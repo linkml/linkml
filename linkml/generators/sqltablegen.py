@@ -1,5 +1,6 @@
 import logging
 import os
+from dataclasses import dataclass, field
 from typing import Dict, List, Optional, TextIO, Union
 
 import click
@@ -60,6 +61,7 @@ RANGEMAP = {
 }
 
 
+@dataclass
 class SQLTableGenerator(Generator):
     """
     A :ref:`Generator` for creating SQL DDL
@@ -119,26 +121,12 @@ class SQLTableGenerator(Generator):
     generatorversion = "0.1.1"
     valid_formats = ["sql"]
     use_inherits: bool = False  ## postgresql supports inheritance
-    dialect: str
-    inject_primary_keys: bool = True
-
-    def __init__(
-        self,
-        schema: Union[str, TextIO, SchemaDefinition],
-        dialect="sqlite",
-        use_foreign_keys=True,
-        rename_foreign_keys=False,
-        direct_mapping=False,
-        **kwargs,
-    ) -> None:
-        # do not do generator-based transform of schema
-        # super().__init__(schema, **kwargs)
-        self.schema = schema
-        self.relative_slot_num = 0
-        self.dialect = dialect
-        self.use_foreign_keys = use_foreign_keys
-        self.rename_foreign_keys = rename_foreign_keys
-        self.direct_mapping = direct_mapping
+    dialect: str = field(default_factory=lambda: "sqlite")
+    inject_primary_keys: bool = field(default_factory=lambda: True)
+    use_foreign_keys: bool = field(default_factory=lambda: True)
+    rename_foreign_keys: bool = field(default_factory=lambda: False)
+    direct_mapping: bool = field(default_factory=lambda: False)
+    relative_slot_num: bool = field(default_factory=lambda: 0)
 
     def generate_ddl(self, naming_policy: SqlNamingPolicy = None, **kwargs) -> str:
         ddl_str = ""

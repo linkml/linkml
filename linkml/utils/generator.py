@@ -1,3 +1,6 @@
+"""
+Base class for all generators
+"""
 import abc
 import logging
 import os
@@ -48,21 +51,39 @@ class Generator(metaclass=abc.ABCMeta):
     schemaview: Optional[SchemaView] = None
     """A wrapper onto the schema object"""
 
-    generatorname: ClassVar[str] = None  # Set to os.path.basename(__file__)
+    generatorname: ClassVar[str] = None
+    """ Set to os.path.basename(__file__)"""
+
     generatorversion: ClassVar[str] = None  # Generator version identifier
     #valid_formats: List[str] = field(default_factory=lambda: [])  # Allowed formats - first format is default
     valid_formats: ClassVar[List[str]] = []
 
     format: Optional[str] = None
+    """expected output format"""
+
     metadata: bool = True
+    """True means include date, generator, etc. information in source header if appropriate"""
+
     useuris: Optional[bool] = None
+    """True means declared class slot uri's are used.  False means use model uris"""
+
     log_level: int = DEFAULT_LOG_LEVEL_INT
     mergeimports: Optional[bool] = True
+    """True means merge non-linkml sources into importing package.  False means separate packages"""
+
     source_file_date: Optional[str] = None
+    """Modification date of input source file"""
+
     source_file_size: Optional[int] = None
+    """Size of the source file in bytes"""
+
     logger: Optional[logging.Logger] = None
+    """Logger to use for logging messages"""
+
     verbose: Optional[bool] = None
+
     output: Optional[str] = None
+    """Path to output file"""
 
     namespaces: Optional[Namespaces] = None
 
@@ -72,40 +93,29 @@ class Generator(metaclass=abc.ABCMeta):
     base_dir: str = None  # Base directory of schema
     """Working directory or base URL of sources"""
 
-    visit_all_class_slots: ClassVar[bool] = (
-        False  # False means only visit own slots, True means visit all slots
-    )
-    visits_are_sorted: ClassVar[bool] = (
-        True  # True means visit basic types in alphabetial order, false in entry
-    )
-    sort_class_slots: ClassVar[bool] = False  # True means visit class slots in alphabetical order
+    visit_all_class_slots: ClassVar[bool] = False
+    """False means only visit own slots, True means visit all slots"""
+
+    visits_are_sorted: ClassVar[bool] = True
+    """True means visit basic types in alphabetial order, false in entry"""
+
+    sort_class_slots: ClassVar[bool] = False
+    """True means visit class slots in alphabetical order"""
 
     metamodel_name_map: Dict[
         str, str
-    ] = None  # Allows mapping of names of metamodel elements such as slot, etc
+    ] = None
+    """Allows mapping of names of metamodel elements such as slot, etc"""
 
     importmap: Optional[Union[str, Optional[Mapping[str, str]]]] = None
+    """File name of import mapping file -- maps import name/uri to target"""
 
     emit_prefixes: Set[str] = field(default_factory=lambda: set())
 
     metamodel: SchemaLoader = None
+    """A SchemaLoader instance that points to the LinkML metamodel (meta.yaml)"""
 
     def __post_init__(self) -> None:
-        """
-        Constructor
-
-        :param schema: metamodel compliant schema.  Can be URI, file name, actual schema, another generator, an
-        open file or a pre-parsed schema.
-        :param format: expected output format
-        :param metadata: True means include date, generator, etc. information in source header if appropriate
-        :param useuris: True means declared class slot uri's are used.  False means use model uris
-        :param importmap: File name of import mapping file -- maps import name/uri to target
-        :param log_level: Logging level
-        :param mergeimports: True means merge non-linkml sources into importing package.  False means separate packages.
-        :param source_file_date: Modification date of input source file
-        :param source_file_size: Source file size
-        :param logger: pre-set logger
-        """
         if not self.logger:
             self.logger = logging.getLogger()
         #    logging.basicConfig()
@@ -116,11 +126,11 @@ class Generator(metaclass=abc.ABCMeta):
             self.format = self.valid_formats[0]
         if self.format not in self.valid_formats:
             raise ValueError(f"Unrecognized format: {format}; known={self.valid_formats}")
-        self.merge_imports = self.mergeimports ## TODO: normalize
+        # TODO: normalize this
+        self.merge_imports = self.mergeimports
         if not self.metadata:
             self.source_file_date = None
             self.source_file_size = None
-        schema = self.schema
         if os.path.exists(LOCAL_METAMODEL_YAML_FILE):
             self.metamodel = SchemaLoader(
                     LOCAL_METAMODEL_YAML_FILE,
@@ -136,6 +146,11 @@ class Generator(metaclass=abc.ABCMeta):
             )
         self.metamodel.resolve()
         #self.metamodel = package_schemaview(metamodel.__name__).schema
+        schema = self.schema
+        # currently generators are very liberal in what they accept, including
+        # other generators.
+        # See https://github.com/linkml/linkml/issues/923 for discussion on how
+        # to simplify the overall framework
         if isinstance(schema, Generator):
             gen = schema
             self.schema = gen.schema
@@ -150,29 +165,29 @@ class Generator(metaclass=abc.ABCMeta):
             self.schema_defaults = gen.schema_defaults
             self.logger = gen.logger
         else:
-            loader = SchemaLoader(
-                schema,
-                self.base_dir,
-                useuris=self.useuris,
-                importmap=self.importmap,
-                logger=self.logger,
-                mergeimports=self.mergeimports,
-                emit_metadata=self.metadata,
-                source_file_date=self.source_file_date,
-                source_file_size=self.source_file_size,
-            )
-            loader.resolve()
-            self.schema = loader.schema
-            # TODO: this re-loads schema, make this more efficient
-            self.synopsis = loader.synopsis
-            self.loaded = loader.loaded
-            self.namespaces = loader.namespaces
-            self.base_dir = loader.base_dir
-            self.importmap = loader.importmap
-            self.source_file_data = loader.source_file_date
-            self.source_file_size = loader.source_file_size
-            self.schema_location = loader.schema_location
-            self.schema_defaults = loader.schema_defaults
+            if not isinstance(schema, SchemaDefinition):
+                loader = SchemaLoader(
+                    schema,
+                    self.base_dir,
+                    useuris=self.useuris,
+                    importmap=self.importmap,
+                    logger=self.logger,
+                    mergeimports=self.mergeimports,
+                    emit_metadata=self.metadata,
+                    source_file_date=self.source_file_date,
+                    source_file_size=self.source_file_size,
+                )
+                loader.resolve()
+                self.schema = loader.schema
+                self.synopsis = loader.synopsis
+                self.loaded = loader.loaded
+                self.namespaces = loader.namespaces
+                self.base_dir = loader.base_dir
+                self.importmap = loader.importmap
+                self.source_file_data = loader.source_file_date
+                self.source_file_size = loader.source_file_size
+                self.schema_location = loader.schema_location
+                self.schema_defaults = loader.schema_defaults
 
     def serialize(self, **kwargs) -> str:
         """
@@ -182,7 +197,13 @@ class Generator(metaclass=abc.ABCMeta):
         :return: Generated output
         """
         output = StringIO()
+        # Note: we currently redirect stdout, this means that print statements within
+        # each generator will be redirected to the StringIO object.
+        # See https://github.com/linkml/linkml/issues/923 for discussion on simplifying this
         with redirect_stdout(output):
+            # the default is to use the Visitor Pattern; each individual generator may
+            # choose to override methods {visit,end}_{element}.
+            # See https://github.com/linkml/linkml/issues/923
             self.visit_schema(**kwargs)
             for sn, ss in (
                 sorted(self.schema.subsets.items(), key=lambda s: s[0].lower())

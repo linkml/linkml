@@ -35,22 +35,24 @@ class PythonGenerator(Generator):
     """
     Generates Python dataclasses from a LinkML model
 
-
+    See `Python Generator Docs <https://linkml.io/linkml/generators/python.html>`_
     """
 
+    # override ClassVars
     generatorname = os.path.basename(__file__)
     generatorversion = PYTHON_GEN_VERSION
     valid_formats = ["py"]
     visit_all_class_slots = False
 
+    # generator-specific attributes
     gen_classvars: bool = True
     gen_slots: bool = True
     genmeta: bool = field(default_factory=lambda: False)
     emit_metadata: bool = True
 
     def __post_init__(self) -> None:
-        super().__post_init__()
         self.sourcefile = self.schema
+        super().__post_init__()
         if self.format is None:
             self.format = self.valid_formats[0]
         if self.schema.default_prefix == "linkml" and not self.genmeta:

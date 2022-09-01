@@ -29,11 +29,14 @@ class MarkdownGenerator(Generator):
     The markdown is suitable for deployment as a MkDocs or Sphinx site
     """
 
+    # override ClassVars
     generatorname = os.path.basename(__file__)
     generatorversion = "0.2.1"
     directory_output = True
     valid_formats = ["md"]
     visit_all_class_slots = False
+
+    # generator-specific attributes
     directory: Optional[str] = None
     image_directory: Optional[str] = None
     noimages: bool = False
@@ -42,6 +45,7 @@ class MarkdownGenerator(Generator):
     warn_on_exist: bool = False
     gen_classes: Optional[Set[ClassDefinitionName]] = None
     gen_classes_neighborhood: Optional[References] = None
+    index_file: str = None
 
     def visit_schema(
         self,

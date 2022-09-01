@@ -38,6 +38,7 @@ class SQLTableGeneratorTestCase(unittest.TestCase):
         b = SchemaBuilder()
         slots = ["full name", "description"]
         b.add_class(DUMMY_CLASS, slots)
+        b.add_defaults()
         gen = SQLTableGenerator(b.schema)
         ddl = gen.generate_ddl()
         # print(ddl)
@@ -52,6 +53,7 @@ class SQLTableGeneratorTestCase(unittest.TestCase):
         b = SchemaBuilder()
         slots = ["full name", "description"]
         b.add_class(DUMMY_CLASS, slots)
+        b.add_defaults()
         gen = SQLTableGenerator(b.schema, use_foreign_keys=False)
         ddl = gen.generate_ddl()
         # print(ddl)
@@ -74,6 +76,7 @@ class SQLTableGeneratorTestCase(unittest.TestCase):
         b.add_slot(
             SlotDefinition("age", range="integer", description="age of person in years")
         )
+        b.add_defaults()
         for dialect in ["postgresql", "sqlite", "mysql"]:
             gen = SQLTableGenerator(b.schema, dialect=dialect)
             ddl = gen.generate_ddl()

@@ -1,6 +1,7 @@
 import logging
 import os
 from copy import copy, deepcopy
+from dataclasses import field
 from typing import (Callable, Dict, Iterator, List, Optional, Set, TextIO,
                     Tuple, Union)
 
@@ -22,19 +23,9 @@ class ShaclGenerator(Generator):
     valid_formats = ["ttl"]
     visit_all_class_slots = False
 
-    def __init__(
-        self,
-        schema: Union[str, TextIO, SchemaDefinition],
-        format: str = valid_formats[0],
-        genmeta: bool = False,
-        gen_classvars: bool = True,
-        gen_slots: bool = True,
-        **kwargs,
-    ) -> None:
-        self.sourcefile = schema
-        self.schemaview = SchemaView(schema)
-        self.schema = self.schemaview.schema
-        self.format = format
+    def __post_init__(self) -> None:
+        self.schemaview = SchemaView(self.schema)
+        super().__post_init__()
         self.generate_header()
 
     def generate_header(self):

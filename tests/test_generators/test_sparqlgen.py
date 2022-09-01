@@ -10,6 +10,7 @@ DIR = env.expected_path("kitchen_sink_sparql")
 SPARQL = env.expected_path("kitchen_sink.rq")
 
 
+
 class SparqlGeneratorTestCase(unittest.TestCase):
     def test_sparqlgen(self):
         """Generate java classes"""

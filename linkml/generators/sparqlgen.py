@@ -1,6 +1,7 @@
 import logging
 import os
 from collections import defaultdict
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, List, Optional, TextIO, Union, cast
 
@@ -128,6 +129,7 @@ def materialize_schema(schemaview: SchemaView):
             s.slot_uri = schemaview.get_uri(s)
 
 
+@dataclass
 class SparqlGenerator(Generator):
     """
     Generates SPARQL queries that can be used for delayed validation
@@ -136,24 +138,15 @@ class SparqlGenerator(Generator):
     generatorname = os.path.basename(__file__)
     valid_formats = ["sparql"]
     visit_all_class_slots = False
+    named_graphs: Optional[List[str]] = None
+    limit: Optional[int] = None
+    sparql: Optional[str] = None
 
-    def __init__(
-        self,
-        schema: Union[str, TextIO, SchemaDefinition],
-        format: str = valid_formats[0],
-        named_graphs: List[str] = None,
-        limit: int = None,
-        **kwargs,
-    ) -> None:
-        self.sourcefile = schema
-        self.schemaview = SchemaView(schema)
-        self.schema = self.schemaview.schema
-        schemaview = self.schemaview
-        schema = self.schema
-        self.sparql = None
-        materialize_schema(schemaview)
-        queries = self.generate_sparql(named_graphs=named_graphs, limit=limit)
-        self.queries = queries
+    def __post_init__(self):
+        self.schemaview = SchemaView(self.schema)
+        materialize_schema(self.schemaview)
+        super().__post_init__()
+        self.queries = self.generate_sparql(named_graphs=self.named_graphs, limit=self.limit)
 
     def generate_sparql(self, named_graphs=None, limit: int = None):
         template_obj = Template(template)

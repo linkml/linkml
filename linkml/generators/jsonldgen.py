@@ -4,6 +4,7 @@
 import logging
 import os
 from copy import deepcopy
+from dataclasses import dataclass
 from typing import Any, Optional
 
 import click
@@ -24,6 +25,7 @@ from linkml.generators.jsonldcontextgen import ContextGenerator
 from linkml.utils.generator import Generator, shared_arguments
 
 
+@dataclass
 class JSONLDGenerator(Generator):
     generatorname = os.path.basename(__file__)
     generatorversion = "0.0.2"
@@ -31,9 +33,11 @@ class JSONLDGenerator(Generator):
         "jsonld",
         "json",
     ]  # jsonld includes @type and @context.  json is pure JSON
+    original_schema: SchemaDefinition = None
+    context: str = None
 
-    def __init__(self, *args, **kwargs) -> None:
-        super().__init__(*args, **kwargs)
+    def __post_init__(self) -> None:
+        super().__post_init__()
         self.original_schema = deepcopy(self.schema)
 
     def _add_type(self, node: YAMLRoot) -> dict:

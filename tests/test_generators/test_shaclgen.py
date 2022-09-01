@@ -1,15 +1,7 @@
-import sys
 import unittest
 
-from linkml_runtime.dumpers import json_dumper, rdf_dumper
-from linkml_runtime.loaders import yaml_loader
-
-from linkml.generators.jsonldcontextgen import ContextGenerator
 from linkml.generators.shaclgen import ShaclGenerator
 from tests.test_generators.environment import env
-from tests.test_generators.test_pythongen import make_python
-
-# from pyshacl.evaluate import evaluate
 
 
 SCHEMA = env.input_path("kitchen_sink.yaml")

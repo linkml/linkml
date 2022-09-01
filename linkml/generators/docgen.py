@@ -101,11 +101,16 @@ class DocGenerator(Generator):
     generatorversion = "0.0.1"
     valid_formats = ["markdown", "rst", "html", "latex"]
     dialect: Optional[Union[DIALECT, str]] = None
+    """markdown dialect (e.g MyST, Python)"""
     sort_by: str = field(default_factory=lambda: "name")
     visit_all_class_slots = False
     template_mappings: Dict[str, str] = None
     directory: str = None
+    """directory in which to write documents"""
+
     template_directory: str = None
+    """directory for custom templates"""
+
     genmeta: bool = field(default_factory=lambda: False)
     gen_classvars: bool = field(default_factory=lambda: True)
     gen_slots: bool = field(default_factory=lambda: True)
@@ -114,19 +119,6 @@ class DocGenerator(Generator):
 
 
     def __post_init__(self):
-        """
-        Creates a generator object that can write documents to a directory from a schema
-
-        :param schema: path to schema file or schema object
-        :param directory: directory in which to write documents
-        :param template_directory: directory for custom templates
-        :param format: only markdown is supported by default
-        :param dialect: markdown dialect (e.g MyST, Python)
-        :param genmeta:
-        :param gen_classvars:
-        :param gen_slots:
-        :param kwargs:
-        """
         self.schemaview = SchemaView(self.schema)
         dialect = self.dialect
         if dialect is not None:
