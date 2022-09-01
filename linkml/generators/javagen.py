@@ -61,14 +61,9 @@ class JavaGenerator(OOCodeGenerator):
     generatorversion = JAVA_GEN_VERSION
     valid_formats = ["java"]
     visit_all_class_slots = False
-    package: str = None
     template_file: str = None
     generate_records: bool = False
 
-    def __post_init__(self):
-        # TODO: consider moving up a level
-        self.schemaview = SchemaView(self.schema)
-        super().__post_init__()
 
     def map_type(self, t: TypeDefinition) -> str:
         if t.uri:

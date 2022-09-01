@@ -61,9 +61,15 @@ class OOClass:
     source_class: ClassDefinition = None
 
 
+@dataclass
 class OOCodeGenerator(Generator):
     package: PACKAGE = "example"
     java_style = True
+
+    def __post_init__(self):
+        # TODO: consider moving up a level
+        self.schemaview = SchemaView(self.schema)
+        super().__post_init__()
 
     @abc.abstractmethod
     def serialize(self, directory: str) -> None:

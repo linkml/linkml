@@ -1,6 +1,7 @@
 import os
 from collections import defaultdict
 from copy import deepcopy
+from dataclasses import field, dataclass
 from typing import Dict, List, TextIO, Union
 
 import click
@@ -110,31 +111,16 @@ def _get_pyrange(t: TypeDefinition, sv: SchemaView) -> str:
     return pyrange
 
 
+@dataclass
 class PydanticGenerator(OOCodeGenerator):
     generatorname = os.path.basename(__file__)
     generatorversion = "0.0.1"
     valid_formats = ["pydantic"]
     visit_all_class_slots = False
+    template_file: str = None
+    allow_extra: bool = field(default_factory=lambda: False)
+    gen_mixin_inheritance: bool = field(default_factory=lambda: True)
 
-    def __init__(
-        self,
-        schema: Union[str, TextIO, SchemaDefinition],
-        template_file: str = None,
-        allow_extra=False,
-        format: str = valid_formats[0],
-        genmeta: bool = False,
-        gen_classvars: bool = True,
-        gen_slots: bool = True,
-        gen_mixin_inheritance: bool = True,
-        **kwargs,
-    ) -> None:
-        self.sorted_class_names = None
-        self.sourcefile = schema
-        self.schemaview = SchemaView(schema)
-        self.schema = self.schemaview.schema
-        self.template_file = template_file
-        self.allow_extra = allow_extra
-        self.gen_mixin_inheritance = gen_mixin_inheritance
 
     def generate_enums(
         self, all_enums: Dict[EnumDefinitionName, EnumDefinition]

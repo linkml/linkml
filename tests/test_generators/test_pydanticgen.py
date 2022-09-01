@@ -50,6 +50,7 @@ class PydanticGeneratorTestCase(unittest.TestCase):
     def test_compile_pydantic(self):
         """Generate and compile pydantic classes"""
         gen = PydanticGenerator(SCHEMA, package=PACKAGE)
+        print(gen.allow_extra)
         code = gen.serialize()
         mod = compile_python(code, PACKAGE)
         p = mod.Person(id="P:1")
@@ -64,6 +65,10 @@ class PydanticGeneratorTestCase(unittest.TestCase):
         unit_test_schema = """
 id: unit_test
 name: unit_test
+
+prefixes:
+  ex: https://example.org/
+default_prefix: ex
 
 enums:
   TestEnum:
