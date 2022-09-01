@@ -4,6 +4,7 @@ Generate CSVs
 import os
 import sys
 from csv import DictWriter
+from dataclasses import dataclass
 from typing import List, Optional, Set, TextIO, Union
 
 import click
@@ -15,18 +16,19 @@ from linkml_runtime.utils.formatutils import be, underscore
 from linkml.utils.generator import Generator, shared_arguments
 
 
+@dataclass
 class CsvGenerator(Generator):
     generatorname = os.path.basename(__file__)
     generatorversion = "0.1.1"
     valid_formats = ["csv", "tsv"]
+    sep: Optional[str] = None
+    closure: Optional[
+        Set[ClassDefinitionName]
+    ] = None  # List of classes to include in output
+    writer: Optional[DictWriter] = None
 
-    def __init__(self, schema: Union[str, TextIO, SchemaDefinition], **kwargs) -> None:
-        super().__init__(schema, **kwargs)
-        self.sep: Optional[str] = None
-        self.closure: Optional[
-            Set[ClassDefinitionName]
-        ] = None  # List of classes to include in output
-        self.writer: Optional[DictWriter] = None
+    def __post_init__(self):
+        super().__post_init__()
         self.generate_header()
 
     def generate_header(self):

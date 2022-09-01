@@ -1,4 +1,5 @@
 import os
+from dataclasses import dataclass, field
 from typing import List, Optional, TextIO, Union
 
 import click
@@ -14,6 +15,7 @@ from openpyxl.worksheet.datavalidation import DataValidation
 from linkml.utils.generator import Generator, shared_arguments
 
 
+@dataclass
 class ExcelGenerator(Generator):
     """This class is a blueprint for the generator module that is responsible
     for automatically creating Excel spreadsheets from the LinkML schema.
@@ -27,7 +29,7 @@ class ExcelGenerator(Generator):
     generator_name = os.path.splitext(os.path.basename(__file__))[0]
     generator_version = "0.0.1"
     valid_formats = ["xlsx"]
-    sheet_name_cols = []
+    sheet_name_cols: List[str] = field(default_factory=lambda: [])
 
     def _workbook_path(self, yaml_filename: str, wb_name: str = None):
         """Internal method that computes the path where the Excel workbook

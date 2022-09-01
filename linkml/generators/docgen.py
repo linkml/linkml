@@ -1,6 +1,7 @@
 import logging
 import os
 from copy import deepcopy
+from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
 from typing import (Callable, Dict, Iterable, Iterator, List, Optional, Set,
@@ -62,6 +63,7 @@ def _ensure_ranked(elements: Iterable[Element]):
             x.rank = MAX_RANK
 
 
+@dataclass
 class DocGenerator(Generator):
     """
     Generates documentation from a schema (ALPHA CODE)
@@ -98,28 +100,20 @@ class DocGenerator(Generator):
     generatorname = os.path.basename(__file__)
     generatorversion = "0.0.1"
     valid_formats = ["markdown", "rst", "html", "latex"]
-    dialect: DIALECT = None
-    sort_by: sort_by = None
+    dialect: Optional[Union[DIALECT, str]] = None
+    sort_by: str = field(default_factory=lambda: "name")
     visit_all_class_slots = False
     template_mappings: Dict[str, str] = None
-    directory = None
-    template_directory = None
-    genmeta = False
+    directory: str = None
+    template_directory: str = None
+    genmeta: bool = field(default_factory=lambda: False)
+    gen_classvars: bool = field(default_factory=lambda: True)
+    gen_slots: bool = field(default_factory=lambda: True)
+    no_types_dir: bool = field(default_factory=lambda: False)
+    use_slot_uris: bool = field(default_factory=lambda: False)
 
-    def __init__(
-        self,
-        schema: Union[str, TextIO, SchemaDefinition],
-        directory: str = None,
-        template_directory: str = None,
-        use_slot_uris: bool = False,
-        format: str = valid_formats[0],
-        dialect: Optional[Union[DIALECT, str]] = None,
-        sort_by: str = None,
-        genmeta: bool = False,
-        gen_classvars: bool = True,
-        gen_slots: bool = True,
-        **kwargs,
-    ) -> None:
+
+    def __post_init__(self):
         """
         Creates a generator object that can write documents to a directory from a schema
 
@@ -133,18 +127,10 @@ class DocGenerator(Generator):
         :param gen_slots:
         :param kwargs:
         """
-        self.sourcefile = schema
-        self.schemaview = SchemaView(schema)
-        self.schema = self.schemaview.schema
-        self.format = format
-        self.directory = directory
-        self.template_directory = template_directory
-        self.use_slot_uris = use_slot_uris
-        self.genmeta = genmeta
-        if sort_by is None:
-            sort_by = "name"
-        self.sort_by = sort_by
+        self.schemaview = SchemaView(self.schema)
+        dialect = self.dialect
         if dialect is not None:
+            # TODO: simplify this
             if isinstance(dialect, str):
                 if dialect == MarkdownDialect.myst.value:
                     dialect = MarkdownDialect.myst
@@ -153,6 +139,7 @@ class DocGenerator(Generator):
                 else:
                     raise NotImplemented(f"{dialect} not supported")
             self.dialect = dialect
+        super().__post_init__()
 
     def serialize(self, directory: str = None) -> None:
         """

@@ -1,4 +1,5 @@
 import os
+from dataclasses import dataclass
 from typing import TextIO, Union
 
 import click
@@ -9,14 +10,16 @@ from linkml_runtime.utils.formatutils import camelcase, lcamelcase
 from linkml.utils.generator import Generator, shared_arguments
 
 
+@dataclass
 class GraphqlGenerator(Generator):
     generatorname = os.path.basename(__file__)
     generatorversion = "0.1.1"
     valid_formats = ["graphql"]
     visit_all_class_slots = True
 
-    def __init__(self, schema: Union[str, TextIO, SchemaDefinition], **kwargs) -> None:
-        super().__init__(schema, **kwargs)
+    def __post_init__(self):
+        super().__post_init__()
+        # TODO: move this
         self.generate_header()
 
     def generate_header(self):
