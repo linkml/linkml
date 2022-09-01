@@ -66,7 +66,9 @@ def _ensure_ranked(elements: Iterable[Element]):
 @dataclass
 class DocGenerator(Generator):
     """
-    Generates documentation from a schema (ALPHA CODE)
+    Generates documentation from a schema
+
+    Note: this is a replacement for MarkdownGenerator
 
     Documents can be generated using either provided Jinja2 templates, or by providing your own
 

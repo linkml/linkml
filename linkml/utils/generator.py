@@ -44,19 +44,37 @@ DEFAULT_LOG_LEVEL_INT: int = logging.WARNING
 class Generator(metaclass=abc.ABCMeta):
     """
     Base class for generators
+
+    See `Generator Docs <https://linkml.io/linkml/generators/>`_
     """
+
+    # ClassVars
     schema: Union[str, TextIO, SchemaDefinition, "Generator"]
     """metamodel compliant schema.  Can be URI, file name, actual schema, another generator, an
         open file or a pre-parsed schema"""
-    schemaview: Optional[SchemaView] = None
-    """A wrapper onto the schema object"""
+
 
     generatorname: ClassVar[str] = None
-    """ Set to os.path.basename(__file__)"""
+    """ Name of the generator. Override with os.path.basename(__file__)"""
 
     generatorversion: ClassVar[str] = None  # Generator version identifier
-    #valid_formats: List[str] = field(default_factory=lambda: [])  # Allowed formats - first format is default
+    """Version of the generator. Consider deprecating and instead use overall linkml version"""
+
     valid_formats: ClassVar[List[str]] = []
+    """Allowed formats - first format is default"""
+
+    visit_all_class_slots: ClassVar[bool] = False
+    """Visitor ClassVar: False means only visit own slots, True means visit all slots"""
+
+    visits_are_sorted: ClassVar[bool] = True
+    """Visitor ClassVar: True means visit basic types in alphabetial order, false in entry"""
+
+    sort_class_slots: ClassVar[bool] = False
+    """Visitor ClassVar: True means visit class slots in alphabetical order"""
+
+    # Object-level Vars
+    schemaview: Optional[SchemaView] = None
+    """A wrapper onto the schema object"""
 
     format: Optional[str] = None
     """expected output format"""
@@ -68,6 +86,8 @@ class Generator(metaclass=abc.ABCMeta):
     """True means declared class slot uri's are used.  False means use model uris"""
 
     log_level: int = DEFAULT_LOG_LEVEL_INT
+    """Logging level, 0 is minimum"""
+
     mergeimports: Optional[bool] = True
     """True means merge non-linkml sources into importing package.  False means separate packages"""
 
@@ -81,11 +101,13 @@ class Generator(metaclass=abc.ABCMeta):
     """Logger to use for logging messages"""
 
     verbose: Optional[bool] = None
+    """Verbosity"""
 
     output: Optional[str] = None
     """Path to output file"""
 
     namespaces: Optional[Namespaces] = None
+    """All prefix expansions used"""
 
     directory_output: bool = False
     """True means output is to a directory, False is to stdout"""
@@ -93,14 +115,7 @@ class Generator(metaclass=abc.ABCMeta):
     base_dir: str = None  # Base directory of schema
     """Working directory or base URL of sources"""
 
-    visit_all_class_slots: ClassVar[bool] = False
-    """False means only visit own slots, True means visit all slots"""
 
-    visits_are_sorted: ClassVar[bool] = True
-    """True means visit basic types in alphabetial order, false in entry"""
-
-    sort_class_slots: ClassVar[bool] = False
-    """True means visit class slots in alphabetical order"""
 
     metamodel_name_map: Dict[
         str, str

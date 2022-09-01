@@ -18,18 +18,33 @@ from linkml.utils.generator import Generator, shared_arguments
 
 @dataclass
 class CsvGenerator(Generator):
+    """
+    Generates CSV summaries
+
+    Note: this generator is not widely used,
+    and has largely been supplanted by schemasheets
+    """
+
+    # ClassVars
     generatorname = os.path.basename(__file__)
     generatorversion = "0.1.1"
     valid_formats = ["csv", "tsv"]
+
+    # ObjectVars
     sep: Optional[str] = None
+    """Separator for columns"""
+
     closure: Optional[
         Set[ClassDefinitionName]
-    ] = None  # List of classes to include in output
+    ] = None
+    """List of classes to include in output"""
+
     writer: Optional[DictWriter] = None
+    """Python dictwriter"""
 
     def __post_init__(self):
         super().__post_init__()
-        self.generate_header()
+        self.generate_header()  # TODO: don't do this in initialization
 
     def generate_header(self):
         print(f"# metamodel_version: {self.schema.metamodel_version}")

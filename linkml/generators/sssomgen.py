@@ -1,4 +1,5 @@
 import os
+from dataclasses import dataclass
 from datetime import date
 from typing import Optional, TextIO, Union
 
@@ -12,6 +13,7 @@ from linkml.utils.generator import Generator, shared_arguments
 DEFAULT_OUTPUT_FILENAME = "sssom.tsv"
 
 
+@dataclass
 class SSSOMGenerator(Generator):
     generatorname = os.path.basename(__file__)
     generatorversion = "0.0.1"

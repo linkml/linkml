@@ -41,6 +41,7 @@ class ContextGenerator(Generator):
     context_body: Dict = field(default_factory=lambda: dict())
     slot_class_maps: Dict = field(default_factory=lambda: dict())
     emit_metadata: bool = field(default_factory=lambda: False)
+    model: Optional[bool] = True
 
 
     def visit_schema(
@@ -79,6 +80,8 @@ class ContextGenerator(Generator):
         model: Optional[bool] = True,
         **_,
     ) -> None:
+        if model is None:
+            model = self.model
         context = JsonObj()
         if self.emit_metadata:
             comments = f"""Auto generated from {self.schema.source_file} by {self.generatorname} version: {self.generatorversion}"""

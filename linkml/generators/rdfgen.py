@@ -6,6 +6,7 @@ Generate a JSON LD representation of the model
 """
 import os
 import urllib.parse as urlparse
+from dataclasses import dataclass
 from typing import Optional, TextIO, Union
 
 import click
@@ -19,6 +20,7 @@ from linkml.generators.jsonldgen import JSONLDGenerator
 from linkml.utils.generator import Generator, shared_arguments
 
 
+@dataclass
 class RDFGenerator(Generator):
     generatorname = os.path.basename(__file__)
     generatorversion = "0.1.1"
@@ -28,8 +30,9 @@ class RDFGenerator(Generator):
     )
     visit_all_class_slots = False
 
-    def __init__(self, schema: Union[str, TextIO, SchemaDefinition], **kwargs) -> None:
-        super().__init__(schema, **kwargs)
+    # ObjectVars
+    emit_metadata: bool = False
+
 
     def _data(self, g: Graph) -> str:
         return g.serialize(
@@ -41,7 +44,7 @@ class RDFGenerator(Generator):
     ) -> None:
         gen = JSONLDGenerator(
             self,
-            fmt=JSONLDGenerator.valid_formats[0],
+            format=JSONLDGenerator.valid_formats[0],
             metadata=self.emit_metadata,
             importmap=self.importmap,
         )
