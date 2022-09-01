@@ -4,8 +4,9 @@ model classes are translated to OWL classes, slots to OWL properties.
 """
 import logging
 import os
+from dataclasses import dataclass, field
 from enum import Enum, unique
-from typing import Optional, TextIO, Union, cast
+from typing import Optional, TextIO, Union, Set, List
 
 import click
 from linkml_runtime.linkml_model.meta import (ClassDefinition,
@@ -23,9 +24,7 @@ from rdflib.namespace import DCTERMS, RDFS, SKOS
 from rdflib.plugin import Parser as rdflib_Parser
 from rdflib.plugin import plugins as rdflib_plugins
 
-from linkml import (LOCAL_METAMODEL_YAML_FILE, META_BASE_URI,
-                    METAMODEL_NAMESPACE, METAMODEL_NAMESPACE_NAME,
-                    METAMODEL_YAML_URI)
+from linkml import METAMODEL_NAMESPACE, METAMODEL_NAMESPACE_NAME
 from linkml.utils.generator import Generator, shared_arguments
 from linkml.utils.schemaloader import SchemaLoader
 
@@ -49,6 +48,7 @@ class ElementDefinition(object):
     pass
 
 
+@dataclass
 class OwlSchemaGenerator(Generator):
     """
     Generates a schema-oriented OWL representation of a LinkML model
@@ -59,49 +59,23 @@ class OwlSchemaGenerator(Generator):
         type_objects    if True, represent TypeDefinitions as objects; if False, as literals
         metaclasses     if True, include OWL representations of ClassDefinition, SlotDefinition, etc. Introduces punning
     """
+    schema: Union[str, TextIO, SchemaDefinition] = None
 
-    generatorname = os.path.basename(__file__)
-    generatorversion = "0.1.1"
+    generatorname: str = field(default_factory=lambda: os.path.basename(__file__))
+    generatorversion: str = field(default_factory=lambda:  "0.1.1")
     valid_formats = ["owl", "ttl"] + [
-        x.name for x in rdflib_plugins(None, rdflib_Parser) if "/" not in str(x.name)
-    ]
+        x.name for x in rdflib_plugins(None, rdflib_Parser) if "/" not in str(x.name)]
+    #valid_formats: List[str] = field(default_factory=lambda: ["owl", "ttl"] + [
+    #    x.name for x in rdflib_plugins(None, rdflib_Parser) if "/" not in str(x.name)
+    #])
     metadata_profile: MetadataProfile = None
     visits_are_sorted = True
-
-    def __init__(
-        self,
-        schema: Union[str, TextIO, SchemaDefinition],
-        ontology_uri_suffix: str = None,
-        type_objects=True,
-        metaclasses=True,
-        metadata_profile: MetadataProfile = None,
-        add_ols_annotations=True,
-        **kwargs,
-    ) -> None:
-        super().__init__(schema, **kwargs)
-        self.graph: Optional[Graph] = None
-        self.metamodel = (
-            SchemaLoader(
-                LOCAL_METAMODEL_YAML_FILE,
-                importmap=kwargs.get("importmap", None),
-                mergeimports=self.merge_imports,
-            )
-            if os.path.exists(LOCAL_METAMODEL_YAML_FILE)
-            else SchemaLoader(
-                METAMODEL_YAML_URI,
-                base_dir=META_BASE_URI,
-                importmap=kwargs.get("importmap", None),
-                mergeimports=self.merge_imports,
-            )
-        )
-        self.metamodel.resolve()
-        self.emit_prefixes: Set[str] = set()
-        self.top_value_uri: Optional[URIRef] = None
-        self.ontology_uri_suffix = ontology_uri_suffix
-        self.type_objects = type_objects
-        self.metaclasses = metaclasses
-        self.metadata_profile = metadata_profile
-        self.add_ols_annotations = add_ols_annotations
+    ontology_uri_suffix: str = None
+    metaclasses: bool = True
+    add_ols_annotations = True
+    graph: Optional[Graph] = None
+    top_value_uri: Optional[URIRef] = None
+    type_objects: bool = False
 
     def visit_schema(self, output: Optional[str] = None, **_):
         owl_id = self.schema.id

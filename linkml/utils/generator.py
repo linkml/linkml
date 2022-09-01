@@ -1,10 +1,12 @@
 import abc
 import logging
+import os
 import re
 from contextlib import redirect_stdout
+from dataclasses import dataclass, field
 from io import StringIO
 from typing import (Callable, Dict, List, Optional, Set, TextIO, Type, Union,
-                    cast)
+                    cast, Mapping, ClassVar)
 
 import click
 from click import Argument, Command, Option
@@ -20,8 +22,11 @@ from linkml_runtime.linkml_model.meta import (ClassDefinition,
                                               SubsetDefinitionName,
                                               TypeDefinition,
                                               TypeDefinitionName)
+import linkml_runtime.linkml_model.meta as metamodel
 from linkml_runtime.utils.formatutils import camelcase, underscore
+from linkml_runtime.utils.introspection import package_schemaview
 
+from linkml import LOCAL_METAMODEL_YAML_FILE, META_BASE_URI, METAMODEL_YAML_URI
 from linkml.utils.mergeutils import alias_root
 from linkml.utils.schemaloader import SchemaLoader
 from linkml.utils.typereferences import References
@@ -30,13 +35,30 @@ DEFAULT_LOG_LEVEL: str = "WARNING"
 DEFAULT_LOG_LEVEL_INT: int = logging.WARNING
 
 
+@dataclass
 class Generator(metaclass=abc.ABCMeta):
+    """
+    Base class for generators
+    """
+    schema: Union[str, TextIO, SchemaDefinition, "Generator"]
+    """metamodel compliant schema.  Can be URI, file name, actual schema, another generator, an
+        open file or a pre-parsed schema"""
+
+    format: Optional[str] = None
+    metadata: bool = True
+    useuris: Optional[bool] = None
+    log_level: int = DEFAULT_LOG_LEVEL_INT
+    mergeimports: Optional[bool] = True
+    source_file_date: Optional[str] = None
+    source_file_size: Optional[int] = None
+    logger: Optional[logging.Logger] = None
+
     generatorname: str = None  # Set to os.path.basename(__file__)
     generatorversion: str = None  # Generator version identifier
-    valid_formats: List[str] = []  # Allowed formats - first format is default
-    directory_output: bool = (
-        False  # True means output is to a directory, False is to stdout
-    )
+    #valid_formats: List[str] = field(default_factory=lambda: [])  # Allowed formats - first format is default
+    valid_formats: ClassVar[List[str]] = []
+    directory_output: bool = False
+    """True means output is to a directory, False is to stdout"""
     base_dir: str = None  # Base directory of schema
 
     visit_all_class_slots: bool = (
@@ -51,20 +73,13 @@ class Generator(metaclass=abc.ABCMeta):
         str, str
     ] = None  # Allows mapping of names of metamodel elements such as slot, etc
 
-    def __init__(
-        self,
-        schema: Union[str, TextIO, SchemaDefinition, "Generator"],
-        format: Optional[str] = None,
-        metadata: bool = True,
-        useuris: Optional[bool] = None,
-        importmap: Optional[str] = None,
-        log_level: int = DEFAULT_LOG_LEVEL_INT,
-        mergeimports: Optional[bool] = True,
-        source_file_date: Optional[str] = None,
-        source_file_size: Optional[int] = None,
-        logger: Optional[logging.Logger] = None,
-        **kwargs,
-    ) -> None:
+    importmap: Optional[Union[str, Optional[Mapping[str, str]]]] = None
+
+    emit_prefixes: Set[str] = field(default_factory=lambda: set())
+
+    metamodel: SchemaLoader = None
+
+    def __post_init__(self) -> None:
         """
         Constructor
 
@@ -80,25 +95,38 @@ class Generator(metaclass=abc.ABCMeta):
         :param source_file_size: Source file size
         :param logger: pre-set logger
         """
-        if logger:
-            self.logger = logger
-        else:
+        if not self.logger:
             self.logger = logging.getLogger()
         #    logging.basicConfig()
         #    self.logger = logging.getLogger(self.__class__.__name__)
         #    self.logger.setLevel(log_level)
 
-        if format is None:
-            format = self.valid_formats[0]
-        assert format in self.valid_formats, f"Unrecognized format: {format}"
-        self.format = format
-        self.emit_metadata = metadata
-        self.merge_imports = mergeimports
-        self.source_file_date = source_file_date if metadata else None
-        self.source_file_size = source_file_size if metadata else None
+        if self.format is None:
+            self.format = self.valid_formats[0]
+        if self.format not in self.valid_formats:
+            raise ValueError(f"Unrecognized format: {format}; known={self.valid_formats}")
+        self.merge_imports = self.mergeimports ## TODO: normalize
+        if not self.metadata:
+            self.source_file_date = None
+            self.source_file_size = None
+        schema = self.schema
+        if os.path.exists(LOCAL_METAMODEL_YAML_FILE):
+            self.metamodel = SchemaLoader(
+                    LOCAL_METAMODEL_YAML_FILE,
+                    importmap=self.importmap,
+                    mergeimports=self.merge_imports,
+                )
+        else:
+            self.metamodel = SchemaLoader(
+                METAMODEL_YAML_URI,
+                base_dir=META_BASE_URI,
+                importmap=self.importmap,
+                mergeimports=self.merge_imports,
+            )
+        self.metamodel.resolve()
+        #self.metamodel = package_schemaview(metamodel.__name__).schema
         if isinstance(schema, Generator):
             gen = schema
-            self.schema = gen.schema
             self.synopsis = gen.synopsis
             self.loaded = gen.loaded
             self.namespaces = gen.namespaces
@@ -113,11 +141,11 @@ class Generator(metaclass=abc.ABCMeta):
             loader = SchemaLoader(
                 schema,
                 self.base_dir,
-                useuris=useuris,
-                importmap=importmap,
+                useuris=self.useuris,
+                importmap=self.importmap,
                 logger=self.logger,
-                mergeimports=mergeimports,
-                emit_metadata=metadata,
+                mergeimports=self.mergeimports,
+                emit_metadata=self.metadata,
                 source_file_date=self.source_file_date,
                 source_file_size=self.source_file_size,
             )

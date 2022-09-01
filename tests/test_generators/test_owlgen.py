@@ -33,13 +33,13 @@ class OwlGeneratorTestCase(unittest.TestCase):
             metaclasses=False,
             type_objects=False,
             ontology_uri_suffix=".owl.ttl",
-        ).serialize(mergeimports=False)
+        ).serialize()
         with open(OWL_OUTPUT, "w") as stream:
             stream.write(owl)
         g = Graph()
         g.parse(OWL_OUTPUT, format="turtle")
         owl_classes = list(g.subjects(RDF.type, OWL.Class))
-        assert len(owl_classes) > 10
+        self.assertGreater(len(owl_classes), 10)
         for c in owl_classes:
             types = list(g.objects(c, RDF.type))
             # print(f'Class={c} {types}')
