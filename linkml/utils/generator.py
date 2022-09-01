@@ -26,6 +26,7 @@ from linkml_runtime.linkml_model.meta import (ClassDefinition,
 import linkml_runtime.linkml_model.meta as metamodel
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.introspection import package_schemaview
+from linkml_runtime.utils.namespaces import Namespaces
 
 from linkml import LOCAL_METAMODEL_YAML_FILE, META_BASE_URI, METAMODEL_YAML_URI
 from linkml.utils.mergeutils import alias_root
@@ -62,6 +63,8 @@ class Generator(metaclass=abc.ABCMeta):
     logger: Optional[logging.Logger] = None
     verbose: Optional[bool] = None
     output: Optional[str] = None
+
+    namespaces: Optional[Namespaces] = None
 
     directory_output: bool = False
     """True means output is to a directory, False is to stdout"""
