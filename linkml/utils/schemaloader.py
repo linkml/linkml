@@ -260,9 +260,12 @@ class SchemaLoader:
             if cls.class_uri is not None:
                 cls.mappings.insert(0, cls.class_uri)
             if cls.class_uri is None or not self.useuris:
-                if cls.from_schema is None:
-                    raise Exception(f"Class has no from_schema: {cls}")
-                suffixed_cls_schema = sfx(cls.from_schema)
+                from_schema = cls.from_schema
+                if from_schema is None:
+                    from_schema = self.schema.id
+                #if cls.from_schema is None:
+                #    raise Exception(f"Class has no from_schema: {cls}")
+                suffixed_cls_schema = sfx(from_schema)
                 cls.class_uri = self.namespaces.uri_or_curie_for(
                     self.schema_defaults.get(cls.from_schema, suffixed_cls_schema),
                     camelcase(cls.name),
