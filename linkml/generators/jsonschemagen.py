@@ -5,6 +5,7 @@ from dataclasses import dataclass, field
 from typing import Dict, List, Optional, TextIO, Tuple, Union
 
 import click
+from deprecated.classic import deprecated
 from jsonasobj2 import JsonObj, as_json
 from linkml_runtime.linkml_model.meta import (ClassDefinition, EnumDefinition,
                                               PermissibleValue,
@@ -52,7 +53,12 @@ class JsonSchemaGenerator(Generator):
     valid_formats = ["json"]
     visit_all_class_slots = True
     top_class: Optional[str] = None
+
+    @deprecated("Use top_class")
+    topClass: Optional[str] = None
+
     visit_all_slots = True
+
     not_closed: Optional[bool] = None
 
     schemaobj: JsonObj = None
@@ -69,6 +75,9 @@ class JsonSchemaGenerator(Generator):
     optional_identifier_class_map: Dict[str, Tuple[str, str]] = field(default_factory= lambda : {})
 
     def __post_init__(self):
+        if self.topClass:
+            logging.warning(f"topCls is deprecated - use top_class")
+            self.top_class = self.topClass
         # TODO: consider moving up a level
         self.schemaview = SchemaView(self.schema)
         super().__post_init__()

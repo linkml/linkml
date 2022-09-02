@@ -61,21 +61,21 @@ class OwlSchemaGenerator(Generator):
     """
     schema: Union[str, TextIO, SchemaDefinition] = None
 
+    # ClassVars
     generatorname = os.path.basename(__file__)
     generatorversion = "0.1.1"
     valid_formats = ["owl", "ttl"] + [
         x.name for x in rdflib_plugins(None, rdflib_Parser) if "/" not in str(x.name)]
-    #valid_formats: List[str] = field(default_factory=lambda: ["owl", "ttl"] + [
-    #    x.name for x in rdflib_plugins(None, rdflib_Parser) if "/" not in str(x.name)
-    #])
-    metadata_profile: MetadataProfile = None
     visits_are_sorted = True
+
+    # ObjectVars
+    metadata_profile: MetadataProfile = None
     ontology_uri_suffix: str = None
-    metaclasses: bool = True
+    metaclasses: bool = field(default_factory=lambda: True)
     add_ols_annotations: bool = field(default_factory=lambda: True)
     graph: Optional[Graph] = None
     top_value_uri: Optional[URIRef] = None
-    type_objects: bool = False
+    type_objects: bool = field(default_factory=lambda: True)
 
     def visit_schema(self, output: Optional[str] = None, **_):
         owl_id = self.schema.id
