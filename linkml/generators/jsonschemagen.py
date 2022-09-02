@@ -54,7 +54,7 @@ class JsonSchemaGenerator(Generator):
     visit_all_class_slots = True
     top_class: Optional[str] = None
 
-    @deprecated("Use top_class")
+    #@deprecated("Use top_class")
     topClass: Optional[str] = None
 
     visit_all_slots = True
