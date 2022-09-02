@@ -181,6 +181,8 @@ class Generator(metaclass=abc.ABCMeta):
             self.logger = gen.logger
         else:
             if not isinstance(schema, SchemaDefinition):
+                # Note that in principle SchemaLoader should work
+                # with a Schema object, in practice this causes issues
                 loader = SchemaLoader(
                     schema,
                     self.base_dir,
@@ -203,6 +205,10 @@ class Generator(metaclass=abc.ABCMeta):
                 self.source_file_size = loader.source_file_size
                 self.schema_location = loader.schema_location
                 self.schema_defaults = loader.schema_defaults
+            if self.namespaces is None:
+                self.namespaces = Namespaces()
+                for prefix in self.schema.prefixes.values():
+                    self.namespaces[prefix.prefix_prefix] = prefix.prefix_reference
 
     def serialize(self, **kwargs) -> str:
         """
