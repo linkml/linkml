@@ -2,9 +2,11 @@
 Generate dotfiles
 """
 import os
+from dataclasses import dataclass
 from typing import List, Optional, TextIO, Union
 
 import click
+from deprecated.classic import deprecated
 from graphviz import FORMATS, Digraph
 from linkml_runtime.linkml_model.meta import (ClassDefinition,
                                               SchemaDefinition, SlotDefinition)
@@ -15,22 +17,28 @@ from linkml.utils.generator import Generator, shared_arguments
 valid_formats = sorted(list(FORMATS))
 
 
+@deprecated("Replaced by yuml/mermaid")
+@dataclass
 class DotGenerator(Generator):
+    """
+    Generates dotfiles
+
+    No longer in use: use mermaid generator instead
+    """
     generatorname = os.path.basename(__file__)
     generatorversion = "0.1.1"
     directory_output = True
     valid_formats: List[str] = ["png"] + valid_formats
     visit_all_class_slots = True
 
-    def __init__(self, schema: Union[str, TextIO, SchemaDefinition], **kwargs) -> None:
-        super().__init__(schema, **kwargs)
-        self.classnames: Optional[List[str]] = None
-        self.filename: Optional[str] = None
-        self.dirname: Optional[str] = None
-        self.filedot: Optional[Digraph] = None
-        self.classdot: Optional[Digraph] = None
-        self.cls_subj: Optional[SlotDefinition] = None
-        self.cls_obj: Optional[SlotDefinition] = None
+    # ObjectVars
+    classnames: Optional[List[str]] = None
+    filename: Optional[str] = None
+    dirname: Optional[str] = None
+    filedot: Optional[Digraph] = None
+    classdot: Optional[Digraph] = None
+    cls_subj: Optional[SlotDefinition] = None
+    cls_obj: Optional[SlotDefinition] = None
 
     def visit_schema(
         self,

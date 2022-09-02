@@ -43,6 +43,13 @@ class ContextGenerator(Generator):
     emit_metadata: bool = field(default_factory=lambda: False)
     model: Optional[bool] = True
 
+    def __post_init__(self) -> None:
+        super().__post_init__()
+        if self.namespaces is None:
+            raise TypeError(
+                "Schema text must be supplied to context generater.  Preparsed schema will not work"
+            )
+
 
     def visit_schema(
         self, base: Optional[str] = None, output: Optional[str] = None, **_
