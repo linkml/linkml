@@ -65,8 +65,8 @@ class JsonSchemaGenerator(Generator):
     clsobj: JsonObj = None
     inline: bool = False
     top_class: Optional[ClassDefinitionName] = top_class  ## JSON object is one instance of this
-    entryProperties: dict = field(default_factory= lambda : {})
-    include_range_class_descendants: bool = True
+    entryProperties: dict = field(default_factory=lambda: {})
+    include_range_class_descendants: bool = field(default_factory=lambda: False)
 
     # JSON-Schema does not have inheritance,
     # so we duplicate slots from inherited parents and mixins

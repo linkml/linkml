@@ -15,7 +15,7 @@ class IssueJSONSchemaTypesTestCase(TestEnvironmentTestCase):
 
         def generator() -> str:
             gen = JsonSchemaGenerator(env.input_path("issue_129.yaml"))
-            gen.topCls = "c"
+            gen.top_class = "c"
             return gen.serialize()
 
         sobj_str = env.generate_single_file(

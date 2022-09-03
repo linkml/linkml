@@ -182,7 +182,9 @@ class Generator(metaclass=abc.ABCMeta):
             self.schema_defaults = gen.schema_defaults
             self.logger = gen.logger
         else:
-            if not isinstance(schema, SchemaDefinition):
+            if isinstance(schema, SchemaDefinition):
+                pass
+            else:
                 # Note that in principle SchemaLoader should work
                 # with a Schema object, in practice this causes issues
                 loader = SchemaLoader(
