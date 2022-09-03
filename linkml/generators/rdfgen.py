@@ -7,7 +7,7 @@ Generate a JSON LD representation of the model
 import os
 import urllib.parse as urlparse
 from dataclasses import dataclass
-from typing import Optional, TextIO, Union
+from typing import Optional, TextIO, Union, List
 
 import click
 from linkml_runtime.linkml_model.meta import SchemaDefinition
@@ -29,6 +29,7 @@ class RDFGenerator(Generator):
         [x.name for x in rdflib_plugins(None, rdflib_Parser) if "/" not in str(x.name)]
     )
     visit_all_class_slots = False
+    context: List[str] = None
 
     # ObjectVars
     emit_metadata: bool = False

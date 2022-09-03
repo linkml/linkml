@@ -28,7 +28,7 @@ class DotGenerator(Generator):
     generatorname = os.path.basename(__file__)
     generatorversion = "0.1.1"
     directory_output = True
-    valid_formats: List[str] = ["png"] + valid_formats
+    valid_formats = ["png"] + valid_formats
     visit_all_class_slots = True
 
     # ObjectVars
@@ -39,6 +39,8 @@ class DotGenerator(Generator):
     classdot: Optional[Digraph] = None
     cls_subj: Optional[SlotDefinition] = None
     cls_obj: Optional[SlotDefinition] = None
+    classname: Optional[List[str]] = None
+    directory: Optional[str] = None
 
     def visit_schema(
         self,

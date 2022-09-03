@@ -1,6 +1,6 @@
 import os
 from contextlib import redirect_stdout
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from io import StringIO
 from typing import Any, Callable, Dict, List, Optional, Set, TextIO, Union
 
@@ -39,13 +39,15 @@ class MarkdownGenerator(Generator):
     # generator-specific attributes
     directory: Optional[str] = None
     image_directory: Optional[str] = None
+    classes: Set[ClassDefinitionName] = None,
+    image_dir: bool = False,
+    index_file: str = field(default_factory=lambda: "index.md")
     noimages: bool = False
     noyuml: bool = False
     no_types_dir: bool = False
     warn_on_exist: bool = False
     gen_classes: Optional[Set[ClassDefinitionName]] = None
     gen_classes_neighborhood: Optional[References] = None
-    index_file: str = None
 
     def visit_schema(
         self,

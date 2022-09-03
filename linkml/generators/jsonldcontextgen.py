@@ -42,6 +42,7 @@ class ContextGenerator(Generator):
     slot_class_maps: Dict = field(default_factory=lambda: dict())
     emit_metadata: bool = field(default_factory=lambda: False)
     model: Optional[bool] = True
+    base: Optional[str] = None
 
     def __post_init__(self) -> None:
         super().__post_init__()

@@ -5,7 +5,7 @@ https://yuml.me/diagram/scruffy/class/samples
 """
 import logging
 import os
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Callable, List, Optional, Set, TextIO, Union, cast
 
 import click
@@ -61,6 +61,10 @@ class YumlGenerator(Generator):
     output_file_name: Optional[
         str
     ] = None  # Location of output file if directory used
+
+    classes: Set[ClassDefinitionName] = None
+    directory: Optional[str] = None
+    load_image: bool = field(default_factory=lambda: True)
 
 
     def visit_schema(

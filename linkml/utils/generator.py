@@ -79,7 +79,7 @@ class Generator(metaclass=abc.ABCMeta):
     format: Optional[str] = None
     """expected output format"""
 
-    metadata: bool = True
+    metadata: bool = field(default_factory= lambda: True)
     """True means include date, generator, etc. information in source header if appropriate"""
 
     useuris: Optional[bool] = None
@@ -162,6 +162,8 @@ class Generator(metaclass=abc.ABCMeta):
         self.metamodel.resolve()
         #self.metamodel = package_schemaview(metamodel.__name__).schema
         schema = self.schema
+        # TODO: remove aliasing
+        self.emit_metadata = self.metadata
         # currently generators are very liberal in what they accept, including
         # other generators.
         # See https://github.com/linkml/linkml/issues/923 for discussion on how
