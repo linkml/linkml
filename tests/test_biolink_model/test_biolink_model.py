@@ -56,7 +56,8 @@ class CurrentBiolinkModelTestCase(GeneratorTestCase):
             output_name="model",
         )
 
-    @unittest.skipIf(SKIP_MARKDOWN_VALIDATION, SKIP_MARKDOWN_VALIDATION_REASON)
+    #@unittest.skipIf(SKIP_MARKDOWN_VALIDATION, SKIP_MARKDOWN_VALIDATION_REASON)
+    @unittest.skip("Too slow")
     def test_biolink_markdown(self):
         """Test the markdown generator for the biolink model"""
         self.directory_generator(
