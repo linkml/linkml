@@ -21,11 +21,14 @@ class ShExTestCase(unittest.TestCase):
     )
 
     def test_shex(self):
-        """shex"""
+        """tests generation of shex and subsequent evaluation"""
         kitchen_module = make_python(False)
         inst = yaml_loader.load(DATA, target_class=kitchen_module.Dataset)
         shexstr = ShExGenerator(SCHEMA, mergeimports=True).serialize(collections=False)
-        # print(shexstr)
+        self.assertIn("<Person> CLOSED {", shexstr)
+        self.assertIn("<has_familial_relationships> @<FamilialRelationship> * ;", shexstr)
+        # validation
+        # TODO: provide starting shape
         ctxt = ContextGenerator(SCHEMA, mergeimports=True).serialize()
         inst = yaml_loader.load(DATA, target_class=kitchen_module.Dataset)
         with open(SHEXLOG, "w") as log:

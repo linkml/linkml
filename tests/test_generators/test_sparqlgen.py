@@ -16,7 +16,9 @@ class SparqlGeneratorTestCase(unittest.TestCase):
         """Generate java classes"""
         gen = SparqlGenerator(SCHEMA)
         sparql = gen.serialize(directory=DIR)
-        print(sparql)
+        #print(sparql)
+        # TODO: add more checks
+        self.assertIn("?subject rdf:type ks:Person", sparql)
 
 
 if __name__ == "__main__":
