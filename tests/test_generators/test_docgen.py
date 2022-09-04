@@ -64,6 +64,11 @@ def assert_mdfile_contains(
 
 
 class DocGeneratorTestCase(unittest.TestCase):
+    """
+    Tests generation of markdown and similar documents
+
+    Note that docgen replaces markdowngen
+    """
     def test_latex_generation(self):
         """Tests minimal latex generation"""
         gen = DocGenerator(SCHEMA, mergeimports=True, no_types_dir=True, format="latex")

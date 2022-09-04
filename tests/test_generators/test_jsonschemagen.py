@@ -26,6 +26,10 @@ FAILLOG = env.expected_path("kitchen_sink_failtest_log.txt")
 
 
 class JsonSchemaTestCase(unittest.TestCase):
+    """
+    Tests generation of JSON-Schema
+    """
+
     def test_jsonschema(self):
         """json schema"""
         kitchen_module = make_python(False)

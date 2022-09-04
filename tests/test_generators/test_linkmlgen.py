@@ -25,6 +25,7 @@ class LinkMLGenTestCase(unittest.TestCase):
 
         gen = LinkmlGenerator(SCHEMA, format='yaml')
         out = gen.serialize()
+        # TODO: restore this when imports works for string inputs
         #schema2 = YAMLGenerator(out).schema
         #sv2 = SchemaView(schema2)
         #self.assertEqual(len(sv2.all_classes(imports=False)), len(sv.all_classes(imports=False)))
@@ -35,7 +36,7 @@ class LinkMLGenTestCase(unittest.TestCase):
         yobj = yaml.safe_load(out)
         self.assertEqual(len(yobj["classes"]), len(sv.all_classes(imports=False)))
         self.assertNotIn("attributes", yobj["classes"]["Person"])
-
+        # test with material-attributes option
         gen2 = LinkmlGenerator(SCHEMA, format='yaml')
         gen2.materialize_attributes = True
         out2 = gen2.serialize()

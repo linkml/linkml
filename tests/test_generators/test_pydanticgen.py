@@ -15,6 +15,10 @@ PACKAGE = "kitchen_sink"
 
 
 class PydanticGeneratorTestCase(unittest.TestCase):
+    """
+    Tests generation of pydantic-style classes from LinkML schemas
+    """
+
     def test_pydantic(self):
         """Generate pydantic classes"""
         gen = PydanticGenerator(SCHEMA, package=PACKAGE)
