@@ -60,6 +60,15 @@ class Generator(metaclass=abc.ABCMeta):
     generatorversion: ClassVar[str] = None  # Generator version identifier
     """Version of the generator. Consider deprecating and instead use overall linkml version"""
 
+    uses_schemaloader: ClassVar[bool] = True
+    """Old-style generator that uses the SchemaLoader and visitor pattern"""
+
+    uses_schemaview: ClassVar[bool] = True
+    """New-style generator that uses SchemaView"""
+
+    requires_metamodel: ClassVar[bool] = True
+    """Generator queries an instance of the metamodel"""
+
     valid_formats: ClassVar[List[str]] = []
     """Allowed formats - first format is default"""
 
@@ -115,8 +124,6 @@ class Generator(metaclass=abc.ABCMeta):
     base_dir: str = None  # Base directory of schema
     """Working directory or base URL of sources"""
 
-
-
     metamodel_name_map: Dict[
         str, str
     ] = None
@@ -146,20 +153,21 @@ class Generator(metaclass=abc.ABCMeta):
         if not self.metadata:
             self.source_file_date = None
             self.source_file_size = None
-        if os.path.exists(LOCAL_METAMODEL_YAML_FILE):
-            self.metamodel = SchemaLoader(
-                    LOCAL_METAMODEL_YAML_FILE,
+        if self.requires_metamodel:
+            if os.path.exists(LOCAL_METAMODEL_YAML_FILE):
+                self.metamodel = SchemaLoader(
+                        LOCAL_METAMODEL_YAML_FILE,
+                        importmap=self.importmap,
+                        mergeimports=self.merge_imports,
+                    )
+            else:
+                self.metamodel = SchemaLoader(
+                    METAMODEL_YAML_URI,
+                    base_dir=META_BASE_URI,
                     importmap=self.importmap,
                     mergeimports=self.merge_imports,
                 )
-        else:
-            self.metamodel = SchemaLoader(
-                METAMODEL_YAML_URI,
-                base_dir=META_BASE_URI,
-                importmap=self.importmap,
-                mergeimports=self.merge_imports,
-            )
-        self.metamodel.resolve()
+            self.metamodel.resolve()
         #self.metamodel = package_schemaview(metamodel.__name__).schema
         schema = self.schema
         # TODO: remove aliasing
@@ -168,51 +176,55 @@ class Generator(metaclass=abc.ABCMeta):
         # other generators.
         # See https://github.com/linkml/linkml/issues/923 for discussion on how
         # to simplify the overall framework
-        if isinstance(schema, Generator):
-            gen = schema
-            self.schema = gen.schema
-            self.synopsis = gen.synopsis
-            self.loaded = gen.loaded
-            self.namespaces = gen.namespaces
-            self.base_dir = gen.base_dir
-            self.importmap = gen.importmap
-            self.source_file_data = gen.source_file_date
-            self.source_file_size = gen.source_file_size
-            self.schema_location = gen.schema_location
-            self.schema_defaults = gen.schema_defaults
-            self.logger = gen.logger
-        else:
-            if isinstance(schema, SchemaDefinition):
-                pass
+        if self.uses_schemaloader:
+            if isinstance(schema, Generator):
+                gen = schema
+                self.schema = gen.schema
+                self.synopsis = gen.synopsis
+                self.loaded = gen.loaded
+                self.namespaces = gen.namespaces
+                self.base_dir = gen.base_dir
+                self.importmap = gen.importmap
+                self.source_file_data = gen.source_file_date
+                self.source_file_size = gen.source_file_size
+                self.schema_location = gen.schema_location
+                self.schema_defaults = gen.schema_defaults
+                self.logger = gen.logger
             else:
-                # Note that in principle SchemaLoader should work
-                # with a Schema object, in practice this causes issues
-                loader = SchemaLoader(
-                    schema,
-                    self.base_dir,
-                    useuris=self.useuris,
-                    importmap=self.importmap,
-                    logger=self.logger,
-                    mergeimports=self.mergeimports,
-                    emit_metadata=self.metadata,
-                    source_file_date=self.source_file_date,
-                    source_file_size=self.source_file_size,
-                )
-                loader.resolve()
-                self.schema = loader.schema
-                self.synopsis = loader.synopsis
-                self.loaded = loader.loaded
-                self.namespaces = loader.namespaces
-                self.base_dir = loader.base_dir
-                self.importmap = loader.importmap
-                self.source_file_data = loader.source_file_date
-                self.source_file_size = loader.source_file_size
-                self.schema_location = loader.schema_location
-                self.schema_defaults = loader.schema_defaults
-            if self.namespaces is None:
-                self.namespaces = Namespaces()
-                for prefix in self.schema.prefixes.values():
-                    self.namespaces[prefix.prefix_prefix] = prefix.prefix_reference
+                if isinstance(schema, SchemaDefinition):
+                    pass
+                else:
+                    # Note that in principle SchemaLoader should work
+                    # with a Schema object, in practice this causes issues
+                    loader = SchemaLoader(
+                        schema,
+                        self.base_dir,
+                        useuris=self.useuris,
+                        importmap=self.importmap,
+                        logger=self.logger,
+                        mergeimports=self.mergeimports,
+                        emit_metadata=self.metadata,
+                        source_file_date=self.source_file_date,
+                        source_file_size=self.source_file_size,
+                    )
+                    loader.resolve()
+                    self.schema = loader.schema
+                    self.synopsis = loader.synopsis
+                    self.loaded = loader.loaded
+                    self.namespaces = loader.namespaces
+                    self.base_dir = loader.base_dir
+                    self.importmap = loader.importmap
+                    self.source_file_data = loader.source_file_date
+                    self.source_file_size = loader.source_file_size
+                    self.schema_location = loader.schema_location
+                    self.schema_defaults = loader.schema_defaults
+                if self.namespaces is None:
+                    self.namespaces = Namespaces()
+                    for prefix in self.schema.prefixes.values():
+                        self.namespaces[prefix.prefix_prefix] = prefix.prefix_reference
+        else:
+            self.schemaview = SchemaView(schema)
+            self.schema = self.schemaview.schema
 
     def serialize(self, **kwargs) -> str:
         """
