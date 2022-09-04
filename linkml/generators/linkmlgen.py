@@ -1,6 +1,6 @@
 import logging
 import os
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import TextIO, Union
 
 import click
@@ -24,7 +24,7 @@ class LinkmlGenerator(Generator):
     generatorname = os.path.basename(__file__)
     generatorversion = "1.0.0"
     valid_formats = ["json", "yaml"]
-    materialize_attributes: bool = None
+    materialize_attributes: bool = field(default_factory=lambda: False)
     materialize: bool = None
 
     def __post_init__(self):
@@ -42,10 +42,8 @@ class LinkmlGenerator(Generator):
             for attr in attrs:
                 c_def.attributes[attr.name] = attr
 
-        return
-
     def serialize(self, output: str = None, **kwargs) -> str:
-        if self.materialize:
+        if self.materialize_attributes:
             self.materialize_classes()
 
         if self.format == "json":
