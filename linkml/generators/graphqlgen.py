@@ -19,6 +19,7 @@ class GraphqlGenerator(Generator):
     valid_formats = ["graphql"]
     visit_all_class_slots = True
     uses_schemaloader = True
+    requires_metamodel = False
 
     def __post_init__(self):
         super().__post_init__()

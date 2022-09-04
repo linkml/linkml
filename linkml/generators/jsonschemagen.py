@@ -54,11 +54,12 @@ class JsonSchemaGenerator(Generator):
     visit_all_class_slots = True
     visit_all_slots = True
     uses_schemaloader = True
+    #requires_metamodel = False
 
     #@deprecated("Use top_class")
     topClass: Optional[str] = None
 
-    not_closed: Optional[bool] = field(default_factory=lambda: False)
+    not_closed: Optional[bool] = field(default_factory=lambda: True)
     """If not closed, then an open-ended set of attributes can be instantiated for any object"""
 
     schemaobj: JsonObj = None
@@ -74,7 +75,7 @@ class JsonSchemaGenerator(Generator):
     # so we duplicate slots from inherited parents and mixins
     # Maps e.g. Person --> Person__identifier_optional
     # for use when Person is a range of an inlined-as-dict slot
-    optional_identifier_class_map: Dict[str, Tuple[str, str]] = field(default_factory= lambda : {})
+    optional_identifier_class_map: Dict[str, Tuple[str, str]] = field(default_factory=lambda: {})
 
     def __post_init__(self):
         if self.topClass:
@@ -84,15 +85,16 @@ class JsonSchemaGenerator(Generator):
         self.schemaview = SchemaView(self.schema)
         super().__post_init__()
 
-    def visit_schema(self, inline: bool = False, not_closed=True, **kwargs) -> None:
+    def visit_schema(self, inline: bool = False, **kwargs) -> None:
         self.inline = inline
+        #logging.error(f"NC: {self.not_closed}")
         self.schemaobj = JsonObj(
             title=self.schema.name,
             type="object",
             metamodel_version=self.schema.metamodel_version,
             version=self.schema.version if self.schema.version else None,
             properties={},
-            additionalProperties=not_closed,
+            additionalProperties=self.not_closed,
         )
         for p, c in self.entryProperties.items():
             self.schemaobj["properties"][p] = {

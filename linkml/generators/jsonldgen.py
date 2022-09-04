@@ -35,6 +35,7 @@ class JSONLDGenerator(Generator):
         "json",
     ]  # jsonld includes @type and @context.  json is pure JSON
     uses_schemaloader = True
+    requires_metamodel = True
 
     # ObjectVars
     original_schema: SchemaDefinition = None

@@ -1,5 +1,18 @@
 """
 Base class for all generators
+
+Developer Notes
+---------------
+
+Subclasses of this class implement specific generators. Each generator is in one of two styles:
+
+1. schemaloader-based, using a Visitor pattern (older)
+2. schemaview-based, no visitor pattern (newer)
+
+New generators should always using the latter approach
+
+See: https://github.com/linkml/linkml/issues/923
+
 """
 import abc
 import logging
@@ -45,14 +58,13 @@ class Generator(metaclass=abc.ABCMeta):
     """
     Base class for generators
 
-    See `Generator Docs <https://linkml.io/linkml/generators/>`_
+    For usage `Generator Docs <https://linkml.io/linkml/generators/>`_
     """
 
     # ClassVars
     schema: Union[str, TextIO, SchemaDefinition, "Generator"]
     """metamodel compliant schema.  Can be URI, file name, actual schema, another generator, an
         open file or a pre-parsed schema"""
-
 
     generatorname: ClassVar[str] = None
     """ Name of the generator. Override with os.path.basename(__file__)"""
@@ -113,7 +125,7 @@ class Generator(metaclass=abc.ABCMeta):
     """Verbosity"""
 
     output: Optional[str] = None
-    """Path to output file"""
+    """Path to output file. Note all generators may not implement this uniformly, see https://github.com/linkml/linkml/issues/923"""
 
     namespaces: Optional[Namespaces] = None
     """All prefix expansions used"""
@@ -133,6 +145,7 @@ class Generator(metaclass=abc.ABCMeta):
     """File name of import mapping file -- maps import name/uri to target"""
 
     emit_prefixes: Set[str] = field(default_factory=lambda: set())
+    """Prefixes to emit, for RDF-based generators"""
 
     metamodel: SchemaLoader = None
     """A SchemaLoader instance that points to the LinkML metamodel (meta.yaml)"""
@@ -148,8 +161,8 @@ class Generator(metaclass=abc.ABCMeta):
             self.format = self.valid_formats[0]
         if self.format not in self.valid_formats:
             raise ValueError(f"Unrecognized format: {format}; known={self.valid_formats}")
-        # TODO: normalize this
-        self.merge_imports = self.mergeimports
+        # legacy: all generators should use "mergeimports"
+        # self.merge_imports = self.mergeimports
         if not self.metadata:
             self.source_file_date = None
             self.source_file_size = None
@@ -158,14 +171,14 @@ class Generator(metaclass=abc.ABCMeta):
                 self.metamodel = SchemaLoader(
                         LOCAL_METAMODEL_YAML_FILE,
                         importmap=self.importmap,
-                        mergeimports=self.merge_imports,
+                        mergeimports=self.mergeimports,
                     )
             else:
                 self.metamodel = SchemaLoader(
                     METAMODEL_YAML_URI,
                     base_dir=META_BASE_URI,
                     importmap=self.importmap,
-                    mergeimports=self.merge_imports,
+                    mergeimports=self.mergeimports,
                 )
             self.metamodel.resolve()
         #self.metamodel = package_schemaview(metamodel.__name__).schema

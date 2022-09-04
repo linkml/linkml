@@ -50,6 +50,7 @@ class GolrSchemaGenerator(Generator):
     valid_formats = ["golr"]
     visit_all_class_slots = True
     uses_schemaloader = True
+    requires_metamodel = False
 
     # ObjectVars
     directory: str = None

@@ -31,6 +31,7 @@ class ExcelGenerator(Generator):
     generator_version = "0.0.1"
     valid_formats = ["xlsx"]
     uses_schemaloader = True
+    requires_metamodel = False
 
     # ObjectVars
     sheet_name_cols: List[str] = field(default_factory=lambda: [])

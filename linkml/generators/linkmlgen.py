@@ -25,6 +25,7 @@ class LinkmlGenerator(Generator):
     generatorversion = "1.0.0"
     valid_formats = ["json", "yaml"]
     uses_schemaloader = False
+    requires_metamodel = False
 
     materialize_attributes: bool = field(default_factory=lambda: False)
 

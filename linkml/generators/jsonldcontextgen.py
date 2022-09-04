@@ -38,6 +38,7 @@ class ContextGenerator(Generator):
     valid_formats = ["context", "json"]
     visit_all_class_slots = False
     uses_schemaloader = True
+    requires_metamodel = True
 
     # ObjectVars
     emit_prefixes: Set[str] = field(default_factory=lambda: set())
