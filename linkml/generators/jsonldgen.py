@@ -27,12 +27,16 @@ from linkml.utils.generator import Generator, shared_arguments
 
 @dataclass
 class JSONLDGenerator(Generator):
+    # ClassVars
     generatorname = os.path.basename(__file__)
     generatorversion = "0.0.2"
     valid_formats = [
         "jsonld",
         "json",
     ]  # jsonld includes @type and @context.  json is pure JSON
+    uses_schemaloader = True
+
+    # ObjectVars
     original_schema: SchemaDefinition = None
     context: str = None
 

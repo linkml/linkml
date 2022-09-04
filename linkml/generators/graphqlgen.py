@@ -12,10 +12,13 @@ from linkml.utils.generator import Generator, shared_arguments
 
 @dataclass
 class GraphqlGenerator(Generator):
+
+    # ClassVars
     generatorname = os.path.basename(__file__)
     generatorversion = "0.1.1"
     valid_formats = ["graphql"]
     visit_all_class_slots = True
+    uses_schemaloader = True
 
     def __post_init__(self):
         super().__post_init__()

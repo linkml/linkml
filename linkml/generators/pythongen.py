@@ -38,17 +38,18 @@ class PythonGenerator(Generator):
     See `Python Generator Docs <https://linkml.io/linkml/generators/python.html>`_
     """
 
-    # override ClassVars
+    # ClassVars
     generatorname = os.path.basename(__file__)
     generatorversion = PYTHON_GEN_VERSION
     valid_formats = ["py"]
     visit_all_class_slots = False
+    uses_schemaloader = True
 
-    # generator-specific attributes
-    gen_classvars: bool = True
-    gen_slots: bool = True
+    # ObjectVars
+    gen_classvars: bool = field(default_factory=lambda: True)
+    gen_slots: bool = field(default_factory=lambda: True)
     genmeta: bool = field(default_factory=lambda: False)
-    emit_metadata: bool = True
+    emit_metadata: bool = field(default_factory=lambda: True)
 
     def __post_init__(self) -> None:
         self.sourcefile = self.schema

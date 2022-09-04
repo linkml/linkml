@@ -113,6 +113,11 @@ def _get_pyrange(t: TypeDefinition, sv: SchemaView) -> str:
 
 @dataclass
 class PydanticGenerator(OOCodeGenerator):
+    """
+    Generates Pydantic-compliant classes from a schema
+
+    This is an alternative to the dataclasses-based Pythongen
+    """
 
     # ClassVar overrides
     generatorname = os.path.basename(__file__)

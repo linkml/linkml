@@ -19,10 +19,13 @@ class YAMLGenerator(Generator):
     A generator that produces a schema as a YAML Document
     """
 
+    # ClassVars
     generatorname = os.path.basename(__file__)
     generatorversion = "0.1.0"
     valid_formats = ["yaml"]
+    uses_schemaloader = True
 
+    # ObjectVars
     validateonly: bool = field(default_factory=lambda: False)
 
     def serialize(self, validateonly: bool = False, **kwargs) -> str:

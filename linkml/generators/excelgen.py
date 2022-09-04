@@ -26,10 +26,19 @@ class ExcelGenerator(Generator):
     :type output: str
     """
 
+    # ClassVars
     generator_name = os.path.splitext(os.path.basename(__file__))[0]
     generator_version = "0.0.1"
     valid_formats = ["xlsx"]
+    uses_schemaloader = True
+
+    # ObjectVars
     sheet_name_cols: List[str] = field(default_factory=lambda: [])
+    output: str = None
+    workbook: Workbook = field(default_factory=lambda: Workbook())
+    wb_name: str = None
+    enum_dict: dict = field(default_factory=lambda: dict())
+    """dictionary with slot types and possibles values for those types"""
 
     def _workbook_path(self, yaml_filename: str, wb_name: str = None):
         """Internal method that computes the path where the Excel workbook
@@ -56,19 +65,10 @@ class ExcelGenerator(Generator):
 
         return wb_name
 
-    def __init__(
-        self,
-        schema: Union[str, TextIO, SchemaDefinition],
-        output: Optional[str] = None,
-        **kwargs,
-    ) -> None:
-        self.wb_name = self._workbook_path(yaml_filename=schema, wb_name=output)
-        self.workbook = Workbook()
+    def __post_init__(self):
+        super().__post_init__()
+        self.wb_name = self._workbook_path(yaml_filename=self.schema, wb_name=self.output)
         self.workbook.remove(self.workbook["Sheet"])
-
-        # dictionary with slot types and possibles values for those types
-        self.enum_dict = {}
-        super().__init__(schema, **kwargs)
 
     def _create_spreadsheet(self, ws_name: str, columns: List[str]) -> None:
         """Method to add worksheets to the Excel workbook.

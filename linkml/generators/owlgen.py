@@ -67,6 +67,7 @@ class OwlSchemaGenerator(Generator):
     valid_formats = ["owl", "ttl"] + [
         x.name for x in rdflib_plugins(None, rdflib_Parser) if "/" not in str(x.name)]
     visits_are_sorted = True
+    uses_schemaloader = True
 
     # ObjectVars
     metadata_profile: MetadataProfile = None

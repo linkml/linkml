@@ -29,6 +29,7 @@ class CsvGenerator(Generator):
     generatorname = os.path.basename(__file__)
     generatorversion = "0.1.1"
     valid_formats = ["csv", "tsv"]
+    uses_schemaloader = True
 
     # ObjectVars
     sep: Optional[str] = None

@@ -29,14 +29,15 @@ class MarkdownGenerator(Generator):
     The markdown is suitable for deployment as a MkDocs or Sphinx site
     """
 
-    # override ClassVars
+    #ClassVars
     generatorname = os.path.basename(__file__)
     generatorversion = "0.2.1"
     directory_output = True
     valid_formats = ["md"]
     visit_all_class_slots = False
+    uses_schemaloader = True
 
-    # generator-specific attributes
+    # ObjectVars
     directory: Optional[str] = None
     image_directory: Optional[str] = None
     classes: Set[ClassDefinitionName] = None,

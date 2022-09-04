@@ -57,10 +57,13 @@ TYPEMAP = {
 
 @dataclass
 class JavaGenerator(OOCodeGenerator):
+
+    # ClassVars
     generatorname = os.path.basename(__file__)
     generatorversion = JAVA_GEN_VERSION
     valid_formats = ["java"]
 
+    # ObjectVars
     generate_records: bool = False
     """If True then use java records (introduced in java 16) rather than classes"""
 

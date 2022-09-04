@@ -27,10 +27,14 @@ from linkml.utils.generator import Generator, shared_arguments
 
 @dataclass
 class ShExGenerator(Generator):
+    # ClassVars
     generatorname = os.path.basename(__file__)
     generatorversion = "0.0.2"
     valid_formats = ["shex", "json", "rdf"]
     visit_all_class_slots = False
+    uses_schemaloader = True
+
+    # ObjectVars
     shex: Schema = field(default_factory=lambda: Schema())  # ShEx Schema being generated
     shapes: List = field(default_factory=lambda: [])
     shape: Optional[Shape] = None  # Current shape being defined

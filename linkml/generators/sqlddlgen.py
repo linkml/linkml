@@ -39,6 +39,7 @@ def _quote(s: str) -> str:
     return f"'{s}'"
 
 
+@deprecated("Use SQLTableGenerator instead")
 @dataclass
 class Backref:
     original_column: "SQLColumn"
@@ -46,6 +47,7 @@ class Backref:
     order_by: str = None
 
 
+@deprecated("Use SQLTableGenerator instead")
 @dataclass(unsafe_hash=True)
 class DDLEntity:
     """
@@ -55,6 +57,7 @@ class DDLEntity:
     description: str = None
 
 
+@deprecated("Use SQLTableGenerator instead")
 @dataclass
 class SQLColumn(DDLEntity):
     """
@@ -76,6 +79,7 @@ class SQLColumn(DDLEntity):
         return self in self.table.primary_keys
 
 
+@deprecated("Use SQLTableGenerator instead")
 @dataclass
 class SQLTable(DDLEntity):
     """
@@ -107,6 +111,7 @@ class SQLTable(DDLEntity):
         del self.columns[c.name]
 
 
+@deprecated("Use SQLTableGenerator instead")
 @dataclass
 class SQLSchema(DDLEntity):
     """

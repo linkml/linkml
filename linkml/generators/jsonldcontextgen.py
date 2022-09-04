@@ -31,11 +31,15 @@ ENUM_CONTEXT = {
 
 @dataclass
 class ContextGenerator(Generator):
+
+    # ClassVars
     generatorname = os.path.basename(__file__)
     generatorversion = "0.1.1"
     valid_formats = ["context", "json"]
     visit_all_class_slots = False
+    uses_schemaloader = True
 
+    # ObjectVars
     emit_prefixes: Set[str] = field(default_factory=lambda: set())
     default_ns: str = None
     context_body: Dict = field(default_factory=lambda: dict())

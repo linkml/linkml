@@ -135,9 +135,13 @@ class SparqlGenerator(Generator):
     Generates SPARQL queries that can be used for delayed validation
     """
 
+    # ClassVars
     generatorname = os.path.basename(__file__)
     valid_formats = ["sparql"]
     visit_all_class_slots = False
+    uses_schemaloader = False
+
+    # ObjectVars
     named_graphs: Optional[List[str]] = None
     limit: Optional[int] = None
     sparql: Optional[str] = None

@@ -15,9 +15,14 @@ DEFAULT_OUTPUT_FILENAME = "sssom.tsv"
 
 @dataclass
 class SSSOMGenerator(Generator):
+    """
+    Generates Simple Standard for Sharing Ontology Mappings (SSSOM) TSVs
+    """
+    # ClassVats
     generatorname = os.path.basename(__file__)
     generatorversion = "0.0.1"
     valid_formats = ["tsv"]
+    uses_schemaloader = True
 
     # TODO: move up
     msdf_columns = [

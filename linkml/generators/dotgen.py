@@ -30,6 +30,7 @@ class DotGenerator(Generator):
     directory_output = True
     valid_formats = ["png"] + valid_formats
     visit_all_class_slots = True
+    uses_schemaloader = True
 
     # ObjectVars
     classnames: Optional[List[str]] = None

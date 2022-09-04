@@ -42,11 +42,16 @@ class GOLRClass(YAMLRoot):
 
 @dataclass
 class GolrSchemaGenerator(Generator):
+
+    # ClassVars
     generatorname = os.path.basename(__file__)
     generatorversion = "0.1.1"
     directory_output = True
     valid_formats = ["golr"]
     visit_all_class_slots = True
+    uses_schemaloader = True
+
+    # ObjectVars
     directory: str = None
     class_obj: Optional[GOLRClass] = None
 

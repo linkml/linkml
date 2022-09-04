@@ -18,10 +18,12 @@ from linkml.utils.generator import Generator, shared_arguments
 
 
 class ShaclGenerator(Generator):
+    # ClassVars
     generatorname = os.path.basename(__file__)
     generatorversion = "0.0.1"
     valid_formats = ["ttl"]
     visit_all_class_slots = False
+    uses_schemaloader = True
 
     def __post_init__(self) -> None:
         self.schemaview = SchemaView(self.schema)

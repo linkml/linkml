@@ -27,7 +27,6 @@ class LinkmlGenerator(Generator):
     uses_schemaloader = False
 
     materialize_attributes: bool = field(default_factory=lambda: False)
-    #materialize: bool = None
 
 
     def __post_init__(self):

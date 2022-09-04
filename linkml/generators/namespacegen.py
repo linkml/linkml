@@ -1,4 +1,5 @@
 import os
+from dataclasses import dataclass
 
 import click
 from linkml_runtime.utils.formatutils import be, split_line
@@ -8,6 +9,7 @@ from linkml.generators.pythongen import PythonGenerator
 from linkml.utils.generator import shared_arguments
 
 
+@dataclass
 class NamespaceGenerator(PythonGenerator):
     generatorname = os.path.basename(__file__)
     generatorversion = PYTHON_GEN_VERSION
