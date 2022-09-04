@@ -117,9 +117,13 @@ class SQLTableGenerator(Generator):
 
     """
 
+    # ClassVars
     generatorname = os.path.basename(__file__)
     generatorversion = "0.1.1"
     valid_formats = ["sql"]
+    uses_schemaloader = False
+
+    # ObjectVars
     use_inherits: bool = False  ## postgresql supports inheritance
     dialect: str = field(default_factory=lambda: "sqlite")
     inject_primary_keys: bool = field(default_factory=lambda: True)

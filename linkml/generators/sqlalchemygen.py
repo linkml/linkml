@@ -32,11 +32,19 @@ class TemplateEnum(Enum):
 
 @dataclass
 class SQLAlchemyGenerator(Generator):
-    """ """
+    """
+    Generates SQL Alchemy classes
 
+    See also: :ref:`SQLTableGenerator`
+    """
+
+    # ClassVars
     generatorname = os.path.basename(__file__)
     generatorversion = "0.1.1"
     valid_formats = ["sqla"]
+    uses_schemaloader = False
+
+    # ObjectVars
     original_schema: Union[SchemaDefinition, str] = None
 
     def __post_init__(self) -> None:

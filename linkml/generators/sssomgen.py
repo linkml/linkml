@@ -18,7 +18,8 @@ class SSSOMGenerator(Generator):
     generatorname = os.path.basename(__file__)
     generatorversion = "0.0.1"
     valid_formats = ["tsv"]
-    list_of_slots = []
+
+    # TODO: move up
     msdf_columns = [
         "subject_id",
         "subject_label",
@@ -46,24 +47,15 @@ class SSSOMGenerator(Generator):
         "exact_mappings": "skos:exactMatch",
     }
 
-    def __init__(
-        self,
-        schema: Union[str, TextIO, SchemaDefinition],
-        format: str = valid_formats[0],
-        output: Optional[str] = None,
-        **kwargs
-    ) -> None:
-
-        self.sourcefile = schema
+    def __post_init__(self):
+        super().__post_init__()
+        self.sourcefile = self.schema
         self.table_as_list = []
-        if output:
-            self.output_file = output
+        if self.output:
+            self.output_file = self.output
         else:
             self.output_file = DEFAULT_OUTPUT_FILENAME
 
-        if format is None:
-            format = self.valid_formats[0]
-        super().__init__(schema, **kwargs)
 
     def make_msdf_list(self, row_as_dict: dict) -> None:
         list_of_row = []
@@ -149,15 +141,10 @@ class SSSOMGenerator(Generator):
 
     def visit_class(self, cls: ClassDefinition) -> bool:
         self.definition_extract_info(cls)
-
         return True
 
     def visit_slot(self, aliased_slot_name: str, slot: SlotDefinition) -> None:
         self.definition_extract_info(slot)
-
-    # def visit_type(self, typ: TypeDefinition) -> None:
-    #     type_as_dict = typ._as_dict
-    #     print(type_as_dict)
 
     def visit_enum(self, enum: EnumDefinition) -> None:
         self.definition_extract_info(enum)
@@ -174,7 +161,6 @@ class SSSOMGenerator(Generator):
         metadata["curie_map"] = {
             k: v.prefix_reference for k, v in schema.prefixes.items()
         }
-
         with open(self.output_file, "w", encoding="UTF-8") as sssom_tsv:
             for k, v in metadata.items():
                 if k != "curie_map":

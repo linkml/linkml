@@ -60,9 +60,9 @@ class JavaGenerator(OOCodeGenerator):
     generatorname = os.path.basename(__file__)
     generatorversion = JAVA_GEN_VERSION
     valid_formats = ["java"]
-    visit_all_class_slots = False
-    template_file: str = None
+
     generate_records: bool = False
+    """If True then use java records (introduced in java 16) rather than classes"""
 
 
     def map_type(self, t: TypeDefinition) -> str:

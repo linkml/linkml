@@ -113,10 +113,13 @@ def _get_pyrange(t: TypeDefinition, sv: SchemaView) -> str:
 
 @dataclass
 class PydanticGenerator(OOCodeGenerator):
+
+    # ClassVar overrides
     generatorname = os.path.basename(__file__)
     generatorversion = "0.0.1"
     valid_formats = ["pydantic"]
-    visit_all_class_slots = False
+
+    # ObjectVars
     template_file: str = None
     allow_extra: bool = field(default_factory=lambda: False)
     gen_mixin_inheritance: bool = field(default_factory=lambda: True)

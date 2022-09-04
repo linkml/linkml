@@ -24,8 +24,11 @@ class LinkmlGenerator(Generator):
     generatorname = os.path.basename(__file__)
     generatorversion = "1.0.0"
     valid_formats = ["json", "yaml"]
+    uses_schemaloader = False
+
     materialize_attributes: bool = field(default_factory=lambda: False)
-    materialize: bool = None
+    #materialize: bool = None
+
 
     def __post_init__(self):
         # TODO: consider moving up a level

@@ -5,6 +5,7 @@ Generate JSON-LD contexts
 import csv
 import logging
 import os
+from dataclasses import dataclass, field
 from typing import Dict, Mapping, Optional, Set, TextIO, Union
 
 import click
@@ -21,22 +22,29 @@ from linkml.utils.generator import Generator, shared_arguments
 URI_RANGES = (XSD.anyURI, SHEX.nonliteral, SHEX.bnode, SHEX.iri)
 
 
+@dataclass
 class PrefixGenerator(Generator):
+
+    # ClassVars
     generatorname = os.path.basename(__file__)
     generatorversion = "0.1.1"
     valid_formats = ["json", "tsv"]
     visit_all_class_slots = False
+    uses_schemaloader = True
 
-    def __init__(self, schema: Union[str, TextIO, SchemaDefinition], **kwargs) -> None:
-        super().__init__(schema, **kwargs)
+    # ObjectVars
+    emit_prefixes: Set[str] = field(default_factory=lambda: set())
+    default_ns: str = None
+    context_body: Dict = field(default_factory=lambda: dict())
+    slot_class_maps: Dict = field(default_factory=lambda: dict())
+    base: str = None
+
+    def __post_init__(self):
+        super().__post_init__()
         if self.namespaces is None:
             raise TypeError(
                 "Schema text must be supplied to context generater.  Preparsed schema will not work"
             )
-        self.emit_prefixes: Set[str] = set()
-        self.default_ns = None
-        self.context_body = dict()
-        self.slot_class_maps = dict()
 
     def visit_schema(
         self, base: Optional[str] = None, output: Optional[str] = None, **_

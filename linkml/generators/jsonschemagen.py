@@ -2,10 +2,9 @@ import logging
 import os
 from copy import deepcopy
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional, TextIO, Tuple, Union
+from typing import Dict, List, Optional, Tuple, Union
 
 import click
-from deprecated.classic import deprecated
 from jsonasobj2 import JsonObj, as_json
 from linkml_runtime.linkml_model.meta import (ClassDefinition, EnumDefinition,
                                               PermissibleValue,
@@ -48,23 +47,26 @@ class JsonSchemaGenerator(Generator):
     - Foreign key references are treated as semantics-free strings
     """
 
+    # ClassVars
     generatorname = os.path.basename(__file__)
     generatorversion = "0.0.2"
     valid_formats = ["json"]
     visit_all_class_slots = True
-    top_class: Optional[str] = None
+    visit_all_slots = True
+    uses_schemaloader = True
 
     #@deprecated("Use top_class")
     topClass: Optional[str] = None
 
-    visit_all_slots = True
-
-    not_closed: Optional[bool] = None
+    not_closed: Optional[bool] = field(default_factory=lambda: False)
+    """If not closed, then an open-ended set of attributes can be instantiated for any object"""
 
     schemaobj: JsonObj = None
     clsobj: JsonObj = None
     inline: bool = False
-    top_class: Optional[ClassDefinitionName] = top_class  ## JSON object is one instance of this
+    top_class: Optional[ClassDefinitionName] = None  ## JSON object is one instance of this
+    """Class instantiated by the root node of the document tree"""
+
     entryProperties: dict = field(default_factory=lambda: {})
     include_range_class_descendants: bool = field(default_factory=lambda: False)
 

@@ -99,9 +99,13 @@ class DocGenerator(Generator):
     It will also create an index file
     """
 
+    # ClassVars
     generatorname = os.path.basename(__file__)
     generatorversion = "0.0.1"
     valid_formats = ["markdown", "rst", "html", "latex"]
+    uses_schemaloader = False
+
+    # ObjectVars
     dialect: Optional[Union[DIALECT, str]] = None
     """markdown dialect (e.g MyST, Python)"""
     sort_by: str = field(default_factory=lambda: "name")
