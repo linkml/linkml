@@ -1,14 +1,9 @@
 import json
 import unittest
-from typing import Type
 
-import jsonasobj2
-import jsonschema
 import yaml
 from linkml_runtime.dumpers import json_dumper, rdf_dumper
-from linkml_runtime.linkml_model import SchemaDefinition
 from linkml_runtime.loaders import yaml_loader
-from linkml_runtime.utils.yamlutils import YAMLRoot, as_dict
 
 from linkml.generators.jsonschemagen import JsonSchemaGenerator
 from linkml.utils.validation import validate_object
