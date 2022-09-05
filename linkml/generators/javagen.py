@@ -57,6 +57,14 @@ TYPEMAP = {
 
 @dataclass
 class JavaGenerator(OOCodeGenerator):
+    """
+    Generates java code from a LinkML schema.
+
+    Two styles are supported:
+
+    - java classes, using lombok annotations
+    - java records
+    """
 
     # ClassVars
     generatorname = os.path.basename(__file__)
@@ -65,7 +73,7 @@ class JavaGenerator(OOCodeGenerator):
 
     # ObjectVars
     generate_records: bool = False
-    """If True then use java records (introduced in java 16) rather than classes"""
+    """If True then use java records (introduced in java 14) rather than classes"""
 
 
     def map_type(self, t: TypeDefinition) -> str:

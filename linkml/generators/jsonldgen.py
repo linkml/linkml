@@ -27,6 +27,13 @@ from linkml.utils.generator import Generator, shared_arguments
 
 @dataclass
 class JSONLDGenerator(Generator):
+    """
+    Generates JSON-LD from a Schema
+
+    Status: incompletely implemented
+
+    Note: this is distinct from :ref:`ContextGenerator`, which generates a JSON-LD context
+    """
     # ClassVars
     generatorname = os.path.basename(__file__)
     generatorversion = "0.0.2"
@@ -39,7 +46,10 @@ class JSONLDGenerator(Generator):
 
     # ObjectVars
     original_schema: SchemaDefinition = None
+    """See https://github.com/linkml/linkml/issues/871"""
+
     context: str = None
+    """Path to a JSONLD context file"""
 
     def __post_init__(self) -> None:
         super().__post_init__()
@@ -184,7 +194,10 @@ class JSONLDGenerator(Generator):
     help=f"JSONLD context file (default: {METAMODEL_CONTEXT_URI} and <model>.prefixes.context.jsonld)",
 )
 def cli(yamlfile, **kwargs):
-    """Generate JSONLD file from biolink schema"""
+    """Generate JSONLD file from LinkML schema.
+
+    Status: incomplete
+    """
     print(JSONLDGenerator(yamlfile, **kwargs).serialize(**kwargs))
 
 
