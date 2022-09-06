@@ -27,6 +27,7 @@ from typing import (Callable, Dict, List, Optional, Set, TextIO, Type, Union,
 import click
 from click import Argument, Command, Option
 from linkml_runtime import SchemaView
+from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.linkml_model.meta import (ClassDefinition,
                                               ClassDefinitionName, Definition,
                                               Element, ElementName,
@@ -75,8 +76,8 @@ class Generator(metaclass=abc.ABCMeta):
     uses_schemaloader: ClassVar[bool] = True
     """Old-style generator that uses the SchemaLoader and visitor pattern"""
 
-    uses_schemaview: ClassVar[bool] = True
-    """New-style generator that uses SchemaView"""
+    #uses_schemaview: ClassVar[bool] = True
+    #"""New-style generator that uses SchemaView"""
 
     requires_metamodel: ClassVar[bool] = True
     """Generator queries an instance of the metamodel"""
@@ -109,7 +110,7 @@ class Generator(metaclass=abc.ABCMeta):
     log_level: int = DEFAULT_LOG_LEVEL_INT
     """Logging level, 0 is minimum"""
 
-    mergeimports: Optional[bool] = True
+    mergeimports: Optional[bool] = field(default_factory= lambda: True)
     """True means merge non-linkml sources into importing package.  False means separate packages"""
 
     source_file_date: Optional[str] = None
@@ -167,6 +168,8 @@ class Generator(metaclass=abc.ABCMeta):
             self.source_file_date = None
             self.source_file_size = None
         if self.requires_metamodel:
+            # TODO: use newer introspection methods
+            #self.metamodel = package_schemaview(metamodel.__name__).schema
             if os.path.exists(LOCAL_METAMODEL_YAML_FILE):
                 self.metamodel = SchemaLoader(
                         LOCAL_METAMODEL_YAML_FILE,
@@ -181,63 +184,67 @@ class Generator(metaclass=abc.ABCMeta):
                     mergeimports=self.mergeimports,
                 )
             self.metamodel.resolve()
-        #self.metamodel = package_schemaview(metamodel.__name__).schema
         schema = self.schema
         # TODO: remove aliasing
         self.emit_metadata = self.metadata
+        if self.uses_schemaloader:
+            self._initialize_using_schemaloader(schema)
+        else:
+            self.schemaview = SchemaView(schema)
+            self.schema = self.schemaview.schema
+
+    def _initialize_using_schemaloader(self, schema: Union[str, TextIO, SchemaDefinition, "Generator"]):
         # currently generators are very liberal in what they accept, including
         # other generators.
         # See https://github.com/linkml/linkml/issues/923 for discussion on how
         # to simplify the overall framework
-        if self.uses_schemaloader:
-            if isinstance(schema, Generator):
-                gen = schema
-                self.schema = gen.schema
-                self.synopsis = gen.synopsis
-                self.loaded = gen.loaded
-                self.namespaces = gen.namespaces
-                self.base_dir = gen.base_dir
-                self.importmap = gen.importmap
-                self.source_file_data = gen.source_file_date
-                self.source_file_size = gen.source_file_size
-                self.schema_location = gen.schema_location
-                self.schema_defaults = gen.schema_defaults
-                self.logger = gen.logger
-            else:
-                if isinstance(schema, SchemaDefinition):
-                    pass
-                else:
-                    # Note that in principle SchemaLoader should work
-                    # with a Schema object, in practice this causes issues
-                    loader = SchemaLoader(
-                        schema,
-                        self.base_dir,
-                        useuris=self.useuris,
-                        importmap=self.importmap,
-                        logger=self.logger,
-                        mergeimports=self.mergeimports,
-                        emit_metadata=self.metadata,
-                        source_file_date=self.source_file_date,
-                        source_file_size=self.source_file_size,
-                    )
-                    loader.resolve()
-                    self.schema = loader.schema
-                    self.synopsis = loader.synopsis
-                    self.loaded = loader.loaded
-                    self.namespaces = loader.namespaces
-                    self.base_dir = loader.base_dir
-                    self.importmap = loader.importmap
-                    self.source_file_data = loader.source_file_date
-                    self.source_file_size = loader.source_file_size
-                    self.schema_location = loader.schema_location
-                    self.schema_defaults = loader.schema_defaults
-                if self.namespaces is None:
-                    self.namespaces = Namespaces()
-                    for prefix in self.schema.prefixes.values():
-                        self.namespaces[prefix.prefix_prefix] = prefix.prefix_reference
+        if isinstance(schema, Generator):
+            logging.warning("Instantiating generator with another generator is deprecated")
+            gen = schema
+            self.schema = gen.schema
+            self.synopsis = gen.synopsis
+            self.loaded = gen.loaded
+            self.namespaces = gen.namespaces
+            self.base_dir = gen.base_dir
+            self.importmap = gen.importmap
+            self.source_file_data = gen.source_file_date
+            self.source_file_size = gen.source_file_size
+            self.schema_location = gen.schema_location
+            self.schema_defaults = gen.schema_defaults
+            self.logger = gen.logger
         else:
-            self.schemaview = SchemaView(schema)
-            self.schema = self.schemaview.schema
+            if isinstance(schema, SchemaDefinition):
+                # schemaloader based methods require schemas to have been created via SchemaLoader,
+                # which prepopulates some fields (e.g definition_url). If the schema has not been processed through the
+                # loader, then roundtrip
+                if any(c for c in schema.classes.values() if not c.definition_uri):
+                    schema = yaml_dumper.dumps(schema)
+            loader = SchemaLoader(
+                schema,
+                self.base_dir,
+                useuris=self.useuris,
+                importmap=self.importmap,
+                logger=self.logger,
+                mergeimports=self.mergeimports,
+                emit_metadata=self.metadata,
+                source_file_date=self.source_file_date,
+                source_file_size=self.source_file_size,
+            )
+            loader.resolve()
+            self.schema = loader.schema
+            self.synopsis = loader.synopsis
+            self.loaded = loader.loaded
+            self.namespaces = loader.namespaces
+            self.base_dir = loader.base_dir
+            self.importmap = loader.importmap
+            self.source_file_data = loader.source_file_date
+            self.source_file_size = loader.source_file_size
+            self.schema_location = loader.schema_location
+            self.schema_defaults = loader.schema_defaults
+            if self.namespaces is None:
+                self.namespaces = Namespaces()
+                for prefix in self.schema.prefixes.values():
+                    self.namespaces[prefix.prefix_prefix] = prefix.prefix_reference
 
     def serialize(self, **kwargs) -> str:
         """
