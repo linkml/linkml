@@ -13,4 +13,5 @@ Some of these guides are works in progress
    using-jsonld
    port-linkml
    linkml-ws
+   model-measurements
 

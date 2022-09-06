@@ -6,8 +6,10 @@ representation such as JsonSchema
 __all__ = [
     "csvgen",
     "dotgen",
+    "docgen",
     "golrgen",
     "graphqlgen",
+    "javagen",
     "jsonldcontextgen",
     "jsonldgen",
     "jsonschemagen",

@@ -50,6 +50,7 @@ class OOClass:
     An object-oriented class
     """
 
+    # ObjectVars
     name: SAFE_NAME
     is_a: Optional[SAFE_NAME] = None
     abstract: Optional[bool] = None
@@ -61,9 +62,24 @@ class OOClass:
     source_class: ClassDefinition = None
 
 
+@dataclass
 class OOCodeGenerator(Generator):
-    package: PACKAGE = "example"
+
+    # ClassVars
     java_style = True
+    visit_all_class_slots = False
+    uses_schemaloader = False
+    requires_metamodel = False
+
+    template_file: str = None
+    """Path to template"""
+
+    package: PACKAGE = "example"
+
+    def __post_init__(self):
+        # TODO: consider moving up a level
+        self.schemaview = SchemaView(self.schema)
+        super().__post_init__()
 
     @abc.abstractmethod
     def serialize(self, directory: str) -> None:
@@ -152,9 +168,9 @@ class OOCodeGenerator(Generator):
                     t = sv.get_type(range)
                     range = self.map_type(t)
                     if range is None:  # If mapping fails,
-                        range = self.map_type(sv.all_type().get("string"))
+                        range = self.map_type(sv.all_types().get("string"))
                 elif range in sv.all_enums():
-                    range = self.map_type(sv.all_type().get("string"))
+                    range = self.map_type(sv.all_types().get("string"))
                 else:
                     raise Exception(f"Unknown range {range}")
 

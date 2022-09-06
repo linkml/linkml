@@ -36,7 +36,7 @@ class GenYUMLTestCase(ClickTestCase):
         )
         with self.assertRaises(ValueError) as e:
             self.do_test(
-                [env.input_path("yaml_validate_invalid.yaml"), "-v"],
+                [env.input_path("yaml_validate_invalid.yaml"), "-V"],
                 "invalid.txt",
                 add_yaml=False,
             )

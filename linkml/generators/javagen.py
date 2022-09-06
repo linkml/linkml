@@ -1,4 +1,5 @@
 import os
+from dataclasses import field, dataclass
 from typing import (Callable, Dict, Iterator, List, Optional, Set, TextIO,
                     Tuple, Union)
 
@@ -54,30 +55,26 @@ TYPEMAP = {
 }
 
 
+@dataclass
 class JavaGenerator(OOCodeGenerator):
+    """
+    Generates java code from a LinkML schema.
+
+    Two styles are supported:
+
+    - java classes, using lombok annotations
+    - java records
+    """
+
+    # ClassVars
     generatorname = os.path.basename(__file__)
     generatorversion = JAVA_GEN_VERSION
     valid_formats = ["java"]
-    visit_all_class_slots = False
 
-    def __init__(
-        self,
-        schema: Union[str, TextIO, SchemaDefinition],
-        package: str = None,
-        template_file: str = None,
-        generate_records: bool = False,
-        format: str = valid_formats[0],
-        genmeta: bool = False,
-        gen_classvars: bool = True,
-        gen_slots: bool = True,
-        **kwargs,
-    ) -> None:
-        self.sourcefile = schema
-        self.schemaview = SchemaView(schema)
-        self.schema = self.schemaview.schema
-        self.package = package
-        self.template_file = template_file
-        self.generate_records = generate_records
+    # ObjectVars
+    generate_records: bool = False
+    """If True then use java records (introduced in java 14) rather than classes"""
+
 
     def map_type(self, t: TypeDefinition) -> str:
         if t.uri:

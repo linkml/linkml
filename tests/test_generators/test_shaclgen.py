@@ -1,15 +1,9 @@
-import sys
 import unittest
 
-from linkml_runtime.dumpers import json_dumper, rdf_dumper
-from linkml_runtime.loaders import yaml_loader
+import rdflib
 
-from linkml.generators.jsonldcontextgen import ContextGenerator
 from linkml.generators.shaclgen import ShaclGenerator
 from tests.test_generators.environment import env
-from tests.test_generators.test_pythongen import make_python
-
-# from pyshacl.evaluate import evaluate
 
 
 SCHEMA = env.input_path("kitchen_sink.yaml")
@@ -18,12 +12,26 @@ LOG = env.expected_path("ShaclGen_log.txt")
 OUT = env.expected_path("kitchen_sink.shacl.ttl")
 
 
+EXPECTED = [
+    (rdflib.term.URIRef('https://w3id.org/linkml/tests/kitchen_sink/Person'),
+     rdflib.term.URIRef('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'),
+     rdflib.term.URIRef('http://www.w3.org/ns/shacl#NodeShape')),
+    (rdflib.term.URIRef('https://w3id.org/linkml/tests/kitchen_sink/Person'),
+     rdflib.term.URIRef('http://www.w3.org/ns/shacl#closed'),
+     rdflib.term.Literal('true', datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#boolean')))
+]
+
 class ShaclTestCase(unittest.TestCase):
     def test_shacl(self):
-        """shacl"""
+        """tests shacl generation"""
         shaclstr = ShaclGenerator(SCHEMA, mergeimports=True).serialize()
         with open(OUT, "w") as stream:
             stream.write(shaclstr)
+        g = rdflib.Graph()
+        g.parse(OUT)
+        triples = list(g.triples((None, None, None)))
+        for et in EXPECTED:
+            self.assertIn(et, triples)
         # TODO: test shacl validation; pyshacl requires rdflib6
 
 

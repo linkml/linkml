@@ -4,6 +4,7 @@
 import os
 import sys
 from csv import DictWriter
+from dataclasses import dataclass, field
 from typing import Optional, TextIO, Union
 
 import click
@@ -14,17 +15,18 @@ from linkml_runtime.utils.formatutils import camelcase
 from linkml.utils.generator import Generator, shared_arguments
 
 
+@dataclass
 class SummaryGenerator(Generator):
+
+    # ClassVars
     generatorname = os.path.basename(__file__)
     generatorversion = "0.1.1"
     valid_formats = ["tsv"]
 
-    def __init__(self, schema: Union[str, TextIO, SchemaDefinition], **args) -> None:
-        super().__init__(schema, **args)
-        self.dirname = None
-        self.classtab: Optional[DictWriter] = None
-        self.slottab: Optional[DictWriter] = None
-        self.dialect = "excel-tab"
+    dirname: str = None
+    classtab: Optional[DictWriter] = None
+    slottab: Optional[DictWriter] = None
+    dialect: str = field(default_factory=lambda: "excel-tab")
 
     def visit_schema(self, **_) -> None:
         self.classtab = DictWriter(

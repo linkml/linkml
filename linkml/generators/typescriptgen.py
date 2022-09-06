@@ -1,6 +1,7 @@
 import logging
 import os
 from copy import deepcopy
+from dataclasses import dataclass
 from pathlib import Path
 from typing import (Callable, Dict, Iterator, List, Optional, Set, TextIO,
                     Tuple, Union)
@@ -56,31 +57,21 @@ export interface {{gen.name(c)}} {% if parents %} extends {{parents|join(', ')}}
 """
 
 
+@dataclass
 class TypescriptGenerator(Generator):
     """
-    Generates typescript a schema
+    Generates typescript from a schema
     """
 
+    # ClassVars
     generatorname = os.path.basename(__file__)
     generatorversion = "0.0.1"
     valid_formats = ["text"]
-
-    def __init__(
-        self,
-        schema: Union[str, TextIO, SchemaDefinition],
-        format: str = valid_formats[0],
-        **kwargs,
-    ) -> None:
-        self.sourcefile = schema
-        self.schemaview = SchemaView(schema)
-        self.schema = self.schemaview.schema
-        self.format = format
+    uses_schemaloader = False
 
     def serialize(self) -> str:
         """
-        Serialize a schema as a collection of documents
-
-        :param directory: relative or absolute path to directory in which documents are to be written
+        Serialize a schema to typescript string
         :return:
         """
         template_obj = Template(default_template)

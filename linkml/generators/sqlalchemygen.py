@@ -1,6 +1,7 @@
 import logging
 import os
 from collections import defaultdict
+from dataclasses import dataclass
 from types import ModuleType
 from typing import Dict, List, TextIO, Union
 
@@ -29,20 +30,28 @@ class TemplateEnum(Enum):
     IMPERATIVE = "imperative"
 
 
+@dataclass
 class SQLAlchemyGenerator(Generator):
-    """ """
+    """
+    Generates SQL Alchemy classes
 
+    See also: :ref:`SQLTableGenerator`
+    """
+
+    # ClassVars
     generatorname = os.path.basename(__file__)
     generatorversion = "0.1.1"
     valid_formats = ["sqla"]
+    uses_schemaloader = False
 
-    def __init__(
-        self, schema: Union[str, TextIO, SchemaDefinition], dialect="sqlite", **kwargs
-    ) -> None:
-        self.original_schema = schema
-        # super().__init__(schema, **kwargs)
-        self.schemaview = SchemaView(schema)
-        self.schema = self.schemaview.schema
+    # ObjectVars
+    original_schema: Union[SchemaDefinition, str] = None
+
+    def __post_init__(self) -> None:
+        self.original_schema = self.schema
+        self.schemaview = SchemaView(self.schema)
+        super().__post_init__()
+
 
     def generate_sqla(
         self,

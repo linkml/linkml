@@ -2,6 +2,7 @@
 
 """
 import os
+from dataclasses import dataclass, field
 from typing import List, Optional, TextIO, Union
 
 import click
@@ -24,18 +25,23 @@ from linkml import METAMODEL_NAMESPACE, METAMODEL_NAMESPACE_NAME
 from linkml.utils.generator import Generator, shared_arguments
 
 
+@dataclass
 class ShExGenerator(Generator):
+    # ClassVars
     generatorname = os.path.basename(__file__)
     generatorversion = "0.0.2"
     valid_formats = ["shex", "json", "rdf"]
     visit_all_class_slots = False
+    uses_schemaloader = True
 
-    def __init__(self, schema: Union[str, TextIO, SchemaDefinition], **args) -> None:
-        super().__init__(schema, **args)
-        self.shex: Schema = Schema()  # ShEx Schema being generated
-        self.shapes = []
-        self.shape: Optional[Shape] = None  # Current shape being defined
-        self.list_shapes: List[IRIREF] = []  # Shapes that have been defined as lists
+    # ObjectVars
+    shex: Schema = field(default_factory=lambda: Schema())  # ShEx Schema being generated
+    shapes: List = field(default_factory=lambda: [])
+    shape: Optional[Shape] = None  # Current shape being defined
+    list_shapes: List[IRIREF] = field(default_factory=lambda: [])  # Shapes that have been defined as lists
+
+    def __post_init__(self):
+        super().__post_init__()
 
         if METAMODEL_NAMESPACE_NAME not in self.namespaces:
             self.namespaces[METAMODEL_NAMESPACE_NAME] = METAMODEL_NAMESPACE

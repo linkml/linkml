@@ -90,7 +90,7 @@ types:
                 f"{pythongen.PythonGenerator.generatorversion}"
             )
         )
-        output = pythongen.PythonGenerator(yaml, "py", metadata=False).serialize()
+        output = pythongen.PythonGenerator(yaml, format="py", metadata=False).serialize()
         self.assertTrue(output.startswith("\n# id: https://w3id.org/biolink/metamodel"))
 
     def test_multi_id(self):

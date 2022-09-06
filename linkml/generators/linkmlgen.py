@@ -1,5 +1,6 @@
 import logging
 import os
+from dataclasses import dataclass, field
 from typing import TextIO, Union
 
 import click
@@ -13,6 +14,7 @@ from linkml.utils.helpers import write_to_file
 logger = logging.getLogger(__name__)
 
 
+@dataclass
 class LinkmlGenerator(Generator):
     """This generator provides a direct conversion of a LinkML schema
     into json, optionally merging imports and unrolling induced slots
@@ -22,21 +24,17 @@ class LinkmlGenerator(Generator):
     generatorname = os.path.basename(__file__)
     generatorversion = "1.0.0"
     valid_formats = ["json", "yaml"]
+    uses_schemaloader = False
+    requires_metamodel = False
 
-    def __init__(
-        self,
-        schema: Union[str, TextIO, SchemaDefinition],
-        materialize_attributes: bool,
-        mergeimports: bool = None,
-        format: str = valid_formats[0],
-        **kwargs,
-    ):
-        self.schemaview = SchemaView(schema)
-        self.materialize = materialize_attributes
-        self.format = format
+    materialize_attributes: bool = field(default_factory=lambda: False)
 
-        if mergeimports:
-            self.schemaview.merge_imports()
+
+    def __post_init__(self):
+        # TODO: consider moving up a level
+        self.schemaview = SchemaView(self.schema)
+        super().__post_init__()
+
 
     def materialize_classes(self) -> None:
         """Materialize class slots from schema as attribues, in place"""
@@ -47,10 +45,8 @@ class LinkmlGenerator(Generator):
             for attr in attrs:
                 c_def.attributes[attr.name] = attr
 
-        return
-
     def serialize(self, output: str = None, **kwargs) -> str:
-        if self.materialize:
+        if self.materialize_attributes:
             self.materialize_classes()
 
         if self.format == "json":

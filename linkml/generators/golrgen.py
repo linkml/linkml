@@ -40,22 +40,22 @@ class GOLRClass(YAMLRoot):
     fields: List[GOLRField] = empty_list()
 
 
+@dataclass
 class GolrSchemaGenerator(Generator):
+
+    # ClassVars
     generatorname = os.path.basename(__file__)
     generatorversion = "0.1.1"
     directory_output = True
     valid_formats = ["golr"]
     visit_all_class_slots = True
+    uses_schemaloader = True
+    requires_metamodel = False
 
-    def __init__(
-        self,
-        schema: Union[str, TextIO, SchemaDefinition],
-        directory: str = None,
-        **kwargs,
-    ) -> None:
-        super().__init__(schema, **kwargs)
-        self.dirname: str = directory
-        self.class_obj: Optional[GOLRClass] = None
+    # ObjectVars
+    directory: str = None
+    class_obj: Optional[GOLRClass] = None
+
 
     def generate_header(self):
         headers = [f"# metamodel_version: {self.schema.metamodel_version}"]
@@ -64,7 +64,7 @@ class GolrSchemaGenerator(Generator):
         return headers
 
     def visit_schema(self, directory: str, **_) -> None:
-        self.dirname = directory
+        self.directory = directory
         if directory:
             os.makedirs(directory, exist_ok=True)
         # write_golr_yaml_to_dir(schema, dir)
@@ -84,7 +84,7 @@ class GolrSchemaGenerator(Generator):
             return False
 
     def end_class(self, cls: ClassDefinition) -> None:
-        fn = os.path.join(self.dirname, underscore(cls.name + "-config.yaml"))
+        fn = os.path.join(self.directory, underscore(cls.name + "-config.yaml"))
         if len(self.class_obj.fields) > 1:
             with open(fn, "w", encoding="UTF-8") as f:
                 f.write("".join(self.generate_header()))

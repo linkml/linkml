@@ -2,6 +2,7 @@
 
 """
 import os
+from dataclasses import dataclass, field
 from typing import TextIO, Union
 
 import click
@@ -12,17 +13,20 @@ from linkml.utils.generator import Generator, shared_arguments
 from linkml.utils.schemaloader import load_raw_schema
 
 
+@dataclass
 class YAMLGenerator(Generator):
     """
     A generator that produces a schema as a YAML Document
     """
 
+    # ClassVars
     generatorname = os.path.basename(__file__)
     generatorversion = "0.1.0"
     valid_formats = ["yaml"]
+    uses_schemaloader = True
 
-    def __init__(self, schema: Union[str, TextIO, SchemaDefinition], **kwargs) -> None:
-        super().__init__(schema, **kwargs)
+    # ObjectVars
+    validateonly: bool = field(default_factory=lambda: False)
 
     def serialize(self, validateonly: bool = False, **kwargs) -> str:
         if validateonly:
@@ -41,7 +45,7 @@ class YAMLGenerator(Generator):
 )
 @click.option(
     "--validateonly/--generate",
-    "-v/-g",
+    "-V/-g",
     default=False,
     show_default=True,
     help="Just validate / generate output (default: generate)",

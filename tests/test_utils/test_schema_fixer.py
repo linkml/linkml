@@ -2,11 +2,10 @@ import unittest
 from copy import deepcopy
 
 from linkml_runtime.dumpers import yaml_dumper
-from linkml_runtime.linkml_model import SlotDefinitionName
+from linkml_runtime.linkml_model import SlotDefinitionName, SlotDefinition
 
 from linkml.utils.schema_builder import SchemaBuilder
 from linkml.utils.schema_fixer import SchemaFixer
-from tests.output.meta import SlotDefinition
 
 MY_CLASS = "MyClass"
 MY_CLASS2 = "MyClass2"
