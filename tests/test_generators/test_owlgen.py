@@ -1,11 +1,14 @@
 import sys
 import unittest
 
-from rdflib import RDFS, SKOS, Graph, Literal, Namespace
+from linkml_runtime.dumpers import yaml_dumper
+from linkml_runtime.linkml_model import SlotDefinition
+from rdflib import RDFS, SKOS, Graph, Literal, Namespace, URIRef
 from rdflib.collection import Collection
 from rdflib.namespace import OWL, RDF
 
 from linkml.generators.owlgen import MetadataProfile, OwlSchemaGenerator
+from linkml.utils.schema_builder import SchemaBuilder
 from tests.test_generators.environment import env
 
 SCHEMA = env.input_path("kitchen_sink.yaml")
@@ -13,6 +16,7 @@ DATA = env.input_path("kitchen_sink_inst_01.yaml")
 SHEXLOG = env.expected_path("owl_log.txt")
 OWL_OUTPUT = env.expected_path("kitchen_sink.owl.ttl")
 OWL_OUTPUT_RDFS = env.expected_path("kitchen_sink.rdfs-profile.owl.ttl")
+OWL_OUTPUT_TMP = env.expected_path("tmp.owl.ttl")
 
 SYMP = Namespace("http://purl.obolibrary.org/obo/SYMP_")
 KS = Namespace("https://w3id.org/linkml/tests/kitchen_sink/")
@@ -26,7 +30,7 @@ class OwlGeneratorTestCase(unittest.TestCase):
     """
 
     def test_owlgen(self):
-        """owl"""
+        """tests generation of owl schema-style ontologies"""
         owl = OwlSchemaGenerator(
             SCHEMA,
             mergeimports=False,
@@ -92,6 +96,37 @@ class OwlGeneratorTestCase(unittest.TestCase):
         self.assertIn(
             Literal("A person, living or dead"), g.objects(KS.Person, RDFS.comment)
         )
+
+    def test_definition_uris(self):
+        """
+        Tests behavior of assigning URIs to classes and slots
+
+        In future this will be paramterizable as per:
+        https://github.com/linkml/linkml/issues/932
+        """
+        sb = SchemaBuilder()
+        sb.add_class('MyPerson',
+                     class_uri='schema:Person',
+                     slots=[SlotDefinition("name", slot_uri="schema:name")])
+        sb.add_defaults()
+        sb.add_prefix("schema", "http://schema.org/")
+        schema = sb.schema
+        gen = OwlSchemaGenerator(schema, mergeimports=False, metaclasses=False, type_objects=False)
+        owl = gen.serialize()
+        with open(OWL_OUTPUT_TMP, "w", encoding="UTF-8") as stream:
+            stream.write(owl)
+        g = Graph()
+        g.parse(OWL_OUTPUT_TMP)
+        triples = list(g.triples((None,None,None)))
+        expected = [
+            (URIRef('http://example.org/test-schema/MyPerson'),
+             URIRef('http://www.w3.org/2004/02/skos/core#exactMatch'),
+             URIRef('http://schema.org/Person'))
+        ]
+        #for t in triples:
+        #    print(t)
+        for t in expected:
+            self.assertIn(t, triples)
 
 
 if __name__ == "__main__":
