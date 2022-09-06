@@ -86,9 +86,11 @@
 <span class="sd">Generate dotfiles</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">click</span>
+<span class="kn">from</span> <span class="nn">deprecated.classic</span> <span class="kn">import</span> <span class="n">deprecated</span>
 <span class="kn">from</span> <span class="nn">graphviz</span> <span class="kn">import</span> <span class="n">FORMATS</span><span class="p">,</span> <span class="n">Digraph</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model.meta</span> <span class="kn">import</span> <span class="p">(</span><span class="n">ClassDefinition</span><span class="p">,</span>
                                               <span class="n">SchemaDefinition</span><span class="p">,</span> <span class="n">SlotDefinition</span><span class="p">)</span>
@@ -99,22 +101,31 @@
 <span class="n">valid_formats</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">FORMATS</span><span class="p">))</span>
 
 
-<div class="viewcode-block" id="DotGenerator"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.dotgen.DotGenerator">[docs]</a><span class="k">class</span> <span class="nc">DotGenerator</span><span class="p">(</span><span class="n">Generator</span><span class="p">):</span>
+<div class="viewcode-block" id="DotGenerator"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.dotgen.DotGenerator">[docs]</a><span class="nd">@deprecated</span><span class="p">(</span><span class="s2">&quot;Replaced by yuml/mermaid&quot;</span><span class="p">)</span>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">DotGenerator</span><span class="p">(</span><span class="n">Generator</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generates dotfiles</span>
+
+<span class="sd">    No longer in use: use mermaid generator instead</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">generatorname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
     <span class="n">generatorversion</span> <span class="o">=</span> <span class="s2">&quot;0.1.1&quot;</span>
     <span class="n">directory_output</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="n">valid_formats</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;png&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">valid_formats</span>
+    <span class="n">valid_formats</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;png&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">valid_formats</span>
     <span class="n">visit_all_class_slots</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">uses_schemaloader</span> <span class="o">=</span> <span class="kc">True</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">SchemaDefinition</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">classnames</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">dirname</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">filedot</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Digraph</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">classdot</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Digraph</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cls_subj</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">SlotDefinition</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cls_obj</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">SlotDefinition</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="c1"># ObjectVars</span>
+    <span class="n">classnames</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">filename</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">dirname</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">filedot</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Digraph</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">classdot</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Digraph</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">cls_subj</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">SlotDefinition</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">cls_obj</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">SlotDefinition</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">classname</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">directory</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="DotGenerator.visit_schema"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.dotgen.DotGenerator.visit_schema">[docs]</a>    <span class="k">def</span> <span class="nf">visit_schema</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>

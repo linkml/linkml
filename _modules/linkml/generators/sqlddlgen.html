@@ -123,14 +123,16 @@
     <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">s</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
 
 
-<div class="viewcode-block" id="Backref"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.sqlddlgen.Backref">[docs]</a><span class="nd">@dataclass</span>
+<div class="viewcode-block" id="Backref"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.sqlddlgen.Backref">[docs]</a><span class="nd">@deprecated</span><span class="p">(</span><span class="s2">&quot;Use SQLTableGenerator instead&quot;</span><span class="p">)</span>
+<span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">Backref</span><span class="p">:</span>
     <span class="n">original_column</span><span class="p">:</span> <span class="s2">&quot;SQLColumn&quot;</span>
     <span class="n">backref_column</span><span class="p">:</span> <span class="s2">&quot;SQLColumn&quot;</span>
     <span class="n">order_by</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span></div>
 
 
-<div class="viewcode-block" id="DDLEntity"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.sqlddlgen.DDLEntity">[docs]</a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">unsafe_hash</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="viewcode-block" id="DDLEntity"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.sqlddlgen.DDLEntity">[docs]</a><span class="nd">@deprecated</span><span class="p">(</span><span class="s2">&quot;Use SQLTableGenerator instead&quot;</span><span class="p">)</span>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">unsafe_hash</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">DDLEntity</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    abstract grouping</span>
@@ -139,7 +141,8 @@
     <span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span></div>
 
 
-<div class="viewcode-block" id="SQLColumn"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.sqlddlgen.SQLColumn">[docs]</a><span class="nd">@dataclass</span>
+<div class="viewcode-block" id="SQLColumn"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.sqlddlgen.SQLColumn">[docs]</a><span class="nd">@deprecated</span><span class="p">(</span><span class="s2">&quot;Use SQLTableGenerator instead&quot;</span><span class="p">)</span>
+<span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">SQLColumn</span><span class="p">(</span><span class="n">DDLEntity</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    represents a Relational Table Column</span>
@@ -160,7 +163,8 @@
         <span class="k">return</span> <span class="bp">self</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">table</span><span class="o">.</span><span class="n">primary_keys</span></div></div>
 
 
-<div class="viewcode-block" id="SQLTable"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.sqlddlgen.SQLTable">[docs]</a><span class="nd">@dataclass</span>
+<div class="viewcode-block" id="SQLTable"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.sqlddlgen.SQLTable">[docs]</a><span class="nd">@deprecated</span><span class="p">(</span><span class="s2">&quot;Use SQLTableGenerator instead&quot;</span><span class="p">)</span>
+<span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">SQLTable</span><span class="p">(</span><span class="n">DDLEntity</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    represents a Relational Table</span>
@@ -191,7 +195,8 @@
         <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="p">]</span></div></div>
 
 
-<div class="viewcode-block" id="SQLSchema"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.sqlddlgen.SQLSchema">[docs]</a><span class="nd">@dataclass</span>
+<div class="viewcode-block" id="SQLSchema"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.sqlddlgen.SQLSchema">[docs]</a><span class="nd">@deprecated</span><span class="p">(</span><span class="s2">&quot;Use SQLTableGenerator instead&quot;</span><span class="p">)</span>
+<span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">SQLSchema</span><span class="p">(</span><span class="n">DDLEntity</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    represents a Relational Schema</span>

@@ -85,6 +85,7 @@
 <span></span><span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
 <span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">ModuleType</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">Union</span>
 
@@ -113,20 +114,28 @@
     <span class="n">IMPERATIVE</span> <span class="o">=</span> <span class="s2">&quot;imperative&quot;</span>
 
 
-<div class="viewcode-block" id="SQLAlchemyGenerator"><a class="viewcode-back" href="../../../generators/sqlalchemy.html#linkml.generators.sqlalchemygen.SQLAlchemyGenerator">[docs]</a><span class="k">class</span> <span class="nc">SQLAlchemyGenerator</span><span class="p">(</span><span class="n">Generator</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="SQLAlchemyGenerator"><a class="viewcode-back" href="../../../generators/sqlalchemy.html#linkml.generators.sqlalchemygen.SQLAlchemyGenerator">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">SQLAlchemyGenerator</span><span class="p">(</span><span class="n">Generator</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generates SQL Alchemy classes</span>
 
+<span class="sd">    See also: :ref:`SQLTableGenerator`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># ClassVars</span>
     <span class="n">generatorname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
     <span class="n">generatorversion</span> <span class="o">=</span> <span class="s2">&quot;0.1.1&quot;</span>
     <span class="n">valid_formats</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;sqla&quot;</span><span class="p">]</span>
+    <span class="n">uses_schemaloader</span> <span class="o">=</span> <span class="kc">False</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">SchemaDefinition</span><span class="p">],</span> <span class="n">dialect</span><span class="o">=</span><span class="s2">&quot;sqlite&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">original_schema</span> <span class="o">=</span> <span class="n">schema</span>
-        <span class="c1"># super().__init__(schema, **kwargs)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span> <span class="o">=</span> <span class="n">SchemaView</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">schema</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">schema</span>
+    <span class="c1"># ObjectVars</span>
+    <span class="n">original_schema</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">SchemaDefinition</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">original_schema</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span> <span class="o">=</span> <span class="n">SchemaView</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span>
+
 
     <span class="k">def</span> <span class="nf">generate_sqla</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>

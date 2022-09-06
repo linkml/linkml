@@ -18,7 +18,9 @@
         <script src="../_static/doctools.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" /> 
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Examples of use" href="../examples.html" />
+    <link rel="prev" title="LinkML Workspace Generator" href="linkml-ws.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -38,14 +40,46 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../intro/overview.html">LinkML at a glance</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../intro/install.html">Quick Install Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../intro/tutorial.html">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../schemas/index.html">LinkML Schemas</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../data/index.html">Working with Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../generators/index.html">Generators</a></li>
-<li class="toctree-l1"><a class="reference internal" href="index.html">How-to Guides</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">How-to Guides</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="yq-for-schemas.html">Using yq for querying and manipulating schemas</a></li>
+<li class="toctree-l2"><a class="reference internal" href="using-jsonld.html">Using JSON-LD</a></li>
+<li class="toctree-l2"><a class="reference internal" href="port-linkml.html">Porting LinkML tools to other programming languages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="port-linkml.html#overview-of-python-framework">Overview of Python Framework</a></li>
+<li class="toctree-l2"><a class="reference internal" href="linkml-ws.html">LinkML Workspace Generator</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">How to model quantities and measurements</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#central-example">Central Example</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#requirements">Requirements</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#core-schema">Core schema</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#patterns-and-anti-patterns">Patterns and Anti-patterns</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#simple-explicit-scalar-pattern">Simple Explicit Scalar Pattern</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#variant-simple-implicit-scalar-pattern">Variant: Simple Implicit Scalar Pattern</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#simple-coupled-scalar-pattern">Simple Coupled Scalar Pattern</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#simple-flexible-unit-scalar-pattern">Simple Flexible Unit Scalar Pattern</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#flexible-unit-nested-measurement-pattern">Flexible Unit Nested Measurement Pattern</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#flexible-unit-string-encoding-pattern">Flexible Unit String Encoding Pattern</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#generic-quantity-type-pattern">Generic Quantity Type Pattern</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#case-studies">Case Studies</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#fhir">FHIR</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mixs">MIxS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#qudt">QUDT</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#obi">OBI</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cf">CF</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#further-reading">Further Reading</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples of use</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../ecosystem.html">The LinkML Ecosystem</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../specifications/linkml-spec.html">LinkML specification</a></li>
@@ -72,6 +106,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">How-to Guides</a> &raquo;</li>
       <li>How to model quantities and measurements</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/howtos/model-measurements.md.txt" rel="nofollow"> View page source</a>
@@ -687,7 +722,10 @@ The units are also fixed, but ranges are supported.</p>
 
            </div>
           </div>
-          <footer>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="linkml-ws.html" class="btn btn-neutral float-left" title="LinkML Workspace Generator" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../examples.html" class="btn btn-neutral float-right" title="Examples of use" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
 
   <hr/>
 

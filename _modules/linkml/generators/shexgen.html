@@ -86,6 +86,7 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">click</span>
@@ -108,18 +109,23 @@
 <span class="kn">from</span> <span class="nn">linkml.utils.generator</span> <span class="kn">import</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">shared_arguments</span>
 
 
-<div class="viewcode-block" id="ShExGenerator"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.shexgen.ShExGenerator">[docs]</a><span class="k">class</span> <span class="nc">ShExGenerator</span><span class="p">(</span><span class="n">Generator</span><span class="p">):</span>
+<div class="viewcode-block" id="ShExGenerator"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.shexgen.ShExGenerator">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">ShExGenerator</span><span class="p">(</span><span class="n">Generator</span><span class="p">):</span>
+    <span class="c1"># ClassVars</span>
     <span class="n">generatorname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
     <span class="n">generatorversion</span> <span class="o">=</span> <span class="s2">&quot;0.0.2&quot;</span>
     <span class="n">valid_formats</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;shex&quot;</span><span class="p">,</span> <span class="s2">&quot;json&quot;</span><span class="p">,</span> <span class="s2">&quot;rdf&quot;</span><span class="p">]</span>
     <span class="n">visit_all_class_slots</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">uses_schemaloader</span> <span class="o">=</span> <span class="kc">True</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">SchemaDefinition</span><span class="p">],</span> <span class="o">**</span><span class="n">args</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="o">**</span><span class="n">args</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">shex</span><span class="p">:</span> <span class="n">Schema</span> <span class="o">=</span> <span class="n">Schema</span><span class="p">()</span>  <span class="c1"># ShEx Schema being generated</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">shapes</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Shape</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Current shape being defined</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">list_shapes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">IRIREF</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># Shapes that have been defined as lists</span>
+    <span class="c1"># ObjectVars</span>
+    <span class="n">shex</span><span class="p">:</span> <span class="n">Schema</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">Schema</span><span class="p">())</span>  <span class="c1"># ShEx Schema being generated</span>
+    <span class="n">shapes</span><span class="p">:</span> <span class="n">List</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="p">[])</span>
+    <span class="n">shape</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Shape</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Current shape being defined</span>
+    <span class="n">list_shapes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">IRIREF</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="p">[])</span>  <span class="c1"># Shapes that have been defined as lists</span>
+
+    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="n">METAMODEL_NAMESPACE_NAME</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="p">[</span><span class="n">METAMODEL_NAMESPACE_NAME</span><span class="p">]</span> <span class="o">=</span> <span class="n">METAMODEL_NAMESPACE</span>

@@ -82,16 +82,36 @@
            <div itemprop="articleBody">
              
   <h1>Source code for linkml.utils.generator</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">abc</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Base class for all generators</span>
+
+<span class="sd">Developer Notes</span>
+<span class="sd">---------------</span>
+
+<span class="sd">Subclasses of this class implement specific generators. Each generator is in one of two styles:</span>
+
+<span class="sd">1. schemaloader-based, using a Visitor pattern (older)</span>
+<span class="sd">2. schemaview-based, no visitor pattern (newer)</span>
+
+<span class="sd">New generators should always using the latter approach</span>
+
+<span class="sd">See: https://github.com/linkml/linkml/issues/923</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">abc</span>
 <span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">redirect_stdout</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
 <span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">StringIO</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="p">(</span><span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span>
-                    <span class="n">cast</span><span class="p">)</span>
+                    <span class="n">cast</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">ClassVar</span><span class="p">)</span>
 
 <span class="kn">import</span> <span class="nn">click</span>
 <span class="kn">from</span> <span class="nn">click</span> <span class="kn">import</span> <span class="n">Argument</span><span class="p">,</span> <span class="n">Command</span><span class="p">,</span> <span class="n">Option</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime</span> <span class="kn">import</span> <span class="n">SchemaView</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime.dumpers</span> <span class="kn">import</span> <span class="n">yaml_dumper</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model.meta</span> <span class="kn">import</span> <span class="p">(</span><span class="n">ClassDefinition</span><span class="p">,</span>
                                               <span class="n">ClassDefinitionName</span><span class="p">,</span> <span class="n">Definition</span><span class="p">,</span>
                                               <span class="n">Element</span><span class="p">,</span> <span class="n">ElementName</span><span class="p">,</span>
@@ -104,8 +124,12 @@
                                               <span class="n">SubsetDefinitionName</span><span class="p">,</span>
                                               <span class="n">TypeDefinition</span><span class="p">,</span>
                                               <span class="n">TypeDefinitionName</span><span class="p">)</span>
+<span class="kn">import</span> <span class="nn">linkml_runtime.linkml_model.meta</span> <span class="k">as</span> <span class="nn">metamodel</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime.utils.formatutils</span> <span class="kn">import</span> <span class="n">camelcase</span><span class="p">,</span> <span class="n">underscore</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime.utils.introspection</span> <span class="kn">import</span> <span class="n">package_schemaview</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime.utils.namespaces</span> <span class="kn">import</span> <span class="n">Namespaces</span>
 
+<span class="kn">from</span> <span class="nn">linkml</span> <span class="kn">import</span> <span class="n">LOCAL_METAMODEL_YAML_FILE</span><span class="p">,</span> <span class="n">META_BASE_URI</span><span class="p">,</span> <span class="n">METAMODEL_YAML_URI</span>
 <span class="kn">from</span> <span class="nn">linkml.utils.mergeutils</span> <span class="kn">import</span> <span class="n">alias_root</span>
 <span class="kn">from</span> <span class="nn">linkml.utils.schemaloader</span> <span class="kn">import</span> <span class="n">SchemaLoader</span>
 <span class="kn">from</span> <span class="nn">linkml.utils.typereferences</span> <span class="kn">import</span> <span class="n">References</span>
@@ -114,73 +138,152 @@
 <span class="n">DEFAULT_LOG_LEVEL_INT</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span>
 
 
-<div class="viewcode-block" id="Generator"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.generator.Generator">[docs]</a><span class="k">class</span> <span class="nc">Generator</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">abc</span><span class="o">.</span><span class="n">ABCMeta</span><span class="p">):</span>
-    <span class="n">generatorname</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Set to os.path.basename(__file__)</span>
-    <span class="n">generatorversion</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Generator version identifier</span>
-    <span class="n">valid_formats</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># Allowed formats - first format is default</span>
-    <span class="n">directory_output</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="kc">False</span>  <span class="c1"># True means output is to a directory, False is to stdout</span>
-    <span class="p">)</span>
-    <span class="n">base_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Base directory of schema</span>
+<div class="viewcode-block" id="Generator"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.generator.Generator">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Generator</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">abc</span><span class="o">.</span><span class="n">ABCMeta</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base class for generators</span>
 
-    <span class="n">visit_all_class_slots</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="kc">False</span>  <span class="c1"># False means only visit own slots, True means visit all slots</span>
-    <span class="p">)</span>
-    <span class="n">visits_are_sorted</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="kc">True</span>  <span class="c1"># True means visit basic types in alphabetial order, false in entry</span>
-    <span class="p">)</span>
-    <span class="n">sort_class_slots</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># True means visit class slots in alphabetical order</span>
+<span class="sd">    For usage `Generator Docs &lt;https://linkml.io/linkml/generators/&gt;`_</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># ClassVars</span>
+    <span class="n">schema</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">SchemaDefinition</span><span class="p">,</span> <span class="s2">&quot;Generator&quot;</span><span class="p">]</span>
+    <span class="sd">&quot;&quot;&quot;metamodel compliant schema.  Can be URI, file name, actual schema, another generator, an</span>
+<span class="sd">        open file or a pre-parsed schema&quot;&quot;&quot;</span>
+
+    <span class="n">generatorname</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="sd">&quot;&quot;&quot; Name of the generator. Override with os.path.basename(__file__)&quot;&quot;&quot;</span>
+
+    <span class="n">generatorversion</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Generator version identifier</span>
+    <span class="sd">&quot;&quot;&quot;Version of the generator. Consider deprecating and instead use overall linkml version&quot;&quot;&quot;</span>
+
+    <span class="n">uses_schemaloader</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="sd">&quot;&quot;&quot;Old-style generator that uses the SchemaLoader and visitor pattern&quot;&quot;&quot;</span>
+
+    <span class="c1">#uses_schemaview: ClassVar[bool] = True</span>
+    <span class="c1">#&quot;&quot;&quot;New-style generator that uses SchemaView&quot;&quot;&quot;</span>
+
+    <span class="n">requires_metamodel</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="sd">&quot;&quot;&quot;Generator queries an instance of the metamodel&quot;&quot;&quot;</span>
+
+    <span class="n">valid_formats</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="sd">&quot;&quot;&quot;Allowed formats - first format is default&quot;&quot;&quot;</span>
+
+    <span class="n">visit_all_class_slots</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="sd">&quot;&quot;&quot;Visitor ClassVar: False means only visit own slots, True means visit all slots&quot;&quot;&quot;</span>
+
+    <span class="n">visits_are_sorted</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="sd">&quot;&quot;&quot;Visitor ClassVar: True means visit basic types in alphabetial order, false in entry&quot;&quot;&quot;</span>
+
+    <span class="n">sort_class_slots</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="sd">&quot;&quot;&quot;Visitor ClassVar: True means visit class slots in alphabetical order&quot;&quot;&quot;</span>
+
+    <span class="c1"># Object-level Vars</span>
+    <span class="n">schemaview</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">SchemaView</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="sd">&quot;&quot;&quot;A wrapper onto the schema object&quot;&quot;&quot;</span>
+
+    <span class="nb">format</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="sd">&quot;&quot;&quot;expected output format&quot;&quot;&quot;</span>
+
+    <span class="n">metadata</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;True means include date, generator, etc. information in source header if appropriate&quot;&quot;&quot;</span>
+
+    <span class="n">useuris</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="sd">&quot;&quot;&quot;True means declared class slot uri&#39;s are used.  False means use model uris&quot;&quot;&quot;</span>
+
+    <span class="n">log_level</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">DEFAULT_LOG_LEVEL_INT</span>
+    <span class="sd">&quot;&quot;&quot;Logging level, 0 is minimum&quot;&quot;&quot;</span>
+
+    <span class="n">mergeimports</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;True means merge non-linkml sources into importing package.  False means separate packages&quot;&quot;&quot;</span>
+
+    <span class="n">source_file_date</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="sd">&quot;&quot;&quot;Modification date of input source file&quot;&quot;&quot;</span>
+
+    <span class="n">source_file_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="sd">&quot;&quot;&quot;Size of the source file in bytes&quot;&quot;&quot;</span>
+
+    <span class="n">logger</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="sd">&quot;&quot;&quot;Logger to use for logging messages&quot;&quot;&quot;</span>
+
+    <span class="n">verbose</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="sd">&quot;&quot;&quot;Verbosity&quot;&quot;&quot;</span>
+
+    <span class="n">output</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="sd">&quot;&quot;&quot;Path to output file. Note all generators may not implement this uniformly, see https://github.com/linkml/linkml/issues/923&quot;&quot;&quot;</span>
+
+    <span class="n">namespaces</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Namespaces</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="sd">&quot;&quot;&quot;All prefix expansions used&quot;&quot;&quot;</span>
+
+    <span class="n">directory_output</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="sd">&quot;&quot;&quot;True means output is to a directory, False is to stdout&quot;&quot;&quot;</span>
+
+    <span class="n">base_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Base directory of schema</span>
+    <span class="sd">&quot;&quot;&quot;Working directory or base URL of sources&quot;&quot;&quot;</span>
 
     <span class="n">metamodel_name_map</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span>
         <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span>
-    <span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Allows mapping of names of metamodel elements such as slot, etc</span>
+    <span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="sd">&quot;&quot;&quot;Allows mapping of names of metamodel elements such as slot, etc&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">schema</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">SchemaDefinition</span><span class="p">,</span> <span class="s2">&quot;Generator&quot;</span><span class="p">],</span>
-        <span class="nb">format</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">metadata</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="n">useuris</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">importmap</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">log_level</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">DEFAULT_LOG_LEVEL_INT</span><span class="p">,</span>
-        <span class="n">mergeimports</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="n">source_file_date</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">source_file_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">logger</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Constructor</span>
+    <span class="n">importmap</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="sd">&quot;&quot;&quot;File name of import mapping file -- maps import name/uri to target&quot;&quot;&quot;</span>
 
-<span class="sd">        :param schema: metamodel compliant schema.  Can be URI, file name, actual schema, another generator, an</span>
-<span class="sd">        open file or a pre-parsed schema.</span>
-<span class="sd">        :param format: expected output format</span>
-<span class="sd">        :param metadata: True means include date, generator, etc. information in source header if appropriate</span>
-<span class="sd">        :param useuris: True means declared class slot uri&#39;s are used.  False means use model uris</span>
-<span class="sd">        :param importmap: File name of import mapping file -- maps import name/uri to target</span>
-<span class="sd">        :param log_level: Logging level</span>
-<span class="sd">        :param mergeimports: True means merge non-linkml sources into importing package.  False means separate packages.</span>
-<span class="sd">        :param source_file_date: Modification date of input source file</span>
-<span class="sd">        :param source_file_size: Source file size</span>
-<span class="sd">        :param logger: pre-set logger</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">logger</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logger</span>
-        <span class="k">else</span><span class="p">:</span>
+    <span class="n">emit_prefixes</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="nb">set</span><span class="p">())</span>
+    <span class="sd">&quot;&quot;&quot;Prefixes to emit, for RDF-based generators&quot;&quot;&quot;</span>
+
+    <span class="n">metamodel</span><span class="p">:</span> <span class="n">SchemaLoader</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="sd">&quot;&quot;&quot;A SchemaLoader instance that points to the LinkML metamodel (meta.yaml)&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span>
         <span class="c1">#    logging.basicConfig()</span>
         <span class="c1">#    self.logger = logging.getLogger(self.__class__.__name__)</span>
         <span class="c1">#    self.logger.setLevel(log_level)</span>
 
-        <span class="k">if</span> <span class="nb">format</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="nb">format</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">valid_formats</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="k">assert</span> <span class="nb">format</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">valid_formats</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Unrecognized format: </span><span class="si">{</span><span class="nb">format</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">format</span> <span class="o">=</span> <span class="nb">format</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">emit_metadata</span> <span class="o">=</span> <span class="n">metadata</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">merge_imports</span> <span class="o">=</span> <span class="n">mergeimports</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">source_file_date</span> <span class="o">=</span> <span class="n">source_file_date</span> <span class="k">if</span> <span class="n">metadata</span> <span class="k">else</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">source_file_size</span> <span class="o">=</span> <span class="n">source_file_size</span> <span class="k">if</span> <span class="n">metadata</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">format</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">format</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">valid_formats</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">format</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">valid_formats</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unrecognized format: </span><span class="si">{</span><span class="nb">format</span><span class="si">}</span><span class="s2">; known=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">valid_formats</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="c1"># legacy: all generators should use &quot;mergeimports&quot;</span>
+        <span class="c1"># self.merge_imports = self.mergeimports</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">source_file_date</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">source_file_size</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">requires_metamodel</span><span class="p">:</span>
+            <span class="c1"># TODO: use newer introspection methods</span>
+            <span class="c1">#self.metamodel = package_schemaview(metamodel.__name__).schema</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">LOCAL_METAMODEL_YAML_FILE</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">metamodel</span> <span class="o">=</span> <span class="n">SchemaLoader</span><span class="p">(</span>
+                        <span class="n">LOCAL_METAMODEL_YAML_FILE</span><span class="p">,</span>
+                        <span class="n">importmap</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">importmap</span><span class="p">,</span>
+                        <span class="n">mergeimports</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mergeimports</span><span class="p">,</span>
+                    <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">metamodel</span> <span class="o">=</span> <span class="n">SchemaLoader</span><span class="p">(</span>
+                    <span class="n">METAMODEL_YAML_URI</span><span class="p">,</span>
+                    <span class="n">base_dir</span><span class="o">=</span><span class="n">META_BASE_URI</span><span class="p">,</span>
+                    <span class="n">importmap</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">importmap</span><span class="p">,</span>
+                    <span class="n">mergeimports</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mergeimports</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">metamodel</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+        <span class="n">schema</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span>
+        <span class="c1"># TODO: remove aliasing</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">emit_metadata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">uses_schemaloader</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_initialize_using_schemaloader</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span> <span class="o">=</span> <span class="n">SchemaView</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">schema</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">schema</span>
+
+    <span class="k">def</span> <span class="nf">_initialize_using_schemaloader</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">SchemaDefinition</span><span class="p">,</span> <span class="s2">&quot;Generator&quot;</span><span class="p">]):</span>
+        <span class="c1"># currently generators are very liberal in what they accept, including</span>
+        <span class="c1"># other generators.</span>
+        <span class="c1"># See https://github.com/linkml/linkml/issues/923 for discussion on how</span>
+        <span class="c1"># to simplify the overall framework</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="n">Generator</span><span class="p">):</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Instantiating generator with another generator is deprecated&quot;</span><span class="p">)</span>
             <span class="n">gen</span> <span class="o">=</span> <span class="n">schema</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">schema</span> <span class="o">=</span> <span class="n">gen</span><span class="o">.</span><span class="n">schema</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">synopsis</span> <span class="o">=</span> <span class="n">gen</span><span class="o">.</span><span class="n">synopsis</span>
@@ -194,14 +297,20 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">schema_defaults</span> <span class="o">=</span> <span class="n">gen</span><span class="o">.</span><span class="n">schema_defaults</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">gen</span><span class="o">.</span><span class="n">logger</span>
         <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="n">SchemaDefinition</span><span class="p">):</span>
+                <span class="c1"># schemaloader based methods require schemas to have been created via SchemaLoader,</span>
+                <span class="c1"># which prepopulates some fields (e.g definition_url). If the schema has not been processed through the</span>
+                <span class="c1"># loader, then roundtrip</span>
+                <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">schema</span><span class="o">.</span><span class="n">classes</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">c</span><span class="o">.</span><span class="n">definition_uri</span><span class="p">):</span>
+                    <span class="n">schema</span> <span class="o">=</span> <span class="n">yaml_dumper</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span>
             <span class="n">loader</span> <span class="o">=</span> <span class="n">SchemaLoader</span><span class="p">(</span>
                 <span class="n">schema</span><span class="p">,</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">base_dir</span><span class="p">,</span>
-                <span class="n">useuris</span><span class="o">=</span><span class="n">useuris</span><span class="p">,</span>
-                <span class="n">importmap</span><span class="o">=</span><span class="n">importmap</span><span class="p">,</span>
+                <span class="n">useuris</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">useuris</span><span class="p">,</span>
+                <span class="n">importmap</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">importmap</span><span class="p">,</span>
                 <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span>
-                <span class="n">mergeimports</span><span class="o">=</span><span class="n">mergeimports</span><span class="p">,</span>
-                <span class="n">emit_metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span>
+                <span class="n">mergeimports</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mergeimports</span><span class="p">,</span>
+                <span class="n">emit_metadata</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">,</span>
                 <span class="n">source_file_date</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">source_file_date</span><span class="p">,</span>
                 <span class="n">source_file_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">source_file_size</span><span class="p">,</span>
             <span class="p">)</span>
@@ -216,6 +325,10 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">source_file_size</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">source_file_size</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">schema_location</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">schema_location</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">schema_defaults</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">schema_defaults</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span> <span class="o">=</span> <span class="n">Namespaces</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">prefix</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">prefixes</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="p">[</span><span class="n">prefix</span><span class="o">.</span><span class="n">prefix_prefix</span><span class="p">]</span> <span class="o">=</span> <span class="n">prefix</span><span class="o">.</span><span class="n">prefix_reference</span>
 
 <div class="viewcode-block" id="Generator.serialize"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.generator.Generator.serialize">[docs]</a>    <span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -225,7 +338,13 @@
 <span class="sd">        :return: Generated output</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">output</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">()</span>
+        <span class="c1"># Note: we currently redirect stdout, this means that print statements within</span>
+        <span class="c1"># each generator will be redirected to the StringIO object.</span>
+        <span class="c1"># See https://github.com/linkml/linkml/issues/923 for discussion on simplifying this</span>
         <span class="k">with</span> <span class="n">redirect_stdout</span><span class="p">(</span><span class="n">output</span><span class="p">):</span>
+            <span class="c1"># the default is to use the Visitor Pattern; each individual generator may</span>
+            <span class="c1"># choose to override methods {visit,end}_{element}.</span>
+            <span class="c1"># See https://github.com/linkml/linkml/issues/923</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">visit_schema</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">sn</span><span class="p">,</span> <span class="n">ss</span> <span class="ow">in</span> <span class="p">(</span>
                 <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">subsets</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>

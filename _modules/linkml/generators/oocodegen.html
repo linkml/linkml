@@ -134,6 +134,7 @@
 <span class="sd">    An object-oriented class</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="c1"># ObjectVars</span>
     <span class="n">name</span><span class="p">:</span> <span class="n">SAFE_NAME</span>
     <span class="n">is_a</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">SAFE_NAME</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">abstract</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
@@ -145,9 +146,24 @@
     <span class="n">source_class</span><span class="p">:</span> <span class="n">ClassDefinition</span> <span class="o">=</span> <span class="kc">None</span></div>
 
 
-<div class="viewcode-block" id="OOCodeGenerator"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.oocodegen.OOCodeGenerator">[docs]</a><span class="k">class</span> <span class="nc">OOCodeGenerator</span><span class="p">(</span><span class="n">Generator</span><span class="p">):</span>
-    <span class="n">package</span><span class="p">:</span> <span class="n">PACKAGE</span> <span class="o">=</span> <span class="s2">&quot;example&quot;</span>
+<div class="viewcode-block" id="OOCodeGenerator"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.oocodegen.OOCodeGenerator">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">OOCodeGenerator</span><span class="p">(</span><span class="n">Generator</span><span class="p">):</span>
+
+    <span class="c1"># ClassVars</span>
     <span class="n">java_style</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">visit_all_class_slots</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">uses_schemaloader</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">requires_metamodel</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="n">template_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="sd">&quot;&quot;&quot;Path to template&quot;&quot;&quot;</span>
+
+    <span class="n">package</span><span class="p">:</span> <span class="n">PACKAGE</span> <span class="o">=</span> <span class="s2">&quot;example&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># TODO: consider moving up a level</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span> <span class="o">=</span> <span class="n">SchemaView</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span>
 
 <div class="viewcode-block" id="OOCodeGenerator.serialize"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.oocodegen.OOCodeGenerator.serialize">[docs]</a>    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
     <span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">directory</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -236,9 +252,9 @@
                     <span class="n">t</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">get_type</span><span class="p">(</span><span class="nb">range</span><span class="p">)</span>
                     <span class="nb">range</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_type</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
                     <span class="k">if</span> <span class="nb">range</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># If mapping fails,</span>
-                        <span class="nb">range</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_type</span><span class="p">(</span><span class="n">sv</span><span class="o">.</span><span class="n">all_type</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;string&quot;</span><span class="p">))</span>
+                        <span class="nb">range</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_type</span><span class="p">(</span><span class="n">sv</span><span class="o">.</span><span class="n">all_types</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;string&quot;</span><span class="p">))</span>
                 <span class="k">elif</span> <span class="nb">range</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">all_enums</span><span class="p">():</span>
-                    <span class="nb">range</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_type</span><span class="p">(</span><span class="n">sv</span><span class="o">.</span><span class="n">all_type</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;string&quot;</span><span class="p">))</span>
+                    <span class="nb">range</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_type</span><span class="p">(</span><span class="n">sv</span><span class="o">.</span><span class="n">all_types</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;string&quot;</span><span class="p">))</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown range </span><span class="si">{</span><span class="nb">range</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 

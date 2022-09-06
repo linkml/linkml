@@ -88,8 +88,9 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
 <span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span><span class="p">,</span> <span class="n">unique</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">List</span>
 
 <span class="kn">import</span> <span class="nn">click</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model.meta</span> <span class="kn">import</span> <span class="p">(</span><span class="n">ClassDefinition</span><span class="p">,</span>
@@ -107,9 +108,7 @@
 <span class="kn">from</span> <span class="nn">rdflib.plugin</span> <span class="kn">import</span> <span class="n">Parser</span> <span class="k">as</span> <span class="n">rdflib_Parser</span>
 <span class="kn">from</span> <span class="nn">rdflib.plugin</span> <span class="kn">import</span> <span class="n">plugins</span> <span class="k">as</span> <span class="n">rdflib_plugins</span>
 
-<span class="kn">from</span> <span class="nn">linkml</span> <span class="kn">import</span> <span class="p">(</span><span class="n">LOCAL_METAMODEL_YAML_FILE</span><span class="p">,</span> <span class="n">META_BASE_URI</span><span class="p">,</span>
-                    <span class="n">METAMODEL_NAMESPACE</span><span class="p">,</span> <span class="n">METAMODEL_NAMESPACE_NAME</span><span class="p">,</span>
-                    <span class="n">METAMODEL_YAML_URI</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">linkml</span> <span class="kn">import</span> <span class="n">METAMODEL_NAMESPACE</span><span class="p">,</span> <span class="n">METAMODEL_NAMESPACE_NAME</span>
 <span class="kn">from</span> <span class="nn">linkml.utils.generator</span> <span class="kn">import</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">shared_arguments</span>
 <span class="kn">from</span> <span class="nn">linkml.utils.schemaloader</span> <span class="kn">import</span> <span class="n">SchemaLoader</span>
 
@@ -133,7 +132,8 @@
     <span class="k">pass</span></div>
 
 
-<div class="viewcode-block" id="OwlSchemaGenerator"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.owlgen.OwlSchemaGenerator">[docs]</a><span class="k">class</span> <span class="nc">OwlSchemaGenerator</span><span class="p">(</span><span class="n">Generator</span><span class="p">):</span>
+<div class="viewcode-block" id="OwlSchemaGenerator"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.owlgen.OwlSchemaGenerator">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">OwlSchemaGenerator</span><span class="p">(</span><span class="n">Generator</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generates a schema-oriented OWL representation of a LinkML model</span>
 
@@ -143,49 +143,25 @@
 <span class="sd">        type_objects    if True, represent TypeDefinitions as objects; if False, as literals</span>
 <span class="sd">        metaclasses     if True, include OWL representations of ClassDefinition, SlotDefinition, etc. Introduces punning</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">schema</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">SchemaDefinition</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 
+    <span class="c1"># ClassVars</span>
     <span class="n">generatorname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
     <span class="n">generatorversion</span> <span class="o">=</span> <span class="s2">&quot;0.1.1&quot;</span>
     <span class="n">valid_formats</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;owl&quot;</span><span class="p">,</span> <span class="s2">&quot;ttl&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span>
-        <span class="n">x</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">rdflib_plugins</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">rdflib_Parser</span><span class="p">)</span> <span class="k">if</span> <span class="s2">&quot;/&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-    <span class="p">]</span>
-    <span class="n">metadata_profile</span><span class="p">:</span> <span class="n">MetadataProfile</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">x</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">rdflib_plugins</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">rdflib_Parser</span><span class="p">)</span> <span class="k">if</span> <span class="s2">&quot;/&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">name</span><span class="p">)]</span>
     <span class="n">visits_are_sorted</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">uses_schemaloader</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">requires_metamodel</span> <span class="o">=</span> <span class="kc">True</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">schema</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">SchemaDefinition</span><span class="p">],</span>
-        <span class="n">ontology_uri_suffix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">type_objects</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">metaclasses</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">metadata_profile</span><span class="p">:</span> <span class="n">MetadataProfile</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">add_ols_annotations</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Graph</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">metamodel</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">SchemaLoader</span><span class="p">(</span>
-                <span class="n">LOCAL_METAMODEL_YAML_FILE</span><span class="p">,</span>
-                <span class="n">importmap</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;importmap&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
-                <span class="n">mergeimports</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">merge_imports</span><span class="p">,</span>
-            <span class="p">)</span>
-            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">LOCAL_METAMODEL_YAML_FILE</span><span class="p">)</span>
-            <span class="k">else</span> <span class="n">SchemaLoader</span><span class="p">(</span>
-                <span class="n">METAMODEL_YAML_URI</span><span class="p">,</span>
-                <span class="n">base_dir</span><span class="o">=</span><span class="n">META_BASE_URI</span><span class="p">,</span>
-                <span class="n">importmap</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;importmap&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
-                <span class="n">mergeimports</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">merge_imports</span><span class="p">,</span>
-            <span class="p">)</span>
-        <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">metamodel</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">emit_prefixes</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">top_value_uri</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">URIRef</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ontology_uri_suffix</span> <span class="o">=</span> <span class="n">ontology_uri_suffix</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">type_objects</span> <span class="o">=</span> <span class="n">type_objects</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">metaclasses</span> <span class="o">=</span> <span class="n">metaclasses</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">metadata_profile</span> <span class="o">=</span> <span class="n">metadata_profile</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_ols_annotations</span> <span class="o">=</span> <span class="n">add_ols_annotations</span>
+    <span class="c1"># ObjectVars</span>
+    <span class="n">metadata_profile</span><span class="p">:</span> <span class="n">MetadataProfile</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">ontology_uri_suffix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">metaclasses</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="n">add_ols_annotations</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="n">graph</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Graph</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">top_value_uri</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">URIRef</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">type_objects</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="kc">True</span><span class="p">)</span>
 
 <div class="viewcode-block" id="OwlSchemaGenerator.visit_schema"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.owlgen.OwlSchemaGenerator.visit_schema">[docs]</a>    <span class="k">def</span> <span class="nf">visit_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">_</span><span class="p">):</span>
         <span class="n">owl_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">id</span>
@@ -735,7 +711,7 @@
     <span class="n">help</span><span class="o">=</span><span class="s2">&quot;If true, auto-include annotations from https://www.ebi.ac.uk/ols/docs/installation-guide&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
-    <span class="s2">&quot;--ontology-iri-suffix&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;--ontology-uri-suffix&quot;</span><span class="p">,</span>
     <span class="n">default</span><span class="o">=</span><span class="s2">&quot;.owl.ttl&quot;</span><span class="p">,</span>
     <span class="n">show_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Suffix to append to schema id to generate OWL Ontology IRI&quot;</span><span class="p">,</span>

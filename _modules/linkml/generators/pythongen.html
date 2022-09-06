@@ -86,6 +86,7 @@
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
 <span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">ModuleType</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="p">(</span><span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">,</span>
                     <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span><span class="p">)</span>
@@ -113,35 +114,32 @@
                                              <span class="n">ifabsent_value_declaration</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="PythonGenerator"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.pythongen.PythonGenerator">[docs]</a><span class="k">class</span> <span class="nc">PythonGenerator</span><span class="p">(</span><span class="n">Generator</span><span class="p">):</span>
+<div class="viewcode-block" id="PythonGenerator"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.pythongen.PythonGenerator">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">PythonGenerator</span><span class="p">(</span><span class="n">Generator</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generates Python dataclasses from a LinkML model</span>
 
-
+<span class="sd">    See `Python Generator Docs &lt;https://linkml.io/linkml/generators/python.html&gt;`_</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="c1"># ClassVars</span>
     <span class="n">generatorname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
     <span class="n">generatorversion</span> <span class="o">=</span> <span class="n">PYTHON_GEN_VERSION</span>
     <span class="n">valid_formats</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;py&quot;</span><span class="p">]</span>
     <span class="n">visit_all_class_slots</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">uses_schemaloader</span> <span class="o">=</span> <span class="kc">True</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">schema</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">SchemaDefinition</span><span class="p">],</span>
-        <span class="nb">format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">valid_formats</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-        <span class="n">genmeta</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">gen_classvars</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="n">gen_slots</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sourcefile</span> <span class="o">=</span> <span class="n">schema</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">emit_prefixes</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
-        <span class="k">if</span> <span class="nb">format</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="nb">format</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">valid_formats</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">genmeta</span> <span class="o">=</span> <span class="n">genmeta</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">gen_classvars</span> <span class="o">=</span> <span class="n">gen_classvars</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">gen_slots</span> <span class="o">=</span> <span class="n">gen_slots</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="nb">format</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="c1"># ObjectVars</span>
+    <span class="n">gen_classvars</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="n">gen_slots</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="n">genmeta</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="kc">False</span><span class="p">)</span>
+    <span class="n">emit_metadata</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sourcefile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">format</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">format</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">valid_formats</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">default_prefix</span> <span class="o">==</span> <span class="s2">&quot;linkml&quot;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">genmeta</span><span class="p">:</span>
             <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;Generating metamodel without --genmeta is highly inadvised!&quot;</span>

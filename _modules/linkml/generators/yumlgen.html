@@ -89,6 +89,7 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
 
 <span class="kn">import</span> <span class="nn">click</span>
@@ -116,35 +117,39 @@
 <span class="n">YUML</span> <span class="o">=</span> <span class="n">Namespace</span><span class="p">(</span><span class="n">yuml_base</span> <span class="o">+</span> <span class="n">yuml_scale</span> <span class="o">+</span> <span class="n">yuml_dir</span> <span class="o">+</span> <span class="n">yuml_class</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="YumlGenerator"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.yumlgen.YumlGenerator">[docs]</a><span class="k">class</span> <span class="nc">YumlGenerator</span><span class="p">(</span><span class="n">Generator</span><span class="p">):</span>
+<div class="viewcode-block" id="YumlGenerator"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.yumlgen.YumlGenerator">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">YumlGenerator</span><span class="p">(</span><span class="n">Generator</span><span class="p">):</span>
     <span class="n">generatorname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
     <span class="n">generatorversion</span> <span class="o">=</span> <span class="s2">&quot;0.1.1&quot;</span>
     <span class="n">valid_formats</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;yuml&quot;</span><span class="p">,</span> <span class="s2">&quot;png&quot;</span><span class="p">,</span> <span class="s2">&quot;pdf&quot;</span><span class="p">,</span> <span class="s2">&quot;jpg&quot;</span><span class="p">,</span> <span class="s2">&quot;json&quot;</span><span class="p">,</span> <span class="s2">&quot;svg&quot;</span><span class="p">]</span>
     <span class="n">visit_all_class_slots</span> <span class="o">=</span> <span class="kc">False</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">SchemaDefinition</span><span class="p">],</span> <span class="o">**</span><span class="n">args</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="o">**</span><span class="n">args</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">referenced</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span>
-            <span class="n">Set</span><span class="p">[</span><span class="n">ClassDefinitionName</span><span class="p">]</span>
-        <span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># List of classes that have to be emitted</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">generated</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span>
-            <span class="n">Set</span><span class="p">[</span><span class="n">ClassDefinitionName</span><span class="p">]</span>
-        <span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># List of classes that have been emitted</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">box_generated</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span>
-            <span class="n">Set</span><span class="p">[</span><span class="n">ClassDefinitionName</span><span class="p">]</span>
-        <span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Class boxes that have been emitted</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">associations_generated</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span>
-            <span class="n">Set</span><span class="p">[</span><span class="n">ClassDefinitionName</span><span class="p">]</span>
-        <span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Classes with associations generated</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">focus_classes</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span>
-            <span class="n">Set</span><span class="p">[</span><span class="n">ClassDefinitionName</span><span class="p">]</span>
-        <span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Classes to be completely filled</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">gen_classes</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span>
-            <span class="n">Set</span><span class="p">[</span><span class="n">ClassDefinitionName</span><span class="p">]</span>
-        <span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Classes to be generated</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">output_file_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span>
-            <span class="nb">str</span>
-        <span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Location of output file if directory used</span>
+    <span class="n">referenced</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span>
+        <span class="n">Set</span><span class="p">[</span><span class="n">ClassDefinitionName</span><span class="p">]</span>
+    <span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># List of classes that have to be emitted</span>
+    <span class="n">generated</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span>
+        <span class="n">Set</span><span class="p">[</span><span class="n">ClassDefinitionName</span><span class="p">]</span>
+    <span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># List of classes that have been emitted</span>
+    <span class="n">box_generated</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span>
+        <span class="n">Set</span><span class="p">[</span><span class="n">ClassDefinitionName</span><span class="p">]</span>
+    <span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Class boxes that have been emitted</span>
+    <span class="n">associations_generated</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span>
+        <span class="n">Set</span><span class="p">[</span><span class="n">ClassDefinitionName</span><span class="p">]</span>
+    <span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Classes with associations generated</span>
+    <span class="n">focus_classes</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span>
+        <span class="n">Set</span><span class="p">[</span><span class="n">ClassDefinitionName</span><span class="p">]</span>
+    <span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Classes to be completely filled</span>
+    <span class="n">gen_classes</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span>
+        <span class="n">Set</span><span class="p">[</span><span class="n">ClassDefinitionName</span><span class="p">]</span>
+    <span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Classes to be generated</span>
+    <span class="n">output_file_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span>
+        <span class="nb">str</span>
+    <span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Location of output file if directory used</span>
+
+    <span class="n">classes</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="n">ClassDefinitionName</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">directory</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">load_image</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="kc">True</span><span class="p">)</span>
+
 
 <div class="viewcode-block" id="YumlGenerator.visit_schema"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.yumlgen.YumlGenerator.visit_schema">[docs]</a>    <span class="k">def</span> <span class="nf">visit_schema</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>

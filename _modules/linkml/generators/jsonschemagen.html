@@ -85,14 +85,15 @@
 <span></span><span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">click</span>
 <span class="kn">from</span> <span class="nn">jsonasobj2</span> <span class="kn">import</span> <span class="n">JsonObj</span><span class="p">,</span> <span class="n">as_json</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model.meta</span> <span class="kn">import</span> <span class="p">(</span><span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">EnumDefinition</span><span class="p">,</span>
                                               <span class="n">PermissibleValue</span><span class="p">,</span>
                                               <span class="n">PermissibleValueText</span><span class="p">,</span>
-                                              <span class="n">SchemaDefinition</span><span class="p">,</span> <span class="n">SlotDefinition</span><span class="p">)</span>
+                                              <span class="n">SchemaDefinition</span><span class="p">,</span> <span class="n">SlotDefinition</span><span class="p">,</span> <span class="n">ClassDefinitionName</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime.utils.formatutils</span> <span class="kn">import</span> <span class="n">be</span><span class="p">,</span> <span class="n">camelcase</span><span class="p">,</span> <span class="n">underscore</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime.utils.schemaview</span> <span class="kn">import</span> <span class="n">SchemaView</span>
 
@@ -118,7 +119,8 @@
 <span class="n">WITH_OPTIONAL_IDENTIFIER_SUFFIX</span> <span class="o">=</span> <span class="s2">&quot;__identifier_optional&quot;</span>
 
 
-<div class="viewcode-block" id="JsonSchemaGenerator"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.jsonschemagen.JsonSchemaGenerator">[docs]</a><span class="k">class</span> <span class="nc">JsonSchemaGenerator</span><span class="p">(</span><span class="n">Generator</span><span class="p">):</span>
+<div class="viewcode-block" id="JsonSchemaGenerator"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.jsonschemagen.JsonSchemaGenerator">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">JsonSchemaGenerator</span><span class="p">(</span><span class="n">Generator</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generates JSONSchema documents from a LinkML SchemaDefinition</span>
 
@@ -129,52 +131,54 @@
 <span class="sd">    - Foreign key references are treated as semantics-free strings</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="c1"># ClassVars</span>
     <span class="n">generatorname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
     <span class="n">generatorversion</span> <span class="o">=</span> <span class="s2">&quot;0.0.2&quot;</span>
     <span class="n">valid_formats</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;json&quot;</span><span class="p">]</span>
     <span class="n">visit_all_class_slots</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">visit_all_slots</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">uses_schemaloader</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="c1">#requires_metamodel = False</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">schema</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">SchemaDefinition</span><span class="p">],</span>
-        <span class="n">top_class</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Instantiation</span>
+    <span class="c1">#@deprecated(&quot;Use top_class&quot;)</span>
+    <span class="n">topClass</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 
-<span class="sd">        :param schema:</span>
-<span class="sd">        :param top_class: root class for JSONSchema generation</span>
-<span class="sd">        :param kwargs:</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span> <span class="o">=</span> <span class="n">SchemaView</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">schemaobj</span><span class="p">:</span> <span class="n">JsonObj</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">clsobj</span><span class="p">:</span> <span class="n">JsonObj</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">inline</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">topCls</span> <span class="o">=</span> <span class="n">top_class</span>  <span class="c1">## JSON object is one instance of this</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">entryProperties</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">include_range_class_descendants</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;include_range_class_descendants&quot;</span><span class="p">]</span>
-            <span class="k">if</span> <span class="s2">&quot;include_range_class_descendants&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span>
-            <span class="k">else</span> <span class="kc">False</span>
-        <span class="p">)</span>
-        <span class="c1"># JSON-Schema does not have inheritance,</span>
-        <span class="c1"># so we duplicate slots from inherited parents and mixins</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">visit_all_slots</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="c1"># Maps e.g. Person --&gt; Person__identifier_optional</span>
-        <span class="c1"># for use when Person is a range of an inlined-as-dict slot</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">optional_identifier_class_map</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">not_closed</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;If not closed, then an open-ended set of attributes can be instantiated for any object&quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="JsonSchemaGenerator.visit_schema"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.jsonschemagen.JsonSchemaGenerator.visit_schema">[docs]</a>    <span class="k">def</span> <span class="nf">visit_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inline</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">not_closed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">schemaobj</span><span class="p">:</span> <span class="n">JsonObj</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">clsobj</span><span class="p">:</span> <span class="n">JsonObj</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">inline</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">top_class</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClassDefinitionName</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1">## JSON object is one instance of this</span>
+    <span class="sd">&quot;&quot;&quot;Class instantiated by the root node of the document tree&quot;&quot;&quot;</span>
+
+    <span class="n">entryProperties</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="p">{})</span>
+    <span class="n">include_range_class_descendants</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="kc">False</span><span class="p">)</span>
+
+    <span class="c1"># JSON-Schema does not have inheritance,</span>
+    <span class="c1"># so we duplicate slots from inherited parents and mixins</span>
+    <span class="c1"># Maps e.g. Person --&gt; Person__identifier_optional</span>
+    <span class="c1"># for use when Person is a range of an inlined-as-dict slot</span>
+    <span class="n">optional_identifier_class_map</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="p">{})</span>
+
+    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">topClass</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;topCls is deprecated - use top_class&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">top_class</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">topClass</span>
+        <span class="c1"># TODO: consider moving up a level</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span> <span class="o">=</span> <span class="n">SchemaView</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span>
+
+<div class="viewcode-block" id="JsonSchemaGenerator.visit_schema"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.jsonschemagen.JsonSchemaGenerator.visit_schema">[docs]</a>    <span class="k">def</span> <span class="nf">visit_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inline</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">inline</span> <span class="o">=</span> <span class="n">inline</span>
+        <span class="c1">#logging.error(f&quot;NC: {self.not_closed}&quot;)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">schemaobj</span> <span class="o">=</span> <span class="n">JsonObj</span><span class="p">(</span>
             <span class="n">title</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
             <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
             <span class="n">metamodel_version</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">metamodel_version</span><span class="p">,</span>
             <span class="n">version</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">version</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">version</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">properties</span><span class="o">=</span><span class="p">{},</span>
-            <span class="n">additionalProperties</span><span class="o">=</span><span class="n">not_closed</span><span class="p">,</span>
+            <span class="n">additionalProperties</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">not_closed</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">for</span> <span class="n">p</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">entryProperties</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">schemaobj</span><span class="p">[</span><span class="s2">&quot;properties&quot;</span><span class="p">][</span><span class="n">p</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
@@ -358,8 +362,8 @@
             <span class="n">prop</span><span class="o">.</span><span class="n">const</span> <span class="o">=</span> <span class="n">slot</span><span class="o">.</span><span class="n">equals_number</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">clsobj</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="n">underscore</span><span class="p">(</span><span class="n">aliased_slot_name</span><span class="p">)]</span> <span class="o">=</span> <span class="n">prop</span>
         <span class="k">if</span> <span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">topCls</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">camelcase</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">topCls</span><span class="p">)</span> <span class="o">==</span> <span class="n">camelcase</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-        <span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">topCls</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">cls</span><span class="o">.</span><span class="n">tree_root</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">top_class</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">camelcase</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">top_class</span><span class="p">)</span> <span class="o">==</span> <span class="n">camelcase</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">top_class</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">cls</span><span class="o">.</span><span class="n">tree_root</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">schemaobj</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="n">underscore</span><span class="p">(</span><span class="n">aliased_slot_name</span><span class="p">)]</span> <span class="o">=</span> <span class="n">prop</span>
 
             <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">required</span><span class="p">:</span>

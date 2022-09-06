@@ -234,10 +234,22 @@ Otherwise use the class that is not referenced as a range in any other class.</p
 </section>
 <section id="module-linkml.utils.generator">
 <span id="linkml-utils-generator-module"></span><h2>linkml.utils.generator module<a class="headerlink" href="#module-linkml.utils.generator" title="Permalink to this heading"></a></h2>
+<p>Base class for all generators</p>
+<section id="developer-notes">
+<h3>Developer Notes<a class="headerlink" href="#developer-notes" title="Permalink to this heading"></a></h3>
+<p>Subclasses of this class implement specific generators. Each generator is in one of two styles:</p>
+<ol class="arabic simple">
+<li><p>schemaloader-based, using a Visitor pattern (older)</p></li>
+<li><p>schemaview-based, no visitor pattern (newer)</p></li>
+</ol>
+<p>New generators should always using the latter approach</p>
+<p>See: <a class="reference external" href="https://github.com/linkml/linkml/issues/923">https://github.com/linkml/linkml/issues/923</a></p>
 <dl class="py class">
 <dt class="sig sig-object py" id="linkml.utils.generator.Generator">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linkml.utils.generator.</span></span><span class="sig-name descname"><span class="pre">Generator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">TextIO</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.SchemaDefinition" title="linkml_runtime.linkml_model.meta.SchemaDefinition"><span class="pre">SchemaDefinition</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#linkml.utils.generator.Generator" title="linkml.utils.generator.Generator"><span class="pre">Generator</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">useuris</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">importmap</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mergeimports</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_file_date</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_file_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Logger</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/linkml/utils/generator.html#Generator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.utils.generator.Generator" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linkml.utils.generator.</span></span><span class="sig-name descname"><span class="pre">Generator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">schema:</span> <span class="pre">~typing.Union[str,</span> <span class="pre">~typing.TextIO,</span> <span class="pre">~linkml_runtime.linkml_model.meta.SchemaDefinition,</span> <span class="pre">~linkml.utils.generator.Generator],</span> <span class="pre">schemaview:</span> <span class="pre">~typing.Optional[~linkml_runtime.utils.schemaview.SchemaView]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">format:</span> <span class="pre">~typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">metadata:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">useuris:</span> <span class="pre">~typing.Optional[bool]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">log_level:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">30,</span> <span class="pre">mergeimports:</span> <span class="pre">~typing.Optional[bool]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">source_file_date:</span> <span class="pre">~typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">source_file_size:</span> <span class="pre">~typing.Optional[int]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">logger:</span> <span class="pre">~typing.Optional[~logging.Logger]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">verbose:</span> <span class="pre">~typing.Optional[bool]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">output:</span> <span class="pre">~typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">namespaces:</span> <span class="pre">~typing.Optional[~linkml_runtime.utils.namespaces.Namespaces]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">directory_output:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False,</span> <span class="pre">base_dir:</span> <span class="pre">~typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">metamodel_name_map:</span> <span class="pre">~typing.Optional[~typing.Dict[str,</span> <span class="pre">str]]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">importmap:</span> <span class="pre">~typing.Optional[~typing.Union[str,</span> <span class="pre">~typing.Mapping[str,</span> <span class="pre">str]]]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">emit_prefixes:</span> <span class="pre">~typing.Set[str]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">metamodel:</span> <span class="pre">~typing.Optional[~linkml.utils.schemaloader.SchemaLoader]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">**_kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/linkml/utils/generator.html#Generator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.utils.generator.Generator" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Base class for generators</p>
+<p>For usage <a class="reference external" href="https://linkml.io/linkml/generators/">Generator Docs</a></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="linkml.utils.generator.Generator.add_id_prefixes">
 <span class="sig-name descname"><span class="pre">add_id_prefixes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Element</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/linkml/utils/generator.html#Generator.add_id_prefixes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.utils.generator.Generator.add_id_prefixes" title="Permalink to this definition"></a></dt>
@@ -289,7 +301,8 @@ in classes, with recursive is_a’s being added first followed by mixins and fin
 <dl class="py attribute">
 <dt class="sig sig-object py" id="linkml.utils.generator.Generator.base_dir">
 <span class="sig-name descname"><span class="pre">base_dir</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#linkml.utils.generator.Generator.base_dir" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Working directory or base URL of sources</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="linkml.utils.generator.Generator.class_identifier">
@@ -346,12 +359,19 @@ if the name isn’t valid</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="linkml.utils.generator.Generator.directory_output">
 <span class="sig-name descname"><span class="pre">directory_output</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#linkml.utils.generator.Generator.directory_output" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>True means output is to a directory, False is to stdout</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="linkml.utils.generator.Generator.domain_slots">
 <span class="sig-name descname"><span class="pre">domain_slots</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.ClassDefinition" title="linkml_runtime.linkml_model.meta.ClassDefinition"><span class="pre">ClassDefinition</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.SlotDefinition" title="linkml_runtime.linkml_model.meta.SlotDefinition"><span class="pre">SlotDefinition</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/linkml/utils/generator.html#Generator.domain_slots"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.utils.generator.Generator.domain_slots" title="Permalink to this definition"></a></dt>
 <dd><p>Return all slots in the class definition that are owned by the class</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="linkml.utils.generator.Generator.emit_prefixes">
+<span class="sig-name descname"><span class="pre">emit_prefixes</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#linkml.utils.generator.Generator.emit_prefixes" title="Permalink to this definition"></a></dt>
+<dd><p>Prefixes to emit, for RDF-based generators</p>
 </dd></dl>
 
 <dl class="py method">
@@ -374,6 +394,12 @@ if the name isn’t valid</p>
 <dd><p>Return an enum_identifier path</p>
 </dd></dl>
 
+<dl class="py attribute">
+<dt class="sig sig-object py" id="linkml.utils.generator.Generator.format">
+<span class="sig-name descname"><span class="pre">format</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#linkml.utils.generator.Generator.format" title="Permalink to this definition"></a></dt>
+<dd><p>expected output format</p>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="linkml.utils.generator.Generator.formatted_element_name">
 <span class="sig-name descname"><span class="pre">formatted_element_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">el_or_elname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">ElementName</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Element</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_range_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/linkml/utils/generator.html#Generator.formatted_element_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.utils.generator.Generator.formatted_element_name" title="Permalink to this definition"></a></dt>
@@ -393,13 +419,15 @@ CamelCased. Slot names are the alias, not the actual name</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="linkml.utils.generator.Generator.generatorname">
-<span class="sig-name descname"><span class="pre">generatorname</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#linkml.utils.generator.Generator.generatorname" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">generatorname</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#linkml.utils.generator.Generator.generatorname" title="Permalink to this definition"></a></dt>
+<dd><p>Name of the generator. Override with os.path.basename(__file__)</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="linkml.utils.generator.Generator.generatorversion">
-<span class="sig-name descname"><span class="pre">generatorversion</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#linkml.utils.generator.Generator.generatorversion" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">generatorversion</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#linkml.utils.generator.Generator.generatorversion" title="Permalink to this definition"></a></dt>
+<dd><p>Version of the generator. Consider deprecating and instead use overall linkml version</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="linkml.utils.generator.Generator.get_metamodel_slot_name">
@@ -419,6 +447,12 @@ mapping the metamodel slot “slot” to “field”</p>
 </dl>
 </dd></dl>
 
+<dl class="py attribute">
+<dt class="sig sig-object py" id="linkml.utils.generator.Generator.importmap">
+<span class="sig-name descname"><span class="pre">importmap</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#linkml.utils.generator.Generator.importmap" title="Permalink to this definition"></a></dt>
+<dd><p>File name of import mapping file – maps import name/uri to target</p>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="linkml.utils.generator.Generator.is_class_unconstrained">
 <span class="sig-name descname"><span class="pre">is_class_unconstrained</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.ClassDefinition" title="linkml_runtime.linkml_model.meta.ClassDefinition"><span class="pre">ClassDefinition</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/linkml/utils/generator.html#Generator.is_class_unconstrained"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.utils.generator.Generator.is_class_unconstrained" title="Permalink to this definition"></a></dt>
@@ -434,9 +468,46 @@ mapping the metamodel slot “slot” to “field”</p>
 </dd></dl>
 
 <dl class="py attribute">
+<dt class="sig sig-object py" id="linkml.utils.generator.Generator.log_level">
+<span class="sig-name descname"><span class="pre">log_level</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">30</span></em><a class="headerlink" href="#linkml.utils.generator.Generator.log_level" title="Permalink to this definition"></a></dt>
+<dd><p>Logging level, 0 is minimum</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="linkml.utils.generator.Generator.logger">
+<span class="sig-name descname"><span class="pre">logger</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Logger</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#linkml.utils.generator.Generator.logger" title="Permalink to this definition"></a></dt>
+<dd><p>Logger to use for logging messages</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="linkml.utils.generator.Generator.mergeimports">
+<span class="sig-name descname"><span class="pre">mergeimports</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#linkml.utils.generator.Generator.mergeimports" title="Permalink to this definition"></a></dt>
+<dd><p>True means merge non-linkml sources into importing package.  False means separate packages</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="linkml.utils.generator.Generator.metadata">
+<span class="sig-name descname"><span class="pre">metadata</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#linkml.utils.generator.Generator.metadata" title="Permalink to this definition"></a></dt>
+<dd><p>True means include date, generator, etc. information in source header if appropriate</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="linkml.utils.generator.Generator.metamodel">
+<span class="sig-name descname"><span class="pre">metamodel</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#linkml.utils.schemaloader.SchemaLoader" title="linkml.utils.schemaloader.SchemaLoader"><span class="pre">SchemaLoader</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#linkml.utils.generator.Generator.metamodel" title="Permalink to this definition"></a></dt>
+<dd><p>A SchemaLoader instance that points to the LinkML metamodel (meta.yaml)</p>
+</dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="linkml.utils.generator.Generator.metamodel_name_map">
 <span class="sig-name descname"><span class="pre">metamodel_name_map</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#linkml.utils.generator.Generator.metamodel_name_map" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Allows mapping of names of metamodel elements such as slot, etc</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="linkml.utils.generator.Generator.namespaces">
+<span class="sig-name descname"><span class="pre">namespaces</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Namespaces</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#linkml.utils.generator.Generator.namespaces" title="Permalink to this definition"></a></dt>
+<dd><p>All prefix expansions used</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="linkml.utils.generator.Generator.neighborhood">
@@ -451,6 +522,12 @@ itself</p>
 <dt class="sig sig-object py" id="linkml.utils.generator.Generator.obj_for">
 <span class="sig-name descname"><span class="pre">obj_for</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">el_or_elname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_range_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Element</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/linkml/utils/generator.html#Generator.obj_for"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.utils.generator.Generator.obj_for" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="linkml.utils.generator.Generator.output">
+<span class="sig-name descname"><span class="pre">output</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#linkml.utils.generator.Generator.output" title="Permalink to this definition"></a></dt>
+<dd><p>Path to output file. Note all generators may not implement this uniformly, see <a class="reference external" href="https://github.com/linkml/linkml/issues/923">https://github.com/linkml/linkml/issues/923</a></p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="linkml.utils.generator.Generator.own_slot_names">
@@ -492,6 +569,25 @@ in the class is_a parent.  Own_slots include:</p>
 <dd class="field-even"><p>List of possible types with base at the leftmost</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="linkml.utils.generator.Generator.requires_metamodel">
+<span class="sig-name descname"><span class="pre">requires_metamodel</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#linkml.utils.generator.Generator.requires_metamodel" title="Permalink to this definition"></a></dt>
+<dd><p>Generator queries an instance of the metamodel</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="linkml.utils.generator.Generator.schema">
+<span class="sig-name descname"><span class="pre">schema</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">TextIO</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.SchemaDefinition" title="linkml_runtime.linkml_model.meta.SchemaDefinition"><span class="pre">SchemaDefinition</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#linkml.utils.generator.Generator" title="linkml.utils.generator.Generator"><span class="pre">Generator</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#linkml.utils.generator.Generator.schema" title="Permalink to this definition"></a></dt>
+<dd><p>metamodel compliant schema.  Can be URI, file name, actual schema, another generator, an
+open file or a pre-parsed schema</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="linkml.utils.generator.Generator.schemaview">
+<span class="sig-name descname"><span class="pre">schemaview</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="developers/manipulating-schemas.html#linkml_runtime.utils.schemaview.SchemaView" title="linkml_runtime.utils.schemaview.SchemaView"><span class="pre">SchemaView</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#linkml.utils.generator.Generator.schemaview" title="Permalink to this definition"></a></dt>
+<dd><p>A wrapper onto the schema object</p>
 </dd></dl>
 
 <dl class="py method">
@@ -536,8 +632,21 @@ isn’t valid.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="linkml.utils.generator.Generator.sort_class_slots">
-<span class="sig-name descname"><span class="pre">sort_class_slots</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#linkml.utils.generator.Generator.sort_class_slots" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">sort_class_slots</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#linkml.utils.generator.Generator.sort_class_slots" title="Permalink to this definition"></a></dt>
+<dd><p>Visitor ClassVar: True means visit class slots in alphabetical order</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="linkml.utils.generator.Generator.source_file_date">
+<span class="sig-name descname"><span class="pre">source_file_date</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#linkml.utils.generator.Generator.source_file_date" title="Permalink to this definition"></a></dt>
+<dd><p>Modification date of input source file</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="linkml.utils.generator.Generator.source_file_size">
+<span class="sig-name descname"><span class="pre">source_file_size</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#linkml.utils.generator.Generator.source_file_size" title="Permalink to this definition"></a></dt>
+<dd><p>Size of the source file in bytes</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="linkml.utils.generator.Generator.subset_for">
@@ -550,14 +659,34 @@ isn’t valid.</p>
 <dd></dd></dl>
 
 <dl class="py attribute">
+<dt class="sig sig-object py" id="linkml.utils.generator.Generator.uses_schemaloader">
+<span class="sig-name descname"><span class="pre">uses_schemaloader</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#linkml.utils.generator.Generator.uses_schemaloader" title="Permalink to this definition"></a></dt>
+<dd><p>Old-style generator that uses the SchemaLoader and visitor pattern</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="linkml.utils.generator.Generator.useuris">
+<span class="sig-name descname"><span class="pre">useuris</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#linkml.utils.generator.Generator.useuris" title="Permalink to this definition"></a></dt>
+<dd><p>True means declared class slot uri’s are used.  False means use model uris</p>
+</dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="linkml.utils.generator.Generator.valid_formats">
-<span class="sig-name descname"><span class="pre">valid_formats</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#linkml.utils.generator.Generator.valid_formats" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">valid_formats</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#linkml.utils.generator.Generator.valid_formats" title="Permalink to this definition"></a></dt>
+<dd><p>Allowed formats - first format is default</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="linkml.utils.generator.Generator.verbose">
+<span class="sig-name descname"><span class="pre">verbose</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#linkml.utils.generator.Generator.verbose" title="Permalink to this definition"></a></dt>
+<dd><p>Verbosity</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="linkml.utils.generator.Generator.visit_all_class_slots">
-<span class="sig-name descname"><span class="pre">visit_all_class_slots</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#linkml.utils.generator.Generator.visit_all_class_slots" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">visit_all_class_slots</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#linkml.utils.generator.Generator.visit_all_class_slots" title="Permalink to this definition"></a></dt>
+<dd><p>Visitor ClassVar: False means only visit own slots, True means visit all slots</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="linkml.utils.generator.Generator.visit_class">
@@ -615,8 +744,9 @@ for any class that is inherited (class itself, is_a, mixin, apply_to).  Otherwis
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="linkml.utils.generator.Generator.visits_are_sorted">
-<span class="sig-name descname"><span class="pre">visits_are_sorted</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#linkml.utils.generator.Generator.visits_are_sorted" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">visits_are_sorted</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#linkml.utils.generator.Generator.visits_are_sorted" title="Permalink to this definition"></a></dt>
+<dd><p>Visitor ClassVar: True means visit basic types in alphabetial order, false in entry</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -625,6 +755,7 @@ for any class that is inherited (class itself, is_a, mixin, apply_to).  Otherwis
 <span class="sig-prename descclassname"><span class="pre">linkml.utils.generator.</span></span><span class="sig-name descname"><span class="pre">shared_arguments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">g</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#linkml.utils.generator.Generator" title="linkml.utils.generator.Generator"><span class="pre">Generator</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Command</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Command</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/linkml/utils/generator.html#shared_arguments"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.utils.generator.shared_arguments" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
+</section>
 </section>
 <section id="module-linkml.utils.helpers">
 <span id="linkml-utils-helpers-module"></span><h2>linkml.utils.helpers module<a class="headerlink" href="#module-linkml.utils.helpers" title="Permalink to this heading"></a></h2>

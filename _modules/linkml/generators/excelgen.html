@@ -83,6 +83,7 @@
              
   <h1>Source code for linkml.generators.excelgen</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">click</span>
@@ -98,7 +99,8 @@
 <span class="kn">from</span> <span class="nn">linkml.utils.generator</span> <span class="kn">import</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">shared_arguments</span>
 
 
-<div class="viewcode-block" id="ExcelGenerator"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.excelgen.ExcelGenerator">[docs]</a><span class="k">class</span> <span class="nc">ExcelGenerator</span><span class="p">(</span><span class="n">Generator</span><span class="p">):</span>
+<div class="viewcode-block" id="ExcelGenerator"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.excelgen.ExcelGenerator">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">ExcelGenerator</span><span class="p">(</span><span class="n">Generator</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;This class is a blueprint for the generator module that is responsible</span>
 <span class="sd">    for automatically creating Excel spreadsheets from the LinkML schema.</span>
 
@@ -108,10 +110,20 @@
 <span class="sd">    :type output: str</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="c1"># ClassVars</span>
     <span class="n">generator_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
     <span class="n">generator_version</span> <span class="o">=</span> <span class="s2">&quot;0.0.1&quot;</span>
     <span class="n">valid_formats</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;xlsx&quot;</span><span class="p">]</span>
-    <span class="n">sheet_name_cols</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">uses_schemaloader</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">requires_metamodel</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="c1"># ObjectVars</span>
+    <span class="n">sheet_name_cols</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="p">[])</span>
+    <span class="n">output</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">workbook</span><span class="p">:</span> <span class="n">Workbook</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">Workbook</span><span class="p">())</span>
+    <span class="n">wb_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">enum_dict</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="nb">dict</span><span class="p">())</span>
+    <span class="sd">&quot;&quot;&quot;dictionary with slot types and possibles values for those types&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">_workbook_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">yaml_filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">wb_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Internal method that computes the path where the Excel workbook</span>
@@ -138,19 +150,10 @@
 
         <span class="k">return</span> <span class="n">wb_name</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">schema</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">SchemaDefinition</span><span class="p">],</span>
-        <span class="n">output</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">wb_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_workbook_path</span><span class="p">(</span><span class="n">yaml_filename</span><span class="o">=</span><span class="n">schema</span><span class="p">,</span> <span class="n">wb_name</span><span class="o">=</span><span class="n">output</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">workbook</span> <span class="o">=</span> <span class="n">Workbook</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wb_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_workbook_path</span><span class="p">(</span><span class="n">yaml_filename</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="p">,</span> <span class="n">wb_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">workbook</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">workbook</span><span class="p">[</span><span class="s2">&quot;Sheet&quot;</span><span class="p">])</span>
-
-        <span class="c1"># dictionary with slot types and possibles values for those types</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">enum_dict</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_create_spreadsheet</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ws_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">columns</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Method to add worksheets to the Excel workbook.</span>

@@ -124,22 +124,22 @@
     <span class="n">fields</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">GOLRField</span><span class="p">]</span> <span class="o">=</span> <span class="n">empty_list</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="GolrSchemaGenerator"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.golrgen.GolrSchemaGenerator">[docs]</a><span class="k">class</span> <span class="nc">GolrSchemaGenerator</span><span class="p">(</span><span class="n">Generator</span><span class="p">):</span>
+<div class="viewcode-block" id="GolrSchemaGenerator"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.golrgen.GolrSchemaGenerator">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">GolrSchemaGenerator</span><span class="p">(</span><span class="n">Generator</span><span class="p">):</span>
+
+    <span class="c1"># ClassVars</span>
     <span class="n">generatorname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
     <span class="n">generatorversion</span> <span class="o">=</span> <span class="s2">&quot;0.1.1&quot;</span>
     <span class="n">directory_output</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">valid_formats</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;golr&quot;</span><span class="p">]</span>
     <span class="n">visit_all_class_slots</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">uses_schemaloader</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">requires_metamodel</span> <span class="o">=</span> <span class="kc">False</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">schema</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">SchemaDefinition</span><span class="p">],</span>
-        <span class="n">directory</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">dirname</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">directory</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">class_obj</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">GOLRClass</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="c1"># ObjectVars</span>
+    <span class="n">directory</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">class_obj</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">GOLRClass</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
 
 <div class="viewcode-block" id="GolrSchemaGenerator.generate_header"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.golrgen.GolrSchemaGenerator.generate_header">[docs]</a>    <span class="k">def</span> <span class="nf">generate_header</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">headers</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;# metamodel_version: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">metamodel_version</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
@@ -148,7 +148,7 @@
         <span class="k">return</span> <span class="n">headers</span></div>
 
 <div class="viewcode-block" id="GolrSchemaGenerator.visit_schema"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.golrgen.GolrSchemaGenerator.visit_schema">[docs]</a>    <span class="k">def</span> <span class="nf">visit_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">directory</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">_</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">dirname</span> <span class="o">=</span> <span class="n">directory</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">directory</span> <span class="o">=</span> <span class="n">directory</span>
         <span class="k">if</span> <span class="n">directory</span><span class="p">:</span>
             <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
         <span class="c1"># write_golr_yaml_to_dir(schema, dir)</span>
@@ -168,7 +168,7 @@
             <span class="k">return</span> <span class="kc">False</span></div>
 
 <div class="viewcode-block" id="GolrSchemaGenerator.end_class"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.golrgen.GolrSchemaGenerator.end_class">[docs]</a>    <span class="k">def</span> <span class="nf">end_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">fn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dirname</span><span class="p">,</span> <span class="n">underscore</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;-config.yaml&quot;</span><span class="p">))</span>
+        <span class="n">fn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">directory</span><span class="p">,</span> <span class="n">underscore</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;-config.yaml&quot;</span><span class="p">))</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">class_obj</span><span class="o">.</span><span class="n">fields</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;UTF-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
                 <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">generate_header</span><span class="p">()))</span>

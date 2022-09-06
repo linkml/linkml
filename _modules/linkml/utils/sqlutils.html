@@ -95,6 +95,7 @@
 <span class="kn">import</span> <span class="nn">click</span>
 <span class="kn">import</span> <span class="nn">linkml_runtime.linkml_model.meta</span> <span class="k">as</span> <span class="nn">metamodel</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime</span> <span class="kn">import</span> <span class="n">SchemaView</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime.dumpers</span> <span class="kn">import</span> <span class="n">yaml_dumper</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model</span> <span class="kn">import</span> <span class="n">PermissibleValue</span><span class="p">,</span> <span class="n">SchemaDefinition</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime.utils.compile_python</span> <span class="kn">import</span> <span class="n">compile_python</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime.utils.enumerations</span> <span class="kn">import</span> <span class="n">EnumDefinitionImpl</span>
@@ -188,7 +189,7 @@
 
 <span class="sd">        :return: compiled module</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">gen</span> <span class="o">=</span> <span class="n">PythonGenerator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="p">)</span>
+        <span class="n">gen</span> <span class="o">=</span> <span class="n">PythonGenerator</span><span class="p">(</span><span class="n">yaml_dumper</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">native_module</span> <span class="o">=</span> <span class="n">gen</span><span class="o">.</span><span class="n">compile_module</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">native_module</span></div>
 
