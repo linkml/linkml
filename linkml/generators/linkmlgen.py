@@ -5,11 +5,11 @@ from typing import TextIO, Union
 
 import click
 from linkml_runtime.dumpers import json_dumper, yaml_dumper
-from linkml_runtime.linkml_model.meta import SchemaDefinition
 from linkml_runtime.utils.schemaview import SchemaView
 
 from linkml.utils.generator import Generator, shared_arguments
 from linkml.utils.helpers import write_to_file
+from linkml_runtime.utils.pattern import generate_patterns
 
 logger = logging.getLogger(__name__)
 
@@ -28,6 +28,7 @@ class LinkmlGenerator(Generator):
     requires_metamodel = False
 
     materialize_attributes: bool = field(default_factory=lambda: False)
+    materialize_patterns: bool = field(default_factory=lambda: False)
 
 
     def __post_init__(self):
@@ -48,6 +49,8 @@ class LinkmlGenerator(Generator):
     def serialize(self, output: str = None, **kwargs) -> str:
         if self.materialize_attributes:
             self.materialize_classes()
+        if self.materialize_patterns:
+            self.schemaview.materialize_patterns()
 
         if self.format == "json":
             json_str = json_dumper.dumps(self.schemaview.schema)
@@ -82,15 +85,23 @@ class LinkmlGenerator(Generator):
     help="Materialize induced slots as attributes",
 )
 @click.option(
+    "--materialize-patterns/--no-materialize-patterns",
+    default=False,
+    show_default=True,
+    help="Materialize structured patterns as patterns",
+)
+@click.option(
     "-o",
     "--output",
     type=click.Path(),
     help="""Name of JSON or YAML file to be created""",
 )
 @click.command()
-def cli(yamlfile, materialize_attributes, output, **kwargs):
+def cli(yamlfile, materialize_attributes: bool, output, **kwargs):
     gen = LinkmlGenerator(
-        yamlfile, materialize_attributes=materialize_attributes, **kwargs
+        yamlfile,
+        materialize_attributes=materialize_attributes,
+        **kwargs
     )
     print(gen.serialize(output=output))
 
