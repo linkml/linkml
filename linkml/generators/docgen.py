@@ -403,8 +403,12 @@ class DocGenerator(Generator):
         """
         s, depth = self._tree(element, focus=element.name, **kwargs)
         if children:
-            for c in self.schemaview.class_children(element.name, mixins=False):
-                s += self._tree_info(self.schemaview.get_class(c), depth + 1, **kwargs)
+            if isinstance(element, ClassDefinition):
+                all_children = self.schemaview.class_children(element.name, mixins=False)
+            else:
+                all_children = self.schemaview.slot_children(element.name, mixins=False)
+            for c in all_children:
+                s += self._tree_info(self.schemaview.get_element(c), depth + 1, **kwargs)
         return s
 
     def _tree(
