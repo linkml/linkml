@@ -4,7 +4,8 @@ Generate JSON-LD contexts
 """
 import os
 import re
-from typing import Optional, Set, TextIO, Union
+from dataclasses import dataclass, field
+from typing import Optional, Set, TextIO, Union, Dict
 
 import click
 from jsonasobj2 import JsonObj, as_json
@@ -28,22 +29,36 @@ ENUM_CONTEXT = {
 }
 
 
+@dataclass
 class ContextGenerator(Generator):
+
+    # ClassVars
     generatorname = os.path.basename(__file__)
     generatorversion = "0.1.1"
     valid_formats = ["context", "json"]
     visit_all_class_slots = False
+    uses_schemaloader = True
+    requires_metamodel = True
 
-    def __init__(self, schema: Union[str, TextIO, SchemaDefinition], **kwargs) -> None:
-        super().__init__(schema, **kwargs)
+    # ObjectVars
+    emit_prefixes: Set[str] = field(default_factory=lambda: set())
+    default_ns: str = None
+    context_body: Dict = field(default_factory=lambda: dict())
+    slot_class_maps: Dict = field(default_factory=lambda: dict())
+    emit_metadata: bool = field(default_factory=lambda: False)
+    model: Optional[bool] = field(default_factory=lambda: True)
+    base: Optional[str] = None
+    output: Optional[str] = None,
+    prefixes: Optional[bool] = field(default_factory=lambda: True),
+    flatprefixes: Optional[bool] = field(default_factory=lambda: False),
+
+    def __post_init__(self) -> None:
+        super().__post_init__()
         if self.namespaces is None:
             raise TypeError(
                 "Schema text must be supplied to context generater.  Preparsed schema will not work"
             )
-        self.emit_prefixes: Set[str] = set()
-        self.default_ns = None
-        self.context_body = dict()
-        self.slot_class_maps = dict()
+
 
     def visit_schema(
         self, base: Optional[str] = None, output: Optional[str] = None, **_
@@ -81,6 +96,8 @@ class ContextGenerator(Generator):
         model: Optional[bool] = True,
         **_,
     ) -> None:
+        if model is None:
+            model = self.model
         context = JsonObj()
         if self.emit_metadata:
             comments = f"""Auto generated from {self.schema.source_file} by {self.generatorname} version: {self.generatorversion}"""

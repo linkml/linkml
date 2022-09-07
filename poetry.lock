@@ -23,14 +23,6 @@ optional = false
 python-versions = "*"
 
 [[package]]
-name = "argparse"
-version = "1.4.0"
-description = "Python command-line parsing library"
-category = "main"
-optional = false
-python-versions = "*"
-
-[[package]]
 name = "attrs"
 version = "21.4.0"
 description = "Classes Without Boilerplate"
@@ -1564,13 +1556,12 @@ docs = ["sphinx", "sphinx-rtd-theme"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7.6"
-content-hash = "7d4b8d77b47a500f6549704ca3bf5d26229aede908b73b6925f6453791eaae5e"
+content-hash = "150c18c5d1b4c8de15800e1f6b6bddfb827db79c8d86b9d97f9f7c5464c9b3ab"
 
 [metadata.files]
 alabaster = []
 antlr4-python3-runtime = []
 appnope = []
-argparse = []
 attrs = []
 babel = []
 backcall = []

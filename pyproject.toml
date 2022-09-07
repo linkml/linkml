@@ -89,7 +89,6 @@ gen-linkml = "linkml.generators.linkmlgen:cli"
 [tool.poetry.dependencies]
 python = "^3.7.6"
 antlr4-python3-runtime = "<4.10,==4.*,>=4.9.0"
-argparse = ">=1.4.0"
 click = ">=7.0"
 graphviz = ">=0.10.1"
 hbreader = "*"

@@ -1,4 +1,5 @@
 import os
+from dataclasses import dataclass, field
 from typing import TextIO, Union
 
 import click
@@ -9,20 +10,25 @@ from linkml_runtime.utils.formatutils import camelcase, lcamelcase
 from linkml.utils.generator import Generator, shared_arguments
 
 
+@dataclass
 class ProtoGenerator(Generator):
     """
     A `Generator` for creating Protobuf schemas from a linkml schema.
 
     """
 
+    # ClassVars
     generatorname = os.path.basename(__file__)
     generatorversion = "0.1.1"
     valid_formats = ["proto"]
     visit_all_class_slots = True
+    uses_schemaloader = True
 
-    def __init__(self, schema: Union[str, TextIO, SchemaDefinition], **kwargs) -> None:
-        super().__init__(schema, **kwargs)
-        self.relative_slot_num = 0
+    # ObjectVars
+    relative_slot_num: int = field(default_factory=lambda: 0)
+
+    def __post_init__(self):
+        super().__post_init__()
         self.generate_header()
 
     def generate_header(self):

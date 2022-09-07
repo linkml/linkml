@@ -93,6 +93,8 @@ class ProjectConfiguration:
 class ProjectGenerator:
     """
     Generates complete project folders
+
+    Note this doesn't conform to overall generator framework, as it is a meta-generator
     """
 
     def generate(

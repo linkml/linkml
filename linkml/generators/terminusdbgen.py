@@ -1,5 +1,6 @@
 import json
 import os
+from dataclasses import dataclass
 from typing import TextIO, Union
 
 import click
@@ -33,9 +34,12 @@ XSD_Ok = {
     ]
 }
 
-
+@dataclass
 class TerminusdbGenerator(Generator):
-    """Generates JSON-LD to pass to `WOQLQuery()`.
+    """
+    Experimental generator for TerminusDB
+
+    Generates JSON-LD to pass to `WOQLQuery()`.
 
     Assumes an "inference/main" graph if any slots have "is_a" values, because any statements with
     rdfs:subPropertyOf as the predicate must live in a TerminusDB "inference" graph rather than the
@@ -44,16 +48,18 @@ class TerminusdbGenerator(Generator):
 
     """
 
+    # ClassVars
     generatorname = os.path.basename(__file__)
     generatorversion = "0.1.0"
     valid_formats = ["json"]
     visit_all_class_slots = True
+    uses_schemaloader = True
 
-    def __init__(self, schema: Union[str, TextIO, SchemaDefinition], **kwargs) -> None:
-        super().__init__(schema, **kwargs)
-        self.classes = None
-        self.raw_additions = None
-        self.clswq = None
+    # ObjectVars
+    classes: List = None
+    raw_additions: List = None
+    clswq: str = None
+
 
     def visit_schema(self, inline: bool = False, **kwargs) -> None:
         self.classes = []

@@ -11,6 +11,7 @@ from typing import Any, List, Optional, Type, Union
 import click
 import linkml_runtime.linkml_model.meta as metamodel
 from linkml_runtime import SchemaView
+from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.linkml_model import PermissibleValue, SchemaDefinition
 from linkml_runtime.utils.compile_python import compile_python
 from linkml_runtime.utils.enumerations import EnumDefinitionImpl
@@ -104,7 +105,7 @@ class SQLStore:
 
         :return: compiled module
         """
-        gen = PythonGenerator(self.schema)
+        gen = PythonGenerator(yaml_dumper.dumps(self.schema))
         self.native_module = gen.compile_module()
         return self.native_module
 

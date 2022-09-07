@@ -1,5 +1,6 @@
 import os
 from contextlib import redirect_stdout
+from dataclasses import dataclass, field
 from io import StringIO
 from typing import Any, Callable, Dict, List, Optional, Set, TextIO, Union
 
@@ -17,6 +18,7 @@ from linkml.utils.generator import Generator, shared_arguments
 from linkml.utils.typereferences import References
 
 
+@dataclass
 class MarkdownGenerator(Generator):
     """
     Generates markdown documentation for a LinkML schema
@@ -27,30 +29,26 @@ class MarkdownGenerator(Generator):
     The markdown is suitable for deployment as a MkDocs or Sphinx site
     """
 
+    #ClassVars
     generatorname = os.path.basename(__file__)
     generatorversion = "0.2.1"
     directory_output = True
     valid_formats = ["md"]
     visit_all_class_slots = False
+    uses_schemaloader = True
 
-    def __init__(
-        self,
-        schema: Union[str, TextIO, SchemaDefinition],
-        no_types_dir: bool = False,
-        noyuml: bool = False,
-        warn_on_exist: bool = False,
-        **kwargs,
-    ) -> None:
-        super().__init__(schema, **kwargs)
-        self.directory: Optional[str] = None
-        self.image_directory: Optional[str] = None
-        self.noimages: bool = False
-        self.noyuml = noyuml
-        self.no_types_dir = no_types_dir
-        self.warn_on_exist = warn_on_exist
-        self.gen_classes: Optional[Set[ClassDefinitionName]] = None
-        self.gen_classes_neighborhood: Optional[References] = None
-        self.BASE = None
+    # ObjectVars
+    directory: Optional[str] = None
+    image_directory: Optional[str] = None
+    classes: Set[ClassDefinitionName] = None,
+    image_dir: bool = False,
+    index_file: str = field(default_factory=lambda: "index.md")
+    noimages: bool = False
+    noyuml: bool = False
+    no_types_dir: bool = False
+    warn_on_exist: bool = False
+    gen_classes: Optional[Set[ClassDefinitionName]] = None
+    gen_classes_neighborhood: Optional[References] = None
 
     def visit_schema(
         self,

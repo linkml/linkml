@@ -1,6 +1,7 @@
 import logging
 import os
 from copy import deepcopy
+from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
 from typing import (Callable, Dict, Iterable, Iterator, List, Optional, Set,
@@ -62,9 +63,12 @@ def _ensure_ranked(elements: Iterable[Element]):
             x.rank = MAX_RANK
 
 
+@dataclass
 class DocGenerator(Generator):
     """
-    Generates documentation from a schema (ALPHA CODE)
+    Generates documentation from a schema
+
+    Note: this is a replacement for MarkdownGenerator
 
     Documents can be generated using either provided Jinja2 templates, or by providing your own
 
@@ -95,56 +99,37 @@ class DocGenerator(Generator):
     It will also create an index file
     """
 
+    # ClassVars
     generatorname = os.path.basename(__file__)
     generatorversion = "0.0.1"
     valid_formats = ["markdown", "rst", "html", "latex"]
-    dialect: DIALECT = None
-    sort_by: sort_by = None
+    uses_schemaloader = False
+    requires_metamodel = False
+
+    # ObjectVars
+    dialect: Optional[Union[DIALECT, str]] = None
+    """markdown dialect (e.g MyST, Python)"""
+    sort_by: str = field(default_factory=lambda: "name")
     visit_all_class_slots = False
     template_mappings: Dict[str, str] = None
-    directory = None
-    template_directory = None
-    genmeta = False
+    directory: str = None
+    """directory in which to write documents"""
 
-    def __init__(
-        self,
-        schema: Union[str, TextIO, SchemaDefinition],
-        directory: str = None,
-        template_directory: str = None,
-        use_slot_uris: bool = False,
-        format: str = valid_formats[0],
-        dialect: Optional[Union[DIALECT, str]] = None,
-        sort_by: str = None,
-        genmeta: bool = False,
-        gen_classvars: bool = True,
-        gen_slots: bool = True,
-        **kwargs,
-    ) -> None:
-        """
-        Creates a generator object that can write documents to a directory from a schema
+    template_directory: str = None
+    """directory for custom templates"""
 
-        :param schema: path to schema file or schema object
-        :param directory: directory in which to write documents
-        :param template_directory: directory for custom templates
-        :param format: only markdown is supported by default
-        :param dialect: markdown dialect (e.g MyST, Python)
-        :param genmeta:
-        :param gen_classvars:
-        :param gen_slots:
-        :param kwargs:
-        """
-        self.sourcefile = schema
-        self.schemaview = SchemaView(schema)
-        self.schema = self.schemaview.schema
-        self.format = format
-        self.directory = directory
-        self.template_directory = template_directory
-        self.use_slot_uris = use_slot_uris
-        self.genmeta = genmeta
-        if sort_by is None:
-            sort_by = "name"
-        self.sort_by = sort_by
+    genmeta: bool = field(default_factory=lambda: False)
+    gen_classvars: bool = field(default_factory=lambda: True)
+    gen_slots: bool = field(default_factory=lambda: True)
+    no_types_dir: bool = field(default_factory=lambda: False)
+    use_slot_uris: bool = field(default_factory=lambda: False)
+
+
+    def __post_init__(self):
+        self.schemaview = SchemaView(self.schema)
+        dialect = self.dialect
         if dialect is not None:
+            # TODO: simplify this
             if isinstance(dialect, str):
                 if dialect == MarkdownDialect.myst.value:
                     dialect = MarkdownDialect.myst
@@ -153,6 +138,7 @@ class DocGenerator(Generator):
                 else:
                     raise NotImplemented(f"{dialect} not supported")
             self.dialect = dialect
+        super().__post_init__()
 
     def serialize(self, directory: str = None) -> None:
         """
@@ -417,8 +403,12 @@ class DocGenerator(Generator):
         """
         s, depth = self._tree(element, focus=element.name, **kwargs)
         if children:
-            for c in self.schemaview.class_children(element.name, mixins=False):
-                s += self._tree_info(self.schemaview.get_class(c), depth + 1, **kwargs)
+            if isinstance(element, ClassDefinition):
+                all_children = self.schemaview.class_children(element.name, mixins=False)
+            else:
+                all_children = self.schemaview.slot_children(element.name, mixins=False)
+            for c in all_children:
+                s += self._tree_info(self.schemaview.get_element(c), depth + 1, **kwargs)
         return s
 
     def _tree(

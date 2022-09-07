@@ -34,6 +34,8 @@ def create_and_compile_sqla_bindings(gen: SQLDDLGenerator, path: str = SQLA_CODE
 
 
 class SQLDDLTestCase(unittest.TestCase):
+
+    @unittest.skip("Deprecated")
     def test_sqlddl_serialize(self):
         """Test case to validate output of serialize method."""
         gen = SQLDDLGenerator(SCHEMA, mergeimports=True, direct_mapping=True)
@@ -81,6 +83,7 @@ class SQLDDLTestCase(unittest.TestCase):
             f"Expected classes from {SCHEMA} not written to {temp_py_filepath}",
         )
 
+    @unittest.skip("Deprecated")
     def test_sqlddl(self):
         """DDL"""
         kitchen_module = make_python(False)

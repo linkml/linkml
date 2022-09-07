@@ -5,6 +5,7 @@ https://yuml.me/diagram/scruffy/class/samples
 """
 import logging
 import os
+from dataclasses import dataclass, field
 from typing import Callable, List, Optional, Set, TextIO, Union, cast
 
 import click
@@ -32,35 +33,39 @@ yuml_class = "/class/"
 YUML = Namespace(yuml_base + yuml_scale + yuml_dir + yuml_class)
 
 
+@dataclass
 class YumlGenerator(Generator):
     generatorname = os.path.basename(__file__)
     generatorversion = "0.1.1"
     valid_formats = ["yuml", "png", "pdf", "jpg", "json", "svg"]
     visit_all_class_slots = False
 
-    def __init__(self, schema: Union[str, TextIO, SchemaDefinition], **args) -> None:
-        super().__init__(schema, **args)
-        self.referenced: Optional[
-            Set[ClassDefinitionName]
-        ] = None  # List of classes that have to be emitted
-        self.generated: Optional[
-            Set[ClassDefinitionName]
-        ] = None  # List of classes that have been emitted
-        self.box_generated: Optional[
-            Set[ClassDefinitionName]
-        ] = None  # Class boxes that have been emitted
-        self.associations_generated: Optional[
-            Set[ClassDefinitionName]
-        ] = None  # Classes with associations generated
-        self.focus_classes: Optional[
-            Set[ClassDefinitionName]
-        ] = None  # Classes to be completely filled
-        self.gen_classes: Optional[
-            Set[ClassDefinitionName]
-        ] = None  # Classes to be generated
-        self.output_file_name: Optional[
-            str
-        ] = None  # Location of output file if directory used
+    referenced: Optional[
+        Set[ClassDefinitionName]
+    ] = None  # List of classes that have to be emitted
+    generated: Optional[
+        Set[ClassDefinitionName]
+    ] = None  # List of classes that have been emitted
+    box_generated: Optional[
+        Set[ClassDefinitionName]
+    ] = None  # Class boxes that have been emitted
+    associations_generated: Optional[
+        Set[ClassDefinitionName]
+    ] = None  # Classes with associations generated
+    focus_classes: Optional[
+        Set[ClassDefinitionName]
+    ] = None  # Classes to be completely filled
+    gen_classes: Optional[
+        Set[ClassDefinitionName]
+    ] = None  # Classes to be generated
+    output_file_name: Optional[
+        str
+    ] = None  # Location of output file if directory used
+
+    classes: Set[ClassDefinitionName] = None
+    directory: Optional[str] = None
+    load_image: bool = field(default_factory=lambda: True)
+
 
     def visit_schema(
         self,

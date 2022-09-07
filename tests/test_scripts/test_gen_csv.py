@@ -8,6 +8,9 @@ from tests.utils.clicktestcase import ClickTestCase
 
 
 class GenCSVTestCase(ClickTestCase):
+    """
+    tests generation of CSV summaries
+    """
     testdir = "gencsv"
     click_ep = csvgen.cli
     prog_name = "gen-csv"

@@ -64,6 +64,11 @@ def assert_mdfile_contains(
 
 
 class DocGeneratorTestCase(unittest.TestCase):
+    """
+    Tests generation of markdown and similar documents
+
+    Note that docgen replaces markdowngen
+    """
     def test_latex_generation(self):
         """Tests minimal latex generation"""
         gen = DocGenerator(SCHEMA, mergeimports=True, no_types_dir=True, format="latex")
@@ -213,6 +218,11 @@ class DocGeneratorTestCase(unittest.TestCase):
             "ceo.md", "Range: [Person](Person.md)", after="Properties"
         )
         # TODO: external links
+        
+        # test slot hierarchy
+        assert_mdfile_contains(
+            "tree_slot_B.md", "tree_slot_C", after="tree_slot_B"
+        )
 
     def test_docgen_rank_ordering(self):
         """Tests overriding default order"""
@@ -266,7 +276,7 @@ class DocGeneratorTestCase(unittest.TestCase):
             "index.md",
             "AliasPredicateEnum",
             after="## Enumerations",
-            followed_by=["SeverityOptions"],
+            followed_by=["PvFormulaOptions"],
             outdir=META_MD_DIR,
         )
         assert_mdfile_contains(
