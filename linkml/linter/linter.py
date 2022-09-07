@@ -7,8 +7,8 @@ from typing import Any, Dict, Iterable, Union
 
 import yaml
 from linkml_runtime import SchemaView
-from linkml_runtime.linkml_model import SchemaDefinition
 from linkml_runtime.dumpers import yaml_dumper
+from linkml_runtime.linkml_model import SchemaDefinition
 
 from .config.datamodel.config import Config, RuleLevel
 
