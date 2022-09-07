@@ -21,6 +21,7 @@ import re
 from contextlib import redirect_stdout
 from dataclasses import dataclass, field
 from io import StringIO
+from pathlib import Path
 from typing import (Callable, Dict, List, Optional, Set, TextIO, Type, Union,
                     cast, Mapping, ClassVar)
 
@@ -28,6 +29,7 @@ import click
 from click import Argument, Command, Option
 from linkml_runtime import SchemaView
 from linkml_runtime.dumpers import yaml_dumper
+from linkml_runtime.linkml_model.linkml_files import LOCAL_BASE
 from linkml_runtime.linkml_model.meta import (ClassDefinition,
                                               ClassDefinitionName, Definition,
                                               Element, ElementName,
@@ -168,21 +170,17 @@ class Generator(metaclass=abc.ABCMeta):
             self.source_file_date = None
             self.source_file_size = None
         if self.requires_metamodel:
-            # TODO: use newer introspection methods
-            #self.metamodel = package_schemaview(metamodel.__name__).schema
             if os.path.exists(LOCAL_METAMODEL_YAML_FILE):
+                base_dir = str(Path(str(LOCAL_METAMODEL_YAML_FILE)).parent)
+                logging.debug(f"BASE={base_dir}")
                 self.metamodel = SchemaLoader(
                         LOCAL_METAMODEL_YAML_FILE,
-                        importmap=self.importmap,
+                        importmap={"linkml": base_dir},
+                        base_dir=base_dir,
                         mergeimports=self.mergeimports,
                     )
             else:
-                self.metamodel = SchemaLoader(
-                    METAMODEL_YAML_URI,
-                    base_dir=META_BASE_URI,
-                    importmap=self.importmap,
-                    mergeimports=self.mergeimports,
-                )
+                raise AssertionError(f"{LOCAL_METAMODEL_YAML_FILE} not found")
             self.metamodel.resolve()
         schema = self.schema
         # TODO: remove aliasing
