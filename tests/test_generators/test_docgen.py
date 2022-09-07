@@ -218,6 +218,11 @@ class DocGeneratorTestCase(unittest.TestCase):
             "ceo.md", "Range: [Person](Person.md)", after="Properties"
         )
         # TODO: external links
+        
+        # test slot hierarchy
+        assert_mdfile_contains(
+            "tree_slot_B.md", "tree_slot_C", after="tree_slot_B"
+        )
 
     def test_docgen_rank_ordering(self):
         """Tests overriding default order"""
