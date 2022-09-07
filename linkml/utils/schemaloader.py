@@ -127,7 +127,14 @@ class SchemaLoader:
             sname = self.importmap.get(str(imp), imp)  # Import map may use CURIE
             # substitute CURIE only if we don't have a local file name with drive letter (windows)
             if not os.path.splitdrive(sname)[0]:
-                sname = self.namespaces.uri_for(sname) if ":" in sname else sname
+                if ":" in sname:
+                    # allow mapping of a prefix to a folder/directory
+                    toks = sname.split(":")
+                    pfx = toks[0]
+                    if pfx in self.importmap:
+                        sname = os.path.join(self.importmap[pfx], ":".join(toks[1:]))
+                    else:
+                        sname = self.namespaces.uri_for(sname)
             sname = self.importmap.get(
                 str(sname), sname
             )  # It may also use URI or other forms
