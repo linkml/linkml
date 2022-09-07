@@ -105,6 +105,7 @@
 <span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">redirect_stdout</span>
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
 <span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">StringIO</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="p">(</span><span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span>
                     <span class="n">cast</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">ClassVar</span><span class="p">)</span>
 
@@ -112,6 +113,7 @@
 <span class="kn">from</span> <span class="nn">click</span> <span class="kn">import</span> <span class="n">Argument</span><span class="p">,</span> <span class="n">Command</span><span class="p">,</span> <span class="n">Option</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime</span> <span class="kn">import</span> <span class="n">SchemaView</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime.dumpers</span> <span class="kn">import</span> <span class="n">yaml_dumper</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model.linkml_files</span> <span class="kn">import</span> <span class="n">LOCAL_BASE</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model.meta</span> <span class="kn">import</span> <span class="p">(</span><span class="n">ClassDefinition</span><span class="p">,</span>
                                               <span class="n">ClassDefinitionName</span><span class="p">,</span> <span class="n">Definition</span><span class="p">,</span>
                                               <span class="n">Element</span><span class="p">,</span> <span class="n">ElementName</span><span class="p">,</span>
@@ -252,21 +254,17 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">source_file_date</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">source_file_size</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">requires_metamodel</span><span class="p">:</span>
-            <span class="c1"># TODO: use newer introspection methods</span>
-            <span class="c1">#self.metamodel = package_schemaview(metamodel.__name__).schema</span>
             <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">LOCAL_METAMODEL_YAML_FILE</span><span class="p">):</span>
+                <span class="n">base_dir</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">LOCAL_METAMODEL_YAML_FILE</span><span class="p">))</span><span class="o">.</span><span class="n">parent</span><span class="p">)</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;BASE=</span><span class="si">{</span><span class="n">base_dir</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">metamodel</span> <span class="o">=</span> <span class="n">SchemaLoader</span><span class="p">(</span>
                         <span class="n">LOCAL_METAMODEL_YAML_FILE</span><span class="p">,</span>
-                        <span class="n">importmap</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">importmap</span><span class="p">,</span>
+                        <span class="n">importmap</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;linkml&quot;</span><span class="p">:</span> <span class="n">base_dir</span><span class="p">},</span>
+                        <span class="n">base_dir</span><span class="o">=</span><span class="n">base_dir</span><span class="p">,</span>
                         <span class="n">mergeimports</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mergeimports</span><span class="p">,</span>
                     <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">metamodel</span> <span class="o">=</span> <span class="n">SchemaLoader</span><span class="p">(</span>
-                    <span class="n">METAMODEL_YAML_URI</span><span class="p">,</span>
-                    <span class="n">base_dir</span><span class="o">=</span><span class="n">META_BASE_URI</span><span class="p">,</span>
-                    <span class="n">importmap</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">importmap</span><span class="p">,</span>
-                    <span class="n">mergeimports</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mergeimports</span><span class="p">,</span>
-                <span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">LOCAL_METAMODEL_YAML_FILE</span><span class="si">}</span><span class="s2"> not found&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">metamodel</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
         <span class="n">schema</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span>
         <span class="c1"># TODO: remove aliasing</span>
