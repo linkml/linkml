@@ -271,7 +271,7 @@ class DocGeneratorTestCase(unittest.TestCase):
             "index.md",
             "AliasPredicateEnum",
             after="## Enumerations",
-            followed_by=["SeverityOptions"],
+            followed_by=["PvFormulaOptions"],
             outdir=META_MD_DIR,
         )
         assert_mdfile_contains(
