@@ -1,5 +1,5 @@
 # Auto generated from config.yaml by pythongen.py version: 0.9.0
-# Generation date: 2022-08-25T11:43:24
+# Generation date: 2022-09-06T15:57:37
 # Schema: linter-config
 #
 # id: https://w3id.org/linkml/linter/config
@@ -68,6 +68,7 @@ class Config(YAMLRoot):
     no_xsd_int_type: Optional[Union[dict, "RuleConfig"]] = None
     no_invalid_slot_usage: Optional[Union[dict, "RuleConfig"]] = None
     standard_naming: Optional[Union[dict, "StandardNamingConfig"]] = None
+    canonical_prefixes: Optional[Union[dict, "CanonicalPrefixesConfig"]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self.no_empty_title is not None and not isinstance(
@@ -110,6 +111,13 @@ class Config(YAMLRoot):
             self.standard_naming, StandardNamingConfig
         ):
             self.standard_naming = StandardNamingConfig(**as_dict(self.standard_naming))
+
+        if self.canonical_prefixes is not None and not isinstance(
+            self.canonical_prefixes, CanonicalPrefixesConfig
+        ):
+            self.canonical_prefixes = CanonicalPrefixesConfig(
+                **as_dict(self.canonical_prefixes)
+            )
 
         super().__post_init__(**kwargs)
 
@@ -248,6 +256,36 @@ class StandardNamingConfig(RuleConfig):
         super().__post_init__(**kwargs)
 
 
+@dataclass
+class CanonicalPrefixesConfig(RuleConfig):
+    """
+    Additional configuration options for the canonical_prefixes rule
+    """
+
+    _inherited_slots: ClassVar[List[str]] = []
+
+    class_class_uri: ClassVar[URIRef] = LINTCFG.CanonicalPrefixesConfig
+    class_class_curie: ClassVar[str] = "lintcfg:CanonicalPrefixesConfig"
+    class_name: ClassVar[str] = "CanonicalPrefixesConfig"
+    class_model_uri: ClassVar[URIRef] = LINTCFG.CanonicalPrefixesConfig
+
+    level: Union[str, "RuleLevel"] = None
+    prefixmaps_contexts: Optional[Union[str, List[str]]] = empty_list()
+
+    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if not isinstance(self.prefixmaps_contexts, list):
+            self.prefixmaps_contexts = (
+                [self.prefixmaps_contexts]
+                if self.prefixmaps_contexts is not None
+                else []
+            )
+        self.prefixmaps_contexts = [
+            v if isinstance(v, str) else str(v) for v in self.prefixmaps_contexts
+        ]
+
+        super().__post_init__(**kwargs)
+
+
 # Enumerations
 class RuleLevel(EnumDefinitionImpl):
     """
@@ -340,6 +378,15 @@ slots.config__standard_naming = Slot(
     range=Optional[Union[dict, StandardNamingConfig]],
 )
 
+slots.config__canonical_prefixes = Slot(
+    uri=LINTCFG.canonical_prefixes,
+    name="config__canonical_prefixes",
+    curie=LINTCFG.curie("canonical_prefixes"),
+    model_uri=LINTCFG.config__canonical_prefixes,
+    domain=None,
+    range=Optional[Union[dict, CanonicalPrefixesConfig]],
+)
+
 slots.ruleConfig__level = Slot(
     uri=LINTCFG.level,
     name="ruleConfig__level",
@@ -401,4 +448,13 @@ slots.standardNamingConfig__permissible_values_upper_case = Slot(
     model_uri=LINTCFG.standardNamingConfig__permissible_values_upper_case,
     domain=None,
     range=Optional[Union[bool, Bool]],
+)
+
+slots.canonicalPrefixesConfig__prefixmaps_contexts = Slot(
+    uri=LINTCFG.prefixmaps_contexts,
+    name="canonicalPrefixesConfig__prefixmaps_contexts",
+    curie=LINTCFG.curie("prefixmaps_contexts"),
+    model_uri=LINTCFG.canonicalPrefixesConfig__prefixmaps_contexts,
+    domain=None,
+    range=Optional[Union[str, List[str]]],
 )

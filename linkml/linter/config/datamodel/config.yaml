@@ -62,6 +62,12 @@ classes:
           CamelCase for enums, snake_case (default) or UPPER_SNAKE for permissible_values 
           (see permissible_values_upper_case option). This rule may conflict with the
           permissible_values_format rule. Not auto-fixable.
+      canonical_prefixes:
+        range: CanonicalPrefixesConfig
+        description: >-
+          Enforce canonical prefixes by verifying that the mappings defined in the `prefixes`
+          slot agree with those provided by the [prefixmaps](https://github.com/linkml/prefixmaps)
+          package. Not auto-fixable.
 
   RuleConfig:
     description: >-
@@ -135,6 +141,19 @@ classes:
           Default: false
           If true, permissible values will be checked for snake_case, otherwise UPPER_SNAKE
 
+  CanonicalPrefixesConfig:
+    description: >-
+      Additional configuration options for the canonical_prefixes rule
+    is_a: RuleConfig
+    attributes:
+      prefixmaps_contexts:
+        range: string
+        multivalued: true
+        description: >-
+          Default: [merged]
+          The list of context names which will be loaded by the `prefixmaps` library to do the 
+          validation. The order of names is meaningful and will be preserved. See:  
+          https://github.com/linkml/prefixmaps#usage
 
 enums:
   RuleLevel:
