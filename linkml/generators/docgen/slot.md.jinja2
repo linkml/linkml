@@ -36,8 +36,8 @@ URI: [{{ gen.uri(element) }}]({{ gen.uri(element) }})
 * Multivalued: {{ element.multivalued }}
 {% if element.aliases %}
 * Aliases:
-    {% for alias in element.aliases -%}
-        * {{ alias }}
+{% for alias in element.aliases -%}
+    * {{ alias }}
 {% endfor %}
 {% endif %}
 
