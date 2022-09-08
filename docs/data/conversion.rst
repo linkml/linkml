@@ -184,7 +184,7 @@ See `RDF <rdf.md>`__ for more details
 Loading from and dumping to CSVs
 --------------------------------
 
-See `CSVs <csvs.md>`__ for more details
+See `CSVs <./csvs.html>`__ for more details
 
 Inferring missing values
 ------------------------
