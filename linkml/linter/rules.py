@@ -5,10 +5,12 @@ from typing import Callable, Iterable, List
 from linkml_runtime.linkml_model import (ClassDefinition, ClassDefinitionName,
                                          SlotDefinition)
 from linkml_runtime.utils.schemaview import SchemaView
+from prefixmaps.io.parser import load_multi_context
 
 from linkml import LOCAL_METAMODEL_YAML_FILE
 
-from .config.datamodel.config import (RecommendedRuleConfig, RuleConfig,
+from .config.datamodel.config import (CanonicalPrefixesConfig,
+                                      RecommendedRuleConfig, RuleConfig,
                                       StandardNamingConfig,
                                       TreeRootClassRuleConfig)
 from .linter import LinterProblem
@@ -264,4 +266,30 @@ class StandardNamingRule(LinterRule):
                 if permissible_value_pattern.fullmatch(permissible_value_name) is None:
                     yield LinterProblem(
                         f"Permissible value of enum '{enum_name}' has name '{permissible_value_name}'"
+                    )
+
+
+class CanonicalPrefixesRule(LinterRule):
+
+    id = "canonical_prefixes"
+
+    def __init__(self, config: CanonicalPrefixesConfig) -> None:
+        self.config = config
+
+    def check(
+        self, schema_view: SchemaView, fix: bool = False
+    ) -> Iterable[LinterProblem]:
+        context = load_multi_context(self.config.prefixmaps_contexts)
+        prefix_to_namespace = context.as_dict()
+        namespace_to_prefix = context.as_inverted_dict()
+        for prefix in schema_view.schema.prefixes.values():
+            if prefix.prefix_prefix in prefix_to_namespace:
+                if prefix.prefix_reference != prefix_to_namespace[prefix.prefix_prefix]:
+                    yield LinterProblem(
+                        f"Schema maps prefix '{prefix.prefix_prefix}' to namespace '{prefix.prefix_reference}' instead of namespace '{prefix_to_namespace[prefix.prefix_prefix]}'"
+                    )
+            if prefix.prefix_reference in namespace_to_prefix:
+                if prefix.prefix_prefix != namespace_to_prefix[prefix.prefix_reference]:
+                    yield LinterProblem(
+                        f"Schema maps prefix '{prefix.prefix_prefix}' to namespace '{prefix.prefix_reference}' instead of using prefix '{namespace_to_prefix[prefix.prefix_reference]}'"
                     )
