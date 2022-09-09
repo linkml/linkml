@@ -47,6 +47,7 @@ def get_yaml_files(root: Path) -> Iterable[str]:
 @click.option("-o", "--output", type=click.File("w"), default="-")
 @click.option("--fix/--no-fix", default=False)
 def main(schema: Path, fix: bool, config: str, format: str, output):
+    config_file = None
     if config:
         config_file = config
     else:
