@@ -1,11 +1,13 @@
 import unittest
 from copy import deepcopy
 
+from linkml_runtime import SchemaView
 from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.linkml_model import SlotDefinitionName, SlotDefinition
 
 from linkml.utils.schema_builder import SchemaBuilder
 from linkml.utils.schema_fixer import SchemaFixer
+from tests.test_issues.environment import env
 
 MY_CLASS = "MyClass"
 MY_CLASS2 = "MyClass2"
@@ -15,6 +17,8 @@ FULL_NAME = "full_name"
 DESC = "description"
 LIVING = "Living"
 DEAD = "Dead"
+
+NMDC_SCHEMA = env.input_path("nmdc_submission_schema.yaml")
 
 
 class SchemaFixerTestCase(unittest.TestCase):
@@ -161,6 +165,16 @@ class SchemaFixerTestCase(unittest.TestCase):
         self.assertEqual({}, c.attributes)
         self.assertEqual(s.slots[FULL_NAME].name, FULL_NAME)
         self.assertEqual(s.slots[DESC].name, DESC)
+
+    def test_nmdc_submission_schema(self):
+
+        view = SchemaView(NMDC_SCHEMA)
+        s = view.schema
+
+        fixer = SchemaFixer()
+
+        fixer.remove_redundant_slot_usage(s)
+        print(fixer.history)
 
 
 if __name__ == "__main__":
