@@ -224,6 +224,11 @@ class DocGeneratorTestCase(unittest.TestCase):
             "tree_slot_B.md", "tree_slot_C", after="tree_slot_B"
         )
 
+        # test mixin page
+        assert_mdfile_contains(
+            "mixin_slot_I.md", "## Mixin Usage"
+        )
+
     def test_docgen_rank_ordering(self):
         """Tests overriding default order"""
         gen = DocGenerator(SCHEMA, mergeimports=True, no_types_dir=True, sort_by="rank")
