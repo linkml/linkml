@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from typing import Callable, List
 
 from linkml_runtime import SchemaView
-from linkml_runtime.dumpers import json_dumper
+from linkml_runtime.dumpers import json_dumper, yaml_dumper
 from linkml_runtime.linkml_model import (ClassDefinition, ClassDefinitionName,
                                          SchemaDefinition, SlotDefinition)
 
@@ -208,33 +208,54 @@ class SchemaFixer:
                 self.remove_redundant_slot_usage(schema, class_name)
         else:
             cls = sv.get_class(class_name)
-            for sn, slot in cls.slot_usage.items():
-                del cls.slot_usage[sn]
+            # test every key-value pair in the slot usage to determine which
+            # slots within that are redundant
+            slot_usage_keys = list(cls.slot_usage.keys())
+            for slot_usage_key in slot_usage_keys:
+                logging.debug(f"TESTING: {class_name}.{slot_usage_key}")
+                slot_usage_value = cls.slot_usage[slot_usage_key]
+                # perform a deletion test: what can be retrieved by inference
+                del cls.slot_usage[slot_usage_key]
                 sv.set_modified()
-                induced_slot = sv.induced_slot(sn, class_name)
-                cls.slot_usage[sn] = slot
+                try:
+                    induced_slot = sv.induced_slot(slot_usage_key, class_name)
+                except ValueError:
+                    logging.warning(f"slot_usage with no slot: {slot_usage_key}")
+                    continue
+                # restore value
+                cls.slot_usage[slot_usage_key] = slot_usage_value
                 sv.set_modified()
                 to_delete = []
-                for metaslot_name, metaslot in vars(slot).items():
+                for metaslot_name, metaslot in vars(slot_usage_value).items():
                     if metaslot_name == "name":
+                        # redundant with key
+                        to_delete.append(metaslot_name)
                         continue
-                    v = getattr(slot, metaslot_name, None)
+                    if metaslot_name in ["from_schema", "owner", "domain_of", "definition_uri"]:
+                        # metamodel readonly slots are redundant by definition
+                        to_delete.append(metaslot_name)
+                        continue
+                    v = getattr(slot_usage_value, metaslot_name, None)
+                    if isinstance(v, bool) and not v:
+                        # booleans with value False are inherently redundant
+                        to_delete.append(metaslot_name)
+                        continue
                     induced_v = getattr(induced_slot, metaslot_name, None)
                     if v is not None and v != [] and v != {} and v == induced_v:
                         logging.info(
-                            f"REDUNDANT: {class_name}.{sn}[{metaslot_name}] = {v}"
+                            f"REDUNDANT: {class_name}.{slot_usage_key}[{metaslot_name}] = {v}"
                         )
                         to_delete.append(metaslot_name)
                 for metaslot_name in to_delete:
-                    del slot[metaslot_name]
+                    del slot_usage_value[metaslot_name]
                     self._add_history(
-                        f"Removed redundant: {class_name}.slot_usage[{sn}].[{metaslot_name}]"
+                        f"Removed redundant: {class_name}.slot_usage[{slot_usage_key}].[{metaslot_name}]"
                     )
             empty_keys = []
-            for sn, slot in cls.slot_usage.items():
-                metaslot_keys = list(json_dumper.to_dict(slot).keys())
+            for slot_usage_key, slot_usage_value in cls.slot_usage.items():
+                metaslot_keys = list(json_dumper.to_dict(slot_usage_value).keys())
                 if metaslot_keys == [] or metaslot_keys == ["name"]:
-                    empty_keys.append(sn)
+                    empty_keys.append(slot_usage_key)
             for k in empty_keys:
                 del cls.slot_usage[k]
 
