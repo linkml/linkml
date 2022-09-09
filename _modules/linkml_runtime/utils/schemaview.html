@@ -1190,6 +1190,9 @@
             <span class="n">islot</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">mangled_name</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">islot</span><span class="o">.</span><span class="n">alias</span><span class="p">:</span>
             <span class="n">islot</span><span class="o">.</span><span class="n">alias</span> <span class="o">=</span> <span class="n">underscore</span><span class="p">(</span><span class="n">slot_name</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_classes</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">islot</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">slots</span> <span class="ow">or</span> <span class="n">islot</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">attributes</span><span class="p">:</span>
+                <span class="n">islot</span><span class="o">.</span><span class="n">domain_of</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">islot</span><span class="p">)</span></div>
 
     <span class="nd">@lru_cache</span><span class="p">()</span>
@@ -1372,6 +1375,29 @@
             <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">range</span><span class="p">:</span>
                 <span class="n">range_union_of</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">range</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">range_union_of</span></div>
+
+<div class="viewcode-block" id="SchemaView.get_classes_by_slot"><a class="viewcode-back" href="../../../developers/manipulating-schemas.html#linkml_runtime.utils.schemaview.SchemaView.get_classes_by_slot">[docs]</a>    <span class="k">def</span> <span class="nf">get_classes_by_slot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">,</span> <span class="n">include_induced</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">ClassDefinitionName</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Get all classes that use a given slot, either as a direct or induced slot.</span>
+
+<span class="sd">        :param slot: slot in consideration</span>
+<span class="sd">        :param include_induced: supplement all direct slots with induced slots, defaults to False</span>
+<span class="sd">        :return: list of slots, either direct, or both direct and induced</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">slots_list</span> <span class="o">=</span> <span class="p">[]</span> <span class="c1"># list of all direct or induced slots</span>
+
+        <span class="k">for</span> <span class="n">c_name</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_classes</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="c1"># check if slot is direct specification on class</span>
+            <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">slots</span><span class="p">:</span>
+                <span class="n">slots_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c_name</span><span class="p">)</span>
+
+        <span class="c1"># include induced classes also if requested</span>
+        <span class="k">if</span> <span class="n">include_induced</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">c_name</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_classes</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">for</span> <span class="n">ind_slot</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">class_induced_slots</span><span class="p">(</span><span class="n">c_name</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">ind_slot</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
+                        <span class="n">slots_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c_name</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">dict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span><span class="n">slots_list</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="SchemaView.usage_index"><a class="viewcode-back" href="../../../developers/manipulating-schemas.html#linkml_runtime.utils.schemaview.SchemaView.usage_index">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">()</span>
     <span class="k">def</span> <span class="nf">usage_index</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">ElementName</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">SchemaUsage</span><span class="p">]]:</span>
