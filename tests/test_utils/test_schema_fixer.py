@@ -30,8 +30,8 @@ class SchemaFixerTestCase(unittest.TestCase):
         s = b.schema
         fixer = SchemaFixer()
         fixer.add_titles(s)
-        print(fixer.history)
-        print(yaml_dumper.dumps(s))
+        #print(fixer.history)
+        #print(yaml_dumper.dumps(s))
         c = s.classes[MY_CLASS]
         e = s.enums[MY_ENUM]
         self.assertEqual(c.title, "my class")
@@ -61,8 +61,8 @@ class SchemaFixerTestCase(unittest.TestCase):
         s = b.schema
         fixer = SchemaFixer()
         fixer.attributes_to_slots(s, remove_redundant_slot_usage=False)
-        print(fixer.history)
-        print(yaml_dumper.dumps(s))
+        #print(fixer.history)
+        #print(yaml_dumper.dumps(s))
         c = s.classes[MY_CLASS]
         self.assertCountEqual([FULL_NAME, DESC], c.slots)
         self.assertEqual({}, c.attributes)
@@ -78,7 +78,7 @@ class SchemaFixerTestCase(unittest.TestCase):
         fixer.merge_slot_usage(
             s, c, SlotDefinition(FULL_NAME, description="desc1", range="string")
         )
-        print(yaml_dumper.dumps(s))
+        #print(yaml_dumper.dumps(s))
         su = c.slot_usage[FULL_NAME]
         self.assertEqual("desc1", su.description)
         self.assertEqual("string", su.range)
@@ -93,7 +93,7 @@ class SchemaFixerTestCase(unittest.TestCase):
                 range="string",
             ),
         )
-        print(yaml_dumper.dumps(s))
+        #print(yaml_dumper.dumps(s))
         su = c.slot_usage[FULL_NAME]
         with self.assertRaises(ValueError):
             fixer.merge_slot_usage(s, c, SlotDefinition(FULL_NAME, description="desc2"))
@@ -101,35 +101,44 @@ class SchemaFixerTestCase(unittest.TestCase):
         fixer.merge_slot_usage(
             s, c, SlotDefinition(FULL_NAME, description="desc2"), overwrite=True
         )
-        print(yaml_dumper.dumps(s))
+        #print(yaml_dumper.dumps(s))
         su = c.slot_usage[FULL_NAME]
         self.assertEqual("desc2", su.description)
 
     def test_remove_redundant(self):
+        """
+        Tests
+        """
         b = SchemaBuilder()
         s = b.schema
-        s.default_range = "string"
         slot1 = SlotDefinition(ID, title="identifier", description="unique identifier")
         slot2 = SlotDefinition(FULL_NAME, description="full name", range="string")
         slot3 = SlotDefinition(DESC, description="used to describe")
         b.add_class(MY_CLASS, [slot1.name, slot2.name, slot3.name])
         c = s.classes[MY_CLASS]
+        # add a slot usage for ID that is intentionally partially redundant with the main slot
+        # here the description is redundant
         c.slot_usage[ID] = SlotDefinition(
             ID,
             identifier=True,
             comments=["my comment1"],
             description="unique identifier",
         )
+        # add a slot usage for full_name that is intentionally partially redundant with the main slot
         c.slot_usage[FULL_NAME] = SlotDefinition(
             FULL_NAME, range="string", description="full name", pattern="^.*$"
         )
+        # add a slot usage that is fully redundant
         c.slot_usage[DESC] = SlotDefinition(DESC, range="string")
         b.add_slot(deepcopy(slot1)).add_slot(deepcopy(slot2))
+        b.add_defaults()
         fixer = SchemaFixer()
         fixer.remove_redundant_slot_usage(s)
+        # not-redundant; should be preserved
         self.assertEqual(c.slot_usage[ID].identifier, True)
         self.assertEqual(c.slot_usage[ID].comments, ["my comment1"])
         self.assertEqual(c.slot_usage[FULL_NAME].pattern, "^.*$")
+        # redundant; should be removed
         self.assertNotIn(DESC, c.slot_usage)
         self.assertNotIn("description", c.slot_usage[ID])
         self.assertNotIn("range", c.slot_usage[FULL_NAME])
@@ -154,8 +163,8 @@ class SchemaFixerTestCase(unittest.TestCase):
         s = b.schema
         fixer = SchemaFixer()
         fixer.attributes_to_slots(s, remove_redundant_slot_usage=True)
-        print(fixer.history)
-        print(yaml_dumper.dumps(s))
+        #print(fixer.history)
+        #print(yaml_dumper.dumps(s))
         c = s.classes[MY_CLASS]
         self.assertCountEqual([ID, FULL_NAME, DESC], c.slots)
         self.assertEqual({}, c.attributes)
