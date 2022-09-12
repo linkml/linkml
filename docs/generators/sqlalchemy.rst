@@ -25,7 +25,7 @@ Overview
 Declarative Mode
 ^^^^^^^^^^^^^^^^
 
-`https://docs.sqlalchemy.org/en/14/orm/declarative_mapping.html`
+`declarative mapping docs<https://docs.sqlalchemy.org/en/14/orm/declarative_mapping.html>` on SQL Alchemy site
 
 Given input such as:
 

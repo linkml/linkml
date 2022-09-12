@@ -1,6 +1,6 @@
 # Using JSON-LD
 
-See also: [Part 4 of the tutorial[https://linkml.io/linkml/intro/tutorial04.html]
+See also: [Part 4 of the tutorial](https://linkml.io/linkml/intro/tutorial04.html)
 
 This how-to guide walks you through some of the basics of working with JSON-LD and LinkML
 
@@ -236,7 +236,7 @@ frameworks and JSON-LD/RDF should be coordinated.
 
 ## LinkML and JSON-LD
 
-LinkML provides a single "polymorphic" language for describing multiple aspects of your data.
+LinkML provides a single "polyglot" language for describing multiple aspects of your data.
 
 One of the value propositions of LinkML is that it allows a single Source of Truth with compilation
 to multiple representations using generators.

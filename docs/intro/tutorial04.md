@@ -107,7 +107,7 @@ Outputs:
 ```
 
 Note that each person is now represented by an ORCID URI. This is a
-start, but it is not ideal - there are existing vocabularies such as
+start, but note we are still using classes and properties in our own namespace - there are existing vocabularies such as
 [schema.org](http://schema.org) we could be reusing here.
 
 ## Adding URIs to our schema

@@ -1,6 +1,12 @@
-# Versioning of the metamodel
+# The metamodel
 
-## Versioning scheme
+LinkML is fully described by a *metamodel* that is itself described in LinkML
+
+- [linkml-model repo](https://github.com/linkml/linkml-model/)
+- [linkml-model documentation](https://linkml.io/linkml-model/docs/)
+- [Part 3](https://linkml.io/linkml-model/docs/specification/03schemas/) of specification
+
+## Metamodel Versioning scheme
 
 The LinkML project uses Semantic Versioning (SemVer)
 

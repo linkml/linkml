@@ -12,9 +12,11 @@ This section of the documentation is aimed primarily at Python developers who wa
    organization
    notebooks
    manipulating-schemas
+   schemaview
    loaders-and-dumpers
    inference
    using-sql-dbs
+   sqlstore
    tool-developer-guide
    contributing-code
 
