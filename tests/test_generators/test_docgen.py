@@ -229,6 +229,11 @@ class DocGeneratorTestCase(unittest.TestCase):
             "mixin_slot_I.md", "## Mixin Usage"
         )
 
+        # test that mixin page is hyperlinked
+        assert_mdfile_contains(
+            "tree_slot_C.md", "[mixin_slot_I](mixin_slot_I.md)"
+        )
+
     def test_docgen_rank_ordering(self):
         """Tests overriding default order"""
         gen = DocGenerator(SCHEMA, mergeimports=True, no_types_dir=True, sort_by="rank")
