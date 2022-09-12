@@ -1,18 +1,9 @@
 Manipulating Schemas
 --------------------
 
-The SchemaView class in the linkml-runtime provides a method for
-dynamically introspecting and manipulating schemas, for example:
+There are a number of ways of programmatically manipulating and working with LinkML schemas
 
-* find all ancestors or descendants of a class
-* find all inferred (induced) slots for a class
-
-See `runtime notebooks
-<https://github.com/linkml/linkml-runtime/tree/main/notebooks>`_ for an example
-
-
-.. currentmodule:: linkml_runtime.utils.schemaview
-                   
-.. autoclass:: SchemaView
-    :members:                
-    :inherited-members:
+- Working directly with YAML objects
+- Using the metamodel classes such as SchemaDefinition
+- SchemaView
+- Creating schemas using the schema builder

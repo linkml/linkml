@@ -20,100 +20,19 @@ See
 `PersonSchema/data <https://github.com/linkml/linkml/tree/main/examples/PersonSchema/data>`__
 for example toy data files
 
+Specification:
+
+- `Part 6 <https://linkml.io/linkml-model/docs/specification/06mapping/>`_ of the LinkML specification provides a more formal treatment
+
 LinkML-Convert
 --------------
 
 The ``linkml-convert`` script can be used to convert data from one form
 to another, following a schema
 
-This makes use of loaders and dumpers in the linkml-runtime
+This makes use of loaders and dumpers in the linkml-runtime.
 
-.. code:: bash
-
-   Usage: linkml-convert [OPTIONS] INPUT
-
-     Converts instance data to and from different LinkML Runtime serialization
-     formats.
-
-     The instance data must conform to a LinkML model, and either a path to a
-     python module must be passed, or a path to a schema.
-
-     The converter works by first using a linkml-runtime *loader* to instantiate
-     in-memory model objects, then a *dumper* is used to serialize. A validation
-     step is optionally performed in between
-
-     When converting to or from RDF, a path to a schema must be provided.
-
-     For more information, see https://linkml.io/linkml/data/index.html
-
-   Options:
-     -m, --module TEXT               Path to python datamodel module
-     -o, --output TEXT               Path to output file
-     -f, --input-format [yaml|json|rdf|ttl|json-ld|csv|tsv]
-                                     Input format. Inferred from input suffix if
-                                     not specified
-     -t, --output-format [yaml|json|rdf|ttl|json-ld|csv|tsv]
-                                     Output format. Inferred from output suffix
-                                     if not specified
-     -C, --target-class TEXT         name of class in datamodel that the root
-                                     node instantiates
-     --target-class-from-path / --no-target-class-from-path
-                                     Infer the target class from the filename,
-                                     should be ClassName-<other-
-                                     chars>.{yaml,json,...}  [default: no-target-
-                                     class-from-path]
-     -S, --index-slot TEXT           top level slot. Required for CSV
-                                     dumping/loading
-     -s, --schema TEXT               Path to schema specified as LinkML yaml
-     -P, --prefix TEXT               Prefixmap base=URI pairs
-     --validate / --no-validate      Validate against the schema  [default:
-                                     validate]
-     --infer / --no-infer            Infer missing slot values  [default: no-
-                                     infer]
-     -c, --context TEXT              path to JSON-LD context file
-     --help                          Show this message and exit.
-   Usage: linkml-convert [OPTIONS] INPUT
-
-     Converts instance data to and from different LinkML Runtime serialization
-     formats.
-
-     The instance data must conform to a LinkML model, and either a path to a
-     python module must be passed, or a path to a schema.
-
-     The converter works by first using a linkml-runtime *loader* to instantiate
-     in-memory model objects, then a *dumper* is used to serialize. A validation
-     step is optionally performed in between
-
-     When converting to or from RDF, a path to a schema must be provided.
-
-     For more information, see https://linkml.io/linkml/data/index.html
-
-   Options:
-     -m, --module TEXT               Path to python datamodel module
-     -o, --output TEXT               Path to output file
-     -f, --input-format [yaml|json|rdf|ttl|json-ld|csv|tsv]
-                                     Input format. Inferred from input suffix if
-                                     not specified
-     -t, --output-format [yaml|json|rdf|ttl|json-ld|csv|tsv]
-                                     Output format. Inferred from output suffix
-                                     if not specified
-     -C, --target-class TEXT         name of class in datamodel that the root
-                                     node instantiates
-     --target-class-from-path / --no-target-class-from-path
-                                     Infer the target class from the filename,
-                                     should be ClassName-<other-
-                                     chars>.{yaml,json,...}  [default: no-target-
-                                     class-from-path]
-     -S, --index-slot TEXT           top level slot. Required for CSV
-                                     dumping/loading
-     -s, --schema TEXT               Path to schema specified as LinkML yaml
-     -P, --prefix TEXT               Prefixmap base=URI pairs
-     --validate / --no-validate      Validate against the schema  [default:
-                                     validate]
-     --infer / --no-infer            Infer missing slot values  [default: no-
-                                     infer]
-     -c, --context TEXT              path to JSON-LD context file
-     --help                          Show this message and exit.
+See below for command line docs
 
 Loading from and dumping to JSON
 --------------------------------

@@ -13,7 +13,7 @@ URIs can be shortended as CURIEs (Compact URIs). Given a prefix declaration wher
 For more on URIs and their importance in Linked Data, see
 
 - [Linked Data](https://www.w3.org/DesignIssues/LinkedData.html) by Tim Berners-Lee from 2006
-- [What are URIs](https://www.cogsci.ed.ac.uk/~ht/WhatAreURIs/) by Henry S Thompson from 2010
+- [What are URIs?](https://www.cogsci.ed.ac.uk/~ht/WhatAreURIs/) by Henry S Thompson from 2010
 
 ## URI Prefixes
 
@@ -44,6 +44,11 @@ imports:
 The [prefixes](https://w3id.org/linkml/prefixes) section contains a list of prefix expansions that can be used to specify CURIEs. Additionally, prefixmaps can be imported from prefixcommons.
 
 With the above prefixmap, the CURIE `schema:Person` will expand to http://schema.org/Person
+
+LinkML also provides a way to import prefix maps to avoid repetitively declaring them, through
+[default_curi_maps](https://w3id.org/linkml/default_curi_maps). However, we now consider it
+best practice to explicitly declare prefix maps, and to use the linter to check for
+consistency with standard prefix registries like bioregistry and prefix.cc.
 
 ## class uri and slot uri
 
@@ -84,11 +89,25 @@ For example, if Person did not declare a class_uri, then a CURIE `personinfo:Per
 
 ## Enumerations and the meaning slot
 
-The metamodel slot
+The metamodel slot [meaning](https://w3id.org/linkml/meaning) Can be optionally used with a [PermissibleValue](https://w3id.org/linkml/PermissibleValue) as part of an *enumeration*
 
- * [meaning](https://w3id.org/linkml/meaning)
+For example, two of the permissible values in the following enumeration map to ontology terms via `meaning`:
 
-Can be optionally used with a [PermissibleValue](https://w3id.org/linkml/PermissibleValue) as part of an *enumeration*
+```yaml
+enums:
+  PersonStatus:
+    permissible_values:
+      ALIVE:
+        description: the person is living
+        meaning: PATO:0001421 
+      DEAD:
+        description: the person is deceased
+        meaning: PATO:0001422
+      UNKNOWN:
+        description: the vital status is not known
+        todos:
+          - map this to an ontology
+```
 
 ## Relationship to ISO-11179-3
 

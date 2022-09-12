@@ -49,6 +49,7 @@ classes:
       phone:
       age:
   Container:
+    tree_root: true
     attributes:
       persons:
         multivalued: true

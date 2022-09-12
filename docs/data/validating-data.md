@@ -6,14 +6,16 @@ in the language to allow model designers to state all constraints in a
 declarative fashion, and then to leverage existing frameworks and to
 allow the user to balance concerns such as expressivity vs efficiency.
 
-Currently there are 4 supported strategies:
+Currently there are 5 supported strategies:
 
- * validation via Python object instantiation
- * validation through JSON-Schema
- * validation of triples in a triplestore or RDF file via generation of SPARQL constraints
- * validation of RDF via generation of ShEx
+- validation via Python object instantiation 
+- validation through JSON-Schema 
+- validation of triples in a triplestore or RDF file via generation of SPARQL constraints
+- validation of RDF via generation of ShEx or SHACL
+- validation via SQL loading and queries
 
-However, others will be supported in future.
+However, others will be supported in future; in particular, scalable validation
+of massive databases.
 
 ## Validation of JSON documents
 
@@ -85,4 +87,12 @@ These constraints can then be executed over large databases via a variety of str
  * generation of datalog programs for efficient engines such as souffle
  * generation of SQL queries to be used with relational databases
 
-We also plan to support generation of SHACL from LinkML
+
+Command Line
+-------
+
+.. currentmodule:: linkml.utils.jsonschemavalidator
+
+.. click:: linkml.utils.jsonschemavalidator:cli
+:prog: linkml-validate
+:nested: full

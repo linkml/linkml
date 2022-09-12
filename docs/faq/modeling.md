@@ -24,7 +24,7 @@ For background, see the Wikipedia article on [composition over inheritance](http
 
 We have certainly seen cases where inheritance is abused in programming languages, especially when it comes to behavioral classes.
 
-However, in our experience inheritance is still very useful when used for data classes. We trust the users of LinkML to create schemas to design schemas carefully.
+However, in our experience inheritance is still very useful when used for data classes. We trust the users of LinkML to create and design schemas carefully.  But you can avoid it altogether if you like, and use composition entirely!
 
 ## When should I use attributes vs slots?
 
@@ -44,11 +44,15 @@ The extent to which these are made visible is currently the subject of some disc
 
 Induced slots can be *materialized* as attributes using the [linkml generator](../generators/linkml)
 
+See:
+
+- [derived models](../schemas/derived-models)
+
 ## Why would I need to define my own types?
 
 Types are scalar values such as integers or strings. They are also known as "literals" in RDF.
 
-Strictly speaking it is not necessary to define your own types, you can just use the builtin types.
+Strictly speaking it is not necessary to define your own types, you can just use the builtin types (string, integer, etc).
 
 However, defining your own types can be good practice, as it can make
 your intent clearer. For example, if you have a slot `description` you
@@ -62,10 +66,10 @@ An example of a type section might be:
 ```yaml
 types:
   CountType:
-    uri: xsd:int
+    uri: xsd:integer
     base: int
     minimum_value: 0
-    description: A count is an integer that is used to measure counts
+    description: An integer that specifies cardinality
   SymbolType:
     uri: xsd:string
     base: str
@@ -413,6 +417,44 @@ enums:
     permissible_values:
       allele_of:
 ```
+
+You can further annotate your schema with information that two of
+your classes represent *entities* and one represents a *relationship*:
+
+
+```yaml
+default_prefix: my_schema
+
+classes:
+  allele:
+  gene:
+  allele gene relation:
+     represents_relationship: true
+     slots:
+        - subject
+        - object
+        - predicate
+      
+slots:
+  predicate: 
+     range: predicate_enum
+     relational_role: PREDICATE
+  subject:
+     range: allele
+     relational_role: SUBJECT
+  object:
+     range: gene
+     relational_role: OBJECT
+
+enums:
+  predicate_enum:
+    permissible_values:
+      allele_of:
+```
+
+Applications can make use of this metadata - e.g for compact
+property graph representations, ER-style visualizations of the schema,
+auto-inferring convenient shortcut slots.
 
 ## What are id_prefixes used for and why do we want them?
 

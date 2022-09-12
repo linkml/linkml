@@ -110,7 +110,7 @@ This would generate the following JSON-Schema:
 Composition
 ^^^^^^^^^^^
 
-JSON-Schema support schema composition through:
+JSON-Schema supports schema *composition* through:
 
 * allOf
 * anyOf

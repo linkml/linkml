@@ -63,7 +63,7 @@ The [json-flattener/](https://github.com/cmungall/json-flattener/) library is us
 
 ## Inference of schemas from tabular data
 
-Use `tsvs2linkml` in the [enrichment toolkit](https://github.com/linkml/linkml-model-enrichment)
+Use `generalize-tsv` command in the [schema-automator](https://github.com/linkml/schema-automator)
 
 
 
