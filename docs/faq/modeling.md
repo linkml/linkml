@@ -24,8 +24,7 @@ For background, see the Wikipedia article on [composition over inheritance](http
 
 We have certainly seen cases where inheritance is abused in programming languages, especially when it comes to behavioral classes.
 
-However, in our experience inheritance is still very useful when used for data classes. We trust the users of LinkML to create schemas to design schemas carefully.
-But you can avoid it altogether if you like, and use composition entirely!
+However, in our experience inheritance is still very useful when used for data classes. We trust the users of LinkML to create and design schemas carefully.  But you can avoid it altogether if you like, and use composition entirely!
 
 ## When should I use attributes vs slots?
 
