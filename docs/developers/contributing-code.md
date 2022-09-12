@@ -4,4 +4,4 @@ We welcome any and all contributions, to code, metamodeling, documentation, exam
 
 See [contributors guide](../contributing)
 
-See the [LinkML Python FAQ](../faq/python) for any qustions on the tools
+See the [LinkML Python FAQ](../faq/python) for any qeustions on the tools
