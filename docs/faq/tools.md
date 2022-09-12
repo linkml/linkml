@@ -38,8 +38,7 @@ We recommend using an IDE that has support for YAML format.
 IDEs like PyCharm and VSCode have support for schema-aware editing of YAML files.
 These require a JSON-Schema input.
 
-The LinkML meta model is converted to JSON-Schema here: [https://w3id.org/linkml/meta.schema.json](https://w3id.org/linkml/meta.schema.json) can be incorporated into pycharm for model development
-syntax validation.  For more details on pycharm specifically: [PyCharm docs](https://www.jetbrains.com/help/pycharm/json.html#ws_json_schema_add_custom)
+The LinkML meta model is converted to JSON-Schema here: [https://w3id.org/linkml/meta.schema.json](https://w3id.org/linkml/meta.schema.json) and can be incorporated into pycharm for model syntax validation.  For more details on pycharm specifically: [PyCharm docs](https://www.jetbrains.com/help/pycharm/json.html#ws_json_schema_add_custom)
 
 See the section below on "Are there tools for editing my data?" for
 suggestions (note that your schema *is* data - schemas instantiate the
