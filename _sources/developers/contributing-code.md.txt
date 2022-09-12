@@ -1,18 +1,7 @@
 # Contributing Code
 
-We welcome any and all contributions!
+We welcome any and all contributions, to code, metamodeling, documentation, example schemas, ...
 
-See the file CONTRIBUTING.md included in the top level folder of each repo
+See [contributors guide](../contributing)
 
-## Setup and Installation
-
- * Install pipenv
- * git clone this repo
-
-## Pull Requests
-
-## Tests
-
-See the file Testing.md included in the tests/ folder of each repo
-
-
+See the [LinkML Python FAQ](../faq/python) for any questions on the tools

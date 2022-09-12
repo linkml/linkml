@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Imports &mdash; linkml  documentation</title>
+  <title>Derived models &mdash; linkml  documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -19,8 +19,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Advanced features" href="advanced.html" />
-    <link rel="prev" title="Subsets" href="subsets.html" /> 
+    <link rel="next" title="The metamodel" href="metamodel.html" />
+    <link rel="prev" title="Mapping schemas to other frameworks" href="generators.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -54,15 +54,16 @@
 <li class="toctree-l2"><a class="reference internal" href="inlining.html">Inlining objects</a></li>
 <li class="toctree-l2"><a class="reference internal" href="constraints.html">Adding constraints and rules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="subsets.html">Subsets</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Imports</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#importing-external-schemas">Importing external schemas</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#local-imports">Local imports</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#making-merged-files-for-distribution">Making merged files for distribution</a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="imports.html">Imports</a></li>
 <li class="toctree-l2"><a class="reference internal" href="advanced.html">Advanced features</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generators.html">Mapping schemas to other frameworks</a></li>
-<li class="toctree-l2"><a class="reference internal" href="derived-models.html">Derived models</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Derived models</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#asserted-vs-derived-models-schemas">Asserted vs Derived Models/Schemas</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#materializing-a-derived-model">Materializing a derived model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#programmatically-inferring-models">Programmatically inferring models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#specification">Specification</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="metamodel.html">The metamodel</a></li>
 </ul>
 </li>
@@ -96,9 +97,9 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
           <li><a href="index.html">LinkML Schemas</a> &raquo;</li>
-      <li>Imports</li>
+      <li>Derived models</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/schemas/imports.md.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/schemas/derived-models.md.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -106,52 +107,42 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="imports">
-<h1>Imports<a class="headerlink" href="#imports" title="Permalink to this heading"></a></h1>
-<p>LinkML encourages modular schema development. You can split you schema into modules, and even reuse other peoples modules on the web</p>
-<p>A schema can have a list of <a class="reference external" href="https://w3id.org/linkml/imports">imports</a> associated with it. These are specified as <span class="xref myst">CURIEs</span> or local imports.</p>
-<section id="importing-external-schemas">
-<h2>Importing external schemas<a class="headerlink" href="#importing-external-schemas" title="Permalink to this heading"></a></h2>
-<p>Most schemas will have at least an imports to the linkml types schema, which defines core types:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">prefixes</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">linkml</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://w3id.org/linkml/</span><span class="w"></span>
-<span class="w">  </span><span class="nt">...</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">...</span><span class="w"></span>
-
-<span class="nt">imports</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">linkml:types</span><span class="w"></span>
-</pre></div>
-</div>
-<p>The <code class="docutils literal notranslate"><span class="pre">prefixes</span></code> declaration (see <a class="reference internal" href="uris-and-mappings.html"><span class="doc std std-doc">URIs and
-mappings</span></a>) registers the linkml prefix. The
-import is exanded to <code class="docutils literal notranslate"><span class="pre">https://w3id.org/linkml/types</span></code>, and an implicit
-file type suffix is added, yielding <a class="reference external" href="https://w3id.org/linkml/types.yaml">https://w3id.org/linkml/types.yaml</a></p>
+  <section id="derived-models">
+<h1>Derived models<a class="headerlink" href="#derived-models" title="Permalink to this heading"></a></h1>
+<section id="asserted-vs-derived-models-schemas">
+<h2>Asserted vs Derived Models/Schemas<a class="headerlink" href="#asserted-vs-derived-models-schemas" title="Permalink to this heading"></a></h2>
+<p>LinkML distinguishes between the <em>asserted</em> data model and the <em>derived</em> data model</p>
+<p>For example, if a class inherits a slot from a parent class, the schema author does not
+need to redundantly assert this, as this can be inferred.</p>
+<p>Examples of things that can be derived:</p>
+<ul class="simple">
+<li><p>new slot definitions by composing:</p>
+<ul>
+<li><p>slot_usage</p></li>
+<li><p>information from parent/ancestor slots</p></li>
+<li><p>information from parent/ancestor classes</p></li>
+</ul>
+</li>
+<li><p>deriving patterns from structured patterns</p></li>
+</ul>
 </section>
-<section id="local-imports">
-<h2>Local imports<a class="headerlink" href="#local-imports" title="Permalink to this heading"></a></h2>
-<p>You can also specify relative paths, e.g</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">imports</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">core</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">../enums/my-enums</span><span class="w"></span>
-</pre></div>
-</div>
-<p>The <code class="docutils literal notranslate"><span class="pre">.yaml</span></code> suffix is implicitly added, and here the list elements represent a relative path on the file system.</p>
-<p>If you include relative paths and make a release of your schema be
-sure that the imported modules are accessible and follow the same
-paths</p>
+<section id="materializing-a-derived-model">
+<h2>Materializing a derived model<a class="headerlink" href="#materializing-a-derived-model" title="Permalink to this heading"></a></h2>
+<p>Use <a class="reference internal" href="../generators/linkml.html"><span class="doc std std-doc">gen-linkml</span></a> to create a derived schema saved as YAML</p>
+<p>This can be useful for feeding to basic tools that do not need to implement logic for inheritance</p>
 </section>
-<section id="making-merged-files-for-distribution">
-<h2>Making merged files for distribution<a class="headerlink" href="#making-merged-files-for-distribution" title="Permalink to this heading"></a></h2>
-<p>Sometimes it can be convenient to <em>merge imports</em> prior to
-distribution. This makes it easier for programs that want to make use
-of a linkml schema, as they only have to work with one file, rather
-than implementing the full import mechanism. It can also help
-eliminate network dependencies.</p>
-<p>All <span class="xref myst">generators</span> have a <code class="docutils literal notranslate"><span class="pre">--mergeimports</span></code> import that
-will merge the imports closure. i.e. all imported definitions will be
-recursively copied into the main file.</p>
-<p>One particularly useful generator is the <a class="reference internal" href="../generators/linkml.html"><span class="doc std std-doc">linkml
-generator</span></a>. This can be used to make a single
-combined file for distribution (in either JSON or YAML)</p>
+<section id="programmatically-inferring-models">
+<h2>Programmatically inferring models<a class="headerlink" href="#programmatically-inferring-models" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p>Python developers can use SchemaView, see <a class="reference internal" href="../developers/manipulating-schemas.html"><span class="doc std std-doc">developers guide</span></a></p></li>
+<li><p>Javascript developers can use the javascript equivalent in <a class="reference external" href="https://github.com/linkml/linkml-runtime.js">linkml-runtime.js</a></p></li>
+</ul>
+</section>
+<section id="specification">
+<h2>Specification<a class="headerlink" href="#specification" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://linkml.io/linkml-model/docs/specification/04derived-schemas/">Part 4</a> of LinkML specification</p></li>
+</ul>
 </section>
 </section>
 
@@ -159,8 +150,8 @@ combined file for distribution (in either JSON or YAML)</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="subsets.html" class="btn btn-neutral float-left" title="Subsets" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="advanced.html" class="btn btn-neutral float-right" title="Advanced features" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="generators.html" class="btn btn-neutral float-left" title="Mapping schemas to other frameworks" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="metamodel.html" class="btn btn-neutral float-right" title="The metamodel" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

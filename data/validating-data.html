@@ -52,6 +52,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#validation-of-rdf-triplestores-using-generated-sparql">Validation of RDF triplestores using generated SPARQL</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#validation-via-shape-languages">Validation via shape languages</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#future-plans">Future plans</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#command-line">Command Line</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="rdf.html">Working with RDF and LinkML</a></li>
@@ -105,14 +106,16 @@ validation. The overall philosophy is to provide maximum expressivity
 in the language to allow model designers to state all constraints in a
 declarative fashion, and then to leverage existing frameworks and to
 allow the user to balance concerns such as expressivity vs efficiency.</p>
-<p>Currently there are 4 supported strategies:</p>
+<p>Currently there are 5 supported strategies:</p>
 <ul class="simple">
 <li><p>validation via Python object instantiation</p></li>
 <li><p>validation through JSON-Schema</p></li>
 <li><p>validation of triples in a triplestore or RDF file via generation of SPARQL constraints</p></li>
-<li><p>validation of RDF via generation of ShEx</p></li>
+<li><p>validation of RDF via generation of ShEx or SHACL</p></li>
+<li><p>validation via SQL loading and queries</p></li>
 </ul>
-<p>However, others will be supported in future.</p>
+<p>However, others will be supported in future; in particular, scalable validation
+of massive databases.</p>
 <section id="validation-of-json-documents">
 <h2>Validation of JSON documents<a class="headerlink" href="#validation-of-json-documents" title="Permalink to this heading"></a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">linkml-convert</span></code> command will automatically perform data validation.</p>
@@ -179,7 +182,13 @@ Options:
 <li><p>generation of datalog programs for efficient engines such as souffle</p></li>
 <li><p>generation of SQL queries to be used with relational databases</p></li>
 </ul>
-<p>We also plan to support generation of SHACL from LinkML</p>
+</section>
+<section id="command-line">
+<h2>Command Line<a class="headerlink" href="#command-line" title="Permalink to this heading"></a></h2>
+<p>.. currentmodule:: linkml.utils.jsonschemavalidator</p>
+<p>.. click:: linkml.utils.jsonschemavalidator:cli
+:prog: linkml-validate
+:nested: full</p>
 </section>
 </section>
 

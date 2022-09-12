@@ -1,6 +1,6 @@
 .. _data_conversions:
 
-Data Convetsion: Loaders and Dumpers
+Data Conversion: Loaders and Dumpers
 ====================================
 
 The linkml-runtime loaders and dumpers framework provide a way to

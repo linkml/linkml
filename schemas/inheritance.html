@@ -63,6 +63,8 @@
 <li class="toctree-l2"><a class="reference internal" href="imports.html">Imports</a></li>
 <li class="toctree-l2"><a class="reference internal" href="advanced.html">Advanced features</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generators.html">Mapping schemas to other frameworks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="derived-models.html">Derived models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metamodel.html">The metamodel</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../data/index.html">Working with Data</a></li>
@@ -150,9 +152,15 @@
 </pre></div>
 </div>
 <p>This forces data providers to always provide a more specific class than the generic “<code class="docutils literal notranslate"><span class="pre">NamedThing</span></code>”.</p>
-<p>Some generators may also choose to utilize abstract tags, e.g to mask generation of abstract classes.</p>
+<p>This also provides a very useful piece of metadata that can be used by tools that
+present schemas to domain scientists and subject matter experts. Abstract classes can be filtered
+from displays, with their properties “rolled down”.</p>
+<p>Some generators may choose to utilize abstract tags, e.g to mask generation of abstract classes.</p>
 <p><strong>Note</strong>: Slots can also be declared abstract.</p>
-<p>See also the <a class="reference external" href="https://en.wikipedia.org/wiki/Abstract_type">wikipedia page on Abstract Types</a></p>
+<p>See also:</p>
+<ul class="simple">
+<li><p>the <a class="reference external" href="https://en.wikipedia.org/wiki/Abstract_type">wikipedia page on Abstract Types</a></p></li>
+</ul>
 </section>
 <section id="mixin-classes-and-slots">
 <h2>Mixin classes and slots<a class="headerlink" href="#mixin-classes-and-slots" title="Permalink to this heading"></a></h2>
@@ -198,7 +206,7 @@ of multiple inheritance noted in the <a class="reference external" href="https:/
 </section>
 <section id="materializing-inherited-slots">
 <h2>Materializing inherited slots<a class="headerlink" href="#materializing-inherited-slots" title="Permalink to this heading"></a></h2>
-<p>the <span class="xref myst">linkml generator</span> can be used with the
+<p>the <a class="reference internal" href="../generators/linkml.html"><span class="doc std std-doc">linkml generator</span></a> can be used with the
 <code class="docutils literal notranslate"><span class="pre">--materialize-attributes</span></code> option to <em>materialize</em> all induced slots
 as attributes. This is useful if you want to make a version of your
 schema for distribution that frees the program that uses the schema

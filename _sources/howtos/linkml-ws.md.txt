@@ -1,5 +1,7 @@
 # LinkML Workspace Generator
 
+__NOTE: This guide is obsolete - we are switching to a cookiecutter approach__
+
 ## Pre-modeling Setup
 
 This generator helps you get setup with a pre-defined project structure, 

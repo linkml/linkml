@@ -50,7 +50,7 @@
 <li class="toctree-l2"><a class="reference internal" href="tutorial04.html">Part 4: Working with RDF</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Part 5: Using Python dataclasses</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#generating-a-python-datamodel">Generating a Python datamodel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#linkml-runtime">LinkML runtime</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#the-linkml-runtime">The LinkML runtime</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#alternatives">Alternatives</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#further-reading">Further reading</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#next">Next</a></li>
@@ -105,11 +105,11 @@
              
   <section id="part-5-using-python-dataclasses">
 <h1>Part 5: Using Python dataclasses<a class="headerlink" href="#part-5-using-python-dataclasses" title="Permalink to this heading"></a></h1>
-<p>If you are not a developer, you can skip this section.</p>
+<p><em>If you are not a developer, you can skip this section</em>.</p>
 <p>If you are a developer and favor a language other than python, you may
 still be interested in this section. The use of generated code is an
-optional but convenient part of LinkML. We are actively adding support
-for other languages.</p>
+optional but convenient part of LinkML. <a class="reference external" href="https://linkml.io/linkml/faq/general.html#is-linkml-only-for-python-developers">We are actively adding support
+for other languages</a>.</p>
 <section id="generating-a-python-datamodel">
 <h2>Generating a Python datamodel<a class="headerlink" href="#generating-a-python-datamodel" title="Permalink to this heading"></a></h2>
 <p>For illustration, we will take the schema we developed in the last section:</p>
@@ -189,18 +189,18 @@ for other languages.</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Person(id=&#39;ORCID:9876&#39;, full_name=&#39;Lex Luthor&#39;, aliases=[], phone=None, age=None)
 </pre></div>
 </div>
-<p>This is not very impressive in itself, but as your models get larger it can be very handy to have a python data model</p>
+<p>Hurray! Perhaps this is not very impressive in itself,
+but having an object model that is guaranteed to be in sync with your data model can
+help with productivity and robustness of code.</p>
 </section>
-<section id="linkml-runtime">
-<h2>LinkML runtime<a class="headerlink" href="#linkml-runtime" title="Permalink to this heading"></a></h2>
+<section id="the-linkml-runtime">
+<h2>The LinkML runtime<a class="headerlink" href="#the-linkml-runtime" title="Permalink to this heading"></a></h2>
 <p>The LinkML runtime is a separate python library that provides methods needed by your generated datamodel classes, and utilities for converting your python objects into YAML, JSON, RDF, and TSV:</p>
 <p>test_runtime.py:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">linkml_runtime.dumpers</span> <span class="kn">import</span> <span class="n">json_dumper</span>
-
 <span class="kn">from</span> <span class="nn">personinfo</span> <span class="kn">import</span> <span class="n">Person</span>
 
 <span class="n">p1</span> <span class="o">=</span> <span class="n">Person</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">&#39;ORCID:9876&#39;</span><span class="p">,</span> <span class="n">full_name</span><span class="o">=</span><span class="s1">&#39;Lex Luthor&#39;</span><span class="p">,</span> <span class="n">aliases</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Bad Guy&quot;</span><span class="p">])</span>
-
 <span class="nb">print</span><span class="p">(</span><span class="n">json_dumper</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">p1</span><span class="p">))</span>
 </pre></div>
 </div>

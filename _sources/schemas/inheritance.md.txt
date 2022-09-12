@@ -52,11 +52,17 @@ classes:
 
 This forces data providers to always provide a more specific class than the generic "`NamedThing`".
 
-Some generators may also choose to utilize abstract tags, e.g to mask generation of abstract classes.
+This also provides a very useful piece of metadata that can be used by tools that
+present schemas to domain scientists and subject matter experts. Abstract classes can be filtered
+from displays, with their properties "rolled down".
+
+Some generators may choose to utilize abstract tags, e.g to mask generation of abstract classes.
 
 **Note**: Slots can also be declared abstract.
 
-See also the [wikipedia page on Abstract Types](https://en.wikipedia.org/wiki/Abstract_type)
+See also:
+
+ - the [wikipedia page on Abstract Types](https://en.wikipedia.org/wiki/Abstract_type)
 
 ## Mixin classes and slots
 

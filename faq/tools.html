@@ -60,6 +60,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#what-tools-do-i-need-for-linkml">What tools do I need for LinkML?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#how-do-i-install-the-linkml-tools">How do I install the LinkML tools?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#what-tools-are-available-for-authoring-schemas">What tools are available for authoring schemas?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#is-there-ide-support-for-editing-schemas">Is there IDE support for editing schemas</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#is-there-a-tool-to-manage-schemas-as-spreadsheets">Is there a tool to manage schemas as spreadsheets?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#how-do-i-browse-a-schema">How do I browse a schema?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#how-can-i-check-my-schema-is-valid">How can I check my schema is valid?</a></li>
@@ -137,19 +138,22 @@
 </section>
 <section id="how-do-i-install-the-linkml-tools">
 <h2>How do I install the LinkML tools?<a class="headerlink" href="#how-do-i-install-the-linkml-tools" title="Permalink to this heading"></a></h2>
-<p>See the <span class="xref myst">installation guide</span>.</p>
+<p>See the <a class="reference internal" href="../intro/install.html"><span class="doc std std-doc">installation guide</span></a>.</p>
 </section>
 <section id="what-tools-are-available-for-authoring-schemas">
 <h2>What tools are available for authoring schemas?<a class="headerlink" href="#what-tools-are-available-for-authoring-schemas" title="Permalink to this heading"></a></h2>
 <p>Currently the main way to author a schema is to edit schema YAML files
 in a text editor or IDE (Integrated Development Environment).</p>
 <p>We recommend using an IDE that has support for YAML format.</p>
-<p>The meta model, here: https://w3id.org/linkml/meta.schema.json can be incorporated into pycharm for model development
-syntax validation.  For more details on pycharm specifically: https://www.jetbrains.com/help/pycharm/json.html#ws_json_schema_add_custom</p>
+</section>
+<section id="is-there-ide-support-for-editing-schemas">
+<h2>Is there IDE support for editing schemas<a class="headerlink" href="#is-there-ide-support-for-editing-schemas" title="Permalink to this heading"></a></h2>
+<p>IDEs like PyCharm and VSCode have support for schema-aware editing of YAML files.
+These require a JSON-Schema input.</p>
+<p>The LinkML meta model is converted to JSON-Schema here: <a class="reference external" href="https://w3id.org/linkml/meta.schema.json">https://w3id.org/linkml/meta.schema.json</a> and can be incorporated into pycharm for model syntax validation.  For more details on pycharm specifically: <a class="reference external" href="https://www.jetbrains.com/help/pycharm/json.html#ws_json_schema_add_custom">PyCharm docs</a></p>
 <p>See the section below on “Are there tools for editing my data?” for
 suggestions (note that your schema <em>is</em> data - schemas instantiate the
 schema class in the metamodel)</p>
-<p>One possible alternative to authoring schemas in YAML is to enter the schema in a <em>spreadsheet</em>, which is our next question…</p>
 </section>
 <section id="is-there-a-tool-to-manage-schemas-as-spreadsheets">
 <h2>Is there a tool to manage schemas as spreadsheets?<a class="headerlink" href="#is-there-a-tool-to-manage-schemas-as-spreadsheets" title="Permalink to this heading"></a></h2>
@@ -167,7 +171,7 @@ schema class in the metamodel)</p>
 <li><p>Use <a class="reference external" href="https://linkml.io/linkml/generators/owl">gen-owl</a> to make an OWL ontology, which can be browsed:</p>
 <ul>
 <li><p>Using an ontology editing tool like Protege</p></li>
-<li><p>By publishing the ontology with an ontology repository and using a web ontology browser</p></li>
+<li><p>By publishing the ontology with an ontology repository (e.g. BioPortal or a member of the OntoPortal alliance) and using a web ontology browser</p></li>
 <li><p>By running the Ontology Lookup Service docker image and browsing using a web browser</p></li>
 </ul>
 </li>
@@ -183,7 +187,7 @@ schema class in the metamodel)</p>
 <a class="reference external" href="https://linkml.io/linkml/generators/">generate</a> schemas in other
 frameworks from a linkml schema. The generators are part of the core framework.</p>
 <p>We have <em>experimental</em> importers as part of the
-<a class="reference external" href="https://github.com/linkml/linkml-model-enrichment">linkml-model-enrichment</a>
+<a class="reference external" href="https://github.com/linkml/schema-automator">schema-automator</a>
 project, which can generate a schema from:</p>
 <ul class="simple">
 <li><p>An OWL ontology</p></li>
@@ -197,7 +201,7 @@ on them in a production environment.</p>
 </section>
 <section id="are-there-tools-to-infer-a-schema-from-data">
 <h2>Are there tools to infer a schema from data?<a class="headerlink" href="#are-there-tools-to-infer-a-schema-from-data" title="Permalink to this heading"></a></h2>
-<p>The <a class="reference external" href="https://github.com/linkml/linkml-model-enrichment">linkml-model-enrichment</a> framework can seed a schema from:</p>
+<p>The <a class="reference external" href="https://github.com/linkml/schema-automator">schema-automator</a> framework can seed a schema from:</p>
 <ul class="simple">
 <li><p>CSV/TSV files</p></li>
 <li><p>JSON data</p></li>

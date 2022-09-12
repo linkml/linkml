@@ -58,9 +58,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#definitions">Definitions</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#overview-of-python-framework">Overview of Python Framework</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#overview-of-python-framework">Overview of Python Framework</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#how-to-port-to-your-language-of-choice">How to Port to your language of choice</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#step-1-bootstrap-metamodel-data-access-classes">Step 1: Bootstrap metamodel data access classes</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#step-2-generate-data-access-classes-for-the-metamodel">Step 2: Generate data access classes for the metamodel</a></li>
@@ -74,6 +72,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="linkml-ws.html">LinkML Workspace Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="model-measurements.html">How to model quantities and measurements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model-measurements.html#oboe">OBOE</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples of use</a></li>
@@ -191,9 +190,8 @@ However, if you are aiming for a more powerful library, then this has a number o
 <li><p>LinkML metamodel: the schema that describes LinkML itself</p></li>
 </ul>
 </section>
-</section>
 <section id="overview-of-python-framework">
-<h1>Overview of Python Framework<a class="headerlink" href="#overview-of-python-framework" title="Permalink to this heading"></a></h1>
+<h2>Overview of Python Framework<a class="headerlink" href="#overview-of-python-framework" title="Permalink to this heading"></a></h2>
 <p>Currently there are 3 core repos:</p>
 <ul class="simple">
 <li><p><a class="reference external" href="https://github.com/linkml/linkml-model">linkml-model</a> This holds the Source of Truth for the <em>metamodel</em></p></li>
@@ -204,6 +202,7 @@ However, if you are aiming for a more powerful library, then this has a number o
 <p>Note that there are no runtime dependencies on linkml-model; this
 would create a circularity since the metamodel is like any other
 schema and depends on the runtime. Instead, linkml-model is synced into linkml-runtime.</p>
+</section>
 <section id="how-to-port-to-your-language-of-choice">
 <h2>How to Port to your language of choice<a class="headerlink" href="#how-to-port-to-your-language-of-choice" title="Permalink to this heading"></a></h2>
 <p>This provides a general framework to tackle the problem of building
@@ -350,17 +349,19 @@ statements are added</p>
 </section>
 <section id="case-study-typescriptgen">
 <h4>Case study: typescriptgen<a class="headerlink" href="#case-study-typescriptgen" title="Permalink to this heading"></a></h4>
+<p>See: <a class="reference internal" href="../generators/typescript.html"><span class="doc std std-doc">gen-typescript</span></a></p>
 <p>In contrast to the python approaches, this targets typescript <em>Interfaces</em> as the construct of choice in the target language</p>
 <p>Note that interfaces are “compiled away” but are used for static analyis and IDE support</p>
 <p>This is being used to bootstrap a javascript runtime: <a class="reference external" href="https://github.com/linkml/linkml-runtime.js">linkml-runtime.js</a></p>
 </section>
 <section id="case-study-javagen">
 <h4>Case study: javagen<a class="headerlink" href="#case-study-javagen" title="Permalink to this heading"></a></h4>
+<p>See: <a class="reference internal" href="../generators/java.html"><span class="doc std std-doc">gen-java</span></a></p>
 <p>Currently the approaches here are under discussion. There are different choices of target language construct:</p>
 <ul class="simple">
 <li><p>classes</p></li>
 <li><p>interfaces</p></li>
-<li><p>records (introduced in java 16)</p></li>
+<li><p>records (introduced in java 14)</p></li>
 </ul>
 <p>The current pattern for generation roughly follows the pydanticgen approach of generating largely standalone Java records.</p>
 </section>
@@ -368,6 +369,19 @@ statements are added</p>
 <h4>Implementing for your target language<a class="headerlink" href="#implementing-for-your-target-language" title="Permalink to this heading"></a></h4>
 <p>We recommend starting with a generator for simple standalone classes. These do not need to be as fully featured as pythongen. You can treat things like annotating
 model elements with URIs, providing introspection support, and generating JSON as separate concerns – at least at first.</p>
+</section>
+<section id="language-specific-considerations">
+<h4>Language-specific considerations<a class="headerlink" href="#language-specific-considerations" title="Permalink to this heading"></a></h4>
+<p>This guide is intended to be general purpose, but it is important to consider local idioms
+for any given language, and how that community may use it.</p>
+<p>For example, R developers do not typically develop database infrastructure the same way
+other LinkML programmatic users might. The underlying R dataframe model is a slightly different
+way of looking at data than a classic OO, RDF, or JSON approach.</p>
+<p>Rust has many considerations around safety and sharing of objects, when converting
+a LinkML model to Rust data structures there are considerations that are lower level
+than what is captured in LinkML.</p>
+<p>For some languages, it may suffice to simply generate helper methods and vocabulary helpers,
+or validators that work with existing structures.</p>
 </section>
 </section>
 <section id="step-2-generate-data-access-classes-for-the-metamodel">
@@ -409,10 +423,10 @@ This could have advantages such as leveraging code generation frameworks in that
 <h3>Future Steps<a class="headerlink" href="#future-steps" title="Permalink to this heading"></a></h3>
 <p>The current LinkML toolchain has many features that you may wish to port over, but not
 everything needs to be ported.</p>
-<p>LinkML follows a “parasitzation” strategy where we can leverage other toolchains.</p>
+<p>LinkML follows a “parasitzation” strategy where we can leverage other tool chains.</p>
 <p>For example, implementing a validator in the target language may not be the highest priority
 if you can leverage the existing JSON-Schema generator and use existing json schema validators for
-the target language. The resulting validator may not be as complete but it may be sufficient
+the target language. The resulting validator may not be as complete, but it may be sufficient
 for your purposes.</p>
 <p>Similarly, to do something like dynamically convert objects instantiated in the target
 language to RDF and back, it may be sufficient to rely on the existing JSON-LD context generator</p>

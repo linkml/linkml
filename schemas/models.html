@@ -46,10 +46,10 @@
 <li class="toctree-l1"><a class="reference internal" href="../intro/tutorial.html">Tutorial</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">LinkML Schemas</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Models</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#model-metadata-and-directives">Model metadata and directives</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model-level-metadata-and-directives">Model-level metadata and directives</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#classes">Classes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#slots">Slots</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#the-attribute-slot">The Attribute slot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#the-attributes-slot">The Attributes slot</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#types">Types</a></li>
@@ -69,6 +69,8 @@
 <li class="toctree-l2"><a class="reference internal" href="imports.html">Imports</a></li>
 <li class="toctree-l2"><a class="reference internal" href="advanced.html">Advanced features</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generators.html">Mapping schemas to other frameworks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="derived-models.html">Derived models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metamodel.html">The metamodel</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../data/index.html">Working with Data</a></li>
@@ -113,11 +115,12 @@
              
   <section id="models">
 <h1>Models<a class="headerlink" href="#models" title="Permalink to this heading"></a></h1>
-<p>A LinkML model describes the structure of your data. Your data can be
+<p>A LinkML model (aka schema, aka data model) describes the <em>structure</em> of your data, with hooks for specifying the <em>semantics</em>. Your data can be
 expressed as JSON or YAML files (the default form for LinkML), or as
 CSVs, or as a relational database, or even a triplestore or graph
 database.</p>
-<p>LinkML models are authored as YAML files. These files can be understood as data files that instantiate <a class="reference external" href="https://w3id.org/linkml/SchemaDefinition">SchemaDefinitions</a> in the LinkML metamodel.</p>
+<p>LinkML models are typically authored as YAML files (although they can be <a class="reference internal" href="../developers/manipulating-schemas.html"><span class="doc std std-doc">generated programmatically</span></a> or from <a class="reference external" href="https://linkml.io/schemasheets/">spreadsheets</a>).
+These files can be understood as data files that instantiate <a class="reference external" href="https://w3id.org/linkml/SchemaDefinition">SchemaDefinitions</a> in the LinkML metamodel.</p>
 <p>The overall layout of a schema yaml file is roughly as follows:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://example.org/my-schema</span><span class="w"></span>
 <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_schema</span><span class="w"></span>
@@ -152,8 +155,8 @@ database.</p>
 </pre></div>
 </div>
 <p>To illustrate we will use an example schema for modeling people and attributes about people. The full schema can be found in this repo at <a class="reference external" href="https://github.com/linkml/linkml/tree/main/examples/PersonSchema">examples/PersonSchema</a></p>
-<section id="model-metadata-and-directives">
-<h2>Model metadata and directives<a class="headerlink" href="#model-metadata-and-directives" title="Permalink to this heading"></a></h2>
+<section id="model-level-metadata-and-directives">
+<h2>Model-level metadata and directives<a class="headerlink" href="#model-level-metadata-and-directives" title="Permalink to this heading"></a></h2>
 <p>A LinkML model/schema may have various pieces of metadata associated with it, for example:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://w3id.org/linkml/examples/personinfo</span><span class="w"></span>
 <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">personinfo</span><span class="w"></span>
@@ -291,8 +294,8 @@ as an allowed slot for <code class="docutils literal notranslate"><span class="p
 NamedThing, then <code class="docutils literal notranslate"><span class="pre">name</span></code> will be valid for Person. There is no need to
 re-declare</p>
 <p>See <a class="reference external" href="https://w3id.org/linkml/SlotDefinition">SlotDefinition</a> for a full list of which metamodel slots can be applied to slots.</p>
-<section id="the-attribute-slot">
-<h3>The Attribute slot<a class="headerlink" href="#the-attribute-slot" title="Permalink to this heading"></a></h3>
+<section id="the-attributes-slot">
+<h3>The Attributes slot<a class="headerlink" href="#the-attributes-slot" title="Permalink to this heading"></a></h3>
 <p>As a convenience feature, you can specify slot definitions directly within a class using the <code class="docutils literal notranslate"><span class="pre">attributes</span></code> slot:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="nt">Person</span><span class="p">:</span><span class="w"></span>
@@ -312,6 +315,8 @@ re-declare</p>
 <span class="w">        </span><span class="nt">maximum_value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">999</span><span class="w"></span>
 </pre></div>
 </div>
+<p>While this is more convenient than having a separate decoupled “slots” section,
+it makes it harder to reuse slots outside the context of a class hierarchy.</p>
 <p>See also:</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="../faq/modeling.html#when-should-i-use-attributes-vs-slots"><span class="std std-ref">FAQ: attributes vs slots</span></a></p></li>
@@ -375,6 +380,9 @@ re-declare</p>
 <span class="w">        </span><span class="nt">meaning</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">GSSO:000385</span><span class="w"></span>
 </pre></div>
 </div>
+<p>With the introduction of LinkML 1.3, LinkML supports <em>dynamic</em> or <em>intensional</em> enums,
+which allow enumerations to be derived from queries - e.g. to take all terms in a branch of
+an ontology.</p>
 </section>
 <section id="subsets">
 <h2>Subsets<a class="headerlink" href="#subsets" title="Permalink to this heading"></a></h2>

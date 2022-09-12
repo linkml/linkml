@@ -115,7 +115,7 @@
                                     <span class="n">get_dumper</span><span class="p">,</span> <span class="n">get_loader</span><span class="p">,</span> <span class="n">infer_root_class</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="SQLStore"><a class="viewcode-back" href="../../../developers/using-sql-dbs.html#linkml.utils.sqlutils.SQLStore">[docs]</a><span class="nd">@dataclass</span>
+<div class="viewcode-block" id="SQLStore"><a class="viewcode-back" href="../../../developers/sqlstore.html#linkml.utils.sqlutils.SQLStore">[docs]</a><span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">SQLStore</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A wrapper for a SQLLite database.</span>
@@ -140,7 +140,7 @@
     <span class="n">native_module</span><span class="p">:</span> <span class="n">ModuleType</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">include_schema_in_database</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">None</span>
 
-<div class="viewcode-block" id="SQLStore.db_exists"><a class="viewcode-back" href="../../../developers/using-sql-dbs.html#linkml.utils.sqlutils.SQLStore.db_exists">[docs]</a>    <span class="k">def</span> <span class="nf">db_exists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">create</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="viewcode-block" id="SQLStore.db_exists"><a class="viewcode-back" href="../../../developers/sqlstore.html#linkml.utils.sqlutils.SQLStore.db_exists">[docs]</a>    <span class="k">def</span> <span class="nf">db_exists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">create</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        check if database exists, optionally create if not present</span>
 
@@ -167,7 +167,7 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No database: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">database_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_path</span></div>
 
-<div class="viewcode-block" id="SQLStore.compile"><a class="viewcode-back" href="../../../developers/using-sql-dbs.html#linkml.utils.sqlutils.SQLStore.compile">[docs]</a>    <span class="k">def</span> <span class="nf">compile</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ModuleType</span><span class="p">:</span>
+<div class="viewcode-block" id="SQLStore.compile"><a class="viewcode-back" href="../../../developers/sqlstore.html#linkml.utils.sqlutils.SQLStore.compile">[docs]</a>    <span class="k">def</span> <span class="nf">compile</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ModuleType</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compile SQLAlchemy object model</span>
 
@@ -183,7 +183,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span> <span class="o">=</span> <span class="n">SchemaView</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">module</span></div>
 
-<div class="viewcode-block" id="SQLStore.compile_native"><a class="viewcode-back" href="../../../developers/using-sql-dbs.html#linkml.utils.sqlutils.SQLStore.compile_native">[docs]</a>    <span class="k">def</span> <span class="nf">compile_native</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ModuleType</span><span class="p">:</span>
+<div class="viewcode-block" id="SQLStore.compile_native"><a class="viewcode-back" href="../../../developers/sqlstore.html#linkml.utils.sqlutils.SQLStore.compile_native">[docs]</a>    <span class="k">def</span> <span class="nf">compile_native</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ModuleType</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compile native python object model</span>
 
@@ -193,7 +193,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">native_module</span> <span class="o">=</span> <span class="n">gen</span><span class="o">.</span><span class="n">compile_module</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">native_module</span></div>
 
-<div class="viewcode-block" id="SQLStore.load"><a class="viewcode-back" href="../../../developers/using-sql-dbs.html#linkml.utils.sqlutils.SQLStore.load">[docs]</a>    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_class</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Type</span><span class="p">[</span><span class="n">YAMLRoot</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">YAMLRoot</span><span class="p">:</span>
+<div class="viewcode-block" id="SQLStore.load"><a class="viewcode-back" href="../../../developers/sqlstore.html#linkml.utils.sqlutils.SQLStore.load">[docs]</a>    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_class</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Type</span><span class="p">[</span><span class="n">YAMLRoot</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">YAMLRoot</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Loads a LinkML object from the wrapped SQLite database</span>
 
@@ -217,7 +217,7 @@
         <span class="n">all_objs</span> <span class="o">=</span> <span class="n">q</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">from_sqla</span><span class="p">(</span><span class="n">all_objs</span><span class="p">)</span>
 
-<div class="viewcode-block" id="SQLStore.dump"><a class="viewcode-back" href="../../../developers/using-sql-dbs.html#linkml.utils.sqlutils.SQLStore.dump">[docs]</a>    <span class="k">def</span> <span class="nf">dump</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">:</span> <span class="n">YAMLRoot</span><span class="p">,</span> <span class="n">append</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="SQLStore.dump"><a class="viewcode-back" href="../../../developers/sqlstore.html#linkml.utils.sqlutils.SQLStore.dump">[docs]</a>    <span class="k">def</span> <span class="nf">dump</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">:</span> <span class="n">YAMLRoot</span><span class="p">,</span> <span class="n">append</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Store an element in the database</span>
 
@@ -247,7 +247,7 @@
                 <span class="k">return</span> <span class="n">nu_typ</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not find: </span><span class="si">{</span><span class="n">typ</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="SQLStore.to_sqla"><a class="viewcode-back" href="../../../developers/using-sql-dbs.html#linkml.utils.sqlutils.SQLStore.to_sqla">[docs]</a>    <span class="k">def</span> <span class="nf">to_sqla</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">YAMLRoot</span><span class="p">,</span> <span class="nb">list</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<div class="viewcode-block" id="SQLStore.to_sqla"><a class="viewcode-back" href="../../../developers/sqlstore.html#linkml.utils.sqlutils.SQLStore.to_sqla">[docs]</a>    <span class="k">def</span> <span class="nf">to_sqla</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">YAMLRoot</span><span class="p">,</span> <span class="nb">list</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Translate native LinkML object to SQLAlchemy declarative module</span>
 
@@ -293,7 +293,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">obj</span></div>
 
-<div class="viewcode-block" id="SQLStore.from_sqla"><a class="viewcode-back" href="../../../developers/using-sql-dbs.html#linkml.utils.sqlutils.SQLStore.from_sqla">[docs]</a>    <span class="k">def</span> <span class="nf">from_sqla</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">YAMLRoot</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">YAMLRoot</span><span class="p">]]]:</span>
+<div class="viewcode-block" id="SQLStore.from_sqla"><a class="viewcode-back" href="../../../developers/sqlstore.html#linkml.utils.sqlutils.SQLStore.from_sqla">[docs]</a>    <span class="k">def</span> <span class="nf">from_sqla</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">YAMLRoot</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">YAMLRoot</span><span class="p">]]]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Translate from SQLAlchemy declarative module to native LinkML</span>
 

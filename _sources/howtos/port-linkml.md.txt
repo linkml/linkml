@@ -88,7 +88,7 @@ However, if you are aiming for a more powerful library, then this has a number o
 - Target Language: the programming language one wishes to write a LinkML framework for
 - LinkML metamodel: the schema that describes LinkML itself
 
-# Overview of Python Framework
+## Overview of Python Framework
 
 Currently there are 3 core repos:
 
@@ -276,6 +276,8 @@ All of these decisions lead to a very fully featured set of generated data acces
 
 #### Case study: typescriptgen
 
+See: [gen-typescript](../generators/typescript)
+
 In contrast to the python approaches, this targets typescript *Interfaces* as the construct of choice in the target language
 
 Note that interfaces are "compiled away" but are used for static analyis and IDE support
@@ -284,11 +286,13 @@ This is being used to bootstrap a javascript runtime: [linkml-runtime.js](https:
 
 #### Case study: javagen
 
+See: [gen-java](../generators/java)
+
 Currently the approaches here are under discussion. There are different choices of target language construct:
 
 - classes
 - interfaces
-- records (introduced in java 16)
+- records (introduced in java 14)
 
 The current pattern for generation roughly follows the pydanticgen approach of generating largely standalone Java records.
 
@@ -296,6 +300,22 @@ The current pattern for generation roughly follows the pydanticgen approach of g
 
 We recommend starting with a generator for simple standalone classes. These do not need to be as fully featured as pythongen. You can treat things like annotating
 model elements with URIs, providing introspection support, and generating JSON as separate concerns -- at least at first.
+
+#### Language-specific considerations
+
+This guide is intended to be general purpose, but it is important to consider local idioms
+for any given language, and how that community may use it.
+
+For example, R developers do not typically develop database infrastructure the same way
+other LinkML programmatic users might. The underlying R dataframe model is a slightly different
+way of looking at data than a classic OO, RDF, or JSON approach.
+
+Rust has many considerations around safety and sharing of objects, when converting
+a LinkML model to Rust data structures there are considerations that are lower level
+than what is captured in LinkML.
+
+For some languages, it may suffice to simply generate helper methods and vocabulary helpers,
+or validators that work with existing structures.
 
 ### Step 2: Generate data access classes for the metamodel
 
@@ -347,12 +367,11 @@ At this stage you may wish to revisit some design decisions in the original gene
 The current LinkML toolchain has many features that you may wish to port over, but not
 everything needs to be ported.
 
-
-LinkML follows a "parasitzation" strategy where we can leverage other toolchains.
+LinkML follows a "parasitzation" strategy where we can leverage other tool chains.
 
 For example, implementing a validator in the target language may not be the highest priority
 if you can leverage the existing JSON-Schema generator and use existing json schema validators for
-the target language. The resulting validator may not be as complete but it may be sufficient
+the target language. The resulting validator may not be as complete, but it may be sufficient
 for your purposes.
 
 Similarly, to do something like dynamically convert objects instantiated in the target

@@ -121,13 +121,14 @@ One advantage of LinkML is that it is not *only* for TSVs
 
 JSON-Schema is a fantastic framework for validating JSON documents. If your primary use case is validating JSON documents then by all means keep using it!
 
-However, if any of the following apply to you, you may want to consider LinkML - and remember, you can always compile your LinkML schema down to JSON-Schema!
+However, if any of the following apply to you, you may want to consider LinkML - and remember, you can always
+[compile your LinkML schema down to JSON-Schema](../generators/json-schema)!
 
  * You want to make use inheritance/polymorphism
  * you want a language with a simple core based around familiar concepts of classes and fields (slots)
  * you want to make your data more FAIR (Findable Accessible Interoperable Reusable), for example, by annotating schema elements with IRIs
  * you want to use JSON-LD but don't want to coordinate separate JSON-Schema and JSON-LD context documents - LinkML is an all-in-one-solution!
- * you want a more advanced ontology-aware enumerations
+ * you want a more advanced ontology-aware enumerations or [dynamic enumerations](https://douroucouli.wordpress.com/2022/07/15/using-ontologies-within-data-models-and-standards/)
  * you want your datamodel to be used in other frameworks than JSON - e.g. TSVs, SQL databases, Triplestores, graph databases
 
 When making your decision, you should weigh factors such as the fact that things that can be expressed in one framework may not be expressible in the other.
@@ -149,7 +150,7 @@ schema to ShEx, with a prototype SHACL generator now available.
  * your user based and developer base is not entirely semantic web / linked data enthusiasts
  * your emphasis is more on data modeling rather than validation
 
-Full disclosure: LinkML lead developer Harold Solbrig is also one of the authors of the ShEx specification.
+Note: LinkML lead developer Harold Solbrig is also one of the authors of the ShEx specification.
 
 See also:
 
@@ -276,18 +277,20 @@ However, the yUML generator (used in [the markdown generator](https://linkml.io/
 ## Why should I use LinkML over OWL?
 
 LinkML is in a very different class of languages from OWL. LinkML is a
-schema language, with features in common with JSON-Schema, XML Schema,
+*schema language*, with features in common with JSON-Schema, XML Schema,
 UML, SQL DDL, shape languages such as ShEx/SHACL.
 
 In our experience OWL is best for "open model" direct representations
 of domain knowledge, and should not be used as a schema
-language. However, we appreciate this is nuanced, and we welcome any
+language. Many LinkML contributors and users also work with large biomedical
+terminological-style ontologies in OWL. However, we appreciate this is nuanced, and we welcome any
 questions or discussions via our GitHub issue tracker.
 
 If you do have a schema expressed in OWL, you can use the linkml
 toolkit to infer/bootstrap a LinkML schema from it. But note this is a
 heuristic procedure, and will not give you sensible results from a
-large "terminological" ontology.
+large "terminological" ontology (such as an OBO ontology); it is best used with schema-style "ontologies",
+such as common semantic web vocabularies.
 
 It *is* possible to use LinkML to help you structure an OWL ontology
 by using LinkML as a metaclass authoring system. See
@@ -310,7 +313,7 @@ asked to write validators or UIs driven by these spreadsheets the lack
 of clear semantics can lead to repetitive error-prone code that is
 costly to maintain.
 
-LinkML provides a more systematic way to manage data dictionaries and metadata elements.
+LinkML provides a **systematic way to manage data dictionaries and metadata elements**.
 
 Historically this has required use of YAML files to maintain a schema,
 which can be offputting to non-technical metadata curators. A new framework allows the best of both worlds:

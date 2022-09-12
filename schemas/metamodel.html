@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Versioning of the metamodel &mdash; linkml  documentation</title>
+  <title>The metamodel &mdash; linkml  documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -18,7 +18,9 @@
         <script src="../_static/doctools.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" /> 
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Working with Data" href="../data/index.html" />
+    <link rel="prev" title="Derived models" href="derived-models.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -38,11 +40,37 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../intro/overview.html">LinkML at a glance</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../intro/install.html">Quick Install Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../intro/tutorial.html">Tutorial</a></li>
-<li class="toctree-l1"><a class="reference internal" href="index.html">LinkML Schemas</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">LinkML Schemas</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="models.html">Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metadata.html">Schema Element Metadata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="inheritance.html">Inheritance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="slots.html">Slots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="uris-and-mappings.html">URIs and Mappings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="enums.html">Semantic Enumerations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="inlining.html">Inlining objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="constraints.html">Adding constraints and rules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="subsets.html">Subsets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="imports.html">Imports</a></li>
+<li class="toctree-l2"><a class="reference internal" href="advanced.html">Advanced features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generators.html">Mapping schemas to other frameworks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="derived-models.html">Derived models</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">The metamodel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#metamodel-versioning-scheme">Metamodel Versioning scheme</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#release-candidates">Release Candidates</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#metamodel-release-notes">Metamodel Release Notes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#linkml-model-1-3">LinkML-Model 1.3</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#linkml-model-1-2">LinkML-Model 1.2</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#linkml-model-1-0-june-2021">LinkML-Model 1.0: June 2021</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../data/index.html">Working with Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../generators/index.html">Generators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../howtos/index.html">How-to Guides</a></li>
@@ -72,9 +100,10 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Versioning of the metamodel</li>
+          <li><a href="index.html">LinkML Schemas</a> &raquo;</li>
+      <li>The metamodel</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/schemas/metamodel-versions.md.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/schemas/metamodel.md.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -82,10 +111,16 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="versioning-of-the-metamodel">
-<h1>Versioning of the metamodel<a class="headerlink" href="#versioning-of-the-metamodel" title="Permalink to this heading"></a></h1>
-<section id="versioning-scheme">
-<h2>Versioning scheme<a class="headerlink" href="#versioning-scheme" title="Permalink to this heading"></a></h2>
+  <section id="the-metamodel">
+<h1>The metamodel<a class="headerlink" href="#the-metamodel" title="Permalink to this heading"></a></h1>
+<p>LinkML is fully described by a <em>metamodel</em> that is itself described in LinkML</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/linkml/linkml-model/">linkml-model repo</a></p></li>
+<li><p><a class="reference external" href="https://linkml.io/linkml-model/docs/">linkml-model documentation</a></p></li>
+<li><p><a class="reference external" href="https://linkml.io/linkml-model/docs/specification/03schemas/">Part 3</a> of specification</p></li>
+</ul>
+<section id="metamodel-versioning-scheme">
+<h2>Metamodel Versioning scheme<a class="headerlink" href="#metamodel-versioning-scheme" title="Permalink to this heading"></a></h2>
 <p>The LinkML project uses Semantic Versioning (SemVer)</p>
 <p>Note there are a number of different artefacts in the LinkML project</p>
 <ul class="simple">
@@ -193,7 +228,10 @@ artefacts version numbers are loosely coupled</strong>:</p>
 
            </div>
           </div>
-          <footer>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="derived-models.html" class="btn btn-neutral float-left" title="Derived models" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../data/index.html" class="btn btn-neutral float-right" title="Working with Data" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
 
   <hr/>
 

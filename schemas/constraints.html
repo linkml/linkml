@@ -58,12 +58,15 @@
 <li class="toctree-l3"><a class="reference internal" href="#patterns">Patterns</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#structured-patterns">Structured patterns</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#minimum-and-maximum-values">Minimum and Maximum values</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#expressions-and-other-advanced-features">Expressions and other advanced features</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="subsets.html">Subsets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="imports.html">Imports</a></li>
 <li class="toctree-l2"><a class="reference internal" href="advanced.html">Advanced features</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generators.html">Mapping schemas to other frameworks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="derived-models.html">Derived models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metamodel.html">The metamodel</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../data/index.html">Working with Data</a></li>
@@ -112,6 +115,34 @@
 <section id="unique-key">
 <h2>Unique Key<a class="headerlink" href="#unique-key" title="Permalink to this heading"></a></h2>
 <p>A class can declare <a class="reference external" href="https://w3id.org/linkml/unique_keys">unique_keys</a>, a set of slots that are unique for members of that class.</p>
+<p>For example, a database of chemical entities may with to declare the tuple of atomic number and neutron number
+as a unique key for an isotope:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="w">  </span><span class="nt">ChemicalEntity</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">slots</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">id</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">symbol</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">inchi</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">atomic_number</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">neutron_number</span><span class="w"></span>
+<span class="w">  </span><span class="nt">ChemicalElement</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">is_a</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ChemicalEntity</span><span class="w"></span>
+<span class="w">    </span>
+<span class="w">  </span><span class="nt">Isotope</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">is_a</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ChemicalEntity</span><span class="w"></span>
+<span class="w">    </span><span class="nt">unique_keys</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">main</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">An isotope is uniquely identifier by atomic and neutron number</span><span class="w"></span>
+<span class="w">        </span><span class="nt">unique_key_slots</span><span class="p">:</span><span class="w"></span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">atomic_number</span><span class="w"></span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">neutron_number</span><span class="w"></span>
+<span class="w">      </span><span class="nt">symbol</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">An isotope is uniquely identifier by its symbol</span><span class="w"></span>
+<span class="w">        </span><span class="nt">notes</span><span class="p">:</span><span class="w"></span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">we could have opted to use a simple key slot here as this is not a compound key but this allows us to annotate the key</span><span class="w"></span>
+<span class="w">        </span><span class="nt">unique_key_slots</span><span class="p">:</span><span class="w"></span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">symbol</span><span class="w"></span>
+</pre></div>
+</div>
 <p><a class="reference external" href="https://w3id.org/linkml/identifier">identifier</a>s are special cases of unique keys.</p>
 </section>
 <section id="string-serialization">
@@ -135,6 +166,10 @@
 </ul>
 </li>
 </ul>
+<p>See:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://w3id.org/linkml/string_serialization">string_serialization</a> in the metamodel</p></li>
+</ul>
 </section>
 <section id="patterns">
 <h2>Patterns<a class="headerlink" href="#patterns" title="Permalink to this heading"></a></h2>
@@ -145,6 +180,10 @@
 <span class="w">       </span><span class="nt">pattern</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;^[\\d\\(\\)\\-]+$&quot;</span><span class="w">   </span><span class="c1">## regular expression</span><span class="w"></span>
 </pre></div>
 </div>
+<p>See:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://w3id.org/linkml/pattern">pattern</a> in the metamodel</p></li>
+</ul>
 </section>
 <section id="structured-patterns">
 <h2>Structured patterns<a class="headerlink" href="#structured-patterns" title="Permalink to this heading"></a></h2>
@@ -166,6 +205,7 @@ allows you to provide patterns in a more structured way, and to <em>reuse</em> s
 <span class="w">      </span><span class="nt">partial_match</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span><span class="w"></span>
 </pre></div>
 </div>
+<p>You can use <a class="reference internal" href="../generators/linkml.html"><span class="doc std std-doc">gen-linkml</span></a> to expand these into structured patterns</p>
 </section>
 <section id="minimum-and-maximum-values">
 <h2>Minimum and Maximum values<a class="headerlink" href="#minimum-and-maximum-values" title="Permalink to this heading"></a></h2>
@@ -174,6 +214,11 @@ allows you to provide patterns in a more structured way, and to <em>reuse</em> s
 <li><p><a class="reference external" href="https://w3id.org/linkml/minimum_value">minimum_value</a></p></li>
 <li><p><a class="reference external" href="https://w3id.org/linkml/maximum_value">maximum_value</a></p></li>
 </ul>
+</section>
+<section id="expressions-and-other-advanced-features">
+<h2>Expressions and other advanced features<a class="headerlink" href="#expressions-and-other-advanced-features" title="Permalink to this heading"></a></h2>
+<p>The above describes the core constraint feature. See the <a class="reference internal" href="advanced.html"><span class="doc std std-doc">advanced features guide</span></a> for more on how
+to write rules and expressions for more expressive constraints.</p>
 </section>
 </section>
 

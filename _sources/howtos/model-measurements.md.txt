@@ -491,8 +491,15 @@ narrow table
 
 ### FHIR
 
- - https://build.fhir.org/observation.html
- - https://build.fhir.org/datatypes.html#Quantity
+Fast Healthcare Interoperability Resources (FHIR) is a standard for Electronic Health Records (EHRs).
+
+The FHIR *Observation* resource is intended for capturing measurements and subjective point-in-time assessments
+
+ - [Observation](https://build.fhir.org/observation.html)
+
+Observations make use of the Quantity resource:   
+
+ - [Quantity datatype](https://build.fhir.org/datatypes.html#Quantity)
 
 Example data instance:
 
@@ -533,7 +540,33 @@ valueQuantity:
   code: "[lb_av]"
 ```
 
+Each observation object nas a `valueQuantity` field which has both the value and the unit,
+together with a way of representing the unit standard (UCUM).
+
 ### MIxS
+
+The Genomics Standards Consortium (GSC) Minimal Information about any Sequence (MIxS) standard
+provides standardized metadata elements for recording properties of environmental and biomedical samples
+intended for sequencing. These properties are a mix of categorical values and
+quantities, for things that are measured.
+
+MIxS provides terms such as:
+
+- depth (e.g depth in the soil at which a sample was taken)
+- altitude (height above sea level)
+
+Historically MIxS has not sought to standardize on specific units (e.g. meters for depth).
+Instead each field is associated with a *regular expression-style patterns*.
+
+Examples:
+
+- depth: `{float} {unit}`
+
+In contrast to FHIR which is an interoperability system for exchanging messages between *machines*,
+the choices in MIxS reflect the norms of interchange often involving simple spreadsheets.
+
+Using MIxS users can have single fields for each property, allowing users to use a unit system of choice.
+However, the use of strings means values must be parsed.
 
 ### QUDT
 
@@ -541,6 +574,9 @@ valueQuantity:
 
 ![img](https://ddooley.github.io/assets/images/docs/data_john_bmi_vs.png)
 
+Comparison with QUDT and OM:
+
+![img](https://user-images.githubusercontent.com/4000582/56243972-a72e7280-6050-11e9-8277-fcad93ad58e7.png)
 
 data:
 ```yaml
@@ -556,6 +592,20 @@ data:
         has measurement unit label: UO:0000008
         has decimal value: 1.53
 ```
+
+# OBOE
+
+Concepts:
+
+- **Observation**: an event in which one or more measurements are taken
+- **Measurement**: the measured value of a property for a specific object or phenomenon (e.g., 3.2)
+- **Entity**: an object or phenomenon on which measurements are made (e.g., Quercus rubrum)
+- **Characteristic**: the property being measured (e.g., VolumetricDensity)
+- **Standard**: units and controlled vocabularies for interpreting measured values (e.g., g/cm^3)
+- **Protocol**: the procedures followed to obtain measurements (e.g., DensityProtocol2014)
+
+
+![img](https://ars.els-cdn.com/content/image/1-s2.0-S1574954107000362-gr1.jpg)
 
 ### CF
 

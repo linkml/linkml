@@ -1,11 +1,12 @@
 # Models
 
-A LinkML model describes the structure of your data. Your data can be
+A LinkML model (aka schema, aka data model) describes the *structure* of your data, with hooks for specifying the *semantics*. Your data can be
 expressed as JSON or YAML files (the default form for LinkML), or as
 CSVs, or as a relational database, or even a triplestore or graph
 database.
 
-LinkML models are authored as YAML files. These files can be understood as data files that instantiate [SchemaDefinitions](https://w3id.org/linkml/SchemaDefinition) in the LinkML metamodel.
+LinkML models are typically authored as YAML files (although they can be [generated programmatically](../developers/manipulating-schemas) or from [spreadsheets](https://linkml.io/schemasheets/)).
+These files can be understood as data files that instantiate [SchemaDefinitions](https://w3id.org/linkml/SchemaDefinition) in the LinkML metamodel.
 
 The overall layout of a schema yaml file is roughly as follows:
 
@@ -44,7 +45,7 @@ enums:
 
 To illustrate we will use an example schema for modeling people and attributes about people. The full schema can be found in this repo at [examples/PersonSchema](https://github.com/linkml/linkml/tree/main/examples/PersonSchema)
 
-## Model metadata and directives
+## Model-level metadata and directives
 
 A LinkML model/schema may have various pieces of metadata associated with it, for example:
 
@@ -191,7 +192,7 @@ re-declare
 
 See [SlotDefinition](https://w3id.org/linkml/SlotDefinition) for a full list of which metamodel slots can be applied to slots.
 
-### The Attribute slot
+### The Attributes slot
 
 As a convenience feature, you can specify slot definitions directly within a class using the `attributes` slot:
 
@@ -213,6 +214,9 @@ classes:
         minimum_value: 0
         maximum_value: 999
 ```
+
+While this is more convenient than having a separate decoupled "slots" section,
+it makes it harder to reuse slots outside the context of a class hierarchy.
 
 See also:
 
@@ -286,6 +290,10 @@ enums:
       cisgender woman:
         meaning: GSSO:000385
 ```
+
+With the introduction of LinkML 1.3, LinkML supports *dynamic* or *intensional* enums,
+which allow enumerations to be derived from queries - e.g. to take all terms in a branch of
+an ontology.
 
 ## Subsets
 

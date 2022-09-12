@@ -51,7 +51,6 @@
 <li class="toctree-l2"><a class="reference internal" href="yq-for-schemas.html">Using yq for querying and manipulating schemas</a></li>
 <li class="toctree-l2"><a class="reference internal" href="using-jsonld.html">Using JSON-LD</a></li>
 <li class="toctree-l2"><a class="reference internal" href="port-linkml.html">Porting LinkML tools to other programming languages</a></li>
-<li class="toctree-l2"><a class="reference internal" href="port-linkml.html#overview-of-python-framework">Overview of Python Framework</a></li>
 <li class="toctree-l2"><a class="reference internal" href="linkml-ws.html">LinkML Workspace Generator</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">How to model quantities and measurements</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#central-example">Central Example</a></li>
@@ -72,9 +71,12 @@
 <li class="toctree-l4"><a class="reference internal" href="#mixs">MIxS</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#qudt">QUDT</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#obi">OBI</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#cf">CF</a></li>
 </ul>
 </li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#oboe">OBOE</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#cf">CF</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#further-reading">Further Reading</a></li>
 </ul>
 </li>
@@ -640,9 +642,14 @@ The units are also fixed, but ranges are supported.</p>
 <h2>Case Studies<a class="headerlink" href="#case-studies" title="Permalink to this heading"></a></h2>
 <section id="fhir">
 <h3>FHIR<a class="headerlink" href="#fhir" title="Permalink to this heading"></a></h3>
+<p>Fast Healthcare Interoperability Resources (FHIR) is a standard for Electronic Health Records (EHRs).</p>
+<p>The FHIR <em>Observation</em> resource is intended for capturing measurements and subjective point-in-time assessments</p>
 <ul class="simple">
-<li><p>https://build.fhir.org/observation.html</p></li>
-<li><p>https://build.fhir.org/datatypes.html#Quantity</p></li>
+<li><p><a class="reference external" href="https://build.fhir.org/observation.html">Observation</a></p></li>
+</ul>
+<p>Observations make use of the Quantity resource:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://build.fhir.org/datatypes.html#Quantity">Quantity datatype</a></p></li>
 </ul>
 <p>Example data instance:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">resourceType</span><span class="p">:</span> <span class="n">Observation</span>
@@ -681,9 +688,30 @@ The units are also fixed, but ranges are supported.</p>
   <span class="n">code</span><span class="p">:</span> <span class="s2">&quot;[lb_av]&quot;</span>
 </pre></div>
 </div>
+<p>Each observation object nas a <code class="docutils literal notranslate"><span class="pre">valueQuantity</span></code> field which has both the value and the unit,
+together with a way of representing the unit standard (UCUM).</p>
 </section>
 <section id="mixs">
 <h3>MIxS<a class="headerlink" href="#mixs" title="Permalink to this heading"></a></h3>
+<p>The Genomics Standards Consortium (GSC) Minimal Information about any Sequence (MIxS) standard
+provides standardized metadata elements for recording properties of environmental and biomedical samples
+intended for sequencing. These properties are a mix of categorical values and
+quantities, for things that are measured.</p>
+<p>MIxS provides terms such as:</p>
+<ul class="simple">
+<li><p>depth (e.g depth in the soil at which a sample was taken)</p></li>
+<li><p>altitude (height above sea level)</p></li>
+</ul>
+<p>Historically MIxS has not sought to standardize on specific units (e.g. meters for depth).
+Instead each field is associated with a <em>regular expression-style patterns</em>.</p>
+<p>Examples:</p>
+<ul class="simple">
+<li><p>depth: <code class="docutils literal notranslate"><span class="pre">{float}</span> <span class="pre">{unit}</span></code></p></li>
+</ul>
+<p>In contrast to FHIR which is an interoperability system for exchanging messages between <em>machines</em>,
+the choices in MIxS reflect the norms of interchange often involving simple spreadsheets.</p>
+<p>Using MIxS users can have single fields for each property, allowing users to use a unit system of choice.
+However, the use of strings means values must be parsed.</p>
 </section>
 <section id="qudt">
 <h3>QUDT<a class="headerlink" href="#qudt" title="Permalink to this heading"></a></h3>
@@ -691,6 +719,8 @@ The units are also fixed, but ranges are supported.</p>
 <section id="obi">
 <h3>OBI<a class="headerlink" href="#obi" title="Permalink to this heading"></a></h3>
 <p><img alt="img" src="https://ddooley.github.io/assets/images/docs/data_john_bmi_vs.png" /></p>
+<p>Comparison with QUDT and OM:</p>
+<p><img alt="img" src="https://user-images.githubusercontent.com/4000582/56243972-a72e7280-6050-11e9-8277-fcad93ad58e7.png" /></p>
 <p>data:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">P001</span><span class="w"></span>
 <span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">NCBITaxon:9606</span><span class="w"></span>
@@ -706,9 +736,22 @@ The units are also fixed, but ranges are supported.</p>
 </pre></div>
 </div>
 </section>
-<section id="cf">
-<h3>CF<a class="headerlink" href="#cf" title="Permalink to this heading"></a></h3>
 </section>
+</section>
+<section id="oboe">
+<h1>OBOE<a class="headerlink" href="#oboe" title="Permalink to this heading"></a></h1>
+<p>Concepts:</p>
+<ul class="simple">
+<li><p><strong>Observation</strong>: an event in which one or more measurements are taken</p></li>
+<li><p><strong>Measurement</strong>: the measured value of a property for a specific object or phenomenon (e.g., 3.2)</p></li>
+<li><p><strong>Entity</strong>: an object or phenomenon on which measurements are made (e.g., Quercus rubrum)</p></li>
+<li><p><strong>Characteristic</strong>: the property being measured (e.g., VolumetricDensity)</p></li>
+<li><p><strong>Standard</strong>: units and controlled vocabularies for interpreting measured values (e.g., g/cm^3)</p></li>
+<li><p><strong>Protocol</strong>: the procedures followed to obtain measurements (e.g., DensityProtocol2014)</p></li>
+</ul>
+<p><img alt="img" src="https://ars.els-cdn.com/content/image/1-s2.0-S1574954107000362-gr1.jpg" /></p>
+<section id="cf">
+<h2>CF<a class="headerlink" href="#cf" title="Permalink to this heading"></a></h2>
 </section>
 <section id="further-reading">
 <h2>Further Reading<a class="headerlink" href="#further-reading" title="Permalink to this heading"></a></h2>
