@@ -454,7 +454,7 @@ class DocGenerator(Generator):
             s += " ["
             if element.mixins:
                 for m in element.mixins:
-                    s += f" {m}"
+                    s += f" {self.link(m)}"
             s += "]"
         s += "\n"
         return s
