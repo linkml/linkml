@@ -546,22 +546,16 @@ class DocGenerator(Generator):
         else:
             return False
 
-    def fetch_own_attributes_of_class(self, cls: ClassDefinition) -> List[SlotDefinition]:
+    def fetch_own_attributes_of_class(self, cls: ClassDefinition) -> List[SlotDefinitionName]:
         """Fetch list of all own attributes of a class, i.e., 
         all slots that belong to the domain of a class.
 
         :param cls: class for which we want to determine the attributes
         :return: list of all own attributes of a class
         """
-        sv = self.schemaview
+        return cls.slots + list(cls.attributes.keys())
 
-        slot_list = sv.class_induced_slots(class_name=cls.name)
-
-        own_slots = [slot for slot in slot_list if cls.name in slot.domain_of]
-
-        return own_slots
-
-    def fetch_inherited_attributes_of_class(self, cls: ClassDefinition) -> List[SlotDefinition]:
+    def fetch_inherited_attributes_of_class(self, cls: ClassDefinition) -> List[SlotDefinitionName]:
         """Fetch list of all inherited attributes of a class, i.e., 
         all slots that belong to the domain of a class.
 
@@ -570,12 +564,9 @@ class DocGenerator(Generator):
         """
         sv = self.schemaview
         
-        slot_list = sv.class_induced_slots(class_name=cls.name)
-        ancestors = sv.class_ancestors(class_name=cls.name)
+        slot_list = [slot.name for slot in sv.class_induced_slots(class_name=cls.name)]
 
-        inherited_slots = [slot for slot in slot_list if set(slot.domain_of).intersection(ancestors)]
-
-        return inherited_slots
+        return list(set(slot_list).difference(self.fetch_own_attributes_of_class(cls)))
 
 
 @shared_arguments(DocGenerator)

@@ -225,19 +225,17 @@ class DocGeneratorTestCase(unittest.TestCase):
         cls = sv.get_class("Address")
 
         # test assertion for own attributes of a class
-        own_attributes = gen.fetch_own_attributes_of_class(cls)
+        actual_result = gen.fetch_own_attributes_of_class(cls)
         expected_result = ["street", "city"]
-        actual_result = [attr.name for attr in own_attributes]
 
         self.assertListEqual(expected_result, actual_result)
 
         # test assertion for inherited attributes of a class
         cls = sv.get_class("EmploymentEvent")
-        inherited_attributes = gen.fetch_inherited_attributes_of_class(cls)
-        expected_result = [attr.name for attr in inherited_attributes]
-        actual_result = ["is current"]
+        actual_result = gen.fetch_inherited_attributes_of_class(cls)
+        expected_result = ["ended at time", "metadata", "started at time", "is current"]
         
-        self.assertListEqual(expected_result, actual_result)
+        self.assertListEqual(sorted(expected_result), sorted(actual_result))
 
 
 
