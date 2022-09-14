@@ -253,36 +253,30 @@ classes:
 
 slots:
   employed at:
-    domain_of: Person
     range: Company
     in_subset:
       - subset A
   is current:
-    domain_of: Event
     range: boolean
   has employment history:
-    domain_of: Person
     range: EmploymentEvent
     multivalued: true
     inlined_as_list: true
     in_subset:
       - subset B
   has marriage history:
-    domain_of: Person
     range: MarriageEvent
     multivalued: true
     inlined_as_list: true
     in_subset:
       - subset B
   has medical history:
-    domain_of: Person
     range: MedicalEvent
     multivalued: true
     inlined_as_list: true
     in_subset:
       - subset B
   has familial relationships:
-    domain_of: Person
     range: FamilialRelationship
     multivalued: true
     inlined_as_list: true
@@ -291,23 +285,19 @@ slots:
   married to:
     range: Person
   in location:
-    domain_of: Event
     range: Place
     annotations:
       "biolink:opposite": location_of
   diagnosis:
-    domain_of: Person
     range: DiagnosisConcept
     inlined: true
   procedure:
-    domain_of: Person
     range: ProcedureConcept
     inlined: true
   addresses:
     range: Address
     multivalued: True
   age in years:
-    domain_of: Person
     description: number of years since birth
     range: integer
     minimum_value: 0
@@ -318,9 +308,7 @@ slots:
   related to:
   type:
   street:
-    domain_of: Address
   city:
-    domain_of: Address
   has birth event:
     range: BirthEvent
   in code system:
