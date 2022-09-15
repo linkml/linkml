@@ -568,6 +568,21 @@ class DocGenerator(Generator):
 
         return list(set(slot_list).difference(self.fetch_own_attributes_of_class(cls)))
 
+    def fetch_mixed_in_slots_of_class(self, cls: ClassDefinition) -> Dict[str, List[str]]:
+        """Fetch list of all slots acquired through mixing.
+
+        :param cls: class for which we want to determine the mixed in slots
+        :return: list of all mixed in slots from each mixin class
+        """
+        mixed_in_slots = {}
+        sv = self.schemaview
+
+        mixins = sv.class_parents(class_name=cls.name, mixins=True, is_a=False)
+        for c in mixins:
+            mixed_in_slots[c] = sv.class_slots(c)
+            
+        return mixed_in_slots
+
 
 @shared_arguments(DocGenerator)
 @click.option("--directory", "-d", required=True, help="Folder to which document files are written")

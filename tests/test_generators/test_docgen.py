@@ -237,6 +237,12 @@ class DocGeneratorTestCase(unittest.TestCase):
         
         self.assertListEqual(sorted(expected_result), sorted(actual_result))
 
+        # test assertion for mixed in slots of a class
+        cls = sv.get_class("Organization")
+        actual_result = gen.fetch_mixed_in_slots_of_class(cls)
+        expected_result = {"HasAliases": ["aliases"]}
+
+        self.assertDictEqual(actual_result, expected_result)
 
 
 if __name__ == '__main__':
