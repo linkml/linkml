@@ -48,7 +48,7 @@ class ContextGenerator(Generator):
     emit_metadata: bool = field(default_factory=lambda: False)
     model: Optional[bool] = field(default_factory=lambda: True)
     base: Optional[str] = None
-    output: Optional[str] = None,
+    output: Optional[str] = None
     prefixes: Optional[bool] = field(default_factory=lambda: True),
     flatprefixes: Optional[bool] = field(default_factory=lambda: False),
 
