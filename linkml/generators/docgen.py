@@ -713,7 +713,7 @@ class DocGenerator(Generator):
         
         slot_list = [slot.name for slot in sv.class_induced_slots(class_name=cls.name)]
 
-        return list(set(slot_list).difference(self.fetch_own_attributes_of_class(cls)))
+        return list(set(slot_list).difference(self.get_direct_slots(cls)))
 
     def get_mixin_inherited_slots(self, cls: ClassDefinition) -> Dict[str, List[str]]:
         """Fetch list of all slots acquired through mixing.
