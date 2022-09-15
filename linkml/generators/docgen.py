@@ -693,6 +693,43 @@ class DocGenerator(Generator):
         else:
             return False
 
+    def get_direct_slots(self, cls: ClassDefinition) -> List[SlotDefinitionName]:
+        """Fetch list of all own attributes of a class, i.e., 
+        all slots that belong to the domain of a class.
+
+        :param cls: class for which we want to determine the attributes
+        :return: list of all own attributes of a class
+        """
+        return cls.slots + list(cls.attributes.keys())
+
+    def get_indirect_slots(self, cls: ClassDefinition) -> List[SlotDefinitionName]:
+        """Fetch list of all inherited attributes of a class, i.e., 
+        all slots that belong to the domain of a class.
+
+        :param cls: class for which we want to determine the attributes
+        :return: list of all own attributes of a class
+        """
+        sv = self.schemaview
+        
+        slot_list = [slot.name for slot in sv.class_induced_slots(class_name=cls.name)]
+
+        return list(set(slot_list).difference(self.get_direct_slots(cls)))
+
+    def get_mixin_inherited_slots(self, cls: ClassDefinition) -> Dict[str, List[str]]:
+        """Fetch list of all slots acquired through mixing.
+
+        :param cls: class for which we want to determine the mixed in slots
+        :return: list of all mixed in slots from each mixin class
+        """
+        mixed_in_slots = {}
+        sv = self.schemaview
+
+        mixins = sv.class_parents(class_name=cls.name, mixins=True, is_a=False)
+        for c in mixins:
+            mixed_in_slots[c] = sv.class_slots(c)
+            
+        return mixed_in_slots
+
 
 @shared_arguments(DocGenerator)
 @click.option(

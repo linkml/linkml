@@ -5,6 +5,7 @@ from copy import copy
 from typing import List
 
 from linkml_runtime.utils.introspection import package_schemaview
+from linkml_runtime.utils.schemaview import SchemaView
 
 from linkml.generators.docgen import DocGenerator
 from tests.test_generators.environment import env
@@ -383,39 +384,43 @@ class DocGeneratorTestCase(unittest.TestCase):
         self.assertGreater(tub_sub_class_order, sub_sub_class_order)
         self.assertGreater(sub_sub_class_order, sub_class_order)
         self.assertGreater(sub_class_order, parent_order)
-
-        expected_result = [
-            (0, "activity"),
-            (0, "Address"),
-            (0, "agent"),
-            (0, "AnyObject"),
-            (0, "class with spaces"),
-            (1, "subclass test"),
-            (2, "Sub sub class 2"),
-            (2, "tub sub class 1"),
-            (0, "CodeSystem"),
-            (0, "Concept"),
-            (1, "ProcedureConcept"),
-            (1, "DiagnosisConcept"),
-            (0, "Dataset"),
-            (0, "Event"),
-            (1, "MarriageEvent"),
-            (1, "MedicalEvent"),
-            (1, "EmploymentEvent"),
-            (1, "BirthEvent"),
-            (0, "FakeClass"),
-            (0, "Friend"),
-            (0, "HasAliases"),
-            (0, "Organization"),
-            (1, "Company"),
-            (0, "Person"),
-            (0, "Place"),
-            (0, "Relationship"),
-            (1, "FamilialRelationship"),
-            (0, "WithLocation"),
-        ]
-
+        
+        expected_result = [(0, 'activity'), (0, 'Address'), (0, 'agent'), (0, 'AnyObject'), 
+                           (0, 'class with spaces'), (1, 'subclass test'), (2, 'Sub sub class 2'), (2, 'tub sub class 1'),
+                           (0, 'CodeSystem'), (0, 'Concept'), (1, 'ProcedureConcept'), (1, 'DiagnosisConcept'), 
+                           (0, 'Dataset'), (0, 'Event'), (1, 'MarriageEvent'), (1, 'MedicalEvent'), 
+                           (1, 'EmploymentEvent'), (1, 'BirthEvent'), (0, 'FakeClass'), (0, 'Friend'), (0, 'HasAliases'), 
+                           (0, 'Organization'), (1, 'Company'), (0, 'Person'), (0, 'Place'), (0, 'Relationship'), 
+                           (1, 'FamilialRelationship'), (0, 'WithLocation')]
+                           
         self.assertCountEqual(actual_result, expected_result)
+        
+    def test_fetch_slots_of_class(self):
+        tdir = env.input_path('docgen_html_templates')
+        gen = DocGenerator(SCHEMA, mergeimports=True, no_types_dir=True, template_directory=tdir, format='html')
+
+        sv = SchemaView(SCHEMA)
+        cls = sv.get_class("Address")
+
+        # test assertion for own attributes of a class
+        actual_result = gen.get_direct_slots(cls)
+        expected_result = ["street", "city"]
+
+        self.assertListEqual(expected_result, actual_result)
+
+        # test assertion for inherited attributes of a class
+        cls = sv.get_class("EmploymentEvent")
+        actual_result = gen.get_indirect_slots(cls)
+        expected_result = ["ended at time", "metadata", "started at time", "is current"]
+        
+        self.assertListEqual(sorted(expected_result), sorted(actual_result))
+
+        # test assertion for mixed in slots of a class
+        cls = sv.get_class("Organization")
+        actual_result = gen.get_mixin_inherited_slots(cls)
+        expected_result = {"HasAliases": ["aliases"]}
+
+        self.assertDictEqual(actual_result, expected_result)
 
 
 if __name__ == "__main__":
