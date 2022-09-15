@@ -5,6 +5,7 @@ from copy import copy
 from typing import List
 
 from linkml_runtime.utils.introspection import package_schemaview
+from linkml_runtime.utils.schemaview import SchemaView
 
 from linkml.generators.docgen import DocGenerator
 from tests.test_generators.environment import env
