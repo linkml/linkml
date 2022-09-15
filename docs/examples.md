@@ -38,8 +38,20 @@ LinkML is itself described as a LinkML model
  * [linkml/linkml-model](https://github.com/linkml/linkml-model) repo
  * [generated docs](https://linkml.io/linkml-model/docs/)
 
+## INCLUDE Data Coordination Center
+
+Data model for the INvestigation of Co-occurring conditions across the Lifespan to Understand Down syndromE (INCLUDE) project
+
+* [include-dcc/include-linkml](https://github.com/include-dcc/include-linkml)
+
 ## LinkML Registry
 
 The LinkML registry collects some existing schemas and allows for basic browsing:
 
  * [linkml/linkml-registry](https://linkml.io/linkml-registry/registry/)
+
+## Presentations on LinkML
+
+ * [An introduction to LinkML](https://www.slideshare.net/cmungall/linkml-intro-july-2022pptx) (slides) July 2022
+ * [Yosemite Project Webinar](https://www.youtube.com/watch?v=1cZu4kZ2ufQ) (video) - April 2021
+ * [ICBO 2021 talk](http://ceur-ws.org/Vol-3073/paper24.pdf) (proceedings) Sept 2021

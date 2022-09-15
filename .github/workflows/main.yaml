@@ -70,6 +70,12 @@ jobs:
         run: poetry install --no-interaction
 
       #----------------------------------------------
+      #    Linting
+      #----------------------------------------------
+      - name: Lint with black and isort
+        run: poetry run tox -e lint
+
+      #----------------------------------------------
       #              coverage report
       #----------------------------------------------
       - name: Generate coverage results

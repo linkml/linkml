@@ -1,24 +1,15 @@
 
-from dataclasses import dataclass
-from dataclasses import field
+from dataclasses import dataclass, field
 from typing import List
 
-from sqlalchemy import Column
-from sqlalchemy import ForeignKey
-from sqlalchemy import Integer
-from sqlalchemy import MetaData
-from sqlalchemy import String
-from sqlalchemy import Table
-from sqlalchemy import Text
-from sqlalchemy import Integer
-from sqlalchemy.orm import registry
-from sqlalchemy.orm import relationship
+from sqlalchemy import (Column, ForeignKey, Integer, MetaData, String, Table,
+                        Text)
+from sqlalchemy.orm import registry, relationship
 
 mapper_registry = registry()
 metadata = MetaData()
 
 from output.kitchen_sink import *
-
 
 tbl_activity = Table('activity', metadata, 
     Column('id', Text),

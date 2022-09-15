@@ -1,4 +1,4 @@
-### in_subset
+# Subsets
 
 The `in_subset` slot can be used tag your class (or slot) to belong to a pre-defined subset.
 

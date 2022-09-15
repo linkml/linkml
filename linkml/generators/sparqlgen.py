@@ -1,18 +1,25 @@
+import logging
 import os
 from collections import defaultdict
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Union, TextIO, Optional, cast, Dict, List
-import logging
+from typing import Dict, List, Optional, TextIO, Union, cast
 
 import click
 from jinja2 import Template
-from linkml_runtime.utils.schemaview import SchemaView
-from linkml_runtime.linkml_model.meta import ClassDefinitionName, SchemaDefinition, ClassDefinition, SlotDefinitionName, \
-    TypeDefinitionName, SlotDefinition, TypeDefinition, Element, EnumDefinitionName, Prefix
+from linkml_runtime.linkml_model.meta import (ClassDefinition,
+                                              ClassDefinitionName, Element,
+                                              EnumDefinitionName, Prefix,
+                                              SchemaDefinition, SlotDefinition,
+                                              SlotDefinitionName,
+                                              TypeDefinition,
+                                              TypeDefinitionName)
 from linkml_runtime.utils.formatutils import camelcase, underscore
+from linkml_runtime.utils.schemaview import SchemaView
+
 from linkml.utils.generator import Generator, shared_arguments
 
-template="""
+template = """
 {% for pfxn, pfx in schema.prefixes.items() -%}
 PREFIX {{pfxn}}: <{{pfx.prefix_reference}}>
 {% endfor %}
@@ -91,16 +98,19 @@ WHERE {
 {% endfor %}
 """
 
-x="""
+x = """
 {% for sn in schema_view.class_slots(c.name) %}
      {{ schema.slots[sn].slot_uri }}
    {% endfor %}
 """
 
+
 def materialize_schema(schemaview: SchemaView):
     schema = schemaview.schema
-    if 'rdf' not in schema.prefixes:
-        schema.prefixes['rdf'] = Prefix('rdf', 'http://www.w3.org/1999/02/22-rdf-syntax-ns#')
+    if "rdf" not in schema.prefixes:
+        schema.prefixes["rdf"] = Prefix(
+            "rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+        )
     for scn in schemaview.imports_closure():
         for pfxn, pfx in schemaview.schema_map[scn].prefixes.items():
             if pfxn not in schema:
@@ -118,40 +128,43 @@ def materialize_schema(schemaview: SchemaView):
             c.slot_usage[s.name] = s
             s.slot_uri = schemaview.get_uri(s)
 
+
+@dataclass
 class SparqlGenerator(Generator):
     """
     Generates SPARQL queries that can be used for delayed validation
     """
-    generatorname = os.path.basename(__file__)
-    valid_formats = ['sparql']
-    visit_all_class_slots = False
 
-    def __init__(self, schema: Union[str, TextIO, SchemaDefinition],
-                 format: str = valid_formats[0],
-                 named_graphs: List[str] = None,
-                 limit: int = None,
-                 **kwargs) -> None:
-        self.sourcefile = schema
-        self.schemaview = SchemaView(schema)
-        self.schema = self.schemaview.schema
-        schemaview = self.schemaview
-        schema = self.schema
-        self.sparql = None
-        materialize_schema(schemaview)
-        queries = self.generate_sparql(named_graphs=named_graphs, limit=limit)
-        self.queries = queries
+    # ClassVars
+    generatorname = os.path.basename(__file__)
+    valid_formats = ["sparql"]
+    visit_all_class_slots = False
+    uses_schemaloader = False
+
+    # ObjectVars
+    named_graphs: Optional[List[str]] = None
+    limit: Optional[int] = None
+    sparql: Optional[str] = None
+
+    def __post_init__(self):
+        self.schemaview = SchemaView(self.schema)
+        materialize_schema(self.schemaview)
+        super().__post_init__()
+        self.queries = self.generate_sparql(named_graphs=self.named_graphs, limit=self.limit)
 
     def generate_sparql(self, named_graphs=None, limit: int = None):
         template_obj = Template(template)
         extra = ""
         if named_graphs is not None:
             extra += f'FILTER( ?graph in ( {",".join(named_graphs)} ))'
-        logging.info(f'Named Graphs = {named_graphs} // extra={extra}')
+        logging.info(f"Named Graphs = {named_graphs} // extra={extra}")
         if limit is not None and isinstance(limit, int):
-            limit = f'LIMIT {limit}'
+            limit = f"LIMIT {limit}"
         else:
             limit = ""
-        sparql = template_obj.render(schema_view=self.schemaview, schema=self.schema, limit=limit, extra=extra)
+        sparql = template_obj.render(
+            schema_view=self.schemaview, schema=self.schema, limit=limit, extra=extra
+        )
         self.sparql = sparql
         queries = self.split_sparql(sparql)
         return queries
@@ -160,32 +173,33 @@ class SparqlGenerator(Generator):
         if directory is not None:
             Path(directory).mkdir(parents=True, exist_ok=True)
             for qn, q in self.queries.items():
-                qpath = os.path.join(directory, f'{qn}.rq')
-                with open(qpath, 'w', encoding='UTF-8') as stream:
+                qpath = os.path.join(directory, f"{qn}.rq")
+                with open(qpath, "w", encoding="UTF-8") as stream:
                     stream.write(q)
         return self.sparql
 
-    def split_sparql(self, sparql: str) -> Dict[str,str]:
+    def split_sparql(self, sparql: str) -> Dict[str, str]:
         lines = sparql.split("\n")
         prolog = ""
         queries = defaultdict(str)
         q = None
         for line in lines:
-            if line.startswith('# @'):
-                q = underscore(line.replace('# @', ''))
-                queries[q] = prolog + '\n'
+            if line.startswith("# @"):
+                q = underscore(line.replace("# @", ""))
+                queries[q] = prolog + "\n"
             elif q is None:
-                if line.lower().startswith('prefix'):
+                if line.lower().startswith("prefix"):
                     prolog += line + "\n"
             else:
                 queries[q] += line + "\n"
         return queries
 
+
 @shared_arguments(SparqlGenerator)
 @click.command()
 @click.option("--dir", "-d", help="Directory in which queries will be deposited")
 def cli(yamlfile, dir, **kwargs):
-    """ Generate SPARQL queries for validation
+    """Generate SPARQL queries for validation
 
     This will generate a directory of queries that cann be used for QC over a triplestore that
     is conformant to the same LinkML schema.
@@ -201,8 +215,5 @@ def cli(yamlfile, dir, **kwargs):
     SparqlGenerator(yamlfile, **kwargs).serialize(directory=dir)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     cli()
-
-
-

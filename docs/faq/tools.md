@@ -24,7 +24,7 @@ There are other tools in the LinkML ecosystem that you may find useful:
 
 ## How do I install the LinkML tools?
 
-See the [installation guide](intro/install).
+See the [installation guide](../intro/install).
 
 ## What tools are available for authoring schemas?
 
@@ -33,14 +33,17 @@ in a text editor or IDE (Integrated Development Environment).
 
 We recommend using an IDE that has support for YAML format.
 
-The meta model, here: https://w3id.org/linkml/meta.schema.json can be incorporated into pycharm for model development
-syntax validation.  For more details on pycharm specifically: https://www.jetbrains.com/help/pycharm/json.html#ws_json_schema_add_custom
+## Is there IDE support for editing schemas
+
+IDEs like PyCharm and VSCode have support for schema-aware editing of YAML files.
+These require a JSON-Schema input.
+
+The LinkML meta model is converted to JSON-Schema here: [https://w3id.org/linkml/meta.schema.json](https://w3id.org/linkml/meta.schema.json) and can be incorporated into pycharm for model syntax validation.  For more details on pycharm specifically: [PyCharm docs](https://www.jetbrains.com/help/pycharm/json.html#ws_json_schema_add_custom)
 
 See the section below on "Are there tools for editing my data?" for
 suggestions (note that your schema *is* data - schemas instantiate the
 schema class in the metamodel)
 
-One possible alternative to authoring schemas in YAML is to enter the schema in a *spreadsheet*, which is our next question...
 
 ## Is there a tool to manage schemas as spreadsheets?
 
@@ -57,7 +60,7 @@ There are a few strategies:
 * Use [gen-markdown](https://linkml.io/linkml/generators/markdown) to make markdown that can be viewed using mkdocs
 * Use [gen-owl](https://linkml.io/linkml/generators/owl) to make an OWL ontology, which can be browsed:
     * Using an ontology editing tool like Protege
-    * By publishing the ontology with an ontology repository and using a web ontology browser
+    * By publishing the ontology with an ontology repository (e.g. BioPortal or a member of the OntoPortal alliance) and using a web ontology browser
     * By running the Ontology Lookup Service docker image and browsing using a web browser
 
 ## How can I check my schema is valid?
@@ -71,7 +74,7 @@ Currently the core linkml framework can
 frameworks from a linkml schema. The generators are part of the core framework.
 
 We have *experimental* importers as part of the
-[linkml-model-enrichment](https://github.com/linkml/linkml-model-enrichment)
+[schema-automator](https://github.com/linkml/schema-automator)
 project, which can generate a schema from:
 
 * An OWL ontology
@@ -86,7 +89,7 @@ on them in a production environment.
 
 ## Are there tools to infer a schema from data?
 
-The [linkml-model-enrichment](https://github.com/linkml/linkml-model-enrichment) framework can seed a schema from:
+The [schema-automator](https://github.com/linkml/schema-automator) framework can seed a schema from:
 
 * CSV/TSV files
 * JSON data
@@ -252,3 +255,21 @@ See:
 
  - [working with data - python](https://linkml.io/linkml/data/python.html)
  - [loaders and dumpers, code docs](https://linkml.io/linkml/developers/loaders-and-dumpers.html)
+
+## What does _csv.Error: field larger than field limit (131072) mean?
+
+The Python CSV module has a built-in default limit on the size of the data
+that can fit into any one column value. This is usually enough for most purposes,
+but there may be scenarios where you have a CSV with large data values, e.g
+
+- storing DNA sequence data
+- storing image data in base64 or similar
+
+In these cases you should pass in `--csv-field-size-limit NUMBER`
+
+E.g.
+
+```bash
+linkml-sqldb --csv-field-size-limit 250000 dump  -s my-schema.yaml my-data.tsv -D my.db
+
+```

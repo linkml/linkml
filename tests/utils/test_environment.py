@@ -9,23 +9,26 @@ from enum import Enum
 from importlib import import_module
 from io import StringIO
 from pathlib import Path
-from typing import Optional, Callable, Union, List
+from typing import Callable, List, Optional, Union
 
 from linkml_runtime.linkml_model import linkml_files
-from linkml_runtime.linkml_model.linkml_files import Source, Format
+from linkml_runtime.linkml_model.linkml_files import Format, Source
 
-from linkml import LOCAL_METAMODEL_YAML_FILE, LOCAL_TYPES_YAML_FILE, LOCAL_MAPPINGS_YAML_FILE
+from linkml import (LOCAL_MAPPINGS_YAML_FILE, LOCAL_METAMODEL_YAML_FILE,
+                    LOCAL_TYPES_YAML_FILE)
 from tests.utils.dirutils import are_dir_trees_equal
 from tests.utils.mismatchlog import MismatchLog
 
 
 def no_click_exit(_self, code=0):
     from tests import CLIExitException
+
     raise CLIExitException(code)
 
 
 # This import has to occur here
 import click
+
 click.core.Context.exit = no_click_exit
 
 
@@ -33,26 +36,33 @@ class MismatchAction(Enum):
     Ignore = 0
     Report = 1
     Fail = 2
-    FailOnce = 3                    # Run all tests and then fail if there are any mismatches
+    FailOnce = 3  # Run all tests and then fail if there are any mismatches
 
 
 class TestEnvironment:
     import_map_warning_emitted: bool = False
 
     """ Testing environment """
+
     def __init__(self, filedir: str) -> None:
-        self.cwd = os.path.dirname(filedir)                     # base directory for indir, outdir and tempdir
-        self.indir = os.path.join(self.cwd, 'input')            # Input files
-        self.outdir = os.path.join(self.cwd, 'output')          # Expected/actual output files
-        self.tempdir = os.path.join(self.cwd, 'temp')           # Scratch directory for temporary work
+        self.cwd = os.path.dirname(
+            filedir
+        )  # base directory for indir, outdir and tempdir
+        self.indir = os.path.join(self.cwd, "input")  # Input files
+        self.outdir = os.path.join(self.cwd, "output")  # Expected/actual output files
+        self.tempdir = os.path.join(
+            self.cwd, "temp"
+        )  # Scratch directory for temporary work
 
         # Get the parent's directory name.  If it is a test directory, borrow from its environment
         parent = Path(self.cwd).parts[-2]
-        if parent.startswith('test'):
-            parent_env = import_module('..environment', __package__)
+        if parent.startswith("test"):
+            parent_env = import_module("..environment", __package__)
             self.meta_yaml = linkml_files.LOCAL_PATH_FOR(Source.META, Format.YAML)
             self.types_yaml = linkml_files.LOCAL_PATH_FOR(Source.TYPES, Format.YAML)
-            self.mapping_yaml = linkml_files.LOCAL_PATH_FOR(Source.MAPPINGS, Format.YAML)
+            self.mapping_yaml = linkml_files.LOCAL_PATH_FOR(
+                Source.MAPPINGS, Format.YAML
+            )
             self.import_map = parent_env.env.import_map
             self.mismatch_action = parent_env.env.mismatch_action
             self.root_input_path = parent_env.env.root_input_path
@@ -65,8 +75,14 @@ class TestEnvironment:
             self.mapping_yaml = LOCAL_MAPPINGS_YAML_FILE
 
             from tests import USE_LOCAL_IMPORT_MAP
-            self.import_map = self.input_path('local_import_map.json') if USE_LOCAL_IMPORT_MAP else None
+
+            self.import_map = (
+                self.input_path("local_import_map.json")
+                if USE_LOCAL_IMPORT_MAP
+                else None
+            )
             from tests import DEFAULT_MISMATCH_ACTION
+
             self.mismatch_action = DEFAULT_MISMATCH_ACTION
             self.root_input_path = self.input_path
             self.root_expected_path = self.expected_path
@@ -78,8 +94,10 @@ class TestEnvironment:
         if not filecmp.cmp(test_file, runtime_file):
             print(
                 f"WARNING: Test file {test_file} does not match {runtime_file}.  "
-                f"You may want to update the test version and rerun")
+                f"You may want to update the test version and rerun"
+            )
         from tests import USE_LOCAL_IMPORT_MAP
+
         if USE_LOCAL_IMPORT_MAP and not TestEnvironment.import_map_warning_emitted:
             print(
                 f"WARNING: USE_LOCAL_IMPORT_MAP must be reset to False before completing submission."
@@ -87,26 +105,26 @@ class TestEnvironment:
             TestEnvironment.import_map_warning_emitted = True
 
     def clear_log(self) -> None:
-        """ Clear the output log """
+        """Clear the output log"""
         self._log = MismatchLog()
 
     def input_path(self, *path: str) -> str:
-        """ Create a file path in the local input directory """
+        """Create a file path in the local input directory"""
         return os.path.join(self.indir, *[p for p in path if p])
 
     def expected_path(self, *path: str) -> str:
-        """ Create a file path in the local output directory """
+        """Create a file path in the local output directory"""
         return os.path.join(self.outdir, *[p for p in path if p])
 
     def actual_path(self, *path: str, is_dir: bool = False) -> str:
-        """ Return the full path to the path fragments in path """
+        """Return the full path to the path fragments in path"""
         dir_path = [p for p in (path if is_dir else path[:-1]) if p]
         self.make_temp_dir(*dir_path, clear=False)
         return os.path.join(self.tempdir, *[p for p in path if p])
 
     def temp_file_path(self, *path: str, is_dir: bool = False) -> str:
-        """ Create the directories down to the path fragments in path.  If is_dir is True, create and clear the
-         innermost directory
+        """Create the directories down to the path fragments in path.  If is_dir is True, create and clear the
+        innermost directory
         """
         return self.actual_path(*path, is_dir=is_dir)
 
@@ -115,7 +133,7 @@ class TestEnvironment:
 
     @property
     def verb(self) -> str:
-        return 'will be' if self.fail_on_error else 'was'
+        return "will be" if self.fail_on_error else "was"
 
     @property
     def fail_on_error(self) -> bool:
@@ -126,17 +144,19 @@ class TestEnvironment:
         return self.mismatch_action != MismatchAction.Ignore
 
     def __str__(self):
-        """ Return the current state of the log file """
-        return '\n\n'.join([str(e) for e in self._log.entries])
+        """Return the current state of the log file"""
+        return "\n\n".join([str(e) for e in self._log.entries])
 
     def make_temp_dir(self, *paths: str, clear: bool = True) -> str:
-        """ Create and initialize a list of paths """
+        """Create and initialize a list of paths"""
         full_path = self.tempdir
         TestEnvironment.make_testing_directory(full_path)
         if len(paths):
             for i in range(len(paths)):
                 full_path = os.path.join(full_path, paths[i])
-                TestEnvironment.make_testing_directory(full_path, clear=clear and i == len(paths) - 1)
+                TestEnvironment.make_testing_directory(
+                    full_path, clear=clear and i == len(paths) - 1
+                )
         return full_path
 
     def string_comparator(self, expected: str, actual: str) -> Optional[str]:
@@ -146,7 +166,10 @@ class TestEnvironment:
         :param actual: actual string
         :return: Error message if mismatch else None
         """
-        if expected.replace('\r\n', '\n').strip() != actual.replace('\r\n', '\n').strip():
+        if (
+            expected.replace("\r\n", "\n").strip()
+            != actual.replace("\r\n", "\n").strip()
+        ):
             return f"Output {self.verb} changed."
 
     @staticmethod
@@ -164,13 +187,19 @@ class TestEnvironment:
             safety_file = os.path.join(directory, "generated")
             if os.path.exists(directory):
                 if not os.path.exists(safety_file):
-                    raise FileNotFoundError(f"'generated' guard file not found in {directory}")
+                    raise FileNotFoundError(
+                        f"'generated' guard file not found in {directory}"
+                    )
                 shutil.rmtree(directory)
             os.makedirs(directory, exist_ok=True)
             with open(safety_file, "w") as f:
-                f.write("Generated for safety.  Directory will not be cleared if this file is not present")
+                f.write(
+                    "Generated for safety.  Directory will not be cleared if this file is not present"
+                )
 
-    def generate_directory(self, dirname: Union[str, List[str]], generator: Callable[[str], None]) -> None:
+    def generate_directory(
+        self, dirname: Union[str, List[str]], generator: Callable[[str], None]
+    ) -> None:
         """
         Invoke the generator and compare the output in a temp directory to the output directory.  Report the results
         and then update the output directory
@@ -193,9 +222,15 @@ class TestEnvironment:
         else:
             shutil.rmtree(temp_output_directory)
 
-    def generate_single_file(self, filename: Union[str, List[str]], generator: Callable[[Optional[str]], Optional[str]],
-                             value_is_returned: bool = False, filtr: Callable[[str], str] = None,
-                             comparator: Callable[[str, str], str] = None, use_testing_root: bool = False) -> str:
+    def generate_single_file(
+        self,
+        filename: Union[str, List[str]],
+        generator: Callable[[Optional[str]], Optional[str]],
+        value_is_returned: bool = False,
+        filtr: Callable[[str], str] = None,
+        comparator: Callable[[str, str], str] = None,
+        use_testing_root: bool = False,
+    ) -> str:
         """
         Invoke the generator and compare the actual results to the expected.
         :param filename: relative file name(s) (no path)
@@ -210,14 +245,23 @@ class TestEnvironment:
         if not filtr:
             filtr = lambda s: s
         filename = filename if isinstance(filename, List) else [filename]
-        actual_file = self.root_temp_file_path(*filename) if use_testing_root else self.actual_path(*filename)
-        expected_file = self.root_expected_path(*filename) if use_testing_root else self.expected_path(*filename)
+        actual_file = (
+            self.root_temp_file_path(*filename)
+            if use_testing_root
+            else self.actual_path(*filename)
+        )
+        expected_file = (
+            self.root_expected_path(*filename)
+            if use_testing_root
+            else self.expected_path(*filename)
+        )
 
         if value_is_returned:
             actual = generator()
         else:
             outf = StringIO()
             from tests import CLIExitException
+
             with contextlib.redirect_stdout(outf):
                 try:
                     generator()
@@ -228,14 +272,19 @@ class TestEnvironment:
         if not self.eval_single_file(expected_file, actual, filtr, comparator):
             if self.fail_on_error:
                 self.make_temp_dir(os.path.dirname(actual_file), clear=False)
-                with open(actual_file, 'w') as actualf:
+                with open(actual_file, "w") as actualf:
                     actualf.write(actual)
         return actual
 
-    def eval_single_file(self, expected_file_path: str, actual_text: str, filtr: Callable[[str], str] = None,
-                         comparator: Callable[[str, str], str] = None) -> bool:
-        """ Compare actual_text to the contents of the expected file.  Log a message if there is a mismatch and
-            overwrite the expected file if we're not in the fail on error mode
+    def eval_single_file(
+        self,
+        expected_file_path: str,
+        actual_text: str,
+        filtr: Callable[[str], str] = None,
+        comparator: Callable[[str, str], str] = None,
+    ) -> bool:
+        """Compare actual_text to the contents of the expected file.  Log a message if there is a mismatch and
+        overwrite the expected file if we're not in the fail on error mode
         """
         if filtr is None:
             filtr = lambda s: s
@@ -249,12 +298,12 @@ class TestEnvironment:
             msg = f"New file {self.verb} created"
             cmsg = comparator(actual_text, actual_text)
             if cmsg:
-                msg = msg + '\n' + cmsg
+                msg = msg + "\n" + cmsg
         if msg:
             self.log(expected_file_path, msg)
         if msg and not self.fail_on_error:
             self.make_temp_dir(os.path.dirname(expected_file_path), clear=False)
-            with open(expected_file_path, 'w') as outf:
+            with open(expected_file_path, "w") as outf:
                 outf.write(actual_text)
         return not msg
 
@@ -269,6 +318,7 @@ class TestEnvironmentTestCase(unittest.TestCase):
         env = TestEnvironment(__file__)
         ...
     """
+
     env: TestEnvironment = None
 
     @classmethod

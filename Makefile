@@ -1,3 +1,4 @@
+VERSION = $(shell git tag | tail -1)
 
 SPECIFICATION.pdf: SPECIFICATION.md
 	pandoc $< -o $@
@@ -48,6 +49,9 @@ examples/%-data.nt: examples/%-data.jsonld
 linkml/workspaces/datamodel/workspaces.py: linkml/workspaces/datamodel/workspaces.yaml
 	$(RUN) gen-python $< > $@.tmp && mv $@.tmp $@
 
+linkml/linter/config/datamodel/config.py: linkml/linter/config/datamodel/config.yaml
+	$(RUN) gen-python $< > $@.tmp && mv $@.tmp $@
+
 TUTORIALS = 01 02 03 04 05 06 07 08 09 10
 test-tutorials: $(patsubst %, test-tutorial-%, $(TUTORIALS))
 test-tutorial-%: sphinx/intro/tutorial%.md
@@ -57,3 +61,40 @@ rtd:
 	cd sphinx && $(RUN) make html
 deploy-rtd:
 	cd sphinx && $(RUN) make deploy
+
+################################################
+#### Commands for building the Docker image ####
+################################################
+
+IM=linkml/linkml
+
+docker-build-no-cache:
+	@docker build --no-cache -t $(IM):$(VERSION) . \
+	&& docker tag $(IM):$(VERSION) $(IM):latest
+
+docker-build:
+	@docker build -t $(IM):$(VERSION) . \
+	&& docker tag $(IM):$(VERSION) $(IM):latest
+
+docker-build-use-cache-dev:
+	@docker build -t $(DEV):$(VERSION) . \
+	&& docker tag $(DEV):$(VERSION) $(DEV):latest
+
+docker-clean:
+	docker kill $(IM) || echo not running ;
+	docker rm $(IM) || echo not made 
+
+docker-publish-no-build:
+	@docker push $(IM):$(VERSION) \
+	&& docker push $(IM):latest
+
+docker-publish-dev-no-build:
+	@docker push $(DEV):$(VERSION) \
+	&& docker push $(DEV):latest
+
+docker-publish: docker-build
+	@docker push $(IM):$(VERSION) \
+	&& docker push $(IM):latest
+
+docker-run:
+	@docker run  -v $(PWD):/work -w /work -ti $(IM):$(VERSION) 

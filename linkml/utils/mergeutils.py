@@ -1,19 +1,27 @@
 import dataclasses
 from copy import deepcopy
-from typing import Dict, Optional, Union, cast, List
+from typing import Dict, List, Optional, Union, cast
 
-from rdflib import URIRef
-
-from linkml_runtime.linkml_model.meta import SchemaDefinition, Element, SlotDefinition, ClassDefinition, TypeDefinition, \
-    SlotDefinitionName, TypeDefinitionName, EnumDefinition
+from linkml_runtime.linkml_model.meta import (ClassDefinition, Element,
+                                              EnumDefinition, SchemaDefinition,
+                                              SlotDefinition,
+                                              SlotDefinitionName,
+                                              TypeDefinition,
+                                              TypeDefinitionName)
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.namespaces import Namespaces
 from linkml_runtime.utils.yamlutils import extended_str
+from rdflib import URIRef
 
 
-def merge_schemas(target: SchemaDefinition, mergee: SchemaDefinition, imported_from: Optional[str] = None,
-                  namespaces: Optional[Namespaces] = None, merge_imports: bool = True) -> None:
-    """ Merge mergee into target """
+def merge_schemas(
+    target: SchemaDefinition,
+    mergee: SchemaDefinition,
+    imported_from: Optional[str] = None,
+    namespaces: Optional[Namespaces] = None,
+    merge_imports: bool = True,
+) -> None:
+    """Merge mergee into target"""
     assert target.name is not None, "Schema name must be supplied"
     if target.license is None:
         target.license = mergee.license
@@ -36,14 +44,26 @@ def merge_schemas(target: SchemaDefinition, mergee: SchemaDefinition, imported_f
             imported_from_uri = imported_from
         else:
             imported_from_uri = namespaces.uri_for(imported_from)
-    merge_dicts(target.classes, mergee.classes, imported_from, imported_from_uri, merge_imports)
-    merge_dicts(target.slots, mergee.slots, imported_from, imported_from_uri, merge_imports)
-    merge_dicts(target.types, mergee.types, imported_from, imported_from_uri, merge_imports)
-    merge_dicts(target.subsets, mergee.subsets, imported_from, imported_from_uri, merge_imports)
-    merge_dicts(target.enums, mergee.enums, imported_from, imported_from_uri, merge_imports)
+    merge_dicts(
+        target.classes, mergee.classes, imported_from, imported_from_uri, merge_imports
+    )
+    merge_dicts(
+        target.slots, mergee.slots, imported_from, imported_from_uri, merge_imports
+    )
+    merge_dicts(
+        target.types, mergee.types, imported_from, imported_from_uri, merge_imports
+    )
+    merge_dicts(
+        target.subsets, mergee.subsets, imported_from, imported_from_uri, merge_imports
+    )
+    merge_dicts(
+        target.enums, mergee.enums, imported_from, imported_from_uri, merge_imports
+    )
 
 
-def merge_namespaces(target: SchemaDefinition, mergee: SchemaDefinition, namespaces) -> None:
+def merge_namespaces(
+    target: SchemaDefinition, mergee: SchemaDefinition, namespaces
+) -> None:
     """
     Add the mergee namespace definitions to target
 
@@ -56,9 +76,14 @@ def merge_namespaces(target: SchemaDefinition, mergee: SchemaDefinition, namespa
         namespaces[prefix.prefix_prefix] = prefix.prefix_reference
         # if prefix.prefix_prefix not in target.prefixes:
         #     target.prefixes[prefix.prefix_prefix] = prefix
-        if prefix.prefix_prefix in target.prefixes and \
-                target.prefixes[prefix.prefix_prefix].prefix_reference != prefix.prefix_reference:
-            raise ValueError(f'Prefix: {prefix.prefix_prefix} mismatch between {target.name} and {mergee.name}')
+        if (
+            prefix.prefix_prefix in target.prefixes
+            and target.prefixes[prefix.prefix_prefix].prefix_reference
+            != prefix.prefix_reference
+        ):
+            raise ValueError(
+                f"Prefix: {prefix.prefix_prefix} mismatch between {target.name} and {mergee.name}"
+            )
     for mmap in mergee.default_curi_maps:
         namespaces.add_prefixmap(mmap)
 
@@ -75,26 +100,40 @@ def set_from_schema(schema: SchemaDefinition) -> None:
                 ns = schema.prefixes[schema.default_prefix].prefix_reference
             else:
                 ns = str(URIRef(schema.id) + "/")
-            t[k].definition_uri = f'{ns}{fragment}'
+            t[k].definition_uri = f"{ns}{fragment}"
 
 
-def merge_dicts(target: Dict[str, Element], source: Dict[str, Element], imported_from: str,
-                imported_from_uri: str, merge_imports: bool) -> None:
+def merge_dicts(
+    target: Dict[str, Element],
+    source: Dict[str, Element],
+    imported_from: str,
+    imported_from_uri: str,
+    merge_imports: bool,
+) -> None:
     for k, v in source.items():
         if k in target and source[k].from_schema != target[k].from_schema:
-            raise ValueError(f"Conflicting URIs ({source[k].from_schema}, {target[k].from_schema}) for item: {k}")
+            raise ValueError(
+                f"Conflicting URIs ({source[k].from_schema}, {target[k].from_schema}) for item: {k}"
+            )
         target[k] = deepcopy(v)
         # currently all imports closures are merged into main schema, EXCEPT
         # internal linkml types, which are considered separate
         # https://github.com/linkml/issues/121
         if imported_from is not None:
-            if not merge_imports or imported_from.startswith("linkml") or \
-                    imported_from_uri.startswith("https://w3id.org/biolink/linkml"):
+            if (
+                not merge_imports
+                or imported_from.startswith("linkml")
+                or imported_from_uri.startswith("https://w3id.org/biolink/linkml")
+            ):
                 target[k].imported_from = imported_from
 
 
-def merge_slots(target: Union[SlotDefinition, TypeDefinition], source: Union[SlotDefinition, TypeDefinition],
-                skip: List[Union[SlotDefinitionName, TypeDefinitionName]] = None, inheriting: bool = True) -> None:
+def merge_slots(
+    target: Union[SlotDefinition, TypeDefinition],
+    source: Union[SlotDefinition, TypeDefinition],
+    skip: List[Union[SlotDefinitionName, TypeDefinitionName]] = None,
+    inheriting: bool = True,
+) -> None:
     """
     Merge slot source into target
 
@@ -106,7 +145,11 @@ def merge_slots(target: Union[SlotDefinition, TypeDefinition], source: Union[Slo
     if skip is None:
         skip = []
     for k, v in dataclasses.asdict(source).items():
-        if k not in skip and v is not None and (not inheriting or getattr(target, k, None) is None):
+        if (
+            k not in skip
+            and v is not None
+            and (not inheriting or getattr(target, k, None) is None)
+        ):
             if k in source._inherited_slots or not inheriting:
                 setattr(target, k, deepcopy(v))
             else:
@@ -114,7 +157,9 @@ def merge_slots(target: Union[SlotDefinition, TypeDefinition], source: Union[Slo
     target.__post_init__()
 
 
-def slot_usage_name(usage_name: SlotDefinitionName, owning_class: ClassDefinition) -> SlotDefinitionName:
+def slot_usage_name(
+    usage_name: SlotDefinitionName, owning_class: ClassDefinition
+) -> SlotDefinitionName:
     """
      Synthesize a unique name for an overridden slot
 
@@ -122,20 +167,26 @@ def slot_usage_name(usage_name: SlotDefinitionName, owning_class: ClassDefinitio
     :param owning_class:
     :return: Synthesized name
     """
-    return SlotDefinitionName(extended_str.concat(owning_class.name, '_', usage_name))
+    return SlotDefinitionName(extended_str.concat(owning_class.name, "_", usage_name))
 
 
-def alias_root(schema: SchemaDefinition, slotname: SlotDefinitionName) -> Optional[SlotDefinitionName]:
-    """ Return the ultimate alias of a slot """
+def alias_root(
+    schema: SchemaDefinition, slotname: SlotDefinitionName
+) -> Optional[SlotDefinitionName]:
+    """Return the ultimate alias of a slot"""
     alias = schema.slots[slotname].alias if slotname in schema.slots else None
     if alias and alias == slotname:
         raise ValueError("Error: Slot {slotname} is aliased to itself.")
     return alias_root(schema, cast(SlotDefinitionName, alias)) if alias else slotname
 
 
-def merge_classes(schema: SchemaDefinition, target: ClassDefinition, source: ClassDefinition,
-                  at_end: bool = False) -> None:
-    """ Merge the slots in source into target
+def merge_classes(
+    schema: SchemaDefinition,
+    target: ClassDefinition,
+    source: ClassDefinition,
+    at_end: bool = False,
+) -> None:
+    """Merge the slots in source into target
 
     :param schema: Containing schema
     :param target: mergee
@@ -151,13 +202,19 @@ def merge_classes(schema: SchemaDefinition, target: ClassDefinition, source: Cla
         if slotbase in target.slot_usage:
             slotname = slot_usage_name(slotbase, target)
         if slotbase not in target_base_slots:
-            target.slots.append(slotname) if at_end else target.slots.insert(0, slotname)
+            target.slots.append(slotname) if at_end else target.slots.insert(
+                0, slotname
+            )
             target_base_slots.add(slotbase)
 
 
-def merge_enums(schema: SchemaDefinition, target: EnumDefinition, source: EnumDefinition,
-                  at_end: bool = False) -> None:
-    """ Merge the slots in source into target
+def merge_enums(
+    schema: SchemaDefinition,
+    target: EnumDefinition,
+    source: EnumDefinition,
+    at_end: bool = False,
+) -> None:
+    """Merge the slots in source into target
 
     :param schema: Containing schema
     :param target: mergee

@@ -1,14 +1,15 @@
 import json
 import os
-from typing import Union, TextIO
+from dataclasses import dataclass
+from typing import TextIO, Union
 
 import click
-
-from linkml_runtime.linkml_model.meta import SchemaDefinition, ClassDefinition, SlotDefinition
-
-from linkml_runtime.utils.formatutils import camelcase, be, underscore
-from linkml.utils.generator import Generator, shared_arguments
+from linkml_runtime.linkml_model.meta import (ClassDefinition,
+                                              SchemaDefinition, SlotDefinition)
+from linkml_runtime.utils.formatutils import be, camelcase, underscore
 from terminusdb_client.woqlquery import WOQLQuery as WQ
+
+from linkml.utils.generator import Generator, shared_arguments
 
 # https://terminusdb.com/docs/terminusdb/#/reference/XSD_WHITELIST
 XSD_Ok = {
@@ -33,9 +34,12 @@ XSD_Ok = {
     ]
 }
 
-
+@dataclass
 class TerminusdbGenerator(Generator):
-    """Generates JSON-LD to pass to `WOQLQuery()`.
+    """
+    Experimental generator for TerminusDB
+
+    Generates JSON-LD to pass to `WOQLQuery()`.
 
     Assumes an "inference/main" graph if any slots have "is_a" values, because any statements with
     rdfs:subPropertyOf as the predicate must live in a TerminusDB "inference" graph rather than the
@@ -44,16 +48,18 @@ class TerminusdbGenerator(Generator):
 
     """
 
+    # ClassVars
     generatorname = os.path.basename(__file__)
     generatorversion = "0.1.0"
     valid_formats = ["json"]
     visit_all_class_slots = True
+    uses_schemaloader = True
 
-    def __init__(self, schema: Union[str, TextIO, SchemaDefinition], **kwargs) -> None:
-        super().__init__(schema, **kwargs)
-        self.classes = None
-        self.raw_additions = None
-        self.clswq = None
+    # ObjectVars
+    classes: List = None
+    raw_additions: List = None
+    clswq: str = None
+
 
     def visit_schema(self, inline: bool = False, **kwargs) -> None:
         self.classes = []
@@ -141,7 +147,7 @@ class TerminusdbGenerator(Generator):
 @shared_arguments(TerminusdbGenerator)
 @click.command()
 def cli(yamlfile, **args):
-    """ Generate graphql representation of a LinkML model """
+    """Generate graphql representation of a LinkML model"""
     print(TerminusdbGenerator(yamlfile, **args).serialize(**args))
 
 

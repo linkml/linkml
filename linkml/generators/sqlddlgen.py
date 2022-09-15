@@ -1,14 +1,18 @@
-import os
-from typing import Union, TextIO, Dict, List, Tuple, Optional
-from dataclasses import dataclass, field
-import click
 import logging
+import os
 from contextlib import redirect_stdout
+from dataclasses import dataclass, field
+from typing import Dict, List, Optional, TextIO, Tuple, Union
 
+import click
 from deprecated.classic import deprecated
+from linkml_runtime.linkml_model.meta import (ClassDefinition,
+                                              ClassDefinitionName,
+                                              SchemaDefinition, SlotDefinition,
+                                              SlotDefinitionName)
+from linkml_runtime.utils.formatutils import camelcase, underscore
 from sqlalchemy import *
-from linkml_runtime.linkml_model.meta import ClassDefinition, SlotDefinition, SchemaDefinition, ClassDefinitionName, SlotDefinitionName
-from linkml_runtime.utils.formatutils import underscore, camelcase
+
 from linkml.utils.generator import Generator, shared_arguments
 
 TABLENAME = str
@@ -16,42 +20,50 @@ COLNAME = str
 SQL_STR = str
 
 RANGEMAP = {
-    'str': Text(),
-    'NCName': Text(),
-    'URIorCURIE': Text(),
-    'int': Integer(),
-    'double': Float(),
-    'float': Float(),
-    'Bool': Boolean(),
-    'URI': Text(),
-    'XSDTime': Time(),
-    'XSDDateTime': DateTime(),
-    'XSDDate': Date(),
+    "str": Text(),
+    "NCName": Text(),
+    "URIorCURIE": Text(),
+    "int": Integer(),
+    "double": Float(),
+    "float": Float(),
+    "Bool": Boolean(),
+    "URI": Text(),
+    "XSDTime": Time(),
+    "XSDDateTime": DateTime(),
+    "XSDDate": Date(),
 }
+
 
 def _quote(s: str) -> str:
     s = s.replace("'", "\\'")
     return f"'{s}'"
 
+
+@deprecated("Use SQLTableGenerator instead")
 @dataclass
-class Backref():
+class Backref:
     original_column: "SQLColumn"
     backref_column: "SQLColumn"
     order_by: str = None
 
 
+@deprecated("Use SQLTableGenerator instead")
 @dataclass(unsafe_hash=True)
-class DDLEntity():
+class DDLEntity:
     """
     abstract grouping
     """
+
     description: str = None
 
+
+@deprecated("Use SQLTableGenerator instead")
 @dataclass
 class SQLColumn(DDLEntity):
     """
     represents a Relational Table Column
     """
+
     name: COLNAME = None
     mapped_to: SlotDefinition = None
     mapped_to_alias: str = None
@@ -61,26 +73,29 @@ class SQLColumn(DDLEntity):
     foreign_key: Optional["SQLColumn"] = None
 
     def as_ddlstr(self):
-        return f'{self.table.name}.{self.name}'
+        return f"{self.table.name}.{self.name}"
 
     def is_primary_key(self):
         return self in self.table.primary_keys
 
+
+@deprecated("Use SQLTableGenerator instead")
 @dataclass
 class SQLTable(DDLEntity):
     """
     represents a Relational Table
     """
+
     name: TABLENAME = None
     mapped_to: ClassDefinition = None
     columns: Dict[COLNAME, SQLColumn] = field(default_factory=dict)
     in_schema: "SQLSchema" = None
     referenced_by: List["SQLColumn"] = field(default_factory=list)
     primary_keys: List["SQLColumn"] = field(default_factory=list)
-    backrefs: List[Backref ] = field(default_factory=list)
+    backrefs: List[Backref] = field(default_factory=list)
 
     def as_var(self) -> str:
-        return f'tbl_{self.name}'
+        return f"tbl_{self.name}"
 
     def get_singular_primary_key(self) -> Optional[SQLColumn]:
         for c in self.columns.values():
@@ -91,14 +106,18 @@ class SQLTable(DDLEntity):
     def add_column(self, c: SQLColumn):
         self.columns[c.name] = c
         c.table = self
+
     def remove_column(self, c):
         del self.columns[c.name]
 
+
+@deprecated("Use SQLTableGenerator instead")
 @dataclass
 class SQLSchema(DDLEntity):
     """
     represents a Relational Schema
     """
+
     name: str = None
     mapped_to: SchemaDefinition = None
     tables: Dict[TABLENAME, SQLTable] = field(default_factory=dict)
@@ -177,20 +196,25 @@ class SQLDDLGenerator(Generator):
        - If R is a class, and the slot IS multivalued
 
     """
+
     generatorname = os.path.basename(__file__)
     generatorversion = "0.1.1"
-    valid_formats = ['sql']
+    valid_formats = ["sql"]
     visit_all_class_slots: bool = True
     use_inherits: bool = False  ## postgresql supports inheritance
     dialect: str
     inject_primary_keys: bool = True
     sqlschema: SQLSchema = SQLSchema()
 
-    def __init__(self, schema: Union[str, TextIO, SchemaDefinition], dialect='sqlite',
-                 use_foreign_keys = True,
-                 rename_foreign_keys = False,
-                 direct_mapping = False,
-                 **kwargs) -> None:
+    def __init__(
+        self,
+        schema: Union[str, TextIO, SchemaDefinition],
+        dialect="sqlite",
+        use_foreign_keys=True,
+        rename_foreign_keys=False,
+        direct_mapping=False,
+        **kwargs,
+    ) -> None:
         super().__init__(schema, **kwargs)
         self.relative_slot_num = 0
         self.dialect = dialect
@@ -223,7 +247,7 @@ class SQLDDLGenerator(Generator):
         if self._is_hidden(cls):
             return False
         if cls.description:
-            None ## TODO
+            None  ## TODO
         tname = self._class_name_to_table(cls.name)
         # add table
         self.sqlschema.tables[tname] = SQLTable(name=tname, mapped_to=cls)
@@ -236,23 +260,28 @@ class SQLDDLGenerator(Generator):
             # postgresql supports inheritance
             # if you want to use plain SQL DDL then use sqlutils to unfold hierarchy
             # TODO: raise error if the target is standard SQL
-            raise Exception(f'PostgreSQL Inheritance not yet supported')
+            raise Exception(f"PostgreSQL Inheritance not yet supported")
 
-
-    def visit_class_slot(self, cls: ClassDefinition, aliased_slot_name: str, slot: SlotDefinition) -> None:
+    def visit_class_slot(
+        self, cls: ClassDefinition, aliased_slot_name: str, slot: SlotDefinition
+    ) -> None:
         if self._is_hidden(cls):
             return False
         sqlschema = self.sqlschema
-        #qual = 'repeated ' if slot.multivalued else 'optional ' if not slot.required or slot.key else ''
+        # qual = 'repeated ' if slot.multivalued else 'optional ' if not slot.required or slot.key else ''
         colname = underscore(aliased_slot_name)
         sqltable = sqlschema.get_table_by_class_name(cls.name)
         slot_range = self.get_sql_range(slot)
         is_pk = slot.identifier
         sqlcol: SQLColumn
-        sqlcol = SQLColumn(name=colname, mapped_to=slot,
-                           mapped_to_alias=aliased_slot_name,
-                           is_singular_primary_key=is_pk, description=slot.description,
-                           table=sqltable)
+        sqlcol = SQLColumn(
+            name=colname,
+            mapped_to=slot,
+            mapped_to_alias=aliased_slot_name,
+            is_singular_primary_key=is_pk,
+            description=slot.description,
+            table=sqltable,
+        )
         sqltable.columns[colname] = sqlcol
         sqlcol.base_type = slot_range
 
@@ -281,33 +310,41 @@ class SQLDDLGenerator(Generator):
             range = slot.range
             ref = sqlschema.get_table_by_class_name(range)
             is_primitive = ref is None
-            #basic_type = 'Text'
+            # basic_type = 'Text'
             table_pk = table.get_singular_primary_key()
             if slot.multivalued:
                 if is_primitive and table_pk is not None:
                     # primitive base type:
                     # create a linking table
-                    linktable_name = f'{table.name}_{sqlcol.name}'
-                    backref_col_name = 'backref_id'
+                    linktable_name = f"{table.name}_{sqlcol.name}"
+                    backref_col_name = "backref_id"
                     linktable = SQLTable(name=linktable_name)
-                    linktable.add_column(SQLColumn(name=backref_col_name, foreign_key=table_pk))
+                    linktable.add_column(
+                        SQLColumn(name=backref_col_name, foreign_key=table_pk)
+                    )
                     linktable.add_column(sqlcol)
                     sqlschema.add_table(linktable)
                     table.remove_column(sqlcol)
-                if not is_primitive and table_pk is not None and len(ref.referenced_by) == 1:
+                if (
+                    not is_primitive
+                    and table_pk is not None
+                    and len(ref.referenced_by) == 1
+                ):
                     # e.g. user->addresses
-                    backref_col_name = f'{table.name}_{table_pk.name}'
+                    backref_col_name = f"{table.name}_{table_pk.name}"
                     backref_col = SQLColumn(name=backref_col_name, foreign_key=table_pk)
                     ref.add_column(backref_col)
                     table.remove_column(sqlcol)
-                    table.backrefs.append(Backref(original_column=sqlcol, backref_column=backref_col))
+                    table.backrefs.append(
+                        Backref(original_column=sqlcol, backref_column=backref_col)
+                    )
             else:
                 if not is_primitive:
                     ref_pk = ref.get_singular_primary_key()
                     if ref_pk is not None:
-                        sqlcol.foreign_key=ref_pk
+                        sqlcol.foreign_key = ref_pk
                     else:
-                        logging.info(f'No PK for {ref.name}')
+                        logging.info(f"No PK for {ref.name}")
         for t in sqlschema.tables.values():
             pk = t.get_singular_primary_key()
             if pk is None:
@@ -315,7 +352,6 @@ class SQLDDLGenerator(Generator):
             else:
                 pks = [pk]
             t.primary_keys = pks
-
 
     def get_sql_range(self, slot: SlotDefinition):
         """
@@ -335,7 +371,7 @@ class SQLDDLGenerator(Generator):
         if range in RANGEMAP:
             return RANGEMAP[range]
         else:
-            logging.warning(f'UNKNOWN: {range} // {type(range)}')
+            logging.warning(f"UNKNOWN: {range} // {type(range)}")
             return Text()
 
     def _get_primary_key(self, cls: ClassDefinition) -> SlotDefinition:
@@ -349,15 +385,15 @@ class SQLDDLGenerator(Generator):
         return pk
 
     def _get_sqla_var_for_table(self, t: str) -> str:
-        return f'tbl_{underscore(t)}'
+        return f"tbl_{underscore(t)}"
 
     def generate_ddl(self) -> None:
         def dump(sql, *multiparams, **params):
             print(f"{str(sql.compile(dialect=engine.dialect)).rstrip()};")
+
         engine = create_mock_engine(
-            f'{self.dialect}://./MyDb',
-            strategy='mock',
-            executor= dump)
+            f"{self.dialect}://./MyDb", strategy="mock", executor=dump
+        )
         schema_metadata = MetaData()
         for t in self.sqlschema.tables.values():
             cls = t.mapped_to
@@ -369,13 +405,18 @@ class SQLDDLGenerator(Generator):
                     args = []
                     if sqlcol.foreign_key:
                         args = [ForeignKey(sqlcol.foreign_key.as_ddlstr())]
-                    col = Column(sqlcol.name, sqlcol.base_type, *args, primary_key=sqlcol.is_primary_key(), nullable=slot is None or not slot.required)
+                    col = Column(
+                        sqlcol.name,
+                        sqlcol.base_type,
+                        *args,
+                        primary_key=sqlcol.is_primary_key(),
+                        nullable=slot is None or not slot.required,
+                    )
 
                     cols.append(col)
                 alchemy_tbl = Table(t.name, schema_metadata, *cols)
         print()
         schema_metadata.create_all(engine)
-
 
     def write_sqla_python_imperative(self, model_path: str) -> str:
         """
@@ -389,7 +430,8 @@ class SQLDDLGenerator(Generator):
         with redirect_stdout(output):
            gen.write_sqla_python_imperative()
         """
-        print(f'''
+        print(
+            f"""
 from dataclasses import dataclass
 from dataclasses import field
 from typing import List
@@ -410,11 +452,12 @@ metadata = MetaData()
 
 from {model_path} import *
 
-''')
+"""
+        )
         for sqltable in self.sqlschema.tables.values():
             cols = sqltable.columns.values()
             if len(cols) == 0:
-                logging.warning(f'No columns for {sqltable.name}')
+                logging.warning(f"No columns for {sqltable.name}")
                 continue
 
             var = sqltable.as_var()
@@ -422,16 +465,16 @@ from {model_path} import *
 
             pks = sqltable.primary_keys
             for col in cols:
-                #range = col.base_type
-                range = 'Text'
-                #if isinstance(col.base_type, Integer):
+                # range = col.base_type
+                range = "Text"
+                # if isinstance(col.base_type, Integer):
                 #    range = 'Integer'
-                print(f"    Column('{col.name}', {range}", end='')
+                print(f"    Column('{col.name}', {range}", end="")
                 fk = col.foreign_key
                 if fk is not None:
-                    print(f", ForeignKey('{fk.as_ddlstr()}')", end='')
+                    print(f", ForeignKey('{fk.as_ddlstr()}')", end="")
                 if col in pks:
-                    print(', primary_key=True', end='')
+                    print(", primary_key=True", end="")
                 print("),")
             print(")")
         for t in self.sqlschema.tables.values():
@@ -445,40 +488,65 @@ from {model_path} import *
                     original_col = backref.original_column
                     backref_slot = original_col.mapped_to
                     backref_slot_range = camelcase(backref_slot.range)
-                    print(f"""
+                    print(
+                        f"""
     '{underscore(original_col.mapped_to_alias)}': 
         relationship({backref_slot_range}, 
                       foreign_keys={backref.backref_column.table.as_var()}.columns["{backref.backref_column.name}"],
                       backref='{cn}'),
-""")
+"""
+                    )
                 print("})")
+
 
 @shared_arguments(SQLDDLGenerator)
 @click.command()
-@click.option("--dialect", default='sqlite', show_default=True, help="""
+@click.option(
+    "--dialect",
+    default="sqlite",
+    show_default=True,
+    help="""
 SQL-Alchemy dialect, e.g. sqlite, mysql+odbc
-""")
-@click.option("--sqla-file",  help="""
+""",
+)
+@click.option(
+    "--sqla-file",
+    help="""
 Path to sqlalchemy generated python
-""")
-@click.option("--python-import",  help="""
+""",
+)
+@click.option(
+    "--python-import",
+    help="""
 Python import header for generated sql-alchemy code
-""")
-@click.option("--direct-mapping/--no-direct-mapping", default=False, show_default=True, help="""
+""",
+)
+@click.option(
+    "--direct-mapping/--no-direct-mapping",
+    default=False,
+    show_default=True,
+    help="""
 Map classes directly to 
-""")
-@click.option("--use-foreign-keys/--no-use-foreign-keys", default=True, show_default=True, help="Emit FK declarations")
-def cli(yamlfile, sqla_file:str = None, python_import: str = None, **args):
-    """ Generate SQL DDL representation """
+""",
+)
+@click.option(
+    "--use-foreign-keys/--no-use-foreign-keys",
+    default=True,
+    show_default=True,
+    help="Emit FK declarations",
+)
+def cli(yamlfile, sqla_file: str = None, python_import: str = None, **args):
+    """Generate SQL DDL representation"""
     logging.warning("DEPRECATED: use sqltablegen instead")
     gen = SQLDDLGenerator(yamlfile, **args)
     print(gen.serialize(**args))
     if sqla_file is not None:
         if python_import is None:
             python_import = gen.schema.name
-        with open(sqla_file, "w", encoding='UTF-8') as stream:
+        with open(sqla_file, "w", encoding="UTF-8") as stream:
             with redirect_stdout(stream):
                 gen.write_sqla_python_imperative(python_import)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     cli()

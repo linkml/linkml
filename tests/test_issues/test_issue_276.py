@@ -11,11 +11,11 @@ class Issue276TestCase(TestEnvironmentTestCase):
     env = env
 
     def test_empty_list(self):
-        """ Check the local import behavior """
+        """Check the local import behavior"""
         with self.assertRaises(yaml.constructor.ConstructorError) as e:
-            YAMLGenerator(env.input_path('issue_276.yaml')).serialize(validateonly=True)
+            YAMLGenerator(env.input_path("issue_276.yaml")).serialize(validateonly=True)
         self.assertIn("Empty list elements are not allowed", str(e.exception))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

@@ -1,12 +1,11 @@
 import unittest
 
-from rdflib import URIRef, Graph
-from rdflib.namespace import RDFS, DCTERMS
+from rdflib import Graph, URIRef
+from rdflib.namespace import DCTERMS, RDFS
 
-from linkml.generators.owlgen import OwlSchemaGenerator, MetadataProfile
-
-from tests.utils.test_environment import TestEnvironmentTestCase
+from linkml.generators.owlgen import MetadataProfile, OwlSchemaGenerator
 from tests.test_issues.environment import env
+from tests.utils.test_environment import TestEnvironmentTestCase
 
 # reported in https://github.com/linkml/linkml/issues/692
 # description metaproperty is not being exported with owl-gen
@@ -36,18 +35,21 @@ slots:
     description: Family name. In the U.S., the last name of a Person.
 """
 
+
 class IssueDescriptionExportCase(TestEnvironmentTestCase):
     env = env
 
     def test_owlgen_rdfs_profile(self):
         # export the source schema containing both title and description
-        gen = OwlSchemaGenerator(schema_str,
-                                 ontology_uri_suffix=None,
-                                 type_objects=False,
-                                 metaclasses=False,
-                                 add_ols_annotations=True,
-                                 metadata_profile=MetadataProfile.rdfs,
-                                 format="ttl")
+        gen = OwlSchemaGenerator(
+            schema_str,
+            ontology_uri_suffix=None,
+            type_objects=False,
+            metaclasses=False,
+            add_ols_annotations=True,
+            metadata_profile=MetadataProfile.rdfs,
+            format="ttl",
+        )
         output = gen.serialize()
 
         # load back via rdflib
@@ -69,6 +71,5 @@ class IssueDescriptionExportCase(TestEnvironmentTestCase):
         assert (name_prop, RDFS.comment, None) in graph
 
 
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

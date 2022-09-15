@@ -2,9 +2,8 @@ import json
 import unittest
 
 from linkml.generators.jsonschemagen import JsonSchemaGenerator
-
-from tests.utils.test_environment import TestEnvironmentTestCase
 from tests.test_issues.environment import env
+from tests.utils.test_environment import TestEnvironmentTestCase
 
 # reported in https://github.com/linkml/linkml/issues/726
 
@@ -51,6 +50,7 @@ slots:
     range: integer
 """
 
+
 class Issue726ConstCase(TestEnvironmentTestCase):
     env = env
 
@@ -59,27 +59,27 @@ class Issue726ConstCase(TestEnvironmentTestCase):
         output = gen.serialize()
         print(output)
         js = json.loads(output)
-        top_props = js['properties']
-        s1C = top_props['s1']
-        s2C = top_props['s2']
-        s3C = top_props['s3']
-        s4C = top_props['s4']
-        D = js['$defs']['D']['properties']
-        s1D = D['s1']
-        s2D = D['s2']
-        s3D = D['s3']
-        s4D = D['s4']
+        top_props = js["properties"]
+        s1C = top_props["s1"]
+        s2C = top_props["s2"]
+        s3C = top_props["s3"]
+        s4C = top_props["s4"]
+        D = js["$defs"]["D"]["properties"]
+        s1D = D["s1"]
+        s2D = D["s2"]
+        s3D = D["s3"]
+        s4D = D["s4"]
 
-        self.assertEqual(s1C['const'], 'foo')
-        self.assertEqual(s2C['const'], 'bar')
-        self.assertNotIn('const', s1D)
-        self.assertEqual(s2D['const'], 'bar')
+        self.assertEqual(s1C["const"], "foo")
+        self.assertEqual(s2C["const"], "bar")
+        self.assertNotIn("const", s1D)
+        self.assertEqual(s2D["const"], "bar")
 
-        self.assertEqual(s3C['const'], 32)
-        self.assertEqual(s4C['const'], 7)
-        self.assertNotIn('const', s3D)
-        self.assertEqual(s4D['const'], 7)
+        self.assertEqual(s3C["const"], 32)
+        self.assertEqual(s4C["const"], 7)
+        self.assertNotIn("const", s3D)
+        self.assertEqual(s4D["const"], 7)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

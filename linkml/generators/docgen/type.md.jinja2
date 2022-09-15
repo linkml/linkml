@@ -5,8 +5,9 @@
 URI: {{ gen.uri(element) }}
 
 {{ gen.bullet(element, "base") }}
-{{ gen.bullet(element, "type_uri") }}
+{{ gen.bullet(element, "uri") }}
 {{ gen.bullet(element, "repr") }}
+{{ gen.bullet(element, "typeof") }}
 {{ gen.bullet(element, "pattern", backquote=True) }}
 {% if gen.number_value_range(element) %}
 * Numeric Value Range: {{gen.number_value_range(element)}}

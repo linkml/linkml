@@ -1,11 +1,11 @@
 # Part 5: Using Python dataclasses
 
-If you are not a developer, you can skip this section.
+*If you are not a developer, you can skip this section*.
 
 If you are a developer and favor a language other than python, you may
 still be interested in this section. The use of generated code is an
-optional but convenient part of LinkML. We are actively adding support
-for other languages.
+optional but convenient part of LinkML. [We are actively adding support
+for other languages](https://linkml.io/linkml/faq/general.html#is-linkml-only-for-python-developers).
 
 ## Generating a Python datamodel
 
@@ -76,9 +76,7 @@ class Person(NamedThing):
     ...
 ```
 
-
 Note you don't need to directly view the python - but your favorite IDE should be able to autocomplete and type check as expected
-
 
 You can now write code like:
 
@@ -103,9 +101,11 @@ Outputs:
 Person(id='ORCID:9876', full_name='Lex Luthor', aliases=[], phone=None, age=None)
 ```
 
-This is not very impressive in itself, but as your models get larger it can be very handy to have a python data model
+Hurray! Perhaps this is not very impressive in itself,
+but having an object model that is guaranteed to be in sync with your data model can
+help with productivity and robustness of code.
 
-## LinkML runtime
+## The LinkML runtime
 
 The LinkML runtime is a separate python library that provides methods needed by your generated datamodel classes, and utilities for converting your python objects into YAML, JSON, RDF, and TSV:
 
@@ -113,11 +113,9 @@ test_runtime.py:
 
 ```python
 from linkml_runtime.dumpers import json_dumper
-
 from personinfo import Person
 
 p1 = Person(id='ORCID:9876', full_name='Lex Luthor', aliases=["Bad Guy"])
-
 print(json_dumper.dumps(p1))
 ```
 

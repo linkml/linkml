@@ -1,14 +1,14 @@
-import unittest
-import sys
 import dataclasses
-from dataclasses import dataclass, InitVar, field, fields
-from typing import Optional, ClassVar, Dict, Any
+import sys
+import unittest
+from dataclasses import InitVar, dataclass, field, fields
+from typing import Any, ClassVar, Dict, Optional
 
 import yaml
-
-from linkml_runtime.utils.yamlutils import YAMLRoot, TypedNode, DupCheckYamlLoader
-
-from linkml_runtime.utils.dataclass_extensions_376 import dataclasses_init_fn_with_kwargs
+from linkml_runtime.utils.dataclass_extensions_376 import \
+    dataclasses_init_fn_with_kwargs
+from linkml_runtime.utils.yamlutils import (DupCheckYamlLoader, TypedNode,
+                                            YAMLRoot)
 
 # Overwrite dataclasses _init_fn to add **kwargs in __init__
 dataclasses._init_fn = dataclasses_init_fn_with_kwargs
@@ -38,16 +38,18 @@ class Issue83TestCase(unittest.TestCase):
 """
         parsed_yaml = yaml.load(yaml_str, DupCheckYamlLoader)
         with self.assertRaises(ValueError) as e:
-            Issue83TestCase.FesterBesterTester(**parsed_yaml['base'])
-        self.assertEqual('File "<unicode string>", line 4, col 9:  Unknown argument: c = \'sell\'',
-                         str(e.exception).strip())
+            Issue83TestCase.FesterBesterTester(**parsed_yaml["base"])
+        self.assertEqual(
+            "File \"<unicode string>\", line 4, col 9:  Unknown argument: c = 'sell'",
+            str(e.exception).strip(),
+        )
 
-        parsed_yaml['base'].pop('c', None)
+        parsed_yaml["base"].pop("c", None)
         try:
-            Issue83TestCase.FesterBesterTester(**parsed_yaml['base'])
+            Issue83TestCase.FesterBesterTester(**parsed_yaml["base"])
         except Exception as e:
-            self.fail(f'Raised exception unexpectedly: {str(e.exception)}')
+            self.fail(f"Raised exception unexpectedly: {str(e.exception)}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

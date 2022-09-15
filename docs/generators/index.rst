@@ -30,7 +30,7 @@ standards for structuring data such as JSON-Schema, Protocol Buffers
 Linked Data Standards
 ---------------------
 
-`Linked Data <https://en.wikipedia.org/wiki/Linked_data>_` is a broad
+`Linked Data <https://en.wikipedia.org/wiki/Linked_data>`_ is a broad
 term encompassing frameworks based on RDF and URIs/IRIs. LinkML
 schemas, can be translated directly into RDF, or they can be mapped to
 OWL, or translated to shape languages such as ShEx and SHACL.

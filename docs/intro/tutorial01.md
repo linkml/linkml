@@ -207,6 +207,6 @@ classes. Don't worry! We will get to this later.
  2. Create a test data instance to indicate Clark Kent has an occupation of reporter and is employed by the Daily Planet
  3. Validate the data
 
-## Collections of data
+## Next: Collections of data
 
 Our toy example so far has a single person instance. Next we'll see how to exchange lists of records.

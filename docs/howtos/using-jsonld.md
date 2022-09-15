@@ -1,12 +1,12 @@
 # Using JSON-LD
 
-See also: https://linkml.io/linkml/intro/tutorial04.html
+See also: [Part 4 of the tutorial](https://linkml.io/linkml/intro/tutorial04.html)
 
-This how-to guide walks through some of the basics of working with JSON-LD and LinkML
+This how-to guide walks you through some of the basics of working with JSON-LD and LinkML
 
 ## About JSON-LD
 
-JSON-LD is a way of working with JSON documents that are also RDF
+[JSON-LD](https://json-ld.org/) is a way of working with JSON documents that are also RDF
 documents. JSON-LD can provide a powerful bridge between
 "developer-friendly" JSON serializations and Linked Data
 frameworks.
@@ -22,7 +22,9 @@ Two key concepts to be aware of that make JSON-LD work for you:
  * Framing
 
 A full description of these is outside the scope of this guide, but we
-will provide some practical examples
+will provide some practical examples.
+
+To get a sense of JSON-LD, we recommend exploring the [JSON-LD Playground](https://json-ld.org/playground/)
 
 ## JSON-LD Example
 
@@ -48,7 +50,8 @@ Consider a simple data graph containing two person objects, grouped into a 'cont
 ```
 
 We can use a standard JSON-LD compliant tool (for example, Apache
-Jena) to convert this to JSON-LD, which may look something like this:
+Jena) or the JSON-LD playground
+to convert this to JSON-LD, which may look something like this:
 
 
 ```json
@@ -101,6 +104,22 @@ First you will see fields such as:
  * `@type`
 
 This violates common idioms with JSON documents, where fields are usually 'key-friendly'. As well as being unusual-looking, this structure could actually hinder development and even break some tooling.
+
+**Pitfall Warning**
+
+A classic mistake is trying to declare slots with names like `@id` and `@type` in the corresponding LinkML schema.
+
+E.g.
+
+```json
+slots:
+  "@id":
+    identifier: true
+  "@type":
+    range: ...
+```
+
+While this is possible, it's almost certainly NOT what you want.
 
 Thankfully, we don't have to give such ugly JSON to our fellow developers. In fact there are multiple ways to represent the same RDF as a JSON-LD document. We can make our JSON much more idiomatic through the use of JSON-LD *contexts*.
 
@@ -194,57 +213,73 @@ Using the [JSON-LD playground](https://json-ld.org/playground/) we can make JSON
 }
 ```
 
-Ignore the `@context` blob at the top - that can easily be maksed or imported over the web. We now have a list of Person objects
+Ignore the `@context` blob at the top for now - that can easily be masked or imported over the web. We now have a list of Person objects
 
-### Considerations
+A general tip with JSON-LD is to expose the *compacted* structure, not the *expanded* one.
 
-Being able to customize the structure of JSON is flexible and powerful. However, this power should be wielded carefully.
+## Coordinating JSON-Schema and JSON-LD Contexts
 
-Let's consider the organization `SemanticsRUs`. This organization has
-an internal information ecosystem constructed on Linked Data
-standards. Data is stored in triplestores, and software that
-manipulates data uses libraries such as rdflib or Jena. This
-organization can happily consume any RDF serialization format
-(RDF/XML, turtle, n-triples, ...). It can also handle JSON-LD
-documents, *and they don't care whether the JSON-LD is expanded or
-compacted*. These all get converted to the same internal RDF graph
-representation. This organization may use a shape language like SHACL
-or OWL to enforce conformance of RDF graphs to a particular structure,
-but they don't care about the serialization (except perhaps for performance reasons).
+JSON-LD contexts and JSON-Schema provide distinct ways of describing your data,
+with JSON-Schema providing the *structural* description of how your information is organized,
+and contexts providing the *semantics* (or at least a loose semantics consisting of reuse of URIs).
 
-In fact SemanticsRUs don't even need JSON-LD at all, but they may find
-it useful for exchanging data with the broader information ecosystem
-including mere mortal developers who will only consume JSON.
+Despite these distinct purposes there is a lot of overlap and many organizations
+end up manually maintaining these and keeping them in sync.
 
-Now consider another organization `JsonFTW`, who have a more
-traditional information system. They might rely heavily on exchange of
-YAML/JSON documents, perhaps storing these in a Mongo database. They
-may also have some kind of enterprise data model or data models, with
-mappings from JSON to those models. Or potentially SQL databases or
-other noSQL databases. It's likely this organization makes heavy use
-of JSON-Schema to ensure documents are structured in expected ways,
-allowing reliable and predictable software to be built.
+There are also additional challenges in that there are frequently multiple ways to *frame*
+the same RDF graphs, but this is hard to capture in JSON-Schema, so a schema will typically
+cover a single framing - other frameworks like SHACL may be used for a frame-independent
+representation of the RDF.
 
-Both organizations have valid ways of dealing with data, with
-respective strengths and limitations, and presumably they have
-optimized their approaches to the niche they occupy.
-
-Now let's imagine a developer, MonicaTripleton leaves SemanticsRUs and
-joins JsonFTW. She manages to persuade her new developer colleagues to
-adopt some linked data practices, starting with use of JSON-LD. This
-all goes well, with the JSON-LD adopting appropriate contexts and
-framing such that existing JSON-Schemas continue to function, and the
-developers also start gaining some of the benefits of RDF.
-
-How imagine Monica leaves, and JohnnyEvangelist takes her
-place. Johnny is a born again Linked Data fanatic. He doesn't adopt
-the practices put in place by Monica, and instead starts exchanging
-JSON-LD documents that are expanded or otherwise don't conform to
-internal framing/contexts. Things start breaking, but Johnny 
+All of this and the pitfalls mentioned above lead to confusion in how "traditional" JSON
+frameworks and JSON-LD/RDF should be coordinated.
 
 ## LinkML and JSON-LD
 
-## Tips
+LinkML provides a single "polyglot" language for describing multiple aspects of your data.
 
-### Target the compacted structure, not the expanded structure
+One of the value propositions of LinkML is that it allows a single Source of Truth with compilation
+to multiple representations using generators.
 
+This means that your data modelers can maintain a single schema, and then derive:
+
+- JSON-LD contexts
+- JSON-Schema
+- Anything else (e.g. SHACL shape schema) 
+
+For example, a minimal schema might be:
+  
+```yaml
+prefixes:
+  schema: http://schema.org/
+  ...
+Person:
+  description: A person (alive, dead, undead, or fictional).
+  class_uri: schema:Person
+  attributes:
+    id:
+      identifier: true
+    name:
+      slot_uri: schema:name
+    age:
+      range: integer
+    telephone:
+      slot_uri: schema:telephone
+```
+
+This describes *both* the structure of our data objects, *and* the meaning
+of elements of the schema, by mapping to vocabularies like schema.org
+
+You can use the linkml toolchain to *directly* convert objects from JSON/YAML
+to and from RDF, e.g.
+
+```bash
+linkml-convert -s personinfo.yaml data.json -o data.ttl
+```
+
+You can also use the generator framework to generate a JSON-LD context that
+can be used for *deferred* conversion using standard RDF toolchains:
+
+```bash
+gen-json-ld-context personinfo.yaml -o personinfo.context.jsonld
+```

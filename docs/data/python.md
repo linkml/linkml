@@ -31,6 +31,8 @@ class Person(NamedThing):
     aliases: Optional[Union[str, List[str]]] = empty_list()
 ```
 
+You can also use the [pydantic generator](../generators/pydantic) for a different style of data classes.
+
 The generated python classes have additional functionality to help with serializing/deserializing.
 
 ## Use in programs

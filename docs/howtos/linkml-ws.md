@@ -1,5 +1,7 @@
 # LinkML Workspace Generator
 
+__NOTE: This guide is obsolete - we are switching to a cookiecutter approach__
+
 ## Pre-modeling Setup
 
 This generator helps you get setup with a pre-defined project structure, 
@@ -18,7 +20,7 @@ Note: The default package manager that the generator sets you up with is
 ## Introduction
 
 If you are a data modeler, and want to start authoring LinkML data models 
-to describe the strcuture of your datasets, then the first step to do after 
+to describe the structure of your datasets, then the first step to do after 
 installing the linkml library itself, is to let linkml do the heavy lifting 
 and use it to generate a well defined directory structure for your project.
 

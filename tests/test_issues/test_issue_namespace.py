@@ -1,4 +1,3 @@
-
 import unittest
 
 from linkml.generators.rdfgen import RDFGenerator
@@ -13,10 +12,15 @@ class NamespaceIssueTestCase(TestEnvironmentTestCase):
     # TODO: Find out why test_issue_namespace is emitting generation_date in the TYPE namespace
     def test_namespace(self):
         context = "https://biolink.github.io/biolink-model/context.jsonld"
-        env.generate_single_file('issue_namespace.ttl',
-                                 lambda: RDFGenerator(env.input_path('issue_namespace.yaml')).serialize(context=context),
-                                 comparator=compare_rdf, value_is_returned=True)
+        env.generate_single_file(
+            "issue_namespace.ttl",
+            lambda: RDFGenerator(env.input_path("issue_namespace.yaml")).serialize(
+                context=context
+            ),
+            comparator=compare_rdf,
+            value_is_returned=True,
+        )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

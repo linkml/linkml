@@ -3,13 +3,13 @@ import unittest
 from dataclasses import dataclass
 
 from jsonasobj2 import as_json
-from rdflib import Literal, XSD, Graph, RDF, Namespace
-
-from linkml_runtime.utils.metamodelcore import NCName, Bool, URIorCURIE, URI, XSDDate, XSDDateTime, XSDTime, Curie, \
-    NodeIdentifier
+from linkml_runtime.utils.metamodelcore import (URI, Bool, Curie, NCName,
+                                                NodeIdentifier, URIorCURIE,
+                                                XSDDate, XSDDateTime, XSDTime)
 from linkml_runtime.utils.namespaces import Namespaces
 from linkml_runtime.utils.strictness import lax, strict
 from linkml_runtime.utils.yamlutils import YAMLRoot, as_rdf
+from rdflib import RDF, XSD, Graph, Literal, Namespace
 
 
 class MetamodelCoreTest(unittest.TestCase):
@@ -17,9 +17,9 @@ class MetamodelCoreTest(unittest.TestCase):
         strict()
 
     def test_ncname(self):
-        self.assertEqual('A123', NCName('A123'))
-        x = NCName('A1.B_C-')
-        self.assertEqual('A1.B_C-', x)
+        self.assertEqual("A123", NCName("A123"))
+        x = NCName("A1.B_C-")
+        self.assertEqual("A1.B_C-", x)
         self.assertIsInstance(x, str)
         self.assertIsInstance(x, NCName)
         self.assertEqual(x, NCName(x))
@@ -27,12 +27,12 @@ class MetamodelCoreTest(unittest.TestCase):
         self.assertIsInstance(x, str)
         self.assertFalse(isinstance(x, NCName))
         with self.assertRaises(ValueError):
-            NCName('1')
+            NCName("1")
         with self.assertRaises(ValueError):
-            NCName('A12!')
+            NCName("A12!")
 
     def test_uris(self):
-        """ Test the URI and URIorCURIE types """
+        """Test the URI and URIorCURIE types"""
         str1 = "https://google.com/test#file?abc=1&def=4"
         self.assertEqual(str1, URIorCURIE(str1))
         self.assertEqual(str1, URI(str1))
@@ -52,29 +52,28 @@ class MetamodelCoreTest(unittest.TestCase):
         URIorCURIE("1:def")
 
     def test_curie(self):
-        """ Test the CURIE type """
+        """Test the CURIE type"""
         self.assertEqual("rdf:type", Curie("rdf:type"))
         with self.assertRaises(ValueError):
             Curie("type")
         self.assertFalse(Curie.is_valid("type"))
         self.assertEqual(":type", Curie(":type"))
-        self.assertTrue(Curie.is_valid(':type'))
+        self.assertTrue(Curie.is_valid(":type"))
         with self.assertRaises(ValueError):
             Curie("1df:type")
-        self.assertFalse(Curie.is_valid('1df:type'))
+        self.assertFalse(Curie.is_valid("1df:type"))
         with self.assertRaises(ValueError):
             Curie("rdf:17")
-        self.assertFalse(Curie.is_valid('rdf:17'))
+        self.assertFalse(Curie.is_valid("rdf:17"))
         nsm = Namespaces(Graph())
         self.assertEqual(RDF.type, Curie("rdf:type").as_uri(nsm))
         self.assertIsNone(Curie("ex:foo").as_uri(nsm))
         self.assertIsNone(Curie(":bar").as_uri(nsm))
         nsm._default = "http://example.org/test#"
-        self.assertEqual(nsm._default['bear'], Curie(":bear").as_uri(nsm))
-
+        self.assertEqual(nsm._default["bear"], Curie(":bear").as_uri(nsm))
 
     def test_uri(self):
-        """ Test the URI data type """
+        """Test the URI data type"""
         self.assertEqual("http://foo.org/bargles", URI("http://foo.org/bargles"))
         with self.assertRaises(ValueError):
             URI("rdf:type")
@@ -110,59 +109,67 @@ class MetamodelCoreTest(unittest.TestCase):
 
     def test_time(self):
         v = datetime.time(13, 17, 43, 279000)
-        self.assertEqual('13:17:43.279000', XSDTime(v))                              # A date can be a datetime
-        self.assertEqual('13:17:43.279000', XSDTime(Literal(v, datatype=XSD.time)))  # An RDFLIB Literal
-        self.assertEqual('13:17:43.279000', v.isoformat())                           # A string
-        self.assertEqual('13:17:43.279000', XSDTime(XSDTime(v)))                     # An existing date
+        self.assertEqual("13:17:43.279000", XSDTime(v))  # A date can be a datetime
+        self.assertEqual(
+            "13:17:43.279000", XSDTime(Literal(v, datatype=XSD.time))
+        )  # An RDFLIB Literal
+        self.assertEqual("13:17:43.279000", v.isoformat())  # A string
+        self.assertEqual("13:17:43.279000", XSDTime(XSDTime(v)))  # An existing date
         strict()
         with self.assertRaises(ValueError):
-            XSDTime('Jan 12, 2019')
+            XSDTime("Jan 12, 2019")
         with self.assertRaises(ValueError):
             XSDTime(datetime.datetime.now())
         lax()
-        self.assertEqual('Jan 12, 2019', XSDTime('Jan 12, 2019'))
+        self.assertEqual("Jan 12, 2019", XSDTime("Jan 12, 2019"))
         XSDDate(datetime.datetime.now())
-        self.assertFalse(XSDTime.is_valid('Jan 12, 2019'))
+        self.assertFalse(XSDTime.is_valid("Jan 12, 2019"))
         self.assertFalse(XSDTime.is_valid(datetime.datetime.now()))
         self.assertTrue(XSDTime.is_valid(v))
 
     def test_date(self):
         v = datetime.date(2019, 7, 6)
-        self.assertEqual('2019-07-06', XSDDate(v))                              # A date can be a datetime
-        self.assertEqual('2019-07-06', XSDDate(Literal(v, datatype=XSD.date)))  # An RDFLIB Literal
-        self.assertEqual('2019-07-06', v.isoformat())                           # A string
-        self.assertEqual('2019-07-06', XSDDate(XSDDate(v)))                     # An existing date
+        self.assertEqual("2019-07-06", XSDDate(v))  # A date can be a datetime
+        self.assertEqual(
+            "2019-07-06", XSDDate(Literal(v, datatype=XSD.date))
+        )  # An RDFLIB Literal
+        self.assertEqual("2019-07-06", v.isoformat())  # A string
+        self.assertEqual("2019-07-06", XSDDate(XSDDate(v)))  # An existing date
         strict()
         with self.assertRaises(ValueError):
-            XSDDate('Jan 12, 2019')
+            XSDDate("Jan 12, 2019")
         with self.assertRaises(ValueError):
             XSDDate(datetime.datetime.now())
         lax()
-        bv = XSDDate('Jan 12, 2019')
-        self.assertEqual('Jan 12, 2019', bv)
+        bv = XSDDate("Jan 12, 2019")
+        self.assertEqual("Jan 12, 2019", bv)
         self.assertFalse(XSDDate.is_valid(bv))
         XSDDate(datetime.datetime.now())
-        self.assertFalse(XSDDate.is_valid('Jan 12, 2019'))
+        self.assertFalse(XSDDate.is_valid("Jan 12, 2019"))
         self.assertFalse(XSDDate.is_valid(datetime.datetime.now()))
         self.assertTrue(XSDDate.is_valid(XSDDate(datetime.datetime.now().date())))
         self.assertTrue(XSDDate.is_valid(v))
 
     def test_datetime(self):
         v = datetime.datetime(2019, 7, 6, 17, 22, 39, 7300)
-        self.assertEqual('2019-07-06T17:22:39.007300', XSDDateTime(v))
-        self.assertEqual('2019-07-06T17:22:39.007300', XSDDateTime(Literal(v, datatype=XSD.datetime)))
-        self.assertEqual('2019-07-06T17:22:39.007300', XSDDateTime(Literal(v).value))
-        self.assertEqual('2019-07-06T17:22:39.007300', v.isoformat())
-        self.assertEqual('2019-07-06T17:22:39.007300', XSDDateTime(XSDDateTime(v)))
+        self.assertEqual("2019-07-06T17:22:39.007300", XSDDateTime(v))
+        self.assertEqual(
+            "2019-07-06T17:22:39.007300", XSDDateTime(Literal(v, datatype=XSD.datetime))
+        )
+        self.assertEqual("2019-07-06T17:22:39.007300", XSDDateTime(Literal(v).value))
+        self.assertEqual("2019-07-06T17:22:39.007300", v.isoformat())
+        self.assertEqual("2019-07-06T17:22:39.007300", XSDDateTime(XSDDateTime(v)))
         vstr = str(Literal(v).value)
-        self.assertEqual('2019-07-06 17:22:39.007300', vstr)       # Note that this has no 'T'
-        self.assertEqual('2019-07-06T17:22:39.007300', XSDDateTime(vstr))
+        self.assertEqual(
+            "2019-07-06 17:22:39.007300", vstr
+        )  # Note that this has no 'T'
+        self.assertEqual("2019-07-06T17:22:39.007300", XSDDateTime(vstr))
         with self.assertRaises(ValueError):
-            XSDDateTime('Jan 12, 2019')
+            XSDDateTime("Jan 12, 2019")
         lax()
-        self.assertEqual('penguins', XSDDateTime('penguins'))
+        self.assertEqual("penguins", XSDDateTime("penguins"))
         XSDDateTime(datetime.datetime.now())
-        self.assertFalse(XSDDateTime.is_valid('Jan 12, 2019'))
+        self.assertFalse(XSDDateTime.is_valid("Jan 12, 2019"))
         self.assertTrue(XSDDateTime.is_valid(datetime.datetime.now()))
         self.assertTrue(XSDDateTime.is_valid(XSDDate(datetime.datetime.now().date())))
         self.assertTrue(XSDDateTime.is_valid(v))
@@ -190,6 +197,7 @@ class MetamodelCoreTest(unittest.TestCase):
             }
         }"""
         EX = Namespace("http://example.org/tests/")
+
         class Root(NodeIdentifier):
             pass
 
@@ -220,11 +228,15 @@ class MetamodelCoreTest(unittest.TestCase):
         s = Desc1(EX.descendant1)
         t = Child2(EX.child2)
         y = Pair(s, t)
-        self.assertEqual("""{
+        self.assertEqual(
+            """{
    "s": "http://example.org/tests/descendant1",
    "t": "http://example.org/tests/child2"
-}""", as_json(y))
-        self.assertEqual("""@prefix OIO: <http://www.geneontology.org/formats/oboInOwl#> .
+}""",
+            as_json(y),
+        )
+        self.assertEqual(
+            """@prefix OIO: <http://www.geneontology.org/formats/oboInOwl#> .
 @prefix dcterms: <http://purl.org/dc/terms/> .
 @prefix metatype: <https://w3id.org/linkml/type/> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
@@ -239,12 +251,12 @@ class MetamodelCoreTest(unittest.TestCase):
     rdfs:object "http://example.org/tests/child2" ;
     rdfs:subject "http://example.org/tests/descendant1" .
 
-""", as_rdf(y, context).serialize(format="turtle").decode())
+""",
+            as_rdf(y, context).serialize(format="turtle").decode(),
+        )
         with self.assertRaises(ValueError):
             y = Pair(s, s)
 
 
-
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
