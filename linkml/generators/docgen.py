@@ -546,7 +546,7 @@ class DocGenerator(Generator):
         else:
             return False
 
-    def fetch_own_attributes_of_class(self, cls: ClassDefinition) -> List[SlotDefinitionName]:
+    def get_direct_slots(self, cls: ClassDefinition) -> List[SlotDefinitionName]:
         """Fetch list of all own attributes of a class, i.e., 
         all slots that belong to the domain of a class.
 
@@ -555,7 +555,7 @@ class DocGenerator(Generator):
         """
         return cls.slots + list(cls.attributes.keys())
 
-    def fetch_inherited_attributes_of_class(self, cls: ClassDefinition) -> List[SlotDefinitionName]:
+    def get_indirect_slots(self, cls: ClassDefinition) -> List[SlotDefinitionName]:
         """Fetch list of all inherited attributes of a class, i.e., 
         all slots that belong to the domain of a class.
 
@@ -568,7 +568,7 @@ class DocGenerator(Generator):
 
         return list(set(slot_list).difference(self.fetch_own_attributes_of_class(cls)))
 
-    def fetch_mixed_in_slots_of_class(self, cls: ClassDefinition) -> Dict[str, List[str]]:
+    def get_mixin_inherited_slots(self, cls: ClassDefinition) -> Dict[str, List[str]]:
         """Fetch list of all slots acquired through mixing.
 
         :param cls: class for which we want to determine the mixed in slots

@@ -1,12 +1,10 @@
 import logging
 import os
 import unittest
-from contextlib import redirect_stdout
 from copy import copy
 from typing import List
 
 from linkml.generators.docgen import DocGenerator
-from linkml.generators.markdowngen import MarkdownGenerator
 from tests.test_generators.environment import env
 
 from linkml_runtime.utils.schemaview import SchemaView
@@ -217,7 +215,7 @@ class DocGeneratorTestCase(unittest.TestCase):
                            
         self.assertCountEqual(actual_result, expected_result)
 
-    def test_fetch_attributes_of_class(self):
+    def test_fetch_slots_of_class(self):
         tdir = env.input_path('docgen_html_templates')
         gen = DocGenerator(SCHEMA, mergeimports=True, no_types_dir=True, template_directory=tdir, format='html')
 
@@ -225,21 +223,21 @@ class DocGeneratorTestCase(unittest.TestCase):
         cls = sv.get_class("Address")
 
         # test assertion for own attributes of a class
-        actual_result = gen.fetch_own_attributes_of_class(cls)
+        actual_result = gen.get_direct_slots(cls)
         expected_result = ["street", "city"]
 
         self.assertListEqual(expected_result, actual_result)
 
         # test assertion for inherited attributes of a class
         cls = sv.get_class("EmploymentEvent")
-        actual_result = gen.fetch_inherited_attributes_of_class(cls)
+        actual_result = gen.get_indirect_slots(cls)
         expected_result = ["ended at time", "metadata", "started at time", "is current"]
         
         self.assertListEqual(sorted(expected_result), sorted(actual_result))
 
         # test assertion for mixed in slots of a class
         cls = sv.get_class("Organization")
-        actual_result = gen.fetch_mixed_in_slots_of_class(cls)
+        actual_result = gen.get_mixin_inherited_slots(cls)
         expected_result = {"HasAliases": ["aliases"]}
 
         self.assertDictEqual(actual_result, expected_result)
