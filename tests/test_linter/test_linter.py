@@ -90,7 +90,8 @@ rules:
         self.assertEqual(len(report), 0)
 
     def test_no_extends(self):
-        config = yaml.safe_load("""
+        config = yaml.safe_load(
+            """
 rules:
   canonical_prefixes:
     level: error
@@ -99,19 +100,27 @@ rules:
       - prefixcc
   no_empty_title:
     level: warning
-""")
+"""
+        )
         linter = Linter(config)
-        
+
         # the level is changed by the custom rules
-        self.assertEqual(str(linter.config.rules.canonical_prefixes.level), RuleLevel.error.text)
-        self.assertEqual(linter.config.rules.canonical_prefixes.prefixmaps_contexts, ["obo", "prefixcc"])
+        self.assertEqual(
+            str(linter.config.rules.canonical_prefixes.level), RuleLevel.error.text
+        )
+        self.assertEqual(
+            linter.config.rules.canonical_prefixes.prefixmaps_contexts,
+            ["obo", "prefixcc"],
+        )
 
         # this is not in the custom rules and should come from the default
-        self.assertEqual(str(linter.config.rules.tree_root_class.level), RuleLevel.disabled.text)
-
+        self.assertEqual(
+            str(linter.config.rules.tree_root_class.level), RuleLevel.disabled.text
+        )
 
     def test_extends_recommended(self):
-        config = yaml.safe_load("""
+        config = yaml.safe_load(
+            """
 extends: recommended
 rules:
   canonical_prefixes:
@@ -121,18 +130,30 @@ rules:
       - prefixcc
   no_empty_title:
     level: warning
-""")
+"""
+        )
         linter = Linter(config)
-        
+
         # this rule is in the recommended set, the level is changed by the custom rules
-        self.assertEqual(str(linter.config.rules.canonical_prefixes.level), RuleLevel.error.text)
-        self.assertEqual(linter.config.rules.canonical_prefixes.prefixmaps_contexts, ["obo", "prefixcc"])
+        self.assertEqual(
+            str(linter.config.rules.canonical_prefixes.level), RuleLevel.error.text
+        )
+        self.assertEqual(
+            linter.config.rules.canonical_prefixes.prefixmaps_contexts,
+            ["obo", "prefixcc"],
+        )
 
         # this should come directly from the recommended set with no customization
-        self.assertEqual(str(linter.config.rules.no_xsd_int_type.level), RuleLevel.error.text)
+        self.assertEqual(
+            str(linter.config.rules.no_xsd_int_type.level), RuleLevel.error.text
+        )
 
         # this is in the custom rules but not in the recommended set
-        self.assertEqual(str(linter.config.rules.no_empty_title.level), RuleLevel.warning.text)
+        self.assertEqual(
+            str(linter.config.rules.no_empty_title.level), RuleLevel.warning.text
+        )
 
         # this is not in the recommended or custom rules and should come from the default
-        self.assertEqual(str(linter.config.rules.tree_root_class.level), RuleLevel.disabled.text)
+        self.assertEqual(
+            str(linter.config.rules.tree_root_class.level), RuleLevel.disabled.text
+        )

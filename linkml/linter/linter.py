@@ -10,7 +10,7 @@ from linkml_runtime import SchemaView
 from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.linkml_model import SchemaDefinition
 
-from .config.datamodel.config import Config, RuleLevel, ExtendableConfigs
+from .config.datamodel.config import Config, ExtendableConfigs, RuleLevel
 
 
 @dataclass
@@ -41,10 +41,12 @@ def merge_configs(original: dict, other: dict):
 
 class Linter:
     def __init__(self, config: Dict[str, Any] = {}) -> None:
-        default_config = deepcopy(get_named_config('default'))
+        default_config = deepcopy(get_named_config("default"))
         merged_config = config
-        if config.get('extends') == ExtendableConfigs.recommended.text:
-            recommended_config = deepcopy(get_named_config(ExtendableConfigs.recommended.text))
+        if config.get("extends") == ExtendableConfigs.recommended.text:
+            recommended_config = deepcopy(
+                get_named_config(ExtendableConfigs.recommended.text)
+            )
             merged_config = merge_configs(recommended_config, merged_config)
         merged_config = merge_configs(default_config, merged_config)
         self.config = Config(**merged_config)

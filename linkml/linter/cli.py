@@ -1,4 +1,5 @@
 import os
+import sys
 from pathlib import Path
 from typing import Iterable
 
@@ -61,7 +62,7 @@ def main(schema: Path, fix: bool, config: str, format: str, output):
         with open(config_file) as f:
             config_dict = yaml.safe_load(f)
     else:
-        config_dict = {}
+        config_dict = {"extends": "recommended"}
 
     linter = Linter(config_dict)
     if format == "terminal":
@@ -73,14 +74,18 @@ def main(schema: Path, fix: bool, config: str, format: str, output):
     elif format == "tsv":
         formatter = TsvFormatter(output)
 
+    exit_code = 0
     formatter.start_report()
     for path in get_yaml_files(schema):
         formatter.start_schema(path)
         report = linter.lint(path, fix=fix)
         for problem in report:
+            exit_code = 1
             formatter.handle_problem(problem)
         formatter.end_schema()
     formatter.end_report()
+
+    sys.exit(exit_code)
 
 
 if __name__ == "__main__":
