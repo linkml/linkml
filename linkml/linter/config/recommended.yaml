@@ -1,0 +1,11 @@
+rules:
+  recommended:
+    level: warning
+  no_xsd_int_type:
+    level: error
+  no_invalid_slot_usage:
+    level: error
+  standard_naming:
+    level: warning
+  canonical_prefixes:
+    level: warning
