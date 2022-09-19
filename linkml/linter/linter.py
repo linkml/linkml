@@ -68,7 +68,7 @@ class Linter:
             )
             return
 
-        for rule_id, rule_config in self.config.__dict__.items():
+        for rule_id, rule_config in self.config.rules.__dict__.items():
             rule_cls = self._rules_map.get(rule_id, None)
             if rule_cls is None:
                 raise ValueError("Unknown rule id: " + rule_id)

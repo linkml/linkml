@@ -12,8 +12,9 @@ class TestLinter(unittest.TestCase):
 
         config = yaml.safe_load(
             """
-no_empty_title:
-  level: error
+rules:
+  no_empty_title:
+    level: error
 """
         )
         builder = SchemaBuilder()
@@ -42,8 +43,9 @@ no_empty_title:
     def test_rule_level_warning(self):
         config = yaml.safe_load(
             """
-no_empty_title:
-  level: warning
+rules:
+  no_empty_title:
+    level: warning
 """
         )
         builder = SchemaBuilder()
@@ -72,8 +74,9 @@ no_empty_title:
     def test_rule_level_disabled(self):
         config = yaml.safe_load(
             """
-no_empty_title:
-  level: disabled
+rules:
+  no_empty_title:
+    level: disabled
 """
         )
         builder = SchemaBuilder()

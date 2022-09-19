@@ -1,5 +1,5 @@
 # Auto generated from config.yaml by pythongen.py version: 0.9.0
-# Generation date: 2022-09-06T15:57:37
+# Generation date: 2022-09-19T10:30:48
 # Schema: linter-config
 #
 # id: https://w3id.org/linkml/linter/config
@@ -58,6 +58,28 @@ class Config(YAMLRoot):
     class_class_curie: ClassVar[str] = "lintcfg:Config"
     class_name: ClassVar[str] = "Config"
     class_model_uri: ClassVar[URIRef] = LINTCFG.Config
+
+    extends: Optional[Union[str, "ExtendableConfigs"]] = None
+    rules: Optional[Union[dict, "Rules"]] = None
+
+    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self.extends is not None and not isinstance(self.extends, ExtendableConfigs):
+            self.extends = ExtendableConfigs(self.extends)
+
+        if self.rules is not None and not isinstance(self.rules, Rules):
+            self.rules = Rules(**as_dict(self.rules))
+
+        super().__post_init__(**kwargs)
+
+
+@dataclass
+class Rules(YAMLRoot):
+    _inherited_slots: ClassVar[List[str]] = []
+
+    class_class_uri: ClassVar[URIRef] = LINTCFG.Rules
+    class_class_curie: ClassVar[str] = "lintcfg:Rules"
+    class_name: ClassVar[str] = "Rules"
+    class_model_uri: ClassVar[URIRef] = LINTCFG.Rules
 
     no_empty_title: Optional[Union[dict, "RuleConfig"]] = None
     permissible_values_format: Optional[
@@ -287,6 +309,21 @@ class CanonicalPrefixesConfig(RuleConfig):
 
 
 # Enumerations
+class ExtendableConfigs(EnumDefinitionImpl):
+    """
+    The permissible values for the `extends` field of a config file
+    """
+
+    recommended = PermissibleValue(
+        text="recommended", description="Extend the recommended rule set"
+    )
+
+    _defn = EnumDefinition(
+        name="ExtendableConfigs",
+        description="The permissible values for the `extends` field of a config file",
+    )
+
+
 class RuleLevel(EnumDefinitionImpl):
     """
     The permissible values for the `level` option of all rules
@@ -315,74 +352,92 @@ class slots:
     pass
 
 
-slots.config__no_empty_title = Slot(
+slots.config__extends = Slot(
+    uri=LINTCFG.extends,
+    name="config__extends",
+    curie=LINTCFG.curie("extends"),
+    model_uri=LINTCFG.config__extends,
+    domain=None,
+    range=Optional[Union[str, "ExtendableConfigs"]],
+)
+
+slots.config__rules = Slot(
+    uri=LINTCFG.rules,
+    name="config__rules",
+    curie=LINTCFG.curie("rules"),
+    model_uri=LINTCFG.config__rules,
+    domain=None,
+    range=Optional[Union[dict, Rules]],
+)
+
+slots.rules__no_empty_title = Slot(
     uri=LINTCFG.no_empty_title,
-    name="config__no_empty_title",
+    name="rules__no_empty_title",
     curie=LINTCFG.curie("no_empty_title"),
-    model_uri=LINTCFG.config__no_empty_title,
+    model_uri=LINTCFG.rules__no_empty_title,
     domain=None,
     range=Optional[Union[dict, RuleConfig]],
 )
 
-slots.config__permissible_values_format = Slot(
+slots.rules__permissible_values_format = Slot(
     uri=LINTCFG.permissible_values_format,
-    name="config__permissible_values_format",
+    name="rules__permissible_values_format",
     curie=LINTCFG.curie("permissible_values_format"),
-    model_uri=LINTCFG.config__permissible_values_format,
+    model_uri=LINTCFG.rules__permissible_values_format,
     domain=None,
     range=Optional[Union[dict, PermissibleValuesFormatRuleConfig]],
 )
 
-slots.config__tree_root_class = Slot(
+slots.rules__tree_root_class = Slot(
     uri=LINTCFG.tree_root_class,
-    name="config__tree_root_class",
+    name="rules__tree_root_class",
     curie=LINTCFG.curie("tree_root_class"),
-    model_uri=LINTCFG.config__tree_root_class,
+    model_uri=LINTCFG.rules__tree_root_class,
     domain=None,
     range=Optional[Union[dict, TreeRootClassRuleConfig]],
 )
 
-slots.config__recommended = Slot(
+slots.rules__recommended = Slot(
     uri=LINTCFG.recommended,
-    name="config__recommended",
+    name="rules__recommended",
     curie=LINTCFG.curie("recommended"),
-    model_uri=LINTCFG.config__recommended,
+    model_uri=LINTCFG.rules__recommended,
     domain=None,
     range=Optional[Union[dict, RecommendedRuleConfig]],
 )
 
-slots.config__no_xsd_int_type = Slot(
+slots.rules__no_xsd_int_type = Slot(
     uri=LINTCFG.no_xsd_int_type,
-    name="config__no_xsd_int_type",
+    name="rules__no_xsd_int_type",
     curie=LINTCFG.curie("no_xsd_int_type"),
-    model_uri=LINTCFG.config__no_xsd_int_type,
+    model_uri=LINTCFG.rules__no_xsd_int_type,
     domain=None,
     range=Optional[Union[dict, RuleConfig]],
 )
 
-slots.config__no_invalid_slot_usage = Slot(
+slots.rules__no_invalid_slot_usage = Slot(
     uri=LINTCFG.no_invalid_slot_usage,
-    name="config__no_invalid_slot_usage",
+    name="rules__no_invalid_slot_usage",
     curie=LINTCFG.curie("no_invalid_slot_usage"),
-    model_uri=LINTCFG.config__no_invalid_slot_usage,
+    model_uri=LINTCFG.rules__no_invalid_slot_usage,
     domain=None,
     range=Optional[Union[dict, RuleConfig]],
 )
 
-slots.config__standard_naming = Slot(
+slots.rules__standard_naming = Slot(
     uri=LINTCFG.standard_naming,
-    name="config__standard_naming",
+    name="rules__standard_naming",
     curie=LINTCFG.curie("standard_naming"),
-    model_uri=LINTCFG.config__standard_naming,
+    model_uri=LINTCFG.rules__standard_naming,
     domain=None,
     range=Optional[Union[dict, StandardNamingConfig]],
 )
 
-slots.config__canonical_prefixes = Slot(
+slots.rules__canonical_prefixes = Slot(
     uri=LINTCFG.canonical_prefixes,
-    name="config__canonical_prefixes",
+    name="rules__canonical_prefixes",
     curie=LINTCFG.curie("canonical_prefixes"),
-    model_uri=LINTCFG.config__canonical_prefixes,
+    model_uri=LINTCFG.rules__canonical_prefixes,
     domain=None,
     range=Optional[Union[dict, CanonicalPrefixesConfig]],
 )
