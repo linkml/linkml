@@ -17,10 +17,12 @@ def get_default_paths(file_type: str) -> List[PurePath]:
     """
     paths = []
     rel_dirs = []
+    # TODO: introspect this information
     srcp = PurePath('src')
     if file_type == 'yaml':
         rel_dirs = [PurePath('model') /'schema',
                     PurePath('schema'),
+                    PurePath('linkml'),
                     srcp / 'linkml',
                     srcp / 'model',
                     srcp / 'model' / 'schema',
@@ -37,7 +39,9 @@ def get_default_paths(file_type: str) -> List[PurePath]:
         rel_dirs = []
     for rel_dir in rel_dirs:
         paths.append(rel_dir)
+    # YAML files may be in the same directory as the python
     paths.append(PurePath('.'))
+    logging.debug(f"Paths to search: {paths}")
     return paths
 
 def get_packaged_file_as_str(package: str, file_type: str, rel_paths: List[PurePath]=[], encoding="utf-8") -> str:
