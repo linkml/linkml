@@ -10,7 +10,7 @@ from linkml_runtime import SchemaView
 from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.linkml_model import SchemaDefinition
 
-from .config.datamodel.config import Config, RuleLevel
+from .config.datamodel.config import Config, ExtendableConfigs, RuleLevel
 
 
 @dataclass
@@ -23,8 +23,8 @@ class LinterProblem:
 
 
 @lru_cache
-def get_default_config() -> Dict[str, Any]:
-    config_path = str(Path(__file__).parent / "config/default.yaml")
+def get_named_config(name: str) -> Dict[str, Any]:
+    config_path = str(Path(__file__).parent / f"config/{name}.yaml")
     with open(config_path) as config_file:
         return yaml.safe_load(config_file)
 
@@ -41,8 +41,14 @@ def merge_configs(original: dict, other: dict):
 
 class Linter:
     def __init__(self, config: Dict[str, Any] = {}) -> None:
-        default_config = deepcopy(get_default_config())
-        merged_config = merge_configs(default_config, config)
+        default_config = deepcopy(get_named_config("default"))
+        merged_config = config
+        if config.get("extends") == ExtendableConfigs.recommended.text:
+            recommended_config = deepcopy(
+                get_named_config(ExtendableConfigs.recommended.text)
+            )
+            merged_config = merge_configs(recommended_config, merged_config)
+        merged_config = merge_configs(default_config, merged_config)
         self.config = Config(**merged_config)
 
         from . import rules
@@ -68,7 +74,7 @@ class Linter:
             )
             return
 
-        for rule_id, rule_config in self.config.__dict__.items():
+        for rule_id, rule_config in self.config.rules.__dict__.items():
             rule_cls = self._rules_map.get(rule_id, None)
             if rule_cls is None:
                 raise ValueError("Unknown rule id: " + rule_id)

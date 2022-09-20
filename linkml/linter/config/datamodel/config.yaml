@@ -20,9 +20,22 @@ classes:
   Config:
     tree_root: true
     description: >-
-      This is the top-level representation of a LinkML linter configuration file. Each
-      attribute represents a rule that can be enabled and possibly configured by a 
-      configuration file.
+      This is the top-level representation of a LinkML linter configuration file. It allows 
+      defining a set of rules while also optionally extending a predefined set of rules.
+    attributes:
+      extends:
+        range: ExtendableConfigs
+        description: >-
+          This optional field allows a configuration to extend a predefined configuration.
+      rules:
+        range: Rules
+        description: >-
+          This is where a configuration defines its rules and the configuration of those rules.
+  
+  Rules:
+    description: >-
+      Each attribute of this class represents a rule that can be enabled and possibly 
+      configured by a configuration file. 
     attributes:
       no_empty_title:
         range: RuleConfig
@@ -156,6 +169,11 @@ classes:
           https://github.com/linkml/prefixmaps#usage
 
 enums:
+  ExtendableConfigs:
+    description: The permissible values for the `extends` field of a config file
+    permissible_values:
+      recommended:
+        description: Extend the recommended rule set
   RuleLevel:
     description: >-
       The permissible values for the `level` option of all rules
