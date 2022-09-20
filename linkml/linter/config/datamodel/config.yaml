@@ -110,7 +110,7 @@ classes:
         description: >-
           Default: false
           If true, in addition to validating that a `tree_root: true` ClassDefinition exists,
-          the rule will also validate that is has the name provided by the `class_name` option.
+          the rule will also validate that is has the name provided by the `root_class_name` option.
 
   RecommendedRuleConfig:
     description: >-

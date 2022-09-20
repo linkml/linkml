@@ -40,6 +40,7 @@ extensions = [
     'myst_parser'
 ]
 
+myst_heading_anchors = 3
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
