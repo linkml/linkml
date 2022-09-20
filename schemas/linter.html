@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Schema Linter &mdash; linkml  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Derived models" href="derived-models.html" />
+    <link rel="prev" title="Mapping schemas to other frameworks" href="generators.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> linkml
+            <img src="https://linkml.io/uploads/linkml-logo_color.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../intro/overview.html">LinkML at a glance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/install.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/tutorial.html">Tutorial</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">LinkML Schemas</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="models.html">Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metadata.html">Schema Element Metadata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="inheritance.html">Inheritance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="slots.html">Slots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="uris-and-mappings.html">URIs and Mappings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="enums.html">Semantic Enumerations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="inlining.html">Inlining objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="constraints.html">Adding constraints and rules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="subsets.html">Subsets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="imports.html">Imports</a></li>
+<li class="toctree-l2"><a class="reference internal" href="advanced.html">Advanced features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generators.html">Mapping schemas to other frameworks</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Schema Linter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#introduction">Introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#configuration">Configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#rules">Rules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#canonical-prefixes">canonical_prefixes ⭐</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#no-empty-title">no_empty_title</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#no-invalid-slot-usage">no_invalid_slot_usage ⭐</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#no-xsd-int-type">no_xsd_int_type ⭐</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#permissible-values-format">permissible_values_format</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#recommended">recommended ⭐</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#standard-naming">standard_naming ⭐</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#tree-root-class">tree_root_class</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#reports">Reports</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="derived-models.html">Derived models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metamodel.html">The metamodel</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../data/index.html">Working with Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../generators/index.html">Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../howtos/index.html">How-to Guides</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples of use</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosystem.html">The LinkML Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../specifications/linkml-spec.html">LinkML specification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing/contributing.html">Contribution Guidelines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faq/index.html">FAQ</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developers guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../developers/index.html">Developers guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../code.html">Code</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">linkml</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">LinkML Schemas</a> &raquo;</li>
+      <li>Schema Linter</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/schemas/linter.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="schema-linter">
+<h1>Schema Linter<a class="headerlink" href="#schema-linter" title="Permalink to this heading"></a></h1>
+<p>When authoring a schema – especially when it is large or there are many authors – it is important to establish and adhere to best practices. For example, while <a class="reference internal" href="metadata.html#providing-descriptions"><span class="std std-doc">providing a description</span></a> for each schema element is not required, descriptions can help reduce miscommunication between schema authors. LinkML provides a configurable <a class="reference external" href="https://en.wikipedia.org/wiki/Lint_(software)">linter</a> to identify violations of best practices or error-prone patterns.</p>
+<section id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this heading"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">linkml-lint</span></code> command performs checks on a schema which – while valid – may not represent best practices or may indicate a likely mistake in the schema. These checks are referred to as <a class="reference internal" href="#rules"><span class="std std-doc">rules</span></a> and without additional <a class="reference internal" href="#configuration"><span class="std std-doc">configuration</span></a> a default set of rules will be used.</p>
+<p>To lint a single schema file:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>linkml-lint schema.yaml
+</pre></div>
+</div>
+<p>To recursively lint a directory of schema files:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>linkml-lint schemas
+</pre></div>
+</div>
+</section>
+<section id="configuration">
+<h2>Configuration<a class="headerlink" href="#configuration" title="Permalink to this heading"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">linkml-lint</span></code> command can be configured with a YAML configuration file. The configuration file can be provided using the <code class="docutils literal notranslate"><span class="pre">--config</span></code> command line option:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>linkml-lint --config myconfig.yaml myschema.yaml
+</pre></div>
+</div>
+<p>Alternatively, if there is a file named <code class="docutils literal notranslate"><span class="pre">.linkmllint.yaml</span></code> in the current working directory when you run <code class="docutils literal notranslate"><span class="pre">linkml-lint</span></code> that file will automatically be loaded as the configuration file. If all or most of the schema files in a project can be checked with the same rules, storing the configuration at the root of the project in a <code class="docutils literal notranslate"><span class="pre">.linkmllink.yaml</span></code> file can make it more convenient to check them without having to pass the <code class="docutils literal notranslate"><span class="pre">--config</span></code> option.</p>
+<p>Here is an example of a configuration file which includes all of the recommended rules and enables an additional rule named <code class="docutils literal notranslate"><span class="pre">no_empty_title</span></code>:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># Use all of the recommended rule and also enable the no_empty_title rule</span><span class="w"></span>
+<span class="nt">extends</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">recommended</span><span class="w"></span>
+<span class="nt">rules</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">no_empty_title</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">level</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">error</span><span class="w"></span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">extends</span></code> field of the configuration file allows you to inherit from an existing configuration. Currently the only valid value for this field is <code class="docutils literal notranslate"><span class="pre">recommended</span></code>.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">rules</span></code> field is a dictionary where each key is a rule name and the value is the configuration for that rule. Every rule has at least one configurable property: <code class="docutils literal notranslate"><span class="pre">level</span></code>. Each rule’s <code class="docutils literal notranslate"><span class="pre">level</span></code> can be set to <code class="docutils literal notranslate"><span class="pre">disabled</span></code> (the default) meaning the schema will not be checked with that rule, or <code class="docutils literal notranslate"><span class="pre">level</span></code> can be set to <code class="docutils literal notranslate"><span class="pre">warning</span></code> or <code class="docutils literal notranslate"><span class="pre">error</span></code>. If set to <code class="docutils literal notranslate"><span class="pre">warning</span></code> or <code class="docutils literal notranslate"><span class="pre">error</span></code> the schema will be checked with that rule and violations will be reported. The distinction between <code class="docutils literal notranslate"><span class="pre">warning</span></code> and <code class="docutils literal notranslate"><span class="pre">error</span></code> is solely cosmetic and is designed to help you prioritize issues to fix. If you are unsure there is no harm in only using the <code class="docutils literal notranslate"><span class="pre">error</span></code> level. Some rules have additional configuration beyond the <code class="docutils literal notranslate"><span class="pre">level</span></code> property, as described in the <a class="reference internal" href="#rules"><span class="std std-doc">Rules</span></a> section.</p>
+<p>To use the recommended configuration set except for one of the rules, manually specify <code class="docutils literal notranslate"><span class="pre">level:</span> <span class="pre">disabled</span></code> for that rule:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># Use the recommended rule set except for the standard_naming rule</span><span class="w"></span>
+<span class="nt">extends</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">recommended</span><span class="w"></span>
+<span class="nt">rules</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">standard_naming</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">level</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">disabled</span><span class="w"></span>
+</pre></div>
+</div>
+<p>It is also acceptable to <em>not</em> extend the recommended set. Simply omit the <code class="docutils literal notranslate"><span class="pre">extends</span></code> field from your configuration. In that case, only the rules that your configuration enables are checked:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># Only the no_empty_title and standard_naming rules will be checked</span><span class="w"></span>
+<span class="nt">rules</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">no_empty_title</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">level</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">error</span><span class="w"></span>
+<span class="w">  </span><span class="nt">standard_naming</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">level</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">error</span><span class="w"></span>
+</pre></div>
+</div>
+</section>
+<section id="rules">
+<h2>Rules<a class="headerlink" href="#rules" title="Permalink to this heading"></a></h2>
+<p>Rule names denoted with a star ⭐ are part of the <code class="docutils literal notranslate"><span class="pre">recommended</span></code> configuration set.</p>
+<section id="canonical-prefixes">
+<h3>canonical_prefixes ⭐<a class="headerlink" href="#canonical-prefixes" title="Permalink to this heading"></a></h3>
+<p>Enforce canonical prefixes by verifying that the mappings defined in the schema’s <code class="docutils literal notranslate"><span class="pre">prefixes</span></code> slot agree with those provided by the <a class="reference external" href="https://github.com/linkml/prefixmaps">prefixmaps</a> package.</p>
+<p><strong>Additional Configuration</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">prefixmaps_contexts</span></code>: The list of context names which will be loaded by the <code class="docutils literal notranslate"><span class="pre">prefixmaps</span></code> library to do the validation. The order of names is meaningful and will be preserved. See also: <a class="reference external" href="https://github.com/linkml/prefixmaps#usage">prefixmaps documentation</a>. Default: <code class="docutils literal notranslate"><span class="pre">[merged]</span></code></p></li>
+</ul>
+</section>
+<section id="no-empty-title">
+<h3>no_empty_title<a class="headerlink" href="#no-empty-title" title="Permalink to this heading"></a></h3>
+<p>Disallow empty titles on schema elements.</p>
+</section>
+<section id="no-invalid-slot-usage">
+<h3>no_invalid_slot_usage ⭐<a class="headerlink" href="#no-invalid-slot-usage" title="Permalink to this heading"></a></h3>
+<p>Disallow <code class="docutils literal notranslate"><span class="pre">slot_usage</span></code> definitions where the name of the slot does not refer to an existing slot of the class.</p>
+</section>
+<section id="no-xsd-int-type">
+<h3>no_xsd_int_type ⭐<a class="headerlink" href="#no-xsd-int-type" title="Permalink to this heading"></a></h3>
+<p>Disallow use of <code class="docutils literal notranslate"><span class="pre">uri:</span> <span class="pre">xsd:int</span></code> in type definitions. In nearly all cases, <code class="docutils literal notranslate"><span class="pre">xsd:integer</span></code> should be used instead.</p>
+</section>
+<section id="permissible-values-format">
+<h3>permissible_values_format<a class="headerlink" href="#permissible-values-format" title="Permalink to this heading"></a></h3>
+<p>Enforce consistent formatting of enum permissible values. This rule may conflict with the <code class="docutils literal notranslate"><span class="pre">standard_naming</span></code> rule, but it is more flexible.</p>
+<p><strong>Additional Configuration</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">format</span></code>: The enforced format of enum permissible values. Special values “snake”, “uppersnake”, “camel”, and “kebab” will be recognized, otherwise the value will be interpreted as a regular expression. Default: <code class="docutils literal notranslate"><span class="pre">uppersnake</span></code>.</p></li>
+</ul>
+</section>
+<section id="recommended">
+<h3>recommended ⭐<a class="headerlink" href="#recommended" title="Permalink to this heading"></a></h3>
+<p>Require any slot in the <a class="reference internal" href="metamodel.html"><span class="doc std std-doc">metamodel</span></a> with <code class="docutils literal notranslate"><span class="pre">recommended:</span> <span class="pre">true</span></code> (e.g. <code class="docutils literal notranslate"><span class="pre">description</span></code>) to be provided.</p>
+<p><strong>Additional Configuration</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">include</span></code>: If specified, only elements with the provided names will be checked. Default: <code class="docutils literal notranslate"><span class="pre">[]</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">exclude</span></code>: All elements except the ones with names specified in this list will be checked. Default: <code class="docutils literal notranslate"><span class="pre">[]</span></code>.</p></li>
+</ul>
+</section>
+<section id="standard-naming">
+<h3>standard_naming ⭐<a class="headerlink" href="#standard-naming" title="Permalink to this heading"></a></h3>
+<p>Enforce standard naming conventions: CamelCase for classes, snake_case for slots, CamelCase for enums, snake_case (default) or UPPER_SNAKE for permissible_values (see <code class="docutils literal notranslate"><span class="pre">permissible_values_upper_case</span></code> option). This rule may conflict with the <code class="docutils literal notranslate"><span class="pre">permissible_values_format</span></code> rule.</p>
+<p><strong>Additional Configuration</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">permissible_values_upper_case</span></code>: If <code class="docutils literal notranslate"><span class="pre">true</span></code>, permissible values will be checked for UPPER_SNAKE, otherwise snake_case. Default: <code class="docutils literal notranslate"><span class="pre">false</span></code>.</p></li>
+</ul>
+</section>
+<section id="tree-root-class">
+<h3>tree_root_class<a class="headerlink" href="#tree-root-class" title="Permalink to this heading"></a></h3>
+<p>Require a single class with <code class="docutils literal notranslate"><span class="pre">tree_root:</span> <span class="pre">true</span></code> and optionally verify that class’s name.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">validate_existing_class_name</span></code>: If <code class="docutils literal notranslate"><span class="pre">true</span></code>, in addition to validating that a <code class="docutils literal notranslate"><span class="pre">tree_root:</span> <span class="pre">true</span></code> ClassDefinition exists, the rule will also validate that is has the name provided by the <code class="docutils literal notranslate"><span class="pre">root_class_name</span></code> option. Default: <code class="docutils literal notranslate"><span class="pre">false</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">root_class_name</span></code>: The name of the root class. Default: <code class="docutils literal notranslate"><span class="pre">Container</span></code>.</p></li>
+</ul>
+</section>
+</section>
+<section id="reports">
+<h2>Reports<a class="headerlink" href="#reports" title="Permalink to this heading"></a></h2>
+<p>By default, if the <code class="docutils literal notranslate"><span class="pre">linkml-lint</span></code> command identifies violations of the configured rules it will print the files and issues to the terminal. This behavior can be changed with the <code class="docutils literal notranslate"><span class="pre">--format</span></code> and <code class="docutils literal notranslate"><span class="pre">--output</span></code> command line options.</p>
+<p>The valid values for <code class="docutils literal notranslate"><span class="pre">--format</span></code> are terminal (the default), markdown, json, and tsv.</p>
+<p>If the <code class="docutils literal notranslate"><span class="pre">--output</span></code> option is provided the report will be written to the specified file instead of the terminal.</p>
+<p>For example, to generate a markdown report in a file named <code class="docutils literal notranslate"><span class="pre">linter-results.md</span></code>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>linkml-lint --format markdown --output linter-results.md myschema.yaml
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="generators.html" class="btn btn-neutral float-left" title="Mapping schemas to other frameworks" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="derived-models.html" class="btn btn-neutral float-right" title="Derived models" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, LinkML Authors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

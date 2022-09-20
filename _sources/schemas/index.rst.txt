@@ -27,6 +27,7 @@ use the guide below.
    imports
    advanced
    generators
+   linter
    derived-models
    metamodel
 
