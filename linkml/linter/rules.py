@@ -1,4 +1,4 @@
-from functools import cache
+from functools import lru_cache
 import re
 from abc import ABC, abstractmethod
 from typing import Callable, Iterable, List
@@ -94,7 +94,7 @@ class PermissibleValuesFormatRule(LinterRule):
                     )
 
 
-@cache
+@lru_cache(maxsize=None)
 def _get_recommended_metamodel_slots() -> List[str]:
     meta_schema_view = SchemaView(LOCAL_METAMODEL_YAML_FILE)
     recommended_meta_slots = []
