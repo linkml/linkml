@@ -40,8 +40,8 @@ class MarkdownGenerator(Generator):
     # ObjectVars
     directory: Optional[str] = None
     image_directory: Optional[str] = None
-    classes: Set[ClassDefinitionName] = None,
-    image_dir: bool = False,
+    classes: Set[ClassDefinitionName] = None
+    image_dir: bool = False
     index_file: str = field(default_factory=lambda: "index.md")
     noimages: bool = False
     noyuml: bool = False
