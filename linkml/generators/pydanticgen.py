@@ -129,6 +129,12 @@ class PydanticGenerator(OOCodeGenerator):
     allow_extra: bool = field(default_factory=lambda: False)
     gen_mixin_inheritance: bool = field(default_factory=lambda: True)
 
+    # ObjectVars (identical to pythongen)
+    gen_classvars: bool = field(default_factory=lambda: True)
+    gen_slots: bool = field(default_factory=lambda: True)
+    genmeta: bool = field(default_factory=lambda: False)
+    emit_metadata: bool = field(default_factory=lambda: True)
+
 
     def generate_enums(
         self, all_enums: Dict[EnumDefinitionName, EnumDefinition]

@@ -1,11 +1,8 @@
 from __future__ import annotations
-
-from datetime import date, datetime
+from datetime import datetime, date
 from enum import Enum
-from typing import Any, Dict, List, Optional
-
-from pydantic import BaseModel as BaseModel
-from pydantic import Field
+from typing import List, Dict, Optional, Any
+from pydantic import BaseModel as BaseModel, Field
 
 metamodel_version = "None"
 version = "None"
@@ -80,7 +77,18 @@ class Person(HasAliases):
 
 
 class Organization(HasAliases):
-    
+    """
+    An organization.
+
+This description
+includes newlines
+
+## Markdown headers
+
+ * and
+ * a
+ * list
+    """
     id: Optional[str] = Field(None)
     name: Optional[str] = Field(None)
     aliases: Optional[List[str]] = Field(default_factory=list)
@@ -247,6 +255,22 @@ class SubclassTest(ClassWithSpaces):
     
 
 
+class SubSubClass2(SubclassTest):
+    
+    slot_with_space_2: Optional[ClassWithSpaces] = Field(None)
+    slot_with_space_1: Optional[str] = Field(None)
+    
+
+
+class TubSubClass1(SubclassTest):
+    """
+    Same depth as Sub sub class 1
+    """
+    slot_with_space_2: Optional[ClassWithSpaces] = Field(None)
+    slot_with_space_1: Optional[str] = Field(None)
+    
+
+
 class Activity(ConfiguredBaseModel):
     """
     a provence-generating activity
@@ -297,5 +321,7 @@ Dataset.update_forward_refs()
 FakeClass.update_forward_refs()
 ClassWithSpaces.update_forward_refs()
 SubclassTest.update_forward_refs()
+SubSubClass2.update_forward_refs()
+TubSubClass1.update_forward_refs()
 Activity.update_forward_refs()
 Agent.update_forward_refs()
