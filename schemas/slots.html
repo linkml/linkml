@@ -216,6 +216,9 @@ be used for <a class="reference internal" href="inlining.html"><span class="doc 
 </pre></div>
 </div>
 <p>the range of an identifier can be any type, but it is a good idea to have these be of type <a class="reference external" href="https://w3id.org/linkml/uriorcurie">uriorcurie</a></p>
+<p>A class must not have more than one identifier (asserted or derived). <code class="docutils literal notranslate"><span class="pre">identifier</span></code> marks the <em>primary</em> identifier.</p>
+<p>If you need to mark additional fields as unique, or a collection of slots that when considered as a tuple are unique, use
+<code class="docutils literal notranslate"><span class="pre">unique_keys</span></code> (see the <a class="reference internal" href="constraints.html"><span class="doc std std-doc">constraits</span></a> section of the docs).</p>
 </section>
 <section id="slot-cardinality">
 <h2>Slot cardinality<a class="headerlink" href="#slot-cardinality" title="Permalink to this heading"></a></h2>

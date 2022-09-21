@@ -110,6 +110,11 @@ slots:
 
 the range of an identifier can be any type, but it is a good idea to have these be of type [uriorcurie](https://w3id.org/linkml/uriorcurie)
 
+A class must not have more than one identifier (asserted or derived). `identifier` marks the *primary* identifier.
+
+If you need to mark additional fields as unique, or a collection of slots that when considered as a tuple are unique, use
+`unique_keys` (see the [constraits](constraints.md) section of the docs).
+
 ## Slot cardinality
 
 ### multivalued
