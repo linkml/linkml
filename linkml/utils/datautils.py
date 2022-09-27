@@ -22,6 +22,7 @@ from linkml_runtime.utils.yamlutils import YAMLRoot
 from linkml.generators.jsonldcontextgen import ContextGenerator
 
 dumpers_loaders = {
+    "yml": (YAMLDumper, YAMLLoader),
     "yaml": (YAMLDumper, YAMLLoader),
     "json": (JSONDumper, JSONLoader),
     "rdf": (RDFLibDumper, RDFLibLoader),
