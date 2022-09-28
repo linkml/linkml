@@ -1,3 +1,4 @@
+import logging
 from json_flattener import KeyConfig, GlobalConfig, Serializer
 from json_flattener.flattener import CONFIGMAP
 from linkml_runtime.linkml_model.meta import SlotDefinitionName, SchemaDefinition, \
