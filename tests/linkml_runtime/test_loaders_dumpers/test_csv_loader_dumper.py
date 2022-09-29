@@ -13,6 +13,7 @@ from linkml_runtime.dumpers import csv_dumper
 from linkml_runtime.loaders import csv_loader
 from linkml_runtime.utils.yamlutils import as_json_object
 from tests.test_loaders_dumpers.models.books_normalized import Shop, Book, GenreEnum, BookSeries
+from tests.test_loaders_dumpers.models.table import Table, Row
 
 
 ROOT = os.path.abspath(os.path.dirname(__file__))
@@ -25,6 +26,11 @@ DATA = os.path.join(INPUT_DIR, 'books_normalized_01.yaml')
 DATA2 = os.path.join(INPUT_DIR, 'books_normalized_02.yaml')
 OUTPUT = os.path.join(OUTPUT_DIR, 'books_flattened.tsv')
 OUTPUT2 = os.path.join(OUTPUT_DIR, 'books_flattened_02.tsv')
+
+TABLE_SCHEMA = os.path.join(MODEL_DIR, 'table.yaml')
+TABLE_DATA_JSON = os.path.join(INPUT_DIR, 'table-json.tsv')
+TABLE_DATA_INLINED = os.path.join(INPUT_DIR, 'table-inlined.tsv')
+
 
 def _json(obj) -> str:
     return json.dumps(obj, indent=' ', sort_keys=True)
@@ -84,13 +90,11 @@ class CSVGenTestCase(unittest.TestCase):
         logging.debug(json_dumper.dumps(roundtrip))
         assert roundtrip == data
 
-
-
-
-
-
-
-
+    def test_table_model(self):
+        schemaview = SchemaView(SCHEMA)
+        table_json= csv_loader.load(TABLE_DATA_JSON, target_class=Table, index_slot='rows', schemaview=schemaview)
+        for row in table_json.rows:
+            assert len(row["columnB"]) == 2
 
 if __name__ == '__main__':
     unittest.main()

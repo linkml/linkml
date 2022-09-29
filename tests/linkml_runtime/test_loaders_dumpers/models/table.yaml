@@ -1,0 +1,48 @@
+id: https://w3id.org/linkml/examples/table
+name: table
+description: |-
+  Represent a table in linkml
+license: https://creativecommons.org/publicdomain/zero/1.0/
+imports:
+  - linkml:types
+prefixes:
+  table: https://w3id.org/linkml/examples/table/
+  linkml: https://w3id.org/linkml/
+default_prefix: table
+default_range: string
+
+classes:
+
+  Object:
+    description: |-
+      An object (bnode) which needs embedding in a single row
+    attributes:
+      name:
+        range: string
+      value:
+        range: string
+
+  Row:
+    description: |-
+      A single data point made up of columns.
+    attributes:
+      columnA:
+        range: uriorcurie
+        identifier: true
+      objectB:
+        range: Object
+        inlined: true
+      columnC:
+        range: string
+        multivalued: false
+
+  Table:
+    description: |-
+      Container of rows.
+    tree_root: true
+    attributes:
+      rows:
+        range: Row
+        inlined: true
+        inlined_as_list: true
+        multivalued: true
