@@ -1,13 +1,10 @@
 import os
 from dataclasses import field, dataclass
-from typing import (Callable, Dict, Iterator, List, Optional, Set, TextIO,
-                    Tuple, Union)
-
+from typing import Optional
 import click
 import pkg_resources
 from jinja2 import Environment, FileSystemLoader, Template
-from linkml_runtime.linkml_model.meta import SchemaDefinition, TypeDefinition
-from linkml_runtime.utils.schemaview import SchemaView
+from linkml_runtime.linkml_model.meta import TypeDefinition
 
 from linkml.generators import JAVA_GEN_VERSION
 from linkml.generators.oocodegen import OOCodeGenerator
@@ -75,6 +72,11 @@ class JavaGenerator(OOCodeGenerator):
     generate_records: bool = False
     """If True then use java records (introduced in java 14) rather than classes"""
 
+    template_file: Optional[str] = None
+    gen_classvars: bool = field(default_factory=lambda: True)
+    gen_slots: bool = field(default_factory=lambda: True)
+    genmeta: bool = field(default_factory=lambda: False)
+    emit_metadata: bool = field(default_factory=lambda: True)
 
     def map_type(self, t: TypeDefinition) -> str:
         if t.uri:
@@ -85,8 +87,6 @@ class JavaGenerator(OOCodeGenerator):
             raise ValueError(f"{t} cannot be mapped to a type")
 
     def serialize(self, directory: str, **kwargs) -> None:
-        sv = self.schemaview
-
         if self.generate_records:
             javagen_folder = pkg_resources.resource_filename(__name__, "javagen")
             loader = FileSystemLoader(javagen_folder)
