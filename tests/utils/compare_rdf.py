@@ -1,12 +1,11 @@
 import re
 from contextlib import redirect_stdout
 from io import StringIO
-from typing import Union, Optional
-
-from rdflib import Graph, RDF, Namespace
-from rdflib.compare import to_isomorphic, IsomorphicGraph, graph_diff
+from typing import Optional, Union
 
 from linkml_runtime.linkml_model.meta import LINKML
+from rdflib import RDF, Graph, Namespace
+from rdflib.compare import IsomorphicGraph, graph_diff, to_isomorphic
 
 # TODO: Find out why test_issue_namespace is emitting generation_date in the TYPE namespace
 from tests import SKIP_RDF_COMPARE, SKIP_RDF_COMPARE_REASON
@@ -27,7 +26,7 @@ def to_graph(inp: Union[Graph, str], fmt: Optional[str] = "turtle") -> Graph:
     # If there is no input then return an empty graph
     if not inp.strip():
         return g
-    if not inp.strip().startswith('{') and '\n' not in inp and '\r' not in inp:
+    if not inp.strip().startswith("{") and "\n" not in inp and "\r" not in inp:
         with open(inp) as f:
             inp = f.read()
     g.parse(data=inp, format=fmt)
@@ -39,11 +38,15 @@ def print_triples(g: Graph) -> None:
     Print the contents of g into stdout
     :param g: graph to print
     """
-    g_text = re.sub(r'@prefix.*\n', '', g.serialize(format="turtle").decode())
+    g_text = re.sub(r"@prefix.*\n", "", g.serialize(format="turtle").decode())
     print(g_text)
 
 
-def compare_rdf(expected: Union[Graph, str], actual: Union[Graph, str], fmt: Optional[str] = "turtle") -> Optional[str]:
+def compare_rdf(
+    expected: Union[Graph, str],
+    actual: Union[Graph, str],
+    fmt: Optional[str] = "turtle",
+) -> Optional[str]:
     """
     Compare expected to actual, returning a string if there is a difference
     :param expected: expected RDF. Can be Graph, file name, uri or text
@@ -51,13 +54,20 @@ def compare_rdf(expected: Union[Graph, str], actual: Union[Graph, str], fmt: Opt
     :param fmt: RDF format
     :return: None if they match else summary of difference
     """
+
     def rem_metadata(g: Graph) -> IsomorphicGraph:
         # Remove list declarations from target
         for s in g.subjects(RDF.type, RDF.List):
             g.remove((s, RDF.type, RDF.List))
         for t in g:
-            if t[1] in (LINKML.generation_date, LINKML.source_file_date, LINKML.source_file_size,
-                        TYPE.generation_date, TYPE.source_file_date, TYPE.source_file_size):
+            if t[1] in (
+                LINKML.generation_date,
+                LINKML.source_file_date,
+                LINKML.source_file_size,
+                TYPE.generation_date,
+                TYPE.source_file_date,
+                TYPE.source_file_size,
+            ):
                 g.remove(t)
         g_iso = to_isomorphic(g)
         return g_iso

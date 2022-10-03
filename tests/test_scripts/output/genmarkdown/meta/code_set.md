@@ -20,3 +20,10 @@ URI: [linkml:code_set](https://w3id.org/linkml/code_set)
 ## Used by
 
  * [EnumDefinition](EnumDefinition.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **In Subsets:** | | basic |
+

@@ -1,28 +1,33 @@
-import os
 import logging
-from pathlib import Path
-from typing import Optional, Tuple, List, Union, TextIO, Callable, Dict, Iterator, Set
+import os
 from copy import deepcopy
+from dataclasses import dataclass
+from pathlib import Path
+from typing import (Callable, Dict, Iterator, List, Optional, Set, TextIO,
+                    Tuple, Union)
 
 import click
 import pkg_resources
-from jinja2 import Template, FileSystemLoader, Environment
+from jinja2 import Environment, FileSystemLoader, Template
 from linkml_runtime.dumpers import yaml_dumper
-
+from linkml_runtime.linkml_model.meta import (Annotation, ClassDefinition,
+                                              ClassDefinitionName, Definition,
+                                              DefinitionName, Element,
+                                              EnumDefinition, SchemaDefinition,
+                                              SlotDefinition,
+                                              SlotDefinitionName,
+                                              TypeDefinition)
+from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.schemaview import SchemaView
 
-from linkml_runtime.linkml_model.meta import SchemaDefinition, TypeDefinition, ClassDefinition, Annotation, Element, \
-    SlotDefinition, SlotDefinitionName, Definition, DefinitionName, EnumDefinition, ClassDefinitionName
-from linkml_runtime.utils.formatutils import camelcase, underscore
-
-from linkml.utils.generator import shared_arguments, Generator
+from linkml.utils.generator import Generator, shared_arguments
 
 type_map = {
     "str": "string",
     "int": "number",
     "Bool": "boolean",
     "float": "number",
-    "XSDDate": "date"
+    "XSDDate": "date",
 }
 
 default_template = """
@@ -51,32 +56,28 @@ export interface {{gen.name(c)}} {% if parents %} extends {{parents|join(', ')}}
 {% endfor %}
 """
 
+
+@dataclass
 class TypescriptGenerator(Generator):
     """
-    Generates typescript a schema
+    Generates typescript from a schema
     """
-    generatorname = os.path.basename(__file__)
-    generatorversion = '0.0.1'
-    valid_formats = ['text']
 
-    def __init__(self, schema: Union[str, TextIO, SchemaDefinition],
-                 format: str = valid_formats[0], **kwargs) -> None:
-        self.sourcefile = schema
-        self.schemaview = SchemaView(schema)
-        self.schema = self.schemaview.schema
-        self.format = format
+    # ClassVars
+    generatorname = os.path.basename(__file__)
+    generatorversion = "0.0.1"
+    valid_formats = ["text"]
+    uses_schemaloader = False
 
     def serialize(self) -> str:
         """
-        Serialize a schema as a collection of documents
-
-        :param directory: relative or absolute path to directory in which documents are to be written
+        Serialize a schema to typescript string
         :return:
         """
         template_obj = Template(default_template)
-        out_str = template_obj.render(gen=self,
-                                      schema=self.schemaview.schema,
-                                      view=self.schemaview)
+        out_str = template_obj.render(
+            gen=self, schema=self.schemaview.schema, view=self.schemaview
+        )
         return out_str
 
     def name(self, element: Element) -> str:
@@ -89,7 +90,7 @@ class TypescriptGenerator(Generator):
         alias = element.name
         if isinstance(element, SlotDefinition) and element.alias:
             alias = element.alias
-        if type(element).class_name == 'slot_definition':
+        if type(element).class_name == "slot_definition":
             return underscore(alias)
         else:
             return camelcase(alias)
@@ -106,11 +107,13 @@ class TypescriptGenerator(Generator):
         """
         id_slot = self.get_identifier_or_key_slot(cls.name)
         if id_slot:
-            return f'{self.name(cls)}{camelcase(id_slot.name)}'
+            return f"{self.name(cls)}{camelcase(id_slot.name)}"
         else:
             return None
 
-    def get_identifier_or_key_slot(self, cn: ClassDefinitionName) -> Optional[SlotDefinition]:
+    def get_identifier_or_key_slot(
+        self, cn: ClassDefinitionName
+    ) -> Optional[SlotDefinition]:
         sv = self.schemaview
         id_slot = sv.get_identifier_slot(cn)
         if id_slot:
@@ -132,24 +135,24 @@ class TypescriptGenerator(Generator):
             if slot.multivalued:
                 if not id_slot or slot.inlined:
                     if slot.inlined_as_list or not id_slot:
-                        return f'{rc_name}[]'
+                        return f"{rc_name}[]"
                     else:
-                        return f'{{[index: {rc_ref}]: {rc_name} }}'
+                        return f"{{[index: {rc_ref}]: {rc_name} }}"
                 else:
-                    return f'{rc_ref}[]'
+                    return f"{rc_ref}[]"
             else:
                 if not id_slot or slot.inlined:
                     return rc_name
                 else:
-                    return f'{rc_ref}'
+                    return f"{rc_ref}"
         else:
             if r in sv.all_types():
                 t = sv.get_type(r)
                 if t.base and t.base in type_map:
                     return type_map[t.base]
                 else:
-                    logging.warning(f'Unknown type.base: {t.name}')
-            return 'string'
+                    logging.warning(f"Unknown type.base: {t.name}")
+            return "string"
 
     def parents(self, cls: ClassDefinition) -> List[ClassDefinitionName]:
         if cls.is_a:
@@ -170,5 +173,5 @@ def cli(yamlfile, **args):
     print(gen.serialize())
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     cli()

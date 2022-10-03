@@ -22,7 +22,7 @@ from {{model_path}} import *
 {% endif %}
 
 {% for c in classes %}
-tbl_{{c.alias}} = Table('{{c.name}}', metadata,
+tbl_{{classname(c.name)}} = Table('{{c.name}}', metadata,
     {%- for s in c.attributes.values() %}
     Column('{{s.name}}',
           Text,
@@ -40,7 +40,7 @@ tbl_{{c.alias}} = Table('{{c.name}}', metadata,
 # -- Mappings --
 
 {% for c in classes if not is_join_table(c) %}
-mapper_registry.map_imperatively({{c.alias}}, tbl_{{c.alias}}, properties = {
+mapper_registry.map_imperatively({{classname(c.name)}}, tbl_{{classname(c.name)}}, properties = {
   ## NOTE: mapping omitted for now, see https://stackoverflow.com/questions/11746922/sqlalchemy-object-has-no-attribute-sa-adapter
   {% for mapping in backrefs[c.name] %}
   {% if mapping.uses_join_table %}

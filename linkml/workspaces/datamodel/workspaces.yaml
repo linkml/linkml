@@ -1,0 +1,155 @@
+id: https://w3id.org/linkml/workspace
+name: workspace
+title: LinkML Workspace Datamodel
+description: >-
+  A datamodel for Workspaces.
+
+  A workspace is a local on-disk collection of projects managed by a single user or agent
+license: https://creativecommons.org/publicdomain/zero/1.0/
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+  workspace: https://w3id.org/linkml/workspace
+  skos: http://www.w3.org/2004/02/skos/core#
+  pav: http://purl.org/pav/
+  schema: http://schema.org/
+  sh: https://w3id.org/shacl/
+  void: http://rdfs.org/ns/void#
+  frictionless: https://specs.frictionlessdata.io/
+  formats: http://www.w3.org/ns/formats/
+  csvw: http://www.w3.org/ns/csvw#
+  dcat: http://www.w3.org/ns/dcat#
+  mediatypes: https://www.iana.org/assignments/media-types/
+
+default_prefix: workspace
+default_range: string
+
+default_curi_maps:
+  - semweb_context
+
+emit_prefixes:
+  - linkml
+  - rdf
+  - rdfs
+  - xsd
+  - owl
+
+imports:
+  - linkml:types
+
+types:
+  FileSystemPath:
+    description: A local or absolute path on a file system
+    typeof: string
+
+  ProjectName:
+    typeof: string
+    description: A project name MUST contain no whitespace and SHOULD only contains alphanumeric characters and hyphens (no underscores)
+
+#==================================
+# Classes                         #
+#==================================
+classes:
+  Any:
+    class_uri: linkml:Any
+
+  Project:
+    description: >-
+      A project consists of a single root schema
+    attributes:
+      name:
+        identifier: true
+        range: ProjectName
+        description: >-
+          Name of the project.
+          This should correspond to the name of the schema, but may include spaces or other characters
+        notes:
+          - the path to the project directory is constructed from this, after normalizing non-alphanumeric characters to hyphens
+      uuid:
+      github_organization:
+        range: GitHubAccount
+      creation_date:
+        range: datetime
+      schema:
+        description: >-
+          Links to the schema
+        todos:
+          - reference the metamodel schema object directly
+        range: Any
+      description:
+        description: Description of project
+      source_schema_path:
+        description: >-
+          Path within the project directory where the schema can be found
+        notes:
+          - recommended locations include src/model/my-schema-name.yaml, my-schema-name.yaml
+        range: FileSystemPath
+      data_files:
+        description: >-
+          A project may optionally track data files that are intended to be conformant to the schema
+        todos:
+          - in future allow tracking for a broader range of artefacts
+        range: FileSystemPath
+        multivalued: true
+      source_google_sheet_docs:
+        description: >-
+          source schemasheets
+        see_also:
+          - https://github.com/linkml/schemasheets
+        multivalued: true
+        range: GoogleSheetsDoc
+        inlined: true
+        inlined_as_list: false
+      project_directory:
+        range: FileSystemPath
+        todos:
+          - legacy?
+      external_project_path:
+        todos:
+          - implement this
+        range: FileSystemPath
+      last_saved:
+        description: >-
+          time at which the project was last saved to disk
+        range: datetime
+
+  GoogleSheetsDoc:
+    description: >-
+      A google sheets document can contain multiple individual sheets
+    attributes:
+      id:
+        identifier: true
+      sheet_ids:
+        multivalued: true
+
+  GitHubAccount:
+    attributes:
+      username:
+      password:
+
+  Workspace:
+    description: >-
+      A workspace is a collection of projects managed locally on a file system
+    attributes:
+      projects:
+        description: >-
+          All projects in the workspace
+        range: Project
+        multivalued: true
+        inlined: true
+        inlined_as_list: true
+      github_account:
+        range: GitHubAccount
+      projects_directory:
+        description: >-
+          Directory in which all projects are found, unless externally synced
+        range: FileSystemPath
+      autosync:
+        description: >-
+          If true, the workspace manager should immediately sync any changes made
+        range: boolean
+
+
+
+
+

@@ -44,6 +44,7 @@ classes:
     class_uri: schema:Person
     mixins:
       - HasAliases
+      - HasNewsEvents
     slots:
       - primary_email
       - birth_date
@@ -53,6 +54,7 @@ classes:
       - has_employment_history
       - has_familial_relationships
       - has_medical_history
+      #- children
     slot_usage:
       primary_email:
         pattern: "^\\S+@[\\S+\\.]+\\S+"
@@ -65,10 +67,18 @@ classes:
     mixin: true
     attributes:
       aliases:
+        singular_name: alias
         multivalued: true
         exact_mappings:
           - schema:alternateName
 
+  HasNewsEvents:
+    mixin: true
+    attributes:
+      has_news_events:
+        singular_name: has_news_event
+        multivalued: true
+        range: NewsEvent
 
   Organization:
     description: >-
@@ -77,10 +87,12 @@ classes:
     class_uri: schema:Organization
     mixins:
       - HasAliases
+      - HasNewsEvents
     slots:
       - mission_statement
       - founding_date
       - founding_location
+      - current_address
 
   Place:
     mixins:
@@ -128,7 +140,7 @@ classes:
       type:
         range: FamilialRelationshipType
         required: true
-      related to:
+      related_to:
         range: Person
         required: true
 
@@ -144,6 +156,11 @@ classes:
       - diagnosis
       - procedure
 
+  NewsEvent:
+    is_a: Event
+    attributes:
+      headline:
+
   WithLocation:
     mixin: true
     slots:
@@ -151,7 +168,9 @@ classes:
 
   # TODO: annotate that this is a container/root class
   Container:
+    tree_root: true
     slots:
+      - name
       - persons
       - organizations
 
@@ -186,6 +205,11 @@ slots:
     inlined_as_list: true
   has_familial_relationships:
     range: FamilialRelationship
+    multivalued: true
+    inlined_as_list: true
+  children:
+    singular_name: child
+    range: Person
     multivalued: true
     inlined_as_list: true
   in_location:

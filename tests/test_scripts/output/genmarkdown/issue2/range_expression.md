@@ -20,6 +20,7 @@ slot_expression &#8594;  <sub>0..1</sub> anonymous_class_expression
 ## Used by
 
  * anonymous_slot_expression
+ * path_expression
  * slot_definition
  * slot_expression
 

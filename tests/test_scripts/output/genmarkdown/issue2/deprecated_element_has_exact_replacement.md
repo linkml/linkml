@@ -28,9 +28,13 @@ None &#8594;  <sub>0..1</sub> uriorcurie
  * definition
  * [Element](Element.md)
  * enum_definition
+ * import_expression
+ * path_expression
+ * pattern_expression
  * permissible_value
  * schema_definition
  * slot_definition
+ * structured_alias
  * subset_definition
  * type_definition
  * unique_key

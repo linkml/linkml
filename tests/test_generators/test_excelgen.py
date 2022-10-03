@@ -1,10 +1,10 @@
-import unittest
 import tempfile
+import unittest
 
 from openpyxl import load_workbook
 
-from tests.test_generators.environment import env
 from linkml.generators.excelgen import ExcelGenerator
+from tests.test_generators.environment import env
 
 # path to example organization schema
 ORGANIZATION_SCHEMA = env.input_path("organization.yaml")

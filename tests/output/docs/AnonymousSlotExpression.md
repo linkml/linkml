@@ -42,6 +42,7 @@ the declaration
 implicitly asserts Y is an instance of C2
 
      * Range: [Element](Element.md)
+     * in subsets: (minimal,basic,relational_model,object_oriented)
 
 ### Mixed in from slot_expression:
 
@@ -54,30 +55,55 @@ implicitly asserts Y is an instance of C2
  * [required](required.md)  <sub>0..1</sub>
      * Description: true means that the slot must be present in the loaded definition
      * Range: [Boolean](types/Boolean.md)
+     * in subsets: (minimal,basic,relational_model,object_oriented)
 
 ### Mixed in from slot_expression:
 
  * [recommended](recommended.md)  <sub>0..1</sub>
      * Description: true means that the slot should be present in the loaded definition, but this is not required
      * Range: [Boolean](types/Boolean.md)
+     * in subsets: (basic)
+
+### Mixed in from slot_expression:
+
+ * [inlined](inlined.md)  <sub>0..1</sub>
+     * Description: True means that keyed or identified slot appears in an outer structure by value.  False means that only the key or identifier for the slot appears within the domain, referencing a structure that appears elsewhere.
+     * Range: [Boolean](types/Boolean.md)
+     * in subsets: (basic)
+
+### Mixed in from slot_expression:
+
+ * [inlined_as_list](inlined_as_list.md)  <sub>0..1</sub>
+     * Description: True means that an inlined slot is represented as a list of range instances.  False means that an inlined slot is represented as a dictionary, whose key is the slot key or identifier and whose value is the range instance.
+     * Range: [Boolean](types/Boolean.md)
+     * in subsets: (basic)
 
 ### Mixed in from slot_expression:
 
  * [minimum_value](minimum_value.md)  <sub>0..1</sub>
      * Description: for slots with ranges of type number, the value must be equal to or higher than this
      * Range: [Integer](types/Integer.md)
+     * in subsets: (basic)
 
 ### Mixed in from slot_expression:
 
  * [maximum_value](maximum_value.md)  <sub>0..1</sub>
      * Description: for slots with ranges of type number, the value must be equal to or lowe than this
      * Range: [Integer](types/Integer.md)
+     * in subsets: (basic)
 
 ### Mixed in from slot_expression:
 
  * [pattern](pattern.md)  <sub>0..1</sub>
-     * Description: the string value of the slot must conform to this regular expression
+     * Description: the string value of the slot must conform to this regular expression expressed in the string
      * Range: [String](types/String.md)
+     * in subsets: (basic)
+
+### Mixed in from slot_expression:
+
+ * [structured_pattern](structured_pattern.md)  <sub>0..1</sub>
+     * Description: the string value of the slot must conform to the regular expression in the pattern expression
+     * Range: [PatternExpression](PatternExpression.md)
 
 ### Mixed in from slot_expression:
 

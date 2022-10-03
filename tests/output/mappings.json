@@ -204,11 +204,17 @@
     {
       "name": "mappings",
       "definition_uri": "https://w3id.org/linkml/mappings",
+      "description": "A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.",
+      "from_schema": "https://w3id.org/linkml/mappings",
+      "aliases": [
+        "xrefs",
+        "identifiers",
+        "alternate identifiers",
+        "alternate ids"
+      ],
       "mappings": [
         "http://www.w3.org/2004/02/skos/core#mappingRelation"
       ],
-      "description": "A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.",
-      "from_schema": "https://w3id.org/linkml/mappings",
       "slot_uri": "http://www.w3.org/2004/02/skos/core#mappingRelation",
       "multivalued": true,
       "range": "uriorcurie",
@@ -217,11 +223,11 @@
     {
       "name": "exact_mappings",
       "definition_uri": "https://w3id.org/linkml/exact_mappings",
+      "description": "A list of terms from different schemas or terminology systems that have identical meaning.",
+      "from_schema": "https://w3id.org/linkml/mappings",
       "mappings": [
         "http://www.w3.org/2004/02/skos/core#exactMatch"
       ],
-      "description": "A list of terms from different schemas or terminology systems that have identical meaning.",
-      "from_schema": "https://w3id.org/linkml/mappings",
       "is_a": "mappings",
       "slot_uri": "http://www.w3.org/2004/02/skos/core#exactMatch",
       "multivalued": true,
@@ -231,11 +237,11 @@
     {
       "name": "close_mappings",
       "definition_uri": "https://w3id.org/linkml/close_mappings",
+      "description": "A list of terms from different schemas or terminology systems that have close meaning.",
+      "from_schema": "https://w3id.org/linkml/mappings",
       "mappings": [
         "http://www.w3.org/2004/02/skos/core#closeMatch"
       ],
-      "description": "A list of terms from different schemas or terminology systems that have close meaning.",
-      "from_schema": "https://w3id.org/linkml/mappings",
       "is_a": "mappings",
       "slot_uri": "http://www.w3.org/2004/02/skos/core#closeMatch",
       "multivalued": true,
@@ -245,11 +251,11 @@
     {
       "name": "related_mappings",
       "definition_uri": "https://w3id.org/linkml/related_mappings",
+      "description": "A list of terms from different schemas or terminology systems that have related meaning.",
+      "from_schema": "https://w3id.org/linkml/mappings",
       "mappings": [
         "http://www.w3.org/2004/02/skos/core#relatedMatch"
       ],
-      "description": "A list of terms from different schemas or terminology systems that have related meaning.",
-      "from_schema": "https://w3id.org/linkml/mappings",
       "is_a": "mappings",
       "slot_uri": "http://www.w3.org/2004/02/skos/core#relatedMatch",
       "multivalued": true,
@@ -259,11 +265,11 @@
     {
       "name": "narrow_mappings",
       "definition_uri": "https://w3id.org/linkml/narrow_mappings",
+      "description": "A list of terms from different schemas or terminology systems that have narrower meaning.",
+      "from_schema": "https://w3id.org/linkml/mappings",
       "mappings": [
         "http://www.w3.org/2004/02/skos/core#narrowMatch"
       ],
-      "description": "A list of terms from different schemas or terminology systems that have narrower meaning.",
-      "from_schema": "https://w3id.org/linkml/mappings",
       "is_a": "mappings",
       "slot_uri": "http://www.w3.org/2004/02/skos/core#narrowMatch",
       "multivalued": true,
@@ -273,11 +279,11 @@
     {
       "name": "broad_mappings",
       "definition_uri": "https://w3id.org/linkml/broad_mappings",
+      "description": "A list of terms from different schemas or terminology systems that have broader meaning.",
+      "from_schema": "https://w3id.org/linkml/mappings",
       "mappings": [
         "http://www.w3.org/2004/02/skos/core#broadMatch"
       ],
-      "description": "A list of terms from different schemas or terminology systems that have broader meaning.",
-      "from_schema": "https://w3id.org/linkml/mappings",
       "is_a": "mappings",
       "slot_uri": "http://www.w3.org/2004/02/skos/core#broadMatch",
       "multivalued": true,
@@ -287,11 +293,11 @@
     {
       "name": "deprecated_element_has_exact_replacement",
       "definition_uri": "https://w3id.org/linkml/deprecated_element_has_exact_replacement",
+      "description": "When an element is deprecated, it can be automatically replaced by this uri or curie",
+      "from_schema": "https://w3id.org/linkml/mappings",
       "mappings": [
         "http://purl.obolibrary.org/obo/IAO_0100001"
       ],
-      "description": "When an element is deprecated, it can be automatically replaced by this uri or curie",
-      "from_schema": "https://w3id.org/linkml/mappings",
       "slot_uri": "https://w3id.org/linkml/deprecated_element_has_exact_replacement",
       "range": "uriorcurie",
       "@type": "SlotDefinition"
@@ -299,11 +305,11 @@
     {
       "name": "deprecated_element_has_possible_replacement",
       "definition_uri": "https://w3id.org/linkml/deprecated_element_has_possible_replacement",
+      "description": "When an element is deprecated, it can be potentially replaced by this uri or curie",
+      "from_schema": "https://w3id.org/linkml/mappings",
       "mappings": [
         "http://www.geneontology.org/formats/oboInOwl#consider"
       ],
-      "description": "When an element is deprecated, it can be potentially replaced by this uri or curie",
-      "from_schema": "https://w3id.org/linkml/mappings",
       "slot_uri": "https://w3id.org/linkml/deprecated_element_has_possible_replacement",
       "range": "uriorcurie",
       "@type": "SlotDefinition"
@@ -311,9 +317,9 @@
   ],
   "metamodel_version": "1.7.0",
   "source_file": "mappings.yaml",
-  "source_file_date": "2021-10-27T23:30:13",
-  "source_file_size": 2656,
-  "generation_date": "2021-10-27T23:30:52",
+  "source_file_date": "2022-05-09T21:10:26",
+  "source_file_size": 2755,
+  "generation_date": "2022-05-09T21:11:09",
   "@type": "SchemaDefinition",
   "@context": [
     "https://w3id.org/linkml/meta.context.jsonld",

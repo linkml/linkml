@@ -32,8 +32,14 @@ URI: [linkml:name](https://w3id.org/linkml/name)
 
 |  |  |  |
 | --- | --- | --- |
+| **Aliases:** | | short name |
+|  | | unique name |
 | **Mappings:** | | rdfs:label |
-|  | | schema:name |
 | **In Subsets:** | | owl |
+|  | | minimal |
+|  | | basic |
+|  | | relational_model |
+|  | | object_oriented |
 | **See also:** | | [https://en.wikipedia.org/wiki/Data_element_name](https://en.wikipedia.org/wiki/Data_element_name) |
+| **Exact Mappings:** | | schema:name |
 

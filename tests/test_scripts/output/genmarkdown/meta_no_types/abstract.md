@@ -22,3 +22,11 @@ URI: [linkml:abstract](https://w3id.org/linkml/abstract)
  * [ClassDefinition](ClassDefinition.md)
  * [Definition](Definition.md)
  * [SlotDefinition](SlotDefinition.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **In Subsets:** | | basic |
+|  | | object_oriented |
+

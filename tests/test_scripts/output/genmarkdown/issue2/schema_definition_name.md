@@ -26,8 +26,14 @@ schema_definition &#8594;  <sub>1..1</sub> ncname
 
 |  |  |  |
 | --- | --- | --- |
+| **Aliases:** | | short name |
+|  | | unique name |
 | **Mappings:** | | rdfs:label |
-|  | | schema:name |
 | **In Subsets:** | | owl |
+|  | | minimal |
+|  | | basic |
+|  | | relational_model |
+|  | | object_oriented |
 | **See also:** | | [https://en.wikipedia.org/wiki/Data_element_name](https://en.wikipedia.org/wiki/Data_element_name) |
+| **Exact Mappings:** | | schema:name |
 

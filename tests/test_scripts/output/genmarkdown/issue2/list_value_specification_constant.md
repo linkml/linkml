@@ -17,9 +17,15 @@ None &#8594;  <sub>0..1</sub> [String](types/String.md)
 ## Children
 
  *  all_members
+ *  equals_expression
+ *  equals_number
  *  equals_number_in
+ *  equals_string
  *  equals_string_in
  *  has_member
+ *  maximum_cardinality
+ *  minimum_cardinality
+ *  value_presence
 
 ## Used by
 

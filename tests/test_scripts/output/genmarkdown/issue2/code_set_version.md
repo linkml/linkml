@@ -26,4 +26,5 @@ enum_definition &#8594;  <sub>0..1</sub> [String](types/String.md)
 |  |  |  |
 | --- | --- | --- |
 | **Comments:** | | we assume that version identifiers lexically sort in temporal order. Recommend semver when possible |
+| **In Subsets:** | | basic |
 

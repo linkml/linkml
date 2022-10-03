@@ -21,6 +21,15 @@ URI: [linkml:Prefix](https://w3id.org/linkml/Prefix)
  * [prefix_prefix](prefix_prefix.md)  <sub>1..1</sub>
      * Description: the nsname (sans ':' for a given prefix)
      * Range: [Ncname](types/Ncname.md)
+     * in subsets: (basic)
  * [prefix_reference](prefix_reference.md)  <sub>1..1</sub>
      * Description: A URI associated with a given prefix
      * Range: [Uri](types/Uri.md)
+     * in subsets: (basic)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **In Subsets:** | | basic |
+

@@ -1,8 +1,6 @@
-# persons
+# Slot: persons
 
-None
-
-URI: https://w3id.org/linkml/tests/kitchen_sink/persons
+URI: [https://w3id.org/linkml/tests/kitchen_sink/persons](https://w3id.org/linkml/tests/kitchen_sink/persons)
 
 
 
@@ -13,6 +11,11 @@ URI: https://w3id.org/linkml/tests/kitchen_sink/persons
 
  * Range: Person
 
+
+
 ## Identifier and Mapping Information
+
+
+
 
 

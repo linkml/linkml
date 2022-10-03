@@ -1,8 +1,6 @@
-# acted_on_behalf_of
+# Slot: acted_on_behalf_of
 
-None
-
-URI: http://www.w3.org/ns/prov#actedOnBehalfOf
+URI: [http://www.w3.org/ns/prov#actedOnBehalfOf](http://www.w3.org/ns/prov#actedOnBehalfOf)
 
 
 
@@ -13,6 +11,11 @@ URI: http://www.w3.org/ns/prov#actedOnBehalfOf
 
  * Range: agent
 
+
+
 ## Identifier and Mapping Information
+
+
+
 
 

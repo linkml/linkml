@@ -1,0 +1,39 @@
+package {{ doc.package }};
+
+import java.math.BigDecimal;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
+import java.util.List;
+import java.util.Objects;
+
+public record {{ cls.name }}({% for f in cls.all_fields -%}
+    {{f.range}} {{ f.name }}{{ ", " if not loop.last else "" }}
+{%- endfor %}) {
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+{% for f in cls.all_fields %}
+        private {{ f.range }} {{ f.name }} = {{ f.default_value }};
+{%- endfor %}
+{% for f in cls.all_fields %}
+
+        public Builder {{ f.name }}({{ f.range }} {{ f.name }}) {
+            this.{{ f.name }} = Objects.requireNonNull({{ f.name }});
+            return this;
+        }
+{%- endfor %}
+
+    public {{ cls.name }} build() {
+            return new {{ cls.name }}(
+               {%- for f in cls.all_fields -%}
+               {{ f.name }}{{ ", " if not loop.last else "" }}
+               {%- endfor -%}
+            );
+        }
+    }
+}
+

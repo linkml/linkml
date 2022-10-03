@@ -1,6 +1,7 @@
-# EmploymentEvent
+# Class: EmploymentEvent
 
-None
+
+
 
 URI: [ks:EmploymentEvent](https://w3id.org/linkml/tests/kitchen_sink/EmploymentEvent)
 
@@ -43,12 +44,16 @@ URI: [ks:EmploymentEvent](https://w3id.org/linkml/tests/kitchen_sink/EmploymentE
 
 
 
+
+
+
 ## LinkML Specification
 
 <!-- TODO: investigate https://stackoverflow.com/questions/37606292/how-to-create-tabbed-code-blocks-in-mkdocs-or-sphinx -->
 
-Direct:
+### Direct
 
+<details>
 ```yaml
 name: EmploymentEvent
 from_schema: https://w3id.org/linkml/tests/kitchen_sink
@@ -63,9 +68,11 @@ slot_usage:
     required: false
 
 ```
+</details>
 
-Induced:
+### Induced
 
+<details>
 ```yaml
 name: EmploymentEvent
 from_schema: https://w3id.org/linkml/tests/kitchen_sink
@@ -81,11 +88,13 @@ attributes:
     in_subset:
     - subset A
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    alias: employed_at
     owner: EmploymentEvent
     range: Company
   type:
     name: type
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    alias: type
     owner: EmploymentEvent
     range: EmploymentEventType
     required: false
@@ -93,24 +102,29 @@ attributes:
     name: started at time
     from_schema: https://w3id.org/linkml/tests/core
     slot_uri: prov:startedAtTime
+    alias: started_at_time
     owner: EmploymentEvent
     range: date
   ended at time:
     name: ended at time
     from_schema: https://w3id.org/linkml/tests/core
     slot_uri: prov:endedAtTime
+    alias: ended_at_time
     owner: EmploymentEvent
     range: date
   is current:
     name: is current
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    alias: is_current
     owner: EmploymentEvent
     range: boolean
   metadata:
     name: metadata
     description: Example of a slot that has an unconstrained range
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    alias: metadata
     owner: EmploymentEvent
     range: AnyObject
 
 ```
+</details>

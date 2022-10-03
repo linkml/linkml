@@ -26,4 +26,5 @@ URI: [linkml:code_set_version](https://w3id.org/linkml/code_set_version)
 |  |  |  |
 | --- | --- | --- |
 | **Comments:** | | we assume that version identifiers lexically sort in temporal order. Recommend semver when possible |
+| **In Subsets:** | | basic |
 

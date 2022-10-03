@@ -24,3 +24,11 @@ URI: [linkml:is_a](https://w3id.org/linkml/is_a)
 
  * [AnonymousClassExpression](AnonymousClassExpression.md)
  * [Definition](Definition.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **In Subsets:** | | basic |
+|  | | object_oriented |
+

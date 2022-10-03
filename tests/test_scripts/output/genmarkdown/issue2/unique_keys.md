@@ -25,5 +25,7 @@ class_definition &#8594;  <sub>0..\*</sub> unique_key
 
 |  |  |  |
 | --- | --- | --- |
-| **Mappings:** | | owl:hasKey |
+| **In Subsets:** | | basic |
+|  | | relational_model |
+| **Exact Mappings:** | | owl:hasKey |
 

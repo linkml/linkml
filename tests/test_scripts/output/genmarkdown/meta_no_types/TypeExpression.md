@@ -7,11 +7,11 @@
 URI: [linkml:TypeExpression](https://w3id.org/linkml/TypeExpression)
 
 
-[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[AnonymousTypeExpression]<all_of%200..*-++[TypeExpression&#124;pattern:string%20%3F;equals_string:string%20%3F;equals_string_in:string%20*;equals_number:integer%20%3F],[AnonymousTypeExpression]<any_of%200..*-++[TypeExpression],[AnonymousTypeExpression]<exactly_one_of%200..*-++[TypeExpression],[AnonymousTypeExpression]<none_of%200..*-++[TypeExpression],[TypeDefinition]uses%20-.->[TypeExpression],[AnonymousTypeExpression]uses%20-.->[TypeExpression],[Expression]^-[TypeExpression],[TypeDefinition],[Expression],[AnonymousTypeExpression])](https://yuml.me/diagram/nofunky;dir:TB/class/[AnonymousTypeExpression]<all_of%200..*-++[TypeExpression&#124;pattern:string%20%3F;equals_string:string%20%3F;equals_string_in:string%20*;equals_number:integer%20%3F],[AnonymousTypeExpression]<any_of%200..*-++[TypeExpression],[AnonymousTypeExpression]<exactly_one_of%200..*-++[TypeExpression],[AnonymousTypeExpression]<none_of%200..*-++[TypeExpression],[TypeDefinition]uses%20-.->[TypeExpression],[AnonymousTypeExpression]uses%20-.->[TypeExpression],[Expression]^-[TypeExpression],[TypeDefinition],[Expression],[AnonymousTypeExpression])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[AnonymousTypeExpression]<all_of%200..*-++[TypeExpression&#124;pattern:string%20%3F;equals_string:string%20%3F;equals_string_in:string%20*;equals_number:integer%20%3F;minimum_value:integer%20%3F;maximum_value:integer%20%3F],[AnonymousTypeExpression]<any_of%200..*-++[TypeExpression],[AnonymousTypeExpression]<exactly_one_of%200..*-++[TypeExpression],[AnonymousTypeExpression]<none_of%200..*-++[TypeExpression],[PatternExpression]<structured_pattern%200..1-++[TypeExpression],[TypeDefinition]uses%20-.->[TypeExpression],[AnonymousTypeExpression]uses%20-.->[TypeExpression],[Expression]^-[TypeExpression],[TypeDefinition],[PatternExpression],[Expression],[AnonymousTypeExpression])](https://yuml.me/diagram/nofunky;dir:TB/class/[AnonymousTypeExpression]<all_of%200..*-++[TypeExpression&#124;pattern:string%20%3F;equals_string:string%20%3F;equals_string_in:string%20*;equals_number:integer%20%3F;minimum_value:integer%20%3F;maximum_value:integer%20%3F],[AnonymousTypeExpression]<any_of%200..*-++[TypeExpression],[AnonymousTypeExpression]<exactly_one_of%200..*-++[TypeExpression],[AnonymousTypeExpression]<none_of%200..*-++[TypeExpression],[PatternExpression]<structured_pattern%200..1-++[TypeExpression],[TypeDefinition]uses%20-.->[TypeExpression],[AnonymousTypeExpression]uses%20-.->[TypeExpression],[Expression]^-[TypeExpression],[TypeDefinition],[PatternExpression],[Expression],[AnonymousTypeExpression])
 
 ## Parents
 
- *  is_a: [Expression](Expression.md) - todo
+ *  is_a: [Expression](Expression.md) - general mixin for any class that can represent some form of expression
 
 ## Mixin for
 
@@ -27,8 +27,12 @@ URI: [linkml:TypeExpression](https://w3id.org/linkml/TypeExpression)
 ### Own
 
  * [pattern](pattern.md)  <sub>0..1</sub>
-     * Description: the string value of the slot must conform to this regular expression
+     * Description: the string value of the slot must conform to this regular expression expressed in the string
      * Range: [String](String.md)
+     * in subsets: (basic)
+ * [structured_pattern](structured_pattern.md)  <sub>0..1</sub>
+     * Description: the string value of the slot must conform to the regular expression in the pattern expression
+     * Range: [PatternExpression](PatternExpression.md)
  * [equals_string](equals_string.md)  <sub>0..1</sub>
      * Description: the slot must have range string and the value of the slot must equal the specified value
      * Range: [String](String.md)
@@ -38,6 +42,14 @@ URI: [linkml:TypeExpression](https://w3id.org/linkml/TypeExpression)
  * [equals_number](equals_number.md)  <sub>0..1</sub>
      * Description: the slot must have range of a number and the value of the slot must equal the specified value
      * Range: [Integer](Integer.md)
+ * [minimum_value](minimum_value.md)  <sub>0..1</sub>
+     * Description: for slots with ranges of type number, the value must be equal to or higher than this
+     * Range: [Integer](Integer.md)
+     * in subsets: (basic)
+ * [maximum_value](maximum_value.md)  <sub>0..1</sub>
+     * Description: for slots with ranges of type number, the value must be equal to or lowe than this
+     * Range: [Integer](Integer.md)
+     * in subsets: (basic)
  * [type_expression➞none_of](type_expression_none_of.md)  <sub>0..\*</sub>
      * Description: holds if none of the expressions hold
      * Range: [AnonymousTypeExpression](AnonymousTypeExpression.md)

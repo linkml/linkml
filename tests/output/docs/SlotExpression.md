@@ -11,7 +11,7 @@ URI: [linkml:SlotExpression](https://w3id.org/linkml/SlotExpression)
 
 ## Parents
 
- *  is_a: [Expression](Expression.md) - todo
+ *  is_a: [Expression](Expression.md) - general mixin for any class that can represent some form of expression
 
 ## Mixin for
 
@@ -38,24 +38,41 @@ the declaration
 implicitly asserts Y is an instance of C2
 
      * Range: [Element](Element.md)
+     * in subsets: (minimal,basic,relational_model,object_oriented)
  * [range_expression](range_expression.md)  <sub>0..1</sub>
      * Description: A range that is described as a boolean expression combining existing ranges
      * Range: [AnonymousClassExpression](AnonymousClassExpression.md)
  * [required](required.md)  <sub>0..1</sub>
      * Description: true means that the slot must be present in the loaded definition
      * Range: [Boolean](types/Boolean.md)
+     * in subsets: (minimal,basic,relational_model,object_oriented)
  * [recommended](recommended.md)  <sub>0..1</sub>
      * Description: true means that the slot should be present in the loaded definition, but this is not required
      * Range: [Boolean](types/Boolean.md)
+     * in subsets: (basic)
+ * [inlined](inlined.md)  <sub>0..1</sub>
+     * Description: True means that keyed or identified slot appears in an outer structure by value.  False means that only the key or identifier for the slot appears within the domain, referencing a structure that appears elsewhere.
+     * Range: [Boolean](types/Boolean.md)
+     * in subsets: (basic)
+ * [inlined_as_list](inlined_as_list.md)  <sub>0..1</sub>
+     * Description: True means that an inlined slot is represented as a list of range instances.  False means that an inlined slot is represented as a dictionary, whose key is the slot key or identifier and whose value is the range instance.
+     * Range: [Boolean](types/Boolean.md)
+     * in subsets: (basic)
  * [minimum_value](minimum_value.md)  <sub>0..1</sub>
      * Description: for slots with ranges of type number, the value must be equal to or higher than this
      * Range: [Integer](types/Integer.md)
+     * in subsets: (basic)
  * [maximum_value](maximum_value.md)  <sub>0..1</sub>
      * Description: for slots with ranges of type number, the value must be equal to or lowe than this
      * Range: [Integer](types/Integer.md)
+     * in subsets: (basic)
  * [pattern](pattern.md)  <sub>0..1</sub>
-     * Description: the string value of the slot must conform to this regular expression
+     * Description: the string value of the slot must conform to this regular expression expressed in the string
      * Range: [String](types/String.md)
+     * in subsets: (basic)
+ * [structured_pattern](structured_pattern.md)  <sub>0..1</sub>
+     * Description: the string value of the slot must conform to the regular expression in the pattern expression
+     * Range: [PatternExpression](PatternExpression.md)
  * [equals_string](equals_string.md)  <sub>0..1</sub>
      * Description: the slot must have range string and the value of the slot must equal the specified value
      * Range: [String](types/String.md)

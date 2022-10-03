@@ -4,7 +4,6 @@
 @prefix linkml: <https://w3id.org/linkml/> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 <http://example.org/sample/example163c> a owl:Ontology ;
@@ -12,19 +11,17 @@
     IAO:0000700 ex:C1,
         ex:C2 ;
     dcterms:license "https://creativecommons.org/publicdomain/zero/1.0/" ;
-    linkml:generation_date "2021-10-02 02:02" ;
+    linkml:generation_date "2022-03-08T17:00:43" ;
     linkml:metamodel_version "1.7.0" ;
     linkml:source_file "issue_163c.yaml" ;
-    linkml:source_file_date "Sat Oct  2 01:57:27 2021" ;
+    linkml:source_file_date "2022-03-08T16:55:16" ;
     linkml:source_file_size 654 .
 
 linkml:SubsetDefinition a owl:Class ;
-    rdfs:label "subset_definition" ;
-    skos:definition "the name and description of a subset" .
+    rdfs:label "subset_definition" .
 
 linkml:TypeDefinition a owl:Class ;
-    rdfs:label "type_definition" ;
-    skos:definition "A data type definition." .
+    rdfs:label "type_definition" .
 
 linkml:topValue a owl:DatatypeProperty ;
     rdfs:label "value" .
@@ -46,14 +43,12 @@ ex:C2 a owl:Class,
             owl:onProperty ex:source ] .
 
 linkml:SlotDefinition a owl:Class ;
-    rdfs:label "slot_definition" ;
-    skos:definition "the definition of a property or a slot" .
+    rdfs:label "slot_definition" .
 
 ex:source a owl:ObjectProperty,
         linkml:SlotDefinition .
 
 linkml:ClassDefinition a owl:Class ;
-    rdfs:label "class_definition" ;
-    skos:definition "the definition of a class or interface" .
+    rdfs:label "class_definition" .
 
 

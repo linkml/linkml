@@ -26,8 +26,15 @@ URI: [linkml:AnonymousTypeExpression](https://w3id.org/linkml/AnonymousTypeExpre
 ### Mixed in from type_expression:
 
  * [pattern](pattern.md)  <sub>0..1</sub>
-     * Description: the string value of the slot must conform to this regular expression
+     * Description: the string value of the slot must conform to this regular expression expressed in the string
      * Range: [String](types/String.md)
+     * in subsets: (basic)
+
+### Mixed in from type_expression:
+
+ * [structured_pattern](structured_pattern.md)  <sub>0..1</sub>
+     * Description: the string value of the slot must conform to the regular expression in the pattern expression
+     * Range: [PatternExpression](PatternExpression.md)
 
 ### Mixed in from type_expression:
 
@@ -46,6 +53,20 @@ URI: [linkml:AnonymousTypeExpression](https://w3id.org/linkml/AnonymousTypeExpre
  * [equals_number](equals_number.md)  <sub>0..1</sub>
      * Description: the slot must have range of a number and the value of the slot must equal the specified value
      * Range: [Integer](types/Integer.md)
+
+### Mixed in from type_expression:
+
+ * [minimum_value](minimum_value.md)  <sub>0..1</sub>
+     * Description: for slots with ranges of type number, the value must be equal to or higher than this
+     * Range: [Integer](types/Integer.md)
+     * in subsets: (basic)
+
+### Mixed in from type_expression:
+
+ * [maximum_value](maximum_value.md)  <sub>0..1</sub>
+     * Description: for slots with ranges of type number, the value must be equal to or lowe than this
+     * Range: [Integer](types/Integer.md)
+     * in subsets: (basic)
 
 ### Mixed in from type_expression:
 

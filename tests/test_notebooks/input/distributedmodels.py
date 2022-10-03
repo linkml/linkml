@@ -89,4 +89,3 @@ from linkml.generators.pythongen import PythonGenerator
 
 gen = PythonGenerator(model, log_level=ERROR)
 print(gen.serialize())
-

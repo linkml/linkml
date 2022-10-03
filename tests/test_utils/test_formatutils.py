@@ -1,6 +1,8 @@
 import unittest
 
-from linkml_runtime.utils.formatutils import camelcase, underscore, lcamelcase, be, split_line, wrapped_annotation
+from linkml_runtime.utils.formatutils import (be, camelcase, lcamelcase,
+                                              split_line, underscore,
+                                              wrapped_annotation)
 
 
 class FormatUtilsTestCase(unittest.TestCase):
@@ -15,26 +17,47 @@ class FormatUtilsTestCase(unittest.TestCase):
 
         self.assertEqual("thisIsIt", lcamelcase("   this   is\t  it\n"))
 
-        self.assertEqual('abc', be('  abc\n'))
-        self.assertEqual('', be(None))
-        self.assertEqual('', be('   '))
+        self.assertEqual("abc", be("  abc\n"))
+        self.assertEqual("", be(None))
+        self.assertEqual("", be("   "))
 
     def test_linestuff(self):
-        text = "This is a mess'o test that goes on for a long way.  It has some carriage\n returns embedded in it " \
-               "but otherwise it drags on and on and on until the cows come home.  Splitline covers this we hope."
-        self.assertEqual(["This is a mess'o test that goes on for a long way. It has some carriage returns embedded"
-                          " in it but otherwise it ",
-                          'drags on and on and on until the cows come home. Splitline covers this we hope. '],
-                         split_line(text))
-        self.assertEqual(["This is a mess'o ", 'test that goes on ', 'for a long way. It ', 'has some carriage ',
-                          'returns embedded in ', 'it but otherwise it ', 'drags on and on and ', 'on until the cows ',
-                          'come home. ', 'Splitline covers ', 'this we hope. '], split_line(text, 20))
-        self.assertEqual(['X' * 100 + ' '], split_line('X'*100, 20))
-        self.assertEqual("""This is a mess'o test that goes on for a long way.  It has some carriage
+        text = (
+            "This is a mess'o test that goes on for a long way.  It has some carriage\n returns embedded in it "
+            "but otherwise it drags on and on and on until the cows come home.  Splitline covers this we hope."
+        )
+        self.assertEqual(
+            [
+                "This is a mess'o test that goes on for a long way. It has some carriage returns embedded"
+                " in it but otherwise it ",
+                "drags on and on and on until the cows come home. Splitline covers this we hope. ",
+            ],
+            split_line(text),
+        )
+        self.assertEqual(
+            [
+                "This is a mess'o ",
+                "test that goes on ",
+                "for a long way. It ",
+                "has some carriage ",
+                "returns embedded in ",
+                "it but otherwise it ",
+                "drags on and on and ",
+                "on until the cows ",
+                "come home. ",
+                "Splitline covers ",
+                "this we hope. ",
+            ],
+            split_line(text, 20),
+        )
+        self.assertEqual(["X" * 100 + " "], split_line("X" * 100, 20))
+        self.assertEqual(
+            """This is a mess'o test that goes on for a long way.  It has some carriage
 	returns embedded in it but otherwise it drags on and on and on until the cows come home. Splitline covers this we 
-	hope. """, wrapped_annotation(text))
+	hope. """,
+            wrapped_annotation(text),
+        )
 
 
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

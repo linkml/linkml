@@ -20,6 +20,7 @@ URI: [linkml:range_expression](https://w3id.org/linkml/range_expression)
 ## Used by
 
  * [AnonymousSlotExpression](AnonymousSlotExpression.md)
+ * [PathExpression](PathExpression.md)
  * [SlotDefinition](SlotDefinition.md)
  * [SlotExpression](SlotExpression.md)
 

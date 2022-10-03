@@ -1,16 +1,16 @@
-from IPython.core.display import display, HTML
 from types import ModuleType
 
+from IPython.core.display import HTML, display
+from linkml_runtime.dumpers import json_dumper
+from linkml_runtime.utils.yamlutils import DupCheckYamlLoader
 from rdflib import Graph
 
 from linkml.generators.jsonldcontextgen import ContextGenerator
 from linkml.generators.pythongen import PythonGenerator
 from linkml.generators.shexgen import ShExGenerator
 from linkml.generators.yumlgen import YumlGenerator
-from linkml_runtime.utils.yamlutils import DupCheckYamlLoader
-from linkml_runtime.dumpers import json_dumper
 
-yaml = '''
+yaml = """
 id: http://example.org/sample/example1
 name: synopsis2
 prefixes:
@@ -86,12 +86,12 @@ slots:
         range: person
         slot_uri: foaf:knows
         multivalued: true
-'''
+"""
 
 print(PythonGenerator(yaml, gen_slots=False).serialize())
 
-spec = compile(PythonGenerator(yaml).serialize(), 'test', 'exec')
-module = ModuleType('test')
+spec = compile(PythonGenerator(yaml).serialize(), "test", "exec")
+module = ModuleType("test")
 exec(spec, module.__dict__)
 
 # display(HTML(f'<img src="{YumlGenerator(yaml).serialize()}"/>'))
@@ -101,7 +101,7 @@ print(cntxt)
 
 
 # Generate a person
-joe_smith = module.Person(id="42", last_name="smith", first_name=['Joe', 'Bob'], age=43)
+joe_smith = module.Person(id="42", last_name="smith", first_name=["Joe", "Bob"], age=43)
 print(joe_smith)
 
 # Add the context and turn it into RDF
@@ -116,15 +116,20 @@ shex = ShExGenerator(yaml).serialize(collections=False)
 print(shex)
 
 from pyshex.evaluate import evaluate
-r = evaluate(g, shex,
-             start="http://example.org/model/Person",
-             focus="http://example.org/people/42")
+
+r = evaluate(
+    g,
+    shex,
+    start="http://example.org/model/Person",
+    focus="http://example.org/people/42",
+)
 print("Conforms" if r[0] else r[1])
 
 
-r = evaluate(g, shex,
-             start="http://example.org/model/FriendlyPerson",
-             focus="http://example.org/people/42")
+r = evaluate(
+    g,
+    shex,
+    start="http://example.org/model/FriendlyPerson",
+    focus="http://example.org/people/42",
+)
 print("Conforms" if r[0] else r[1])
-
-

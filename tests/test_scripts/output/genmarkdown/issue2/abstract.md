@@ -22,3 +22,11 @@ definition &#8594;  <sub>0..1</sub> boolean
  * class_definition
  * definition
  * slot_definition
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **In Subsets:** | | basic |
+|  | | object_oriented |
+

@@ -1,6 +1,7 @@
-# Address
+# Class: Address
 
-None
+
+
 
 URI: [ks:Address](https://w3id.org/linkml/tests/kitchen_sink/Address)
 
@@ -34,12 +35,16 @@ URI: [ks:Address](https://w3id.org/linkml/tests/kitchen_sink/Address)
 
 
 
+
+
+
 ## LinkML Specification
 
 <!-- TODO: investigate https://stackoverflow.com/questions/37606292/how-to-create-tabbed-code-blocks-in-mkdocs-or-sphinx -->
 
-Direct:
+### Direct
 
+<details>
 ```yaml
 name: Address
 from_schema: https://w3id.org/linkml/tests/kitchen_sink
@@ -48,9 +53,11 @@ slots:
 - city
 
 ```
+</details>
 
-Induced:
+### Induced
 
+<details>
 ```yaml
 name: Address
 from_schema: https://w3id.org/linkml/tests/kitchen_sink
@@ -58,10 +65,13 @@ attributes:
   street:
     name: street
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    alias: street
     owner: Address
   city:
     name: city
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    alias: city
     owner: Address
 
 ```
+</details>

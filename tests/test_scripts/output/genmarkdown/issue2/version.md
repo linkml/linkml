@@ -26,6 +26,7 @@ schema_definition &#8594;  <sub>0..1</sub> [String](types/String.md)
 |  |  |  |
 | --- | --- | --- |
 | **Mappings:** | | pav:version |
-|  | | schema:schemaVersion |
 | **In Subsets:** | | owl |
+|  | | basic |
+| **Exact Mappings:** | | schema:schemaVersion |
 

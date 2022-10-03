@@ -1,6 +1,7 @@
-# SubclassTest
+# Class: SubclassTest
 
-None
+
+
 
 URI: [ks:SubclassTest](https://w3id.org/linkml/tests/kitchen_sink/SubclassTest)
 
@@ -34,12 +35,16 @@ URI: [ks:SubclassTest](https://w3id.org/linkml/tests/kitchen_sink/SubclassTest)
 
 
 
+
+
+
 ## LinkML Specification
 
 <!-- TODO: investigate https://stackoverflow.com/questions/37606292/how-to-create-tabbed-code-blocks-in-mkdocs-or-sphinx -->
 
-Direct:
+### Direct
 
+<details>
 ```yaml
 name: subclass test
 from_schema: https://w3id.org/linkml/tests/kitchen_sink
@@ -51,9 +56,11 @@ attributes:
     range: class with spaces
 
 ```
+</details>
 
-Induced:
+### Induced
 
+<details>
 ```yaml
 name: subclass test
 from_schema: https://w3id.org/linkml/tests/kitchen_sink
@@ -62,11 +69,14 @@ attributes:
   slot with space 2:
     name: slot with space 2
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    alias: slot_with_space_2
     owner: subclass test
     range: class with spaces
   slot with space 1:
     name: slot with space 1
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    alias: slot_with_space_1
     owner: subclass test
 
 ```
+</details>

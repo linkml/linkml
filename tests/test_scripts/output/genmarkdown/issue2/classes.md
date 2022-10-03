@@ -20,3 +20,13 @@ schema_definition &#8594;  <sub>0..\*</sub> class_definition
 ## Used by
 
  * schema_definition
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **In Subsets:** | | minimal |
+|  | | basic |
+|  | | relational_model |
+|  | | object_oriented |
+

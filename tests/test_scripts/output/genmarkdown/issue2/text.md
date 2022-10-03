@@ -20,3 +20,11 @@ permissible_value &#8594;  <sub>1..1</sub> [String](types/String.md)
 ## Used by
 
  * permissible_value
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **Aliases:** | | value |
+| **In Subsets:** | | basic |
+

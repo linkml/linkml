@@ -20,3 +20,10 @@ schema_definition &#8594;  <sub>0..\*</sub> uriorcurie
 ## Used by
 
  * schema_definition
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **In Subsets:** | | basic |
+

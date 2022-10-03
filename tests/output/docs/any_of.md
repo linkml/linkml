@@ -18,6 +18,7 @@ None &#8594;  <sub>0..\*</sub> [Expression](Expression.md)
 ## Children
 
  *  [class_expression➞any_of](class_expression_any_of.md)
+ *  [path_expression➞any_of](path_expression_any_of.md)
  *  [slot_expression➞any_of](slot_expression_any_of.md)
  *  [type_expression➞any_of](type_expression_any_of.md)
 

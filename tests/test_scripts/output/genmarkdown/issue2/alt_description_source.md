@@ -20,3 +20,10 @@ alt_description &#8594;  <sub>1..1</sub> [String](types/String.md)
 ## Used by
 
  * alt_description
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **In Subsets:** | | basic |
+

@@ -25,5 +25,7 @@ URI: [linkml:unique_keys](https://w3id.org/linkml/unique_keys)
 
 |  |  |  |
 | --- | --- | --- |
-| **Mappings:** | | owl:hasKey |
+| **In Subsets:** | | basic |
+|  | | relational_model |
+| **Exact Mappings:** | | owl:hasKey |
 

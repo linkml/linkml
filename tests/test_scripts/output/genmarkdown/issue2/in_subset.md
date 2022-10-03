@@ -28,9 +28,13 @@ URI: [linkml:in_subset](https://w3id.org/linkml/in_subset)
  * definition
  * [Element](Element.md)
  * enum_definition
+ * import_expression
+ * path_expression
+ * pattern_expression
  * permissible_value
  * schema_definition
  * slot_definition
+ * structured_alias
  * subset_definition
  * type_definition
  * unique_key
@@ -40,4 +44,5 @@ URI: [linkml:in_subset](https://w3id.org/linkml/in_subset)
 |  |  |  |
 | --- | --- | --- |
 | **Mappings:** | | OIO:inSubset |
+| **In Subsets:** | | basic |
 

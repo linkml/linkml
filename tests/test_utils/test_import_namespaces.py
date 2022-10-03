@@ -5,12 +5,12 @@ from tests.test_utils.environment import env
 
 
 class URLImportTestCase(unittest.TestCase):
-
     @unittest.skipIf(False, "Finish implementing this")
     def test_import_from_url(self):
-        """ Validate namespace bindings """
-        shex = ShExGenerator(env.input_path('import_test_l2.yaml')).serialize()
-        self.assertEqual("""BASE <http://example.org/l2/>
+        """Validate namespace bindings"""
+        shex = ShExGenerator(env.input_path("import_test_l2.yaml")).serialize()
+        self.assertEqual(
+            """BASE <http://example.org/l2/>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 PREFIX l1: <http://example.org/l1/>
@@ -45,8 +45,10 @@ l1:L1Class  (
        ) ;
        rdf:type [ <L2Class> ] ?
     )
-}""", shex.strip())
+}""",
+            shex.strip(),
+        )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

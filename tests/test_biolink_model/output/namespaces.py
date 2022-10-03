@@ -7,7 +7,7 @@
 # license: https://creativecommons.org/publicdomain/zero/1.0/
 
 from collections import defaultdict
-from typing import Iterable, Dict, Tuple
+from typing import Dict, Iterable, Tuple
 
 from linkml_runtime.utils.curienamespace import CurieNamespace
 

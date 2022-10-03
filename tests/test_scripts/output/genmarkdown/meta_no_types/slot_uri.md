@@ -20,3 +20,11 @@ URI: [linkml:slot_uri](https://w3id.org/linkml/slot_uri)
 ## Used by
 
  * [SlotDefinition](SlotDefinition.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **Aliases:** | | public ID |
+| **In Subsets:** | | basic |
+

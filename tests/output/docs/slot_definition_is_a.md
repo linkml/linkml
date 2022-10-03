@@ -21,3 +21,11 @@ URI: [linkml:slot_definition_is_a](https://w3id.org/linkml/slot_definition_is_a)
 ## Used by
 
  * [SlotDefinition](SlotDefinition.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **In Subsets:** | | basic |
+|  | | object_oriented |
+

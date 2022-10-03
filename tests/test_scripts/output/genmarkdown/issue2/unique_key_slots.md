@@ -20,3 +20,11 @@ unique_key &#8594;  <sub>1..\*</sub> slot_definition
 ## Used by
 
  * unique_key
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **In Subsets:** | | basic |
+|  | | relational_model |
+

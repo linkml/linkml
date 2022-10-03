@@ -13,7 +13,7 @@ None &#8594;  <sub>0..1</sub> integer
 
 ## Parents
 
- *  is_a: value_specification_constant
+ *  is_a: list_value_specification_constant
 
 ## Children
 

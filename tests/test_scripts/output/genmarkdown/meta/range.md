@@ -35,5 +35,10 @@ URI: [linkml:range](https://w3id.org/linkml/range)
 
 |  |  |  |
 | --- | --- | --- |
+| **Aliases:** | | value domain |
 | **Comments:** | | range is underspecified, as not all elements can appear as the range of a slot. |
+| **In Subsets:** | | minimal |
+|  | | basic |
+|  | | relational_model |
+|  | | object_oriented |
 

@@ -20,3 +20,10 @@ enum_definition &#8594;  <sub>0..1</sub> uriorcurie
 ## Used by
 
  * enum_definition
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **In Subsets:** | | basic |
+

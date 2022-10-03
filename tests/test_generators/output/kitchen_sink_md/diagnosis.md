@@ -1,8 +1,6 @@
-# diagnosis
+# Slot: diagnosis
 
-None
-
-URI: https://w3id.org/linkml/tests/kitchen_sink/diagnosis
+URI: [https://w3id.org/linkml/tests/kitchen_sink/diagnosis](https://w3id.org/linkml/tests/kitchen_sink/diagnosis)
 
 
 
@@ -13,6 +11,11 @@ URI: https://w3id.org/linkml/tests/kitchen_sink/diagnosis
 
  * Range: DiagnosisConcept
 
+
+
 ## Identifier and Mapping Information
+
+
+
 
 

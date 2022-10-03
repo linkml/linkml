@@ -1,0 +1,127 @@
+# metamodel_version: 1.7.0# version: 2.0.0id: pattern_expression
+schema_generating: true
+description: a regular expression pattern used to evaluate conformance of a string
+display_name: pattern_expression
+document_category: pattern_expression
+weight: 20
+fields:
+- id: syntax
+  description: the string value of the slot must conform to this regular expression
+    expressed in the string. May be interpolated.
+  display_name: syntax
+- id: interpolated
+  description: if true then the pattern is first string interpolated
+  display_name: interpolated
+- id: partial_match
+  description: if true then the pattern must match the whole string, as if enclosed
+    in ^...$
+  display_name: partial_match
+- id: extensions
+  description: a tag/text tuple attached to an arbitrary element
+  display_name: extensions
+  cardinality: multi
+- id: annotations
+  description: a collection of tag/text tuples with the semantics of OWL Annotation
+  display_name: annotations
+  cardinality: multi
+- id: description
+  description: a description of the element's purpose and use
+  display_name: description
+- id: alt_descriptions
+  display_name: alt_descriptions
+  cardinality: multi
+- id: title
+  description: the official title of the element
+  display_name: title
+- id: deprecated
+  description: Description of why and when this element will no longer be used
+  display_name: deprecated
+- id: todos
+  description: Outstanding issue that needs resolution
+  display_name: todos
+  cardinality: multi
+- id: notes
+  description: editorial notes about an element intended for internal consumption
+  display_name: notes
+  cardinality: multi
+- id: comments
+  description: notes and comments about an element intended for external consumption
+  display_name: comments
+  cardinality: multi
+- id: examples
+  description: example usages of an element
+  display_name: examples
+  cardinality: multi
+- id: in_subset
+  description: used to indicate membership of a term in a defined subset of terms
+    used for a particular domain or application (e.g. the translator_minimal subset
+    holding the minimal set of predicates used in a translator knowledge graph)
+  display_name: in_subset
+  cardinality: multi
+- id: from_schema
+  description: id of the schema that defined the element
+  display_name: from_schema
+- id: imported_from
+  description: the imports entry that this element was derived from.  Empty means
+    primary source
+  display_name: imported_from
+- id: source
+  description: A related resource from which the element is derived.
+  display_name: source
+- id: in_language
+  display_name: in_language
+- id: see_also
+  description: a reference
+  display_name: see_also
+  cardinality: multi
+- id: deprecated_element_has_exact_replacement
+  description: When an element is deprecated, it can be automatically replaced by
+    this uri or curie
+  display_name: deprecated element has exact replacement
+- id: deprecated_element_has_possible_replacement
+  description: When an element is deprecated, it can be potentially replaced by this
+    uri or curie
+  display_name: deprecated element has possible replacement
+- id: aliases
+  display_name: aliases
+  cardinality: multi
+- id: structured_aliases
+  description: A list of structured_alias objects.
+  display_name: structured_aliases
+  cardinality: multi
+- id: mappings
+  description: A list of terms from different schemas or terminology systems that
+    have comparable meaning. These may include terms that are precisely equivalent,
+    broader or narrower in meaning, or otherwise semantically related but not equivalent
+    from a strict ontological perspective.
+  display_name: mappings
+  cardinality: multi
+- id: exact_mappings
+  description: A list of terms from different schemas or terminology systems that
+    have identical meaning.
+  display_name: exact mappings
+  cardinality: multi
+- id: close_mappings
+  description: A list of terms from different schemas or terminology systems that
+    have close meaning.
+  display_name: close mappings
+  cardinality: multi
+- id: related_mappings
+  description: A list of terms from different schemas or terminology systems that
+    have related meaning.
+  display_name: related mappings
+  cardinality: multi
+- id: narrow_mappings
+  description: A list of terms from different schemas or terminology systems that
+    have narrower meaning.
+  display_name: narrow mappings
+  cardinality: multi
+- id: broad_mappings
+  description: A list of terms from different schemas or terminology systems that
+    have broader meaning.
+  display_name: broad mappings
+  cardinality: multi
+- id: rank
+  description: the relative order in which the element occurs, lower values are given
+    precedence
+  display_name: rank

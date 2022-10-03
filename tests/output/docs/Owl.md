@@ -16,7 +16,7 @@ URI: [linkml:owl](https://w3id.org/linkml/owl)
 ### Slots
 
  * [comments](comments.md) - notes and comments about an element intended for external consumption
- * [description](description.md) - a description of the element's purpose and use
+ * [conforms_to](conforms_to.md) - An established standard to which the element conforms.
  * [examples](examples.md) - example usages of an element
  * [generation_date](generation_date.md) - date and time that the schema was loaded/generated
  * [license](license.md) - license for the schema

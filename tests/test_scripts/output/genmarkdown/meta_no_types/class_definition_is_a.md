@@ -21,3 +21,11 @@ URI: [linkml:class_definition_is_a](https://w3id.org/linkml/class_definition_is_
 ## Used by
 
  * [ClassDefinition](ClassDefinition.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **In Subsets:** | | basic |
+|  | | object_oriented |
+

@@ -1,3 +1,19 @@
+{% if element.comments -%}
+## Comments
+
+{% for x in element.comments -%}
+* {{x}}
+{% endfor %}
+{% endif -%}
+
+{% if element.todos -%}
+## TODOs
+
+{% for x in element.todos -%}
+* {{x}}
+{% endfor %}
+{% endif -%}
+
 ## Identifier and Mapping Information
 
 {% if element.id_prefixes %}
@@ -8,4 +24,26 @@ Instances of this class *should* have identifiers with one of the following pref
 * {{p}}
 {% endfor %}
 
+{% endif %}
+
+
+{% if element.annotations %}
+### Annotations
+
+| property | value |
+| --- | --- |
+{% for a in element.annotations -%}
+| {{a}} | {{ element.annotations[a].value }} |
+{% endfor %}
+{% endif %}
+
+{% if element.from_schema or element.imported_from %}
+### Schema Source
+
+{% if element.from_schema %}
+* from schema: {{ element.from_schema }}
+{% endif %}
+{% if element.imported_from %}
+* imported from: {{ element.imported_from }}
+{% endif %}
 {% endif %}

@@ -1,8 +1,6 @@
-# companies
+# Slot: companies
 
-None
-
-URI: https://w3id.org/linkml/tests/kitchen_sink/companies
+URI: [https://w3id.org/linkml/tests/kitchen_sink/companies](https://w3id.org/linkml/tests/kitchen_sink/companies)
 
 
 
@@ -13,6 +11,11 @@ URI: https://w3id.org/linkml/tests/kitchen_sink/companies
 
  * Range: Company
 
+
+
 ## Identifier and Mapping Information
+
+
+
 
 

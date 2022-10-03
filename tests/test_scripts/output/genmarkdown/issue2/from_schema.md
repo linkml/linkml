@@ -28,9 +28,13 @@ URI: [linkml:from_schema](https://w3id.org/linkml/from_schema)
  * definition
  * [Element](Element.md)
  * enum_definition
+ * import_expression
+ * path_expression
+ * pattern_expression
  * permissible_value
  * schema_definition
  * slot_definition
+ * structured_alias
  * subset_definition
  * type_definition
  * unique_key

@@ -26,4 +26,5 @@ schema_definition &#8594;  <sub>0..1</sub> datetime
 |  |  |  |
 | --- | --- | --- |
 | **In Subsets:** | | owl |
+|  | | basic |
 

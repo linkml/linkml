@@ -20,3 +20,10 @@ URI: [linkml:imports](https://w3id.org/linkml/imports)
 ## Used by
 
  * [SchemaDefinition](SchemaDefinition.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **In Subsets:** | | basic |
+

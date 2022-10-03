@@ -1,6 +1,9 @@
-# Person
+# Class: Person
+_A person, living or dead_
 
-A person, living or dead
+
+
+
 
 URI: [ks:Person](https://w3id.org/linkml/tests/kitchen_sink/Person)
 
@@ -56,22 +59,26 @@ Instances of this class *should* have identifiers with one of the following pref
 
 
 
+
+
+
 ## LinkML Specification
 
 <!-- TODO: investigate https://stackoverflow.com/questions/37606292/how-to-create-tabbed-code-blocks-in-mkdocs-or-sphinx -->
 
-Direct:
+### Direct
 
+<details>
 ```yaml
 name: Person
 id_prefixes:
 - P
-exact_mappings:
-- schema:Person
 description: A person, living or dead
 in_subset:
 - subset A
 from_schema: https://w3id.org/linkml/tests/kitchen_sink
+exact_mappings:
+- schema:Person
 mixins:
 - HasAliases
 slots:
@@ -89,19 +96,21 @@ slot_usage:
     pattern: ^\S+ \S+
 
 ```
+</details>
 
-Induced:
+### Induced
 
+<details>
 ```yaml
 name: Person
 id_prefixes:
 - P
-exact_mappings:
-- schema:Person
 description: A person, living or dead
 in_subset:
 - subset A
 from_schema: https://w3id.org/linkml/tests/kitchen_sink
+exact_mappings:
+- schema:Person
 mixins:
 - HasAliases
 slot_usage:
@@ -113,10 +122,12 @@ attributes:
     name: id
     from_schema: https://w3id.org/linkml/tests/core
     identifier: true
+    alias: id
     owner: Person
   name:
     name: name
     from_schema: https://w3id.org/linkml/tests/core
+    alias: name
     owner: Person
     required: false
     pattern: ^\S+ \S+
@@ -126,30 +137,33 @@ attributes:
     - subset B
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
     multivalued: true
-    inlined: true
-    inlined_as_list: true
+    alias: has_employment_history
     owner: Person
     range: EmploymentEvent
+    inlined: true
+    inlined_as_list: true
   has familial relationships:
     name: has familial relationships
     in_subset:
     - subset B
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
     multivalued: true
-    inlined: true
-    inlined_as_list: true
+    alias: has_familial_relationships
     owner: Person
     range: FamilialRelationship
+    inlined: true
+    inlined_as_list: true
   has medical history:
     name: has medical history
     in_subset:
     - subset B
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
     multivalued: true
-    inlined: true
-    inlined_as_list: true
+    alias: has_medical_history
     owner: Person
     range: MedicalEvent
+    inlined: true
+    inlined_as_list: true
   age in years:
     name: age in years
     description: number of years since birth
@@ -157,6 +171,7 @@ attributes:
     - subset A
     - subset B
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    alias: age_in_years
     owner: Person
     range: integer
     minimum_value: 0
@@ -165,11 +180,13 @@ attributes:
     name: addresses
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
     multivalued: true
+    alias: addresses
     owner: Person
     range: Address
   has birth event:
     name: has birth event
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    alias: has_birth_event
     owner: Person
     range: BirthEvent
   aliases:
@@ -177,6 +194,8 @@ attributes:
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
     slot_uri: skos:altLabel
     multivalued: true
+    alias: aliases
     owner: Person
 
 ```
+</details>

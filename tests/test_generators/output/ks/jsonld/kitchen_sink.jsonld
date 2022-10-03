@@ -81,24 +81,24 @@
     {
       "name": "subset_A",
       "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/SubsetA",
-      "aliases": [
-        "A"
-      ],
       "description": "test subset A",
       "comments": [
         "this subset is meaningless, it is just here for testing"
       ],
       "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
+      "aliases": [
+        "A"
+      ],
       "@type": "SubsetDefinition"
     },
     {
       "name": "subset_B",
       "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/SubsetB",
+      "description": "test subset B",
+      "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
       "aliases": [
         "B"
       ],
-      "description": "test subset B",
-      "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
       "@type": "SubsetDefinition"
     }
   ],
@@ -309,11 +309,11 @@
     {
       "name": "EmploymentEventType",
       "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/EmploymentEventType",
+      "description": "codes for different kinds of employment/HR related events",
+      "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
       "aliases": [
         "HR code"
       ],
-      "description": "codes for different kinds of employment/HR related events",
-      "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
       "permissible_values": [
         {
           "text": "HIRE",
@@ -390,13 +390,13 @@
       "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
       "slot_uri": "https://w3id.org/linkml/tests/kitchen_sink/has_employment_history",
       "multivalued": true,
-      "inlined": true,
-      "inlined_as_list": true,
       "owner": "Person",
       "domain_of": [
         "Person"
       ],
       "range": "EmploymentEvent",
+      "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -408,9 +408,9 @@
       "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
       "slot_uri": "https://w3id.org/linkml/tests/kitchen_sink/has_marriage_history",
       "multivalued": true,
+      "range": "MarriageEvent",
       "inlined": true,
       "inlined_as_list": true,
-      "range": "MarriageEvent",
       "@type": "SlotDefinition"
     },
     {
@@ -422,13 +422,13 @@
       "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
       "slot_uri": "https://w3id.org/linkml/tests/kitchen_sink/has_medical_history",
       "multivalued": true,
-      "inlined": true,
-      "inlined_as_list": true,
       "owner": "Person",
       "domain_of": [
         "Person"
       ],
       "range": "MedicalEvent",
+      "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -440,13 +440,13 @@
       "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
       "slot_uri": "https://w3id.org/linkml/tests/kitchen_sink/has_familial_relationships",
       "multivalued": true,
-      "inlined": true,
-      "inlined_as_list": true,
       "owner": "Person",
       "domain_of": [
         "Person"
       ],
       "range": "FamilialRelationship",
+      "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -487,12 +487,12 @@
       "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/diagnosis",
       "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
       "slot_uri": "https://w3id.org/linkml/tests/kitchen_sink/diagnosis",
-      "inlined": true,
       "owner": "MedicalEvent",
       "domain_of": [
         "MedicalEvent"
       ],
       "range": "DiagnosisConcept",
+      "inlined": true,
       "@type": "SlotDefinition"
     },
     {
@@ -500,12 +500,12 @@
       "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/procedure",
       "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
       "slot_uri": "https://w3id.org/linkml/tests/kitchen_sink/procedure",
-      "inlined": true,
       "owner": "MedicalEvent",
       "domain_of": [
         "MedicalEvent"
       ],
       "range": "ProcedureConcept",
+      "inlined": true,
       "@type": "SlotDefinition"
     },
     {
@@ -514,12 +514,12 @@
       "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
       "slot_uri": "https://w3id.org/linkml/tests/kitchen_sink/addresses",
       "multivalued": true,
-      "inlined": true,
       "owner": "Person",
       "domain_of": [
         "Person"
       ],
       "range": "Address",
+      "inlined": true,
       "@type": "SlotDefinition"
     },
     {
@@ -595,12 +595,12 @@
       "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/has_birth_event",
       "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
       "slot_uri": "https://w3id.org/linkml/tests/kitchen_sink/has_birth_event",
-      "inlined": true,
       "owner": "Person",
       "domain_of": [
         "Person"
       ],
       "range": "BirthEvent",
+      "inlined": true,
       "@type": "SlotDefinition"
     },
     {
@@ -621,12 +621,12 @@
       "description": "Example of a slot that has an unconstrained range",
       "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
       "slot_uri": "https://w3id.org/linkml/tests/kitchen_sink/metadata",
-      "inlined": true,
       "owner": "Event",
       "domain_of": [
         "Event"
       ],
       "range": "AnyObject",
+      "inlined": true,
       "@type": "SlotDefinition"
     },
     {
@@ -681,10 +681,10 @@
     {
       "name": "started_at_time",
       "definition_uri": "https://w3id.org/linkml/tests/core/started_at_time",
+      "from_schema": "https://w3id.org/linkml/tests/core",
       "mappings": [
         "http://www.w3.org/ns/prov#startedAtTime"
       ],
-      "from_schema": "https://w3id.org/linkml/tests/core",
       "slot_uri": "http://www.w3.org/ns/prov#startedAtTime",
       "owner": "Activity",
       "domain_of": [
@@ -698,10 +698,10 @@
     {
       "name": "ended_at_time",
       "definition_uri": "https://w3id.org/linkml/tests/core/ended_at_time",
+      "from_schema": "https://w3id.org/linkml/tests/core",
       "mappings": [
         "http://www.w3.org/ns/prov#endedAtTime"
       ],
-      "from_schema": "https://w3id.org/linkml/tests/core",
       "slot_uri": "http://www.w3.org/ns/prov#endedAtTime",
       "owner": "Activity",
       "domain_of": [
@@ -715,10 +715,10 @@
     {
       "name": "was_informed_by",
       "definition_uri": "https://w3id.org/linkml/tests/core/was_informed_by",
+      "from_schema": "https://w3id.org/linkml/tests/core",
       "mappings": [
         "http://www.w3.org/ns/prov#wasInformedBy"
       ],
-      "from_schema": "https://w3id.org/linkml/tests/core",
       "slot_uri": "http://www.w3.org/ns/prov#wasInformedBy",
       "owner": "Agent",
       "domain_of": [
@@ -731,10 +731,10 @@
     {
       "name": "was_associated_with",
       "definition_uri": "https://w3id.org/linkml/tests/core/was_associated_with",
+      "from_schema": "https://w3id.org/linkml/tests/core",
       "mappings": [
         "http://www.w3.org/ns/prov#wasAssociatedWith"
       ],
-      "from_schema": "https://w3id.org/linkml/tests/core",
       "slot_uri": "http://www.w3.org/ns/prov#wasAssociatedWith",
       "owner": "Activity",
       "domain_of": [
@@ -746,10 +746,10 @@
     {
       "name": "acted_on_behalf_of",
       "definition_uri": "https://w3id.org/linkml/tests/core/acted_on_behalf_of",
+      "from_schema": "https://w3id.org/linkml/tests/core",
       "mappings": [
         "http://www.w3.org/ns/prov#actedOnBehalfOf"
       ],
-      "from_schema": "https://w3id.org/linkml/tests/core",
       "slot_uri": "http://www.w3.org/ns/prov#actedOnBehalfOf",
       "owner": "Agent",
       "domain_of": [
@@ -761,10 +761,10 @@
     {
       "name": "was_generated_by",
       "definition_uri": "https://w3id.org/linkml/tests/core/was_generated_by",
+      "from_schema": "https://w3id.org/linkml/tests/core",
       "mappings": [
         "http://www.w3.org/ns/prov#wasGeneratedBy"
       ],
-      "from_schema": "https://w3id.org/linkml/tests/core",
       "slot_uri": "http://www.w3.org/ns/prov#wasGeneratedBy",
       "range": "Activity",
       "@type": "SlotDefinition"
@@ -772,10 +772,10 @@
     {
       "name": "used",
       "definition_uri": "https://w3id.org/linkml/tests/core/used",
+      "from_schema": "https://w3id.org/linkml/tests/core",
       "mappings": [
         "http://www.w3.org/ns/prov#used"
       ],
-      "from_schema": "https://w3id.org/linkml/tests/core",
       "domain": "Activity",
       "slot_uri": "http://www.w3.org/ns/prov#used",
       "owner": "Activity",
@@ -791,9 +791,9 @@
       "from_schema": "https://w3id.org/linkml/tests/core",
       "slot_uri": "https://w3id.org/linkml/tests/core/activity_set",
       "multivalued": true,
+      "range": "Activity",
       "inlined": true,
       "inlined_as_list": true,
-      "range": "Activity",
       "@type": "SlotDefinition"
     },
     {
@@ -802,17 +802,17 @@
       "from_schema": "https://w3id.org/linkml/tests/core",
       "slot_uri": "https://w3id.org/linkml/tests/core/agent_set",
       "multivalued": true,
+      "range": "Agent",
       "inlined": true,
       "inlined_as_list": true,
-      "range": "Agent",
       "@type": "SlotDefinition"
     },
     {
       "name": "hasAliases__aliases",
+      "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
       "mappings": [
         "http://www.w3.org/2004/02/skos/core#altLabel"
       ],
-      "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
       "slot_uri": "http://www.w3.org/2004/02/skos/core#altLabel",
       "multivalued": true,
       "alias": "aliases",
@@ -825,10 +825,10 @@
     },
     {
       "name": "company__ceo",
+      "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
       "mappings": [
         "http://schema.org/ceo"
       ],
-      "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
       "slot_uri": "http://schema.org/ceo",
       "alias": "ceo",
       "owner": "Company",
@@ -843,14 +843,14 @@
       "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
       "slot_uri": "https://w3id.org/linkml/tests/kitchen_sink/persons",
       "multivalued": true,
-      "inlined": true,
-      "inlined_as_list": true,
       "alias": "persons",
       "owner": "Dataset",
       "domain_of": [
         "Dataset"
       ],
       "range": "Person",
+      "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -858,14 +858,14 @@
       "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
       "slot_uri": "https://w3id.org/linkml/tests/kitchen_sink/companies",
       "multivalued": true,
-      "inlined": true,
-      "inlined_as_list": true,
       "alias": "companies",
       "owner": "Dataset",
       "domain_of": [
         "Dataset"
       ],
       "range": "Company",
+      "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -873,14 +873,14 @@
       "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
       "slot_uri": "https://w3id.org/linkml/tests/kitchen_sink/activities",
       "multivalued": true,
-      "inlined": true,
-      "inlined_as_list": true,
       "alias": "activities",
       "owner": "Dataset",
       "domain_of": [
         "Dataset"
       ],
       "range": "Activity",
+      "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -888,13 +888,13 @@
       "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
       "slot_uri": "https://w3id.org/linkml/tests/kitchen_sink/code_systems",
       "multivalued": true,
-      "inlined": true,
       "alias": "code_systems",
       "owner": "Dataset",
       "domain_of": [
         "Dataset"
       ],
       "range": "CodeSystem",
+      "inlined": true,
       "@type": "SlotDefinition"
     },
     {
@@ -925,13 +925,13 @@
       "name": "subclassTest__slot_with_space_2",
       "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
       "slot_uri": "https://w3id.org/linkml/tests/kitchen_sink/slot_with_space_2",
-      "inlined": true,
       "alias": "slot_with_space_2",
       "owner": "SubclassTest",
       "domain_of": [
         "SubclassTest"
       ],
       "range": "ClassWithSpaces",
+      "inlined": true,
       "@type": "SlotDefinition"
     },
     {
@@ -1045,14 +1045,14 @@
         "P"
       ],
       "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/Person",
-      "exact_mappings": [
-        "schema:Person"
-      ],
       "description": "A person, living or dead",
       "in_subset": [
         "subset_A"
       ],
       "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
+      "exact_mappings": [
+        "schema:Person"
+      ],
       "mixins": [
         "HasAliases"
       ],
@@ -1137,10 +1137,10 @@
     {
       "name": "DiagnosisConcept",
       "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/DiagnosisConcept",
+      "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
       "close_mappings": [
         "biolink:Disease"
       ],
-      "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
       "is_a": "Concept",
       "slots": [
         "id",
@@ -1341,32 +1341,32 @@
         {
           "name": "persons",
           "multivalued": true,
+          "range": "Person",
           "inlined": true,
           "inlined_as_list": true,
-          "range": "Person",
           "@type": "SlotDefinition"
         },
         {
           "name": "companies",
           "multivalued": true,
+          "range": "Company",
           "inlined": true,
           "inlined_as_list": true,
-          "range": "Company",
           "@type": "SlotDefinition"
         },
         {
           "name": "activities",
           "multivalued": true,
+          "range": "Activity",
           "inlined": true,
           "inlined_as_list": true,
-          "range": "Activity",
           "@type": "SlotDefinition"
         },
         {
           "name": "code_systems",
           "multivalued": true,
-          "inlined": true,
           "range": "CodeSystem",
+          "inlined": true,
           "@type": "SlotDefinition"
         }
       ],
@@ -1432,11 +1432,11 @@
     {
       "name": "AnyObject",
       "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/AnyObject",
+      "description": "Example of unconstrained class",
+      "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
       "mappings": [
         "linkml:Any"
       ],
-      "description": "Example of unconstrained class",
-      "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
       "slot_usage": {},
       "class_uri": "https://w3id.org/linkml/Any",
       "@type": "ClassDefinition"
@@ -1444,11 +1444,11 @@
     {
       "name": "Activity",
       "definition_uri": "https://w3id.org/linkml/tests/core/Activity",
+      "description": "a provence-generating activity",
+      "from_schema": "https://w3id.org/linkml/tests/core",
       "mappings": [
         "prov:Activity"
       ],
-      "description": "a provence-generating activity",
-      "from_schema": "https://w3id.org/linkml/tests/core",
       "slots": [
         "id",
         "started_at_time",
@@ -1465,11 +1465,11 @@
     {
       "name": "Agent",
       "definition_uri": "https://w3id.org/linkml/tests/core/Agent",
+      "description": "a provence-generating agent",
+      "from_schema": "https://w3id.org/linkml/tests/core",
       "mappings": [
         "prov:Agent"
       ],
-      "description": "a provence-generating agent",
-      "from_schema": "https://w3id.org/linkml/tests/core",
       "slots": [
         "id",
         "acted_on_behalf_of",
@@ -1482,9 +1482,9 @@
   ],
   "metamodel_version": "1.7.0",
   "source_file": "kitchen_sink.yaml",
-  "source_file_date": "2022-02-14T20:35:40",
+  "source_file_date": "2022-05-10T00:26:24",
   "source_file_size": 6551,
-  "generation_date": "2022-02-14T20:42:23",
+  "generation_date": "2022-05-10T00:31:55",
   "@type": "SchemaDefinition",
   "@context": [
     "file:///home/runner/work/linkml/linkml/tests/test_generators/output/ks/jsonld/kitchen_sink.context.jsonld",

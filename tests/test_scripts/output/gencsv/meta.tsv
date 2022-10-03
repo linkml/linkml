@@ -17,15 +17,20 @@ definition		base class for definitions
 element		a named element in the model
 enum_definition		List of values that constrain the range of a slot
 example		usage example and description
-expression		todo
+expression		general mixin for any class that can represent some form of expression
 extensible		mixin for classes that support extension
 extension		a tag/value pair used to add non-model information to an entry
+import_expression		an expression describing an import
 local_name		an attributed label
+path_expression		An expression that describes an abstract path from an object to another through a sequence of slot lookups
+pattern_expression		a regular expression pattern used to evaluate conformance of a string
 permissible_value		a permissible value, accompanied by intended text and an optional mapping to a concept URI
 prefix		prefix URI tuple
 schema_definition		a collection of subset, type, slot and class definitions
+setting		assignment of a key to a value
 slot_definition		the definition of a property or a slot
 slot_expression		an expression that constrains the range of values a slot can take
+structured_alias		object that contains meta data about a synonym or alias including where it came from (source) and its scope (narrow, broad, etc.)
 subset_definition		the name and description of a subset
 type_definition		A data type definition.
 type_expression		

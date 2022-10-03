@@ -20,3 +20,11 @@ URI: [linkml:enums](https://w3id.org/linkml/enums)
 ## Used by
 
  * [SchemaDefinition](SchemaDefinition.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **In Subsets:** | | basic |
+|  | | object_oriented |
+

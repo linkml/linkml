@@ -3,17 +3,16 @@
 @prefix linkml: <https://w3id.org/linkml/> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 <http://example.org/sample/example1> a owl:Ontology ;
     rdfs:label "example1" ;
     IAO:0000700 <http://example.org/sample/example1/A> ;
     dcterms:license "https://creativecommons.org/publicdomain/zero/1.0/" ;
-    linkml:generation_date "2021-10-02 02:02" ;
+    linkml:generation_date "2022-03-08T17:00:44" ;
     linkml:metamodel_version "1.7.0" ;
     linkml:source_file "issue_163b.yaml" ;
-    linkml:source_file_date "Sat Oct  2 01:57:27 2021" ;
+    linkml:source_file_date "2022-03-08T16:55:16" ;
     linkml:source_file_size 673 .
 
 <http://example.org/sample/example1/D2> a owl:Class,
@@ -27,8 +26,7 @@
     rdfs:subClassOf <http://example.org/sample/example1/D1> .
 
 linkml:SubsetDefinition a owl:Class ;
-    rdfs:label "subset_definition" ;
-    skos:definition "the name and description of a subset" .
+    rdfs:label "subset_definition" .
 
 <http://example.org/sample/example1/D1> a owl:Class,
         linkml:ClassDefinition ;
@@ -75,8 +73,7 @@ linkml:SubsetDefinition a owl:Class ;
     rdfs:range <http://example.org/sample/example1/Unitcode> .
 
 linkml:TypeDefinition a owl:Class ;
-    rdfs:label "type_definition" ;
-    skos:definition "A data type definition." .
+    rdfs:label "type_definition" .
 
 linkml:topValue a owl:DatatypeProperty ;
     rdfs:label "value" .
@@ -106,17 +103,17 @@ linkml:topValue a owl:DatatypeProperty ;
             owl:onClass linkml:String ;
             owl:onProperty <http://example.org/sample/example1/name> ],
         [ a owl:Restriction ;
-            owl:onClass linkml:String ;
-            owl:onProperty <http://example.org/sample/example1/id> ;
-            owl:qualifiedCardinality 1 ],
-        [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
             owl:onClass <http://example.org/sample/example1/Unitcode> ;
             owl:onProperty <http://example.org/sample/example1/unit> ],
         [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
             owl:onClass linkml:Integer ;
-            owl:onProperty <http://example.org/sample/example1/len> ] .
+            owl:onProperty <http://example.org/sample/example1/len> ],
+        [ a owl:Restriction ;
+            owl:onClass linkml:String ;
+            owl:onProperty <http://example.org/sample/example1/id> ;
+            owl:qualifiedCardinality 1 ] .
 
 <http://example.org/sample/example1/C> a owl:Class,
         linkml:ClassDefinition ;
@@ -128,11 +125,9 @@ linkml:topValue a owl:DatatypeProperty ;
         <http://example.org/sample/example1/B> .
 
 linkml:ClassDefinition a owl:Class ;
-    rdfs:label "class_definition" ;
-    skos:definition "the definition of a class or interface" .
+    rdfs:label "class_definition" .
 
 linkml:SlotDefinition a owl:Class ;
-    rdfs:label "slot_definition" ;
-    skos:definition "the definition of a property or a slot" .
+    rdfs:label "slot_definition" .
 
 

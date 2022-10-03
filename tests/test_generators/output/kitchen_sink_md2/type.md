@@ -1,8 +1,6 @@
-# type
+# Slot: type
 
-None
-
-URI: https://w3id.org/linkml/tests/kitchen_sink/type
+URI: [https://w3id.org/linkml/tests/kitchen_sink/type](https://w3id.org/linkml/tests/kitchen_sink/type)
 
 
 
@@ -13,6 +11,11 @@ URI: https://w3id.org/linkml/tests/kitchen_sink/type
 
  * Range: None
 
+
+
 ## Identifier and Mapping Information
+
+
+
 
 

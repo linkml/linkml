@@ -1,8 +1,6 @@
-# is_current
+# Slot: is_current
 
-None
-
-URI: https://w3id.org/linkml/tests/kitchen_sink/is_current
+URI: [https://w3id.org/linkml/tests/kitchen_sink/is_current](https://w3id.org/linkml/tests/kitchen_sink/is_current)
 
 
 
@@ -13,6 +11,11 @@ URI: https://w3id.org/linkml/tests/kitchen_sink/is_current
 
  * Range: boolean
 
+
+
 ## Identifier and Mapping Information
+
+
+
 
 

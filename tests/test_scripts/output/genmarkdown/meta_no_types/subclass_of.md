@@ -1,5 +1,5 @@
 
-# Slot: subclass_of
+# Slot: ~~subclass_of~~ _(deprecated)_
 
 
 rdfs:subClassOf to be emitted in OWL generation

@@ -13,7 +13,7 @@ slot_definition &#8594;  <sub>0..1</sub> [presence_enum](presence_enum.md)
 
 ## Parents
 
- *  is_a: value_specification_constant
+ *  is_a: list_value_specification_constant
 
 ## Children
 

@@ -1,0 +1,11 @@
+# linkml-lint configuration to check the linkml-link configuration definition schema
+rules:
+  recommended:
+    level: error
+  permissible_values_format:
+    level: error
+    format: snake
+  tree_root_class:
+    level: error
+    root_class_name: Config
+    validate_existing_class_name: false

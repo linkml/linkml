@@ -1,6 +1,9 @@
-# WithLocation
+# Class: WithLocation
 
-None
+
+
+* __NOTE__: this is a mixin class intended to be used in combination with other classes, and not used directly
+
 
 URI: [ks:WithLocation](https://w3id.org/linkml/tests/kitchen_sink/WithLocation)
 
@@ -28,12 +31,16 @@ URI: [ks:WithLocation](https://w3id.org/linkml/tests/kitchen_sink/WithLocation)
 
 
 
+
+
+
 ## LinkML Specification
 
 <!-- TODO: investigate https://stackoverflow.com/questions/37606292/how-to-create-tabbed-code-blocks-in-mkdocs-or-sphinx -->
 
-Direct:
+### Direct
 
+<details>
 ```yaml
 name: WithLocation
 from_schema: https://w3id.org/linkml/tests/kitchen_sink
@@ -42,9 +49,11 @@ slots:
 - in location
 
 ```
+</details>
 
-Induced:
+### Induced
 
+<details>
 ```yaml
 name: WithLocation
 from_schema: https://w3id.org/linkml/tests/kitchen_sink
@@ -57,7 +66,9 @@ attributes:
         tag: biolink:opposite
         value: location_of
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    alias: in_location
     owner: WithLocation
     range: Place
 
 ```
+</details>

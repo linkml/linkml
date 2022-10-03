@@ -1,6 +1,7 @@
-# Relationship
+# Class: Relationship
 
-None
+
+
 
 URI: [ks:Relationship](https://w3id.org/linkml/tests/kitchen_sink/Relationship)
 
@@ -36,12 +37,16 @@ URI: [ks:Relationship](https://w3id.org/linkml/tests/kitchen_sink/Relationship)
 
 
 
+
+
+
 ## LinkML Specification
 
 <!-- TODO: investigate https://stackoverflow.com/questions/37606292/how-to-create-tabbed-code-blocks-in-mkdocs-or-sphinx -->
 
-Direct:
+### Direct
 
+<details>
 ```yaml
 name: Relationship
 from_schema: https://w3id.org/linkml/tests/kitchen_sink
@@ -52,9 +57,11 @@ slots:
 - type
 
 ```
+</details>
 
-Induced:
+### Induced
 
+<details>
 ```yaml
 name: Relationship
 from_schema: https://w3id.org/linkml/tests/kitchen_sink
@@ -63,21 +70,26 @@ attributes:
     name: started at time
     from_schema: https://w3id.org/linkml/tests/core
     slot_uri: prov:startedAtTime
+    alias: started_at_time
     owner: Relationship
     range: date
   ended at time:
     name: ended at time
     from_schema: https://w3id.org/linkml/tests/core
     slot_uri: prov:endedAtTime
+    alias: ended_at_time
     owner: Relationship
     range: date
   related to:
     name: related to
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    alias: related_to
     owner: Relationship
   type:
     name: type
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    alias: type
     owner: Relationship
 
 ```
+</details>

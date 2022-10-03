@@ -20,3 +20,11 @@ URI: [linkml:text](https://w3id.org/linkml/text)
 ## Used by
 
  * [PermissibleValue](PermissibleValue.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **Aliases:** | | value |
+| **In Subsets:** | | basic |
+

@@ -1,8 +1,6 @@
-# was_informed_by
+# Slot: was_informed_by
 
-None
-
-URI: http://www.w3.org/ns/prov#wasInformedBy
+URI: [http://www.w3.org/ns/prov#wasInformedBy](http://www.w3.org/ns/prov#wasInformedBy)
 
 
 
@@ -13,6 +11,11 @@ URI: http://www.w3.org/ns/prov#wasInformedBy
 
  * Range: activity
 
+
+
 ## Identifier and Mapping Information
+
+
+
 
 

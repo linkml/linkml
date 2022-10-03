@@ -1,0 +1,25 @@
+{
+   "CODE": "http://example.org/code/",
+   "GEO": "http://example.org/geoloc/",
+   "GSSO": "http://purl.obolibrary.org/obo/GSSO_",
+   "P": "http://example.org/P/",
+   "ROR": "http://example.org/ror/",
+   "famrel": "https://example.org/FamilialRelations#",
+   "linkml": "https://w3id.org/linkml/",
+   "personinfo": "https://w3id.org/linkml/examples/personinfo/",
+   "prov": "http://www.w3.org/ns/prov#",
+   "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+   "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+   "schema": "http://schema.org/",
+   "skos": "http://example.org/UNKNOWN/skos/",
+   "xsd": "http://www.w3.org/2001/XMLSchema#",
+   "Address": {
+      "@id": "schema:PostalAddress"
+   },
+   "Organization": {
+      "@id": "schema:Organization"
+   },
+   "Person": {
+      "@id": "schema:Person"
+   }
+}
