@@ -2,6 +2,30 @@ from functools import lru_cache
 import re
 from typing import Dict
 
+# We might want to deprecate this method in favor of PatternResolver in the future
+def generate_patterns(schema_view) -> Dict[str, str]:
+    """Generates a dictionary of slot patterns corresponding to
+    the structured patterns in the settings.
+    :param schema_view: SchemaView object with LinkML YAML
+        already loaded
+    :return generated_patterns: dictionary with the 
+        expanded structured patterns 
+    """
+
+    resolver = PatternResolver(schema_view)
+
+    # dictionary with structured patterns in the key and
+    # expanded, or materialized patterns as values
+    generated_patterns = {}
+
+    for _, slot_defn in schema_view.all_slots().items():
+        if slot_defn.structured_pattern:
+            struct_pat = slot_defn.structured_pattern
+            pattern = struct_pat.syntax
+            generated_patterns[pattern] = resolver.resolve(pattern)
+
+    return generated_patterns
+
 
 class PatternResolver():
 
