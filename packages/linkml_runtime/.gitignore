@@ -140,3 +140,4 @@ Pipfile.lock
 
 # No Pycharm
 .idea/
+.vscode

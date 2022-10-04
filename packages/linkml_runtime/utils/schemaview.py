@@ -9,7 +9,7 @@ from typing import Mapping, Tuple, Type
 from linkml_runtime.utils.namespaces import Namespaces
 from deprecated.classic import deprecated
 from linkml_runtime.utils.context_utils import parse_import_map, map_import
-from linkml_runtime.utils.pattern import generate_patterns
+from linkml_runtime.utils.pattern import PatternResolver
 from linkml_runtime.linkml_model.meta import *
 from enum import Enum
 logger = logging.getLogger(__name__)
@@ -1462,12 +1462,22 @@ class SchemaView(object):
         into regular expressions based on composite patterns 
         provided in the settings dictionary.
         """
-        patterns_dict = generate_patterns(self)
+        resolver = PatternResolver(self)
 
-        for _, slot_defn in self.all_slots().items():
-            if slot_defn.structured_pattern:
+        def materialize_pattern_into_slot_definition(slot_definition: SlotDefinition) -> None:
+            if not slot_definition.structured_pattern:
+                return
+            pattern = slot_definition.structured_pattern.syntax
+            slot_definition.pattern = resolver.resolve(pattern)
 
-                pattern = slot_defn.structured_pattern.syntax
+        for slot_definition in self.all_slots().values():
+            materialize_pattern_into_slot_definition(slot_definition)
 
-                if pattern in patterns_dict:
-                    slot_defn.pattern = patterns_dict[pattern]
+        for class_definition in self.all_classes().values():
+            if class_definition.slot_usage:
+                for slot_definition in class_definition.slot_usage.values():
+                    materialize_pattern_into_slot_definition(slot_definition)
+        
+            if class_definition.attributes:
+                for slot_definition in class_definition.attributes.values():
+                    materialize_pattern_into_slot_definition(slot_definition)

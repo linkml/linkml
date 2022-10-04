@@ -32,6 +32,7 @@ settings:
   unit.length: "(centimeter|meter|inch)"
   unit.weight: "(kg|g|lbs|stone)"
   email: "\\S+@\\S+{\\.\\w}+"
+  hyphenated_name: "\\S+-\\S+"
   
 #==================================
 # Classes                         #
@@ -44,6 +45,23 @@ classes:
       - name
       - height
       - email
+
+  FancyPersonInfo:
+    is_a: PersonInfo
+    slot_usage:
+      name:
+        structured_pattern:
+          syntax: "\\S+ {hyphenated_name}"
+          interpolated: true
+          partial_match: false
+
+  ClassWithAttributes:
+    attributes:
+      weight:
+        structured_pattern:
+          syntax: "{float} {unit.weight}"
+          interpolated: true
+          partial_match: false
 
 #==================================
 # Slots                           #

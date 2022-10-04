@@ -15,6 +15,7 @@ from tests.test_utils import INPUT_DIR
 
 SCHEMA_NO_IMPORTS = os.path.join(INPUT_DIR, 'kitchen_sink_noimports.yaml')
 SCHEMA_WITH_IMPORTS = os.path.join(INPUT_DIR, 'kitchen_sink.yaml')
+SCHEMA_WITH_STRUCTURED_PATTERNS = os.path.join(INPUT_DIR, "pattern-example.yaml")
 
 yaml_loader = YAMLLoader()
 
@@ -526,7 +527,7 @@ class SchemaViewTestCase(unittest.TestCase):
                 self.assertIsNotNone(exp_slot_uri)
 
     def test_materialize_patterns(self):
-        sv = SchemaView(os.path.join(INPUT_DIR, "pattern-example.yaml"))
+        sv = SchemaView(SCHEMA_WITH_STRUCTURED_PATTERNS)
 
         sv.materialize_patterns()
 
@@ -535,6 +536,24 @@ class SchemaViewTestCase(unittest.TestCase):
 
         self.assertEqual(height_slot.pattern, "\d+[\.\d+] (centimeter|meter|inch)")
         self.assertEqual(weight_slot.pattern, "\d+[\.\d+] (kg|g|lbs|stone)")
+
+    def test_materialize_patterns_slot_usage(self):
+        sv = SchemaView(SCHEMA_WITH_STRUCTURED_PATTERNS)
+
+        sv.materialize_patterns()
+
+        name_slot_usage = sv.get_class("FancyPersonInfo").slot_usage['name']
+
+        self.assertEqual(name_slot_usage.pattern, "\\S+ \\S+-\\S+")
+
+    def test_materialize_patterns_attribute(self):
+        sv = SchemaView(SCHEMA_WITH_STRUCTURED_PATTERNS)
+
+        sv.materialize_patterns()
+
+        weight_attribute = sv.get_class('ClassWithAttributes').attributes['weight']
+
+        self.assertEqual(weight_attribute.pattern, "\d+[\.\d+] (kg|g|lbs|stone)")
 
 
 if __name__ == '__main__':
