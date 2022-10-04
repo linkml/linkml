@@ -1,8 +1,10 @@
-# {{ gen.name(element) }}
+# Type: {{ gen.name(element) }}
 
-{{ element.description }}
+{% if element.description %}
+_{{ element.description }}_
+{% endif %}
 
-URI: {{ gen.uri(element) }}
+URI: [{{ gen.uri(element) }}]({{ gen.uri(element) }})
 
 {{ gen.bullet(element, "base") }}
 {{ gen.bullet(element, "uri") }}

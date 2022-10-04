@@ -81,11 +81,19 @@ URI: {{ gen.uri_link(element) }}
 
 ## Slots
 
-| Name | Cardinality and Range  | Description  |
-| ---  | ---  | --- |
+| Name | Range | Cardinality | Description | Inheritance |
+| ---  | --- | --- | --- | --- |
 {% for s in schemaview.class_induced_slots(element.name) -%}
-| {{gen.link(s)}} | {{ gen.cardinality(s) }} <br/> {{gen.link(s.range)}}  | {{s.description|enshorten}}  |
-{% endfor %}
+{% if s.name in gen.get_direct_slots(element) -%}
+| {{gen.link(s)}} | {{gen.link(s.range)}} | {{ gen.cardinality(s) }} | {{ s.description }}  | direct |
+{% endif -%}
+{%- if s.name in gen.get_indirect_slots(element) -%}
+| {{gen.link(s)}} | {{gen.link(s.range)}} | {{ gen.cardinality(s) }} | {{ s.description }}  | inherited |
+{% endif -%}
+{%- if s.name in gen.get_mixin_inherited_slots(element).items() -%}
+| {{gen.link(s)}} | {{gen.link(s.range)}} | {{ gen.cardinality(s) }} | {{ s.description }}  | mixin |
+{% endif -%}
+{%- endfor %}
 
 ## Usages
 
@@ -113,7 +121,7 @@ URI: {{ gen.uri_link(element) }}
 | ---  | ---  |
 {% for m, mt in schemaview.get_mappings(element.name).items() -%}
 {% if mt|length > 0 -%}
-| {{ m }} | {{ mt }} |
+| {{ m }} | {{ mt }}|join(', ') |
 {% endif -%}
 {% endfor %}
 

@@ -33,7 +33,9 @@ Instances of this class *should* have identifiers with one of the following pref
 | property | value |
 | --- | --- |
 {% for a in element.annotations -%}
-| {{a}} | {{ element.annotations[a].value }} |
+{% if a.first() == '_' -%}
+| {{ a }} | {{ element.annotations[a].value }} |
+{% endif %}
 {% endfor %}
 {% endif %}
 
