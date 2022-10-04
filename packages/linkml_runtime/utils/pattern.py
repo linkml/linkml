@@ -22,7 +22,7 @@ class PatternResolver():
             # substrings in the structured pattern syntax
             self.format_spec[k] = setting.setting_value
 
-    @lru_cache
+    @lru_cache()
     def resolve(self, pattern: str) -> str:
         # apply the regex to the pattern and look for matches
         matches = self.var_name.finditer(pattern)
