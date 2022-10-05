@@ -28,15 +28,15 @@ class TestRecommendedRule(unittest.TestCase):
 
         messages = [p.message for p in problems]
         self.assertIn(
-            "class_definition 'MyClass' does not have recommended slot 'description'",
+            "Class 'MyClass' does not have recommended slot 'description'",
             messages,
         )
         self.assertIn(
-            "slot_definition 'my_slot' does not have recommended slot 'description'",
+            "Slot 'my_slot' does not have recommended slot 'description'",
             messages,
         )
         self.assertIn(
-            "enum_definition 'MyEnum' does not have recommended slot 'description'",
+            "Enum 'MyEnum' does not have recommended slot 'description'",
             messages,
         )
 
@@ -74,7 +74,7 @@ class TestRecommendedRule(unittest.TestCase):
 
         messages = [p.message for p in problems]
         self.assertIn(
-            "slot_definition 'my_slot' does not have recommended slot 'description'",
+            "Slot 'my_slot' does not have recommended slot 'description'",
             messages,
         )
 
@@ -95,10 +95,10 @@ class TestRecommendedRule(unittest.TestCase):
 
         messages = [p.message for p in problems]
         self.assertIn(
-            "class_definition 'MyClass' does not have recommended slot 'description'",
+            "Class 'MyClass' does not have recommended slot 'description'",
             messages,
         )
         self.assertIn(
-            "enum_definition 'MyEnum' does not have recommended slot 'description'",
+            "Enum 'MyEnum' does not have recommended slot 'description'",
             messages,
         )

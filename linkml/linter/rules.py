@@ -1,10 +1,10 @@
-from functools import lru_cache
 import re
 from abc import ABC, abstractmethod
+from functools import lru_cache
 from typing import Callable, Iterable, List
 
 from linkml_runtime.linkml_model import (ClassDefinition, ClassDefinitionName,
-                                         SlotDefinition)
+                                         Element, SlotDefinition)
 from linkml_runtime.utils.schemaview import SchemaView
 from prefixmaps.io.parser import load_multi_context
 
@@ -45,6 +45,11 @@ class LinterRule(ABC):
     def uncamel(n: str) -> str:
         return LinterRule.PATTERNS._uncamel.sub(" ", n)
 
+    @staticmethod
+    def format_element(element: Element):
+        class_name = element.__class__.__name__.replace("Definition", "")
+        return f"{class_name} '{element.name}'"
+
 
 class NoEmptyTitleRule(LinterRule):
 
@@ -60,7 +65,7 @@ class NoEmptyTitleRule(LinterRule):
                 e.title = title
             if e.title is None:
                 problem = LinterProblem(
-                    message=f"{type(e).__name__} '{e.name}' has no title"
+                    message=f"{self.format_element(e)} has no title"
                 )
                 yield problem
 
@@ -70,12 +75,14 @@ class NoXsdIntTypeRule(LinterRule):
     id = "no_xsd_int_type"
 
     def check(self, schema_view: SchemaView, fix: bool = False):
-        for type_name, type_definition in schema_view.all_types(imports=False).items():
+        for type_definition in schema_view.all_types(imports=False).values():
             if type_definition.uri == "xsd:int":
                 if fix:
                     type_definition.uri = "xsd:integer"
                 else:
-                    yield LinterProblem(f"Type '{type_name}' has uri xsd:int")
+                    yield LinterProblem(
+                        f"{self.format_element(type_definition)} has uri xsd:int"
+                    )
 
 
 class PermissibleValuesFormatRule(LinterRule):
@@ -86,11 +93,11 @@ class PermissibleValuesFormatRule(LinterRule):
         self, schema_view: SchemaView, fix: bool = False
     ) -> Iterable[LinterProblem]:
         pattern = self.PATTERNS.get(self.config.format, re.compile(self.config.format))
-        for enum_name, enum_def in schema_view.all_enums(imports=False).items():
+        for enum_def in schema_view.all_enums(imports=False).values():
             for value in enum_def.permissible_values.keys():
                 if pattern.fullmatch(value) is None:
                     yield LinterProblem(
-                        f"Enum '{enum_name}' has permissible value '{value}'"
+                        f"{self.format_element(enum_def)} has permissible value '{value}'"
                     )
 
 
@@ -123,11 +130,10 @@ class RecommendedRule(LinterRule):
             if element_name in self.config.exclude:
                 continue
             for meta_slot_name, meta_slot_value in vars(element_definition).items():
-                meta_class_name = type(element_definition).class_name
-                key = f"{meta_class_name}__{meta_slot_name}"
+                key = f"{element_definition.class_name}__{meta_slot_name}"
                 if key in recommended_meta_slots and not meta_slot_value:
                     yield LinterProblem(
-                        f"{meta_class_name} '{element_name}' does not have recommended slot '{meta_slot_name}'"
+                        f"{self.format_element(element_definition)} does not have recommended slot '{meta_slot_name}'"
                     )
 
 
@@ -272,7 +278,7 @@ class StandardNamingRule(LinterRule):
             for permissible_value_name in enum_definition.permissible_values.keys():
                 if permissible_value_pattern.fullmatch(permissible_value_name) is None:
                     yield LinterProblem(
-                        f"Permissible value of enum '{enum_name}' has name '{permissible_value_name}'"
+                        f"Permissible value of {self.format_element(enum_definition)} has name '{permissible_value_name}'"
                     )
 
 
