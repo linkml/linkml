@@ -6,6 +6,7 @@ from typing import Iterable
 import click
 import yaml
 
+from .config.datamodel.config import RuleLevel
 from .formatters import (JsonFormatter, MarkdownFormatter, TerminalFormatter,
                          TsvFormatter)
 from .linter import Linter
@@ -46,8 +47,18 @@ def get_yaml_files(root: Path) -> Iterable[str]:
     default="terminal",
 )
 @click.option("-o", "--output", type=click.File("w"), default="-")
+@click.option("--ignore-warnings", is_flag=True, default=False)
+@click.option("--max-warnings", type=int, default=0)
 @click.option("--fix/--no-fix", default=False)
-def main(schema: Path, fix: bool, config: str, format: str, output):
+def main(
+    schema: Path,
+    fix: bool,
+    config: str,
+    format: str,
+    output,
+    ignore_warnings: bool,
+    max_warnings: int,
+):
     config_file = None
     if config:
         config_file = config
@@ -74,16 +85,26 @@ def main(schema: Path, fix: bool, config: str, format: str, output):
     elif format == "tsv":
         formatter = TsvFormatter(output)
 
-    exit_code = 0
+    error_count = 0
+    warning_count = 0
     formatter.start_report()
     for path in get_yaml_files(schema):
         formatter.start_schema(path)
         report = linter.lint(path, fix=fix)
         for problem in report:
-            exit_code = 1
+            if str(problem.level) is RuleLevel.error.text:
+                error_count += 1
+            elif str(problem.level) is RuleLevel.warning.text:
+                warning_count += 1
             formatter.handle_problem(problem)
         formatter.end_schema()
     formatter.end_report()
+
+    exit_code = 0
+    if error_count > 0:
+        exit_code = 2
+    elif not ignore_warnings and warning_count > max_warnings:
+        exit_code = 1
 
     sys.exit(exit_code)
 
