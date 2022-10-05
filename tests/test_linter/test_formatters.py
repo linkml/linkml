@@ -97,7 +97,7 @@ b.yaml
 
 |                      | Count |
 |----------------------|-------|
-| Schemas Checked      | 2 |
+| Schemas Checked      | 3 |
 | Schemas with Error   | 2 |
 | Schemas with Warning | 1 |
 | Total Errors         | 2 |
