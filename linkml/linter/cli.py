@@ -45,9 +45,10 @@ def get_yaml_files(root: Path) -> Iterable[str]:
     type=click.Choice(["terminal", "markdown", "json", "tsv"]),
     default="terminal",
 )
+@click.option("-v", "--verbose", is_flag=True)
 @click.option("-o", "--output", type=click.File("w"), default="-")
 @click.option("--fix/--no-fix", default=False)
-def main(schema: Path, fix: bool, config: str, format: str, output):
+def main(schema: Path, fix: bool, config: str, format: str, output, verbose: bool):
     config_file = None
     if config:
         config_file = config
@@ -66,7 +67,7 @@ def main(schema: Path, fix: bool, config: str, format: str, output):
 
     linter = Linter(config_dict)
     if format == "terminal":
-        formatter = TerminalFormatter(output)
+        formatter = TerminalFormatter(output, verbose)
     elif format == "markdown":
         formatter = MarkdownFormatter(output)
     elif format == "json":

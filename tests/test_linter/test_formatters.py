@@ -31,6 +31,9 @@ def populate_report(formatter):
     )
     formatter.end_schema()
 
+    formatter.start_schema("no_problems.yaml")
+    formatter.end_schema()
+
     formatter.start_schema("b.yaml")
     formatter.handle_problem(
         LinterProblem(
@@ -63,6 +66,26 @@ b.yaml
 ✖ Found 3 problems in 2 schemas
 """
         self.assertEqual(output.getvalue().strip(), expected.strip())
+
+    def test_terminal_formatter_verbose(self):
+        output = io.StringIO()
+        formatter = TerminalFormatter(file=output, verbose=True)
+        populate_report(formatter)
+        
+        expected = """
+a.yaml
+  error    this is an error  (rule_1)
+  warning  this is a warning  (rule_2)
+
+no_problems.yaml
+
+b.yaml
+  error    this is another error  (rule_3)
+
+✖ Found 3 problems in 2 schemas
+"""
+        self.assertEqual(output.getvalue().strip(), expected.strip())
+
 
     def test_markdown_formatter(self):
         output = io.StringIO()
