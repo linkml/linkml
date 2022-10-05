@@ -38,17 +38,35 @@ def get_yaml_files(root: Path) -> Iterable[str]:
     ),
 )
 @click.option(
-    "-c", "--config", type=click.Path(exists=True, dir_okay=False, resolve_path=True)
+    "-c",
+    "--config",
+    type=click.Path(exists=True, dir_okay=False, resolve_path=True),
+    help="Custom linter configuration file.",
 )
 @click.option(
     "-f",
     "--format",
     type=click.Choice(["terminal", "markdown", "json", "tsv"]),
     default="terminal",
+    help="Report format.",
+    show_default=True,
 )
-@click.option("-o", "--output", type=click.File("w"), default="-")
-@click.option("--ignore-warnings", is_flag=True, default=False)
-@click.option("--max-warnings", type=int, default=0)
+@click.option(
+    "-o", "--output", type=click.File("w"), default="-", help="Report file name."
+)
+@click.option(
+    "--ignore-warnings",
+    is_flag=True,
+    default=False,
+    help="Do not exit with an error status if only warnings are found.",
+)
+@click.option(
+    "--max-warnings",
+    type=int,
+    default=0,
+    show_default=True,
+    help="Do not exit with an error status if up to this number of warnings (and no errors) are found.",
+)
 @click.option("--fix/--no-fix", default=False)
 def main(
     schema: Path,
@@ -59,6 +77,10 @@ def main(
     ignore_warnings: bool,
     max_warnings: int,
 ):
+    """Run linter on SCHEMA.
+
+    SCHEMA can be a single LinkML YAML file or a directory. If it is a directory
+    every YAML file found in the directory (recursively) will be linted."""
     config_file = None
     if config:
         config_file = config
