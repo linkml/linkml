@@ -18,58 +18,7 @@ _{{ element.description }}_
 
 URI: {{ gen.uri_link(element) }}
 
-
-
-{% if schemaview.class_parents(element.name) and schemaview.class_children(element.name) %}
-```{{ gen.mermaid_directive() }}
- classDiagram
-    class {{ gen.name(element) }}
-      {% for s in schemaview.class_parents(element.name)|sort(attribute='name') -%}
-        {{ gen.name(schemaview.get_element(s)) }} <|-- {{ gen.name(element) }}
-      {% endfor %}
-      {% for s in schemaview.class_induced_slots(element.name)|sort(attribute='name') -%}
-        {{ gen.name(element) }} : {{gen.name(s)}}
-      {% endfor %}
-
-      {% for s in schemaview.class_children(element.name)|sort(attribute='name') -%}
-        {{ gen.name(element) }} <|-- {{ gen.name(schemaview.get_element(s)) }}
-      {% endfor %}
-      {% for s in schemaview.class_induced_slots(element.name)|sort(attribute='name') -%}
-        {{ gen.name(element) }} : {{gen.name(s)}}
-      {% endfor %}
-```
-{% elif schemaview.class_parents(element.name) %}
-```{{ gen.mermaid_directive() }}
- classDiagram
-    class {{ gen.name(element) }}
-      {% for s in schemaview.class_parents(element.name)|sort(attribute='name') -%}
-        {{ gen.name(schemaview.get_element(s)) }} <|-- {{ gen.name(element) }}
-      {% endfor %}
-      {% for s in schemaview.class_induced_slots(element.name)|sort(attribute='name') -%}
-        {{ gen.name(element) }} : {{gen.name(s)}}
-      {% endfor %}
-```
-{% elif schemaview.class_children(element.name)  %}
-```{{ gen.mermaid_directive() }}
- classDiagram
-    class {{ gen.name(element) }}
-      {% for s in schemaview.class_children(element.name)|sort(attribute='name') -%}
-        {{ gen.name(element) }} <|-- {{ gen.name(schemaview.get_element(s)) }}
-      {% endfor %}
-      {% for s in schemaview.class_induced_slots(element.name)|sort(attribute='name') -%}
-        {{ gen.name(element) }} : {{gen.name(s)}}
-      {% endfor %}
-```
-{% else %}
-```{{ gen.mermaid_directive() }}
- classDiagram
-    class {{ gen.name(element) }}
-      {% for s in schemaview.class_induced_slots(element.name)|sort(attribute='name') -%}
-        {{ gen.name(element) }} : {{gen.name(s)}}
-      {% endfor %}
-```
-{% endif %}
-
+{% include "class_diagram.md.jinja2" %}
 
 {% if schemaview.class_parents(element.name) or schemaview.class_children(element.name, mixins=False) %}
 
@@ -88,10 +37,10 @@ URI: {{ gen.uri_link(element) }}
 | {{gen.link(s)}} | {{ gen.cardinality(s) }} <br/> {{ gen.link(s.range) }} | {{ s.description }}  | direct |
 {% endif -%}
 {%- if s.name in gen.get_indirect_slots(element) -%}
-| {{gen.link(s)}} | {{gen.link(s.range)}} | {{ gen.cardinality(s) }} | {{ s.description }}  | inherited |
+| {{gen.link(s)}} | {{ gen.cardinality(s) }} <br/> {{ gen.link(s.range) }} | {{ s.description }}  | inherited |
 {% endif -%}
 {%- if s.name in gen.get_mixin_inherited_slots(element).items() -%}
-| {{gen.link(s)}} | {{gen.link(s.range)}} | {{ gen.cardinality(s) }} | {{ s.description }}  | mixin |
+| {{gen.link(s)}} | {{ gen.cardinality(s) }} <br/> {{ gen.link(s.range) }} | {{ s.description }}  | mixin |
 {% endif -%}
 {%- endfor %}
 
