@@ -64,7 +64,7 @@ class TestLinterCli(unittest.TestCase):
             result = self.runner.invoke(main, [SCHEMA_FILE])
             self.assertEqual(result.exit_code, 1)
             self.assertIn(
-                "warning  class_definition 'Adult' does not have recommended slot 'description'  (recommended)",
+                "warning  Class 'Adult' does not have recommended slot 'description'  (recommended)",
                 result.stdout,
             )
             self.assertIn(

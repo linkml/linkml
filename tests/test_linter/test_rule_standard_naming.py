@@ -47,18 +47,18 @@ class TestStandardNamingRule(unittest.TestCase):
         self.assertIn("Slot has name 'BadSlot'", messages)
         self.assertIn("Slot has name 'worse slot'", messages)
         self.assertIn(
-            "Permissible value of enum 'GoodEnumWithBadPV' has name 'Bad_PV'", messages
+            "Permissible value of Enum 'GoodEnumWithBadPV' has name 'Bad_PV'", messages
         )
         self.assertIn(
-            "Permissible value of enum 'GoodEnumUpperPV' has name 'GOOD_UPPER_PV'",
+            "Permissible value of Enum 'GoodEnumUpperPV' has name 'GOOD_UPPER_PV'",
             messages,
         )
         self.assertIn(
-            "Permissible value of enum 'GoodEnumUpperPV' has name 'GREAT_UPPER_PV'",
+            "Permissible value of Enum 'GoodEnumUpperPV' has name 'GREAT_UPPER_PV'",
             messages,
         )
         self.assertIn(
-            "Permissible value of enum 'GoodEnumBadUpperPV' has name 'GOOD_UPPER_PV'",
+            "Permissible value of Enum 'GoodEnumBadUpperPV' has name 'GOOD_UPPER_PV'",
             messages,
         )
         self.assertIn("Enum has name 'bad_enum'", messages)
@@ -79,25 +79,25 @@ class TestStandardNamingRule(unittest.TestCase):
         self.assertIn("Slot has name 'BadSlot'", messages)
         self.assertIn("Slot has name 'worse slot'", messages)
         self.assertIn(
-            "Permissible value of enum 'GoodEnum' has name 'good_lower_pv'", messages
+            "Permissible value of Enum 'GoodEnum' has name 'good_lower_pv'", messages
         )
         self.assertIn(
-            "Permissible value of enum 'GoodEnum' has name 'great_lower_pv'", messages
+            "Permissible value of Enum 'GoodEnum' has name 'great_lower_pv'", messages
         )
         self.assertIn(
-            "Permissible value of enum 'GoodEnumWithBadPV' has name 'good_lower_pv'",
+            "Permissible value of Enum 'GoodEnumWithBadPV' has name 'good_lower_pv'",
             messages,
         )
         self.assertIn(
-            "Permissible value of enum 'GoodEnumWithBadPV' has name 'Bad_PV'", messages
+            "Permissible value of Enum 'GoodEnumWithBadPV' has name 'Bad_PV'", messages
         )
         self.assertIn(
-            "Permissible value of enum 'GoodEnumBadUpperPV' has name 'bad_pv'", messages
+            "Permissible value of Enum 'GoodEnumBadUpperPV' has name 'bad_pv'", messages
         )
         self.assertIn("Enum has name 'bad_enum'", messages)
         self.assertIn(
-            "Permissible value of enum 'bad_enum' has name 'good_lower_pv'", messages
+            "Permissible value of Enum 'bad_enum' has name 'good_lower_pv'", messages
         )
         self.assertIn(
-            "Permissible value of enum 'bad_enum' has name 'great_lower_pv'", messages
+            "Permissible value of Enum 'bad_enum' has name 'great_lower_pv'", messages
         )
