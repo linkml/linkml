@@ -8,7 +8,7 @@
 _{{ element.description }}_
 {% endif %}
 
-URI: [{{ gen.uri(element) }}]({{ gen.uri(element) }})
+URI: {{ gen.uri_link(element) }}
 
 
 {% if schemaview.slot_parents(element.name) or schemaview.slot_children(element.name, mixins=False) %}
@@ -36,7 +36,7 @@ URI: [{{ gen.uri(element) }}]({{ gen.uri(element) }})
 * Multivalued: {{ element.multivalued }}
 {% if element.aliases %}
 * Aliases:
-{% for alias in element.aliases -%}
+{% for alias in element.aliases %}
     * {{ alias }}
 {% endfor %}
 {% endif %}
@@ -60,7 +60,7 @@ URI: [{{ gen.uri(element) }}]({{ gen.uri(element) }})
 
 {% include "common_metadata.md.jinja2" %}
 
-## LinkML Specification
+## LinkML Source
 
 <details>
 ```yaml
