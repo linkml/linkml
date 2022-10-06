@@ -81,11 +81,11 @@ URI: {{ gen.uri_link(element) }}
 
 ## Slots
 
-| Name | Range | Cardinality | Description | Inheritance |
-| ---  | --- | --- | --- | --- |
+| Name | Cardinality and Range | Description | Inheritance |
+| ---  | --- | --- | --- |
 {% for s in schemaview.class_induced_slots(element.name) -%}
 {% if s.name in gen.get_direct_slots(element) -%}
-| {{gen.link(s)}} | {{gen.link(s.range)}} | {{ gen.cardinality(s) }} | {{ s.description }}  | direct |
+| {{gen.link(s)}} | {{ gen.cardinality(s) }} <br/> {{ gen.link(s.range) }} | {{ s.description }}  | direct |
 {% endif -%}
 {%- if s.name in gen.get_indirect_slots(element) -%}
 | {{gen.link(s)}} | {{gen.link(s.range)}} | {{ gen.cardinality(s) }} | {{ s.description }}  | inherited |
@@ -95,9 +95,9 @@ URI: {{ gen.uri_link(element) }}
 {% endif -%}
 {%- endfor %}
 
+{% if schemaview.usage_index().get(element.name) %}
 ## Usages
 
-{% if schemaview.usage_index().get(element.name) %}
 | used by | used in | type | used |
 | ---  | --- | --- | --- |
 {% for usage in schemaview.usage_index().get(element.name) -%}
@@ -107,12 +107,6 @@ URI: {{ gen.uri_link(element) }}
 
 {% include "common_metadata.md.jinja2" %}
 
-
-{% if element.rules or element.classification_rules %}
-
-## Rules
-
-{% endif %}
 
 {% if schemaview.get_mappings(element.name).items() -%}
 ## Mappings

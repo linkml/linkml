@@ -1,3 +1,13 @@
+{% if element.examples %}
+## Examples
+
+| Value |
+| --- |
+{% for x in element.examples -%}
+| {{ x.value }} |
+{% endfor %}
+{% endif -%}
+
 {% if element.comments -%}
 ## Comments
 
@@ -33,9 +43,9 @@ Instances of this class *should* have identifiers with one of the following pref
 | property | value |
 | --- | --- |
 {% for a in element.annotations -%}
-{% if a.first() == '_' -%}
+{%- if a|string|first != '_' -%}
 | {{ a }} | {{ element.annotations[a].value }} |
-{% endif %}
+{%- endif -%}
 {% endfor %}
 {% endif %}
 

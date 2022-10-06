@@ -8,7 +8,7 @@
 _{{ element.description }}_
 {% endif %}
 
-URI: [{{ gen.uri(element) }}]({{ gen.uri(element) }})
+URI: {{ gen.uri_link(element) }}
 
 
 {% if schemaview.slot_parents(element.name) or schemaview.slot_children(element.name, mixins=False) %}

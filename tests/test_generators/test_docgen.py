@@ -150,7 +150,7 @@ class DocGeneratorTestCase(unittest.TestCase):
         # test type docs
         assert_mdfile_contains(
             "PhoneNumberType.md",
-            "URI: http://www.w3.org/2001/XMLSchema#string",
+            "URI: [xsd:string](http://www.w3.org/2001/XMLSchema#string)",
             after="PhoneNumberType",
         )
         # test enum docs
