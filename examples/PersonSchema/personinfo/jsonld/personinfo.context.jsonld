@@ -1,5 +1,5 @@
 {
-   "_comments": "Auto generated from personinfo.yaml by jsonldcontextgen.py version: 0.1.1\n    Generation date: 2022-02-11T17:52:21\n    Schema: personinfo\n    metamodel version: 1.7.0\n    model version: None\n    \n    id: https://w3id.org/linkml/examples/personinfo\n    description: Information about people, based on [schema.org](http://schema.org)\n    license: https://creativecommons.org/publicdomain/zero/1.0/\n    ",
+   "_comments": "Auto generated from personinfo.yaml by jsonldcontextgen.py version: 0.1.1\n    Generation date: 2022-10-06T14:45:50\n    Schema: personinfo\n    metamodel version: 1.7.0\n    model version: None\n    \n    id: https://w3id.org/linkml/examples/personinfo\n    description: Information about people, based on [schema.org](http://schema.org)\n    license: https://creativecommons.org/publicdomain/zero/1.0/\n    ",
    "@context": {
       "CODE": "http://example.org/code/",
       "GEO": "http://example.org/geoloc/",
