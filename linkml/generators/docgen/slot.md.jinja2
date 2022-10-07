@@ -8,7 +8,7 @@
 _{{ element.description }}_
 {% endif %}
 
-URI: [{{ gen.uri(element) }}]({{ gen.uri(element) }})
+URI: {{ gen.uri_link(element) }}
 
 
 {% if schemaview.slot_parents(element.name) or schemaview.slot_children(element.name, mixins=False) %}
@@ -18,6 +18,18 @@ URI: [{{ gen.uri(element) }}]({{ gen.uri(element) }})
 {{ gen.inheritance_tree(element, mixins=True) }}
 {% else %}
 <!-- no inheritance hierarchy -->
+{% endif %}
+
+{% if schemaview.get_classes_by_slot(element, include_induced=True) %}
+
+## Applicable Classes
+
+| Name | Description |
+| --- | --- |
+{% for c in schemaview.get_classes_by_slot(element, include_induced=True) -%}
+{{ gen.link(c) }} | {{ schemaview.get_class(c).description }}
+{% endfor %}
+
 {% endif %}
 
 {% if schemaview.is_mixin(element.name) %}
@@ -36,7 +48,7 @@ URI: [{{ gen.uri(element) }}]({{ gen.uri(element) }})
 * Multivalued: {{ element.multivalued }}
 {% if element.aliases %}
 * Aliases:
-{% for alias in element.aliases -%}
+{% for alias in element.aliases %}
     * {{ alias }}
 {% endfor %}
 {% endif %}
@@ -60,7 +72,7 @@ URI: [{{ gen.uri(element) }}]({{ gen.uri(element) }})
 
 {% include "common_metadata.md.jinja2" %}
 
-## LinkML Specification
+## LinkML Source
 
 <details>
 ```yaml

@@ -1,9 +1,9 @@
 BASE <https://w3id.org/linkml/examples/personinfo/>
-PREFIX prov: <http://www.w3.org/ns/prov#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 PREFIX linkml: <https://w3id.org/linkml/>
-PREFIX schema1: <http://schema.org/>
+PREFIX schema: <http://schema.org/>
+PREFIX prov: <http://www.w3.org/ns/prov#>
 
 
 linkml:String xsd:string
@@ -24,6 +24,8 @@ linkml:Date xsd:date
 
 linkml:Datetime xsd:dateTime
 
+linkml:DateOrDatetime linkml:DateOrDatetime
+
 linkml:Uriorcurie IRI
 
 linkml:Uri IRI
@@ -39,7 +41,7 @@ linkml:Nodeidentifier NONLITERAL
           <city> @linkml:String ? ;
           <postal_code> @linkml:String ?
        ) ;
-       rdf:type [ schema1:PostalAddress ] ?
+       rdf:type [ schema:PostalAddress ] ?
     )
 }
 
@@ -119,9 +121,9 @@ linkml:Nodeidentifier NONLITERAL
 
 <NamedThing>  (
     CLOSED {
-       (  $<NamedThing_tes> (  schema1:name @linkml:String ? ;
-             schema1:description @linkml:String ? ;
-             schema1:image @linkml:String ?
+       (  $<NamedThing_tes> (  schema:name @linkml:String ? ;
+             schema:description @linkml:String ? ;
+             schema:image @linkml:String ?
           ) ;
           rdf:type [ <NamedThing> ]
        )
@@ -138,7 +140,7 @@ linkml:Nodeidentifier NONLITERAL
           <founding_location> @<Place> ? ;
           <aliases> @linkml:String *
        ) ;
-       rdf:type [ schema1:Organization ]
+       rdf:type [ schema:Organization ]
     )
 }
 
@@ -147,24 +149,24 @@ linkml:Nodeidentifier NONLITERAL
           rdf:type [ <NamedThing> ] ? ;
           &<HasAliases_tes> ;
           rdf:type [ <HasAliases> ] ? ;
-          schema1:email @linkml:String ? ;
-          schema1:birthDate @linkml:String ? ;
+          schema:email @linkml:String ? ;
+          schema:birthDate @linkml:String ? ;
           <age_in_years> @linkml:Integer ? ;
-          schema1:gender @<GenderType> ? ;
+          schema:gender @<GenderType> ? ;
           <current_address> @<Address> ? ;
           <has_employment_history> @<EmploymentEvent> * ;
           <has_familial_relationships> @<FamilialRelationship> * ;
           <has_medical_history> @<MedicalEvent> * ;
           <aliases> @linkml:String *
        ) ;
-       rdf:type [ schema1:Person ]
+       rdf:type [ schema:Person ]
     )
 }
 
 <Place> CLOSED {
     (  $<Place_tes> (  &<HasAliases_tes> ;
           rdf:type [ <HasAliases> ] ? ;
-          schema1:name @linkml:String ? ;
+          schema:name @linkml:String ? ;
           <aliases> @linkml:String *
        ) ;
        rdf:type [ <Place> ]
