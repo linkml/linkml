@@ -36,7 +36,9 @@ classes:
         )
 
 
-def write_config_file(name: str, extends_recommended: bool = False) -> None:
+def write_config_file(
+    name: str, extends_recommended: bool = False, tree_root_level: str = "error"
+) -> None:
     with open(name, "w") as f:
         if extends_recommended:
             f.write(
@@ -45,10 +47,10 @@ extends: recommended
 """
             )
         f.write(
-            """
+            f"""
 rules:
   tree_root_class:
-    level: error
+    level: {tree_root_level}
 """
         )
 
@@ -62,7 +64,7 @@ class TestLinterCli(unittest.TestCase):
             write_schema_file()
 
             result = self.runner.invoke(main, [SCHEMA_FILE])
-            self.assertEqual(result.exit_code, 1)
+            self.assertEqual(result.exit_code, 2)
             self.assertIn(
                 "warning  Class 'Adult' does not have recommended slot 'description'  (recommended)",
                 result.stdout,
@@ -81,7 +83,7 @@ class TestLinterCli(unittest.TestCase):
             write_config_file(".linkmllint.yaml")
 
             result = self.runner.invoke(main, [SCHEMA_FILE])
-            self.assertEqual(result.exit_code, 1)
+            self.assertEqual(result.exit_code, 2)
             self.assertIn(
                 "error    Schema does not have class with `tree_root: true`  (tree_root_class)",
                 result.stdout,
@@ -95,7 +97,7 @@ class TestLinterCli(unittest.TestCase):
             write_config_file(config_file)
 
             result = self.runner.invoke(main, ["--config", config_file, SCHEMA_FILE])
-            self.assertEqual(result.exit_code, 1)
+            self.assertEqual(result.exit_code, 2)
             self.assertIn(
                 "error    Schema does not have class with `tree_root: true`  (tree_root_class)",
                 result.stdout,
@@ -109,13 +111,79 @@ class TestLinterCli(unittest.TestCase):
             write_config_file(config_file, extends_recommended=True)
 
             result = self.runner.invoke(main, ["--config", config_file, SCHEMA_FILE])
-            self.assertEqual(result.exit_code, 1)
+            self.assertEqual(result.exit_code, 2)
             self.assertIn(
                 "error    Schema does not have class with `tree_root: true`  (tree_root_class)",
                 result.stdout,
             )
             self.assertIn(
                 "warning  Class has name 'person'  (standard_naming)", result.stdout
+            )
+
+    def test_warning_exit_code(self):
+        config_file = "config.yaml"
+        with self.runner.isolated_filesystem():
+            write_schema_file()
+            write_config_file(
+                config_file, extends_recommended=False, tree_root_level="warning"
+            )
+
+            result = self.runner.invoke(main, ["--config", config_file, SCHEMA_FILE])
+            self.assertEqual(result.exit_code, 1)
+            self.assertIn(
+                "warning  Schema does not have class with `tree_root: true`  (tree_root_class)",
+                result.stdout,
+            )
+
+    def test_ignore_warnings_flag(self):
+        config_file = "config.yaml"
+        with self.runner.isolated_filesystem():
+            write_schema_file()
+            write_config_file(
+                config_file, extends_recommended=False, tree_root_level="warning"
+            )
+
+            result = self.runner.invoke(
+                main, ["--config", config_file, "--ignore-warnings", SCHEMA_FILE]
+            )
+            self.assertEqual(result.exit_code, 0)
+            self.assertIn(
+                "warning  Schema does not have class with `tree_root: true`  (tree_root_class)",
+                result.stdout,
+            )
+
+    def test_max_warnings_flag(self):
+        config_file = "config.yaml"
+        with self.runner.isolated_filesystem():
+            write_schema_file()
+            write_config_file(
+                config_file, extends_recommended=False, tree_root_level="warning"
+            )
+
+            result = self.runner.invoke(
+                main, ["--config", config_file, "--max-warnings", 1, SCHEMA_FILE]
+            )
+            self.assertEqual(result.exit_code, 0)
+            self.assertIn(
+                "warning  Schema does not have class with `tree_root: true`  (tree_root_class)",
+                result.stdout,
+            )
+
+    def test_exceeded_max_warnings_flag(self):
+        config_file = "config.yaml"
+        with self.runner.isolated_filesystem():
+            write_schema_file()
+            write_config_file(
+                config_file, extends_recommended=False, tree_root_level="warning"
+            )
+
+            result = self.runner.invoke(
+                main, ["--config", config_file, "--max-warnings", 0, SCHEMA_FILE]
+            )
+            self.assertEqual(result.exit_code, 1)
+            self.assertIn(
+                "warning  Schema does not have class with `tree_root: true`  (tree_root_class)",
+                result.stdout,
             )
 
     def test_no_schema_errors(self):

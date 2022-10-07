@@ -6,6 +6,7 @@ from typing import Iterable
 import click
 import yaml
 
+from .config.datamodel.config import RuleLevel
 from .formatters import (JsonFormatter, MarkdownFormatter, TerminalFormatter,
                          TsvFormatter)
 from .linter import Linter
@@ -37,17 +38,49 @@ def get_yaml_files(root: Path) -> Iterable[str]:
     ),
 )
 @click.option(
-    "-c", "--config", type=click.Path(exists=True, dir_okay=False, resolve_path=True)
+    "-c",
+    "--config",
+    type=click.Path(exists=True, dir_okay=False, resolve_path=True),
+    help="Custom linter configuration file.",
 )
 @click.option(
     "-f",
     "--format",
     type=click.Choice(["terminal", "markdown", "json", "tsv"]),
     default="terminal",
+    help="Report format.",
+    show_default=True,
 )
-@click.option("-o", "--output", type=click.File("w"), default="-")
+@click.option(
+    "-o", "--output", type=click.File("w"), default="-", help="Report file name."
+)
+@click.option(
+    "--ignore-warnings",
+    is_flag=True,
+    default=False,
+    help="Do not exit with an error status if only warnings are found.",
+)
+@click.option(
+    "--max-warnings",
+    type=int,
+    default=0,
+    show_default=True,
+    help="Do not exit with an error status if up to this number of warnings (and no errors) are found.",
+)
 @click.option("--fix/--no-fix", default=False)
-def main(schema: Path, fix: bool, config: str, format: str, output):
+def main(
+    schema: Path,
+    fix: bool,
+    config: str,
+    format: str,
+    output,
+    ignore_warnings: bool,
+    max_warnings: int,
+):
+    """Run linter on SCHEMA.
+
+    SCHEMA can be a single LinkML YAML file or a directory. If it is a directory
+    every YAML file found in the directory (recursively) will be linted."""
     config_file = None
     if config:
         config_file = config
@@ -74,16 +107,26 @@ def main(schema: Path, fix: bool, config: str, format: str, output):
     elif format == "tsv":
         formatter = TsvFormatter(output)
 
-    exit_code = 0
+    error_count = 0
+    warning_count = 0
     formatter.start_report()
     for path in get_yaml_files(schema):
         formatter.start_schema(path)
         report = linter.lint(path, fix=fix)
         for problem in report:
-            exit_code = 1
+            if str(problem.level) is RuleLevel.error.text:
+                error_count += 1
+            elif str(problem.level) is RuleLevel.warning.text:
+                warning_count += 1
             formatter.handle_problem(problem)
         formatter.end_schema()
     formatter.end_report()
+
+    exit_code = 0
+    if error_count > 0:
+        exit_code = 2
+    elif not ignore_warnings and warning_count > max_warnings:
+        exit_code = 1
 
     sys.exit(exit_code)
 
