@@ -46,6 +46,7 @@ Users include:
 * The Alliance of Genome Resources
 * The Biomedical Data Translator project
 * The iSamples project
+* The NIH INCLUDE project
 
 See [Examples of use](https://linkml.io/linkml/examples.html) for more
 info on current uses.
@@ -94,7 +95,6 @@ autonomously manage their ontologies in GitHub.
 We aim to make this whole process easier for curators, data modelers,
 and inexperienced developers. See the [getting help](getting-help)
 section for info on how to get assistance.
-
 
 ## How do I cite LinkML?
 

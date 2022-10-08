@@ -238,6 +238,37 @@ The protocol is:
 
 An example repo that uses highly customized templates: [GSC MIxS](https://genomicsstandardsconsortium.github.io/mixs)
 
+## Can I use LinkML in conjunction with SQL Databases?
+
+Yes, and in fact providing semantics and expressivity to relational databases is a core LinkML use case.
+
+With LinkML you can:
+
+- [Generate a relational database schema](https://linkml.io/linkml/generators/sqlddl.html) from a LinkML schema
+- Reverse engineer a LinkML schema [from a Relational Database schema](https://linkml.io/schema-automator/packages/importers.html#importing-from-sql)
+- Create [ORM helper code](https://linkml.io/linkml/generators/sqlalchemy.html)
+
+See the [SQL tutorial](https://linkml.io/linkml/intro/tutorial09.html) for more details.
+
+## Can I use LinkML in conjunction with MongoDB?
+
+LinkML is compatible with MongoDB, in that both can use JSON as a common
+exchange format.
+
+We don't yet have any helper code for working with MongoDB, but you should be
+able to take any LinkML objects, [serialize as JSON](https://linkml.io/linkml/data/index.html),
+and store in the database, as well as the reverse.
+
+## Can I use LinkML is conjunction with Triplestores?
+
+RDF is a natural way of serializing and working with data in LinkML, see
+[working with RDF](https://linkml.io/linkml/data/rdf.html).
+
+There are some additional helper packages for working with RDF stored in triplestores:
+
+- [sparqlfun](https://github.com/linkml/sparqlfun) allows you to define SPARQL templates in LinkML
+- [linkml-sparql](https://github.com/linkml/linkml-sparql) is an experimental ORM for SPARQL
+
 ## Can I use my schema to do reasoning over my data?
 
 There are a number of strategies for performing deductive inference:
@@ -271,5 +302,4 @@ E.g.
 
 ```bash
 linkml-sqldb --csv-field-size-limit 250000 dump  -s my-schema.yaml my-data.tsv -D my.db
-
 ```
