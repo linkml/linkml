@@ -198,6 +198,8 @@ class RDFLibLoader(Loader):
     def _get_id_dict(self, node: VALID_SUBJECT, schemaview: SchemaView, cn: ClassDefinitionName) -> ANYDICT:
         id_slot = schemaview.get_identifier_slot(cn)
         if not isinstance(node, BNode):
+            if id_slot is None:
+                raise Exception(f'no slot found for {cn}: bnode={node}')
             id_val = schemaview.namespaces().curie_for(node)
             if id_val == None:
                 id_val = str(node)
