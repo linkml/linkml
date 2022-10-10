@@ -45,7 +45,9 @@ class YAMLRoot(JsonObj):
             for k in kwargs.keys():
                 v = repr(kwargs[k])[:40].replace('\n', '\\n')
                 messages.append(f"{TypedNode.yaml_loc(k)} Unknown argument: {k} = {v}")
-            raise ValueError('\n'.join(messages))
+            msg = f"Unknown arguments for: {self}\n"
+            msg += '\n'.join(messages)
+            raise ValueError(msg)
 
     def _default(self, obj, filtr: Callable[[dict], dict] = None):
         """ JSON serializer callback.
