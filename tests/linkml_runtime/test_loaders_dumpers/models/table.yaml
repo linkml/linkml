@@ -16,33 +16,41 @@ classes:
   Object:
     description: |-
       An object (bnode) which needs embedding in a single row
-    attributes:
-      name:
-        range: string
-      value:
-        range: string
+    slots:
+      - name
+      - value
 
   Row:
     description: |-
       A single data point made up of columns.
-    attributes:
-      columnA:
-        range: uriorcurie
-        identifier: true
-      objectB:
-        range: Object
-        inlined: true
-      columnC:
-        range: string
-        multivalued: false
+    slots:
+      - columnA
+      - objectB
+      - columnC
 
   Table:
     description: |-
       Container of rows.
     tree_root: true
-    attributes:
-      rows:
-        range: Row
-        inlined: true
-        inlined_as_list: true
-        multivalued: true
+    slots:
+      - rows
+
+slots:
+  rows:
+    range: Row
+    inlined: true
+    inlined_as_list: true
+    multivalued: true
+  columnA:
+    range: uriorcurie
+    identifier: true
+  objectB:
+    range: Object
+    inlined: true
+  columnC:
+    range: string
+    multivalued: false
+  name:
+    range: string
+  value:
+    range: string

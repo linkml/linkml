@@ -1,5 +1,5 @@
 # Auto generated from table.yaml by pythongen.py version: 0.9.0
-# Generation date: 2022-09-29T09:11:32
+# Generation date: 2022-10-10T16:55:54
 # Schema: table
 #
 # id: https://w3id.org/linkml/examples/table
@@ -127,20 +127,20 @@ class Table(YAMLRoot):
 class slots:
     pass
 
-slots.object__name = Slot(uri=TABLE.name, name="object__name", curie=TABLE.curie('name'),
-                   model_uri=TABLE.object__name, domain=None, range=Optional[str])
+slots.rows = Slot(uri=TABLE.rows, name="rows", curie=TABLE.curie('rows'),
+                   model_uri=TABLE.rows, domain=None, range=Optional[Union[Dict[Union[str, RowColumnA], Union[dict, Row]], List[Union[dict, Row]]]])
 
-slots.object__value = Slot(uri=TABLE.value, name="object__value", curie=TABLE.curie('value'),
-                   model_uri=TABLE.object__value, domain=None, range=Optional[str])
+slots.columnA = Slot(uri=TABLE.columnA, name="columnA", curie=TABLE.curie('columnA'),
+                   model_uri=TABLE.columnA, domain=None, range=URIRef)
 
-slots.row__columnA = Slot(uri=TABLE.columnA, name="row__columnA", curie=TABLE.curie('columnA'),
-                   model_uri=TABLE.row__columnA, domain=None, range=URIRef)
+slots.objectB = Slot(uri=TABLE.objectB, name="objectB", curie=TABLE.curie('objectB'),
+                   model_uri=TABLE.objectB, domain=None, range=Optional[Union[dict, Object]])
 
-slots.row__objectB = Slot(uri=TABLE.objectB, name="row__objectB", curie=TABLE.curie('objectB'),
-                   model_uri=TABLE.row__objectB, domain=None, range=Optional[Union[dict, Object]])
+slots.columnC = Slot(uri=TABLE.columnC, name="columnC", curie=TABLE.curie('columnC'),
+                   model_uri=TABLE.columnC, domain=None, range=Optional[str])
 
-slots.row__columnC = Slot(uri=TABLE.columnC, name="row__columnC", curie=TABLE.curie('columnC'),
-                   model_uri=TABLE.row__columnC, domain=None, range=Optional[str])
+slots.name = Slot(uri=TABLE.name, name="name", curie=TABLE.curie('name'),
+                   model_uri=TABLE.name, domain=None, range=Optional[str])
 
-slots.table__rows = Slot(uri=TABLE.rows, name="table__rows", curie=TABLE.curie('rows'),
-                   model_uri=TABLE.table__rows, domain=None, range=Optional[Union[Dict[Union[str, RowColumnA], Union[dict, Row]], List[Union[dict, Row]]]])
+slots.value = Slot(uri=TABLE.value, name="value", curie=TABLE.curie('value'),
+                   model_uri=TABLE.value, domain=None, range=Optional[str])
