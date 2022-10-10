@@ -74,6 +74,9 @@
 <li class="toctree-l3"><a class="reference internal" href="#how-do-i-include-uml-class-diagrams">How do I include UML class diagrams?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#can-i-include-generated-documentation-in-a-sphinx-site">Can I include generated documentation in a Sphinx site?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#can-i-customize-the-markdown-generation-for-my-schema-site">Can I customize the Markdown generation for my schema site?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#can-i-use-linkml-in-conjunction-with-sql-databases">Can I use LinkML in conjunction with SQL Databases?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#can-i-use-linkml-in-conjunction-with-mongodb">Can I use LinkML in conjunction with MongoDB?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#can-i-use-linkml-is-conjunction-with-triplestores">Can I use LinkML is conjunction with Triplestores?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#can-i-use-my-schema-to-do-reasoning-over-my-data">Can I use my schema to do reasoning over my data?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#what-does-if-missing-mean-in-my-json-output">What does _if_missing mean in my JSON output?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#what-does-csv-error-field-larger-than-field-limit-131072-mean">What does _csv.Error: field larger than field limit (131072) mean?</a></li>
@@ -326,6 +329,35 @@ if you are incorporating LinkML into a software project that uses <a class="refe
 <li><p>iterate until they look how you want, then deploy (e.g. <code class="docutils literal notranslate"><span class="pre">mkdocs</span> <span class="pre">gh-deploy</span></code>)</p></li>
 </ol>
 <p>An example repo that uses highly customized templates: <a class="reference external" href="https://genomicsstandardsconsortium.github.io/mixs">GSC MIxS</a></p>
+</section>
+<section id="can-i-use-linkml-in-conjunction-with-sql-databases">
+<h2>Can I use LinkML in conjunction with SQL Databases?<a class="headerlink" href="#can-i-use-linkml-in-conjunction-with-sql-databases" title="Permalink to this heading"></a></h2>
+<p>Yes, and in fact providing semantics and expressivity to relational databases is a core LinkML use case.</p>
+<p>With LinkML you can:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://linkml.io/linkml/generators/sqlddl.html">Generate a relational database schema</a> from a LinkML schema</p></li>
+<li><p>Reverse engineer a LinkML schema <a class="reference external" href="https://linkml.io/schema-automator/packages/importers.html#importing-from-sql">from a Relational Database schema</a></p></li>
+<li><p>Create <a class="reference external" href="https://linkml.io/linkml/generators/sqlalchemy.html">ORM helper code</a></p></li>
+</ul>
+<p>See the <a class="reference external" href="https://linkml.io/linkml/intro/tutorial09.html">SQL tutorial</a> for more details.</p>
+</section>
+<section id="can-i-use-linkml-in-conjunction-with-mongodb">
+<h2>Can I use LinkML in conjunction with MongoDB?<a class="headerlink" href="#can-i-use-linkml-in-conjunction-with-mongodb" title="Permalink to this heading"></a></h2>
+<p>LinkML is compatible with MongoDB, in that both can use JSON as a common
+exchange format.</p>
+<p>We don’t yet have any helper code for working with MongoDB, but you should be
+able to take any LinkML objects, <a class="reference external" href="https://linkml.io/linkml/data/index.html">serialize as JSON</a>,
+and store in the database, as well as the reverse.</p>
+</section>
+<section id="can-i-use-linkml-is-conjunction-with-triplestores">
+<h2>Can I use LinkML is conjunction with Triplestores?<a class="headerlink" href="#can-i-use-linkml-is-conjunction-with-triplestores" title="Permalink to this heading"></a></h2>
+<p>RDF is a natural way of serializing and working with data in LinkML, see
+<a class="reference external" href="https://linkml.io/linkml/data/rdf.html">working with RDF</a>.</p>
+<p>There are some additional helper packages for working with RDF stored in triplestores:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/linkml/sparqlfun">sparqlfun</a> allows you to define SPARQL templates in LinkML</p></li>
+<li><p><a class="reference external" href="https://github.com/linkml/linkml-sparql">linkml-sparql</a> is an experimental ORM for SPARQL</p></li>
+</ul>
 </section>
 <section id="can-i-use-my-schema-to-do-reasoning-over-my-data">
 <h2>Can I use my schema to do reasoning over my data?<a class="headerlink" href="#can-i-use-my-schema-to-do-reasoning-over-my-data" title="Permalink to this heading"></a></h2>

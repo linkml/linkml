@@ -86,27 +86,61 @@ This is probably because you are using the `dump` method from the `json` package
 
 you should use `json_dumper` instead.
 
-## What is the difference between gen-python and gen-pydantic?
+## What is the difference between gen-python and gen-pydantic and gen-sqla?
 
-TODO
+Python has a number of different options for defining an object model:
+
+- dataclasses (part of the standard library)
+- Pydantic
+- Attrs
+
+Additional, SQL Alchemy has its own way of defining an object model
+together with mappings to SQL tables and columns (in fact it actually has *two*
+ways, declarative and imperative).
+
+Additionally, there are ways to bridge between these frameworks.
+For example, Pydantic has [docs on bridging to dataclasses](https://pydantic-docs.helpmanual.io/usage/dataclasses/).
+
+All this can be a bit daunting for a novice developer - which to choose?
+
+LinkML tries to be unopinionated on this matter, and aims to enable developers
+to choose the framework they like.
+
+Currently we provide:
+
+- [gen-python](https://linkml.io/linkml/generators/python.html) - generates dataclasses
+- [gen-pydantic](https://linkml.io/linkml/generators/pydantic.html) - generates pydantic models
+- [gen-sql](https://linkml.io/linkml/generators/sqlalchemy.html) - generates SQL Alchemy models (declarative-style)
+
+Historically, dataclasses has been the de-facto default in LinkML,
+and this remains the most well-tested route. However, we see an increasing
+interest in Pydantic, especially as this works well with the popular FastAPI framework.
+
+If you are looking for an ORM, then gen-sqla is the best route.
+
+Consult the above documentation for detailed documentation on each method. Some key differences:
+
+- Root classes:
+    - in Pydantic, everything is a BaseModel
+    - for dataclasses, everything inherits from YAMLRoot in linkml-runtime
+- Coercion and validation
+    - The Pydantic framework provides a lot of runtime validation for free
+    - The generated dataclasses follow Postel's principle, and performs coercion to repair some data
+- Compatibility with other frameworks
+    - Pydantic works well with FastAPI
+
+## Can I convert between SQL Alchemy models and dataclasses/pydantic
+
+Yes, [SQLStore](https://linkml.io/linkml/developers/sqlstore.html) can perform interconversion 
+
+See [SQL-Examples notebook](https://github.com/linkml/linkml/blob/main/notebooks/SQL-examples.ipynb.ipynb)
+for example code
 
 ## How do I work programmatically with RDF data?
 
 TODO
 
-## How do I work programmatically with SQL databases?
-
-TODO
-
 ## Is LinkML compatible with RDFLib?
-
-TODO
-
-## Is LinkML compatible with SQL Alchemy?
-
-TODO
-
-## Is LinkML compatible with FastAPI?
 
 TODO
 
