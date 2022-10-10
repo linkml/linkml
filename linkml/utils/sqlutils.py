@@ -18,6 +18,7 @@ from linkml_runtime.utils.enumerations import EnumDefinitionImpl
 from linkml_runtime.utils.formatutils import underscore
 from linkml_runtime.utils.introspection import package_schemaview
 from linkml_runtime.utils.yamlutils import YAMLRoot
+from pydantic import BaseModel
 from sqlalchemy import create_engine
 from sqlalchemy.engine import Engine
 from sqlalchemy.ext.associationproxy import _AssociationCollection
@@ -192,7 +193,7 @@ class SQLStore:
         #    return str(obj.text)
         elif isinstance(obj, EnumDefinitionImpl):
             return str(obj)
-        elif isinstance(obj, YAMLRoot):
+        elif isinstance(obj, YAMLRoot) or isinstance(obj, BaseModel):
             typ = type(obj)
             inst_args = {}
             for k, v in vars(obj).items():
