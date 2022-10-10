@@ -14,17 +14,20 @@ def plural(word: str, count: int):
 
 
 class TerminalFormatter(Formatter):
-    def __init__(self, file: Optional[IO[Any]] = None) -> None:
+    def __init__(self, file: Optional[IO[Any]] = None, verbose: bool = False) -> None:
         super().__init__(file)
+        self.verbose = verbose
         self.problem_counts = defaultdict(int)
         self.current_schema = None
 
     def start_schema(self, name: str):
         self.current_schema = name
+        if self.verbose:
+            self.write(click.style(name, underline=True))
 
     def handle_problem(self, problem: LinterProblem):
         key = self.current_schema
-        if key not in self.problem_counts:
+        if not self.verbose and key not in self.problem_counts:
             self.write(click.style(key, underline=True))
 
         self.problem_counts[key] += 1
@@ -39,7 +42,7 @@ class TerminalFormatter(Formatter):
         self.write(formatted)
 
     def end_schema(self):
-        if self.current_schema in self.problem_counts:
+        if self.verbose or self.current_schema in self.problem_counts:
             self.write("")
 
     def end_report(self):

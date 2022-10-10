@@ -51,6 +51,7 @@ def get_yaml_files(root: Path) -> Iterable[str]:
     help="Report format.",
     show_default=True,
 )
+@click.option("-v", "--verbose", is_flag=True)
 @click.option(
     "-o", "--output", type=click.File("w"), default="-", help="Report file name."
 )
@@ -76,6 +77,7 @@ def main(
     output,
     ignore_warnings: bool,
     max_warnings: int,
+    verbose: bool
 ):
     """Run linter on SCHEMA.
 
@@ -99,7 +101,7 @@ def main(
 
     linter = Linter(config_dict)
     if format == "terminal":
-        formatter = TerminalFormatter(output)
+        formatter = TerminalFormatter(output, verbose)
     elif format == "markdown":
         formatter = MarkdownFormatter(output)
     elif format == "json":
