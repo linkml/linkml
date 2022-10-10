@@ -459,8 +459,6 @@ class SchemaViewTestCase(unittest.TestCase):
         check(view.class_ancestors('C', is_a=False),
               ['C', 'Cm1', 'Cm2', 'CX'])
 
-
-
     def test_slot_inheritance(self):
         schema = SchemaDefinition(id='test', name='test')
         view = SchemaView(schema)
@@ -495,6 +493,33 @@ class SchemaViewTestCase(unittest.TestCase):
         with self.assertRaises(ValueError):
             view.slot_ancestors('s5')
 
+    def test_ambiguous_attributes(self):
+        """
+        Tests behavior where multiple attributes share the same name
+
+        :return:
+        """
+        schema = SchemaDefinition(id='test', name='test')
+        view = SchemaView(schema)
+        a1 = SlotDefinition('a1', range='string')
+        a2 = SlotDefinition('a2', range='FooEnum')
+        a3 = SlotDefinition('a3', range='C3')
+        view.add_class(ClassDefinition('C1', attributes={a1.name: a1, a2.name: a2, a3.name: a3}))
+        a1x = SlotDefinition('a1', range='integer')
+        a2x = SlotDefinition('a2', range='BarEnum')
+        view.add_class(ClassDefinition('C2', attributes={a1x.name: a1x, a2x.name: a2x}))
+        # ambiguous
+        self.assertIsNone(view.get_slot(a1.name))
+        self.assertIsNone(view.get_slot(a2.name))
+        self.assertIsNotNone(view.get_slot(a3.name))
+        self.assertEqual(3, len(view.all_slots()))
+        self.assertEqual(3, len(view.all_slots(attributes=True)))
+        self.assertEqual(0, len(view.all_slots(attributes=False)))
+        self.assertEqual(a3.range, view.induced_slot(a3.name).range)
+        self.assertEqual(a1.range, view.induced_slot(a1.name, 'C1').range)
+        self.assertEqual(a2.range, view.induced_slot(a2.name, 'C1').range)
+        self.assertEqual(a1x.range, view.induced_slot(a1x.name, 'C2').range)
+        self.assertEqual(a2x.range, view.induced_slot(a2x.name, 'C2').range)
 
 
     def test_metamodel_in_schemaview(self):
