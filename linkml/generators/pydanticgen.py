@@ -35,6 +35,7 @@ class WeakRefShimBaseModel(BaseModel):
    __slots__ = '__weakref__'
     
 class ConfiguredBaseModel(WeakRefShimBaseModel,
+                use_enum_values = True,
                 validate_assignment = True, 
                 validate_all = True, 
                 underscore_attrs_are_private = True, 
