@@ -530,14 +530,15 @@ class SchemaView(object):
         return self._parents(cls, imports, mixins, is_a)
 
     @lru_cache()
-    def enum_parents(self, enum_name: ENUM_NAME, imports=True, mixins=True, is_a=True) -> List[EnumDefinitionName]:
+    def enum_parents(self, enum_name: ENUM_NAME, imports=False, mixins=False, is_a=True) -> List[EnumDefinitionName]:
         """
         :param enum_name: child enum name
-        :param imports: include import closure
-        :param mixins: include mixins (default is True)
+        :param imports: include import closure (False)
+        :param mixins: include mixins (default is False)
         :return: all direct parent enum names (is_a and mixins)
         """
-        return []
+        e = self.get_enum(enum_name, strict=True)
+        return self._parents(e, imports, mixins, is_a=is_a)
 
     @lru_cache()
     def slot_parents(self, slot_name: SLOT_NAME, imports=True, mixins=True, is_a=True) -> List[SlotDefinitionName]:

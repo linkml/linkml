@@ -355,6 +355,7 @@ enums:
       a:
       b:
   Animals:
+    is_a: OtherEnum
     permissible_values:
       DOG:
       CAT:
