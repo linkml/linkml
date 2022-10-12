@@ -378,7 +378,7 @@ class SchemaView(object):
         for s in schemas:
             # get the value of element name from the schema, if empty, return empty dictionary.
             d1 = getattr(s, slot_name, {})
-            # {**d,**d1} syntax merges dictionary a and b into a single dictionary, removing duplicates.
+            # {**d,**d1} syntax merges dictionary d and d1 into a single dictionary, removing duplicates.
             d = {**d, **d1}
 
         return d

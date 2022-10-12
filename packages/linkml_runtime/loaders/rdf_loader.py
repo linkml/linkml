@@ -18,7 +18,6 @@ class RDFLoader(Loader):
     def load_any(self, *args, **kwargs) -> Union[YAMLRoot, List[YAMLRoot]]:
         return self.load(*args, **kwargs)
 
-
     def load(self, source: Union[str, TextIO, Graph], target_class: Type[YAMLRoot], *, base_dir: Optional[str] = None,
              contexts: CONTEXTS_PARAM_TYPE = None, fmt: Optional[str] = 'turtle',
              metadata: Optional[FileInfo] = None) -> YAMLRoot:
@@ -52,7 +51,6 @@ class RDFLoader(Loader):
                     g.parse(data=data, format=fmt)
                     jsonld_str = g.serialize(format='json-ld', indent=4)
                     data = json.loads(jsonld_str)
-                    #data = pyld_jsonld_from_rdflib_graph(g)
 
             if not isinstance(data, dict):
                 # TODO: Add a context processor to the source w/ CONTEXTS_PARAM_TYPE

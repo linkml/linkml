@@ -21,6 +21,14 @@ yaml_loader = YAMLLoader()
 
 class SchemaViewTestCase(unittest.TestCase):
 
+    def test_schemaview_enums(self):
+        view = SchemaView(SCHEMA_NO_IMPORTS)
+        for en, e in view.all_enums().items():
+            if e.name == "Animals":
+                for mn, m in e.permissible_values.items():
+                    print(mn, m.is_a)
+
+
     def test_schemaview(self):
         # no import schema
         view = SchemaView(SCHEMA_NO_IMPORTS)
@@ -203,6 +211,8 @@ class SchemaViewTestCase(unittest.TestCase):
         for sn in ds_slots:
             s = view.induced_slot(sn, 'Dataset')
             logging.debug(s)
+
+
 
     def test_all_classes_ordered_lexical(self):
         view = SchemaView(SCHEMA_NO_IMPORTS)
