@@ -450,19 +450,21 @@ class SchemaView(object):
             return c
 
     @lru_cache()
-    def get_slot(self, slot_name: SLOT_NAME, imports=True, attributes=False, strict=False) -> SlotDefinition:
+    def get_slot(self, slot_name: SLOT_NAME, imports=True, attributes=True, strict=False) -> SlotDefinition:
         """
         :param slot_name: name of the slot to be retrieved
         :param imports: include import closure
+        :param attributes: include attributes
+        :param strict: raise ValueError is not found
         :return: slot definition
         """
-        slot = self.all_slots(imports=imports).get(slot_name, None)
+        slot = self.all_slots(imports=imports, attributes=False).get(slot_name, None)
         if slot is None and attributes:
             for c in self.all_classes(imports=imports).values():
                 if slot_name in c.attributes:
                     if slot is not None:
-                        # slot name is ambiguous, no results
-                        return None
+                        # slot name is ambiguous: return a stub slot
+                        return SlotDefinition(slot_name)
                     slot = copy(c.attributes[slot_name])
                     slot.from_schema = c.from_schema
                     slot.owner = c.name
@@ -548,7 +550,10 @@ class SchemaView(object):
         :return: all direct parent slot names (is_a and mixins)
         """
         s = self.get_slot(slot_name, imports, strict=True)
-        return self._parents(s, imports, mixins, is_a)
+        if s:
+            return self._parents(s, imports, mixins, is_a)
+        else:
+            return []
 
     @lru_cache()
     def type_parents(self, type_name: TYPE_NAME, imports=True) -> List[TypeDefinitionName]:
@@ -1053,7 +1058,7 @@ class SchemaView(object):
             slot_anc_names = self.slot_ancestors(slot_name, reflexive=True)
             # inheritable slot: first propagate from ancestors
             for anc_sn in reversed(slot_anc_names):
-                anc_slot = self.get_slot(anc_sn)
+                anc_slot = self.get_slot(anc_sn, attributes=False)
                 for metaslot_name in SlotDefinition._inherited_slots:
                     if getattr(anc_slot, metaslot_name, None):
                         setattr(islot, metaslot_name, deepcopy(getattr(anc_slot, metaslot_name)))
@@ -1062,7 +1067,10 @@ class SchemaView(object):
             #    if getattr(slot, metaslot_name, None):
             #        setattr(islot, metaslot_name, deepcopy(getattr(slot, metaslot_name)))
         else:
-            raise ValueError(f'No such slot: {slot_name} and no attribute by that name in ancestors of {class_name}')
+            slot = self.get_slot(slot_name, imports, attributes=True)
+            if slot is None:
+                raise ValueError(f'No such slot: {slot_name} and no attribute by that name in ancestors of {class_name}')
+            islot = deepcopy(slot)
 
         COMBINE = {
             'maximum_value': lambda x, y: min(x, y),

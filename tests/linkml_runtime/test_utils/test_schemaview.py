@@ -508,13 +508,15 @@ class SchemaViewTestCase(unittest.TestCase):
         a1x = SlotDefinition('a1', range='integer')
         a2x = SlotDefinition('a2', range='BarEnum')
         view.add_class(ClassDefinition('C2', attributes={a1x.name: a1x, a2x.name: a2x}))
-        # ambiguous
-        self.assertIsNone(view.get_slot(a1.name))
-        self.assertIsNone(view.get_slot(a2.name))
-        self.assertIsNotNone(view.get_slot(a3.name))
-        self.assertEqual(3, len(view.all_slots()))
+        # a1 and a2 are ambiguous: only stub information available
+        # without class context
+        self.assertIsNone(view.get_slot(a1.name).range)
+        self.assertIsNone(view.get_slot(a2.name).range)
+        self.assertIsNotNone(view.get_slot(a3.name).range)
         self.assertEqual(3, len(view.all_slots(attributes=True)))
         self.assertEqual(0, len(view.all_slots(attributes=False)))
+        # default is to include attributes
+        self.assertEqual(3, len(view.all_slots()))
         self.assertEqual(a3.range, view.induced_slot(a3.name).range)
         self.assertEqual(a1.range, view.induced_slot(a1.name, 'C1').range)
         self.assertEqual(a2.range, view.induced_slot(a2.name, 'C1').range)
