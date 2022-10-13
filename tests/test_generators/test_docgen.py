@@ -15,6 +15,7 @@ LATEX_DIR = env.expected_path("kitchen_sink_tex")
 MD_DIR = env.expected_path("kitchen_sink_md")
 META_MD_DIR = env.expected_path("meta_md")
 MD_DIR2 = env.expected_path("kitchen_sink_md2")
+MD_DIR3 = env.expected_path("kitchen_sink_md3")
 HTML_DIR = env.expected_path("kitchen_sink_html")
 
 
@@ -421,6 +422,15 @@ class DocGeneratorTestCase(unittest.TestCase):
         expected_result = {"HasAliases": ["aliases"]}
 
         self.assertDictEqual(actual_result, expected_result)
+
+    def test_use_slot_uris(self):
+        tdir = env.input_path("docgen_html_templates")
+        gen = DocGenerator(SCHEMA, mergeimports=True, no_types_dir=True, template_directory=tdir, use_slot_uris=True)
+
+        md = gen.serialize(directory=MD_DIR3)
+
+        # this is a markdown file created from slot_uri
+        assert_mdfile_contains("actedOnBehalfOf.md", "Slot: actedOnBehalfOf")
 
 
 if __name__ == "__main__":
