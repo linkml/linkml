@@ -25,12 +25,10 @@ class SchemaViewTestCase(unittest.TestCase):
         view = SchemaView(SCHEMA_NO_IMPORTS)
         for en, e in view.all_enums().items():
             if e.name == "Animals":
-                print(view.enum_parents(en))
-                print(view.enum_ancestors(en))
-                for mn, m in e.permissible_values.items():
-                    e = view.get_element(mn)
-                    print(e)
-
+                for pv in e.permissible_values:
+                    print("permissible value", pv)
+                    print("parent", view.permissible_value_parents(en, pv))
+                    print("ancestors", view.permissible_value_ancestors(en, pv))
 
     def test_schemaview(self):
         # no import schema

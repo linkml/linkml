@@ -357,7 +357,6 @@ enums:
   Animals:
     is_a: OtherEnum
     permissible_values:
-      DOG:
       CAT:
       LION:
         is_a: CAT
@@ -366,4 +365,3 @@ enums:
       BIRD:
       EAGLE:
         is_a: BIRD
-      OTHER:
