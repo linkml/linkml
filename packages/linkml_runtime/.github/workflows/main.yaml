@@ -1,6 +1,6 @@
 # Built from:
 # https://docs.github.com/en/actions/guides/building-and-testing-python
-# https://github.com/snok/install-poetry#workflows-and-tips
+# https://github.com/actions/setup-python/
 
 name: Build and test linkml-runtime
 
