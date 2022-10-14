@@ -430,7 +430,7 @@ class DocGeneratorTestCase(unittest.TestCase):
         md = gen.serialize(directory=MD_DIR3)
 
         # this is a markdown file created from slot_uri
-        assert_mdfile_contains("actedOnBehalfOf.md", "Slot: actedOnBehalfOf")
+        assert_mdfile_contains("actedOnBehalfOf.md", "Slot: actedOnBehalfOf", outdir=MD_DIR3)
 
 
 if __name__ == "__main__":
