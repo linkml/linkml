@@ -1,5 +1,7 @@
 import logging
 import os
+import shutil
+import tempfile
 import unittest
 from copy import copy
 from typing import List
@@ -15,7 +17,6 @@ LATEX_DIR = env.expected_path("kitchen_sink_tex")
 MD_DIR = env.expected_path("kitchen_sink_md")
 META_MD_DIR = env.expected_path("meta_md")
 MD_DIR2 = env.expected_path("kitchen_sink_md2")
-MD_DIR3 = env.expected_path("kitchen_sink_md3")
 HTML_DIR = env.expected_path("kitchen_sink_html")
 
 
@@ -427,21 +428,25 @@ class DocGeneratorTestCase(unittest.TestCase):
         tdir = env.input_path("docgen_html_templates")
         gen = DocGenerator(SCHEMA, mergeimports=True, no_types_dir=True, template_directory=tdir, use_slot_uris=True)
 
-        md = gen.serialize(directory=MD_DIR3)
+        md_temp_dir = tempfile.mkdtemp()
+
+        md = gen.serialize(directory=md_temp_dir)
 
         # this is a markdown file created from slot_uri
-        assert_mdfile_contains("actedOnBehalfOf.md", "Slot: actedOnBehalfOf", outdir=MD_DIR3)
+        assert_mdfile_contains("actedOnBehalfOf.md", "Slot: actedOnBehalfOf", outdir=md_temp_dir)
 
         # check label and link of documents in inheritance tree 
         # A.md
-        assert_mdfile_contains("A.md", "[tree_slot_B](B.md)", after="**tree_slot_A**", outdir=MD_DIR3)
+        assert_mdfile_contains("A.md", "[tree_slot_B](B.md)", after="**tree_slot_A**", outdir=md_temp_dir)
 
         # B.md
         assert_mdfile_contains("B.md", 
                                 "**tree_slot_B**", 
                                 after="[tree_slot_A](A.md)", 
                                 # followed_by="* [tree_slot_C](C.md) [ [mixin_slot_I](mixin_slot_I.md)]",
-                                outdir=MD_DIR3)
+                                outdir=md_temp_dir)
+                
+        shutil.rmtree(md_temp_dir)
 
 
 if __name__ == "__main__":
