@@ -27,7 +27,7 @@ jobs:
       #          install poetry
       #----------------------------------------------
       - name: Install Poetry
-        pipx install poetry
+        run: pipx install poetry
         
       #----------------------------------------------
       #       check-out repo and set-up python
