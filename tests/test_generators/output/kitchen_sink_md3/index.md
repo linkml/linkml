@@ -91,9 +91,9 @@ Name: kitchen_sink
 | [started at time](startedAtTime.md) |  |
 | [street](street.md) |  |
 | [test_attribute](test_attribute.md) |  |
-| [tree_slot_A](tree_slot_A.md) |  |
-| [tree_slot_B](tree_slot_B.md) |  |
-| [tree_slot_C](tree_slot_C.md) |  |
+| [tree_slot_A](A.md) |  |
+| [tree_slot_B](B.md) |  |
+| [tree_slot_C](C.md) |  |
 | [type](type.md) |  |
 | [used](used.md) |  |
 | [was associated with](wasAssociatedWith.md) |  |
