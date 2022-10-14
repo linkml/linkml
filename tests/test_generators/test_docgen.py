@@ -432,6 +432,17 @@ class DocGeneratorTestCase(unittest.TestCase):
         # this is a markdown file created from slot_uri
         assert_mdfile_contains("actedOnBehalfOf.md", "Slot: actedOnBehalfOf", outdir=MD_DIR3)
 
+        # check label and link of documents in inheritance tree 
+        # A.md
+        assert_mdfile_contains("A.md", "[tree_slot_B](B.md)", after="**tree_slot_A**", outdir=MD_DIR3)
+
+        # B.md
+        assert_mdfile_contains("B.md", 
+                                "**tree_slot_B**", 
+                                after="[tree_slot_A](A.md)", 
+                                # followed_by="* [tree_slot_C](C.md) [ [mixin_slot_I](mixin_slot_I.md)]",
+                                outdir=MD_DIR3)
+
 
 if __name__ == "__main__":
     unittest.main()
