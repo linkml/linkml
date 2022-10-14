@@ -343,9 +343,12 @@ slots:
     description: Example of a slot that has an unconstrained range
   # slots added for inheritance tree purposes
   tree_slot_A:
+    slot_uri: ks:A
   tree_slot_B:
+    slot_uri: ks:B
     is_a: tree_slot_A
   tree_slot_C:
+    slot_uri: ks:C
     is_a: tree_slot_B
     mixins: mixin_slot_I
   mixin_slot_I:

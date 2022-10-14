@@ -1,5 +1,7 @@
 import logging
 import os
+import shutil
+import tempfile
 import unittest
 from copy import copy
 from typing import List
@@ -421,6 +423,30 @@ class DocGeneratorTestCase(unittest.TestCase):
         expected_result = {"HasAliases": ["aliases"]}
 
         self.assertDictEqual(actual_result, expected_result)
+
+    def test_use_slot_uris(self):
+        tdir = env.input_path("docgen_html_templates")
+        gen = DocGenerator(SCHEMA, mergeimports=True, no_types_dir=True, template_directory=tdir, use_slot_uris=True)
+
+        md_temp_dir = tempfile.mkdtemp()
+
+        md = gen.serialize(directory=md_temp_dir)
+
+        # this is a markdown file created from slot_uri
+        assert_mdfile_contains("actedOnBehalfOf.md", "Slot: actedOnBehalfOf", outdir=md_temp_dir)
+
+        # check label and link of documents in inheritance tree 
+        # A.md
+        assert_mdfile_contains("A.md", "[tree_slot_B](B.md)", after="**tree_slot_A**", outdir=md_temp_dir)
+
+        # B.md
+        assert_mdfile_contains("B.md", 
+                                "**tree_slot_B**", 
+                                after="[tree_slot_A](A.md)", 
+                                # followed_by="* [tree_slot_C](C.md) [ [mixin_slot_I](mixin_slot_I.md)]",
+                                outdir=md_temp_dir)
+                
+        shutil.rmtree(md_temp_dir)
 
 
 if __name__ == "__main__":

@@ -306,8 +306,9 @@ class DocGenerator(Generator):
         if type(element).class_name == "slot_definition":
 
             if self.use_slot_uris:
-                if element.slot_uri is not None:
-                    return element.slot_uri.split(":")[1]
+                curie = self.schemaview.get_uri(element)
+                if curie is not None:
+                    return curie.split(":")[1]
                 else:
                     return underscore(element.name)
 
@@ -358,8 +359,9 @@ class DocGenerator(Generator):
             return self._markdown_link(camelcase(e.name))
         elif isinstance(e, SlotDefinition):
             if self.use_slot_uris:
-                if e.slot_uri is not None:
-                    return self._markdown_link(e.slot_uri.split(":")[1])
+                curie = self.schemaview.get_uri(e)
+                if curie is not None:
+                    return self._markdown_link(n=curie.split(":")[1], name=e.name)
             return self._markdown_link(underscore(e.name))
         elif isinstance(e, TypeDefinition):
             return self._markdown_link(camelcase(e.name))
@@ -380,11 +382,16 @@ class DocGenerator(Generator):
         else:
             return False
 
-    def _markdown_link(self, n: str, subfolder: str = None) -> str:
+    def _markdown_link(self, n: str, name: str = None, subfolder: str = None) -> str:
         if subfolder:
             rel_path = f"{subfolder}/{n}"
         else:
             rel_path = n
+
+        # if explicit name is provided use that for display name
+        if name:
+            n = name
+
         return f"[{n}]({rel_path}.md)"
 
     def inheritance_tree(
@@ -444,7 +451,12 @@ class DocGenerator(Generator):
         focus: DefinitionName = None,
     ) -> str:
         indent = " " * depth * 4
-        name = self.name(element)
+        
+        if self.use_slot_uris:
+            name = self.schemaview.get_element(element).name
+        else:
+            name = self.name(element)
+
         if element.name == focus:
             lname = f"**{name}**"
         else:
