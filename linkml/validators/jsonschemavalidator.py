@@ -6,7 +6,7 @@ from typing import TextIO, Type, Union
 import click
 import jsonschema
 from linkml_runtime.dumpers import json_dumper
-from linkml_runtime.linkml_model import SchemaDefinition
+from linkml_runtime.linkml_model import SchemaDefinition, ClassDefinitionName
 from linkml_runtime.utils.compile_python import compile_python
 from linkml_runtime.utils.dictutils import as_simple_dict
 from linkml_runtime.utils.schemaview import SchemaView
@@ -30,7 +30,6 @@ class JsonSchemaDataValidator(DataValidator):
         validates instance data against a schema
 
         :param data: LinkML instance to be validates
-        :param schema: LinkML schema
         :param target_class: class in schema to validate against
         :param closed:
         :return:
@@ -40,7 +39,7 @@ class JsonSchemaDataValidator(DataValidator):
         inst_dict = as_simple_dict(data)
         not_closed = not closed
         if self.schema is None:
-            raise Exception(f"schema object must be set")
+            raise ValueError(f"schema object must be set")
         jsonschemastr = JsonSchemaGenerator(
             self.schema,
             mergeimports=True,
@@ -49,6 +48,34 @@ class JsonSchemaDataValidator(DataValidator):
         ).serialize(not_closed=not_closed)
         jsonschema_obj = json.loads(jsonschemastr)
         return jsonschema.validate(inst_dict, schema=jsonschema_obj)
+
+    def validate_dict(
+        self, data: dict, target_class: ClassDefinitionName = None, closed: bool = True
+    ) -> None:
+        """
+        validates instance data against a schema
+
+        :param data: dictionary object
+        :param target_class: class in schema to validate against
+        :param closed:
+        :return:
+        """
+        not_closed = not closed
+        if self.schema is None:
+            raise ValueError(f"schema object must be set")
+        if target_class is None:
+            roots = [c.name for c in self.schema.classes.values() if c.tree_root]
+            if len(roots) != 1:
+                raise ValueError(f"Cannot determine tree root: {roots}")
+            target_class = roots[0]
+        jsonschemastr = JsonSchemaGenerator(
+            self.schema,
+            mergeimports=True,
+            top_class=target_class,
+            not_closed=not_closed,
+        ).serialize(not_closed=not_closed)
+        jsonschema_obj = json.loads(jsonschemastr)
+        return jsonschema.validate(data, schema=jsonschema_obj)
 
 
 @click.command()
