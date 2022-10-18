@@ -1,7 +1,18 @@
+"""Object Tree indexing.
+
+This package provides:
+
+:ref:`ObjectIndex`
+   an index over an object tree
+
+:ref:`ProxyObject`
+   a proxy for a domain object that "knows" its place in the index
+"""
 import logging
-from typing import Mapping, Any, Optional, Tuple, List
+from typing import Mapping, Any, Optional, Tuple, List, Iterator, Union
 
 from linkml_runtime import SchemaView
+from linkml_runtime.utils import eval_utils
 from linkml_runtime.utils.yamlutils import YAMLRoot
 
 
@@ -36,35 +47,41 @@ class ObjectIndex:
     object with an identifier.
     """
     def __init__(self, obj: YAMLRoot, schemaview: SchemaView):
-        self._obj = obj
+        self._root_object = obj
         self._schemaview = schemaview
         self._class_map = schemaview.class_name_mappings()
         self._source_object_cache: Mapping[str, Any] = {}
         self._proxy_object_cache: Mapping[str, "ProxyObject"] = {}
+        self._child_to_parent: Mapping[str, List[Tuple[str, str]]] = {}
         self._index(obj)
 
-    def _index(self, obj: Any):
+    def _index(self, obj: Any, parent_key=None, parent=None):
         if obj is None:
             return None
         if isinstance(obj, list):
-            return [self._index(v) for v in obj]
+            return [self._index(v, parent_key, parent) for v in obj]
         if isinstance(obj, dict):
-            return {k: self._index(v) for k, v in obj.items()}
+            return {k: self._index(v, parent_key, parent) for k, v in obj.items()}
         cls_name = type(obj).__name__
         if cls_name in self._class_map:
             cls = self._class_map[cls_name]
-            id_slot = self._schemaview.get_identifier_slot(cls.name)
-            if id_slot:
-                id_val = getattr(obj, id_slot.name)
-                self._source_object_cache[(cls.name, id_val)] = obj
-            for v in vars(obj).values():
-                self._index(v)
+            pk_val = self._key(obj)
+            self._source_object_cache[pk_val] = obj
+            if pk_val not in self._child_to_parent:
+                self._child_to_parent[pk_val] = []
+            self._child_to_parent[pk_val].append((parent_key, parent))
+            #id_slot = self._schemaview.get_identifier_slot(cls.name)
+            #if id_slot:
+            #    id_val = getattr(obj, id_slot.name)
+            #    self._source_object_cache[(cls.name, id_val)] = obj
+            for k, v in vars(obj).items():
+                self._index(v, k, obj)
         else:
             return obj
 
     def bless(self, obj: Any) -> "ProxyObject":
         """
-        Generate a proxy object for a given domain object.
+        Get the proxy object for a given domain object.
 
         The proxy object will mimic the domain object, which
         should be of type YAMLRoot.
@@ -72,9 +89,15 @@ class ObjectIndex:
            >>> person = ix.bless(person)
            >>> print(person.name)
 
+        However, whereas a domain object will return an
+        identifier *reference* for a non-inlined object, the proxy
+        object will automatically dereference it
+
         :param obj:
         :return:
         """
+        if isinstance(obj, ProxyObject):
+            return obj
         k = self._key(obj)
         if k:
             if k not in self._proxy_object_cache:
@@ -86,13 +109,27 @@ class ObjectIndex:
         else:
             return ProxyObject(obj, _db=self)
 
-    def _key(self, obj: Any) -> Optional[Tuple[str, YAMLRoot]]:
+    def _key(self, obj: Any) -> Tuple[Union[str, YAMLRoot], str]:
+        """
+        Returns primary key value for this object.
+
+        The primary key value is a tuple of the class name,
+        plus an id that is unique within that class
+
+        If the object corresponds to a LinkML class with an identifier,
+        then that id is used, otherwise a stringification of the object is used.
+
+        :param obj:
+        :return:
+        """
         cls_name = type(obj).__name__
         cls = self._class_map[cls_name]
         id_slot = self._schemaview.get_identifier_slot(cls.name)
         if id_slot:
             id_val = getattr(obj, id_slot.name)
             return cls.name, id_val
+        else:
+            return cls.name, str(obj)
 
     @property
     def proxy_object_cache_size(self) -> int:
@@ -126,6 +163,19 @@ class ObjectIndex:
         """
         self._proxy_object_cache = {}
 
+    def eval_expr(self, expr: str, obj: Any=None, **kwargs) -> Any:
+        """
+        Evaluates an expression against the object store.
+
+        :param kwargs:
+        :return:
+        """
+        if obj is None:
+            obj = self._root_object
+        ctxt_obj = self.bless(obj)
+        ctxt_dict = {k: getattr(ctxt_obj, k) for k in ctxt_obj._attributes()}
+        return eval_utils.eval_expr(expr, **{**ctxt_dict, **kwargs})
+
 
 class ProxyObject:
     """
@@ -138,10 +188,19 @@ class ProxyObject:
         self._db = _db
         self._shadowed = obj
 
+    @property
+    def __class__(self):
+        return self._shadowed.__class__
+
     def __str__(self) -> str:
         return f"ProxyFor: {str(self._shadowed)}"
 
     def __getattr__(self, p: str) -> Any:
+        if p == "__post_init__":
+            return lambda: None
+        if p.endswith("__inverse"):
+            p = p.replace("__inverse", "")
+            return [v for k, v in self._parents if k == p]
         obj = self._shadowed
         cls = self._db._class_map[type(obj).__name__]
         slot = self._db._schemaview.induced_slot(p, cls.name)
@@ -160,7 +219,24 @@ class ProxyObject:
         else:
             setattr(self._shadowed, key, value)
 
+    @property
+    def _parents(self) -> Iterator:
+        db = self._db
+        obj = self._shadowed
+        obj_id = db._key(obj)
+        rs = []
+        for rel, parent in db._child_to_parent.get(obj_id, []):
+            rs.append((rel, db.bless(parent)))
+        return rs
+
     def _map(self, obj: Any, in_range: str) -> Any:
+        """
+        Maps an object from domain space into proxy space.
+
+        :param obj:
+        :param in_range:
+        :return:
+        """
         if isinstance(obj, list):
             r = [self._map(v, in_range) for v in obj]
             return r
@@ -182,5 +258,5 @@ class ProxyObject:
         return obj
 
     def _attributes(self) -> List[str]:
-        return vars(self._shadowed).keys()
+        return list(vars(self._shadowed).keys())
 

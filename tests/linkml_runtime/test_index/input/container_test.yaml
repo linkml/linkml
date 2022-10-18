@@ -61,6 +61,9 @@ classes:
     slot_usage:
       primary_email:
         pattern: "^\\S+@[\\S+\\.]+\\S+"
+      description:
+        string_serialization: "name: {name} address: {current_address.street}"
+        #equals_expression: "'name: '+name+(' address: ' + current_address.street if current_address else '')"
     in_subset:
       - basic_subset
 
@@ -137,6 +140,8 @@ classes:
       related_to:
         range: Person
         required: true
+      #string_serialization: "{type} {related_to.name}"
+
 
   EmploymentEvent:
     is_a: Event
