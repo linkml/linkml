@@ -32,7 +32,6 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.githubpages',
     'sphinx.ext.autosectionlabel',
-    'sphinx_rtd_theme',
     'sphinx_click',
     'sphinx.ext.viewcode',
     'sphinx.ext.todo',
