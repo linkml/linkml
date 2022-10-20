@@ -41,7 +41,7 @@ class TestCommandLineInterface(unittest.TestCase):
             cli, ["-s", SCHEMA, YAML_OUT, "-t", "rdf", "-o", RDF_OUT]
         )
         result = self.runner.invoke(
-            cli, ["-s", SCHEMA, RDF_OUT, "-t", "rdf", "-o", JSON_OUT]
+            cli, ["-s", SCHEMA, RDF_OUT, "-t", "json", "-o", JSON_OUT]
         )
         with open(JSON_OUT) as file:
             obj = json.load(file)
