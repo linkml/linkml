@@ -72,6 +72,7 @@ classes:
       - current_address
       - has_employment_history
       - has_familial_relationships
+      - has_interpersonal_relationships
       - has_medical_history
     slot_usage:
       primary_email:
@@ -188,6 +189,18 @@ classes:
         range: Person
         required: true
 
+  InterPersonalRelationship:
+    is_a: Relationship
+    slot_usage:
+      type:
+        any_of:
+          - range: FamilialRelationshipType
+          - range: NonFamilialRelationshipType
+        required: true
+      related to:
+        range: Person
+        required: true
+
   EmploymentEvent:
     is_a: Event
     slots:
@@ -251,6 +264,10 @@ slots:
     inlined_as_list: true
   has_familial_relationships:
     range: FamilialRelationship
+    multivalued: true
+    inlined_as_list: true
+  has_interpersonal_relationships:
+    range: InterPersonalRelationship
     multivalued: true
     inlined_as_list: true
   in location:
@@ -318,6 +335,14 @@ enums:
         meaning: famrel:02
       CHILD_OF:
         meaning: famrel:01
+  NonFamilialRelationshipType:
+    permissible_values:
+      COWORKER_OF:
+        meaning: famrel:70
+      ROOMMATE_OF:
+        meaning: famrel:71
+      BEST_FRIEND_OF:
+      MORTAL_ENEMY_OF:
   GenderType:
     permissible_values:
       nonbinary man:
@@ -344,4 +369,5 @@ enums:
         meaning: bizcodes:001
       shell company:
       loose organization:
+
 
