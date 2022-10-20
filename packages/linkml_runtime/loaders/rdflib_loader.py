@@ -126,14 +126,17 @@ class RDFLibLoader(Loader):
                                 logging.debug(f'No CURIE for {p}={o} in {subject} [{subject_class}]')
                                 v = str(o)
                         elif EnumDefinition.class_name in range_applicable_elements:
+                            range_union_elements = schemaview.slot_range_as_union(slot)
+                            enum_names = [e for e in range_union_elements if e in schemaview.all_enums()]
                             # if a PV has a meaning URI declared, map this
                             # back to a text representation
                             v = namespaces.curie_for(o)
-                            e = schemaview.get_enum(slot.range)
-                            for pv in e.permissible_values.values():
-                                if v == pv.meaning or str(o) == pv.meaning:
-                                    v = pv.text
-                                    break
+                            for enum_name in enum_names:
+                                e = schemaview.get_enum(enum_name)
+                                for pv in e.permissible_values.values():
+                                    if v == pv.meaning or str(o) == pv.meaning:
+                                        v = pv.text
+                                        break
                         elif TypeDefinition.class_name in range_applicable_elements:
                             if cast_literals:
                                 v = namespaces.curie_for(o)
