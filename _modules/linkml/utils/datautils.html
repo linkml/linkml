@@ -329,7 +329,7 @@
 <span class="p">}</span>
 
 <span class="n">aliases</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;ttl&quot;</span><span class="p">:</span> <span class="s2">&quot;rdf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;rdf&quot;</span><span class="p">:</span> <span class="s2">&quot;ttl&quot;</span><span class="p">,</span>
     <span class="s2">&quot;jsonld&quot;</span><span class="p">:</span> <span class="s2">&quot;json-ld&quot;</span><span class="p">,</span>
 <span class="p">}</span>
 
@@ -362,7 +362,7 @@
 
 
 <span class="k">def</span> <span class="nf">_is_rdf_format</span><span class="p">(</span><span class="n">fmt</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-    <span class="k">return</span> <span class="n">fmt</span> <span class="o">==</span> <span class="s2">&quot;rdf&quot;</span> <span class="ow">or</span> <span class="n">fmt</span> <span class="o">==</span> <span class="s2">&quot;ttl&quot;</span> <span class="ow">or</span> <span class="n">fmt</span> <span class="o">==</span> <span class="s2">&quot;json-ld&quot;</span>
+    <span class="k">return</span> <span class="n">fmt</span> <span class="o">==</span> <span class="s2">&quot;rdf&quot;</span> <span class="ow">or</span> <span class="n">fmt</span> <span class="o">==</span> <span class="s2">&quot;ttl&quot;</span> <span class="ow">or</span> <span class="n">fmt</span> <span class="o">==</span> <span class="s2">&quot;turtle&quot;</span> <span class="ow">or</span> <span class="n">fmt</span> <span class="o">==</span> <span class="s2">&quot;json-ld&quot;</span>
 
 
 <div class="viewcode-block" id="get_loader"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.datautils.get_loader">[docs]</a><span class="k">def</span> <span class="nf">get_loader</span><span class="p">(</span><span class="n">fmt</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Loader</span><span class="p">:</span>
