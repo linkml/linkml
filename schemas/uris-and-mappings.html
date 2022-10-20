@@ -296,10 +296,10 @@
         </div>
         <article role="main">
           <section id="uris-and-mappings">
-<h1>URIs and Mappings<a class="headerlink" href="#uris-and-mappings" title="Permalink to this heading"></a></h1>
+<h1>URIs and Mappings<a class="headerlink" href="#uris-and-mappings" title="Permalink to this heading">#</a></h1>
 <p>One feature that sets LinkML apart from frameworks such as JSON-Schema and UML is that fact that each element of your schema has a globally unique <a class="reference external" href="https://en.wikipedia.org/wiki/Uniform_Resource_Identifier">IRI/URI</a>. This is somewhat hidden behind the scenes, so you can ignore this feature if you like, but it is also very easy to use this, which can provide benefits in terms of reusing and linking schemas, and working with the linked data stack.</p>
 <section id="background-uris-iris-and-curies">
-<h2>background: URIs, IRIs, and CURIEs<a class="headerlink" href="#background-uris-iris-and-curies" title="Permalink to this heading"></a></h2>
+<h2>background: URIs, IRIs, and CURIEs<a class="headerlink" href="#background-uris-iris-and-curies" title="Permalink to this heading">#</a></h2>
 <p>URIs and IRIs are generalizations of URLs. URIs are used as identifiers in linked data standards and vocabularies.</p>
 <p>For example, in <a class="reference external" href="http://schema.org">schema.org</a>, the URI <a class="reference external" href="http://schema.org/Person">http://schema.org/Person</a> is the identifier for the Person concept.</p>
 <p>URIs can be shortended as CURIEs (Compact URIs). Given a prefix declaration where we map <code class="docutils literal notranslate"><span class="pre">schema</span></code> to <code class="docutils literal notranslate"><span class="pre">http://schema.org/</span></code>, then we can use the CURIE <code class="docutils literal notranslate"><span class="pre">schema:Person</span></code> to denote the person concept.</p>
@@ -310,7 +310,7 @@
 </ul>
 </section>
 <section id="uri-prefixes">
-<h2>URI Prefixes<a class="headerlink" href="#uri-prefixes" title="Permalink to this heading"></a></h2>
+<h2>URI Prefixes<a class="headerlink" href="#uri-prefixes" title="Permalink to this heading">#</a></h2>
 <p>A typical header for a linkml schema may look like this:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://w3id.org/linkml/examples/personinfo</span><span class="w"></span>
 <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">personinfo</span><span class="w"></span>
@@ -341,7 +341,7 @@ best practice to explicitly declare prefix maps, and to use the linter to check 
 consistency with standard prefix registries like bioregistry and prefix.cc.</p>
 </section>
 <section id="class-uri-and-slot-uri">
-<h2>class uri and slot uri<a class="headerlink" href="#class-uri-and-slot-uri" title="Permalink to this heading"></a></h2>
+<h2>class uri and slot uri<a class="headerlink" href="#class-uri-and-slot-uri" title="Permalink to this heading">#</a></h2>
 <p>Slot and class URIs in LinkML provide the <em>meaning</em> for a class or slot, and give a robust and unique place to consistently find information about a class or slot in a LinkML model on the web.</p>
 <p>The two metamodel slots</p>
 <ul class="simple">
@@ -372,7 +372,7 @@ consistency with standard prefix registries like bioregistry and prefix.cc.</p>
 <p>For example, if Person did not declare a class_uri, then a CURIE <code class="docutils literal notranslate"><span class="pre">personinfo:Person</span></code> would be used, which would expand to <code class="docutils literal notranslate"><span class="pre">https://w3id.org/linkml/examples/personinfo/Person</span></code></p>
 </section>
 <section id="enumerations-and-the-meaning-slot">
-<h2>Enumerations and the meaning slot<a class="headerlink" href="#enumerations-and-the-meaning-slot" title="Permalink to this heading"></a></h2>
+<h2>Enumerations and the meaning slot<a class="headerlink" href="#enumerations-and-the-meaning-slot" title="Permalink to this heading">#</a></h2>
 <p>The metamodel slot <a class="reference external" href="https://w3id.org/linkml/meaning">meaning</a> Can be optionally used with a <a class="reference external" href="https://w3id.org/linkml/PermissibleValue">PermissibleValue</a> as part of an <em>enumeration</em></p>
 <p>For example, two of the permissible values in the following enumeration map to ontology terms via <code class="docutils literal notranslate"><span class="pre">meaning</span></code>:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">enums</span><span class="p">:</span><span class="w"></span>
@@ -392,14 +392,14 @@ consistency with standard prefix registries like bioregistry and prefix.cc.</p>
 </div>
 </section>
 <section id="relationship-to-iso-11179-3">
-<h2>Relationship to ISO-11179-3<a class="headerlink" href="#relationship-to-iso-11179-3" title="Permalink to this heading"></a></h2>
+<h2>Relationship to ISO-11179-3<a class="headerlink" href="#relationship-to-iso-11179-3" title="Permalink to this heading">#</a></h2>
 <p>The LinkML metamodel is strongly influenced by and attempts to conform to the model in <a class="reference external" href="https://www.iso.org/standard/50340.html">ISO/IEC 11179-3</a> - Metadata registries – Part 3: Registry metamodel and basic attributes.</p>
 <p>For those familiar with the ISO 11179-3 model, the class_uri identifies the object class referenced by the data element.  The slot_uri names the particular property.</p>
 <p>For more, see this short slide deck:</p>
 <iframe src="https://docs.google.com/presentation/d/e/2PACX-1vQyQsRIBjSxhaDie5ASDAOTfJO9JqFjYmdoBHgCVVKMHzKo0AyL04lGNqWdgbCnyV8a-syk1U81tRXg/embed?start=false&loop=false&delayms=3000" frameborder="0" width="960" height="569" allowfullscreen="true" mozallowfullscreen="true" webkitallowfullscreen="true"></iframe>
 </section>
 <section id="mappings">
-<h2>mappings<a class="headerlink" href="#mappings" title="Permalink to this heading"></a></h2>
+<h2>mappings<a class="headerlink" href="#mappings" title="Permalink to this heading">#</a></h2>
 <p>You may wish to avoid committing to completely reusing a linked data concept, whilst wanting to retain a mapping. LinkML makes use of <a class="reference external" href="https://www.w3.org/2004/02/skos/">SKOS predicates</a> as metamodel slots:</p>
 <p>Example:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="w">  </span><span class="nt">NamedThing</span><span class="p">:</span><span class="w"></span>
@@ -416,7 +416,7 @@ consistency with standard prefix registries like bioregistry and prefix.cc.</p>
 </div>
 </section>
 <section id="id-prefixes">
-<h2>id_prefixes<a class="headerlink" href="#id-prefixes" title="Permalink to this heading"></a></h2>
+<h2>id_prefixes<a class="headerlink" href="#id-prefixes" title="Permalink to this heading">#</a></h2>
 <p>The <a class="reference external" href="https://w3id.org/linkml/id_prefixes">id_prefixes</a> slot can be used to define a list of valid ID prefixes that instances of this class ought to have as part of their CURIE.</p>
 <p>The order of the list matters since its a prioritized list with the ID prefix with the highest priority appearing at the top of the list.</p>
 <p>For example, the biolink model defines a list of allowed id_prefixes for gene objects:</p>
@@ -452,7 +452,7 @@ consistency with standard prefix registries like bioregistry and prefix.cc.</p>
 <p>Here we define the entity class <code class="docutils literal notranslate"><span class="pre">gene</span></code> to have a list of ID prefixes with <code class="docutils literal notranslate"><span class="pre">NCBIGene</span></code> having the highest priority.</p>
 </section>
 <section id="see-also">
-<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading"></a></h2>
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading">#</a></h2>
 <p><a class="reference external" href="https://github.com/linkml/linkml/blob/main/notebooks/context_issue.ipynb">this notebook</a> demonstrates some potential pitfalls of JSON-LD 1.0 with some forms of CURIEs</p>
 </section>
 </section>

@@ -296,10 +296,10 @@
         </div>
         <article role="main">
           <section id="schema-linter">
-<h1>Schema Linter<a class="headerlink" href="#schema-linter" title="Permalink to this heading"></a></h1>
+<h1>Schema Linter<a class="headerlink" href="#schema-linter" title="Permalink to this heading">#</a></h1>
 <p>When authoring a schema – especially when it is large or there are many authors – it is important to establish and adhere to best practices. For example, while <a class="reference internal" href="metadata.html#providing-descriptions"><span class="std std-doc">providing a description</span></a> for each schema element is not required, descriptions can help reduce miscommunication between schema authors. LinkML provides a configurable <a class="reference external" href="https://en.wikipedia.org/wiki/Lint_(software)">linter</a> to identify violations of best practices or error-prone patterns.</p>
 <section id="introduction">
-<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this heading"></a></h2>
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this heading">#</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">linkml-lint</span></code> command performs checks on a schema which – while valid – may not represent best practices or may indicate a likely mistake in the schema. These checks are referred to as <a class="reference internal" href="#rules"><span class="std std-doc">rules</span></a> and without additional <a class="reference internal" href="#configuration"><span class="std std-doc">configuration</span></a> a default set of rules will be used.</p>
 <p>To lint a single schema file:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>linkml-lint schema.yaml
@@ -311,7 +311,7 @@
 </div>
 </section>
 <section id="configuration">
-<h2>Configuration<a class="headerlink" href="#configuration" title="Permalink to this heading"></a></h2>
+<h2>Configuration<a class="headerlink" href="#configuration" title="Permalink to this heading">#</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">linkml-lint</span></code> command can be configured with a YAML configuration file. The configuration file can be provided using the <code class="docutils literal notranslate"><span class="pre">--config</span></code> command line option:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>linkml-lint --config myconfig.yaml myschema.yaml
 </pre></div>
@@ -346,10 +346,10 @@
 </div>
 </section>
 <section id="rules">
-<h2>Rules<a class="headerlink" href="#rules" title="Permalink to this heading"></a></h2>
+<h2>Rules<a class="headerlink" href="#rules" title="Permalink to this heading">#</a></h2>
 <p>Rule names denoted with a star ⭐ are part of the <code class="docutils literal notranslate"><span class="pre">recommended</span></code> configuration set.</p>
 <section id="canonical-prefixes">
-<h3>canonical_prefixes ⭐<a class="headerlink" href="#canonical-prefixes" title="Permalink to this heading"></a></h3>
+<h3>canonical_prefixes ⭐<a class="headerlink" href="#canonical-prefixes" title="Permalink to this heading">#</a></h3>
 <p>Enforce canonical prefixes by verifying that the mappings defined in the schema’s <code class="docutils literal notranslate"><span class="pre">prefixes</span></code> slot agree with those provided by the <a class="reference external" href="https://github.com/linkml/prefixmaps">prefixmaps</a> package.</p>
 <p><strong>Additional Configuration</strong></p>
 <ul class="simple">
@@ -357,19 +357,19 @@
 </ul>
 </section>
 <section id="no-empty-title">
-<h3>no_empty_title<a class="headerlink" href="#no-empty-title" title="Permalink to this heading"></a></h3>
+<h3>no_empty_title<a class="headerlink" href="#no-empty-title" title="Permalink to this heading">#</a></h3>
 <p>Disallow empty titles on schema elements.</p>
 </section>
 <section id="no-invalid-slot-usage">
-<h3>no_invalid_slot_usage ⭐<a class="headerlink" href="#no-invalid-slot-usage" title="Permalink to this heading"></a></h3>
+<h3>no_invalid_slot_usage ⭐<a class="headerlink" href="#no-invalid-slot-usage" title="Permalink to this heading">#</a></h3>
 <p>Disallow <code class="docutils literal notranslate"><span class="pre">slot_usage</span></code> definitions where the name of the slot does not refer to an existing slot of the class.</p>
 </section>
 <section id="no-xsd-int-type">
-<h3>no_xsd_int_type ⭐<a class="headerlink" href="#no-xsd-int-type" title="Permalink to this heading"></a></h3>
+<h3>no_xsd_int_type ⭐<a class="headerlink" href="#no-xsd-int-type" title="Permalink to this heading">#</a></h3>
 <p>Disallow use of <code class="docutils literal notranslate"><span class="pre">uri:</span> <span class="pre">xsd:int</span></code> in type definitions. In nearly all cases, <code class="docutils literal notranslate"><span class="pre">xsd:integer</span></code> should be used instead.</p>
 </section>
 <section id="permissible-values-format">
-<h3>permissible_values_format<a class="headerlink" href="#permissible-values-format" title="Permalink to this heading"></a></h3>
+<h3>permissible_values_format<a class="headerlink" href="#permissible-values-format" title="Permalink to this heading">#</a></h3>
 <p>Enforce consistent formatting of enum permissible values. This rule may conflict with the <code class="docutils literal notranslate"><span class="pre">standard_naming</span></code> rule, but it is more flexible.</p>
 <p><strong>Additional Configuration</strong></p>
 <ul class="simple">
@@ -377,7 +377,7 @@
 </ul>
 </section>
 <section id="recommended">
-<h3>recommended ⭐<a class="headerlink" href="#recommended" title="Permalink to this heading"></a></h3>
+<h3>recommended ⭐<a class="headerlink" href="#recommended" title="Permalink to this heading">#</a></h3>
 <p>Require any slot in the <a class="reference internal" href="metamodel.html"><span class="doc std std-doc">metamodel</span></a> with <code class="docutils literal notranslate"><span class="pre">recommended:</span> <span class="pre">true</span></code> (e.g. <code class="docutils literal notranslate"><span class="pre">description</span></code>) to be provided.</p>
 <p><strong>Additional Configuration</strong></p>
 <ul class="simple">
@@ -386,7 +386,7 @@
 </ul>
 </section>
 <section id="standard-naming">
-<h3>standard_naming ⭐<a class="headerlink" href="#standard-naming" title="Permalink to this heading"></a></h3>
+<h3>standard_naming ⭐<a class="headerlink" href="#standard-naming" title="Permalink to this heading">#</a></h3>
 <p>Enforce standard naming conventions: CamelCase for classes, snake_case for slots, CamelCase for enums, snake_case (default) or UPPER_SNAKE for permissible_values (see <code class="docutils literal notranslate"><span class="pre">permissible_values_upper_case</span></code> option). This rule may conflict with the <code class="docutils literal notranslate"><span class="pre">permissible_values_format</span></code> rule.</p>
 <p><strong>Additional Configuration</strong></p>
 <ul class="simple">
@@ -394,7 +394,7 @@
 </ul>
 </section>
 <section id="tree-root-class">
-<h3>tree_root_class<a class="headerlink" href="#tree-root-class" title="Permalink to this heading"></a></h3>
+<h3>tree_root_class<a class="headerlink" href="#tree-root-class" title="Permalink to this heading">#</a></h3>
 <p>Require a single class with <code class="docutils literal notranslate"><span class="pre">tree_root:</span> <span class="pre">true</span></code> and optionally verify that class’s name.</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">validate_existing_class_name</span></code>: If <code class="docutils literal notranslate"><span class="pre">true</span></code>, in addition to validating that a <code class="docutils literal notranslate"><span class="pre">tree_root:</span> <span class="pre">true</span></code> ClassDefinition exists, the rule will also validate that is has the name provided by the <code class="docutils literal notranslate"><span class="pre">root_class_name</span></code> option. Default: <code class="docutils literal notranslate"><span class="pre">false</span></code>.</p></li>
@@ -403,7 +403,7 @@
 </section>
 </section>
 <section id="reports">
-<h2>Reports<a class="headerlink" href="#reports" title="Permalink to this heading"></a></h2>
+<h2>Reports<a class="headerlink" href="#reports" title="Permalink to this heading">#</a></h2>
 <p>By default, if the <code class="docutils literal notranslate"><span class="pre">linkml-lint</span></code> command identifies violations of the configured rules it will print the files and issues to the terminal. This behavior can be changed with the <code class="docutils literal notranslate"><span class="pre">--format</span></code> and <code class="docutils literal notranslate"><span class="pre">--output</span></code> command line options.</p>
 <p>The valid values for <code class="docutils literal notranslate"><span class="pre">--format</span></code> are terminal (the default), markdown, json, and tsv.</p>
 <p>If the <code class="docutils literal notranslate"><span class="pre">--output</span></code> option is provided the report will be written to the specified file instead of the terminal.</p>
@@ -413,7 +413,7 @@
 </div>
 </section>
 <section id="exit-codes">
-<h2>Exit Codes<a class="headerlink" href="#exit-codes" title="Permalink to this heading"></a></h2>
+<h2>Exit Codes<a class="headerlink" href="#exit-codes" title="Permalink to this heading">#</a></h2>
 <p>If the linter does not encounter any rule violations at all it will exit with code <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p>
 <p>If the linter encounters rule violations with <code class="docutils literal notranslate"><span class="pre">level:</span> <span class="pre">error</span></code> it will exit with code <code class="docutils literal notranslate"><span class="pre">2</span></code>. This will be the case regardless of whether there are also rule violations with <code class="docutils literal notranslate"><span class="pre">level:</span> <span class="pre">warning</span></code>.</p>
 <p>By default, if the linter encounters <em>only</em> rule violations with <code class="docutils literal notranslate"><span class="pre">level:</span> <span class="pre">warning</span></code> it will exit with code <code class="docutils literal notranslate"><span class="pre">1</span></code>. This behavior can be changed with command line options. In this scenario, if the <code class="docutils literal notranslate"><span class="pre">--ignore-warnings</span></code> flag is provided the exit code will be <code class="docutils literal notranslate"><span class="pre">0</span></code>. If instead the <code class="docutils literal notranslate"><span class="pre">--max-warnings</span> <span class="pre">&lt;int&gt;</span></code> option is passed, the exit code will be <code class="docutils literal notranslate"><span class="pre">1</span></code> or <code class="docutils literal notranslate"><span class="pre">0</span></code> depending on whether the number of warning rule violations is greater than the provided number or not. If both <code class="docutils literal notranslate"><span class="pre">--ignore-warnings</span></code> and <code class="docutils literal notranslate"><span class="pre">--max-warnings</span></code> are used <code class="docutils literal notranslate"><span class="pre">--ignore-warnings</span></code> takes precedence.</p>

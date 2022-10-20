@@ -296,7 +296,7 @@
         </div>
         <article role="main">
           <section id="how-to-model-quantities-and-measurements">
-<h1>How to model quantities and measurements<a class="headerlink" href="#how-to-model-quantities-and-measurements" title="Permalink to this heading"></a></h1>
+<h1>How to model quantities and measurements<a class="headerlink" href="#how-to-model-quantities-and-measurements" title="Permalink to this heading">#</a></h1>
 <p>Measurements lie at the heart of science, as well as engineering and
 everyday life. However, there is no consensus data model or exchange
 standard for measurements. Even representation of units is
@@ -314,7 +314,7 @@ through to physical parts of engineered systems.</p>
 <p>Although this how-to guide is intended primarily for modeling using
 LinkML, the general patterns here are broadly applicable.</p>
 <section id="central-example">
-<h2>Central Example<a class="headerlink" href="#central-example" title="Permalink to this heading"></a></h2>
+<h2>Central Example<a class="headerlink" href="#central-example" title="Permalink to this heading">#</a></h2>
 <p>The central example used here is measurements of a few properties that
 can be recorded for people, in particular:</p>
 <ul class="simple">
@@ -325,7 +325,7 @@ can be recorded for people, in particular:</p>
 <p>But these should be generalizable to other properties or other kinds of observations</p>
 </section>
 <section id="requirements">
-<h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this heading"></a></h2>
+<h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this heading">#</a></h2>
 <p>There are multiple ways to make a data model or standard that uses
 measurements. The decision should be made based on requirements, use
 cases, and the overall context of how the data model should be used.</p>
@@ -340,7 +340,7 @@ cases, and the overall context of how the data model should be used.</p>
 </ol>
 </section>
 <section id="core-schema">
-<h2>Core schema<a class="headerlink" href="#core-schema" title="Permalink to this heading"></a></h2>
+<h2>Core schema<a class="headerlink" href="#core-schema" title="Permalink to this heading">#</a></h2>
 <p>We will work through a number of different alternatives, but all use the following core skeleton:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://w3id.org/linkml/howtos/measurements</span><span class="w"></span>
 <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">research_subject_measurements</span><span class="w"></span>
@@ -369,7 +369,7 @@ cases, and the overall context of how the data model should be used.</p>
 </div>
 </section>
 <section id="patterns-and-anti-patterns">
-<h2>Patterns and Anti-patterns<a class="headerlink" href="#patterns-and-anti-patterns" title="Permalink to this heading"></a></h2>
+<h2>Patterns and Anti-patterns<a class="headerlink" href="#patterns-and-anti-patterns" title="Permalink to this heading">#</a></h2>
 <p>Next we’ll take a look at different ways to model a simple
 hypothetical standard, where we have research subjects (e.g. people,
 or potentially experimental organsisms) with a number of
@@ -377,7 +377,7 @@ measurements. For the basic use case we don’t assume time-series data.</p>
 <p>For each approach, we show a schema snippet, and example data in both
 YAML/JSON and in tabular form.</p>
 <section id="simple-explicit-scalar-pattern">
-<h3>Simple Explicit Scalar Pattern<a class="headerlink" href="#simple-explicit-scalar-pattern" title="Permalink to this heading"></a></h3>
+<h3>Simple Explicit Scalar Pattern<a class="headerlink" href="#simple-explicit-scalar-pattern" title="Permalink to this heading">#</a></h3>
 <p>The simplest possible model has each measurement modeled as a single scalar value:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="nt">Subject</span><span class="p">:</span><span class="w"></span>
@@ -454,7 +454,7 @@ objects conformat to the model</p>
 <p>Ranges are not supported in this data model (we will look at ways to extend this below)</p>
 </section>
 <section id="variant-simple-implicit-scalar-pattern">
-<h3>Variant: Simple Implicit Scalar Pattern<a class="headerlink" href="#variant-simple-implicit-scalar-pattern" title="Permalink to this heading"></a></h3>
+<h3>Variant: Simple Implicit Scalar Pattern<a class="headerlink" href="#variant-simple-implicit-scalar-pattern" title="Permalink to this heading">#</a></h3>
 <p>This is a variant of the above pattern, except the unit name is not baked into the field name:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="nt">Subject</span><span class="p">:</span><span class="w"></span>
@@ -516,7 +516,7 @@ there is a risk of mis-interpretation. For this reason we mark this as unsafe in
 </ul>
 </section>
 <section id="simple-coupled-scalar-pattern">
-<h3>Simple Coupled Scalar Pattern<a class="headerlink" href="#simple-coupled-scalar-pattern" title="Permalink to this heading"></a></h3>
+<h3>Simple Coupled Scalar Pattern<a class="headerlink" href="#simple-coupled-scalar-pattern" title="Permalink to this heading">#</a></h3>
 <p>For this example, consider our requirements have changed, and we want to record a <em>range</em> of body weights,
 for example the body weight at the start of the study, and at the end.</p>
 <p>We can also imagine using an analogous structure to record ranges
@@ -604,7 +604,7 @@ may have a range indicating the top and bottom of the column.</p>
 The units are also fixed, but ranges are supported.</p>
 </section>
 <section id="simple-flexible-unit-scalar-pattern">
-<h3>Simple Flexible Unit Scalar Pattern<a class="headerlink" href="#simple-flexible-unit-scalar-pattern" title="Permalink to this heading"></a></h3>
+<h3>Simple Flexible Unit Scalar Pattern<a class="headerlink" href="#simple-flexible-unit-scalar-pattern" title="Permalink to this heading">#</a></h3>
 <p>Next we will look at a requirement to make units flexible, such that for example body weight can be specified ib kilograms or pounds.</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="nt">Subject</span><span class="p">:</span><span class="w"></span>
@@ -649,7 +649,7 @@ The units are also fixed, but ranges are supported.</p>
 </ul>
 </section>
 <section id="flexible-unit-nested-measurement-pattern">
-<h3>Flexible Unit Nested Measurement Pattern<a class="headerlink" href="#flexible-unit-nested-measurement-pattern" title="Permalink to this heading"></a></h3>
+<h3>Flexible Unit Nested Measurement Pattern<a class="headerlink" href="#flexible-unit-nested-measurement-pattern" title="Permalink to this heading">#</a></h3>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="nt">Subject</span><span class="p">:</span><span class="w"></span>
 <span class="w">    </span><span class="nt">attributes</span><span class="p">:</span><span class="w"></span>
@@ -692,7 +692,7 @@ The units are also fixed, but ranges are supported.</p>
 </ul>
 </section>
 <section id="flexible-unit-string-encoding-pattern">
-<h3>Flexible Unit String Encoding Pattern<a class="headerlink" href="#flexible-unit-string-encoding-pattern" title="Permalink to this heading"></a></h3>
+<h3>Flexible Unit String Encoding Pattern<a class="headerlink" href="#flexible-unit-string-encoding-pattern" title="Permalink to this heading">#</a></h3>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="nt">Subject</span><span class="p">:</span><span class="w"></span>
 <span class="w">    </span><span class="nt">attributes</span><span class="p">:</span><span class="w"></span>
@@ -749,7 +749,7 @@ The units are also fixed, but ranges are supported.</p>
 </ul>
 </section>
 <section id="generic-quantity-type-pattern">
-<h3>Generic Quantity Type Pattern<a class="headerlink" href="#generic-quantity-type-pattern" title="Permalink to this heading"></a></h3>
+<h3>Generic Quantity Type Pattern<a class="headerlink" href="#generic-quantity-type-pattern" title="Permalink to this heading">#</a></h3>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="nt">Subject</span><span class="p">:</span><span class="w"></span>
 <span class="w">    </span><span class="nt">attributes</span><span class="p">:</span><span class="w"></span>
@@ -825,9 +825,9 @@ The units are also fixed, but ranges are supported.</p>
 </section>
 </section>
 <section id="case-studies">
-<h2>Case Studies<a class="headerlink" href="#case-studies" title="Permalink to this heading"></a></h2>
+<h2>Case Studies<a class="headerlink" href="#case-studies" title="Permalink to this heading">#</a></h2>
 <section id="fhir">
-<h3>FHIR<a class="headerlink" href="#fhir" title="Permalink to this heading"></a></h3>
+<h3>FHIR<a class="headerlink" href="#fhir" title="Permalink to this heading">#</a></h3>
 <p>Fast Healthcare Interoperability Resources (FHIR) is a standard for Electronic Health Records (EHRs).</p>
 <p>The FHIR <em>Observation</em> resource is intended for capturing measurements and subjective point-in-time assessments</p>
 <ul class="simple">
@@ -878,7 +878,7 @@ The units are also fixed, but ranges are supported.</p>
 together with a way of representing the unit standard (UCUM).</p>
 </section>
 <section id="mixs">
-<h3>MIxS<a class="headerlink" href="#mixs" title="Permalink to this heading"></a></h3>
+<h3>MIxS<a class="headerlink" href="#mixs" title="Permalink to this heading">#</a></h3>
 <p>The Genomics Standards Consortium (GSC) Minimal Information about any Sequence (MIxS) standard
 provides standardized metadata elements for recording properties of environmental and biomedical samples
 intended for sequencing. These properties are a mix of categorical values and
@@ -900,10 +900,10 @@ the choices in MIxS reflect the norms of interchange often involving simple spre
 However, the use of strings means values must be parsed.</p>
 </section>
 <section id="qudt">
-<h3>QUDT<a class="headerlink" href="#qudt" title="Permalink to this heading"></a></h3>
+<h3>QUDT<a class="headerlink" href="#qudt" title="Permalink to this heading">#</a></h3>
 </section>
 <section id="obi">
-<h3>OBI<a class="headerlink" href="#obi" title="Permalink to this heading"></a></h3>
+<h3>OBI<a class="headerlink" href="#obi" title="Permalink to this heading">#</a></h3>
 <p><img alt="img" src="https://ddooley.github.io/assets/images/docs/data_john_bmi_vs.png" /></p>
 <p>Comparison with QUDT and OM:</p>
 <p><img alt="img" src="https://user-images.githubusercontent.com/4000582/56243972-a72e7280-6050-11e9-8277-fcad93ad58e7.png" /></p>
@@ -925,7 +925,7 @@ However, the use of strings means values must be parsed.</p>
 </section>
 </section>
 <section id="oboe">
-<h1>OBOE<a class="headerlink" href="#oboe" title="Permalink to this heading"></a></h1>
+<h1>OBOE<a class="headerlink" href="#oboe" title="Permalink to this heading">#</a></h1>
 <p>Concepts:</p>
 <ul class="simple">
 <li><p><strong>Observation</strong>: an event in which one or more measurements are taken</p></li>
@@ -937,10 +937,10 @@ However, the use of strings means values must be parsed.</p>
 </ul>
 <p><img alt="img" src="https://ars.els-cdn.com/content/image/1-s2.0-S1574954107000362-gr1.jpg" /></p>
 <section id="cf">
-<h2>CF<a class="headerlink" href="#cf" title="Permalink to this heading"></a></h2>
+<h2>CF<a class="headerlink" href="#cf" title="Permalink to this heading">#</a></h2>
 </section>
 <section id="further-reading">
-<h2>Further Reading<a class="headerlink" href="#further-reading" title="Permalink to this heading"></a></h2>
+<h2>Further Reading<a class="headerlink" href="#further-reading" title="Permalink to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Measurement in Science, Stanford Encyclopedia of Philosophy, https://plato.stanford.edu/entries/measurement-science/</p></li>
 <li><p>OBO Core Values, James Overton, https://docs.google.com/document/d/14qqp0M2dgefDFMvB4mmwpxrhoo4UGwd1KLZcoWCcqss/edit?usp=sharing</p></li>

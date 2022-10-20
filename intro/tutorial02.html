@@ -296,13 +296,13 @@
         </div>
         <article role="main">
           <section id="part-2-adding-a-container-object">
-<h1>Part 2: Adding a container object<a class="headerlink" href="#part-2-adding-a-container-object" title="Permalink to this heading"></a></h1>
+<h1>Part 2: Adding a container object<a class="headerlink" href="#part-2-adding-a-container-object" title="Permalink to this heading">#</a></h1>
 <p>In part 1 of this tutorial we created a schema for describing people,
 and showed how we could use this to validate YAML or JSON files with a
 single person instance.</p>
 <p>In practice our data files will rarely be at the level of a single instance. Instead we might have a file that contains a <em>list</em> of people, or a more complex document that contains a variety of different heterogeneous objects.</p>
 <section id="example-data-file">
-<h2>Example data file<a class="headerlink" href="#example-data-file" title="Permalink to this heading"></a></h2>
+<h2>Example data file<a class="headerlink" href="#example-data-file" title="Permalink to this heading">#</a></h2>
 <p>Let’s start with a simple data file that contains more than one instance of person. We choose to structure this as a YAML/JSON dictionary, with an “index slot” called <code class="docutils literal notranslate"><span class="pre">persons</span></code>:</p>
 <p>data.yaml:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">persons</span><span class="p">:</span><span class="w"></span>
@@ -318,7 +318,7 @@ single person instance.</p>
 <p>(later on we will see how to express this same thing as a TSV)</p>
 </section>
 <section id="nesting-lists-of-objects">
-<h2>Nesting lists of objects<a class="headerlink" href="#nesting-lists-of-objects" title="Permalink to this heading"></a></h2>
+<h2>Nesting lists of objects<a class="headerlink" href="#nesting-lists-of-objects" title="Permalink to this heading">#</a></h2>
 <p>We can describe this data using the following schema.</p>
 <p>personinfo.yaml:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://w3id.org/linkml/examples/personinfo</span><span class="w"></span>
@@ -360,7 +360,7 @@ crucial characteristics:</p>
 <p>Later on we will explore these in more detail</p>
 </section>
 <section id="validating">
-<h2>Validating<a class="headerlink" href="#validating" title="Permalink to this heading"></a></h2>
+<h2>Validating<a class="headerlink" href="#validating" title="Permalink to this heading">#</a></h2>
 <p>We can validate this to make sure we got it right:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>linkml-validate -s personinfo.yaml data.yaml 
 </pre></div>
@@ -368,7 +368,7 @@ crucial characteristics:</p>
 <p>This should report no errors.</p>
 </section>
 <section id="visualizing">
-<h2>Visualizing<a class="headerlink" href="#visualizing" title="Permalink to this heading"></a></h2>
+<h2>Visualizing<a class="headerlink" href="#visualizing" title="Permalink to this heading">#</a></h2>
 <p>We can use yUML to visualize the schema. The <code class="docutils literal notranslate"><span class="pre">gen-yuml</span></code> command can generate REST URLs that can be fed into</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gen-yuml -f yuml personinfo.yaml 
 </pre></div>
@@ -385,7 +385,7 @@ crucial characteristics:</p>
 </div>
 </section>
 <section id="exercises">
-<h2>Exercises<a class="headerlink" href="#exercises" title="Permalink to this heading"></a></h2>
+<h2>Exercises<a class="headerlink" href="#exercises" title="Permalink to this heading">#</a></h2>
 <ol class="arabic simple">
 <li><p>Extend the container object to include dataset-level metadata:</p>
 <ul class="simple">
@@ -399,7 +399,7 @@ crucial characteristics:</p>
 </ol>
 </section>
 <section id="further-reading">
-<h2>Further reading<a class="headerlink" href="#further-reading" title="Permalink to this heading"></a></h2>
+<h2>Further reading<a class="headerlink" href="#further-reading" title="Permalink to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Metamodel Specification</p>
 <ul>
@@ -410,7 +410,7 @@ crucial characteristics:</p>
 </ul>
 </section>
 <section id="next">
-<h2>Next<a class="headerlink" href="#next" title="Permalink to this heading"></a></h2>
+<h2>Next<a class="headerlink" href="#next" title="Permalink to this heading">#</a></h2>
 <p>Next we will explore how to add constraints to the schema</p>
 </section>
 </section>

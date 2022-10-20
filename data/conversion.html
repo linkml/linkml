@@ -296,7 +296,7 @@
         </div>
         <article role="main">
           <section id="converting-between-different-representations">
-<h1>Converting between different representations<a class="headerlink" href="#converting-between-different-representations" title="Permalink to this heading"></a></h1>
+<h1>Converting between different representations<a class="headerlink" href="#converting-between-different-representations" title="Permalink to this heading">#</a></h1>
 <p>LinkML allows you to specify schemas for data in a variety of forms:</p>
 <ul class="simple">
 <li><p>JSON / YAML</p></li>
@@ -318,14 +318,14 @@ for example toy data files</p>
 <li><p><a class="reference external" href="https://linkml.io/linkml-model/docs/specification/06mapping/">Part 6</a> of the LinkML specification provides a more formal treatment</p></li>
 </ul>
 <section id="linkml-convert">
-<h2>LinkML-Convert<a class="headerlink" href="#linkml-convert" title="Permalink to this heading"></a></h2>
+<h2>LinkML-Convert<a class="headerlink" href="#linkml-convert" title="Permalink to this heading">#</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">linkml-convert</span></code> script can be used to convert data from one form
 to another, following a schema</p>
 <p>This makes use of loaders and dumpers in the linkml-runtime.</p>
 <p>See below for command line docs</p>
 </section>
 <section id="loading-from-and-dumping-to-json">
-<h2>Loading from and dumping to JSON<a class="headerlink" href="#loading-from-and-dumping-to-json" title="Permalink to this heading"></a></h2>
+<h2>Loading from and dumping to JSON<a class="headerlink" href="#loading-from-and-dumping-to-json" title="Permalink to this heading">#</a></h2>
 <p>You can use the linkml-convert script to load or dump from JSON into
 another representation.</p>
 <p>Dumping to JSON can be lossy; if your objects contain typing information
@@ -365,38 +365,38 @@ currently do not yet make use of this when loading from JSON into the
 internal representation.</p>
 </section>
 <section id="loading-from-and-dumping-to-yaml">
-<h2>Loading from and dumping to YAML<a class="headerlink" href="#loading-from-and-dumping-to-yaml" title="Permalink to this heading"></a></h2>
+<h2>Loading from and dumping to YAML<a class="headerlink" href="#loading-from-and-dumping-to-yaml" title="Permalink to this heading">#</a></h2>
 <p>The native YAML representation for LinkML is essentially identical to
 JSON.</p>
 <p>In future there may be support for a <em>direct</em> translation to YAML that
 utilizes YAML tags to encode typing information.</p>
 </section>
 <section id="loading-from-and-dumping-to-rdf">
-<h2>Loading from and dumping to RDF<a class="headerlink" href="#loading-from-and-dumping-to-rdf" title="Permalink to this heading"></a></h2>
+<h2>Loading from and dumping to RDF<a class="headerlink" href="#loading-from-and-dumping-to-rdf" title="Permalink to this heading">#</a></h2>
 <p>Loading and dumping works in a similar fashion for RDF. One difference
 is that the schema must be present as this contains crucial information
 for being able to map classes and slots to URIs.</p>
 <p>See <a class="reference external" href="rdf.md">RDF</a> for more details</p>
 </section>
 <section id="loading-from-and-dumping-to-csvs">
-<h2>Loading from and dumping to CSVs<a class="headerlink" href="#loading-from-and-dumping-to-csvs" title="Permalink to this heading"></a></h2>
+<h2>Loading from and dumping to CSVs<a class="headerlink" href="#loading-from-and-dumping-to-csvs" title="Permalink to this heading">#</a></h2>
 <p>See <a class="reference external" href="./csvs.html">CSVs</a> for more details</p>
 </section>
 <section id="inferring-missing-values">
-<h2>Inferring missing values<a class="headerlink" href="#inferring-missing-values" title="Permalink to this heading"></a></h2>
+<h2>Inferring missing values<a class="headerlink" href="#inferring-missing-values" title="Permalink to this heading">#</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">--infer</span></code> flag can be provided to perform missing value inference</p>
 <p>See <a class="reference external" href="../schemas/advanced.md">advanced schemas</a> for more information
 on inference</p>
 </section>
 <section id="programmatic-usage">
-<h2>Programmatic usage<a class="headerlink" href="#programmatic-usage" title="Permalink to this heading"></a></h2>
+<h2>Programmatic usage<a class="headerlink" href="#programmatic-usage" title="Permalink to this heading">#</a></h2>
 <p>See <a class="reference external" href="../code">developer docs</a> for documentation of the relevant
 python classes</p>
 </section>
 <section id="command-line">
-<h2>Command Line<a class="headerlink" href="#command-line" title="Permalink to this heading"></a></h2>
+<h2>Command Line<a class="headerlink" href="#command-line" title="Permalink to this heading">#</a></h2>
 <section id="linkml-convert">
-<h3>linkml-convert<a class="headerlink" href="#linkml-convert" title="Permalink to this heading"></a></h3>
+<h3>linkml-convert<a class="headerlink" href="#linkml-convert" title="Permalink to this heading">#</a></h3>
 <p>Converts instance data to and from different LinkML Runtime serialization formats.</p>
 <p>The instance data must conform to a LinkML model, and either a path to a python
 module must be passed, or a path to a schema.</p>
@@ -411,19 +411,19 @@ A validation step is optionally performed in between</p>
 <p class="rubric">Options</p>
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-linkml-convert-m">
-<span id="cmdoption-linkml-convert-module"></span><span class="sig-name descname"><span class="pre">-m</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--module</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;module&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-convert-m" title="Permalink to this definition"></a></dt>
+<span id="cmdoption-linkml-convert-module"></span><span class="sig-name descname"><span class="pre">-m</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--module</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;module&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-convert-m" title="Permalink to this definition">#</a></dt>
 <dd><p>Path to python datamodel module</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-linkml-convert-o">
-<span id="cmdoption-linkml-convert-output"></span><span class="sig-name descname"><span class="pre">-o</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--output</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;output&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-convert-o" title="Permalink to this definition"></a></dt>
+<span id="cmdoption-linkml-convert-output"></span><span class="sig-name descname"><span class="pre">-o</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--output</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;output&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-convert-o" title="Permalink to this definition">#</a></dt>
 <dd><p>Path to output file</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-linkml-convert-f">
-<span id="cmdoption-linkml-convert-input-format"></span><span class="sig-name descname"><span class="pre">-f</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--input-format</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;input_format&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-convert-f" title="Permalink to this definition"></a></dt>
+<span id="cmdoption-linkml-convert-input-format"></span><span class="sig-name descname"><span class="pre">-f</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--input-format</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;input_format&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-convert-f" title="Permalink to this definition">#</a></dt>
 <dd><p>Input format. Inferred from input suffix if not specified</p>
 <dl class="field-list simple">
 <dt class="field-odd">Options</dt>
@@ -434,7 +434,7 @@ A validation step is optionally performed in between</p>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-linkml-convert-t">
-<span id="cmdoption-linkml-convert-output-format"></span><span class="sig-name descname"><span class="pre">-t</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--output-format</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;output_format&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-convert-t" title="Permalink to this definition"></a></dt>
+<span id="cmdoption-linkml-convert-output-format"></span><span class="sig-name descname"><span class="pre">-t</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--output-format</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;output_format&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-convert-t" title="Permalink to this definition">#</a></dt>
 <dd><p>Output format. Inferred from output suffix if not specified</p>
 <dl class="field-list simple">
 <dt class="field-odd">Options</dt>
@@ -445,13 +445,13 @@ A validation step is optionally performed in between</p>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-linkml-convert-C">
-<span id="cmdoption-linkml-convert-c"></span><span id="cmdoption-linkml-convert-target-class"></span><span class="sig-name descname"><span class="pre">-C</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--target-class</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;target_class&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-convert-C" title="Permalink to this definition"></a></dt>
+<span id="cmdoption-linkml-convert-c"></span><span id="cmdoption-linkml-convert-target-class"></span><span class="sig-name descname"><span class="pre">-C</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--target-class</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;target_class&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-convert-C" title="Permalink to this definition">#</a></dt>
 <dd><p>name of class in datamodel that the root node instantiates</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-linkml-convert-target-class-from-path">
-<span id="cmdoption-linkml-convert-no-target-class-from-path"></span><span class="sig-name descname"><span class="pre">--target-class-from-path</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-target-class-from-path</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-convert-target-class-from-path" title="Permalink to this definition"></a></dt>
+<span id="cmdoption-linkml-convert-no-target-class-from-path"></span><span class="sig-name descname"><span class="pre">--target-class-from-path</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-target-class-from-path</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-convert-target-class-from-path" title="Permalink to this definition">#</a></dt>
 <dd><p>Infer the target class from the filename, should be ClassName-&lt;other-chars&gt;.{yaml,json,…}</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default</dt>
@@ -462,25 +462,25 @@ A validation step is optionally performed in between</p>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-linkml-convert-S">
-<span id="cmdoption-linkml-convert-s"></span><span id="cmdoption-linkml-convert-index-slot"></span><span class="sig-name descname"><span class="pre">-S</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--index-slot</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;index_slot&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-convert-S" title="Permalink to this definition"></a></dt>
+<span id="cmdoption-linkml-convert-s"></span><span id="cmdoption-linkml-convert-index-slot"></span><span class="sig-name descname"><span class="pre">-S</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--index-slot</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;index_slot&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-convert-S" title="Permalink to this definition">#</a></dt>
 <dd><p>top level slot. Required for CSV dumping/loading</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-linkml-convert-0">
-<span id="cmdoption-linkml-convert-schema"></span><span class="sig-name descname"><span class="pre">-s</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--schema</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;schema&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-convert-0" title="Permalink to this definition"></a></dt>
+<span id="cmdoption-linkml-convert-schema"></span><span class="sig-name descname"><span class="pre">-s</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--schema</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;schema&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-convert-0" title="Permalink to this definition">#</a></dt>
 <dd><p>Path to schema specified as LinkML yaml</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-linkml-convert-P">
-<span id="cmdoption-linkml-convert-p"></span><span id="cmdoption-linkml-convert-prefix"></span><span class="sig-name descname"><span class="pre">-P</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--prefix</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;prefix&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-convert-P" title="Permalink to this definition"></a></dt>
+<span id="cmdoption-linkml-convert-p"></span><span id="cmdoption-linkml-convert-prefix"></span><span class="sig-name descname"><span class="pre">-P</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--prefix</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;prefix&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-convert-P" title="Permalink to this definition">#</a></dt>
 <dd><p>Prefixmap base=URI pairs</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-linkml-convert-validate">
-<span id="cmdoption-linkml-convert-no-validate"></span><span class="sig-name descname"><span class="pre">--validate</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-validate</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-convert-validate" title="Permalink to this definition"></a></dt>
+<span id="cmdoption-linkml-convert-no-validate"></span><span class="sig-name descname"><span class="pre">--validate</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-validate</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-convert-validate" title="Permalink to this definition">#</a></dt>
 <dd><p>Validate against the schema</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default</dt>
@@ -491,7 +491,7 @@ A validation step is optionally performed in between</p>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-linkml-convert-infer">
-<span id="cmdoption-linkml-convert-no-infer"></span><span class="sig-name descname"><span class="pre">--infer</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-infer</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-convert-infer" title="Permalink to this definition"></a></dt>
+<span id="cmdoption-linkml-convert-no-infer"></span><span class="sig-name descname"><span class="pre">--infer</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-infer</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-convert-infer" title="Permalink to this definition">#</a></dt>
 <dd><p>Infer missing slot values</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default</dt>
@@ -502,14 +502,14 @@ A validation step is optionally performed in between</p>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-linkml-convert-1">
-<span id="cmdoption-linkml-convert-context"></span><span class="sig-name descname"><span class="pre">-c</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--context</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;context&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-convert-1" title="Permalink to this definition"></a></dt>
+<span id="cmdoption-linkml-convert-context"></span><span class="sig-name descname"><span class="pre">-c</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--context</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;context&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-convert-1" title="Permalink to this definition">#</a></dt>
 <dd><p>path to JSON-LD context file</p>
 </dd></dl>
 
 <p class="rubric">Arguments</p>
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-linkml-convert-arg-INPUT">
-<span id="cmdoption-linkml-convert-arg-input"></span><span class="sig-name descname"><span class="pre">INPUT</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-convert-arg-INPUT" title="Permalink to this definition"></a></dt>
+<span id="cmdoption-linkml-convert-arg-input"></span><span class="sig-name descname"><span class="pre">INPUT</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-convert-arg-INPUT" title="Permalink to this definition">#</a></dt>
 <dd><p>Required argument</p>
 </dd></dl>
 

@@ -296,10 +296,10 @@
         </div>
         <article role="main">
           <section id="faq-python">
-<h1>FAQ: Python<a class="headerlink" href="#faq-python" title="Permalink to this heading"></a></h1>
+<h1>FAQ: Python<a class="headerlink" href="#faq-python" title="Permalink to this heading">#</a></h1>
 <p>this section of the FAQ is for questions about writing Python code that uses the LinkML framework.</p>
 <section id="why-would-i-use-linkml-in-my-python-code">
-<h2>Why would I use LinkML in my Python code?<a class="headerlink" href="#why-would-i-use-linkml-in-my-python-code" title="Permalink to this heading"></a></h2>
+<h2>Why would I use LinkML in my Python code?<a class="headerlink" href="#why-would-i-use-linkml-in-my-python-code" title="Permalink to this heading">#</a></h2>
 <p>You can use LinkML without writing a line of Python code, but if you
 are coding in Python there are a number of advantages to using parts
 of the LinkML toolchain.</p>
@@ -314,24 +314,24 @@ lots of “freebies” for things like loading/dumping to formats like YAML/JSON
 </ul>
 </section>
 <section id="where-do-i-find-out-more">
-<h2>Where do I find out more?<a class="headerlink" href="#where-do-i-find-out-more" title="Permalink to this heading"></a></h2>
+<h2>Where do I find out more?<a class="headerlink" href="#where-do-i-find-out-more" title="Permalink to this heading">#</a></h2>
 <ul class="simple">
 <li><p><a class="reference external" href="https://linkml.io/linkml/data/python.html">working with python</a></p></li>
 <li><p><a class="reference external" href="https://linkml.io/linkml/developers/index.html">developers guide</a></p></li>
 </ul>
 </section>
 <section id="which-packages-do-i-need-to-install">
-<h2>Which packages do I need to install?<a class="headerlink" href="#which-packages-do-i-need-to-install" title="Permalink to this heading"></a></h2>
+<h2>Which packages do I need to install?<a class="headerlink" href="#which-packages-do-i-need-to-install" title="Permalink to this heading">#</a></h2>
 <p>If you want to generate Python dataclasses, then you need the full <a class="reference external" href="https://github.com/linkml/linkml">linkml</a> package.</p>
 <p>However, your code doesn’t need this at <em>runtime</em>. Once you have generated your project files your only dependency will be on the more lightweight <a class="reference external" href="https://github.com/linkml/linkml-runtime">linkml-runtime</a> package.</p>
 <p><em>Note</em> you don’t need to install <a class="reference external" href="https://github.com/linkml/linkml-model">linkml-model</a>, the metamodel is included as part of the runtime</p>
 </section>
 <section id="how-do-i-get-started">
-<h2>How do I get started?<a class="headerlink" href="#how-do-i-get-started" title="Permalink to this heading"></a></h2>
+<h2>How do I get started?<a class="headerlink" href="#how-do-i-get-started" title="Permalink to this heading">#</a></h2>
 <p>We recommend going through the tutorial, and in particular, <a class="reference external" href="https://linkml.io/linkml/intro/tutorial05.html">Part 5: Using Python</a></p>
 </section>
 <section id="what-is-a-loader-or-a-dumper">
-<h2>What is a loader or a dumper?<a class="headerlink" href="#what-is-a-loader-or-a-dumper" title="Permalink to this heading"></a></h2>
+<h2>What is a loader or a dumper?<a class="headerlink" href="#what-is-a-loader-or-a-dumper" title="Permalink to this heading">#</a></h2>
 <ul class="simple">
 <li><p>loaders allow data to be loaded <em>into</em> python objects from supported formats</p></li>
 <li><p>dumpers allow data to be loaded <em>from</em> python objects into supported formats</p></li>
@@ -359,7 +359,7 @@ there is insufficient information in the json/yaml</p>
 <p>Note: dumpers shouldn’t be confused with <em>generators</em> - dumpers are for exporting <em>data</em> that conforms to a LinkML schema, and generators are for converting an actual LinkML schema to another framework (e.g. json-schema)</p>
 </section>
 <section id="what-formats-are-supported">
-<h2>What formats are supported?<a class="headerlink" href="#what-formats-are-supported" title="Permalink to this heading"></a></h2>
+<h2>What formats are supported?<a class="headerlink" href="#what-formats-are-supported" title="Permalink to this heading">#</a></h2>
 <p>The core formats for LinkML data are:</p>
 <ul class="simple">
 <li><p>json (see json_dumper and json_loader)</p></li>
@@ -370,12 +370,12 @@ there is insufficient information in the json/yaml</p>
 <p>Data can also be exported to and imported from SQL databases, but this is not part of the loader/dumper framework</p>
 </section>
 <section id="why-do-i-get-a-not-json-serializable-message">
-<h2>Why do I get a “not JSON serializable” message?<a class="headerlink" href="#why-do-i-get-a-not-json-serializable-message" title="Permalink to this heading"></a></h2>
+<h2>Why do I get a “not JSON serializable” message?<a class="headerlink" href="#why-do-i-get-a-not-json-serializable-message" title="Permalink to this heading">#</a></h2>
 <p>This is probably because you are using the <code class="docutils literal notranslate"><span class="pre">dump</span></code> method from the <code class="docutils literal notranslate"><span class="pre">json</span></code> package, which expects dictionaries, not objects.</p>
 <p>you should use <code class="docutils literal notranslate"><span class="pre">json_dumper</span></code> instead.</p>
 </section>
 <section id="what-is-the-difference-between-gen-python-and-gen-pydantic-and-gen-sqla">
-<h2>What is the difference between gen-python and gen-pydantic and gen-sqla?<a class="headerlink" href="#what-is-the-difference-between-gen-python-and-gen-pydantic-and-gen-sqla" title="Permalink to this heading"></a></h2>
+<h2>What is the difference between gen-python and gen-pydantic and gen-sqla?<a class="headerlink" href="#what-is-the-difference-between-gen-python-and-gen-pydantic-and-gen-sqla" title="Permalink to this heading">#</a></h2>
 <p>Python has a number of different options for defining an object model:</p>
 <ul class="simple">
 <li><p>dataclasses (part of the standard library)</p></li>
@@ -422,25 +422,25 @@ interest in Pydantic, especially as this works well with the popular FastAPI fra
 </ul>
 </section>
 <section id="can-i-convert-between-sql-alchemy-models-and-dataclasses-pydantic">
-<h2>Can I convert between SQL Alchemy models and dataclasses/pydantic<a class="headerlink" href="#can-i-convert-between-sql-alchemy-models-and-dataclasses-pydantic" title="Permalink to this heading"></a></h2>
+<h2>Can I convert between SQL Alchemy models and dataclasses/pydantic<a class="headerlink" href="#can-i-convert-between-sql-alchemy-models-and-dataclasses-pydantic" title="Permalink to this heading">#</a></h2>
 <p>Yes, <a class="reference external" href="https://linkml.io/linkml/developers/sqlstore.html">SQLStore</a> can perform interconversion</p>
 <p>See <a class="reference external" href="https://github.com/linkml/linkml/blob/main/notebooks/SQL-examples.ipynb.ipynb">SQL-Examples notebook</a>
 for example code</p>
 </section>
 <section id="how-do-i-work-programmatically-with-rdf-data">
-<h2>How do I work programmatically with RDF data?<a class="headerlink" href="#how-do-i-work-programmatically-with-rdf-data" title="Permalink to this heading"></a></h2>
+<h2>How do I work programmatically with RDF data?<a class="headerlink" href="#how-do-i-work-programmatically-with-rdf-data" title="Permalink to this heading">#</a></h2>
 <p>TODO</p>
 </section>
 <section id="is-linkml-compatible-with-rdflib">
-<h2>Is LinkML compatible with RDFLib?<a class="headerlink" href="#is-linkml-compatible-with-rdflib" title="Permalink to this heading"></a></h2>
+<h2>Is LinkML compatible with RDFLib?<a class="headerlink" href="#is-linkml-compatible-with-rdflib" title="Permalink to this heading">#</a></h2>
 <p>TODO</p>
 </section>
 <section id="is-linkml-compatible-with-flask">
-<h2>Is LinkML compatible with Flask?<a class="headerlink" href="#is-linkml-compatible-with-flask" title="Permalink to this heading"></a></h2>
+<h2>Is LinkML compatible with Flask?<a class="headerlink" href="#is-linkml-compatible-with-flask" title="Permalink to this heading">#</a></h2>
 <p>TODO</p>
 </section>
 <section id="is-linkml-compatible-with-python-graphql-frameworks">
-<h2>Is LinkML compatible with Python GraphQL frameworks?<a class="headerlink" href="#is-linkml-compatible-with-python-graphql-frameworks" title="Permalink to this heading"></a></h2>
+<h2>Is LinkML compatible with Python GraphQL frameworks?<a class="headerlink" href="#is-linkml-compatible-with-python-graphql-frameworks" title="Permalink to this heading">#</a></h2>
 <p>TODO</p>
 </section>
 </section>

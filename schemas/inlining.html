@@ -296,10 +296,10 @@
         </div>
         <article role="main">
           <section id="inlining-objects">
-<h1>Inlining objects<a class="headerlink" href="#inlining-objects" title="Permalink to this heading"></a></h1>
+<h1>Inlining objects<a class="headerlink" href="#inlining-objects" title="Permalink to this heading">#</a></h1>
 <p>LinkML allows control over whether objects should be <em>inlined</em> or <em>referenced</em> in JSON-style representations using the <a class="reference external" href="https://w3id.org/linkml/inlined">inlined</a> slot.</p>
 <section id="example">
-<h2>Example<a class="headerlink" href="#example" title="Permalink to this heading"></a></h2>
+<h2>Example<a class="headerlink" href="#example" title="Permalink to this heading">#</a></h2>
 <p>For example, given a model with a Organism class that can reference other Organism classes:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="nt">Organism</span><span class="p">:</span><span class="w"></span>
@@ -316,7 +316,7 @@
 <p>for example, the object for “mammals” may be logically related to objects for “primates” and “cats” via the <code class="docutils literal notranslate"><span class="pre">has_subtypes</span></code> slot. This logical relationship can be serialized in the following different ways:</p>
 </section>
 <section id="no-inlining-reference-by-key">
-<h2>No inlining, reference by key<a class="headerlink" href="#no-inlining-reference-by-key" title="Permalink to this heading"></a></h2>
+<h2>No inlining, reference by key<a class="headerlink" href="#no-inlining-reference-by-key" title="Permalink to this heading">#</a></h2>
 <p>schema:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="w">      </span><span class="nt">has_subtypes</span><span class="p">:</span><span class="w"></span>
 <span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Organism</span><span class="w"></span>
@@ -342,7 +342,7 @@
 <p>Note that if the range class does not declare an <a class="reference external" href="https://w3id.org/linkml/identifier">identifier</a> then <code class="docutils literal notranslate"><span class="pre">inlined</span></code> is always true</p>
 </section>
 <section id="inlining-as-a-list">
-<h2>Inlining as a list<a class="headerlink" href="#inlining-as-a-list" title="Permalink to this heading"></a></h2>
+<h2>Inlining as a list<a class="headerlink" href="#inlining-as-a-list" title="Permalink to this heading">#</a></h2>
 <p>To force inlining as a list, set <a class="reference external" href="https://w3id.org/linkml/inlined_as_list">inlined_as_list</a> to <code class="docutils literal notranslate"><span class="pre">true</span></code></p>
 <p>schema:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="w">      </span><span class="nt">has_subtypes</span><span class="p">:</span><span class="w"></span>
@@ -367,7 +367,7 @@
 </div>
 </section>
 <section id="inlining-as-a-dictionary">
-<h2>Inlining as a dictionary<a class="headerlink" href="#inlining-as-a-dictionary" title="Permalink to this heading"></a></h2>
+<h2>Inlining as a dictionary<a class="headerlink" href="#inlining-as-a-dictionary" title="Permalink to this heading">#</a></h2>
 <p>To force inlining as a dictionary, set <a class="reference external" href="https://w3id.org/linkml/inlined_as_list">inlined_as_list</a> to <code class="docutils literal notranslate"><span class="pre">false</span></code></p>
 <p>This is a slight variant on inlining as a list - here a dictionary keyed by identifier is provided</p>
 <p><strong>Note</strong> this is only possible if the range of the slot is a class that has an identifier slot</p>
@@ -412,7 +412,7 @@ like this:</p>
 </div>
 </section>
 <section id="inlining-a-single-valued-object">
-<h2>Inlining a single-valued object<a class="headerlink" href="#inlining-a-single-valued-object" title="Permalink to this heading"></a></h2>
+<h2>Inlining a single-valued object<a class="headerlink" href="#inlining-a-single-valued-object" title="Permalink to this heading">#</a></h2>
 <p>Consider a variant of the above schema, with a non-multivalued slot</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="w">      </span><span class="nt">has_parent</span><span class="p">:</span><span class="w"></span>
 <span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Organism</span><span class="w"></span>
@@ -433,7 +433,7 @@ like this:</p>
 </div>
 </section>
 <section id="inlining-with-non-json-serializations">
-<h2>Inlining with non-JSON serializations<a class="headerlink" href="#inlining-with-non-json-serializations" title="Permalink to this heading"></a></h2>
+<h2>Inlining with non-JSON serializations<a class="headerlink" href="#inlining-with-non-json-serializations" title="Permalink to this heading">#</a></h2>
 <p>The concept of inlining only makes sense with JSON-like tree-oriented data serializations:</p>
 <ul class="simple">
 <li><p>JSON and JSON-LD</p></li>
@@ -444,7 +444,7 @@ like this:</p>
 <p>The inlined slot in LinkML corresponds to <code class="docutils literal notranslate"><span class="pre">&#64;embed</span></code> in JSON-LD</p>
 </section>
 <section id="when-should-inlining-be-used">
-<h2>When should inlining be used?<a class="headerlink" href="#when-should-inlining-be-used" title="Permalink to this heading"></a></h2>
+<h2>When should inlining be used?<a class="headerlink" href="#when-should-inlining-be-used" title="Permalink to this heading">#</a></h2>
 <p>The choice of whether to inline in a JSON representation is application dependent. Inlining can be more convenient for applications that need to traverse an object tree, but inlining can also lead to redundancy in representation and more verbose object payloads.</p>
 </section>
 </section>

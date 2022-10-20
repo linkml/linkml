@@ -296,14 +296,14 @@
         </div>
         <article role="main">
           <section id="schema-element-metadata">
-<h1>Schema Element Metadata<a class="headerlink" href="#schema-element-metadata" title="Permalink to this heading"></a></h1>
+<h1>Schema Element Metadata<a class="headerlink" href="#schema-element-metadata" title="Permalink to this heading">#</a></h1>
 <p>There are various slots that can be used to provide metadata about
 either a schema or elements of a schema. These typically don’t affect
 the semantics of the model, but rather act as annotations that can be
 used to provide more information to people, or that can guide the
 behavior of some tools.</p>
 <section id="providing-descriptions">
-<h2>Providing descriptions<a class="headerlink" href="#providing-descriptions" title="Permalink to this heading"></a></h2>
+<h2>Providing descriptions<a class="headerlink" href="#providing-descriptions" title="Permalink to this heading">#</a></h2>
 <p>The <a class="reference external" href="https://w3id.org/linkml/description">description</a> slot can be used to provide a human-readable description of any schema element</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="w">  </span><span class="nt">Person</span><span class="p">:</span><span class="w"></span>
 <span class="w">    </span><span class="nt">is_a</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">NamedThing</span><span class="w"></span>
@@ -326,7 +326,7 @@ behavior of some tools.</p>
 <p>This <a class="reference external" href="https://yaml-multiline.info/">guide to yaml formatting</a> may be helpful</p>
 </section>
 <section id="providing-aliases">
-<h2>Providing aliases<a class="headerlink" href="#providing-aliases" title="Permalink to this heading"></a></h2>
+<h2>Providing aliases<a class="headerlink" href="#providing-aliases" title="Permalink to this heading">#</a></h2>
 <p>The <a class="reference external" href="https://w3id.org/linkml/aliases">aliases</a> slot can be used to define a list of aliases for a class or slot. This is useful for adding synonymous names to your class (or slot), that serve either as hints for human users, or to enhance search and findability over your model</p>
 <p>Example:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">Person</span><span class="p">:</span><span class="w"></span>
@@ -340,7 +340,7 @@ Downstream tooling could use these aliases to help users query the model for exa
 aliases and element names interchangeable.</p>
 </section>
 <section id="structured-aliases">
-<h2>Structured aliases<a class="headerlink" href="#structured-aliases" title="Permalink to this heading"></a></h2>
+<h2>Structured aliases<a class="headerlink" href="#structured-aliases" title="Permalink to this heading">#</a></h2>
 <p>Sometimes you may want to include additional information about an alias</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">Person</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="nt">structured_aliases</span><span class="p">:</span><span class="w"></span>
@@ -355,7 +355,7 @@ aliases and element names interchangeable.</p>
 </div>
 </section>
 <section id="deprecating-elements">
-<h2>Deprecating elements<a class="headerlink" href="#deprecating-elements" title="Permalink to this heading"></a></h2>
+<h2>Deprecating elements<a class="headerlink" href="#deprecating-elements" title="Permalink to this heading">#</a></h2>
 <p>Any schema element can be deprecated, with a reason provided; optionally, a replacement can be provided</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="nt">Agent</span><span class="p">:</span><span class="w"></span>
@@ -365,7 +365,7 @@ aliases and element names interchangeable.</p>
 </div>
 </section>
 <section id="specifying-units">
-<h2>Specifying units<a class="headerlink" href="#specifying-units" title="Permalink to this heading"></a></h2>
+<h2>Specifying units<a class="headerlink" href="#specifying-units" title="Permalink to this heading">#</a></h2>
 <p>You can use the <a class="reference external" href="https://w3id.org/linkml/unit">unit</a> element to annotate a slot
 as holding a value in a particular unit:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">slots</span><span class="p">:</span><span class="w"></span>
@@ -434,7 +434,7 @@ formally specifying the intended use of a slot, and provides a potential hook fo
 and automated data model mapping.</p>
 </section>
 <section id="arbitrary-annotations">
-<h2>Arbitrary annotations<a class="headerlink" href="#arbitrary-annotations" title="Permalink to this heading"></a></h2>
+<h2>Arbitrary annotations<a class="headerlink" href="#arbitrary-annotations" title="Permalink to this heading">#</a></h2>
 <p>You can use the <a class="reference external" href="https://w3id.org/linkml/annotations">annotations</a> element to provide
 arbitrary key-value pairs for any of your schema elements. This can be
 used for when none of the existing metamodel slots are appropriate.</p>
@@ -450,7 +450,7 @@ deta elements. These can then be used by applications such as UIs to drive behav
 </div>
 </section>
 <section id="other-metadata-slots">
-<h2>Other metadata slots<a class="headerlink" href="#other-metadata-slots" title="Permalink to this heading"></a></h2>
+<h2>Other metadata slots<a class="headerlink" href="#other-metadata-slots" title="Permalink to this heading">#</a></h2>
 <p>See <a class="reference external" href="https://w3id.org/linkml/CommonMetadata">CommonMetadata</a> for other slots</p>
 </section>
 </section>

@@ -296,15 +296,15 @@
         </div>
         <article role="main">
           <section id="porting-linkml-tools-to-other-programming-languages">
-<h1>Porting LinkML tools to other programming languages<a class="headerlink" href="#porting-linkml-tools-to-other-programming-languages" title="Permalink to this heading"></a></h1>
+<h1>Porting LinkML tools to other programming languages<a class="headerlink" href="#porting-linkml-tools-to-other-programming-languages" title="Permalink to this heading">#</a></h1>
 <section id="preamble">
-<h2>Preamble<a class="headerlink" href="#preamble" title="Permalink to this heading"></a></h2>
+<h2>Preamble<a class="headerlink" href="#preamble" title="Permalink to this heading">#</a></h2>
 <p><strong>this is an advanced how-to guide that is not expected to be useful for typical LinkML users or developers</strong>.</p>
 <p>If you are thinking of porting any part of the LinkML toolchain to another language (R, Rust, GO, …) please contact us first,
 by <a class="reference external" href="https://github.com/linkml/linkml/issues">making an issue in our GitHub tracker</a></p>
 </section>
 <section id="introduction">
-<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this heading"></a></h2>
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this heading">#</a></h2>
 <p>LinkML is a <em>programming language-neutral framework</em>. Using LinkML you
 can specify a data model (schema, data dictionary) for your project, and use LinkML tools for
 validating data. The majority tools are in Python, but they can be executed
@@ -313,7 +313,7 @@ dependencies in non-python code.</p>
 <p>Before embarking on a porting project, please read the <a class="reference external" href="https://linkml.io/linkml-model/docs/specification/">The LinkML specification</a></p>
 </section>
 <section id="data-class-generators">
-<h2>Data class generators<a class="headerlink" href="#data-class-generators" title="Permalink to this heading"></a></h2>
+<h2>Data class generators<a class="headerlink" href="#data-class-generators" title="Permalink to this heading">#</a></h2>
 <p>For a small but growing set of languages there is support for
 <a class="reference external" href="https://linkml.io/linkml/generators/index.html">generating object
 models</a> for that
@@ -343,7 +343,7 @@ as between Java records, interfaces, or classes.</p>
 <p>While this <em>could</em> be done in Python and Jinja2 templates, there is an advantage to leveraging existing
 tooling in the host language.</p>
 <section id="direct-yaml-access-vs-higher-level-access">
-<h3>Direct YAML access vs higher level access<a class="headerlink" href="#direct-yaml-access-vs-higher-level-access" title="Permalink to this heading"></a></h3>
+<h3>Direct YAML access vs higher level access<a class="headerlink" href="#direct-yaml-access-vs-higher-level-access" title="Permalink to this heading">#</a></h3>
 <p>It may be tempting to take the “easy” approach and simply write code
 that works directly from LinkML yaml files. All modern languages have
 support for YAML.</p>
@@ -366,7 +366,7 @@ However, if you are aiming for a more powerful library, then this has a number o
 </section>
 </section>
 <section id="definitions">
-<h2>Definitions<a class="headerlink" href="#definitions" title="Permalink to this heading"></a></h2>
+<h2>Definitions<a class="headerlink" href="#definitions" title="Permalink to this heading">#</a></h2>
 <ul class="simple">
 <li><p>LinkML framework: a general purpose programming library for working with LinkML models</p></li>
 <li><p>Target Language: the programming language one wishes to write a LinkML framework for</p></li>
@@ -374,7 +374,7 @@ However, if you are aiming for a more powerful library, then this has a number o
 </ul>
 </section>
 <section id="overview-of-python-framework">
-<h2>Overview of Python Framework<a class="headerlink" href="#overview-of-python-framework" title="Permalink to this heading"></a></h2>
+<h2>Overview of Python Framework<a class="headerlink" href="#overview-of-python-framework" title="Permalink to this heading">#</a></h2>
 <p>Currently there are 3 core repos:</p>
 <ul class="simple">
 <li><p><a class="reference external" href="https://github.com/linkml/linkml-model">linkml-model</a> This holds the Source of Truth for the <em>metamodel</em></p></li>
@@ -387,11 +387,11 @@ would create a circularity since the metamodel is like any other
 schema and depends on the runtime. Instead, linkml-model is synced into linkml-runtime.</p>
 </section>
 <section id="how-to-port-to-your-language-of-choice">
-<h2>How to Port to your language of choice<a class="headerlink" href="#how-to-port-to-your-language-of-choice" title="Permalink to this heading"></a></h2>
+<h2>How to Port to your language of choice<a class="headerlink" href="#how-to-port-to-your-language-of-choice" title="Permalink to this heading">#</a></h2>
 <p>This provides a general framework to tackle the problem of building
 support for a target language via <em>bootstrapping</em></p>
 <section id="step-1-bootstrap-metamodel-data-access-classes">
-<h3>Step 1: Bootstrap metamodel data access classes<a class="headerlink" href="#step-1-bootstrap-metamodel-data-access-classes" title="Permalink to this heading"></a></h3>
+<h3>Step 1: Bootstrap metamodel data access classes<a class="headerlink" href="#step-1-bootstrap-metamodel-data-access-classes" title="Permalink to this heading">#</a></h3>
 <p>Even if you intended to ultimately use the target language for doing
 code geneation, we strongly recommend you bootstrap by using the existing
 generators framework. This may take a small amount of Python coding,
@@ -413,11 +413,11 @@ sure to use the newer style SchemaView generators.</p>
 <p>There are no right or wrong answers here. A good strategy is to start with the simplest thing that could work and build out from there.</p>
 <p>By way of comparison here are some rough descriptions of existing generators and their decisions:</p>
 <section id="case-study-pydanticgen">
-<h4>Case study: pydanticgen<a class="headerlink" href="#case-study-pydanticgen" title="Permalink to this heading"></a></h4>
+<h4>Case study: pydanticgen<a class="headerlink" href="#case-study-pydanticgen" title="Permalink to this heading">#</a></h4>
 <p><strong>pydanticgen</strong>: this generates largely standalone python classes, with only a dependency on the 3rd party Pydantic framework (all classes ultimately inherit from BaseModel)</p>
 </section>
 <section id="case-study-pythongen">
-<h4>Case study: pythongen<a class="headerlink" href="#case-study-pythongen" title="Permalink to this heading"></a></h4>
+<h4>Case study: pythongen<a class="headerlink" href="#case-study-pythongen" title="Permalink to this heading">#</a></h4>
 <p><strong>pythongen</strong>: this builds fully-featured Python classes that follow
 the dataclasses framework, which is part of the Python core. These
 classes are not standalone however. Let’s examine the header of
@@ -531,14 +531,14 @@ statements are added</p>
 <p>All of these decisions lead to a very fully featured set of generated data access classes, but these decisions do not need to be replicated when writing a generator for your target language.</p>
 </section>
 <section id="case-study-typescriptgen">
-<h4>Case study: typescriptgen<a class="headerlink" href="#case-study-typescriptgen" title="Permalink to this heading"></a></h4>
+<h4>Case study: typescriptgen<a class="headerlink" href="#case-study-typescriptgen" title="Permalink to this heading">#</a></h4>
 <p>See: <a class="reference internal" href="../generators/typescript.html"><span class="doc std std-doc">gen-typescript</span></a></p>
 <p>In contrast to the python approaches, this targets typescript <em>Interfaces</em> as the construct of choice in the target language</p>
 <p>Note that interfaces are “compiled away” but are used for static analyis and IDE support</p>
 <p>This is being used to bootstrap a javascript runtime: <a class="reference external" href="https://github.com/linkml/linkml-runtime.js">linkml-runtime.js</a></p>
 </section>
 <section id="case-study-javagen">
-<h4>Case study: javagen<a class="headerlink" href="#case-study-javagen" title="Permalink to this heading"></a></h4>
+<h4>Case study: javagen<a class="headerlink" href="#case-study-javagen" title="Permalink to this heading">#</a></h4>
 <p>See: <a class="reference internal" href="../generators/java.html"><span class="doc std std-doc">gen-java</span></a></p>
 <p>Currently the approaches here are under discussion. There are different choices of target language construct:</p>
 <ul class="simple">
@@ -549,12 +549,12 @@ statements are added</p>
 <p>The current pattern for generation roughly follows the pydanticgen approach of generating largely standalone Java records.</p>
 </section>
 <section id="implementing-for-your-target-language">
-<h4>Implementing for your target language<a class="headerlink" href="#implementing-for-your-target-language" title="Permalink to this heading"></a></h4>
+<h4>Implementing for your target language<a class="headerlink" href="#implementing-for-your-target-language" title="Permalink to this heading">#</a></h4>
 <p>We recommend starting with a generator for simple standalone classes. These do not need to be as fully featured as pythongen. You can treat things like annotating
 model elements with URIs, providing introspection support, and generating JSON as separate concerns – at least at first.</p>
 </section>
 <section id="language-specific-considerations">
-<h4>Language-specific considerations<a class="headerlink" href="#language-specific-considerations" title="Permalink to this heading"></a></h4>
+<h4>Language-specific considerations<a class="headerlink" href="#language-specific-considerations" title="Permalink to this heading">#</a></h4>
 <p>This guide is intended to be general purpose, but it is important to consider local idioms
 for any given language, and how that community may use it.</p>
 <p>For example, R developers do not typically develop database infrastructure the same way
@@ -568,7 +568,7 @@ or validators that work with existing structures.</p>
 </section>
 </section>
 <section id="step-2-generate-data-access-classes-for-the-metamodel">
-<h3>Step 2: Generate data access classes for the metamodel<a class="headerlink" href="#step-2-generate-data-access-classes-for-the-metamodel" title="Permalink to this heading"></a></h3>
+<h3>Step 2: Generate data access classes for the metamodel<a class="headerlink" href="#step-2-generate-data-access-classes-for-the-metamodel" title="Permalink to this heading">#</a></h3>
 <p>This will give you the equivalent of meta.py, types.py in linkml-runtime.</p>
 <p>E.g if your target language is C, and you decided on <em>structs</em> as target construct, then you will have structs with names like <code class="docutils literal notranslate"><span class="pre">ClassDefinition</span></code>, <code class="docutils literal notranslate"><span class="pre">SchemaDefinition</span></code></p>
 <p>Depending on the approach you took in Step 1, this may also include an approach to instantiate this target language datamodel from YAML or JSON.</p>
@@ -583,7 +583,7 @@ or validators that work with existing structures.</p>
 </div>
 </section>
 <section id="step-3-implement-core-logic-for-derived-schemas">
-<h3>Step 3: Implement core logic for derived schemas<a class="headerlink" href="#step-3-implement-core-logic-for-derived-schemas" title="Permalink to this heading"></a></h3>
+<h3>Step 3: Implement core logic for derived schemas<a class="headerlink" href="#step-3-implement-core-logic-for-derived-schemas" title="Permalink to this heading">#</a></h3>
 <p>See: <a class="reference external" href="https://linkml.io/linkml-model/docs/specification/04derived-schemas/">Part 4 of the specification</a></p>
 <p>By this stage you can load and dump schema objects in a type-safe way. It may be tempting to just go off and implement things with this.</p>
 <p>However, you will also want to implement the core logic of LinkML as defined in the LinkML specification, under “Derived Schemas”. You can do this simply by implementing the spec in your target language,
@@ -597,13 +597,13 @@ but a more pragmatic approach is to port the python class SchemaView</p>
 </ul>
 </section>
 <section id="step-4-optional-jettison-the-bootstrap-approach">
-<h3>Step 4 (optional): Jettison the bootstrap approach<a class="headerlink" href="#step-4-optional-jettison-the-bootstrap-approach" title="Permalink to this heading"></a></h3>
+<h3>Step 4 (optional): Jettison the bootstrap approach<a class="headerlink" href="#step-4-optional-jettison-the-bootstrap-approach" title="Permalink to this heading">#</a></h3>
 <p>Now you have a core framework - perhaps not yet complete - for your target language, you may wish to jettison the original generator you wrote with Python/Jinja2 and implement this in the target language.
 This could have advantages such as leveraging code generation frameworks in that target language (this is the case for Java that has a rich codegen framework)</p>
 <p>At this stage you may wish to revisit some design decisions in the original generator, and make the generated code more fully featured like pythongen.</p>
 </section>
 <section id="future-steps">
-<h3>Future Steps<a class="headerlink" href="#future-steps" title="Permalink to this heading"></a></h3>
+<h3>Future Steps<a class="headerlink" href="#future-steps" title="Permalink to this heading">#</a></h3>
 <p>The current LinkML toolchain has many features that you may wish to port over, but not
 everything needs to be ported.</p>
 <p>LinkML follows a “parasitzation” strategy where we can leverage other tool chains.</p>
@@ -616,7 +616,7 @@ language to RDF and back, it may be sufficient to rely on the existing JSON-LD c
 </section>
 </section>
 <section id="summary">
-<h2>Summary<a class="headerlink" href="#summary" title="Permalink to this heading"></a></h2>
+<h2>Summary<a class="headerlink" href="#summary" title="Permalink to this heading">#</a></h2>
 <p>This guide is by its nature high level, and various decisions will be determined by specific features of the target language or even by developer preference. As we gain more experience and port core linkml utilities to more target languages we will update this guide.</p>
 </section>
 </section>

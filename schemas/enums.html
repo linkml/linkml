@@ -296,7 +296,7 @@
         </div>
         <article role="main">
           <section id="semantic-enumerations">
-<h1>Semantic Enumerations<a class="headerlink" href="#semantic-enumerations" title="Permalink to this heading"></a></h1>
+<h1>Semantic Enumerations<a class="headerlink" href="#semantic-enumerations" title="Permalink to this heading">#</a></h1>
 <p>Enumerations are common features in modeling frameworks. These can be
 thought of as a “drop-down” of permissible values for a
 field/slot. For example, a “vital status” slot may have an enumeration
@@ -307,7 +307,7 @@ with permissible values <code class="docutils literal notranslate"><span class="
 <li><p>Enumerations can be <em>static</em> or <em>dynamic</em>, where dynamic enums are defined by a set of constraints (e.g. a branch of an ontology)</p></li>
 </ul>
 <section id="basic-enums">
-<h2>Basic Enums<a class="headerlink" href="#basic-enums" title="Permalink to this heading"></a></h2>
+<h2>Basic Enums<a class="headerlink" href="#basic-enums" title="Permalink to this heading">#</a></h2>
 <p>The core enumeration model is the same as for familiar systems, where there is a set of allowed string values:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">enums</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="nt">FamilialRelationshipType</span><span class="p">:</span><span class="w"></span>
@@ -331,7 +331,7 @@ with permissible values <code class="docutils literal notranslate"><span class="
 </div>
 </section>
 <section id="mapping-permissible-values-to-ontologies">
-<h2>Mapping Permissible Values to Ontologies<a class="headerlink" href="#mapping-permissible-values-to-ontologies" title="Permalink to this heading"></a></h2>
+<h2>Mapping Permissible Values to Ontologies<a class="headerlink" href="#mapping-permissible-values-to-ontologies" title="Permalink to this heading">#</a></h2>
 <p>As an example, we will map the Permissible Values above to terms from the GA4GH <a class="reference external" href="https://github.com/GA4GH-Pedigree-Standard/">pedigree standard</a> kinship ontology.</p>
 <p>We will first add a base prefix declaration (KIN concepts have PURLs of the form http://purl.org/ga4gh/kin.owl#KIN_007</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">prefixes</span><span class="p">:</span><span class="w"></span>
@@ -356,7 +356,7 @@ with permissible values <code class="docutils literal notranslate"><span class="
 </div>
 </section>
 <section id="working-with-enums-in-python">
-<h2>Working with Enums in Python<a class="headerlink" href="#working-with-enums-in-python" title="Permalink to this heading"></a></h2>
+<h2>Working with Enums in Python<a class="headerlink" href="#working-with-enums-in-python" title="Permalink to this heading">#</a></h2>
 <p>Enumerations are mapped directly to Python enums. See</p>
 <ul class="simple">
 <li><p><a class="reference external" href="https://github.com/linkml/linkml/blob/main/notebooks/enumerations.ipynb">enumerations notebook</a></p></li>
@@ -364,7 +364,7 @@ with permissible values <code class="docutils literal notranslate"><span class="
 <p>For examples</p>
 </section>
 <section id="dynamic-enums">
-<h2>Dynamic Enums<a class="headerlink" href="#dynamic-enums" title="Permalink to this heading"></a></h2>
+<h2>Dynamic Enums<a class="headerlink" href="#dynamic-enums" title="Permalink to this heading">#</a></h2>
 <p>Starting with LinkML 1.3, enums do not have to be a static hardcoded list; instead they can be <em>dynamic</em>, populated by a query.</p>
 <p>This allows the enum to be synced with some upstream source, and avoids hardcoding very long lists where there are a lot of possibilities.</p>
 <p>The following example defines an enumeration that selects any subtype of “neuron” from the OBO cell type ontology:</p>
@@ -434,7 +434,7 @@ with permissible values <code class="docutils literal notranslate"><span class="
 </div>
 </section>
 <section id="tooling-to-support-dynamic-enums">
-<h2>Tooling to support dynamic enums<a class="headerlink" href="#tooling-to-support-dynamic-enums" title="Permalink to this heading"></a></h2>
+<h2>Tooling to support dynamic enums<a class="headerlink" href="#tooling-to-support-dynamic-enums" title="Permalink to this heading">#</a></h2>
 <p>Different tool chains may choose to implement dynamic enums differently.</p>
 <p>For example, if you have a stack that uses JSON-Schema for validation,
 then tools may choose to <em>materialize</em> a dynamic query into a static
