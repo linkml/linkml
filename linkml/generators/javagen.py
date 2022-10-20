@@ -1,6 +1,6 @@
 import os
 from dataclasses import field, dataclass
-from typing import Optional
+from typing import Optional, Dict
 import click
 import pkg_resources
 from jinja2 import Environment, FileSystemLoader, Template
@@ -51,6 +51,13 @@ TYPEMAP = {
     "xsd:decimal": "BigDecimal",
 }
 
+TYPE_DEFAULTS = {
+    "bool": "false",
+    "int": "0",
+    "float": "0.0",
+    "double": "0.0",
+    "String": '""'
+}
 
 @dataclass
 class JavaGenerator(OOCodeGenerator):
@@ -73,10 +80,14 @@ class JavaGenerator(OOCodeGenerator):
     """If True then use java records (introduced in java 14) rather than classes"""
 
     template_file: Optional[str] = None
+
     gen_classvars: bool = field(default_factory=lambda: True)
     gen_slots: bool = field(default_factory=lambda: True)
     genmeta: bool = field(default_factory=lambda: False)
     emit_metadata: bool = field(default_factory=lambda: True)
+
+    def default_value_for_type(self, typ: str) -> str:
+        return TYPE_DEFAULTS.get(typ, "null")
 
     def map_type(self, t: TypeDefinition, required: bool = False) -> str:
         if t.uri:

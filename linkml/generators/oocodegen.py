@@ -2,7 +2,7 @@ import abc
 import re
 import unicodedata
 from dataclasses import dataclass, field
-from typing import List, Optional
+from typing import List, Optional, Dict
 
 from linkml_runtime.linkml_model.meta import (ClassDefinition,
                                               SchemaDefinition, SlotDefinition,
@@ -84,6 +84,10 @@ class OOCodeGenerator(Generator):
     @abc.abstractmethod
     def serialize(self, directory: str) -> None:
         raise NotImplementedError("Not implemented.")
+
+    @abc.abstractmethod
+    def default_value_for_type(self, typ: str) -> str:
+        raise NotImplementedError
 
     def get_class_name(self, cn):
         return camelcase(cn)
@@ -181,6 +185,9 @@ class OOCodeGenerator(Generator):
                     default_value = "0"
                 elif range == "String":
                     default_value = '""'
+
+                # TODO:
+                #  default_value = default_value_for_type(range)
 
                 if slot.multivalued:
                     range = self.make_multivalued(range)
