@@ -33,7 +33,7 @@ dumpers_loaders = {
 }
 
 aliases = {
-    "ttl": "rdf",
+    "rdf": "ttl",
     "jsonld": "json-ld",
 }
 
@@ -66,7 +66,7 @@ def _is_xsv(fmt: str) -> bool:
 
 
 def _is_rdf_format(fmt: str) -> bool:
-    return fmt == "rdf" or fmt == "ttl" or fmt == "json-ld"
+    return fmt == "rdf" or fmt == "ttl" or fmt == "turtle" or fmt == "json-ld"
 
 
 def get_loader(fmt: str) -> Loader:
