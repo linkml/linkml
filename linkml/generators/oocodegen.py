@@ -95,7 +95,7 @@ class OOCodeGenerator(Generator):
             safe_sn = underscore(sn)
         return safe_sn
 
-    def map_type(self, t: TypeDefinition) -> str:
+    def map_type(self, t: TypeDefinition, required: bool = False) -> str:
         return t.base
 
     def make_multivalued(self, range: str) -> str:
@@ -166,7 +166,7 @@ class OOCodeGenerator(Generator):
                     default_value = "null"
                 elif range in sv.all_types():
                     t = sv.get_type(range)
-                    range = self.map_type(t)
+                    range = self.map_type(t, slot.required)
                     if range is None:  # If mapping fails,
                         range = self.map_type(sv.all_types().get("string"))
                 elif range in sv.all_enums():

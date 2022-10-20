@@ -43,7 +43,7 @@ TYPEMAP = {
     "xsd:integer": "Integer",
     "xsd:float": "Float",
     "xsd:double": "Double",
-    "xsd:boolean": "Boolean",
+    "xsd:boolean": "bool",
     "xds:dateTime": "ZonedDateTime",
     "xds:date": "LocalDateTime",
     "xds:time": "Instant",
@@ -78,9 +78,15 @@ class JavaGenerator(OOCodeGenerator):
     genmeta: bool = field(default_factory=lambda: False)
     emit_metadata: bool = field(default_factory=lambda: True)
 
-    def map_type(self, t: TypeDefinition) -> str:
+    def map_type(self, t: TypeDefinition, required: bool = False) -> str:
         if t.uri:
-            return TYPEMAP.get(t.uri)
+            # only return a Integer, Double Float when required == false
+            typ = TYPEMAP.get(t.uri)
+            if required and (typ == "Double" or typ == "Float"):
+                typ = typ.lower()
+            elif required and typ == "Integer":
+                typ = "int"
+            return typ
         elif t.typeof:
             return self.map_type(self.schemaview.get_type(t.typeof))
         else:
