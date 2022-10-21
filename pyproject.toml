@@ -127,8 +127,7 @@ nbformat = "*"
 coverage = "^6.4.1"
 
 [tool.poetry.extras]
-docs = ["Sphinx", "sphinx-rtd-theme", "sphinxcontrib-mermaid"]
-furo = ["furo"]
+docs = ["Sphinx", "sphinx-rtd-theme", "sphinxcontrib-mermaid", "furo"]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
