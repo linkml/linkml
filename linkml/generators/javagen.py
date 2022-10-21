@@ -1,6 +1,6 @@
 import os
 from dataclasses import field, dataclass
-from typing import Optional, Dict
+from typing import Optional
 import click
 import pkg_resources
 from jinja2 import Environment, FileSystemLoader, Template
@@ -43,7 +43,7 @@ TYPEMAP = {
     "xsd:integer": "Integer",
     "xsd:float": "Float",
     "xsd:double": "Double",
-    "xsd:boolean": "bool",
+    "xsd:boolean": "boolean",
     "xds:dateTime": "ZonedDateTime",
     "xds:date": "LocalDateTime",
     "xds:time": "Instant",
@@ -52,10 +52,10 @@ TYPEMAP = {
 }
 
 TYPE_DEFAULTS = {
-    "bool": "false",
+    "boolean": "false",
     "int": "0",
-    "float": "0.0",
-    "double": "0.0",
+    "float": "0f",
+    "double": "0d",
     "String": '""'
 }
 
