@@ -21,7 +21,7 @@ jobs:
         uses: snok/install-poetry@v1.3
 
       - name: install
-        run: poetry install -E docs
+        run: poetry install -E "docs furo"
 
       - name: Build documentation.
         run: |
