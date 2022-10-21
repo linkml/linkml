@@ -1615,12 +1615,11 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "flake8 
 
 [extras]
 docs = ["sphinx", "sphinx-rtd-theme"]
-furo = []
 
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7.6"
-content-hash = "294bac16fc14768cc90c592516efb89a29fc6b7b09930b18da8628512e7f87f4"
+content-hash = "d6264f415efecb1446961fa9e745b6ae188618513536c9c16003ff28b471861f"
 
 [metadata.files]
 alabaster = []
