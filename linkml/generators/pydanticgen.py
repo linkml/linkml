@@ -19,7 +19,6 @@ from linkml.utils.generator import shared_arguments
 
 default_template = """
 {#-
-
   Jinja2 Template for a pydantic classes
 -#}
 from __future__ import annotations
