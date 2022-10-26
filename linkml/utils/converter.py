@@ -1,5 +1,6 @@
 import logging
 import os
+import sys
 from pathlib import Path
 from typing import List
 
@@ -15,6 +16,8 @@ from linkml.utils import datautils, validation
 from linkml.utils.datautils import (_get_context, _get_format, _is_xsv,
                                     dumpers_loaders, get_dumper, get_loader,
                                     infer_index_slot, infer_root_class)
+
+from linkml._version import __version__
 
 
 @click.command()
@@ -61,6 +64,7 @@ from linkml.utils.datautils import (_get_context, _get_format, _is_xsv,
     help="Infer missing slot values",
 )
 @click.option("--context", "-c", multiple=True, help="path to JSON-LD context file")
+@click.version_option(__version__)
 @click.argument("input")
 def cli(
     input,
