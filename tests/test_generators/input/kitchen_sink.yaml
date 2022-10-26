@@ -91,9 +91,15 @@ classes:
       - age in years
       - addresses
       - has birth event
+      - species name
+      - stomach count
     slot_usage:
       name:
-        pattern: "^\\S+ \\S+"  ## do not do this in a real schema, people have all kinds of names
+        pattern: "^\\S+ \\S+$"  ## do not do this in a real schema, people have all kinds of names
+      species name:
+        equals_string: human
+      stomach count:
+        equals_number: 1
     id_prefixes:
       - P
     exact_mappings:
@@ -246,6 +252,8 @@ classes:
         range: CodeSystem
         inlined: true
         multivalued: true
+    slots:
+      - metadata
 
   FakeClass:
     deprecated: this is not a real class, we are using it to test deprecation
@@ -341,6 +349,9 @@ slots:
   metadata:
     range: AnyObject
     description: Example of a slot that has an unconstrained range
+  species name:
+  stomach count:
+    range: integer
   # slots added for inheritance tree purposes
   tree_slot_A:
     slot_uri: ks:A

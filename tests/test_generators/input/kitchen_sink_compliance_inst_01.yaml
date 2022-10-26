@@ -1,3 +1,6 @@
+# By default these cases are expected to *not* validate. Use valid: true
+# for cases that are expected to validate successfully.
+
 - description: name fails regex
   dataset:
     persons:
@@ -26,7 +29,6 @@
         has_familial_relationships:
           - related_to: P:002
 - description: wrong enum
-  skip: https://github.com/linkml/linkml/issues/201
   dataset:
     persons:
       - id: P:001
@@ -123,6 +125,12 @@
       - id: A1
         was_associated_with:
           id: Agent:987
+- description: inline used with reference
+  valid: true
+  dataset:
+    activities:
+      - id: A1
+        was_associated_with: Agent:987
 - description: date format
   skip: Not implemented yet
   comment: :-
@@ -133,4 +141,24 @@
     activities:
       - id: A1
         started_at_time: "not a real date"
-
+- description: instance of linkml:Any class can have additional properties
+  valid: true
+  dataset:
+    metadata:
+      something: 1
+      anything: fine
+- description: value does not match slot pattern
+  dataset:
+    persons:
+      - id: P1
+        name: Toomany    Spaces
+- description: value does not match equals_string specification
+  dataset:
+    persons:
+      - id: P2
+        species_name: cat
+- description: value does not match equals_number specification
+  dataset:
+    persons:
+      - id: P3
+        stomach_count: 2
