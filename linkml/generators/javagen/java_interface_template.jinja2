@@ -1,0 +1,14 @@
+package {{ doc.package }};
+
+import java.util.List;
+import java.util.Objects;
+
+/**
+ * {{ cls.description }}
+ */
+public interface {{ cls.name }} {
+{% for f in cls.all_fields %}
+    public {{f.range}} {{ f.name }}();
+
+{%- endfor %}
+}

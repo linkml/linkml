@@ -52,7 +52,9 @@ class OOClass:
 
     # ObjectVars
     name: SAFE_NAME
+    description: Optional[SAFE_NAME] = None
     is_a: Optional[SAFE_NAME] = None
+    mixin: Optional[bool] = None
     abstract: Optional[bool] = None
     mixins: List[SAFE_NAME] = field(default_factory=lambda: [])
     fields: List[OOField] = field(default_factory=lambda: [])
@@ -141,10 +143,14 @@ class OOCodeGenerator(Generator):
             )
             docs.append(oodoc)
             ooclass = OOClass(
-                name=safe_cn, package=self.package, fields=[], source_class=c
+                name=safe_cn, description=c.description, package=self.package, fields=[], source_class=c
             )
             # currently hardcoded for java style, one class per doc
             oodoc.classes = [ooclass]
+            if c.mixin:
+                ooclass.mixin = c.mixin
+            if c.mixins:
+                ooclass.mixins = [camelcase(x) for x in c.mixins]
             if c.abstract:
                 ooclass.abstract = c.abstract
             if c.is_a:
