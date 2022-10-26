@@ -726,7 +726,19 @@ class DocGenerator(Generator):
         slot_list = [slot.name for slot in sv.class_induced_slots(class_name=cls.name)]
 
         return list(set(slot_list).difference(self.get_direct_slots(cls)))
+    
+    def get_slot_inherited_from(self, class_name: ClassDefinitionName, slot_name: SlotDefinitionName) -> List[ClassDefinitionName]:
+        """Get the name of the class that a given slot is inherited from.
 
+        :param class_name: name of the class whose slot we are checking
+        :param slot_name: name of slot in consideration
+        :return: list of classes
+        """
+        sv = self.schemaview
+        induced_slot = sv.induced_slot(slot_name, class_name)
+        ancestors = sv.class_ancestors(class_name)
+        return list(set(induced_slot.domain_of).intersection(ancestors))
+    
     def get_mixin_inherited_slots(self, cls: ClassDefinition) -> Dict[str, List[str]]:
         """Fetch list of all slots acquired through mixing.
 
