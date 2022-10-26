@@ -373,6 +373,9 @@ class PydanticGenerator(OOCodeGenerator):
         )
         return code
 
+    def default_value_for_type(self, typ: str) -> str:
+        return 'None'
+
 
 @shared_arguments(PydanticGenerator)
 @click.option(
