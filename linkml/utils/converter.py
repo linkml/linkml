@@ -64,7 +64,7 @@ from linkml._version import __version__
     help="Infer missing slot values",
 )
 @click.option("--context", "-c", multiple=True, help="path to JSON-LD context file")
-@click.version_option(__version__)
+@click.version_option(__version__, "-V", "--version")
 @click.argument("input")
 def cli(
     input,
