@@ -1,7 +1,11 @@
-from importlib.metadata import version, PackageNotFoundError
-
 try:
-    __version__ = version("linkml")
-except PackageNotFoundError:
+    from importlib import metadata
+except ImportError:
+    # Python < 3.8
+    import importlib_metadata as metadata  # pragma: no cover
+                
+try:
+    __version__ = metadata.version("linkml")
+except metadata.PackageNotFoundError:
     # package is not installed
-    __version__ = "0.0.0"
+    __version__ = "0.0.0"  # pragma: no cover
