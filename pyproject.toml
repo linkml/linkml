@@ -42,6 +42,11 @@ packages = [
     { include = "linkml" }
 ]
 
+[tool.poetry-dynamic-versioning]
+enable = true
+vcs = "git"
+style = "pep440"
+
 [tool.poetry.scripts]    
 gen-jsonld-context = "linkml.generators.jsonldcontextgen:cli"
 gen-prefix-map = "linkml.generators.prefixmapgen:cli"
@@ -130,5 +135,5 @@ coverage = "^6.4.1"
 docs = ["Sphinx", "sphinx-rtd-theme", "sphinxcontrib-mermaid", "furo"]
 
 [build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning"]
+build-backend = "poetry_dynamic_versioning.backend"
