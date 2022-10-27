@@ -250,7 +250,7 @@ class JsonSchemaGenerator(Generator):
 
         if slot.description:
             prop.description = slot.description
-        if slot.required or slot is id_slot:
+        if slot.required or slot == id_slot:
             clsobj.required.append(underscore(aliased_slot_name))
         if slot.pattern:
             # See https://github.com/linkml/linkml/issues/193
