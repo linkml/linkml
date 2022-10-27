@@ -7,6 +7,7 @@ import click
 from linkml_runtime.dumpers import json_dumper, yaml_dumper
 from linkml_runtime.utils.schemaview import SchemaView
 
+from linkml._version import __version__
 from linkml.utils.generator import Generator, shared_arguments
 from linkml.utils.helpers import write_to_file
 from linkml_runtime.utils.pattern import generate_patterns
@@ -96,6 +97,7 @@ class LinkmlGenerator(Generator):
     type=click.Path(),
     help="""Name of JSON or YAML file to be created""",
 )
+@click.version_option(__version__, "-V", "--version")
 @click.command()
 def cli(yamlfile, materialize_attributes: bool, output, **kwargs):
     gen = LinkmlGenerator(

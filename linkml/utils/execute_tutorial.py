@@ -8,6 +8,8 @@ from typing import List
 
 import click
 
+from linkml._version import __version__
+
 re_decl = re.compile("^(\\S+):$")
 re_start_yaml = re.compile("^```(\w+)$")
 re_end_yaml = re.compile("^```$")
@@ -188,6 +190,7 @@ def parse_file_to_blocks(input) -> List[Block]:
     help="path to directory to execute tutorial example on",
 )
 @click.argument("inputs", nargs=-1)
+@click.version_option(__version__, "-V", "--version")
 def cli(inputs, directory):
     """
 

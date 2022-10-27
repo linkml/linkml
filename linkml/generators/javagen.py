@@ -6,6 +6,7 @@ import pkg_resources
 from jinja2 import Environment, FileSystemLoader, Template
 from linkml_runtime.linkml_model.meta import TypeDefinition
 
+from linkml._version import __version__
 from linkml.generators import JAVA_GEN_VERSION
 from linkml.generators.oocodegen import OOCodeGenerator
 from linkml.utils.generator import shared_arguments
@@ -132,6 +133,7 @@ class JavaGenerator(OOCodeGenerator):
     default=False,
     help="Optional Java 17 record implementation",
 )
+@click.version_option(__version__, "-V", "--version")
 @click.command()
 def cli(
     yamlfile,

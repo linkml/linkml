@@ -13,6 +13,7 @@ from linkml_runtime.linkml_model.meta import (ClassDefinition, EnumDefinition,
 from linkml_runtime.utils.formatutils import be, camelcase, underscore
 from linkml_runtime.utils.schemaview import SchemaView
 
+from linkml._version import __version__
 from linkml.utils.generator import Generator, shared_arguments
 
 # Map from underlying python data type to json equivalent
@@ -320,6 +321,7 @@ Set additionalProperties=False if closed otherwise true if not closed at the glo
 When handling range constraints, include all descendants of the range class instead of just the range class
 """,
 )
+@click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, **kwargs):
     """Generate JSON Schema representation of a LinkML model"""
     print(JsonSchemaGenerator(yamlfile, **kwargs).serialize(**kwargs))
