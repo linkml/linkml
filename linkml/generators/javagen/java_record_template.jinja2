@@ -1,15 +1,32 @@
 package {{ doc.package }};
 
-import java.math.BigDecimal;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
-import java.util.List;
-import java.util.Objects;
+{% for f in cls.all_fields -%}
+{% if f.range.startswith('BigDecimal') %}
+import java.math.BigDecimal;{% endif -%}
+{% if f.range.startswith('Instant') %}
+import java.time.Instant;{% endif -%}
+{% if f.range.startswith('LocalDateTime') %}
+import java.time.LocalDateTime;{% endif -%}
+{% if f.range.startswith('ZonedDateTime') %}
+import java.time.ZonedDateTime;{% endif -%}
+{% if f.range.startswith('List') %}
+import java.util.List;{% endif -%}
+{%- endfor %}
+{% if not cls.mixin -%}
+import java.util.Objects;{%- endif %}
 
+{% if cls.description -%}
 /**
  * {{ cls.description }}
- */
+ */{% endif %}
+{% if cls.mixin -%}
+public interface {{ cls.name }} {
+{% for f in cls.all_fields %}
+    public {{f.range}} {{ f.name }}();
+
+{%- endfor %}
+}
+{% else -%}
 public record {{ cls.name }}({% for f in cls.all_fields -%}
     {{f.range}} {{ f.name }}{{ ", " if not loop.last else "" }}
 {%- endfor %}){{ " implements" if cls.mixins else "" }} {% for f in cls.mixins -%}
@@ -41,4 +58,4 @@ public record {{ cls.name }}({% for f in cls.all_fields -%}
         }
     }
 }
-
+{% endif -%}

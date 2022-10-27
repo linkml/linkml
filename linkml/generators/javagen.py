@@ -109,7 +109,6 @@ class JavaGenerator(OOCodeGenerator):
             loader = FileSystemLoader(javagen_folder)
             env = Environment(loader=loader)
             template_obj = env.get_template("java_record_template.jinja2")
-            template_interface = env.get_template("java_interface_template.jinja2")
         elif self.template_file is not None:
             with open(self.template_file) as template_file:
                 template_obj = Template(template_file.read())
@@ -120,20 +119,12 @@ class JavaGenerator(OOCodeGenerator):
         self.directory = directory
         for oodoc in oodocs:
             cls = oodoc.classes[0]
-            if cls.mixin:
-                code = template_interface.render(
-                    doc=oodoc,
-                    cls=cls,
-                    metamodel_version=self.schema.metamodel_version,
-                    model_version=self.schema.version,
-                )
-            else:
-                code = template_obj.render(
-                    doc=oodoc,
-                    cls=cls,
-                    metamodel_version=self.schema.metamodel_version,
-                    model_version=self.schema.version,
-                )
+            code = template_obj.render(
+                doc=oodoc,
+                cls=cls,
+                metamodel_version=self.schema.metamodel_version,
+                model_version=self.schema.version,
+            )
 
             os.makedirs(directory, exist_ok=True)
             filename = f"{oodoc.name}.java"
