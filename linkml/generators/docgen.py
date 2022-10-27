@@ -715,7 +715,7 @@ class DocGenerator(Generator):
         return cls.slots + list(cls.attributes.keys())
 
     def get_indirect_slots(self, cls: ClassDefinition) -> List[SlotDefinitionName]:
-        """Fetch list of all inherited attributes of a class, i.e., 
+        """Fetch list of all is_a inherited attributes of a class, i.e., 
         all slots that belong to the domain of a class.
 
         :param cls: class for which we want to determine the attributes
@@ -725,7 +725,12 @@ class DocGenerator(Generator):
         
         slot_list = [slot.name for slot in sv.class_induced_slots(class_name=cls.name)]
 
-        return list(set(slot_list).difference(self.get_direct_slots(cls)))
+        induced_slots = list(set(slot_list).difference(self.get_direct_slots(cls)))
+
+        for _, m_slots in self.get_mixin_inherited_slots(cls).items():
+            induced_slots = set(induced_slots).difference(m_slots)
+
+        return induced_slots
     
     def get_slot_inherited_from(self, class_name: ClassDefinitionName, slot_name: SlotDefinitionName) -> List[ClassDefinitionName]:
         """Get the name of the class that a given slot is inherited from.
