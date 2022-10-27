@@ -724,13 +724,8 @@ class DocGenerator(Generator):
         sv = self.schemaview
         
         slot_list = [slot.name for slot in sv.class_induced_slots(class_name=cls.name)]
-
-        induced_slots = list(set(slot_list).difference(self.get_direct_slots(cls)))
-
-        for _, m_slots in self.get_mixin_inherited_slots(cls).items():
-            induced_slots = set(induced_slots).difference(m_slots)
-
-        return induced_slots
+        
+        return list(set(slot_list).difference(self.get_direct_slots(cls)))
     
     def get_slot_inherited_from(self, class_name: ClassDefinitionName, slot_name: SlotDefinitionName) -> List[ClassDefinitionName]:
         """Get the name of the class that a given slot is inherited from.

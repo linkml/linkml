@@ -33,21 +33,15 @@ URI: {{ gen.uri_link(element) }}
 | Name | Cardinality and Range | Description | Inheritance |
 | ---  | --- | --- | --- |
 {%- if gen.get_direct_slots(element)|length > 0 %}
-{%- for d_slot in gen.get_direct_slots(element) %} | {{ gen.link(schemaview.get_slot(d_slot)) }} | {{ gen.cardinality(schemaview.get_slot(d_slot)) }} <br/> {{ schemaview.get_slot(d_slot).range }} | {{ schemaview.get_slot(d_slot).description }} | direct |
-{%- endfor -%}
-{%- endif -%}
-{%- if gen.get_indirect_slots(element)|length > 0 %}
-{%- for i_slot in gen.get_indirect_slots(element) %} | 
-{{ gen.link(schemaview.get_slot(i_slot)) }} | {{ gen.cardinality(schemaview.get_slot(i_slot)) }} <br/> {{ schemaview.get_slot(i_slot).range }} | {{ schemaview.get_slot(i_slot).description }} | induced <br/> class: {{ gen.get_slot_inherited_from(element.name, i_slot)|join(', ') }} |
-{%- endfor -%}
-{%- endif -%}
-{%- if not gen.get_mixin_inherited_slots(element).vars %}
-{%- for m_name, m_slots in gen.get_mixin_inherited_slots(element).items() %}
-{%- for m_slot in m_slots %}
-| {{ gen.link(schemaview.get_slot(m_slot)) }} | {{ gen.cardinality(schemaview.get_slot(m_slot)) }} <br/> {{ gen.link(schemaview.get_slot(m_slot).range) }} | {{ schemaview.get_slot(m_slot).description }} | mixin inherited <br/> class: {{ gen.name(schemaview.get_class(m_name)) }}|
-{%- endfor -%}
-{%- endfor -%}
-{%- endif %}
+{% for d_slot in gen.get_direct_slots(element) -%}
+| {{ gen.link(schemaview.get_slot(d_slot)) }} | {{ gen.cardinality(schemaview.get_slot(d_slot)) }} <br/> {{ schemaview.get_slot(d_slot).range }} | {{ schemaview.get_slot(d_slot).description }} | direct |
+{% endfor -%}
+{% endif -%}
+{% if gen.get_indirect_slots(element)|length > 0 -%}
+{% for i_slot in gen.get_indirect_slots(element) -%}
+| {{ gen.link(schemaview.get_slot(i_slot)) }} | {{ gen.cardinality(schemaview.get_slot(i_slot)) }} <br/> {{ schemaview.get_slot(i_slot).range }} | {{ schemaview.get_slot(i_slot).description }} | induced <br/> Class: _{{ gen.get_slot_inherited_from(element.name, i_slot)|join(', ') }}_ |
+{% endfor -%}
+{% endif -%}
 
 {% if schemaview.usage_index().get(element.name) %}
 ## Usages
