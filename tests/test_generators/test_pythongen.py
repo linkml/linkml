@@ -59,7 +59,7 @@ class PythonGenTestCase(unittest.TestCase):
         self.assertEqual(
             "Person(id='P:1', name=None, has_employment_history=[EmploymentEvent(started_at_time=None, "
             "ended_at_time=None, is_current=None, metadata=None, employed_at='ROR:1', type=None)], has_familial_relationships=[], "
-            "has_medical_history=[], age_in_years=None, addresses=[], has_birth_event=None, aliases=[])",
+            "has_medical_history=[], age_in_years=None, addresses=[], has_birth_event=None, species_name=None, stomach_count=None, aliases=[])",
             str(p),
         )
 
