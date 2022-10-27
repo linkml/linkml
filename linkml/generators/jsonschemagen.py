@@ -184,7 +184,7 @@ class JsonSchemaGenerator(Generator):
         reference_obj = None
         descendants = None
         if slot.range in self.schemaview.all_types().keys():
-            schema_type = self.schemaview.get_type(slot.range)
+            schema_type = self.schemaview.induced_type(slot.range)
             (typ, fmt) = json_schema_types.get(schema_type.base.lower(), ("string", None))
         elif slot.range in self.schemaview.all_enums().keys():
             reference_obj = camelcase(slot.range)

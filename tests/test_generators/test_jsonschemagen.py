@@ -117,5 +117,35 @@ class JsonSchemaTestCase(unittest.TestCase):
                 else:
                     self.assertRaises(jsonschema.ValidationError, do_validate)
 
+    def test_type_inheritance(self):
+        # TODO: can this be a compliance case too?
+        schema = """
+id: http://example.org/test_type_inheritance
+name: test_type_inheritance
+
+types:
+  alpha:
+    base: double 
+  beta:
+    typeof: alpha
+
+slots:
+  alpha_slot:
+    range: alpha
+  beta_slot:
+    range: beta
+
+classes:
+  Test:
+    slots:
+      - alpha_slot
+      - beta_slot
+"""
+        generator = JsonSchemaGenerator(schema, top_class="Test")
+        json_schema = json.loads(generator.serialize())
+        test_def_properties = json_schema['$defs']['Test']['properties']
+        self.assertEqual(test_def_properties['alpha_slot']['type'], 'number')
+        self.assertEqual(test_def_properties['beta_slot']['type'], 'number')
+
 if __name__ == "__main__":
     unittest.main()
