@@ -247,10 +247,11 @@ class JsonSchemaGenerator(Generator):
                     prop = JsonObj(type=typ, format=fmt)
 
         id_slot = self.schemaview.get_identifier_slot(cls.name, use_key=True)
+        slot_is_required = slot.required or slot == id_slot
 
         if slot.description:
             prop.description = slot.description
-        if slot.required or slot == id_slot:
+        if slot_is_required:
             clsobj.required.append(underscore(aliased_slot_name))
         if slot.pattern:
             # See https://github.com/linkml/linkml/issues/193
@@ -269,7 +270,7 @@ class JsonSchemaGenerator(Generator):
         ) or (self.top_class is None and cls.tree_root):
             self.schemaobj.properties[underscore(aliased_slot_name)] = prop
 
-            if slot.required:
+            if slot_is_required:
                 self.schemaobj.required.append(underscore(aliased_slot_name))
 
     def serialize(self, **kwargs) -> str:

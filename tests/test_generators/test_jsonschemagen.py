@@ -147,5 +147,28 @@ classes:
         self.assertEqual(test_def_properties['alpha_slot']['type'], 'number')
         self.assertEqual(test_def_properties['beta_slot']['type'], 'number')
 
+    def test_top_class_identifier(self):
+        """Test that an identifier slot on the top_class becomes a required
+        property in the JSON Schema."""
+
+        schema = """
+id: http://example.org/test_top_class_identifier
+name: test_top_class_identifier
+
+slots:
+  id:
+    identifier: true
+
+classes:
+  Test:
+    slots:
+      - id
+"""
+        generator = JsonSchemaGenerator(schema, top_class="Test")
+        json_schema = json.loads(generator.serialize())
+
+        self.assertIn("id", json_schema["$defs"]["Test"]["required"])
+        self.assertIn("id", json_schema["required"])
+
 if __name__ == "__main__":
     unittest.main()
