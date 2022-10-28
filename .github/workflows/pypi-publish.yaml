@@ -12,23 +12,18 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Install Poetry
-        run: pipx install poetry
-
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v3
         with:
           python-version: 3.9
-          cache: 'poetry'
 
-      # - name: Install Poetry
-      #   uses: snok/install-poetry@v1.3.1
-      #   with:
-      #     virtualenvs-create: true
-      #     virtualenvs-in-project: true
+      - name: Install Poetry
+        run: pip install poetry
 
       - name: Install dependencies
-        run: poetry install --no-interaction
+        run: |
+          poetry self add "poetry-dynamic-versioning[plugin]"
+          poetry install --no-interaction
 
       - name: Build source and wheel archives
         run: |
