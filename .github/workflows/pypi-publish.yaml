@@ -18,7 +18,7 @@ jobs:
           python-version: 3.9
 
       - name: Install Poetry
-        run: pip install -U poetry
+        run: pipx install poetry
       #   uses: snok/install-poetry@v1.3.1
       #   with:
       #     virtualenvs-create: true
