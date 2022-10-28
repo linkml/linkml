@@ -162,11 +162,6 @@
       - id: "PERSON:2"
         name: person two
 - description: date format
-  skip: Not implemented yet
-  comment: :-
-    as per https://json-schema.org/understanding-json-schema/reference/string.html#format
-    "JSON Schema implementations are not required to implement this part of the specification, and many of them do not."
-    it appears the python json schema implementation does not implement this, so we skip for now
   dataset:
     activities:
       - id: A1
