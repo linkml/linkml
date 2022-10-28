@@ -43,7 +43,7 @@ TYPEMAP = {
     "xsd:integer": "Integer",
     "xsd:float": "Float",
     "xsd:double": "Double",
-    "xsd:boolean": "Boolean",
+    "xsd:boolean": "boolean",
     "xds:dateTime": "ZonedDateTime",
     "xds:date": "LocalDateTime",
     "xds:time": "Instant",
@@ -51,6 +51,13 @@ TYPEMAP = {
     "xsd:decimal": "BigDecimal",
 }
 
+TYPE_DEFAULTS = {
+    "boolean": "false",
+    "int": "0",
+    "float": "0f",
+    "double": "0d",
+    "String": '""'
+}
 
 @dataclass
 class JavaGenerator(OOCodeGenerator):
@@ -73,14 +80,24 @@ class JavaGenerator(OOCodeGenerator):
     """If True then use java records (introduced in java 14) rather than classes"""
 
     template_file: Optional[str] = None
+
     gen_classvars: bool = field(default_factory=lambda: True)
     gen_slots: bool = field(default_factory=lambda: True)
     genmeta: bool = field(default_factory=lambda: False)
     emit_metadata: bool = field(default_factory=lambda: True)
 
-    def map_type(self, t: TypeDefinition) -> str:
+    def default_value_for_type(self, typ: str) -> str:
+        return TYPE_DEFAULTS.get(typ, "null")
+
+    def map_type(self, t: TypeDefinition, required: bool = False) -> str:
         if t.uri:
-            return TYPEMAP.get(t.uri)
+            # only return a Integer, Double Float when required == false
+            typ = TYPEMAP.get(t.uri)
+            if required and (typ == "Double" or typ == "Float"):
+                typ = typ.lower()
+            elif required and typ == "Integer":
+                typ = "int"
+            return typ
         elif t.typeof:
             return self.map_type(self.schemaview.get_type(t.typeof))
         else:
