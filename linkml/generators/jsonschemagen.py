@@ -211,6 +211,7 @@ class JsonSchemaGenerator(Generator):
                 range_id_slot = self.schemaview.get_identifier_slot(slot.range, use_key=True)
                 if range_id_slot is not None and not slot.inlined_as_list:
                     prop = JsonObj(
+                        type="object",
                         additionalProperties={
                             "$ref": f"{reference}{WITH_OPTIONAL_IDENTIFIER_SUFFIX}"
                         }

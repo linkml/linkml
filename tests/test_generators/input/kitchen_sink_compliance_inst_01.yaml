@@ -131,6 +131,36 @@
     activities:
       - id: A1
         was_associated_with: Agent:987
+- description: inline as list used where inline as dictionary expected
+  dataset:
+    code_systems:
+      - id: "CODE:1"
+        name: one
+      - id: "CODE:2"
+        name: two
+- description: inline as dictionary used correctly
+  valid: true
+  dataset:
+    code_systems:
+      "CODE:1":
+        name: one
+      "CODE:2":
+        name: two
+- description: inline as dictionary used where inline as list expected
+  dataset:
+    persons:
+      "PERSON:1":
+        name: person one
+      "PERSON:2":
+        name: person two
+- description: inline as list used correctly
+  valid: true
+  dataset:
+    persons:
+      - id: "PERSON:1"
+        name: person one
+      - id: "PERSON:2"
+        name: person two
 - description: date format
   skip: Not implemented yet
   comment: :-
