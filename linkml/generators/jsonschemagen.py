@@ -183,6 +183,11 @@ class JsonSchemaGenerator(Generator):
         fmt = None  # JSON Schema format (https://json-schema.org/understanding-json-schema/reference/string.html#format)
         reference_obj = None
         descendants = None
+
+        id_slot = self.schemaview.get_identifier_slot(cls.name, use_key=True)
+        slot_is_required = slot.required or slot == id_slot
+        slot_is_inlined = self.schemaview.is_inlined(slot)
+
         if slot.range in self.schemaview.all_types().keys():
             schema_type = self.schemaview.induced_type(slot.range)
             (typ, fmt) = json_schema_types.get(schema_type.base.lower(), ("string", None))
@@ -190,7 +195,7 @@ class JsonSchemaGenerator(Generator):
             reference_obj = camelcase(slot.range)
             reference = f"#/$defs/{reference_obj}"
             typ = "object"
-        elif self.schemaview.is_inlined(slot) and slot.range in self.schemaview.all_classes().keys():
+        elif slot_is_inlined and slot.range in self.schemaview.all_classes().keys():
             reference_obj = camelcase(slot.range)
             descendants = self.schemaview.class_descendants(slot.range)
             reference = f"#/$defs/{reference_obj}"
@@ -198,9 +203,7 @@ class JsonSchemaGenerator(Generator):
         else:
             typ = "string"
         
-        if slot.inlined:
-            id_slot = self.schemaview.get_identifier_slot(slot.range, use_key=True)
-
+        if slot_is_inlined:
             # If inline we have to include redefined slots
             ref = JsonObj()
             ref["$ref"] = reference
@@ -245,9 +248,6 @@ class JsonSchemaGenerator(Generator):
                     prop = JsonObj(type=typ)
                 else:
                     prop = JsonObj(type=typ, format=fmt)
-
-        id_slot = self.schemaview.get_identifier_slot(cls.name, use_key=True)
-        slot_is_required = slot.required or slot == id_slot
 
         if slot.description:
             prop.description = slot.description
