@@ -184,8 +184,8 @@ class JsonSchemaGenerator(Generator):
         reference_obj = None
         descendants = None
 
-        id_slot = self.schemaview.get_identifier_slot(cls.name, use_key=True)
-        slot_is_required = slot.required or slot == id_slot
+        class_id_slot = self.schemaview.get_identifier_slot(cls.name, use_key=True)
+        slot_is_required = slot.required or slot == class_id_slot
         slot_is_inlined = self.schemaview.is_inlined(slot)
 
         if slot.range in self.schemaview.all_types().keys():
@@ -208,14 +208,15 @@ class JsonSchemaGenerator(Generator):
             ref = JsonObj()
             ref["$ref"] = reference
             if slot.multivalued:
-                if id_slot is not None and not slot.inlined_as_list:
+                range_id_slot = self.schemaview.get_identifier_slot(slot.range, use_key=True)
+                if range_id_slot is not None and not slot.inlined_as_list:
                     prop = JsonObj(
                         additionalProperties={
                             "$ref": f"{reference}{WITH_OPTIONAL_IDENTIFIER_SUFFIX}"
                         }
                     )
                     self.optional_identifier_class_map[reference_obj] = (
-                        self.aliased_slot_name(id_slot),
+                        self.aliased_slot_name(range_id_slot),
                         f"{reference_obj}{WITH_OPTIONAL_IDENTIFIER_SUFFIX}",
                     )
                 else:
