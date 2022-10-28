@@ -9,6 +9,7 @@ from typing import Any, Dict, List, Tuple, Type, Union
 import click
 import yaml
 
+from linkml._version import __version__
 from linkml.generators.excelgen import ExcelGenerator
 from linkml.generators.graphqlgen import GraphqlGenerator
 from linkml.generators.javagen import JavaGenerator
@@ -195,6 +196,7 @@ class ProjectGenerator:
     help="Merge imports into source file",
 )
 @click.argument("yamlfile")
+@click.version_option(__version__, "-V", "--version")
 def cli(
     yamlfile,
     dir,

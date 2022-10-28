@@ -13,6 +13,7 @@ from linkml_runtime.linkml_model.meta import (ClassDefinition,
                                               SchemaDefinition)
 from linkml_runtime.utils.formatutils import be, underscore
 
+from linkml._version import __version__
 from linkml.utils.generator import Generator, shared_arguments
 
 
@@ -90,6 +91,7 @@ class CsvGenerator(Generator):
 
 @shared_arguments(CsvGenerator)
 @click.command()
+@click.version_option(__version__, "-V", "--version")
 @click.option("--root", "-r", multiple=True, help="Class(es) to transform")
 def cli(yamlfile, root=None, **args):
     """Generate CSV/TSV file from LinkML model"""

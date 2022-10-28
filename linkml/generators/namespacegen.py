@@ -4,6 +4,7 @@ from dataclasses import dataclass
 import click
 from linkml_runtime.utils.formatutils import be, split_line
 
+from linkml._version import __version__
 from linkml.generators import PYTHON_GEN_VERSION
 from linkml.generators.pythongen import PythonGenerator
 from linkml.utils.generator import shared_arguments
@@ -196,6 +197,7 @@ def curie(identifier) -> str:
 
 
 @shared_arguments(NamespaceGenerator)
+@click.version_option(__version__, "-V", "--version")
 @click.command()
 def cli(yamlfile, **args):
     """Generate a namespace manager for all of the prefixes represented in a LinkML model"""

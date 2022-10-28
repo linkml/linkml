@@ -16,6 +16,7 @@ from linkml_runtime.linkml_model.types import SHEX
 from linkml_runtime.utils.formatutils import be, camelcase, underscore
 from rdflib import SKOS, XSD
 
+from linkml._version import __version__
 from linkml.utils.generator import Generator, shared_arguments
 
 URI_RANGES = (XSD.anyURI, SHEX.nonliteral, SHEX.bnode, SHEX.iri)
@@ -227,6 +228,7 @@ class ContextGenerator(Generator):
     show_default=True,
     help="Emit non-JSON-LD compliant prefixes as an object (deprecated: use gen-prefix-map instead).",
 )
+@click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, **args):
     """Generate jsonld @context definition from LinkML model"""
     print(ContextGenerator(yamlfile, **args).serialize(**args))

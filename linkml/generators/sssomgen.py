@@ -8,6 +8,7 @@ from linkml_runtime.linkml_model.meta import (LINKML, ClassDefinition,
                                               Definition, EnumDefinition,
                                               SchemaDefinition, SlotDefinition)
 
+from linkml._version import __version__
 from linkml.utils.generator import Generator, shared_arguments
 
 DEFAULT_OUTPUT_FILENAME = "sssom.tsv"
@@ -185,6 +186,7 @@ class SSSOMGenerator(Generator):
 @shared_arguments(SSSOMGenerator)
 @click.command()
 @click.option("-o", "--output", help="Output file name")
+@click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, **kwargs):
     """Generate SSSOM TSV to represent a LinkML model"""
     print(SSSOMGenerator(yamlfile, **kwargs).serialize(**kwargs))

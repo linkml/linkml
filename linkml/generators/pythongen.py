@@ -23,6 +23,7 @@ from linkml_runtime.utils.metamodelcore import builtinnames
 from rdflib import URIRef
 
 import linkml
+from linkml._version import __version__
 from linkml.generators import PYTHON_GEN_VERSION
 from linkml.utils.generator import Generator, shared_arguments
 from linkml.utils.ifabsent_functions import (default_curie_or_uri,
@@ -1156,6 +1157,7 @@ class {enum_name}(EnumDefinitionImpl):
     show_default=True,
     help="Generate Slot information",
 )
+@click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, head=True, genmeta=False, classvars=True, slots=True, **args):
     """Generate python classes to represent a LinkML model"""
     print(

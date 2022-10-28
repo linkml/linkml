@@ -12,6 +12,7 @@ from openpyxl import Workbook, load_workbook
 from openpyxl.utils import get_column_letter
 from openpyxl.worksheet.datavalidation import DataValidation
 
+from linkml._version import __version__
 from linkml.utils.generator import Generator, shared_arguments
 
 
@@ -148,6 +149,7 @@ class ExcelGenerator(Generator):
     type=click.Path(),
     help="""Name of Excel spreadsheet to be created""",
 )
+@click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, **kwargs):
     """Generate Excel representation of a LinkML model"""
     print(ExcelGenerator(yamlfile, **kwargs).serialize(**kwargs))

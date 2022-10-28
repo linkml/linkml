@@ -17,6 +17,7 @@ from linkml_runtime.utils.formatutils import underscore
 from linkml_runtime.utils.metamodelcore import empty_list
 from linkml_runtime.utils.yamlutils import YAMLRoot, as_yaml
 
+from linkml._version import __version__
 from linkml.utils.generator import Generator, shared_arguments
 
 
@@ -108,6 +109,7 @@ class GolrSchemaGenerator(Generator):
 @click.option(
     "--dir", "-d", default="golr-views", show_default=True, help="Output directory"
 )
+@click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, dir=None, **args):
     """Generate GOLR representation of a LinkML model"""
     print(

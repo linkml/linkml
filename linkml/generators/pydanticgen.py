@@ -14,6 +14,7 @@ from linkml_runtime.linkml_model.meta import (Annotation, ClassDefinition,
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.schemaview import SchemaView
 
+from linkml._version import __version__
 from linkml.generators.oocodegen import OOCodeGenerator
 from linkml.utils.generator import shared_arguments
 
@@ -381,6 +382,7 @@ class PydanticGenerator(OOCodeGenerator):
 @click.option(
     "--template_file", help="Optional jinja2 template to use for class generation"
 )
+@click.version_option(__version__, "-V", "--version")
 @click.command()
 def cli(
     yamlfile,

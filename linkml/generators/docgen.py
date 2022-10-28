@@ -21,6 +21,7 @@ from linkml_runtime.linkml_model.meta import (Annotation, ClassDefinition,
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.schemaview import SchemaView
 
+from linkml._version import __version__
 from linkml.utils.generator import Generator, shared_arguments
 
 
@@ -769,6 +770,7 @@ class DocGenerator(Generator):
     default=False,
     help="Use IDs from slot_uri instead of names",
 )
+@click.version_option(__version__, "-V", "--version")
 @click.command()
 def cli(yamlfile, directory, dialect, template_directory, use_slot_uris, **args):
     """Generate documentation folder from a LinkML YAML schema

@@ -17,6 +17,7 @@ from linkml_runtime.linkml_model.meta import (ClassDefinition,
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.schemaview import SchemaView
 
+from linkml._version import __version__
 from linkml.utils.generator import Generator, shared_arguments
 
 template = """
@@ -198,6 +199,7 @@ class SparqlGenerator(Generator):
 @shared_arguments(SparqlGenerator)
 @click.command()
 @click.option("--dir", "-d", help="Directory in which queries will be deposited")
+@click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, dir, **kwargs):
     """Generate SPARQL queries for validation
 

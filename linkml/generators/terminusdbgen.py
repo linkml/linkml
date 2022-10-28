@@ -9,6 +9,7 @@ from linkml_runtime.linkml_model.meta import (ClassDefinition,
 from linkml_runtime.utils.formatutils import be, camelcase, underscore
 from terminusdb_client.woqlquery import WOQLQuery as WQ
 
+from linkml._version import __version__
 from linkml.utils.generator import Generator, shared_arguments
 
 # https://terminusdb.com/docs/terminusdb/#/reference/XSD_WHITELIST
@@ -145,6 +146,7 @@ class TerminusdbGenerator(Generator):
 
 
 @shared_arguments(TerminusdbGenerator)
+@click.version_option(__version__, "-V", "--version")
 @click.command()
 def cli(yamlfile, **args):
     """Generate graphql representation of a LinkML model"""
