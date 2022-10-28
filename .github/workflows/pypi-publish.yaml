@@ -18,12 +18,10 @@ jobs:
           python-version: 3.9
 
       - name: Install Poetry
-        run: pip install poetry
+        run: pip install poetry poetry-dynamic-versioning
 
       - name: Install dependencies
-        run: |
-          poetry self add "poetry-dynamic-versioning[plugin]"
-          poetry install --no-interaction
+        run: poetry install --no-interaction
 
       - name: Build source and wheel archives
         run: |
