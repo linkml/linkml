@@ -39,7 +39,7 @@ URI: {{ gen.uri_link(element) }}
 {% endif -%}
 {% if gen.get_indirect_slots(element)|length > 0 -%}
 {% for i_slot in gen.get_indirect_slots(element) -%}
-| {{ gen.link(schemaview.get_slot(i_slot)) }} | {{ gen.cardinality(schemaview.get_slot(i_slot)) }} <br/> {{ schemaview.get_slot(i_slot).range }} | {{ schemaview.get_slot(i_slot).description }} | induced <br/> Class: _{{ gen.get_slot_inherited_from(element.name, i_slot)|join(', ') }}_ |
+| {{ gen.link(schemaview.get_slot(i_slot)) }} | {{ gen.cardinality(schemaview.get_slot(i_slot)) }} <br/> {{ schemaview.get_slot(i_slot).range }} | {{ schemaview.get_slot(i_slot).description }} | {{ gen.links(gen.get_slot_inherited_from(element.name, i_slot))|join(', ') }} |
 {% endfor -%}
 {% endif -%}
 

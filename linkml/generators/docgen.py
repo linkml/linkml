@@ -369,6 +369,14 @@ class DocGenerator(Generator):
             return self._markdown_link(camelcase(e.name))
         else:
             return e.name
+        
+    def links(self, e_list: List[DefinitionName]) -> List[str]:
+        """Render list of element documentation pages as hyperlinks.
+
+        :param e_list: list of elements
+        :return: list of hyperlinked elements
+        """
+        return list(map(self.link, e_list))
 
     def _exclude_type(self, t: TypeDefinition) -> bool:
         return self._is_external(t) and not self.schemaview.schema.id.startswith(
