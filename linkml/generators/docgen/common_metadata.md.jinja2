@@ -1,10 +1,9 @@
 {% if element.aliases %}
 ## Aliases
 
-* Aliases:
 {% for alias in element.aliases %}
-    * {{ alias }}
-{% endfor %}
+* {{ alias }}
+{%- endfor %}
 {% endif %}
 
 {% if element.examples %}
