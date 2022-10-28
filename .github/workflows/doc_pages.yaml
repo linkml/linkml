@@ -21,9 +21,7 @@ jobs:
         uses: snok/install-poetry@v1.3
 
       - name: install
-        run: |
-          poetry install -E docs
-          poetry self show plugins
+        run: poetry install -E docs
 
       - name: Build documentation.
         run: |
