@@ -28,6 +28,7 @@ jobs:
 
       - name: Build source and wheel archives
         run: |
+          poetry version $(git describe --tags --abbrev=0)
           poetry build
 
       - name: Publish distribution 📦 to PyPI
