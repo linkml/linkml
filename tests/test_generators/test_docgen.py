@@ -237,6 +237,18 @@ class DocGeneratorTestCase(unittest.TestCase):
             "tree_slot_C.md", "[mixin_slot_I](mixin_slot_I.md)"
         )
 
+        # test see_also hyperlinking
+        assert_mdfile_contains(
+            "Person.md", 
+            "[https://en.wikipedia.org/wiki/Person](https://en.wikipedia.org/wiki/Person)",
+            after="## See Also"
+        )
+        assert_mdfile_contains(
+            "Person.md", 
+            "[schema:Person](http://schema.org/Person)",
+            after="## See Also"
+        )
+
     def test_docgen_rank_ordering(self):
         """Tests overriding default order"""
         gen = DocGenerator(SCHEMA, mergeimports=True, no_types_dir=True, sort_by="rank")

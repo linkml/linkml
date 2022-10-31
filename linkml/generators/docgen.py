@@ -329,13 +329,16 @@ class DocGenerator(Generator):
             return self.name(element)
         return self.schemaview.get_uri(element, expand=expand)
 
-    def uri_link(self, element: Element) -> str:
-        """
-        Returns a link string (default: markdown links) for a schema element
+    def uri_link(self, element: Union[Element, str]) -> str:
+        """Returns a link string (default: markdown links) for a schema element
 
-        :param element:
-        :return:
+        :param element: uri string or linkml model element
+        :return: hyperlinked markdown or web links
         """
+        if isinstance(element, str):
+            uri = self.schemaview.expand_curie(element)
+            return f"[{element}]({uri})"
+
         uri = self.uri(element)
         curie = self.uri(element, expand=False)
         sc = element.from_schema
