@@ -6,6 +6,12 @@
 {%- endfor %}
 {% endif %}
 
+{% if element.alias %}
+## Alias
+
+{{ alias }}
+{% endif %}
+
 {% if element.examples %}
 ## Examples
 
