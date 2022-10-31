@@ -237,6 +237,11 @@ class DocGeneratorTestCase(unittest.TestCase):
             "tree_slot_C.md", "[mixin_slot_I](mixin_slot_I.md)"
         )
 
+        # test that Aliases is showing from common metadata
+        assert_mdfile_contains(
+            "EmploymentEventType.md", "* HR code", after="## Aliases"
+        )
+
     def test_docgen_rank_ordering(self):
         """Tests overriding default order"""
         gen = DocGenerator(SCHEMA, mergeimports=True, no_types_dir=True, sort_by="rank")
