@@ -1,0 +1,43 @@
+id: https://w3id.org/linkml/examples/personinfo
+name: personinfo
+prefixes:
+  linkml: https://w3id.org/linkml/
+  schema: http://schema.org/
+  personinfo: https://w3id.org/linkml/examples/personinfo/
+  ORCID: https://orcid.org/
+imports:
+  - linkml:types
+default_range: string
+
+classes:
+  Person:
+    class_uri: schema:Person
+    attributes:
+      id:
+        identifier: true
+      employed:
+        range: EmploymentStatusEnum
+      past_relationship:
+        range: RelationshipStatusEnum
+
+
+slots:
+    status:
+      range: PersonStatusEnum
+    relationship:
+      range: RelationshipStatusEnum
+
+enums:
+  PersonStatusEnum:
+    permissible_values:
+      ALIVE:
+      DEAD:
+      UNKNOWN:
+  EmployedStatusEnum:
+    permissible_values:
+      EMPLOYED:
+      UNEMPLOYED:
+      UNKNOWN:
+  RelationshipStatusEnum:
+    permissible_values:
+      UNKNOWN:
