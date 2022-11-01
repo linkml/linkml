@@ -342,7 +342,7 @@
         <span class="n">not_closed</span><span class="o">=</span><span class="n">not_closed</span><span class="p">,</span>
     <span class="p">)</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="n">not_closed</span><span class="o">=</span><span class="n">not_closed</span><span class="p">)</span>
     <span class="n">jsonschema_obj</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">jsonschemastr</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">jsonschema</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">inst_dict</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="n">jsonschema_obj</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">jsonschema</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">inst_dict</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="n">jsonschema_obj</span><span class="p">,</span> <span class="n">format_checker</span><span class="o">=</span><span class="n">jsonschema</span><span class="o">.</span><span class="n">Draft7Validator</span><span class="o">.</span><span class="n">FORMAT_CHECKER</span><span class="p">)</span></div>
 </pre></div>
         </article>
       </div>
