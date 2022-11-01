@@ -4,7 +4,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
-    <meta name="generator" content="sphinx-5.1.1, furo 2022.09.29"/>
+    <meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
         <title>linkml.generators.pydanticgen - linkml documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
@@ -310,6 +310,7 @@
 <span class="kn">from</span> <span class="nn">linkml_runtime.utils.formatutils</span> <span class="kn">import</span> <span class="n">camelcase</span><span class="p">,</span> <span class="n">underscore</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime.utils.schemaview</span> <span class="kn">import</span> <span class="n">SchemaView</span>
 
+<span class="kn">from</span> <span class="nn">linkml._version</span> <span class="kn">import</span> <span class="n">__version__</span>
 <span class="kn">from</span> <span class="nn">linkml.generators.oocodegen</span> <span class="kn">import</span> <span class="n">OOCodeGenerator</span>
 <span class="kn">from</span> <span class="nn">linkml.utils.generator</span> <span class="kn">import</span> <span class="n">shared_arguments</span>
 
@@ -667,13 +668,17 @@
             <span class="n">version</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">version</span><span class="p">,</span>
             <span class="n">class_isa_plus_mixins</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_class_isa_plus_mixins</span><span class="p">(),</span>
         <span class="p">)</span>
-        <span class="k">return</span> <span class="n">code</span></div></div>
+        <span class="k">return</span> <span class="n">code</span></div>
+
+<div class="viewcode-block" id="PydanticGenerator.default_value_for_type"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.pydanticgen.PydanticGenerator.default_value_for_type">[docs]</a>    <span class="k">def</span> <span class="nf">default_value_for_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">typ</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s1">&#39;None&#39;</span></div></div>
 
 
 <span class="nd">@shared_arguments</span><span class="p">(</span><span class="n">PydanticGenerator</span><span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
     <span class="s2">&quot;--template_file&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Optional jinja2 template to use for class generation&quot;</span>
 <span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">version_option</span><span class="p">(</span><span class="n">__version__</span><span class="p">,</span> <span class="s2">&quot;-V&quot;</span><span class="p">,</span> <span class="s2">&quot;--version&quot;</span><span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">command</span><span class="p">()</span>
 <span class="k">def</span> <span class="nf">cli</span><span class="p">(</span>
     <span class="n">yamlfile</span><span class="p">,</span>
@@ -739,6 +744,7 @@
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
     <script src="../../../_static/scripts/furo.js"></script>
     </body>
 </html>

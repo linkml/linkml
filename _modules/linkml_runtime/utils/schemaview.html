@@ -4,7 +4,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
-    <meta name="generator" content="sphinx-5.1.1, furo 2022.09.29"/>
+    <meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
         <title>linkml_runtime.utils.schemaview - linkml documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
@@ -305,7 +305,7 @@
 <span class="kn">from</span> <span class="nn">linkml_runtime.utils.namespaces</span> <span class="kn">import</span> <span class="n">Namespaces</span>
 <span class="kn">from</span> <span class="nn">deprecated.classic</span> <span class="kn">import</span> <span class="n">deprecated</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime.utils.context_utils</span> <span class="kn">import</span> <span class="n">parse_import_map</span><span class="p">,</span> <span class="n">map_import</span>
-<span class="kn">from</span> <span class="nn">linkml_runtime.utils.pattern</span> <span class="kn">import</span> <span class="n">generate_patterns</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime.utils.pattern</span> <span class="kn">import</span> <span class="n">PatternResolver</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model.meta</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
@@ -746,19 +746,21 @@
             <span class="k">return</span> <span class="n">c</span></div>
 
 <div class="viewcode-block" id="SchemaView.get_slot"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.get_slot">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">()</span>
-    <span class="k">def</span> <span class="nf">get_slot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slot_name</span><span class="p">:</span> <span class="n">SLOT_NAME</span><span class="p">,</span> <span class="n">imports</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SlotDefinition</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">get_slot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slot_name</span><span class="p">:</span> <span class="n">SLOT_NAME</span><span class="p">,</span> <span class="n">imports</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SlotDefinition</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param slot_name: name of the slot to be retrieved</span>
 <span class="sd">        :param imports: include import closure</span>
+<span class="sd">        :param attributes: include attributes</span>
+<span class="sd">        :param strict: raise ValueError is not found</span>
 <span class="sd">        :return: slot definition</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">slot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_slots</span><span class="p">(</span><span class="n">imports</span><span class="o">=</span><span class="n">imports</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">slot_name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">slot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_slots</span><span class="p">(</span><span class="n">imports</span><span class="o">=</span><span class="n">imports</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">slot_name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">slot</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">attributes</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_classes</span><span class="p">(</span><span class="n">imports</span><span class="o">=</span><span class="n">imports</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
                 <span class="k">if</span> <span class="n">slot_name</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">attributes</span><span class="p">:</span>
                     <span class="k">if</span> <span class="n">slot</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                        <span class="c1"># slot name is ambiguous, no results</span>
-                        <span class="k">return</span> <span class="kc">None</span>
+                        <span class="c1"># slot name is ambiguous: return a stub slot</span>
+                        <span class="k">return</span> <span class="n">SlotDefinition</span><span class="p">(</span><span class="n">slot_name</span><span class="p">)</span>
                     <span class="n">slot</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="n">slot_name</span><span class="p">])</span>
                     <span class="n">slot</span><span class="o">.</span><span class="n">from_schema</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">from_schema</span>
                     <span class="n">slot</span><span class="o">.</span><span class="n">owner</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">name</span>
@@ -844,7 +846,10 @@
 <span class="sd">        :return: all direct parent slot names (is_a and mixins)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_slot</span><span class="p">(</span><span class="n">slot_name</span><span class="p">,</span> <span class="n">imports</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parents</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">imports</span><span class="p">,</span> <span class="n">mixins</span><span class="p">,</span> <span class="n">is_a</span><span class="p">)</span></div>
+        <span class="k">if</span> <span class="n">s</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parents</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">imports</span><span class="p">,</span> <span class="n">mixins</span><span class="p">,</span> <span class="n">is_a</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span></div>
 
 <div class="viewcode-block" id="SchemaView.type_parents"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.type_parents">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">()</span>
     <span class="k">def</span> <span class="nf">type_parents</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">type_name</span><span class="p">:</span> <span class="n">TYPE_NAME</span><span class="p">,</span> <span class="n">imports</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">TypeDefinitionName</span><span class="p">]:</span>
@@ -1349,7 +1354,7 @@
             <span class="n">slot_anc_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">slot_ancestors</span><span class="p">(</span><span class="n">slot_name</span><span class="p">,</span> <span class="n">reflexive</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="c1"># inheritable slot: first propagate from ancestors</span>
             <span class="k">for</span> <span class="n">anc_sn</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">slot_anc_names</span><span class="p">):</span>
-                <span class="n">anc_slot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_slot</span><span class="p">(</span><span class="n">anc_sn</span><span class="p">)</span>
+                <span class="n">anc_slot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_slot</span><span class="p">(</span><span class="n">anc_sn</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
                 <span class="k">for</span> <span class="n">metaslot_name</span> <span class="ow">in</span> <span class="n">SlotDefinition</span><span class="o">.</span><span class="n">_inherited_slots</span><span class="p">:</span>
                     <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">anc_slot</span><span class="p">,</span> <span class="n">metaslot_name</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
                         <span class="nb">setattr</span><span class="p">(</span><span class="n">islot</span><span class="p">,</span> <span class="n">metaslot_name</span><span class="p">,</span> <span class="n">deepcopy</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">anc_slot</span><span class="p">,</span> <span class="n">metaslot_name</span><span class="p">)))</span>
@@ -1358,7 +1363,10 @@
             <span class="c1">#    if getattr(slot, metaslot_name, None):</span>
             <span class="c1">#        setattr(islot, metaslot_name, deepcopy(getattr(slot, metaslot_name)))</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;No such slot: </span><span class="si">{</span><span class="n">slot_name</span><span class="si">}</span><span class="s1"> and no attribute by that name in ancestors of </span><span class="si">{</span><span class="n">class_name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="n">slot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_slot</span><span class="p">(</span><span class="n">slot_name</span><span class="p">,</span> <span class="n">imports</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">slot</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;No such slot: </span><span class="si">{</span><span class="n">slot_name</span><span class="si">}</span><span class="s1"> and no attribute by that name in ancestors of </span><span class="si">{</span><span class="n">class_name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="n">islot</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">slot</span><span class="p">)</span>
 
         <span class="n">COMBINE</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s1">&#39;maximum_value&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">min</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span>
@@ -1781,15 +1789,25 @@
 <span class="sd">        into regular expressions based on composite patterns </span>
 <span class="sd">        provided in the settings dictionary.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">patterns_dict</span> <span class="o">=</span> <span class="n">generate_patterns</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">resolver</span> <span class="o">=</span> <span class="n">PatternResolver</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
-        <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">slot_defn</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_slots</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">if</span> <span class="n">slot_defn</span><span class="o">.</span><span class="n">structured_pattern</span><span class="p">:</span>
+        <span class="k">def</span> <span class="nf">materialize_pattern_into_slot_definition</span><span class="p">(</span><span class="n">slot_definition</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">slot_definition</span><span class="o">.</span><span class="n">structured_pattern</span><span class="p">:</span>
+                <span class="k">return</span>
+            <span class="n">pattern</span> <span class="o">=</span> <span class="n">slot_definition</span><span class="o">.</span><span class="n">structured_pattern</span><span class="o">.</span><span class="n">syntax</span>
+            <span class="n">slot_definition</span><span class="o">.</span><span class="n">pattern</span> <span class="o">=</span> <span class="n">resolver</span><span class="o">.</span><span class="n">resolve</span><span class="p">(</span><span class="n">pattern</span><span class="p">)</span>
 
-                <span class="n">pattern</span> <span class="o">=</span> <span class="n">slot_defn</span><span class="o">.</span><span class="n">structured_pattern</span><span class="o">.</span><span class="n">syntax</span>
+        <span class="k">for</span> <span class="n">slot_definition</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_slots</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">materialize_pattern_into_slot_definition</span><span class="p">(</span><span class="n">slot_definition</span><span class="p">)</span>
 
-                <span class="k">if</span> <span class="n">pattern</span> <span class="ow">in</span> <span class="n">patterns_dict</span><span class="p">:</span>
-                    <span class="n">slot_defn</span><span class="o">.</span><span class="n">pattern</span> <span class="o">=</span> <span class="n">patterns_dict</span><span class="p">[</span><span class="n">pattern</span><span class="p">]</span></div></div>
+        <span class="k">for</span> <span class="n">class_definition</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_classes</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">class_definition</span><span class="o">.</span><span class="n">slot_usage</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">slot_definition</span> <span class="ow">in</span> <span class="n">class_definition</span><span class="o">.</span><span class="n">slot_usage</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                    <span class="n">materialize_pattern_into_slot_definition</span><span class="p">(</span><span class="n">slot_definition</span><span class="p">)</span>
+        
+            <span class="k">if</span> <span class="n">class_definition</span><span class="o">.</span><span class="n">attributes</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">slot_definition</span> <span class="ow">in</span> <span class="n">class_definition</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                    <span class="n">materialize_pattern_into_slot_definition</span><span class="p">(</span><span class="n">slot_definition</span><span class="p">)</span></div></div>
 </pre></div>
         </article>
       </div>
@@ -1829,6 +1847,7 @@
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
     <script src="../../../_static/scripts/furo.js"></script>
     </body>
 </html>

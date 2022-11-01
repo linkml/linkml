@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Inferring Missing Values" href="inference.html" /><link rel="prev" title="SchemaView" href="schemaview.html" />
 
-    <meta name="generator" content="sphinx-5.1.1, furo 2022.09.29"/>
+    <meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
         <title>Data Conversion: Loaders and Dumpers - linkml documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
@@ -719,10 +719,61 @@ target class. To load from graphs with multiple instances, use from_rdf_graph</p
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">Data Conversion: Loaders and Dumpers</a><ul>
-<li><a class="reference internal" href="#json-conversion">JSON Conversion</a></li>
-<li><a class="reference internal" href="#yaml-conversion">YAML Conversion</a></li>
-<li><a class="reference internal" href="#rdf-conversion">RDF Conversion</a></li>
-<li><a class="reference internal" href="#csv-conversion">CSV Conversion</a></li>
+<li><a class="reference internal" href="#json-conversion">JSON Conversion</a><ul>
+<li><a class="reference internal" href="#linkml_runtime.dumpers.JSONDumper"><code class="docutils literal notranslate"><span class="pre">JSONDumper</span></code></a><ul>
+<li><a class="reference internal" href="#linkml_runtime.dumpers.JSONDumper.dump"><code class="docutils literal notranslate"><span class="pre">JSONDumper.dump()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.dumpers.JSONDumper.dumps"><code class="docutils literal notranslate"><span class="pre">JSONDumper.dumps()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#linkml_runtime.loaders.JSONLoader"><code class="docutils literal notranslate"><span class="pre">JSONLoader</span></code></a><ul>
+<li><a class="reference internal" href="#linkml_runtime.loaders.JSONLoader.load"><code class="docutils literal notranslate"><span class="pre">JSONLoader.load()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.loaders.JSONLoader.load_any"><code class="docutils literal notranslate"><span class="pre">JSONLoader.load_any()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.loaders.JSONLoader.loads"><code class="docutils literal notranslate"><span class="pre">JSONLoader.loads()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.loaders.JSONLoader.loads_any"><code class="docutils literal notranslate"><span class="pre">JSONLoader.loads_any()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#yaml-conversion">YAML Conversion</a><ul>
+<li><a class="reference internal" href="#linkml_runtime.dumpers.YAMLDumper"><code class="docutils literal notranslate"><span class="pre">YAMLDumper</span></code></a><ul>
+<li><a class="reference internal" href="#linkml_runtime.dumpers.YAMLDumper.dump"><code class="docutils literal notranslate"><span class="pre">YAMLDumper.dump()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.dumpers.YAMLDumper.dumps"><code class="docutils literal notranslate"><span class="pre">YAMLDumper.dumps()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#linkml_runtime.loaders.YAMLLoader"><code class="docutils literal notranslate"><span class="pre">YAMLLoader</span></code></a><ul>
+<li><a class="reference internal" href="#linkml_runtime.loaders.YAMLLoader.load"><code class="docutils literal notranslate"><span class="pre">YAMLLoader.load()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.loaders.YAMLLoader.load_any"><code class="docutils literal notranslate"><span class="pre">YAMLLoader.load_any()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.loaders.YAMLLoader.loads"><code class="docutils literal notranslate"><span class="pre">YAMLLoader.loads()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.loaders.YAMLLoader.loads_any"><code class="docutils literal notranslate"><span class="pre">YAMLLoader.loads_any()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#rdf-conversion">RDF Conversion</a><ul>
+<li><a class="reference internal" href="#linkml_runtime.loaders.RDFLibLoader"><code class="docutils literal notranslate"><span class="pre">RDFLibLoader</span></code></a><ul>
+<li><a class="reference internal" href="#linkml_runtime.loaders.RDFLibLoader.load"><code class="docutils literal notranslate"><span class="pre">RDFLibLoader.load()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.loaders.RDFLibLoader.load_any"><code class="docutils literal notranslate"><span class="pre">RDFLibLoader.load_any()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.loaders.RDFLibLoader.loads"><code class="docutils literal notranslate"><span class="pre">RDFLibLoader.loads()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.loaders.RDFLibLoader.loads_any"><code class="docutils literal notranslate"><span class="pre">RDFLibLoader.loads_any()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#csv-conversion">CSV Conversion</a><ul>
+<li><a class="reference internal" href="#linkml_runtime.dumpers.CSVDumper"><code class="docutils literal notranslate"><span class="pre">CSVDumper</span></code></a><ul>
+<li><a class="reference internal" href="#linkml_runtime.dumpers.CSVDumper.dump"><code class="docutils literal notranslate"><span class="pre">CSVDumper.dump()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.dumpers.CSVDumper.dumps"><code class="docutils literal notranslate"><span class="pre">CSVDumper.dumps()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#linkml_runtime.loaders.CSVLoader"><code class="docutils literal notranslate"><span class="pre">CSVLoader</span></code></a><ul>
+<li><a class="reference internal" href="#linkml_runtime.loaders.CSVLoader.load"><code class="docutils literal notranslate"><span class="pre">CSVLoader.load()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.loaders.CSVLoader.load_any"><code class="docutils literal notranslate"><span class="pre">CSVLoader.load_any()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.loaders.CSVLoader.loads"><code class="docutils literal notranslate"><span class="pre">CSVLoader.loads()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.loaders.CSVLoader.loads_any"><code class="docutils literal notranslate"><span class="pre">CSVLoader.loads_any()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -739,6 +790,7 @@ target class. To load from graphs with multiple instances, use from_rdf_graph</p
     <script src="../_static/underscore.js"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/scripts/furo.js"></script>
     </body>
 </html>

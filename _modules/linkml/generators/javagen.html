@@ -4,7 +4,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
-    <meta name="generator" content="sphinx-5.1.1, furo 2022.09.29"/>
+    <meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
         <title>linkml.generators.javagen - linkml documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
@@ -302,6 +302,7 @@
 <span class="kn">from</span> <span class="nn">jinja2</span> <span class="kn">import</span> <span class="n">Environment</span><span class="p">,</span> <span class="n">FileSystemLoader</span><span class="p">,</span> <span class="n">Template</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model.meta</span> <span class="kn">import</span> <span class="n">TypeDefinition</span>
 
+<span class="kn">from</span> <span class="nn">linkml._version</span> <span class="kn">import</span> <span class="n">__version__</span>
 <span class="kn">from</span> <span class="nn">linkml.generators</span> <span class="kn">import</span> <span class="n">JAVA_GEN_VERSION</span>
 <span class="kn">from</span> <span class="nn">linkml.generators.oocodegen</span> <span class="kn">import</span> <span class="n">OOCodeGenerator</span>
 <span class="kn">from</span> <span class="nn">linkml.utils.generator</span> <span class="kn">import</span> <span class="n">shared_arguments</span>
@@ -339,7 +340,7 @@
     <span class="s2">&quot;xsd:integer&quot;</span><span class="p">:</span> <span class="s2">&quot;Integer&quot;</span><span class="p">,</span>
     <span class="s2">&quot;xsd:float&quot;</span><span class="p">:</span> <span class="s2">&quot;Float&quot;</span><span class="p">,</span>
     <span class="s2">&quot;xsd:double&quot;</span><span class="p">:</span> <span class="s2">&quot;Double&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;xsd:boolean&quot;</span><span class="p">:</span> <span class="s2">&quot;Boolean&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;xsd:boolean&quot;</span><span class="p">:</span> <span class="s2">&quot;boolean&quot;</span><span class="p">,</span>
     <span class="s2">&quot;xds:dateTime&quot;</span><span class="p">:</span> <span class="s2">&quot;ZonedDateTime&quot;</span><span class="p">,</span>
     <span class="s2">&quot;xds:date&quot;</span><span class="p">:</span> <span class="s2">&quot;LocalDateTime&quot;</span><span class="p">,</span>
     <span class="s2">&quot;xds:time&quot;</span><span class="p">:</span> <span class="s2">&quot;Instant&quot;</span><span class="p">,</span>
@@ -347,6 +348,13 @@
     <span class="s2">&quot;xsd:decimal&quot;</span><span class="p">:</span> <span class="s2">&quot;BigDecimal&quot;</span><span class="p">,</span>
 <span class="p">}</span>
 
+<span class="n">TYPE_DEFAULTS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;boolean&quot;</span><span class="p">:</span> <span class="s2">&quot;false&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;int&quot;</span><span class="p">:</span> <span class="s2">&quot;0&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;float&quot;</span><span class="p">:</span> <span class="s2">&quot;0f&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;double&quot;</span><span class="p">:</span> <span class="s2">&quot;0d&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;String&quot;</span><span class="p">:</span> <span class="s1">&#39;&quot;&quot;&#39;</span>
+<span class="p">}</span>
 
 <div class="viewcode-block" id="JavaGenerator"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.javagen.JavaGenerator">[docs]</a><span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">JavaGenerator</span><span class="p">(</span><span class="n">OOCodeGenerator</span><span class="p">):</span>
@@ -369,14 +377,24 @@
     <span class="sd">&quot;&quot;&quot;If True then use java records (introduced in java 14) rather than classes&quot;&quot;&quot;</span>
 
     <span class="n">template_file</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
     <span class="n">gen_classvars</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="kc">True</span><span class="p">)</span>
     <span class="n">gen_slots</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="kc">True</span><span class="p">)</span>
     <span class="n">genmeta</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="kc">False</span><span class="p">)</span>
     <span class="n">emit_metadata</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="kc">True</span><span class="p">)</span>
 
-<div class="viewcode-block" id="JavaGenerator.map_type"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.javagen.JavaGenerator.map_type">[docs]</a>    <span class="k">def</span> <span class="nf">map_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span> <span class="n">TypeDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="viewcode-block" id="JavaGenerator.default_value_for_type"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.javagen.JavaGenerator.default_value_for_type">[docs]</a>    <span class="k">def</span> <span class="nf">default_value_for_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">typ</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">TYPE_DEFAULTS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">typ</span><span class="p">,</span> <span class="s2">&quot;null&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="JavaGenerator.map_type"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.javagen.JavaGenerator.map_type">[docs]</a>    <span class="k">def</span> <span class="nf">map_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span> <span class="n">TypeDefinition</span><span class="p">,</span> <span class="n">required</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">uri</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">TYPEMAP</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">uri</span><span class="p">)</span>
+            <span class="c1"># only return a Integer, Double Float when required == false</span>
+            <span class="n">typ</span> <span class="o">=</span> <span class="n">TYPEMAP</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">uri</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">required</span> <span class="ow">and</span> <span class="p">(</span><span class="n">typ</span> <span class="o">==</span> <span class="s2">&quot;Double&quot;</span> <span class="ow">or</span> <span class="n">typ</span> <span class="o">==</span> <span class="s2">&quot;Float&quot;</span><span class="p">):</span>
+                <span class="n">typ</span> <span class="o">=</span> <span class="n">typ</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+            <span class="k">elif</span> <span class="n">required</span> <span class="ow">and</span> <span class="n">typ</span> <span class="o">==</span> <span class="s2">&quot;Integer&quot;</span><span class="p">:</span>
+                <span class="n">typ</span> <span class="o">=</span> <span class="s2">&quot;int&quot;</span>
+            <span class="k">return</span> <span class="n">typ</span>
         <span class="k">elif</span> <span class="n">t</span><span class="o">.</span><span class="n">typeof</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">get_type</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">typeof</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
@@ -428,6 +446,7 @@
     <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Optional Java 17 record implementation&quot;</span><span class="p">,</span>
 <span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">version_option</span><span class="p">(</span><span class="n">__version__</span><span class="p">,</span> <span class="s2">&quot;-V&quot;</span><span class="p">,</span> <span class="s2">&quot;--version&quot;</span><span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">command</span><span class="p">()</span>
 <span class="k">def</span> <span class="nf">cli</span><span class="p">(</span>
     <span class="n">yamlfile</span><span class="p">,</span>
@@ -497,6 +516,7 @@
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
     <script src="../../../_static/scripts/furo.js"></script>
     </body>
 </html>

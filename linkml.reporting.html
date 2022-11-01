@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" />
 
-    <meta name="generator" content="sphinx-5.1.1, furo 2022.09.29"/>
+    <meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
         <title>linkml.reporting package - linkml documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
@@ -637,7 +637,80 @@
             <ul>
 <li><a class="reference internal" href="#">linkml.reporting package</a><ul>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-linkml.reporting.model">linkml.reporting.model module</a></li>
+<li><a class="reference internal" href="#module-linkml.reporting.model">linkml.reporting.model module</a><ul>
+<li><a class="reference internal" href="#linkml.reporting.model.CheckResult"><code class="docutils literal notranslate"><span class="pre">CheckResult</span></code></a><ul>
+<li><a class="reference internal" href="#linkml.reporting.model.CheckResult.class_class_curie"><code class="docutils literal notranslate"><span class="pre">CheckResult.class_class_curie</span></code></a></li>
+<li><a class="reference internal" href="#linkml.reporting.model.CheckResult.class_class_uri"><code class="docutils literal notranslate"><span class="pre">CheckResult.class_class_uri</span></code></a></li>
+<li><a class="reference internal" href="#linkml.reporting.model.CheckResult.class_model_uri"><code class="docutils literal notranslate"><span class="pre">CheckResult.class_model_uri</span></code></a></li>
+<li><a class="reference internal" href="#linkml.reporting.model.CheckResult.class_name"><code class="docutils literal notranslate"><span class="pre">CheckResult.class_name</span></code></a></li>
+<li><a class="reference internal" href="#linkml.reporting.model.CheckResult.info"><code class="docutils literal notranslate"><span class="pre">CheckResult.info</span></code></a></li>
+<li><a class="reference internal" href="#linkml.reporting.model.CheckResult.instantiates"><code class="docutils literal notranslate"><span class="pre">CheckResult.instantiates</span></code></a></li>
+<li><a class="reference internal" href="#linkml.reporting.model.CheckResult.object"><code class="docutils literal notranslate"><span class="pre">CheckResult.object</span></code></a></li>
+<li><a class="reference internal" href="#linkml.reporting.model.CheckResult.object_str"><code class="docutils literal notranslate"><span class="pre">CheckResult.object_str</span></code></a></li>
+<li><a class="reference internal" href="#linkml.reporting.model.CheckResult.predicate"><code class="docutils literal notranslate"><span class="pre">CheckResult.predicate</span></code></a></li>
+<li><a class="reference internal" href="#linkml.reporting.model.CheckResult.source"><code class="docutils literal notranslate"><span class="pre">CheckResult.source</span></code></a></li>
+<li><a class="reference internal" href="#linkml.reporting.model.CheckResult.subject"><code class="docutils literal notranslate"><span class="pre">CheckResult.subject</span></code></a></li>
+<li><a class="reference internal" href="#linkml.reporting.model.CheckResult.type"><code class="docutils literal notranslate"><span class="pre">CheckResult.type</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#linkml.reporting.model.Problem"><code class="docutils literal notranslate"><span class="pre">Problem</span></code></a><ul>
+<li><a class="reference internal" href="#linkml.reporting.model.Problem.class_class_curie"><code class="docutils literal notranslate"><span class="pre">Problem.class_class_curie</span></code></a></li>
+<li><a class="reference internal" href="#linkml.reporting.model.Problem.class_class_uri"><code class="docutils literal notranslate"><span class="pre">Problem.class_class_uri</span></code></a></li>
+<li><a class="reference internal" href="#linkml.reporting.model.Problem.class_model_uri"><code class="docutils literal notranslate"><span class="pre">Problem.class_model_uri</span></code></a></li>
+<li><a class="reference internal" href="#linkml.reporting.model.Problem.class_name"><code class="docutils literal notranslate"><span class="pre">Problem.class_name</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#linkml.reporting.model.ProblemSlotInapplicable"><code class="docutils literal notranslate"><span class="pre">ProblemSlotInapplicable</span></code></a><ul>
+<li><a class="reference internal" href="#linkml.reporting.model.ProblemSlotInapplicable.class_class_curie"><code class="docutils literal notranslate"><span class="pre">ProblemSlotInapplicable.class_class_curie</span></code></a></li>
+<li><a class="reference internal" href="#linkml.reporting.model.ProblemSlotInapplicable.class_class_uri"><code class="docutils literal notranslate"><span class="pre">ProblemSlotInapplicable.class_class_uri</span></code></a></li>
+<li><a class="reference internal" href="#linkml.reporting.model.ProblemSlotInapplicable.class_model_uri"><code class="docutils literal notranslate"><span class="pre">ProblemSlotInapplicable.class_model_uri</span></code></a></li>
+<li><a class="reference internal" href="#linkml.reporting.model.ProblemSlotInapplicable.class_name"><code class="docutils literal notranslate"><span class="pre">ProblemSlotInapplicable.class_name</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#linkml.reporting.model.ProblemSlotMissing"><code class="docutils literal notranslate"><span class="pre">ProblemSlotMissing</span></code></a><ul>
+<li><a class="reference internal" href="#linkml.reporting.model.ProblemSlotMissing.class_class_curie"><code class="docutils literal notranslate"><span class="pre">ProblemSlotMissing.class_class_curie</span></code></a></li>
+<li><a class="reference internal" href="#linkml.reporting.model.ProblemSlotMissing.class_class_uri"><code class="docutils literal notranslate"><span class="pre">ProblemSlotMissing.class_class_uri</span></code></a></li>
+<li><a class="reference internal" href="#linkml.reporting.model.ProblemSlotMissing.class_model_uri"><code class="docutils literal notranslate"><span class="pre">ProblemSlotMissing.class_model_uri</span></code></a></li>
+<li><a class="reference internal" href="#linkml.reporting.model.ProblemSlotMissing.class_name"><code class="docutils literal notranslate"><span class="pre">ProblemSlotMissing.class_name</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#linkml.reporting.model.ProblemSlotUndeclared"><code class="docutils literal notranslate"><span class="pre">ProblemSlotUndeclared</span></code></a><ul>
+<li><a class="reference internal" href="#linkml.reporting.model.ProblemSlotUndeclared.class_class_curie"><code class="docutils literal notranslate"><span class="pre">ProblemSlotUndeclared.class_class_curie</span></code></a></li>
+<li><a class="reference internal" href="#linkml.reporting.model.ProblemSlotUndeclared.class_class_uri"><code class="docutils literal notranslate"><span class="pre">ProblemSlotUndeclared.class_class_uri</span></code></a></li>
+<li><a class="reference internal" href="#linkml.reporting.model.ProblemSlotUndeclared.class_model_uri"><code class="docutils literal notranslate"><span class="pre">ProblemSlotUndeclared.class_model_uri</span></code></a></li>
+<li><a class="reference internal" href="#linkml.reporting.model.ProblemSlotUndeclared.class_name"><code class="docutils literal notranslate"><span class="pre">ProblemSlotUndeclared.class_name</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#linkml.reporting.model.Report"><code class="docutils literal notranslate"><span class="pre">Report</span></code></a><ul>
+<li><a class="reference internal" href="#linkml.reporting.model.Report.class_class_curie"><code class="docutils literal notranslate"><span class="pre">Report.class_class_curie</span></code></a></li>
+<li><a class="reference internal" href="#linkml.reporting.model.Report.class_class_uri"><code class="docutils literal notranslate"><span class="pre">Report.class_class_uri</span></code></a></li>
+<li><a class="reference internal" href="#linkml.reporting.model.Report.class_model_uri"><code class="docutils literal notranslate"><span class="pre">Report.class_model_uri</span></code></a></li>
+<li><a class="reference internal" href="#linkml.reporting.model.Report.class_name"><code class="docutils literal notranslate"><span class="pre">Report.class_name</span></code></a></li>
+<li><a class="reference internal" href="#linkml.reporting.model.Report.results"><code class="docutils literal notranslate"><span class="pre">Report.results</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#linkml.reporting.model.SeverityOptions"><code class="docutils literal notranslate"><span class="pre">SeverityOptions</span></code></a><ul>
+<li><a class="reference internal" href="#linkml.reporting.model.SeverityOptions.ERROR"><code class="docutils literal notranslate"><span class="pre">SeverityOptions.ERROR</span></code></a></li>
+<li><a class="reference internal" href="#linkml.reporting.model.SeverityOptions.FATAL"><code class="docutils literal notranslate"><span class="pre">SeverityOptions.FATAL</span></code></a></li>
+<li><a class="reference internal" href="#linkml.reporting.model.SeverityOptions.INFO"><code class="docutils literal notranslate"><span class="pre">SeverityOptions.INFO</span></code></a></li>
+<li><a class="reference internal" href="#linkml.reporting.model.SeverityOptions.WARNING"><code class="docutils literal notranslate"><span class="pre">SeverityOptions.WARNING</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#linkml.reporting.model.slots"><code class="docutils literal notranslate"><span class="pre">slots</span></code></a><ul>
+<li><a class="reference internal" href="#linkml.reporting.model.slots.info"><code class="docutils literal notranslate"><span class="pre">slots.info</span></code></a></li>
+<li><a class="reference internal" href="#linkml.reporting.model.slots.instantiates"><code class="docutils literal notranslate"><span class="pre">slots.instantiates</span></code></a></li>
+<li><a class="reference internal" href="#linkml.reporting.model.slots.object"><code class="docutils literal notranslate"><span class="pre">slots.object</span></code></a></li>
+<li><a class="reference internal" href="#linkml.reporting.model.slots.object_str"><code class="docutils literal notranslate"><span class="pre">slots.object_str</span></code></a></li>
+<li><a class="reference internal" href="#linkml.reporting.model.slots.predicate"><code class="docutils literal notranslate"><span class="pre">slots.predicate</span></code></a></li>
+<li><a class="reference internal" href="#linkml.reporting.model.slots.report__results"><code class="docutils literal notranslate"><span class="pre">slots.report__results</span></code></a></li>
+<li><a class="reference internal" href="#linkml.reporting.model.slots.severity"><code class="docutils literal notranslate"><span class="pre">slots.severity</span></code></a></li>
+<li><a class="reference internal" href="#linkml.reporting.model.slots.source"><code class="docutils literal notranslate"><span class="pre">slots.source</span></code></a></li>
+<li><a class="reference internal" href="#linkml.reporting.model.slots.subject"><code class="docutils literal notranslate"><span class="pre">slots.subject</span></code></a></li>
+<li><a class="reference internal" href="#linkml.reporting.model.slots.type"><code class="docutils literal notranslate"><span class="pre">slots.type</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li><a class="reference internal" href="#module-linkml.reporting">Module contents</a></li>
 </ul>
 </li>
@@ -655,6 +728,7 @@
     <script src="_static/underscore.js"></script>
     <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/scripts/furo.js"></script>
     </body>
 </html>

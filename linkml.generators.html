@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" />
 
-    <meta name="generator" content="sphinx-5.1.1, furo 2022.09.29"/>
+    <meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
         <title>linkml.generators package - linkml documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
@@ -907,6 +907,11 @@ for any class that is inherited (class itself, is_a, mixin, apply_to).  Otherwis
 <li><p>java classes, using lombok annotations</p></li>
 <li><p>java records</p></li>
 </ul>
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml.generators.javagen.JavaGenerator.default_value_for_type">
+<span class="sig-name descname"><span class="pre">default_value_for_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">typ</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/linkml/generators/javagen.html#JavaGenerator.default_value_for_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.javagen.JavaGenerator.default_value_for_type" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="linkml.generators.javagen.JavaGenerator.emit_metadata">
 <span class="sig-name descname"><span class="pre">emit_metadata</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#linkml.generators.javagen.JavaGenerator.emit_metadata" title="Permalink to this definition">#</a></dt>
@@ -947,7 +952,7 @@ for any class that is inherited (class itself, is_a, mixin, apply_to).  Otherwis
 
 <dl class="py method">
 <dt class="sig sig-object py" id="linkml.generators.javagen.JavaGenerator.map_type">
-<span class="sig-name descname"><span class="pre">map_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TypeDefinition</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/linkml/generators/javagen.html#JavaGenerator.map_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.javagen.JavaGenerator.map_type" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">map_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TypeDefinition</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">required</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/linkml/generators/javagen.html#JavaGenerator.map_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.javagen.JavaGenerator.map_type" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -1524,7 +1529,7 @@ building</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="linkml.generators.markdowngen.MarkdownGenerator.mappings">
-<span class="sig-name descname"><span class="pre">mappings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">obj:</span> <span class="pre">[&lt;class</span> <span class="pre">'linkml_runtime.linkml_model.meta.SlotDefinition'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'linkml_runtime.linkml_model.meta.ClassDefinition'&gt;]</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/linkml/generators/markdowngen.html#MarkdownGenerator.mappings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.markdowngen.MarkdownGenerator.mappings" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">mappings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.SlotDefinition" title="linkml_runtime.linkml_model.meta.SlotDefinition"><span class="pre">SlotDefinition</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.ClassDefinition" title="linkml_runtime.linkml_model.meta.ClassDefinition"><span class="pre">ClassDefinition</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/linkml/generators/markdowngen.html#MarkdownGenerator.mappings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.markdowngen.MarkdownGenerator.mappings" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -1732,7 +1737,7 @@ building</p>
 <span id="linkml-generators-oocodegen-module"></span><h2>linkml.generators.oocodegen module<a class="headerlink" href="#module-linkml.generators.oocodegen" title="Permalink to this heading">#</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="linkml.generators.oocodegen.OOClass">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linkml.generators.oocodegen.</span></span><span class="sig-name descname"><span class="pre">OOClass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name:</span> <span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_a:</span> <span class="pre">~typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">abstract:</span> <span class="pre">~typing.Optional[bool]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mixins:</span> <span class="pre">~typing.List[str]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fields:</span> <span class="pre">~typing.List[~linkml.generators.oocodegen.OOField]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">all_fields:</span> <span class="pre">~typing.List[~linkml.generators.oocodegen.OOField]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">annotations:</span> <span class="pre">~typing.List[str]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">package:</span> <span class="pre">~typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_class:</span> <span class="pre">~typing.Optional[~linkml_runtime.linkml_model.meta.ClassDefinition]</span> <span class="pre">=</span> <span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/linkml/generators/oocodegen.html#OOClass"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.oocodegen.OOClass" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linkml.generators.oocodegen.</span></span><span class="sig-name descname"><span class="pre">OOClass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name:</span> <span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description:</span> <span class="pre">~typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_a:</span> <span class="pre">~typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mixin:</span> <span class="pre">~typing.Optional[bool]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">abstract:</span> <span class="pre">~typing.Optional[bool]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mixins:</span> <span class="pre">~typing.List[str]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fields:</span> <span class="pre">~typing.List[~linkml.generators.oocodegen.OOField]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">all_fields:</span> <span class="pre">~typing.List[~linkml.generators.oocodegen.OOField]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">annotations:</span> <span class="pre">~typing.List[str]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">package:</span> <span class="pre">~typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_class:</span> <span class="pre">~typing.Optional[~linkml_runtime.linkml_model.meta.ClassDefinition]</span> <span class="pre">=</span> <span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/linkml/generators/oocodegen.html#OOClass"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.oocodegen.OOClass" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>An object-oriented class</p>
 <dl class="py attribute">
@@ -1751,6 +1756,11 @@ building</p>
 <dd></dd></dl>
 
 <dl class="py attribute">
+<dt class="sig sig-object py" id="linkml.generators.oocodegen.OOClass.description">
+<span class="sig-name descname"><span class="pre">description</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#linkml.generators.oocodegen.OOClass.description" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="linkml.generators.oocodegen.OOClass.fields">
 <span class="sig-name descname"><span class="pre">fields</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#linkml.generators.oocodegen.OOField" title="linkml.generators.oocodegen.OOField"><span class="pre">OOField</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#linkml.generators.oocodegen.OOClass.fields" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
@@ -1758,6 +1768,11 @@ building</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="linkml.generators.oocodegen.OOClass.is_a">
 <span class="sig-name descname"><span class="pre">is_a</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#linkml.generators.oocodegen.OOClass.is_a" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="linkml.generators.oocodegen.OOClass.mixin">
+<span class="sig-name descname"><span class="pre">mixin</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#linkml.generators.oocodegen.OOClass.mixin" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -1794,6 +1809,11 @@ building</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="linkml.generators.oocodegen.OOCodeGenerator.default_value_for_type">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">default_value_for_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">typ</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/linkml/generators/oocodegen.html#OOCodeGenerator.default_value_for_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.oocodegen.OOCodeGenerator.default_value_for_type" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="linkml.generators.oocodegen.OOCodeGenerator.generate_enum_label">
 <span class="sig-name descname"><span class="pre">generate_enum_label</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/linkml/generators/oocodegen.html#OOCodeGenerator.generate_enum_label"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.oocodegen.OOCodeGenerator.generate_enum_label" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
@@ -1820,7 +1840,7 @@ building</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="linkml.generators.oocodegen.OOCodeGenerator.map_type">
-<span class="sig-name descname"><span class="pre">map_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TypeDefinition</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/linkml/generators/oocodegen.html#OOCodeGenerator.map_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.oocodegen.OOCodeGenerator.map_type" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">map_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TypeDefinition</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">required</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/linkml/generators/oocodegen.html#OOCodeGenerator.map_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.oocodegen.OOCodeGenerator.map_type" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -2384,6 +2404,11 @@ for any class that is inherited (class itself, is_a, mixin, apply_to).  Otherwis
 <dl class="py attribute">
 <dt class="sig sig-object py" id="linkml.generators.pydanticgen.PydanticGenerator.allow_extra">
 <span class="sig-name descname"><span class="pre">allow_extra</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#linkml.generators.pydanticgen.PydanticGenerator.allow_extra" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml.generators.pydanticgen.PydanticGenerator.default_value_for_type">
+<span class="sig-name descname"><span class="pre">default_value_for_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">typ</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/linkml/generators/pydanticgen.html#PydanticGenerator.default_value_for_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.pydanticgen.PydanticGenerator.default_value_for_type" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -3886,36 +3911,707 @@ representation such as JsonSchema</p>
             <ul>
 <li><a class="reference internal" href="#">linkml.generators package</a><ul>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-linkml.generators.csvgen">linkml.generators.csvgen module</a></li>
-<li><a class="reference internal" href="#module-linkml.generators.dotgen">linkml.generators.dotgen module</a></li>
-<li><a class="reference internal" href="#module-linkml.generators.excelgen">linkml.generators.excelgen module</a></li>
+<li><a class="reference internal" href="#module-linkml.generators.csvgen">linkml.generators.csvgen module</a><ul>
+<li><a class="reference internal" href="#linkml.generators.csvgen.CsvGenerator"><code class="docutils literal notranslate"><span class="pre">CsvGenerator</span></code></a><ul>
+<li><a class="reference internal" href="#linkml.generators.csvgen.CsvGenerator.closure"><code class="docutils literal notranslate"><span class="pre">CsvGenerator.closure</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.csvgen.CsvGenerator.generate_header"><code class="docutils literal notranslate"><span class="pre">CsvGenerator.generate_header()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.csvgen.CsvGenerator.generatorname"><code class="docutils literal notranslate"><span class="pre">CsvGenerator.generatorname</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.csvgen.CsvGenerator.generatorversion"><code class="docutils literal notranslate"><span class="pre">CsvGenerator.generatorversion</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.csvgen.CsvGenerator.requires_metamodel"><code class="docutils literal notranslate"><span class="pre">CsvGenerator.requires_metamodel</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.csvgen.CsvGenerator.sep"><code class="docutils literal notranslate"><span class="pre">CsvGenerator.sep</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.csvgen.CsvGenerator.uses_schemaloader"><code class="docutils literal notranslate"><span class="pre">CsvGenerator.uses_schemaloader</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.csvgen.CsvGenerator.valid_formats"><code class="docutils literal notranslate"><span class="pre">CsvGenerator.valid_formats</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.csvgen.CsvGenerator.visit_class"><code class="docutils literal notranslate"><span class="pre">CsvGenerator.visit_class()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.csvgen.CsvGenerator.visit_schema"><code class="docutils literal notranslate"><span class="pre">CsvGenerator.visit_schema()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.csvgen.CsvGenerator.writer"><code class="docutils literal notranslate"><span class="pre">CsvGenerator.writer</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-linkml.generators.dotgen">linkml.generators.dotgen module</a><ul>
+<li><a class="reference internal" href="#linkml.generators.dotgen.DotGenerator"><code class="docutils literal notranslate"><span class="pre">DotGenerator</span></code></a><ul>
+<li><a class="reference internal" href="#linkml.generators.dotgen.DotGenerator.classdot"><code class="docutils literal notranslate"><span class="pre">DotGenerator.classdot</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.dotgen.DotGenerator.classname"><code class="docutils literal notranslate"><span class="pre">DotGenerator.classname</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.dotgen.DotGenerator.classnames"><code class="docutils literal notranslate"><span class="pre">DotGenerator.classnames</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.dotgen.DotGenerator.cls_obj"><code class="docutils literal notranslate"><span class="pre">DotGenerator.cls_obj</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.dotgen.DotGenerator.cls_subj"><code class="docutils literal notranslate"><span class="pre">DotGenerator.cls_subj</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.dotgen.DotGenerator.directory"><code class="docutils literal notranslate"><span class="pre">DotGenerator.directory</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.dotgen.DotGenerator.directory_output"><code class="docutils literal notranslate"><span class="pre">DotGenerator.directory_output</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.dotgen.DotGenerator.dirname"><code class="docutils literal notranslate"><span class="pre">DotGenerator.dirname</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.dotgen.DotGenerator.edge"><code class="docutils literal notranslate"><span class="pre">DotGenerator.edge()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.dotgen.DotGenerator.end_class"><code class="docutils literal notranslate"><span class="pre">DotGenerator.end_class()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.dotgen.DotGenerator.end_schema"><code class="docutils literal notranslate"><span class="pre">DotGenerator.end_schema()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.dotgen.DotGenerator.filedot"><code class="docutils literal notranslate"><span class="pre">DotGenerator.filedot</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.dotgen.DotGenerator.filename"><code class="docutils literal notranslate"><span class="pre">DotGenerator.filename</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.dotgen.DotGenerator.generatorname"><code class="docutils literal notranslate"><span class="pre">DotGenerator.generatorname</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.dotgen.DotGenerator.generatorversion"><code class="docutils literal notranslate"><span class="pre">DotGenerator.generatorversion</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.dotgen.DotGenerator.node"><code class="docutils literal notranslate"><span class="pre">DotGenerator.node()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.dotgen.DotGenerator.uses_schemaloader"><code class="docutils literal notranslate"><span class="pre">DotGenerator.uses_schemaloader</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.dotgen.DotGenerator.valid_formats"><code class="docutils literal notranslate"><span class="pre">DotGenerator.valid_formats</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.dotgen.DotGenerator.visit_all_class_slots"><code class="docutils literal notranslate"><span class="pre">DotGenerator.visit_all_class_slots</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.dotgen.DotGenerator.visit_class"><code class="docutils literal notranslate"><span class="pre">DotGenerator.visit_class()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.dotgen.DotGenerator.visit_class_slot"><code class="docutils literal notranslate"><span class="pre">DotGenerator.visit_class_slot()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.dotgen.DotGenerator.visit_schema"><code class="docutils literal notranslate"><span class="pre">DotGenerator.visit_schema()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-linkml.generators.excelgen">linkml.generators.excelgen module</a><ul>
+<li><a class="reference internal" href="#linkml.generators.excelgen.ExcelGenerator"><code class="docutils literal notranslate"><span class="pre">ExcelGenerator</span></code></a><ul>
+<li><a class="reference internal" href="#linkml.generators.excelgen.ExcelGenerator.enum_dict"><code class="docutils literal notranslate"><span class="pre">ExcelGenerator.enum_dict</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.excelgen.ExcelGenerator.generator_name"><code class="docutils literal notranslate"><span class="pre">ExcelGenerator.generator_name</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.excelgen.ExcelGenerator.generator_version"><code class="docutils literal notranslate"><span class="pre">ExcelGenerator.generator_version</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.excelgen.ExcelGenerator.output"><code class="docutils literal notranslate"><span class="pre">ExcelGenerator.output</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.excelgen.ExcelGenerator.requires_metamodel"><code class="docutils literal notranslate"><span class="pre">ExcelGenerator.requires_metamodel</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.excelgen.ExcelGenerator.sheet_name_cols"><code class="docutils literal notranslate"><span class="pre">ExcelGenerator.sheet_name_cols</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.excelgen.ExcelGenerator.uses_schemaloader"><code class="docutils literal notranslate"><span class="pre">ExcelGenerator.uses_schemaloader</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.excelgen.ExcelGenerator.valid_formats"><code class="docutils literal notranslate"><span class="pre">ExcelGenerator.valid_formats</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.excelgen.ExcelGenerator.visit_class"><code class="docutils literal notranslate"><span class="pre">ExcelGenerator.visit_class()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.excelgen.ExcelGenerator.visit_class_slot"><code class="docutils literal notranslate"><span class="pre">ExcelGenerator.visit_class_slot()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.excelgen.ExcelGenerator.visit_enum"><code class="docutils literal notranslate"><span class="pre">ExcelGenerator.visit_enum()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.excelgen.ExcelGenerator.wb_name"><code class="docutils literal notranslate"><span class="pre">ExcelGenerator.wb_name</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.excelgen.ExcelGenerator.workbook"><code class="docutils literal notranslate"><span class="pre">ExcelGenerator.workbook</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li><a class="reference internal" href="#linkml-generators-flattener-module">linkml.generators.flattener module</a></li>
-<li><a class="reference internal" href="#module-linkml.generators.golrgen">linkml.generators.golrgen module</a></li>
-<li><a class="reference internal" href="#module-linkml.generators.graphqlgen">linkml.generators.graphqlgen module</a></li>
+<li><a class="reference internal" href="#module-linkml.generators.golrgen">linkml.generators.golrgen module</a><ul>
+<li><a class="reference internal" href="#linkml.generators.golrgen.GOLRClass"><code class="docutils literal notranslate"><span class="pre">GOLRClass</span></code></a><ul>
+<li><a class="reference internal" href="#linkml.generators.golrgen.GOLRClass.description"><code class="docutils literal notranslate"><span class="pre">GOLRClass.description</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.golrgen.GOLRClass.display_name"><code class="docutils literal notranslate"><span class="pre">GOLRClass.display_name</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.golrgen.GOLRClass.document_category"><code class="docutils literal notranslate"><span class="pre">GOLRClass.document_category</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.golrgen.GOLRClass.fields"><code class="docutils literal notranslate"><span class="pre">GOLRClass.fields</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.golrgen.GOLRClass.id"><code class="docutils literal notranslate"><span class="pre">GOLRClass.id</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.golrgen.GOLRClass.schema_generating"><code class="docutils literal notranslate"><span class="pre">GOLRClass.schema_generating</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.golrgen.GOLRClass.weight"><code class="docutils literal notranslate"><span class="pre">GOLRClass.weight</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#linkml.generators.golrgen.GOLRField"><code class="docutils literal notranslate"><span class="pre">GOLRField</span></code></a><ul>
+<li><a class="reference internal" href="#linkml.generators.golrgen.GOLRField.cardinality"><code class="docutils literal notranslate"><span class="pre">GOLRField.cardinality</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.golrgen.GOLRField.description"><code class="docutils literal notranslate"><span class="pre">GOLRField.description</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.golrgen.GOLRField.display_name"><code class="docutils literal notranslate"><span class="pre">GOLRField.display_name</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.golrgen.GOLRField.id"><code class="docutils literal notranslate"><span class="pre">GOLRField.id</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.golrgen.GOLRField.property"><code class="docutils literal notranslate"><span class="pre">GOLRField.property</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#linkml.generators.golrgen.GolrSchemaGenerator"><code class="docutils literal notranslate"><span class="pre">GolrSchemaGenerator</span></code></a><ul>
+<li><a class="reference internal" href="#linkml.generators.golrgen.GolrSchemaGenerator.class_obj"><code class="docutils literal notranslate"><span class="pre">GolrSchemaGenerator.class_obj</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.golrgen.GolrSchemaGenerator.directory"><code class="docutils literal notranslate"><span class="pre">GolrSchemaGenerator.directory</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.golrgen.GolrSchemaGenerator.directory_output"><code class="docutils literal notranslate"><span class="pre">GolrSchemaGenerator.directory_output</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.golrgen.GolrSchemaGenerator.end_class"><code class="docutils literal notranslate"><span class="pre">GolrSchemaGenerator.end_class()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.golrgen.GolrSchemaGenerator.generate_header"><code class="docutils literal notranslate"><span class="pre">GolrSchemaGenerator.generate_header()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.golrgen.GolrSchemaGenerator.generatorname"><code class="docutils literal notranslate"><span class="pre">GolrSchemaGenerator.generatorname</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.golrgen.GolrSchemaGenerator.generatorversion"><code class="docutils literal notranslate"><span class="pre">GolrSchemaGenerator.generatorversion</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.golrgen.GolrSchemaGenerator.requires_metamodel"><code class="docutils literal notranslate"><span class="pre">GolrSchemaGenerator.requires_metamodel</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.golrgen.GolrSchemaGenerator.uses_schemaloader"><code class="docutils literal notranslate"><span class="pre">GolrSchemaGenerator.uses_schemaloader</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.golrgen.GolrSchemaGenerator.valid_formats"><code class="docutils literal notranslate"><span class="pre">GolrSchemaGenerator.valid_formats</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.golrgen.GolrSchemaGenerator.visit_all_class_slots"><code class="docutils literal notranslate"><span class="pre">GolrSchemaGenerator.visit_all_class_slots</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.golrgen.GolrSchemaGenerator.visit_class"><code class="docutils literal notranslate"><span class="pre">GolrSchemaGenerator.visit_class()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.golrgen.GolrSchemaGenerator.visit_class_slot"><code class="docutils literal notranslate"><span class="pre">GolrSchemaGenerator.visit_class_slot()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.golrgen.GolrSchemaGenerator.visit_schema"><code class="docutils literal notranslate"><span class="pre">GolrSchemaGenerator.visit_schema()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-linkml.generators.graphqlgen">linkml.generators.graphqlgen module</a><ul>
+<li><a class="reference internal" href="#linkml.generators.graphqlgen.GraphqlGenerator"><code class="docutils literal notranslate"><span class="pre">GraphqlGenerator</span></code></a><ul>
+<li><a class="reference internal" href="#linkml.generators.graphqlgen.GraphqlGenerator.emit_prefixes"><code class="docutils literal notranslate"><span class="pre">GraphqlGenerator.emit_prefixes</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.graphqlgen.GraphqlGenerator.end_class"><code class="docutils literal notranslate"><span class="pre">GraphqlGenerator.end_class()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.graphqlgen.GraphqlGenerator.generate_header"><code class="docutils literal notranslate"><span class="pre">GraphqlGenerator.generate_header()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.graphqlgen.GraphqlGenerator.generatorname"><code class="docutils literal notranslate"><span class="pre">GraphqlGenerator.generatorname</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.graphqlgen.GraphqlGenerator.generatorversion"><code class="docutils literal notranslate"><span class="pre">GraphqlGenerator.generatorversion</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.graphqlgen.GraphqlGenerator.mergeimports"><code class="docutils literal notranslate"><span class="pre">GraphqlGenerator.mergeimports</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.graphqlgen.GraphqlGenerator.metadata"><code class="docutils literal notranslate"><span class="pre">GraphqlGenerator.metadata</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.graphqlgen.GraphqlGenerator.requires_metamodel"><code class="docutils literal notranslate"><span class="pre">GraphqlGenerator.requires_metamodel</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.graphqlgen.GraphqlGenerator.schema"><code class="docutils literal notranslate"><span class="pre">GraphqlGenerator.schema</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.graphqlgen.GraphqlGenerator.uses_schemaloader"><code class="docutils literal notranslate"><span class="pre">GraphqlGenerator.uses_schemaloader</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.graphqlgen.GraphqlGenerator.valid_formats"><code class="docutils literal notranslate"><span class="pre">GraphqlGenerator.valid_formats</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.graphqlgen.GraphqlGenerator.visit_all_class_slots"><code class="docutils literal notranslate"><span class="pre">GraphqlGenerator.visit_all_class_slots</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.graphqlgen.GraphqlGenerator.visit_class"><code class="docutils literal notranslate"><span class="pre">GraphqlGenerator.visit_class()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.graphqlgen.GraphqlGenerator.visit_class_slot"><code class="docutils literal notranslate"><span class="pre">GraphqlGenerator.visit_class_slot()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li><a class="reference internal" href="#linkml-generators-infer-model-module">linkml.generators.infer_model module</a></li>
-<li><a class="reference internal" href="#module-linkml.generators.javagen">linkml.generators.javagen module</a></li>
-<li><a class="reference internal" href="#module-linkml.generators.jsonldcontextgen">linkml.generators.jsonldcontextgen module</a></li>
-<li><a class="reference internal" href="#module-linkml.generators.jsonldgen">linkml.generators.jsonldgen module</a></li>
-<li><a class="reference internal" href="#module-linkml.generators.jsonschemagen">linkml.generators.jsonschemagen module</a></li>
+<li><a class="reference internal" href="#module-linkml.generators.javagen">linkml.generators.javagen module</a><ul>
+<li><a class="reference internal" href="#linkml.generators.javagen.JavaGenerator"><code class="docutils literal notranslate"><span class="pre">JavaGenerator</span></code></a><ul>
+<li><a class="reference internal" href="#linkml.generators.javagen.JavaGenerator.default_value_for_type"><code class="docutils literal notranslate"><span class="pre">JavaGenerator.default_value_for_type()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.javagen.JavaGenerator.emit_metadata"><code class="docutils literal notranslate"><span class="pre">JavaGenerator.emit_metadata</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.javagen.JavaGenerator.gen_classvars"><code class="docutils literal notranslate"><span class="pre">JavaGenerator.gen_classvars</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.javagen.JavaGenerator.gen_slots"><code class="docutils literal notranslate"><span class="pre">JavaGenerator.gen_slots</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.javagen.JavaGenerator.generate_records"><code class="docutils literal notranslate"><span class="pre">JavaGenerator.generate_records</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.javagen.JavaGenerator.generatorname"><code class="docutils literal notranslate"><span class="pre">JavaGenerator.generatorname</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.javagen.JavaGenerator.generatorversion"><code class="docutils literal notranslate"><span class="pre">JavaGenerator.generatorversion</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.javagen.JavaGenerator.genmeta"><code class="docutils literal notranslate"><span class="pre">JavaGenerator.genmeta</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.javagen.JavaGenerator.map_type"><code class="docutils literal notranslate"><span class="pre">JavaGenerator.map_type()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.javagen.JavaGenerator.serialize"><code class="docutils literal notranslate"><span class="pre">JavaGenerator.serialize()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.javagen.JavaGenerator.template_file"><code class="docutils literal notranslate"><span class="pre">JavaGenerator.template_file</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.javagen.JavaGenerator.valid_formats"><code class="docutils literal notranslate"><span class="pre">JavaGenerator.valid_formats</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-linkml.generators.jsonldcontextgen">linkml.generators.jsonldcontextgen module</a><ul>
+<li><a class="reference internal" href="#linkml.generators.jsonldcontextgen.ContextGenerator"><code class="docutils literal notranslate"><span class="pre">ContextGenerator</span></code></a><ul>
+<li><a class="reference internal" href="#linkml.generators.jsonldcontextgen.ContextGenerator.base"><code class="docutils literal notranslate"><span class="pre">ContextGenerator.base</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.jsonldcontextgen.ContextGenerator.context_body"><code class="docutils literal notranslate"><span class="pre">ContextGenerator.context_body</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.jsonldcontextgen.ContextGenerator.default_ns"><code class="docutils literal notranslate"><span class="pre">ContextGenerator.default_ns</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.jsonldcontextgen.ContextGenerator.emit_metadata"><code class="docutils literal notranslate"><span class="pre">ContextGenerator.emit_metadata</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.jsonldcontextgen.ContextGenerator.emit_prefixes"><code class="docutils literal notranslate"><span class="pre">ContextGenerator.emit_prefixes</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.jsonldcontextgen.ContextGenerator.end_schema"><code class="docutils literal notranslate"><span class="pre">ContextGenerator.end_schema()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.jsonldcontextgen.ContextGenerator.flatprefixes"><code class="docutils literal notranslate"><span class="pre">ContextGenerator.flatprefixes</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.jsonldcontextgen.ContextGenerator.generatorname"><code class="docutils literal notranslate"><span class="pre">ContextGenerator.generatorname</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.jsonldcontextgen.ContextGenerator.generatorversion"><code class="docutils literal notranslate"><span class="pre">ContextGenerator.generatorversion</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.jsonldcontextgen.ContextGenerator.model"><code class="docutils literal notranslate"><span class="pre">ContextGenerator.model</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.jsonldcontextgen.ContextGenerator.output"><code class="docutils literal notranslate"><span class="pre">ContextGenerator.output</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.jsonldcontextgen.ContextGenerator.prefixes"><code class="docutils literal notranslate"><span class="pre">ContextGenerator.prefixes</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.jsonldcontextgen.ContextGenerator.requires_metamodel"><code class="docutils literal notranslate"><span class="pre">ContextGenerator.requires_metamodel</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.jsonldcontextgen.ContextGenerator.slot_class_maps"><code class="docutils literal notranslate"><span class="pre">ContextGenerator.slot_class_maps</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.jsonldcontextgen.ContextGenerator.uses_schemaloader"><code class="docutils literal notranslate"><span class="pre">ContextGenerator.uses_schemaloader</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.jsonldcontextgen.ContextGenerator.valid_formats"><code class="docutils literal notranslate"><span class="pre">ContextGenerator.valid_formats</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.jsonldcontextgen.ContextGenerator.visit_all_class_slots"><code class="docutils literal notranslate"><span class="pre">ContextGenerator.visit_all_class_slots</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.jsonldcontextgen.ContextGenerator.visit_class"><code class="docutils literal notranslate"><span class="pre">ContextGenerator.visit_class()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.jsonldcontextgen.ContextGenerator.visit_schema"><code class="docutils literal notranslate"><span class="pre">ContextGenerator.visit_schema()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.jsonldcontextgen.ContextGenerator.visit_slot"><code class="docutils literal notranslate"><span class="pre">ContextGenerator.visit_slot()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-linkml.generators.jsonldgen">linkml.generators.jsonldgen module</a><ul>
+<li><a class="reference internal" href="#linkml.generators.jsonldgen.JSONLDGenerator"><code class="docutils literal notranslate"><span class="pre">JSONLDGenerator</span></code></a><ul>
+<li><a class="reference internal" href="#linkml.generators.jsonldgen.JSONLDGenerator.adjust_slot"><code class="docutils literal notranslate"><span class="pre">JSONLDGenerator.adjust_slot()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.jsonldgen.JSONLDGenerator.context"><code class="docutils literal notranslate"><span class="pre">JSONLDGenerator.context</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.jsonldgen.JSONLDGenerator.end_schema"><code class="docutils literal notranslate"><span class="pre">JSONLDGenerator.end_schema()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.jsonldgen.JSONLDGenerator.generatorname"><code class="docutils literal notranslate"><span class="pre">JSONLDGenerator.generatorname</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.jsonldgen.JSONLDGenerator.generatorversion"><code class="docutils literal notranslate"><span class="pre">JSONLDGenerator.generatorversion</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.jsonldgen.JSONLDGenerator.original_schema"><code class="docutils literal notranslate"><span class="pre">JSONLDGenerator.original_schema</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.jsonldgen.JSONLDGenerator.requires_metamodel"><code class="docutils literal notranslate"><span class="pre">JSONLDGenerator.requires_metamodel</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.jsonldgen.JSONLDGenerator.uses_schemaloader"><code class="docutils literal notranslate"><span class="pre">JSONLDGenerator.uses_schemaloader</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.jsonldgen.JSONLDGenerator.valid_formats"><code class="docutils literal notranslate"><span class="pre">JSONLDGenerator.valid_formats</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.jsonldgen.JSONLDGenerator.visit_class"><code class="docutils literal notranslate"><span class="pre">JSONLDGenerator.visit_class()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.jsonldgen.JSONLDGenerator.visit_slot"><code class="docutils literal notranslate"><span class="pre">JSONLDGenerator.visit_slot()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.jsonldgen.JSONLDGenerator.visit_subset"><code class="docutils literal notranslate"><span class="pre">JSONLDGenerator.visit_subset()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.jsonldgen.JSONLDGenerator.visit_type"><code class="docutils literal notranslate"><span class="pre">JSONLDGenerator.visit_type()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-linkml.generators.jsonschemagen">linkml.generators.jsonschemagen module</a><ul>
+<li><a class="reference internal" href="#linkml.generators.jsonschemagen.JsonSchemaGenerator"><code class="docutils literal notranslate"><span class="pre">JsonSchemaGenerator</span></code></a><ul>
+<li><a class="reference internal" href="#linkml.generators.jsonschemagen.JsonSchemaGenerator.clsobj"><code class="docutils literal notranslate"><span class="pre">JsonSchemaGenerator.clsobj</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.jsonschemagen.JsonSchemaGenerator.end_class"><code class="docutils literal notranslate"><span class="pre">JsonSchemaGenerator.end_class()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.jsonschemagen.JsonSchemaGenerator.end_schema"><code class="docutils literal notranslate"><span class="pre">JsonSchemaGenerator.end_schema()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.jsonschemagen.JsonSchemaGenerator.entryProperties"><code class="docutils literal notranslate"><span class="pre">JsonSchemaGenerator.entryProperties</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.jsonschemagen.JsonSchemaGenerator.generatorname"><code class="docutils literal notranslate"><span class="pre">JsonSchemaGenerator.generatorname</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.jsonschemagen.JsonSchemaGenerator.generatorversion"><code class="docutils literal notranslate"><span class="pre">JsonSchemaGenerator.generatorversion</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.jsonschemagen.JsonSchemaGenerator.get_ref_for_descendants"><code class="docutils literal notranslate"><span class="pre">JsonSchemaGenerator.get_ref_for_descendants()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.jsonschemagen.JsonSchemaGenerator.include_range_class_descendants"><code class="docutils literal notranslate"><span class="pre">JsonSchemaGenerator.include_range_class_descendants</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.jsonschemagen.JsonSchemaGenerator.inline"><code class="docutils literal notranslate"><span class="pre">JsonSchemaGenerator.inline</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.jsonschemagen.JsonSchemaGenerator.not_closed"><code class="docutils literal notranslate"><span class="pre">JsonSchemaGenerator.not_closed</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.jsonschemagen.JsonSchemaGenerator.optional_identifier_class_map"><code class="docutils literal notranslate"><span class="pre">JsonSchemaGenerator.optional_identifier_class_map</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.jsonschemagen.JsonSchemaGenerator.schemaobj"><code class="docutils literal notranslate"><span class="pre">JsonSchemaGenerator.schemaobj</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.jsonschemagen.JsonSchemaGenerator.topClass"><code class="docutils literal notranslate"><span class="pre">JsonSchemaGenerator.topClass</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.jsonschemagen.JsonSchemaGenerator.top_class"><code class="docutils literal notranslate"><span class="pre">JsonSchemaGenerator.top_class</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.jsonschemagen.JsonSchemaGenerator.uses_schemaloader"><code class="docutils literal notranslate"><span class="pre">JsonSchemaGenerator.uses_schemaloader</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.jsonschemagen.JsonSchemaGenerator.valid_formats"><code class="docutils literal notranslate"><span class="pre">JsonSchemaGenerator.valid_formats</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.jsonschemagen.JsonSchemaGenerator.visit_all_class_slots"><code class="docutils literal notranslate"><span class="pre">JsonSchemaGenerator.visit_all_class_slots</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.jsonschemagen.JsonSchemaGenerator.visit_all_slots"><code class="docutils literal notranslate"><span class="pre">JsonSchemaGenerator.visit_all_slots</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.jsonschemagen.JsonSchemaGenerator.visit_class"><code class="docutils literal notranslate"><span class="pre">JsonSchemaGenerator.visit_class()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.jsonschemagen.JsonSchemaGenerator.visit_class_slot"><code class="docutils literal notranslate"><span class="pre">JsonSchemaGenerator.visit_class_slot()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.jsonschemagen.JsonSchemaGenerator.visit_enum"><code class="docutils literal notranslate"><span class="pre">JsonSchemaGenerator.visit_enum()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.jsonschemagen.JsonSchemaGenerator.visit_schema"><code class="docutils literal notranslate"><span class="pre">JsonSchemaGenerator.visit_schema()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li><a class="reference internal" href="#linkml-generators-lpgen-module">linkml.generators.lpgen module</a></li>
-<li><a class="reference internal" href="#module-linkml.generators.markdowngen">linkml.generators.markdowngen module</a></li>
-<li><a class="reference internal" href="#module-linkml.generators.namespacegen">linkml.generators.namespacegen module</a></li>
-<li><a class="reference internal" href="#module-linkml.generators.oocodegen">linkml.generators.oocodegen module</a></li>
-<li><a class="reference internal" href="#module-linkml.generators.owlgen">linkml.generators.owlgen module</a></li>
-<li><a class="reference internal" href="#module-linkml.generators.prefixmapgen">linkml.generators.prefixmapgen module</a></li>
-<li><a class="reference internal" href="#module-linkml.generators.projectgen">linkml.generators.projectgen module</a></li>
-<li><a class="reference internal" href="#module-linkml.generators.protogen">linkml.generators.protogen module</a></li>
-<li><a class="reference internal" href="#module-linkml.generators.pydanticgen">linkml.generators.pydanticgen module</a></li>
-<li><a class="reference internal" href="#module-linkml.generators.pythongen">linkml.generators.pythongen module</a></li>
-<li><a class="reference internal" href="#module-linkml.generators.rdfgen">linkml.generators.rdfgen module</a></li>
-<li><a class="reference internal" href="#module-linkml.generators.shaclgen">linkml.generators.shaclgen module</a></li>
-<li><a class="reference internal" href="#module-linkml.generators.shexgen">linkml.generators.shexgen module</a></li>
-<li><a class="reference internal" href="#module-linkml.generators.sparqlgen">linkml.generators.sparqlgen module</a></li>
-<li><a class="reference internal" href="#module-linkml.generators.sqlddlgen">linkml.generators.sqlddlgen module</a></li>
-<li><a class="reference internal" href="#module-linkml.generators.summarygen">linkml.generators.summarygen module</a></li>
+<li><a class="reference internal" href="#module-linkml.generators.markdowngen">linkml.generators.markdowngen module</a><ul>
+<li><a class="reference internal" href="#linkml.generators.markdowngen.MarkdownGenerator"><code class="docutils literal notranslate"><span class="pre">MarkdownGenerator</span></code></a><ul>
+<li><a class="reference internal" href="#linkml.generators.markdowngen.MarkdownGenerator.anchor"><code class="docutils literal notranslate"><span class="pre">MarkdownGenerator.anchor()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.markdowngen.MarkdownGenerator.anchorend"><code class="docutils literal notranslate"><span class="pre">MarkdownGenerator.anchorend()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.markdowngen.MarkdownGenerator.bbin"><code class="docutils literal notranslate"><span class="pre">MarkdownGenerator.bbin()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.markdowngen.MarkdownGenerator.bullet"><code class="docutils literal notranslate"><span class="pre">MarkdownGenerator.bullet()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.markdowngen.MarkdownGenerator.class_hier"><code class="docutils literal notranslate"><span class="pre">MarkdownGenerator.class_hier()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.markdowngen.MarkdownGenerator.class_link"><code class="docutils literal notranslate"><span class="pre">MarkdownGenerator.class_link()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.markdowngen.MarkdownGenerator.class_type_link"><code class="docutils literal notranslate"><span class="pre">MarkdownGenerator.class_type_link()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.markdowngen.MarkdownGenerator.classes"><code class="docutils literal notranslate"><span class="pre">MarkdownGenerator.classes</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.markdowngen.MarkdownGenerator.desc_for"><code class="docutils literal notranslate"><span class="pre">MarkdownGenerator.desc_for()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.markdowngen.MarkdownGenerator.dir_path"><code class="docutils literal notranslate"><span class="pre">MarkdownGenerator.dir_path()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.markdowngen.MarkdownGenerator.directory"><code class="docutils literal notranslate"><span class="pre">MarkdownGenerator.directory</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.markdowngen.MarkdownGenerator.directory_output"><code class="docutils literal notranslate"><span class="pre">MarkdownGenerator.directory_output</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.markdowngen.MarkdownGenerator.element_header"><code class="docutils literal notranslate"><span class="pre">MarkdownGenerator.element_header()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.markdowngen.MarkdownGenerator.element_properties"><code class="docutils literal notranslate"><span class="pre">MarkdownGenerator.element_properties()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.markdowngen.MarkdownGenerator.enum_hier"><code class="docutils literal notranslate"><span class="pre">MarkdownGenerator.enum_hier()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.markdowngen.MarkdownGenerator.enum_link"><code class="docutils literal notranslate"><span class="pre">MarkdownGenerator.enum_link()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.markdowngen.MarkdownGenerator.exist_warning"><code class="docutils literal notranslate"><span class="pre">MarkdownGenerator.exist_warning()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.markdowngen.MarkdownGenerator.frontmatter"><code class="docutils literal notranslate"><span class="pre">MarkdownGenerator.frontmatter()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.markdowngen.MarkdownGenerator.gen_classes"><code class="docutils literal notranslate"><span class="pre">MarkdownGenerator.gen_classes</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.markdowngen.MarkdownGenerator.gen_classes_neighborhood"><code class="docutils literal notranslate"><span class="pre">MarkdownGenerator.gen_classes_neighborhood</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.markdowngen.MarkdownGenerator.generatorname"><code class="docutils literal notranslate"><span class="pre">MarkdownGenerator.generatorname</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.markdowngen.MarkdownGenerator.generatorversion"><code class="docutils literal notranslate"><span class="pre">MarkdownGenerator.generatorversion</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.markdowngen.MarkdownGenerator.header"><code class="docutils literal notranslate"><span class="pre">MarkdownGenerator.header()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.markdowngen.MarkdownGenerator.id_to_url"><code class="docutils literal notranslate"><span class="pre">MarkdownGenerator.id_to_url()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.markdowngen.MarkdownGenerator.image_dir"><code class="docutils literal notranslate"><span class="pre">MarkdownGenerator.image_dir</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.markdowngen.MarkdownGenerator.image_directory"><code class="docutils literal notranslate"><span class="pre">MarkdownGenerator.image_directory</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.markdowngen.MarkdownGenerator.index_file"><code class="docutils literal notranslate"><span class="pre">MarkdownGenerator.index_file</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.markdowngen.MarkdownGenerator.is_secondary_ref"><code class="docutils literal notranslate"><span class="pre">MarkdownGenerator.is_secondary_ref()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.markdowngen.MarkdownGenerator.mappings"><code class="docutils literal notranslate"><span class="pre">MarkdownGenerator.mappings()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.markdowngen.MarkdownGenerator.no_types_dir"><code class="docutils literal notranslate"><span class="pre">MarkdownGenerator.no_types_dir</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.markdowngen.MarkdownGenerator.noimages"><code class="docutils literal notranslate"><span class="pre">MarkdownGenerator.noimages</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.markdowngen.MarkdownGenerator.noyuml"><code class="docutils literal notranslate"><span class="pre">MarkdownGenerator.noyuml</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.markdowngen.MarkdownGenerator.para"><code class="docutils literal notranslate"><span class="pre">MarkdownGenerator.para()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.markdowngen.MarkdownGenerator.pred_hier"><code class="docutils literal notranslate"><span class="pre">MarkdownGenerator.pred_hier()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.markdowngen.MarkdownGenerator.predicate_cardinality"><code class="docutils literal notranslate"><span class="pre">MarkdownGenerator.predicate_cardinality()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.markdowngen.MarkdownGenerator.range_cardinality"><code class="docutils literal notranslate"><span class="pre">MarkdownGenerator.range_cardinality()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.markdowngen.MarkdownGenerator.slot_field"><code class="docutils literal notranslate"><span class="pre">MarkdownGenerator.slot_field()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.markdowngen.MarkdownGenerator.slot_link"><code class="docutils literal notranslate"><span class="pre">MarkdownGenerator.slot_link()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.markdowngen.MarkdownGenerator.subset_link"><code class="docutils literal notranslate"><span class="pre">MarkdownGenerator.subset_link()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.markdowngen.MarkdownGenerator.to_uri"><code class="docutils literal notranslate"><span class="pre">MarkdownGenerator.to_uri()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.markdowngen.MarkdownGenerator.type_link"><code class="docutils literal notranslate"><span class="pre">MarkdownGenerator.type_link()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.markdowngen.MarkdownGenerator.uses_schemaloader"><code class="docutils literal notranslate"><span class="pre">MarkdownGenerator.uses_schemaloader</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.markdowngen.MarkdownGenerator.valid_formats"><code class="docutils literal notranslate"><span class="pre">MarkdownGenerator.valid_formats</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.markdowngen.MarkdownGenerator.visit_all_class_slots"><code class="docutils literal notranslate"><span class="pre">MarkdownGenerator.visit_all_class_slots</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.markdowngen.MarkdownGenerator.visit_class"><code class="docutils literal notranslate"><span class="pre">MarkdownGenerator.visit_class()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.markdowngen.MarkdownGenerator.visit_enum"><code class="docutils literal notranslate"><span class="pre">MarkdownGenerator.visit_enum()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.markdowngen.MarkdownGenerator.visit_schema"><code class="docutils literal notranslate"><span class="pre">MarkdownGenerator.visit_schema()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.markdowngen.MarkdownGenerator.visit_slot"><code class="docutils literal notranslate"><span class="pre">MarkdownGenerator.visit_slot()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.markdowngen.MarkdownGenerator.visit_subset"><code class="docutils literal notranslate"><span class="pre">MarkdownGenerator.visit_subset()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.markdowngen.MarkdownGenerator.visit_type"><code class="docutils literal notranslate"><span class="pre">MarkdownGenerator.visit_type()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.markdowngen.MarkdownGenerator.warn_on_exist"><code class="docutils literal notranslate"><span class="pre">MarkdownGenerator.warn_on_exist</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.markdowngen.MarkdownGenerator.xlink"><code class="docutils literal notranslate"><span class="pre">MarkdownGenerator.xlink()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-linkml.generators.namespacegen">linkml.generators.namespacegen module</a><ul>
+<li><a class="reference internal" href="#linkml.generators.namespacegen.NamespaceGenerator"><code class="docutils literal notranslate"><span class="pre">NamespaceGenerator</span></code></a><ul>
+<li><a class="reference internal" href="#linkml.generators.namespacegen.NamespaceGenerator.emit_metadata"><code class="docutils literal notranslate"><span class="pre">NamespaceGenerator.emit_metadata</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.namespacegen.NamespaceGenerator.gen_classvars"><code class="docutils literal notranslate"><span class="pre">NamespaceGenerator.gen_classvars</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.namespacegen.NamespaceGenerator.gen_namespaces"><code class="docutils literal notranslate"><span class="pre">NamespaceGenerator.gen_namespaces()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.namespacegen.NamespaceGenerator.gen_schema"><code class="docutils literal notranslate"><span class="pre">NamespaceGenerator.gen_schema()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.namespacegen.NamespaceGenerator.gen_slots"><code class="docutils literal notranslate"><span class="pre">NamespaceGenerator.gen_slots</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.namespacegen.NamespaceGenerator.generatorname"><code class="docutils literal notranslate"><span class="pre">NamespaceGenerator.generatorname</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.namespacegen.NamespaceGenerator.generatorversion"><code class="docutils literal notranslate"><span class="pre">NamespaceGenerator.generatorversion</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.namespacegen.NamespaceGenerator.genmeta"><code class="docutils literal notranslate"><span class="pre">NamespaceGenerator.genmeta</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.namespacegen.NamespaceGenerator.valid_formats"><code class="docutils literal notranslate"><span class="pre">NamespaceGenerator.valid_formats</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.namespacegen.NamespaceGenerator.visit_all_class_slots"><code class="docutils literal notranslate"><span class="pre">NamespaceGenerator.visit_all_class_slots</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-linkml.generators.oocodegen">linkml.generators.oocodegen module</a><ul>
+<li><a class="reference internal" href="#linkml.generators.oocodegen.OOClass"><code class="docutils literal notranslate"><span class="pre">OOClass</span></code></a><ul>
+<li><a class="reference internal" href="#linkml.generators.oocodegen.OOClass.abstract"><code class="docutils literal notranslate"><span class="pre">OOClass.abstract</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.oocodegen.OOClass.all_fields"><code class="docutils literal notranslate"><span class="pre">OOClass.all_fields</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.oocodegen.OOClass.annotations"><code class="docutils literal notranslate"><span class="pre">OOClass.annotations</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.oocodegen.OOClass.description"><code class="docutils literal notranslate"><span class="pre">OOClass.description</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.oocodegen.OOClass.fields"><code class="docutils literal notranslate"><span class="pre">OOClass.fields</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.oocodegen.OOClass.is_a"><code class="docutils literal notranslate"><span class="pre">OOClass.is_a</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.oocodegen.OOClass.mixin"><code class="docutils literal notranslate"><span class="pre">OOClass.mixin</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.oocodegen.OOClass.mixins"><code class="docutils literal notranslate"><span class="pre">OOClass.mixins</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.oocodegen.OOClass.name"><code class="docutils literal notranslate"><span class="pre">OOClass.name</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.oocodegen.OOClass.package"><code class="docutils literal notranslate"><span class="pre">OOClass.package</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.oocodegen.OOClass.source_class"><code class="docutils literal notranslate"><span class="pre">OOClass.source_class</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#linkml.generators.oocodegen.OOCodeGenerator"><code class="docutils literal notranslate"><span class="pre">OOCodeGenerator</span></code></a><ul>
+<li><a class="reference internal" href="#linkml.generators.oocodegen.OOCodeGenerator.create_documents"><code class="docutils literal notranslate"><span class="pre">OOCodeGenerator.create_documents()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.oocodegen.OOCodeGenerator.default_value_for_type"><code class="docutils literal notranslate"><span class="pre">OOCodeGenerator.default_value_for_type()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.oocodegen.OOCodeGenerator.generate_enum_label"><code class="docutils literal notranslate"><span class="pre">OOCodeGenerator.generate_enum_label()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.oocodegen.OOCodeGenerator.get_class_name"><code class="docutils literal notranslate"><span class="pre">OOCodeGenerator.get_class_name()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.oocodegen.OOCodeGenerator.get_slot_name"><code class="docutils literal notranslate"><span class="pre">OOCodeGenerator.get_slot_name()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.oocodegen.OOCodeGenerator.java_style"><code class="docutils literal notranslate"><span class="pre">OOCodeGenerator.java_style</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.oocodegen.OOCodeGenerator.make_multivalued"><code class="docutils literal notranslate"><span class="pre">OOCodeGenerator.make_multivalued()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.oocodegen.OOCodeGenerator.map_type"><code class="docutils literal notranslate"><span class="pre">OOCodeGenerator.map_type()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.oocodegen.OOCodeGenerator.package"><code class="docutils literal notranslate"><span class="pre">OOCodeGenerator.package</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.oocodegen.OOCodeGenerator.replace_invalid_identifier_character"><code class="docutils literal notranslate"><span class="pre">OOCodeGenerator.replace_invalid_identifier_character()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.oocodegen.OOCodeGenerator.requires_metamodel"><code class="docutils literal notranslate"><span class="pre">OOCodeGenerator.requires_metamodel</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.oocodegen.OOCodeGenerator.serialize"><code class="docutils literal notranslate"><span class="pre">OOCodeGenerator.serialize()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.oocodegen.OOCodeGenerator.template_file"><code class="docutils literal notranslate"><span class="pre">OOCodeGenerator.template_file</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.oocodegen.OOCodeGenerator.uses_schemaloader"><code class="docutils literal notranslate"><span class="pre">OOCodeGenerator.uses_schemaloader</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.oocodegen.OOCodeGenerator.visit_all_class_slots"><code class="docutils literal notranslate"><span class="pre">OOCodeGenerator.visit_all_class_slots</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#linkml.generators.oocodegen.OODocument"><code class="docutils literal notranslate"><span class="pre">OODocument</span></code></a><ul>
+<li><a class="reference internal" href="#linkml.generators.oocodegen.OODocument.classes"><code class="docutils literal notranslate"><span class="pre">OODocument.classes</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.oocodegen.OODocument.imports"><code class="docutils literal notranslate"><span class="pre">OODocument.imports</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.oocodegen.OODocument.name"><code class="docutils literal notranslate"><span class="pre">OODocument.name</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.oocodegen.OODocument.package"><code class="docutils literal notranslate"><span class="pre">OODocument.package</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.oocodegen.OODocument.source_schema"><code class="docutils literal notranslate"><span class="pre">OODocument.source_schema</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#linkml.generators.oocodegen.OOField"><code class="docutils literal notranslate"><span class="pre">OOField</span></code></a><ul>
+<li><a class="reference internal" href="#linkml.generators.oocodegen.OOField.annotations"><code class="docutils literal notranslate"><span class="pre">OOField.annotations</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.oocodegen.OOField.default_value"><code class="docutils literal notranslate"><span class="pre">OOField.default_value</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.oocodegen.OOField.name"><code class="docutils literal notranslate"><span class="pre">OOField.name</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.oocodegen.OOField.range"><code class="docutils literal notranslate"><span class="pre">OOField.range</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.oocodegen.OOField.source_slot"><code class="docutils literal notranslate"><span class="pre">OOField.source_slot</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-linkml.generators.owlgen">linkml.generators.owlgen module</a><ul>
+<li><a class="reference internal" href="#linkml.generators.owlgen.ElementDefinition"><code class="docutils literal notranslate"><span class="pre">ElementDefinition</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.owlgen.MetadataProfile"><code class="docutils literal notranslate"><span class="pre">MetadataProfile</span></code></a><ul>
+<li><a class="reference internal" href="#linkml.generators.owlgen.MetadataProfile.linkml"><code class="docutils literal notranslate"><span class="pre">MetadataProfile.linkml</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.owlgen.MetadataProfile.list"><code class="docutils literal notranslate"><span class="pre">MetadataProfile.list()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.owlgen.MetadataProfile.rdfs"><code class="docutils literal notranslate"><span class="pre">MetadataProfile.rdfs</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#linkml.generators.owlgen.OwlSchemaGenerator"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator</span></code></a><ul>
+<li><a class="reference internal" href="#linkml.generators.owlgen.OwlSchemaGenerator.add_metadata"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.add_metadata()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.owlgen.OwlSchemaGenerator.add_ols_annotations"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.add_ols_annotations</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.owlgen.OwlSchemaGenerator.end_schema"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.end_schema()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.owlgen.OwlSchemaGenerator.generatorname"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.generatorname</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.owlgen.OwlSchemaGenerator.generatorversion"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.generatorversion</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.owlgen.OwlSchemaGenerator.graph"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.graph</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.owlgen.OwlSchemaGenerator.is_slot_object_property"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.is_slot_object_property()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.owlgen.OwlSchemaGenerator.metaclasses"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.metaclasses</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.owlgen.OwlSchemaGenerator.metadata_profile"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.metadata_profile</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.owlgen.OwlSchemaGenerator.ontology_uri_suffix"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.ontology_uri_suffix</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.owlgen.OwlSchemaGenerator.requires_metamodel"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.requires_metamodel</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.owlgen.OwlSchemaGenerator.schema"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.schema</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.owlgen.OwlSchemaGenerator.slot_owl_type"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.slot_owl_type()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.owlgen.OwlSchemaGenerator.top_value_uri"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.top_value_uri</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.owlgen.OwlSchemaGenerator.type_objects"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.type_objects</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.owlgen.OwlSchemaGenerator.uses_schemaloader"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.uses_schemaloader</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.owlgen.OwlSchemaGenerator.valid_formats"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.valid_formats</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.owlgen.OwlSchemaGenerator.visit_class"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.visit_class()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.owlgen.OwlSchemaGenerator.visit_enum"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.visit_enum()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.owlgen.OwlSchemaGenerator.visit_schema"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.visit_schema()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.owlgen.OwlSchemaGenerator.visit_slot"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.visit_slot()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.owlgen.OwlSchemaGenerator.visit_type"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.visit_type()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.owlgen.OwlSchemaGenerator.visits_are_sorted"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.visits_are_sorted</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-linkml.generators.prefixmapgen">linkml.generators.prefixmapgen module</a><ul>
+<li><a class="reference internal" href="#linkml.generators.prefixmapgen.PrefixGenerator"><code class="docutils literal notranslate"><span class="pre">PrefixGenerator</span></code></a><ul>
+<li><a class="reference internal" href="#linkml.generators.prefixmapgen.PrefixGenerator.base"><code class="docutils literal notranslate"><span class="pre">PrefixGenerator.base</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.prefixmapgen.PrefixGenerator.context_body"><code class="docutils literal notranslate"><span class="pre">PrefixGenerator.context_body</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.prefixmapgen.PrefixGenerator.default_ns"><code class="docutils literal notranslate"><span class="pre">PrefixGenerator.default_ns</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.prefixmapgen.PrefixGenerator.emit_prefixes"><code class="docutils literal notranslate"><span class="pre">PrefixGenerator.emit_prefixes</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.prefixmapgen.PrefixGenerator.end_schema"><code class="docutils literal notranslate"><span class="pre">PrefixGenerator.end_schema()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.prefixmapgen.PrefixGenerator.generatorname"><code class="docutils literal notranslate"><span class="pre">PrefixGenerator.generatorname</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.prefixmapgen.PrefixGenerator.generatorversion"><code class="docutils literal notranslate"><span class="pre">PrefixGenerator.generatorversion</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.prefixmapgen.PrefixGenerator.slot_class_maps"><code class="docutils literal notranslate"><span class="pre">PrefixGenerator.slot_class_maps</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.prefixmapgen.PrefixGenerator.uses_schemaloader"><code class="docutils literal notranslate"><span class="pre">PrefixGenerator.uses_schemaloader</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.prefixmapgen.PrefixGenerator.valid_formats"><code class="docutils literal notranslate"><span class="pre">PrefixGenerator.valid_formats</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.prefixmapgen.PrefixGenerator.visit_all_class_slots"><code class="docutils literal notranslate"><span class="pre">PrefixGenerator.visit_all_class_slots</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.prefixmapgen.PrefixGenerator.visit_class"><code class="docutils literal notranslate"><span class="pre">PrefixGenerator.visit_class()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.prefixmapgen.PrefixGenerator.visit_schema"><code class="docutils literal notranslate"><span class="pre">PrefixGenerator.visit_schema()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.prefixmapgen.PrefixGenerator.visit_slot"><code class="docutils literal notranslate"><span class="pre">PrefixGenerator.visit_slot()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-linkml.generators.projectgen">linkml.generators.projectgen module</a><ul>
+<li><a class="reference internal" href="#linkml.generators.projectgen.ProjectConfiguration"><code class="docutils literal notranslate"><span class="pre">ProjectConfiguration</span></code></a><ul>
+<li><a class="reference internal" href="#linkml.generators.projectgen.ProjectConfiguration.directory"><code class="docutils literal notranslate"><span class="pre">ProjectConfiguration.directory</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.projectgen.ProjectConfiguration.excludes"><code class="docutils literal notranslate"><span class="pre">ProjectConfiguration.excludes</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.projectgen.ProjectConfiguration.generator_args"><code class="docutils literal notranslate"><span class="pre">ProjectConfiguration.generator_args</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.projectgen.ProjectConfiguration.includes"><code class="docutils literal notranslate"><span class="pre">ProjectConfiguration.includes</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.projectgen.ProjectConfiguration.mergeimports"><code class="docutils literal notranslate"><span class="pre">ProjectConfiguration.mergeimports</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#linkml.generators.projectgen.ProjectGenerator"><code class="docutils literal notranslate"><span class="pre">ProjectGenerator</span></code></a><ul>
+<li><a class="reference internal" href="#linkml.generators.projectgen.ProjectGenerator.generate"><code class="docutils literal notranslate"><span class="pre">ProjectGenerator.generate()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#linkml.generators.projectgen.get_local_imports"><code class="docutils literal notranslate"><span class="pre">get_local_imports()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-linkml.generators.protogen">linkml.generators.protogen module</a><ul>
+<li><a class="reference internal" href="#linkml.generators.protogen.ProtoGenerator"><code class="docutils literal notranslate"><span class="pre">ProtoGenerator</span></code></a><ul>
+<li><a class="reference internal" href="#linkml.generators.protogen.ProtoGenerator.end_class"><code class="docutils literal notranslate"><span class="pre">ProtoGenerator.end_class()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.protogen.ProtoGenerator.generate_header"><code class="docutils literal notranslate"><span class="pre">ProtoGenerator.generate_header()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.protogen.ProtoGenerator.generatorname"><code class="docutils literal notranslate"><span class="pre">ProtoGenerator.generatorname</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.protogen.ProtoGenerator.generatorversion"><code class="docutils literal notranslate"><span class="pre">ProtoGenerator.generatorversion</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.protogen.ProtoGenerator.relative_slot_num"><code class="docutils literal notranslate"><span class="pre">ProtoGenerator.relative_slot_num</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.protogen.ProtoGenerator.uses_schemaloader"><code class="docutils literal notranslate"><span class="pre">ProtoGenerator.uses_schemaloader</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.protogen.ProtoGenerator.valid_formats"><code class="docutils literal notranslate"><span class="pre">ProtoGenerator.valid_formats</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.protogen.ProtoGenerator.visit_all_class_slots"><code class="docutils literal notranslate"><span class="pre">ProtoGenerator.visit_all_class_slots</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.protogen.ProtoGenerator.visit_class"><code class="docutils literal notranslate"><span class="pre">ProtoGenerator.visit_class()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.protogen.ProtoGenerator.visit_class_slot"><code class="docutils literal notranslate"><span class="pre">ProtoGenerator.visit_class_slot()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-linkml.generators.pydanticgen">linkml.generators.pydanticgen module</a><ul>
+<li><a class="reference internal" href="#linkml.generators.pydanticgen.PydanticGenerator"><code class="docutils literal notranslate"><span class="pre">PydanticGenerator</span></code></a><ul>
+<li><a class="reference internal" href="#linkml.generators.pydanticgen.PydanticGenerator.allow_extra"><code class="docutils literal notranslate"><span class="pre">PydanticGenerator.allow_extra</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.pydanticgen.PydanticGenerator.default_value_for_type"><code class="docutils literal notranslate"><span class="pre">PydanticGenerator.default_value_for_type()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.pydanticgen.PydanticGenerator.emit_metadata"><code class="docutils literal notranslate"><span class="pre">PydanticGenerator.emit_metadata</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.pydanticgen.PydanticGenerator.gen_classvars"><code class="docutils literal notranslate"><span class="pre">PydanticGenerator.gen_classvars</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.pydanticgen.PydanticGenerator.gen_mixin_inheritance"><code class="docutils literal notranslate"><span class="pre">PydanticGenerator.gen_mixin_inheritance</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.pydanticgen.PydanticGenerator.gen_slots"><code class="docutils literal notranslate"><span class="pre">PydanticGenerator.gen_slots</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.pydanticgen.PydanticGenerator.generate_enums"><code class="docutils literal notranslate"><span class="pre">PydanticGenerator.generate_enums()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.pydanticgen.PydanticGenerator.generatorname"><code class="docutils literal notranslate"><span class="pre">PydanticGenerator.generatorname</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.pydanticgen.PydanticGenerator.generatorversion"><code class="docutils literal notranslate"><span class="pre">PydanticGenerator.generatorversion</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.pydanticgen.PydanticGenerator.genmeta"><code class="docutils literal notranslate"><span class="pre">PydanticGenerator.genmeta</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.pydanticgen.PydanticGenerator.get_class_isa_plus_mixins"><code class="docutils literal notranslate"><span class="pre">PydanticGenerator.get_class_isa_plus_mixins()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.pydanticgen.PydanticGenerator.get_class_slot_range"><code class="docutils literal notranslate"><span class="pre">PydanticGenerator.get_class_slot_range()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.pydanticgen.PydanticGenerator.get_mixin_identifier_range"><code class="docutils literal notranslate"><span class="pre">PydanticGenerator.get_mixin_identifier_range()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.pydanticgen.PydanticGenerator.get_predefined_slot_values"><code class="docutils literal notranslate"><span class="pre">PydanticGenerator.get_predefined_slot_values()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.pydanticgen.PydanticGenerator.serialize"><code class="docutils literal notranslate"><span class="pre">PydanticGenerator.serialize()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.pydanticgen.PydanticGenerator.sort_classes"><code class="docutils literal notranslate"><span class="pre">PydanticGenerator.sort_classes()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.pydanticgen.PydanticGenerator.template_file"><code class="docutils literal notranslate"><span class="pre">PydanticGenerator.template_file</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.pydanticgen.PydanticGenerator.valid_formats"><code class="docutils literal notranslate"><span class="pre">PydanticGenerator.valid_formats</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-linkml.generators.pythongen">linkml.generators.pythongen module</a><ul>
+<li><a class="reference internal" href="#linkml.generators.pythongen.PythonGenerator"><code class="docutils literal notranslate"><span class="pre">PythonGenerator</span></code></a><ul>
+<li><a class="reference internal" href="#linkml.generators.pythongen.PythonGenerator.class_reference_type"><code class="docutils literal notranslate"><span class="pre">PythonGenerator.class_reference_type()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.pythongen.PythonGenerator.compile_module"><code class="docutils literal notranslate"><span class="pre">PythonGenerator.compile_module()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.pythongen.PythonGenerator.emit_metadata"><code class="docutils literal notranslate"><span class="pre">PythonGenerator.emit_metadata</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.pythongen.PythonGenerator.end_schema"><code class="docutils literal notranslate"><span class="pre">PythonGenerator.end_schema()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.pythongen.PythonGenerator.forward_reference"><code class="docutils literal notranslate"><span class="pre">PythonGenerator.forward_reference()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.pythongen.PythonGenerator.gen_class_meta"><code class="docutils literal notranslate"><span class="pre">PythonGenerator.gen_class_meta()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.pythongen.PythonGenerator.gen_class_reference"><code class="docutils literal notranslate"><span class="pre">PythonGenerator.gen_class_reference()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.pythongen.PythonGenerator.gen_class_variable"><code class="docutils literal notranslate"><span class="pre">PythonGenerator.gen_class_variable()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.pythongen.PythonGenerator.gen_class_variables"><code class="docutils literal notranslate"><span class="pre">PythonGenerator.gen_class_variables()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.pythongen.PythonGenerator.gen_classdef"><code class="docutils literal notranslate"><span class="pre">PythonGenerator.gen_classdef()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.pythongen.PythonGenerator.gen_classdefs"><code class="docutils literal notranslate"><span class="pre">PythonGenerator.gen_classdefs()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.pythongen.PythonGenerator.gen_classvars"><code class="docutils literal notranslate"><span class="pre">PythonGenerator.gen_classvars</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.pythongen.PythonGenerator.gen_enum"><code class="docutils literal notranslate"><span class="pre">PythonGenerator.gen_enum()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.pythongen.PythonGenerator.gen_enum_comment"><code class="docutils literal notranslate"><span class="pre">PythonGenerator.gen_enum_comment()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.pythongen.PythonGenerator.gen_enum_definition"><code class="docutils literal notranslate"><span class="pre">PythonGenerator.gen_enum_definition()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.pythongen.PythonGenerator.gen_enum_description"><code class="docutils literal notranslate"><span class="pre">PythonGenerator.gen_enum_description()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.pythongen.PythonGenerator.gen_enumerations"><code class="docutils literal notranslate"><span class="pre">PythonGenerator.gen_enumerations()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.pythongen.PythonGenerator.gen_import_list"><code class="docutils literal notranslate"><span class="pre">PythonGenerator.gen_import_list()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.pythongen.PythonGenerator.gen_imports"><code class="docutils literal notranslate"><span class="pre">PythonGenerator.gen_imports()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.pythongen.PythonGenerator.gen_inherited_slots"><code class="docutils literal notranslate"><span class="pre">PythonGenerator.gen_inherited_slots()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.pythongen.PythonGenerator.gen_namespaces"><code class="docutils literal notranslate"><span class="pre">PythonGenerator.gen_namespaces()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.pythongen.PythonGenerator.gen_postinit"><code class="docutils literal notranslate"><span class="pre">PythonGenerator.gen_postinit()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.pythongen.PythonGenerator.gen_postinits"><code class="docutils literal notranslate"><span class="pre">PythonGenerator.gen_postinits()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.pythongen.PythonGenerator.gen_pv_constructor"><code class="docutils literal notranslate"><span class="pre">PythonGenerator.gen_pv_constructor()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.pythongen.PythonGenerator.gen_pvs"><code class="docutils literal notranslate"><span class="pre">PythonGenerator.gen_pvs()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.pythongen.PythonGenerator.gen_pvs2"><code class="docutils literal notranslate"><span class="pre">PythonGenerator.gen_pvs2()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.pythongen.PythonGenerator.gen_pvs2_initializers"><code class="docutils literal notranslate"><span class="pre">PythonGenerator.gen_pvs2_initializers()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.pythongen.PythonGenerator.gen_references"><code class="docutils literal notranslate"><span class="pre">PythonGenerator.gen_references()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.pythongen.PythonGenerator.gen_schema"><code class="docutils literal notranslate"><span class="pre">PythonGenerator.gen_schema()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.pythongen.PythonGenerator.gen_slot"><code class="docutils literal notranslate"><span class="pre">PythonGenerator.gen_slot()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.pythongen.PythonGenerator.gen_slotdefs"><code class="docutils literal notranslate"><span class="pre">PythonGenerator.gen_slotdefs()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.pythongen.PythonGenerator.gen_slots"><code class="docutils literal notranslate"><span class="pre">PythonGenerator.gen_slots</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.pythongen.PythonGenerator.gen_type_meta"><code class="docutils literal notranslate"><span class="pre">PythonGenerator.gen_type_meta()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.pythongen.PythonGenerator.gen_typedefs"><code class="docutils literal notranslate"><span class="pre">PythonGenerator.gen_typedefs()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.pythongen.PythonGenerator.generatorname"><code class="docutils literal notranslate"><span class="pre">PythonGenerator.generatorname</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.pythongen.PythonGenerator.generatorversion"><code class="docutils literal notranslate"><span class="pre">PythonGenerator.generatorversion</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.pythongen.PythonGenerator.genmeta"><code class="docutils literal notranslate"><span class="pre">PythonGenerator.genmeta</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.pythongen.PythonGenerator.is_key_value_class"><code class="docutils literal notranslate"><span class="pre">PythonGenerator.is_key_value_class()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.pythongen.PythonGenerator.key_name_for"><code class="docutils literal notranslate"><span class="pre">PythonGenerator.key_name_for()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.pythongen.PythonGenerator.primary_keys_for"><code class="docutils literal notranslate"><span class="pre">PythonGenerator.primary_keys_for()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.pythongen.PythonGenerator.python_uri_for"><code class="docutils literal notranslate"><span class="pre">PythonGenerator.python_uri_for()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.pythongen.PythonGenerator.range_cardinality"><code class="docutils literal notranslate"><span class="pre">PythonGenerator.range_cardinality()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.pythongen.PythonGenerator.range_type_name"><code class="docutils literal notranslate"><span class="pre">PythonGenerator.range_type_name()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.pythongen.PythonGenerator.uses_schemaloader"><code class="docutils literal notranslate"><span class="pre">PythonGenerator.uses_schemaloader</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.pythongen.PythonGenerator.valid_formats"><code class="docutils literal notranslate"><span class="pre">PythonGenerator.valid_formats</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.pythongen.PythonGenerator.visit_all_class_slots"><code class="docutils literal notranslate"><span class="pre">PythonGenerator.visit_all_class_slots</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.pythongen.PythonGenerator.visit_class"><code class="docutils literal notranslate"><span class="pre">PythonGenerator.visit_class()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.pythongen.PythonGenerator.visit_schema"><code class="docutils literal notranslate"><span class="pre">PythonGenerator.visit_schema()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.pythongen.PythonGenerator.visit_slot"><code class="docutils literal notranslate"><span class="pre">PythonGenerator.visit_slot()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.pythongen.PythonGenerator.visit_type"><code class="docutils literal notranslate"><span class="pre">PythonGenerator.visit_type()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-linkml.generators.rdfgen">linkml.generators.rdfgen module</a><ul>
+<li><a class="reference internal" href="#linkml.generators.rdfgen.RDFGenerator"><code class="docutils literal notranslate"><span class="pre">RDFGenerator</span></code></a><ul>
+<li><a class="reference internal" href="#linkml.generators.rdfgen.RDFGenerator.context"><code class="docutils literal notranslate"><span class="pre">RDFGenerator.context</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.rdfgen.RDFGenerator.emit_metadata"><code class="docutils literal notranslate"><span class="pre">RDFGenerator.emit_metadata</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.rdfgen.RDFGenerator.end_schema"><code class="docutils literal notranslate"><span class="pre">RDFGenerator.end_schema()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.rdfgen.RDFGenerator.generatorname"><code class="docutils literal notranslate"><span class="pre">RDFGenerator.generatorname</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.rdfgen.RDFGenerator.generatorversion"><code class="docutils literal notranslate"><span class="pre">RDFGenerator.generatorversion</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.rdfgen.RDFGenerator.uses_schemaloader"><code class="docutils literal notranslate"><span class="pre">RDFGenerator.uses_schemaloader</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.rdfgen.RDFGenerator.valid_formats"><code class="docutils literal notranslate"><span class="pre">RDFGenerator.valid_formats</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.rdfgen.RDFGenerator.visit_all_class_slots"><code class="docutils literal notranslate"><span class="pre">RDFGenerator.visit_all_class_slots</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-linkml.generators.shaclgen">linkml.generators.shaclgen module</a><ul>
+<li><a class="reference internal" href="#linkml.generators.shaclgen.ShaclGenerator"><code class="docutils literal notranslate"><span class="pre">ShaclGenerator</span></code></a><ul>
+<li><a class="reference internal" href="#linkml.generators.shaclgen.ShaclGenerator.as_graph"><code class="docutils literal notranslate"><span class="pre">ShaclGenerator.as_graph()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.shaclgen.ShaclGenerator.emit_prefixes"><code class="docutils literal notranslate"><span class="pre">ShaclGenerator.emit_prefixes</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.shaclgen.ShaclGenerator.generate_header"><code class="docutils literal notranslate"><span class="pre">ShaclGenerator.generate_header()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.shaclgen.ShaclGenerator.generatorname"><code class="docutils literal notranslate"><span class="pre">ShaclGenerator.generatorname</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.shaclgen.ShaclGenerator.generatorversion"><code class="docutils literal notranslate"><span class="pre">ShaclGenerator.generatorversion</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.shaclgen.ShaclGenerator.mergeimports"><code class="docutils literal notranslate"><span class="pre">ShaclGenerator.mergeimports</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.shaclgen.ShaclGenerator.metadata"><code class="docutils literal notranslate"><span class="pre">ShaclGenerator.metadata</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.shaclgen.ShaclGenerator.schema"><code class="docutils literal notranslate"><span class="pre">ShaclGenerator.schema</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.shaclgen.ShaclGenerator.serialize"><code class="docutils literal notranslate"><span class="pre">ShaclGenerator.serialize()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.shaclgen.ShaclGenerator.uses_schemaloader"><code class="docutils literal notranslate"><span class="pre">ShaclGenerator.uses_schemaloader</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.shaclgen.ShaclGenerator.valid_formats"><code class="docutils literal notranslate"><span class="pre">ShaclGenerator.valid_formats</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.shaclgen.ShaclGenerator.visit_all_class_slots"><code class="docutils literal notranslate"><span class="pre">ShaclGenerator.visit_all_class_slots</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-linkml.generators.shexgen">linkml.generators.shexgen module</a><ul>
+<li><a class="reference internal" href="#linkml.generators.shexgen.ShExGenerator"><code class="docutils literal notranslate"><span class="pre">ShExGenerator</span></code></a><ul>
+<li><a class="reference internal" href="#linkml.generators.shexgen.ShExGenerator.end_class"><code class="docutils literal notranslate"><span class="pre">ShExGenerator.end_class()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.shexgen.ShExGenerator.end_schema"><code class="docutils literal notranslate"><span class="pre">ShExGenerator.end_schema()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.shexgen.ShExGenerator.generate_header"><code class="docutils literal notranslate"><span class="pre">ShExGenerator.generate_header()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.shexgen.ShExGenerator.generatorname"><code class="docutils literal notranslate"><span class="pre">ShExGenerator.generatorname</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.shexgen.ShExGenerator.generatorversion"><code class="docutils literal notranslate"><span class="pre">ShExGenerator.generatorversion</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.shexgen.ShExGenerator.list_shapes"><code class="docutils literal notranslate"><span class="pre">ShExGenerator.list_shapes</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.shexgen.ShExGenerator.shape"><code class="docutils literal notranslate"><span class="pre">ShExGenerator.shape</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.shexgen.ShExGenerator.shapes"><code class="docutils literal notranslate"><span class="pre">ShExGenerator.shapes</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.shexgen.ShExGenerator.shex"><code class="docutils literal notranslate"><span class="pre">ShExGenerator.shex</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.shexgen.ShExGenerator.uses_schemaloader"><code class="docutils literal notranslate"><span class="pre">ShExGenerator.uses_schemaloader</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.shexgen.ShExGenerator.valid_formats"><code class="docutils literal notranslate"><span class="pre">ShExGenerator.valid_formats</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.shexgen.ShExGenerator.visit_all_class_slots"><code class="docutils literal notranslate"><span class="pre">ShExGenerator.visit_all_class_slots</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.shexgen.ShExGenerator.visit_class"><code class="docutils literal notranslate"><span class="pre">ShExGenerator.visit_class()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.shexgen.ShExGenerator.visit_class_slot"><code class="docutils literal notranslate"><span class="pre">ShExGenerator.visit_class_slot()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.shexgen.ShExGenerator.visit_schema"><code class="docutils literal notranslate"><span class="pre">ShExGenerator.visit_schema()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-linkml.generators.sparqlgen">linkml.generators.sparqlgen module</a><ul>
+<li><a class="reference internal" href="#linkml.generators.sparqlgen.SparqlGenerator"><code class="docutils literal notranslate"><span class="pre">SparqlGenerator</span></code></a><ul>
+<li><a class="reference internal" href="#linkml.generators.sparqlgen.SparqlGenerator.generate_sparql"><code class="docutils literal notranslate"><span class="pre">SparqlGenerator.generate_sparql()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.sparqlgen.SparqlGenerator.generatorname"><code class="docutils literal notranslate"><span class="pre">SparqlGenerator.generatorname</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.sparqlgen.SparqlGenerator.limit"><code class="docutils literal notranslate"><span class="pre">SparqlGenerator.limit</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.sparqlgen.SparqlGenerator.named_graphs"><code class="docutils literal notranslate"><span class="pre">SparqlGenerator.named_graphs</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.sparqlgen.SparqlGenerator.serialize"><code class="docutils literal notranslate"><span class="pre">SparqlGenerator.serialize()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.sparqlgen.SparqlGenerator.sparql"><code class="docutils literal notranslate"><span class="pre">SparqlGenerator.sparql</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.sparqlgen.SparqlGenerator.split_sparql"><code class="docutils literal notranslate"><span class="pre">SparqlGenerator.split_sparql()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.sparqlgen.SparqlGenerator.uses_schemaloader"><code class="docutils literal notranslate"><span class="pre">SparqlGenerator.uses_schemaloader</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.sparqlgen.SparqlGenerator.valid_formats"><code class="docutils literal notranslate"><span class="pre">SparqlGenerator.valid_formats</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.sparqlgen.SparqlGenerator.visit_all_class_slots"><code class="docutils literal notranslate"><span class="pre">SparqlGenerator.visit_all_class_slots</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#linkml.generators.sparqlgen.materialize_schema"><code class="docutils literal notranslate"><span class="pre">materialize_schema()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-linkml.generators.sqlddlgen">linkml.generators.sqlddlgen module</a><ul>
+<li><a class="reference internal" href="#linkml.generators.sqlddlgen.Backref"><code class="docutils literal notranslate"><span class="pre">Backref</span></code></a><ul>
+<li><a class="reference internal" href="#linkml.generators.sqlddlgen.Backref.backref_column"><code class="docutils literal notranslate"><span class="pre">Backref.backref_column</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.sqlddlgen.Backref.order_by"><code class="docutils literal notranslate"><span class="pre">Backref.order_by</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.sqlddlgen.Backref.original_column"><code class="docutils literal notranslate"><span class="pre">Backref.original_column</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#linkml.generators.sqlddlgen.DDLEntity"><code class="docutils literal notranslate"><span class="pre">DDLEntity</span></code></a><ul>
+<li><a class="reference internal" href="#linkml.generators.sqlddlgen.DDLEntity.description"><code class="docutils literal notranslate"><span class="pre">DDLEntity.description</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLColumn"><code class="docutils literal notranslate"><span class="pre">SQLColumn</span></code></a><ul>
+<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLColumn.as_ddlstr"><code class="docutils literal notranslate"><span class="pre">SQLColumn.as_ddlstr()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLColumn.base_type"><code class="docutils literal notranslate"><span class="pre">SQLColumn.base_type</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLColumn.foreign_key"><code class="docutils literal notranslate"><span class="pre">SQLColumn.foreign_key</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLColumn.is_primary_key"><code class="docutils literal notranslate"><span class="pre">SQLColumn.is_primary_key()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLColumn.is_singular_primary_key"><code class="docutils literal notranslate"><span class="pre">SQLColumn.is_singular_primary_key</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLColumn.mapped_to"><code class="docutils literal notranslate"><span class="pre">SQLColumn.mapped_to</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLColumn.mapped_to_alias"><code class="docutils literal notranslate"><span class="pre">SQLColumn.mapped_to_alias</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLColumn.name"><code class="docutils literal notranslate"><span class="pre">SQLColumn.name</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLColumn.table"><code class="docutils literal notranslate"><span class="pre">SQLColumn.table</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLDDLGenerator"><code class="docutils literal notranslate"><span class="pre">SQLDDLGenerator</span></code></a><ul>
+<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLDDLGenerator.dialect"><code class="docutils literal notranslate"><span class="pre">SQLDDLGenerator.dialect</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLDDLGenerator.end_class"><code class="docutils literal notranslate"><span class="pre">SQLDDLGenerator.end_class()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLDDLGenerator.end_schema"><code class="docutils literal notranslate"><span class="pre">SQLDDLGenerator.end_schema()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLDDLGenerator.generate_ddl"><code class="docutils literal notranslate"><span class="pre">SQLDDLGenerator.generate_ddl()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLDDLGenerator.generate_header"><code class="docutils literal notranslate"><span class="pre">SQLDDLGenerator.generate_header()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLDDLGenerator.generatorname"><code class="docutils literal notranslate"><span class="pre">SQLDDLGenerator.generatorname</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLDDLGenerator.generatorversion"><code class="docutils literal notranslate"><span class="pre">SQLDDLGenerator.generatorversion</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLDDLGenerator.get_sql_range"><code class="docutils literal notranslate"><span class="pre">SQLDDLGenerator.get_sql_range()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLDDLGenerator.inject_primary_keys"><code class="docutils literal notranslate"><span class="pre">SQLDDLGenerator.inject_primary_keys</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLDDLGenerator.sqlschema"><code class="docutils literal notranslate"><span class="pre">SQLDDLGenerator.sqlschema</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLDDLGenerator.use_inherits"><code class="docutils literal notranslate"><span class="pre">SQLDDLGenerator.use_inherits</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLDDLGenerator.valid_formats"><code class="docutils literal notranslate"><span class="pre">SQLDDLGenerator.valid_formats</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLDDLGenerator.visit_all_class_slots"><code class="docutils literal notranslate"><span class="pre">SQLDDLGenerator.visit_all_class_slots</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLDDLGenerator.visit_class"><code class="docutils literal notranslate"><span class="pre">SQLDDLGenerator.visit_class()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLDDLGenerator.visit_class_slot"><code class="docutils literal notranslate"><span class="pre">SQLDDLGenerator.visit_class_slot()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLDDLGenerator.write_sqla_python_imperative"><code class="docutils literal notranslate"><span class="pre">SQLDDLGenerator.write_sqla_python_imperative()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLSchema"><code class="docutils literal notranslate"><span class="pre">SQLSchema</span></code></a><ul>
+<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLSchema.add_table"><code class="docutils literal notranslate"><span class="pre">SQLSchema.add_table()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLSchema.all_columns"><code class="docutils literal notranslate"><span class="pre">SQLSchema.all_columns()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLSchema.get_table_by_class_name"><code class="docutils literal notranslate"><span class="pre">SQLSchema.get_table_by_class_name()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLSchema.mapped_to"><code class="docutils literal notranslate"><span class="pre">SQLSchema.mapped_to</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLSchema.name"><code class="docutils literal notranslate"><span class="pre">SQLSchema.name</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLSchema.tables"><code class="docutils literal notranslate"><span class="pre">SQLSchema.tables</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLTable"><code class="docutils literal notranslate"><span class="pre">SQLTable</span></code></a><ul>
+<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLTable.add_column"><code class="docutils literal notranslate"><span class="pre">SQLTable.add_column()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLTable.as_var"><code class="docutils literal notranslate"><span class="pre">SQLTable.as_var()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLTable.backrefs"><code class="docutils literal notranslate"><span class="pre">SQLTable.backrefs</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLTable.columns"><code class="docutils literal notranslate"><span class="pre">SQLTable.columns</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLTable.get_singular_primary_key"><code class="docutils literal notranslate"><span class="pre">SQLTable.get_singular_primary_key()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLTable.in_schema"><code class="docutils literal notranslate"><span class="pre">SQLTable.in_schema</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLTable.mapped_to"><code class="docutils literal notranslate"><span class="pre">SQLTable.mapped_to</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLTable.name"><code class="docutils literal notranslate"><span class="pre">SQLTable.name</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLTable.primary_keys"><code class="docutils literal notranslate"><span class="pre">SQLTable.primary_keys</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLTable.referenced_by"><code class="docutils literal notranslate"><span class="pre">SQLTable.referenced_by</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLTable.remove_column"><code class="docutils literal notranslate"><span class="pre">SQLTable.remove_column()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-linkml.generators.summarygen">linkml.generators.summarygen module</a><ul>
+<li><a class="reference internal" href="#linkml.generators.summarygen.SummaryGenerator"><code class="docutils literal notranslate"><span class="pre">SummaryGenerator</span></code></a><ul>
+<li><a class="reference internal" href="#linkml.generators.summarygen.SummaryGenerator.classtab"><code class="docutils literal notranslate"><span class="pre">SummaryGenerator.classtab</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.summarygen.SummaryGenerator.dialect"><code class="docutils literal notranslate"><span class="pre">SummaryGenerator.dialect</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.summarygen.SummaryGenerator.dirname"><code class="docutils literal notranslate"><span class="pre">SummaryGenerator.dirname</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.summarygen.SummaryGenerator.generatorname"><code class="docutils literal notranslate"><span class="pre">SummaryGenerator.generatorname</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.summarygen.SummaryGenerator.generatorversion"><code class="docutils literal notranslate"><span class="pre">SummaryGenerator.generatorversion</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.summarygen.SummaryGenerator.slottab"><code class="docutils literal notranslate"><span class="pre">SummaryGenerator.slottab</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.summarygen.SummaryGenerator.valid_formats"><code class="docutils literal notranslate"><span class="pre">SummaryGenerator.valid_formats</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.summarygen.SummaryGenerator.visit_class"><code class="docutils literal notranslate"><span class="pre">SummaryGenerator.visit_class()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.summarygen.SummaryGenerator.visit_class_slot"><code class="docutils literal notranslate"><span class="pre">SummaryGenerator.visit_class_slot()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.summarygen.SummaryGenerator.visit_schema"><code class="docutils literal notranslate"><span class="pre">SummaryGenerator.visit_schema()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li><a class="reference internal" href="#linkml-generators-terminusdbgen-module">linkml.generators.terminusdbgen module</a></li>
-<li><a class="reference internal" href="#module-linkml.generators.yamlgen">linkml.generators.yamlgen module</a></li>
-<li><a class="reference internal" href="#module-linkml.generators.yumlgen">linkml.generators.yumlgen module</a></li>
+<li><a class="reference internal" href="#module-linkml.generators.yamlgen">linkml.generators.yamlgen module</a><ul>
+<li><a class="reference internal" href="#linkml.generators.yamlgen.YAMLGenerator"><code class="docutils literal notranslate"><span class="pre">YAMLGenerator</span></code></a><ul>
+<li><a class="reference internal" href="#linkml.generators.yamlgen.YAMLGenerator.generatorname"><code class="docutils literal notranslate"><span class="pre">YAMLGenerator.generatorname</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.yamlgen.YAMLGenerator.generatorversion"><code class="docutils literal notranslate"><span class="pre">YAMLGenerator.generatorversion</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.yamlgen.YAMLGenerator.serialize"><code class="docutils literal notranslate"><span class="pre">YAMLGenerator.serialize()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.yamlgen.YAMLGenerator.uses_schemaloader"><code class="docutils literal notranslate"><span class="pre">YAMLGenerator.uses_schemaloader</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.yamlgen.YAMLGenerator.valid_formats"><code class="docutils literal notranslate"><span class="pre">YAMLGenerator.valid_formats</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.yamlgen.YAMLGenerator.validateonly"><code class="docutils literal notranslate"><span class="pre">YAMLGenerator.validateonly</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-linkml.generators.yumlgen">linkml.generators.yumlgen module</a><ul>
+<li><a class="reference internal" href="#linkml.generators.yumlgen.YumlGenerator"><code class="docutils literal notranslate"><span class="pre">YumlGenerator</span></code></a><ul>
+<li><a class="reference internal" href="#linkml.generators.yumlgen.YumlGenerator.associations_generated"><code class="docutils literal notranslate"><span class="pre">YumlGenerator.associations_generated</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.yumlgen.YumlGenerator.box_generated"><code class="docutils literal notranslate"><span class="pre">YumlGenerator.box_generated</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.yumlgen.YumlGenerator.cardinality"><code class="docutils literal notranslate"><span class="pre">YumlGenerator.cardinality()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.yumlgen.YumlGenerator.class_associations"><code class="docutils literal notranslate"><span class="pre">YumlGenerator.class_associations()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.yumlgen.YumlGenerator.class_box"><code class="docutils literal notranslate"><span class="pre">YumlGenerator.class_box()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.yumlgen.YumlGenerator.classes"><code class="docutils literal notranslate"><span class="pre">YumlGenerator.classes</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.yumlgen.YumlGenerator.directory"><code class="docutils literal notranslate"><span class="pre">YumlGenerator.directory</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.yumlgen.YumlGenerator.filtered_cls_slots"><code class="docutils literal notranslate"><span class="pre">YumlGenerator.filtered_cls_slots()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.yumlgen.YumlGenerator.focus_classes"><code class="docutils literal notranslate"><span class="pre">YumlGenerator.focus_classes</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.yumlgen.YumlGenerator.gen_classes"><code class="docutils literal notranslate"><span class="pre">YumlGenerator.gen_classes</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.yumlgen.YumlGenerator.generated"><code class="docutils literal notranslate"><span class="pre">YumlGenerator.generated</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.yumlgen.YumlGenerator.generatorname"><code class="docutils literal notranslate"><span class="pre">YumlGenerator.generatorname</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.yumlgen.YumlGenerator.generatorversion"><code class="docutils literal notranslate"><span class="pre">YumlGenerator.generatorversion</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.yumlgen.YumlGenerator.load_image"><code class="docutils literal notranslate"><span class="pre">YumlGenerator.load_image</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.yumlgen.YumlGenerator.output_file_name"><code class="docutils literal notranslate"><span class="pre">YumlGenerator.output_file_name</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.yumlgen.YumlGenerator.prop_modifier"><code class="docutils literal notranslate"><span class="pre">YumlGenerator.prop_modifier()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.yumlgen.YumlGenerator.referenced"><code class="docutils literal notranslate"><span class="pre">YumlGenerator.referenced</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.yumlgen.YumlGenerator.valid_formats"><code class="docutils literal notranslate"><span class="pre">YumlGenerator.valid_formats</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.yumlgen.YumlGenerator.visit_all_class_slots"><code class="docutils literal notranslate"><span class="pre">YumlGenerator.visit_all_class_slots</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.yumlgen.YumlGenerator.visit_schema"><code class="docutils literal notranslate"><span class="pre">YumlGenerator.visit_schema()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li><a class="reference internal" href="#module-linkml.generators">Module contents</a></li>
 </ul>
 </li>
@@ -3933,6 +4629,7 @@ representation such as JsonSchema</p>
     <script src="_static/underscore.js"></script>
     <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/scripts/furo.js"></script>
     </body>
 </html>

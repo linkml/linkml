@@ -4,7 +4,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
-    <meta name="generator" content="sphinx-5.1.1, furo 2022.09.29"/>
+    <meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
         <title>linkml.generators.owlgen - linkml documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
@@ -321,6 +321,7 @@
 <span class="kn">from</span> <span class="nn">rdflib.plugin</span> <span class="kn">import</span> <span class="n">plugins</span> <span class="k">as</span> <span class="n">rdflib_plugins</span>
 
 <span class="kn">from</span> <span class="nn">linkml</span> <span class="kn">import</span> <span class="n">METAMODEL_NAMESPACE</span><span class="p">,</span> <span class="n">METAMODEL_NAMESPACE_NAME</span>
+<span class="kn">from</span> <span class="nn">linkml._version</span> <span class="kn">import</span> <span class="n">__version__</span>
 <span class="kn">from</span> <span class="nn">linkml.utils.generator</span> <span class="kn">import</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">shared_arguments</span>
 <span class="kn">from</span> <span class="nn">linkml.utils.schemaloader</span> <span class="kn">import</span> <span class="n">SchemaLoader</span>
 
@@ -928,6 +929,7 @@
     <span class="n">show_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Suffix to append to schema id to generate OWL Ontology IRI&quot;</span><span class="p">,</span>
 <span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">version_option</span><span class="p">(</span><span class="n">__version__</span><span class="p">,</span> <span class="s2">&quot;-V&quot;</span><span class="p">,</span> <span class="s2">&quot;--version&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">cli</span><span class="p">(</span><span class="n">yamlfile</span><span class="p">,</span> <span class="n">metadata_profile</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Generate an OWL representation of a LinkML model</span>
 
@@ -995,6 +997,7 @@
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
     <script src="../../../_static/scripts/furo.js"></script>
     </body>
 </html>

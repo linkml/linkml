@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Data Conversion: Loaders and Dumpers" href="loaders-and-dumpers.html" /><link rel="prev" title="Manipulating Schemas" href="manipulating-schemas.html" />
 
-    <meta name="generator" content="sphinx-5.1.1, furo 2022.09.29"/>
+    <meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
         <title>SchemaView - linkml documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
@@ -134,7 +134,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -289,7 +289,7 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
@@ -1000,12 +1000,14 @@ The index values are tuples of mapping type and element</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="linkml_runtime.utils.schemaview.SchemaView.get_slot">
-<span class="sig-name descname"><span class="pre">get_slot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slot_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">SlotDefinitionName</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imports</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attributes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../code.html#linkml_runtime.linkml_model.meta.SlotDefinition" title="linkml_runtime.linkml_model.meta.SlotDefinition"><span class="pre">SlotDefinition</span></a></span></span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView.get_slot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView.get_slot" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">get_slot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slot_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">SlotDefinitionName</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imports</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attributes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../code.html#linkml_runtime.linkml_model.meta.SlotDefinition" title="linkml_runtime.linkml_model.meta.SlotDefinition"><span class="pre">SlotDefinition</span></a></span></span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView.get_slot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView.get_slot" title="Permalink to this definition">#</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>slot_name</strong> – name of the slot to be retrieved</p></li>
 <li><p><strong>imports</strong> – include import closure</p></li>
+<li><p><strong>attributes</strong> – include attributes</p></li>
+<li><p><strong>strict</strong> – raise ValueError is not found</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -1521,8 +1523,107 @@ but a proposed feature in LinkML 1.2 is range expressions, where ranges can be d
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">SchemaView</a><ul>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView"><code class="docutils literal notranslate"><span class="pre">SchemaView</span></code></a><ul>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.add_class"><code class="docutils literal notranslate"><span class="pre">SchemaView.add_class()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.add_enum"><code class="docutils literal notranslate"><span class="pre">SchemaView.add_enum()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.add_slot"><code class="docutils literal notranslate"><span class="pre">SchemaView.add_slot()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.add_subset"><code class="docutils literal notranslate"><span class="pre">SchemaView.add_subset()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.add_type"><code class="docutils literal notranslate"><span class="pre">SchemaView.add_type()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.all_class"><code class="docutils literal notranslate"><span class="pre">SchemaView.all_class()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.all_classes"><code class="docutils literal notranslate"><span class="pre">SchemaView.all_classes()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.all_element"><code class="docutils literal notranslate"><span class="pre">SchemaView.all_element()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.all_elements"><code class="docutils literal notranslate"><span class="pre">SchemaView.all_elements()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.all_enum"><code class="docutils literal notranslate"><span class="pre">SchemaView.all_enum()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.all_enums"><code class="docutils literal notranslate"><span class="pre">SchemaView.all_enums()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.all_schema"><code class="docutils literal notranslate"><span class="pre">SchemaView.all_schema()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.all_slot"><code class="docutils literal notranslate"><span class="pre">SchemaView.all_slot()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.all_slots"><code class="docutils literal notranslate"><span class="pre">SchemaView.all_slots()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.all_subset"><code class="docutils literal notranslate"><span class="pre">SchemaView.all_subset()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.all_subsets"><code class="docutils literal notranslate"><span class="pre">SchemaView.all_subsets()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.all_type"><code class="docutils literal notranslate"><span class="pre">SchemaView.all_type()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.all_types"><code class="docutils literal notranslate"><span class="pre">SchemaView.all_types()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.annotation_dict"><code class="docutils literal notranslate"><span class="pre">SchemaView.annotation_dict()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.class_ancestors"><code class="docutils literal notranslate"><span class="pre">SchemaView.class_ancestors()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.class_children"><code class="docutils literal notranslate"><span class="pre">SchemaView.class_children()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.class_descendants"><code class="docutils literal notranslate"><span class="pre">SchemaView.class_descendants()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.class_induced_slots"><code class="docutils literal notranslate"><span class="pre">SchemaView.class_induced_slots()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.class_leaves"><code class="docutils literal notranslate"><span class="pre">SchemaView.class_leaves()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.class_name_mappings"><code class="docutils literal notranslate"><span class="pre">SchemaView.class_name_mappings()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.class_parents"><code class="docutils literal notranslate"><span class="pre">SchemaView.class_parents()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.class_roots"><code class="docutils literal notranslate"><span class="pre">SchemaView.class_roots()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.class_slots"><code class="docutils literal notranslate"><span class="pre">SchemaView.class_slots()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.delete_class"><code class="docutils literal notranslate"><span class="pre">SchemaView.delete_class()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.delete_enum"><code class="docutils literal notranslate"><span class="pre">SchemaView.delete_enum()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.delete_slot"><code class="docutils literal notranslate"><span class="pre">SchemaView.delete_slot()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.delete_subset"><code class="docutils literal notranslate"><span class="pre">SchemaView.delete_subset()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.delete_type"><code class="docutils literal notranslate"><span class="pre">SchemaView.delete_type()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.enum_ancestors"><code class="docutils literal notranslate"><span class="pre">SchemaView.enum_ancestors()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.enum_parents"><code class="docutils literal notranslate"><span class="pre">SchemaView.enum_parents()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.expand_curie"><code class="docutils literal notranslate"><span class="pre">SchemaView.expand_curie()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.get_class"><code class="docutils literal notranslate"><span class="pre">SchemaView.get_class()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.get_classes_by_slot"><code class="docutils literal notranslate"><span class="pre">SchemaView.get_classes_by_slot()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.get_element"><code class="docutils literal notranslate"><span class="pre">SchemaView.get_element()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.get_elements_applicable_by_identifier"><code class="docutils literal notranslate"><span class="pre">SchemaView.get_elements_applicable_by_identifier()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.get_elements_applicable_by_prefix"><code class="docutils literal notranslate"><span class="pre">SchemaView.get_elements_applicable_by_prefix()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.get_enum"><code class="docutils literal notranslate"><span class="pre">SchemaView.get_enum()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.get_identifier_slot"><code class="docutils literal notranslate"><span class="pre">SchemaView.get_identifier_slot()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.get_key_slot"><code class="docutils literal notranslate"><span class="pre">SchemaView.get_key_slot()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.get_mapping_index"><code class="docutils literal notranslate"><span class="pre">SchemaView.get_mapping_index()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.get_mappings"><code class="docutils literal notranslate"><span class="pre">SchemaView.get_mappings()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.get_slot"><code class="docutils literal notranslate"><span class="pre">SchemaView.get_slot()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.get_subset"><code class="docutils literal notranslate"><span class="pre">SchemaView.get_subset()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.get_type"><code class="docutils literal notranslate"><span class="pre">SchemaView.get_type()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.get_type_designator_slot"><code class="docutils literal notranslate"><span class="pre">SchemaView.get_type_designator_slot()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.get_uri"><code class="docutils literal notranslate"><span class="pre">SchemaView.get_uri()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.imports_closure"><code class="docutils literal notranslate"><span class="pre">SchemaView.imports_closure()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.in_schema"><code class="docutils literal notranslate"><span class="pre">SchemaView.in_schema()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.induced_class"><code class="docutils literal notranslate"><span class="pre">SchemaView.induced_class()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.induced_enum"><code class="docutils literal notranslate"><span class="pre">SchemaView.induced_enum()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.induced_slot"><code class="docutils literal notranslate"><span class="pre">SchemaView.induced_slot()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.induced_type"><code class="docutils literal notranslate"><span class="pre">SchemaView.induced_type()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.inverse"><code class="docutils literal notranslate"><span class="pre">SchemaView.inverse()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.is_inlined"><code class="docutils literal notranslate"><span class="pre">SchemaView.is_inlined()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.is_mixin"><code class="docutils literal notranslate"><span class="pre">SchemaView.is_mixin()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.is_multivalued"><code class="docutils literal notranslate"><span class="pre">SchemaView.is_multivalued()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.is_relationship"><code class="docutils literal notranslate"><span class="pre">SchemaView.is_relationship()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.materialize_patterns"><code class="docutils literal notranslate"><span class="pre">SchemaView.materialize_patterns()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.merge_imports"><code class="docutils literal notranslate"><span class="pre">SchemaView.merge_imports()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.merge_schema"><code class="docutils literal notranslate"><span class="pre">SchemaView.merge_schema()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.slot_ancestors"><code class="docutils literal notranslate"><span class="pre">SchemaView.slot_ancestors()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.slot_applicable_range_elements"><code class="docutils literal notranslate"><span class="pre">SchemaView.slot_applicable_range_elements()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.slot_children"><code class="docutils literal notranslate"><span class="pre">SchemaView.slot_children()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.slot_descendants"><code class="docutils literal notranslate"><span class="pre">SchemaView.slot_descendants()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.slot_is_true_for_metadata_property"><code class="docutils literal notranslate"><span class="pre">SchemaView.slot_is_true_for_metadata_property()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.slot_leaves"><code class="docutils literal notranslate"><span class="pre">SchemaView.slot_leaves()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.slot_name_mappings"><code class="docutils literal notranslate"><span class="pre">SchemaView.slot_name_mappings()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.slot_parents"><code class="docutils literal notranslate"><span class="pre">SchemaView.slot_parents()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.slot_range_as_union"><code class="docutils literal notranslate"><span class="pre">SchemaView.slot_range_as_union()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.slot_roots"><code class="docutils literal notranslate"><span class="pre">SchemaView.slot_roots()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.type_ancestors"><code class="docutils literal notranslate"><span class="pre">SchemaView.type_ancestors()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.type_parents"><code class="docutils literal notranslate"><span class="pre">SchemaView.type_parents()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.usage_index"><code class="docutils literal notranslate"><span class="pre">SchemaView.usage_index()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>
@@ -1532,6 +1633,7 @@ but a proposed feature in LinkML 1.2 is range expressions, where ranges can be d
     <script src="../_static/underscore.js"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/scripts/furo.js"></script>
     </body>
 </html>

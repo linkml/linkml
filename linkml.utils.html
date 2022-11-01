@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" />
 
-    <meta name="generator" content="sphinx-5.1.1, furo 2022.09.29"/>
+    <meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
         <title>linkml.utils package - linkml documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
@@ -457,6 +457,7 @@ Otherwise use the class that is not referenced as a range in any other class.</p
 </ol>
 <p>New generators should always using the latter approach</p>
 <p>See: <a class="reference external" href="https://github.com/linkml/linkml/issues/923">https://github.com/linkml/linkml/issues/923</a></p>
+</section>
 <dl class="py class">
 <dt class="sig sig-object py" id="linkml.utils.generator.Generator">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linkml.utils.generator.</span></span><span class="sig-name descname"><span class="pre">Generator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">schema:</span> <span class="pre">~typing.Union[str,</span> <span class="pre">~typing.TextIO,</span> <span class="pre">~linkml_runtime.linkml_model.meta.SchemaDefinition,</span> <span class="pre">~linkml.utils.generator.Generator],</span> <span class="pre">schemaview:</span> <span class="pre">~typing.Optional[~linkml_runtime.utils.schemaview.SchemaView]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">format:</span> <span class="pre">~typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">metadata:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">useuris:</span> <span class="pre">~typing.Optional[bool]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">log_level:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">30,</span> <span class="pre">mergeimports:</span> <span class="pre">~typing.Optional[bool]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">source_file_date:</span> <span class="pre">~typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">source_file_size:</span> <span class="pre">~typing.Optional[int]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">logger:</span> <span class="pre">~typing.Optional[~logging.Logger]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">verbose:</span> <span class="pre">~typing.Optional[bool]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">output:</span> <span class="pre">~typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">namespaces:</span> <span class="pre">~typing.Optional[~linkml_runtime.utils.namespaces.Namespaces]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">directory_output:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False,</span> <span class="pre">base_dir:</span> <span class="pre">~typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">metamodel_name_map:</span> <span class="pre">~typing.Optional[~typing.Dict[str,</span> <span class="pre">str]]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">importmap:</span> <span class="pre">~typing.Optional[~typing.Union[str,</span> <span class="pre">~typing.Mapping[str,</span> <span class="pre">str]]]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">emit_prefixes:</span> <span class="pre">~typing.Set[str]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">metamodel:</span> <span class="pre">~typing.Optional[~linkml.utils.schemaloader.SchemaLoader]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">**_kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/linkml/utils/generator.html#Generator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.utils.generator.Generator" title="Permalink to this definition">#</a></dt>
@@ -968,7 +969,6 @@ for any class that is inherited (class itself, is_a, mixin, apply_to).  Otherwis
 <span class="sig-prename descclassname"><span class="pre">linkml.utils.generator.</span></span><span class="sig-name descname"><span class="pre">shared_arguments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">g</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#linkml.utils.generator.Generator" title="linkml.utils.generator.Generator"><span class="pre">Generator</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Command</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Command</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/linkml/utils/generator.html#shared_arguments"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.utils.generator.shared_arguments" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
-</section>
 </section>
 <section id="module-linkml.utils.helpers">
 <span id="linkml-utils-helpers-module"></span><h2>linkml.utils.helpers module<a class="headerlink" href="#module-linkml.utils.helpers" title="Permalink to this heading">#</a></h2>
@@ -1694,22 +1694,230 @@ content and load a SchemaSynopsis entry</p>
 <li><a class="reference internal" href="#">linkml.utils package</a><ul>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
 <li><a class="reference internal" href="#module-linkml.utils.converter">linkml.utils.converter module</a></li>
-<li><a class="reference internal" href="#module-linkml.utils.datautils">linkml.utils.datautils module</a></li>
-<li><a class="reference internal" href="#module-linkml.utils.datavalidator">linkml.utils.datavalidator module</a></li>
-<li><a class="reference internal" href="#module-linkml.utils.execute_tutorial">linkml.utils.execute_tutorial module</a></li>
-<li><a class="reference internal" href="#module-linkml.utils.generator">linkml.utils.generator module</a><ul>
-<li><a class="reference internal" href="#developer-notes">Developer Notes</a></li>
+<li><a class="reference internal" href="#module-linkml.utils.datautils">linkml.utils.datautils module</a><ul>
+<li><a class="reference internal" href="#linkml.utils.datautils.get_dumper"><code class="docutils literal notranslate"><span class="pre">get_dumper()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.datautils.get_loader"><code class="docutils literal notranslate"><span class="pre">get_loader()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.datautils.infer_index_slot"><code class="docutils literal notranslate"><span class="pre">infer_index_slot()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.datautils.infer_root_class"><code class="docutils literal notranslate"><span class="pre">infer_root_class()</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#module-linkml.utils.helpers">linkml.utils.helpers module</a></li>
-<li><a class="reference internal" href="#module-linkml.utils.ifabsent_functions">linkml.utils.ifabsent_functions module</a></li>
-<li><a class="reference internal" href="#module-linkml.utils.mergeutils">linkml.utils.mergeutils module</a></li>
-<li><a class="reference internal" href="#module-linkml.utils.rawloader">linkml.utils.rawloader module</a></li>
-<li><a class="reference internal" href="#module-linkml.utils.schemaloader">linkml.utils.schemaloader module</a></li>
-<li><a class="reference internal" href="#module-linkml.utils.schemasynopsis">linkml.utils.schemasynopsis module</a></li>
+<li><a class="reference internal" href="#module-linkml.utils.datavalidator">linkml.utils.datavalidator module</a><ul>
+<li><a class="reference internal" href="#linkml.utils.datavalidator.DataValidator"><code class="docutils literal notranslate"><span class="pre">DataValidator</span></code></a><ul>
+<li><a class="reference internal" href="#linkml.utils.datavalidator.DataValidator.schema"><code class="docutils literal notranslate"><span class="pre">DataValidator.schema</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-linkml.utils.execute_tutorial">linkml.utils.execute_tutorial module</a><ul>
+<li><a class="reference internal" href="#linkml.utils.execute_tutorial.Block"><code class="docutils literal notranslate"><span class="pre">Block</span></code></a><ul>
+<li><a class="reference internal" href="#linkml.utils.execute_tutorial.Block.annotations"><code class="docutils literal notranslate"><span class="pre">Block.annotations</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.execute_tutorial.Block.category"><code class="docutils literal notranslate"><span class="pre">Block.category</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.execute_tutorial.Block.content"><code class="docutils literal notranslate"><span class="pre">Block.content</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.execute_tutorial.Block.error"><code class="docutils literal notranslate"><span class="pre">Block.error</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.execute_tutorial.Block.expected_fail"><code class="docutils literal notranslate"><span class="pre">Block.expected_fail</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.execute_tutorial.Block.is_bash"><code class="docutils literal notranslate"><span class="pre">Block.is_bash()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.execute_tutorial.Block.is_file_block"><code class="docutils literal notranslate"><span class="pre">Block.is_file_block()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.execute_tutorial.Block.is_stdout"><code class="docutils literal notranslate"><span class="pre">Block.is_stdout()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.execute_tutorial.Block.output"><code class="docutils literal notranslate"><span class="pre">Block.output</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.execute_tutorial.Block.prior_lines"><code class="docutils literal notranslate"><span class="pre">Block.prior_lines</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.execute_tutorial.Block.title"><code class="docutils literal notranslate"><span class="pre">Block.title</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#linkml.utils.execute_tutorial.execute_blocks"><code class="docutils literal notranslate"><span class="pre">execute_blocks()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.execute_tutorial.parse_file_to_blocks"><code class="docutils literal notranslate"><span class="pre">parse_file_to_blocks()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.execute_tutorial.write_lines"><code class="docutils literal notranslate"><span class="pre">write_lines()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-linkml.utils.generator">linkml.utils.generator module</a><ul>
+<li><a class="reference internal" href="#developer-notes">Developer Notes</a></li>
+<li><a class="reference internal" href="#linkml.utils.generator.Generator"><code class="docutils literal notranslate"><span class="pre">Generator</span></code></a><ul>
+<li><a class="reference internal" href="#linkml.utils.generator.Generator.add_id_prefixes"><code class="docutils literal notranslate"><span class="pre">Generator.add_id_prefixes()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.generator.Generator.add_mappings"><code class="docutils literal notranslate"><span class="pre">Generator.add_mappings()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.generator.Generator.add_prefix"><code class="docutils literal notranslate"><span class="pre">Generator.add_prefix()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.generator.Generator.aliased_slot_name"><code class="docutils literal notranslate"><span class="pre">Generator.aliased_slot_name()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.generator.Generator.all_slots"><code class="docutils literal notranslate"><span class="pre">Generator.all_slots()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.generator.Generator.ancestors"><code class="docutils literal notranslate"><span class="pre">Generator.ancestors()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.generator.Generator.base_dir"><code class="docutils literal notranslate"><span class="pre">Generator.base_dir</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.generator.Generator.class_identifier"><code class="docutils literal notranslate"><span class="pre">Generator.class_identifier()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.generator.Generator.class_identifier_path"><code class="docutils literal notranslate"><span class="pre">Generator.class_identifier_path()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.generator.Generator.class_or_type_for"><code class="docutils literal notranslate"><span class="pre">Generator.class_or_type_for()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.generator.Generator.class_or_type_name"><code class="docutils literal notranslate"><span class="pre">Generator.class_or_type_name()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.generator.Generator.default_prefix"><code class="docutils literal notranslate"><span class="pre">Generator.default_prefix()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.generator.Generator.directory_output"><code class="docutils literal notranslate"><span class="pre">Generator.directory_output</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.generator.Generator.domain_slots"><code class="docutils literal notranslate"><span class="pre">Generator.domain_slots()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.generator.Generator.emit_prefixes"><code class="docutils literal notranslate"><span class="pre">Generator.emit_prefixes</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.generator.Generator.end_class"><code class="docutils literal notranslate"><span class="pre">Generator.end_class()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.generator.Generator.end_schema"><code class="docutils literal notranslate"><span class="pre">Generator.end_schema()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.generator.Generator.enum_identifier_path"><code class="docutils literal notranslate"><span class="pre">Generator.enum_identifier_path()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.generator.Generator.format"><code class="docutils literal notranslate"><span class="pre">Generator.format</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.generator.Generator.formatted_element_name"><code class="docutils literal notranslate"><span class="pre">Generator.formatted_element_name()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.generator.Generator.generatorname"><code class="docutils literal notranslate"><span class="pre">Generator.generatorname</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.generator.Generator.generatorversion"><code class="docutils literal notranslate"><span class="pre">Generator.generatorversion</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.generator.Generator.get_metamodel_slot_name"><code class="docutils literal notranslate"><span class="pre">Generator.get_metamodel_slot_name()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.generator.Generator.importmap"><code class="docutils literal notranslate"><span class="pre">Generator.importmap</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.generator.Generator.is_class_unconstrained"><code class="docutils literal notranslate"><span class="pre">Generator.is_class_unconstrained()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.generator.Generator.log_level"><code class="docutils literal notranslate"><span class="pre">Generator.log_level</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.generator.Generator.logger"><code class="docutils literal notranslate"><span class="pre">Generator.logger</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.generator.Generator.mergeimports"><code class="docutils literal notranslate"><span class="pre">Generator.mergeimports</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.generator.Generator.metadata"><code class="docutils literal notranslate"><span class="pre">Generator.metadata</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.generator.Generator.metamodel"><code class="docutils literal notranslate"><span class="pre">Generator.metamodel</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.generator.Generator.metamodel_name_map"><code class="docutils literal notranslate"><span class="pre">Generator.metamodel_name_map</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.generator.Generator.namespaces"><code class="docutils literal notranslate"><span class="pre">Generator.namespaces</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.generator.Generator.neighborhood"><code class="docutils literal notranslate"><span class="pre">Generator.neighborhood()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.generator.Generator.obj_for"><code class="docutils literal notranslate"><span class="pre">Generator.obj_for()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.generator.Generator.output"><code class="docutils literal notranslate"><span class="pre">Generator.output</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.generator.Generator.own_slot_names"><code class="docutils literal notranslate"><span class="pre">Generator.own_slot_names()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.generator.Generator.own_slots"><code class="docutils literal notranslate"><span class="pre">Generator.own_slots()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.generator.Generator.parent"><code class="docutils literal notranslate"><span class="pre">Generator.parent()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.generator.Generator.range_type_path"><code class="docutils literal notranslate"><span class="pre">Generator.range_type_path()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.generator.Generator.requires_metamodel"><code class="docutils literal notranslate"><span class="pre">Generator.requires_metamodel</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.generator.Generator.schema"><code class="docutils literal notranslate"><span class="pre">Generator.schema</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.generator.Generator.schemaview"><code class="docutils literal notranslate"><span class="pre">Generator.schemaview</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.generator.Generator.serialize"><code class="docutils literal notranslate"><span class="pre">Generator.serialize()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.generator.Generator.slot_for"><code class="docutils literal notranslate"><span class="pre">Generator.slot_for()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.generator.Generator.slot_name"><code class="docutils literal notranslate"><span class="pre">Generator.slot_name()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.generator.Generator.slot_range_path"><code class="docutils literal notranslate"><span class="pre">Generator.slot_range_path()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.generator.Generator.sort_class_slots"><code class="docutils literal notranslate"><span class="pre">Generator.sort_class_slots</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.generator.Generator.source_file_date"><code class="docutils literal notranslate"><span class="pre">Generator.source_file_date</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.generator.Generator.source_file_size"><code class="docutils literal notranslate"><span class="pre">Generator.source_file_size</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.generator.Generator.subset_for"><code class="docutils literal notranslate"><span class="pre">Generator.subset_for()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.generator.Generator.subset_name"><code class="docutils literal notranslate"><span class="pre">Generator.subset_name()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.generator.Generator.uses_schemaloader"><code class="docutils literal notranslate"><span class="pre">Generator.uses_schemaloader</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.generator.Generator.useuris"><code class="docutils literal notranslate"><span class="pre">Generator.useuris</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.generator.Generator.valid_formats"><code class="docutils literal notranslate"><span class="pre">Generator.valid_formats</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.generator.Generator.verbose"><code class="docutils literal notranslate"><span class="pre">Generator.verbose</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.generator.Generator.visit_all_class_slots"><code class="docutils literal notranslate"><span class="pre">Generator.visit_all_class_slots</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.generator.Generator.visit_class"><code class="docutils literal notranslate"><span class="pre">Generator.visit_class()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.generator.Generator.visit_class_slot"><code class="docutils literal notranslate"><span class="pre">Generator.visit_class_slot()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.generator.Generator.visit_enum"><code class="docutils literal notranslate"><span class="pre">Generator.visit_enum()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.generator.Generator.visit_schema"><code class="docutils literal notranslate"><span class="pre">Generator.visit_schema()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.generator.Generator.visit_slot"><code class="docutils literal notranslate"><span class="pre">Generator.visit_slot()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.generator.Generator.visit_subset"><code class="docutils literal notranslate"><span class="pre">Generator.visit_subset()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.generator.Generator.visit_type"><code class="docutils literal notranslate"><span class="pre">Generator.visit_type()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.generator.Generator.visits_are_sorted"><code class="docutils literal notranslate"><span class="pre">Generator.visits_are_sorted</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#linkml.utils.generator.shared_arguments"><code class="docutils literal notranslate"><span class="pre">shared_arguments()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-linkml.utils.helpers">linkml.utils.helpers module</a><ul>
+<li><a class="reference internal" href="#linkml.utils.helpers.remove_duplicates"><code class="docutils literal notranslate"><span class="pre">remove_duplicates()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.helpers.write_to_file"><code class="docutils literal notranslate"><span class="pre">write_to_file()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-linkml.utils.ifabsent_functions">linkml.utils.ifabsent_functions module</a><ul>
+<li><a class="reference internal" href="#linkml.utils.ifabsent_functions.curie_for"><code class="docutils literal notranslate"><span class="pre">curie_for()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.ifabsent_functions.default_curie_or_uri"><code class="docutils literal notranslate"><span class="pre">default_curie_or_uri()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.ifabsent_functions.default_ns_for"><code class="docutils literal notranslate"><span class="pre">default_ns_for()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.ifabsent_functions.default_uri_for"><code class="docutils literal notranslate"><span class="pre">default_uri_for()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.ifabsent_functions.ifabsent_postinit_declaration"><code class="docutils literal notranslate"><span class="pre">ifabsent_postinit_declaration()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.ifabsent_functions.ifabsent_value_declaration"><code class="docutils literal notranslate"><span class="pre">ifabsent_value_declaration()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.ifabsent_functions.isabsent_match"><code class="docutils literal notranslate"><span class="pre">isabsent_match()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.ifabsent_functions.strval"><code class="docutils literal notranslate"><span class="pre">strval()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.ifabsent_functions.uri_for"><code class="docutils literal notranslate"><span class="pre">uri_for()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-linkml.utils.mergeutils">linkml.utils.mergeutils module</a><ul>
+<li><a class="reference internal" href="#linkml.utils.mergeutils.alias_root"><code class="docutils literal notranslate"><span class="pre">alias_root()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.mergeutils.merge_classes"><code class="docutils literal notranslate"><span class="pre">merge_classes()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.mergeutils.merge_dicts"><code class="docutils literal notranslate"><span class="pre">merge_dicts()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.mergeutils.merge_enums"><code class="docutils literal notranslate"><span class="pre">merge_enums()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.mergeutils.merge_namespaces"><code class="docutils literal notranslate"><span class="pre">merge_namespaces()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.mergeutils.merge_schemas"><code class="docutils literal notranslate"><span class="pre">merge_schemas()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.mergeutils.merge_slots"><code class="docutils literal notranslate"><span class="pre">merge_slots()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.mergeutils.set_from_schema"><code class="docutils literal notranslate"><span class="pre">set_from_schema()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.mergeutils.slot_usage_name"><code class="docutils literal notranslate"><span class="pre">slot_usage_name()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-linkml.utils.rawloader">linkml.utils.rawloader module</a><ul>
+<li><a class="reference internal" href="#linkml.utils.rawloader.load_raw_schema"><code class="docutils literal notranslate"><span class="pre">load_raw_schema()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.rawloader.mrf"><code class="docutils literal notranslate"><span class="pre">mrf()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-linkml.utils.schemaloader">linkml.utils.schemaloader module</a><ul>
+<li><a class="reference internal" href="#linkml.utils.schemaloader.SchemaLoader"><code class="docutils literal notranslate"><span class="pre">SchemaLoader</span></code></a><ul>
+<li><a class="reference internal" href="#linkml.utils.schemaloader.SchemaLoader.check_prefix"><code class="docutils literal notranslate"><span class="pre">SchemaLoader.check_prefix()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.schemaloader.SchemaLoader.check_prefixes"><code class="docutils literal notranslate"><span class="pre">SchemaLoader.check_prefixes()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.schemaloader.SchemaLoader.logger_warning"><code class="docutils literal notranslate"><span class="pre">SchemaLoader.logger_warning()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.schemaloader.SchemaLoader.merge_class"><code class="docutils literal notranslate"><span class="pre">SchemaLoader.merge_class()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.schemaloader.SchemaLoader.merge_enum"><code class="docutils literal notranslate"><span class="pre">SchemaLoader.merge_enum()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.schemaloader.SchemaLoader.merge_slot"><code class="docutils literal notranslate"><span class="pre">SchemaLoader.merge_slot()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.schemaloader.SchemaLoader.merge_type"><code class="docutils literal notranslate"><span class="pre">SchemaLoader.merge_type()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.schemaloader.SchemaLoader.process_slot_usage_definitions"><code class="docutils literal notranslate"><span class="pre">SchemaLoader.process_slot_usage_definitions()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.schemaloader.SchemaLoader.process_slot_usages"><code class="docutils literal notranslate"><span class="pre">SchemaLoader.process_slot_usages()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.schemaloader.SchemaLoader.raise_value_error"><code class="docutils literal notranslate"><span class="pre">SchemaLoader.raise_value_error()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.schemaloader.SchemaLoader.raise_value_errors"><code class="docutils literal notranslate"><span class="pre">SchemaLoader.raise_value_errors()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.schemaloader.SchemaLoader.resolve"><code class="docutils literal notranslate"><span class="pre">SchemaLoader.resolve()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.schemaloader.SchemaLoader.schema_errors"><code class="docutils literal notranslate"><span class="pre">SchemaLoader.schema_errors()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.schemaloader.SchemaLoader.slot_definition_for"><code class="docutils literal notranslate"><span class="pre">SchemaLoader.slot_definition_for()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.schemaloader.SchemaLoader.slot_name_for"><code class="docutils literal notranslate"><span class="pre">SchemaLoader.slot_name_for()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.schemaloader.SchemaLoader.validate_item_names"><code class="docutils literal notranslate"><span class="pre">SchemaLoader.validate_item_names()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-linkml.utils.schemasynopsis">linkml.utils.schemasynopsis module</a><ul>
+<li><a class="reference internal" href="#linkml.utils.schemasynopsis.SchemaSynopsis"><code class="docutils literal notranslate"><span class="pre">SchemaSynopsis</span></code></a><ul>
+<li><a class="reference internal" href="#linkml.utils.schemasynopsis.SchemaSynopsis.abstracts"><code class="docutils literal notranslate"><span class="pre">SchemaSynopsis.abstracts</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.schemasynopsis.SchemaSynopsis.add_ref"><code class="docutils literal notranslate"><span class="pre">SchemaSynopsis.add_ref()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.schemasynopsis.SchemaSynopsis.applytorefs"><code class="docutils literal notranslate"><span class="pre">SchemaSynopsis.applytorefs</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.schemasynopsis.SchemaSynopsis.applytos"><code class="docutils literal notranslate"><span class="pre">SchemaSynopsis.applytos</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.schemasynopsis.SchemaSynopsis.classrefs"><code class="docutils literal notranslate"><span class="pre">SchemaSynopsis.classrefs</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.schemasynopsis.SchemaSynopsis.codesets"><code class="docutils literal notranslate"><span class="pre">SchemaSynopsis.codesets</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.schemasynopsis.SchemaSynopsis.definingslots"><code class="docutils literal notranslate"><span class="pre">SchemaSynopsis.definingslots</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.schemasynopsis.SchemaSynopsis.enumrefs"><code class="docutils literal notranslate"><span class="pre">SchemaSynopsis.enumrefs</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.schemasynopsis.SchemaSynopsis.errors"><code class="docutils literal notranslate"><span class="pre">SchemaSynopsis.errors()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.schemasynopsis.SchemaSynopsis.inschema"><code class="docutils literal notranslate"><span class="pre">SchemaSynopsis.inschema</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.schemasynopsis.SchemaSynopsis.inverses"><code class="docutils literal notranslate"><span class="pre">SchemaSynopsis.inverses</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.schemasynopsis.SchemaSynopsis.isarefs"><code class="docutils literal notranslate"><span class="pre">SchemaSynopsis.isarefs</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.schemasynopsis.SchemaSynopsis.mixinrefs"><code class="docutils literal notranslate"><span class="pre">SchemaSynopsis.mixinrefs</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.schemasynopsis.SchemaSynopsis.mixins"><code class="docutils literal notranslate"><span class="pre">SchemaSynopsis.mixins</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.schemasynopsis.SchemaSynopsis.owners"><code class="docutils literal notranslate"><span class="pre">SchemaSynopsis.owners</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.schemasynopsis.SchemaSynopsis.ownslots"><code class="docutils literal notranslate"><span class="pre">SchemaSynopsis.ownslots</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.schemasynopsis.SchemaSynopsis.rangerefs"><code class="docutils literal notranslate"><span class="pre">SchemaSynopsis.rangerefs</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.schemasynopsis.SchemaSynopsis.roots"><code class="docutils literal notranslate"><span class="pre">SchemaSynopsis.roots</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.schemasynopsis.SchemaSynopsis.schema"><code class="docutils literal notranslate"><span class="pre">SchemaSynopsis.schema</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.schemasynopsis.SchemaSynopsis.slotclasses"><code class="docutils literal notranslate"><span class="pre">SchemaSynopsis.slotclasses</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.schemasynopsis.SchemaSynopsis.slotrefs"><code class="docutils literal notranslate"><span class="pre">SchemaSynopsis.slotrefs</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.schemasynopsis.SchemaSynopsis.slotusages"><code class="docutils literal notranslate"><span class="pre">SchemaSynopsis.slotusages</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.schemasynopsis.SchemaSynopsis.subsetrefs"><code class="docutils literal notranslate"><span class="pre">SchemaSynopsis.subsetrefs</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.schemasynopsis.SchemaSynopsis.summarize_class_definition"><code class="docutils literal notranslate"><span class="pre">SchemaSynopsis.summarize_class_definition()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.schemasynopsis.SchemaSynopsis.summarize_definition"><code class="docutils literal notranslate"><span class="pre">SchemaSynopsis.summarize_definition()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.schemasynopsis.SchemaSynopsis.summarize_element"><code class="docutils literal notranslate"><span class="pre">SchemaSynopsis.summarize_element()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.schemasynopsis.SchemaSynopsis.summarize_enum_definition"><code class="docutils literal notranslate"><span class="pre">SchemaSynopsis.summarize_enum_definition()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.schemasynopsis.SchemaSynopsis.summarize_slot_definition"><code class="docutils literal notranslate"><span class="pre">SchemaSynopsis.summarize_slot_definition()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.schemasynopsis.SchemaSynopsis.summarize_type_definition"><code class="docutils literal notranslate"><span class="pre">SchemaSynopsis.summarize_type_definition()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.schemasynopsis.SchemaSynopsis.summary"><code class="docutils literal notranslate"><span class="pre">SchemaSynopsis.summary()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.schemasynopsis.SchemaSynopsis.typebases"><code class="docutils literal notranslate"><span class="pre">SchemaSynopsis.typebases</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.schemasynopsis.SchemaSynopsis.typeofs"><code class="docutils literal notranslate"><span class="pre">SchemaSynopsis.typeofs</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.schemasynopsis.SchemaSynopsis.typerefs"><code class="docutils literal notranslate"><span class="pre">SchemaSynopsis.typerefs</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#linkml.utils.schemasynopsis.empty_references"><code class="docutils literal notranslate"><span class="pre">empty_references()</span></code></a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#linkml-utils-sqltransformer-old-module">linkml.utils.sqltransformer_old module</a></li>
-<li><a class="reference internal" href="#module-linkml.utils.typereferences">linkml.utils.typereferences module</a></li>
-<li><a class="reference internal" href="#module-linkml.utils.validation">linkml.utils.validation module</a></li>
+<li><a class="reference internal" href="#module-linkml.utils.typereferences">linkml.utils.typereferences module</a><ul>
+<li><a class="reference internal" href="#linkml.utils.typereferences.RefType"><code class="docutils literal notranslate"><span class="pre">RefType</span></code></a><ul>
+<li><a class="reference internal" href="#linkml.utils.typereferences.RefType.name"><code class="docutils literal notranslate"><span class="pre">RefType.name</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#linkml.utils.typereferences.References"><code class="docutils literal notranslate"><span class="pre">References</span></code></a><ul>
+<li><a class="reference internal" href="#linkml.utils.typereferences.References.addref"><code class="docutils literal notranslate"><span class="pre">References.addref()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.typereferences.References.classrefs"><code class="docutils literal notranslate"><span class="pre">References.classrefs</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.typereferences.References.enumrefs"><code class="docutils literal notranslate"><span class="pre">References.enumrefs</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.typereferences.References.slotrefs"><code class="docutils literal notranslate"><span class="pre">References.slotrefs</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.typereferences.References.subsetrefs"><code class="docutils literal notranslate"><span class="pre">References.subsetrefs</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.typereferences.References.typerefs"><code class="docutils literal notranslate"><span class="pre">References.typerefs</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.typereferences.References.update"><code class="docutils literal notranslate"><span class="pre">References.update()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-linkml.utils.validation">linkml.utils.validation module</a><ul>
+<li><a class="reference internal" href="#linkml.utils.validation.validate_object"><code class="docutils literal notranslate"><span class="pre">validate_object()</span></code></a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#module-linkml.utils">Module contents</a></li>
 </ul>
 </li>
@@ -1727,6 +1935,7 @@ content and load a SchemaSynopsis entry</p>
     <script src="_static/underscore.js"></script>
     <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/scripts/furo.js"></script>
     </body>
 </html>

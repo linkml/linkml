@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="prev" title="Contributing Code" href="developers/contributing-code.html" />
 
-    <meta name="generator" content="sphinx-5.1.1, furo 2022.09.29"/>
+    <meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
         <title>Code - linkml documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
@@ -518,10 +518,39 @@ into the schema rather than providing dynamic methods.</p>
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">Code</a><ul>
-<li><a class="reference internal" href="#metamodel">MetaModel</a></li>
-<li><a class="reference internal" href="#generators">Generators</a></li>
-<li><a class="reference internal" href="#loaders-and-dumpers">Loaders and Dumpers</a></li>
-<li><a class="reference internal" href="#schema-utils">Schema Utils</a></li>
+<li><a class="reference internal" href="#metamodel">MetaModel</a><ul>
+<li><a class="reference internal" href="#linkml_runtime.linkml_model.meta.SchemaDefinition"><code class="docutils literal notranslate"><span class="pre">SchemaDefinition</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.linkml_model.meta.ClassDefinition"><code class="docutils literal notranslate"><span class="pre">ClassDefinition</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.linkml_model.meta.SlotDefinition"><code class="docutils literal notranslate"><span class="pre">SlotDefinition</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#generators">Generators</a><ul>
+<li><a class="reference internal" href="#linkml.generators.jsonschemagen.JsonSchemaGenerator"><code class="docutils literal notranslate"><span class="pre">JsonSchemaGenerator</span></code></a><ul>
+<li><a class="reference internal" href="#linkml.generators.jsonschemagen.JsonSchemaGenerator.serialize"><code class="docutils literal notranslate"><span class="pre">JsonSchemaGenerator.serialize()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#linkml.generators.yamlgen.YAMLGenerator"><code class="docutils literal notranslate"><span class="pre">YAMLGenerator</span></code></a><ul>
+<li><a class="reference internal" href="#linkml.generators.yamlgen.YAMLGenerator.serialize"><code class="docutils literal notranslate"><span class="pre">YAMLGenerator.serialize()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#loaders-and-dumpers">Loaders and Dumpers</a><ul>
+<li><a class="reference internal" href="#linkml_runtime.dumpers.json_dumper.JSONDumper"><code class="docutils literal notranslate"><span class="pre">JSONDumper</span></code></a><ul>
+<li><a class="reference internal" href="#linkml_runtime.dumpers.json_dumper.JSONDumper.dump"><code class="docutils literal notranslate"><span class="pre">JSONDumper.dump()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.dumpers.json_dumper.JSONDumper.dumps"><code class="docutils literal notranslate"><span class="pre">JSONDumper.dumps()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#linkml_runtime.loaders.JSONLoader"><code class="docutils literal notranslate"><span class="pre">JSONLoader</span></code></a><ul>
+<li><a class="reference internal" href="#linkml_runtime.loaders.JSONLoader.loads"><code class="docutils literal notranslate"><span class="pre">JSONLoader.loads()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#schema-utils">Schema Utils</a><ul>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView"><code class="docutils literal notranslate"><span class="pre">SchemaView</span></code></a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#utils">Utils</a></li>
 </ul>
 </li>
@@ -539,6 +568,7 @@ into the schema rather than providing dynamic methods.</p>
     <script src="_static/underscore.js"></script>
     <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/scripts/furo.js"></script>
     </body>
 </html>

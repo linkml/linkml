@@ -4,7 +4,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
-    <meta name="generator" content="sphinx-5.1.1, furo 2022.09.29"/>
+    <meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
         <title>linkml_runtime.utils.inference_utils - linkml documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
@@ -301,7 +301,7 @@
 <span class="kn">from</span> <span class="nn">jsonasobj2</span> <span class="kn">import</span> <span class="n">JsonObj</span><span class="p">,</span> <span class="n">items</span>
 
 <span class="kn">from</span> <span class="nn">linkml_runtime</span> <span class="kn">import</span> <span class="n">SchemaView</span>
-<span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model</span> <span class="kn">import</span> <span class="n">SlotDefinitionName</span><span class="p">,</span> <span class="n">PermissibleValue</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model</span> <span class="kn">import</span> <span class="n">SlotDefinitionName</span><span class="p">,</span> <span class="n">PermissibleValue</span><span class="p">,</span> <span class="n">ClassDefinitionName</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime.utils.enumerations</span> <span class="kn">import</span> <span class="n">EnumDefinitionImpl</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime.utils.eval_utils</span> <span class="kn">import</span> <span class="n">eval_expr</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime.utils.walker_utils</span> <span class="kn">import</span> <span class="n">traverse_object_tree</span>
@@ -320,7 +320,7 @@
     <span class="k">if</span> <span class="n">resolve_function</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">resolve_function</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">items</span><span class="p">(</span><span class="n">obj</span><span class="p">)}</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">items</span><span class="p">(</span><span class="n">obj</span><span class="p">)}</span>
+        <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">vars</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
 
 <div class="viewcode-block" id="Config"><a class="viewcode-back" href="../../../developers/inference.html#linkml_runtime.utils.inference_utils.Config">[docs]</a><span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">Config</span><span class="p">:</span>
@@ -347,6 +347,7 @@
 
 
 <span class="k">def</span> <span class="nf">generate_slot_value</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">YAMLRoot</span><span class="p">,</span> <span class="n">slot_name</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">SlotDefinitionName</span><span class="p">],</span> <span class="n">schemaview</span><span class="p">:</span> <span class="n">SchemaView</span><span class="p">,</span>
+                        <span class="n">class_name</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ClassDefinitionName</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                         <span class="n">config</span><span class="p">:</span> <span class="n">Config</span> <span class="o">=</span> <span class="n">Config</span><span class="p">())</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Infer the value of a slot for a given object</span>
@@ -359,13 +360,15 @@
 <span class="sd">    :param obj: object with slot whose value is be generated (not mutated)</span>
 <span class="sd">    :param slot_name: slot whose value is to be filled</span>
 <span class="sd">    :param schemaview:</span>
+<span class="sd">    :param class_name:</span>
 <span class="sd">    :param config: determines which rules to apply</span>
 <span class="sd">    :return: inferred value, or None if not inference performed</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">cls_name</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span><span class="o">.</span><span class="n">class_name</span>
+    <span class="k">if</span> <span class="n">class_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">class_name</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span><span class="o">.</span><span class="n">class_name</span>
     <span class="n">mapped_slot</span> <span class="o">=</span> <span class="n">schemaview</span><span class="o">.</span><span class="n">slot_name_mappings</span><span class="p">()[</span><span class="n">slot_name</span><span class="p">]</span>
     <span class="n">slot_name</span> <span class="o">=</span> <span class="n">mapped_slot</span><span class="o">.</span><span class="n">name</span>
-    <span class="n">slot</span> <span class="o">=</span> <span class="n">schemaview</span><span class="o">.</span><span class="n">induced_slot</span><span class="p">(</span><span class="n">slot_name</span><span class="p">,</span> <span class="n">cls_name</span><span class="p">)</span>
+    <span class="n">slot</span> <span class="o">=</span> <span class="n">schemaview</span><span class="o">.</span><span class="n">induced_slot</span><span class="p">(</span><span class="n">slot_name</span><span class="p">,</span> <span class="n">class_name</span><span class="p">)</span>
     <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;   CONF=</span><span class="si">{</span><span class="n">config</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">use_string_serialization</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">string_serialization</span><span class="p">:</span>
@@ -383,20 +386,22 @@
 
 
 <div class="viewcode-block" id="infer_slot_value"><a class="viewcode-back" href="../../../developers/inference.html#linkml_runtime.utils.inference_utils.infer_slot_value">[docs]</a><span class="k">def</span> <span class="nf">infer_slot_value</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">YAMLRoot</span><span class="p">,</span> <span class="n">slot_name</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">SlotDefinitionName</span><span class="p">],</span> <span class="n">schemaview</span><span class="p">:</span> <span class="n">SchemaView</span><span class="p">,</span>
-                       <span class="n">policy</span><span class="p">:</span> <span class="n">Policy</span> <span class="o">=</span> <span class="n">Policy</span><span class="o">.</span><span class="n">STRICT</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Config</span> <span class="o">=</span> <span class="n">Config</span><span class="p">()):</span>
+                     <span class="n">class_name</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ClassDefinitionName</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                     <span class="n">policy</span><span class="p">:</span> <span class="n">Policy</span> <span class="o">=</span> <span class="n">Policy</span><span class="o">.</span><span class="n">STRICT</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Config</span> <span class="o">=</span> <span class="n">Config</span><span class="p">()):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Infer the value of a slot for an object</span>
 
 <span class="sd">    :param obj: mutable object to be transformed</span>
 <span class="sd">    :param slot_name:</span>
 <span class="sd">    :param schemaview:</span>
+<span class="sd">    :param class_name:</span>
 <span class="sd">    :param policy:</span>
 <span class="sd">    :param config:</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">v</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">slot_name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">policy</span> <span class="o">==</span> <span class="n">Policy</span><span class="o">.</span><span class="n">KEEP</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">v</span>
-    <span class="n">new_v</span> <span class="o">=</span> <span class="n">generate_slot_value</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">slot_name</span><span class="p">,</span> <span class="n">schemaview</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
+    <span class="n">new_v</span> <span class="o">=</span> <span class="n">generate_slot_value</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">slot_name</span><span class="p">,</span> <span class="n">schemaview</span><span class="p">,</span> <span class="n">class_name</span><span class="o">=</span><span class="n">class_name</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
     <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;SETTING </span><span class="si">{</span><span class="n">slot_name</span><span class="si">}</span><span class="s1"> = </span><span class="si">{</span><span class="n">new_v</span><span class="si">}</span><span class="s1"> // current=</span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s1">, </span><span class="si">{</span><span class="n">policy</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">new_v</span><span class="p">:</span>
         <span class="c1"># check if new value is different; not str check is necessary as enums may not be converted</span>
@@ -413,6 +418,7 @@
 
 
 <div class="viewcode-block" id="infer_all_slot_values"><a class="viewcode-back" href="../../../developers/inference.html#linkml_runtime.utils.inference_utils.infer_all_slot_values">[docs]</a><span class="k">def</span> <span class="nf">infer_all_slot_values</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">YAMLRoot</span><span class="p">,</span> <span class="n">schemaview</span><span class="p">:</span> <span class="n">SchemaView</span><span class="p">,</span>
+                          <span class="n">class_name</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ClassDefinitionName</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                           <span class="n">policy</span><span class="p">:</span> <span class="n">Policy</span> <span class="o">=</span> <span class="n">Policy</span><span class="o">.</span><span class="n">STRICT</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Config</span> <span class="o">=</span> <span class="n">Config</span><span class="p">()):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Walks object tree inferring all slot values.</span>
@@ -422,6 +428,7 @@
 
 <span class="sd">    :param obj:</span>
 <span class="sd">    :param schemaview:</span>
+<span class="sd">    :param class_name:</span>
 <span class="sd">    :param policy: default is STRICT</span>
 <span class="sd">    :param config:</span>
 <span class="sd">    :return:</span>
@@ -431,7 +438,7 @@
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">in_obj</span><span class="p">,</span> <span class="n">YAMLRoot</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">in_obj</span><span class="p">,</span> <span class="n">EnumDefinitionImpl</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">in_obj</span><span class="p">,</span> <span class="n">PermissibleValue</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">vars</span><span class="p">(</span><span class="n">in_obj</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="c1">#print(f&#39;  ISV={k} curr={v} policy={policy} in_obj={type(in_obj)}&#39;)</span>
-                <span class="n">infer_slot_value</span><span class="p">(</span><span class="n">in_obj</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">schemaview</span><span class="p">,</span> <span class="n">policy</span><span class="o">=</span><span class="n">policy</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
+                <span class="n">infer_slot_value</span><span class="p">(</span><span class="n">in_obj</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">schemaview</span><span class="p">,</span> <span class="n">class_name</span><span class="o">=</span><span class="n">class_name</span><span class="p">,</span> <span class="n">policy</span><span class="o">=</span><span class="n">policy</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">in_obj</span>
     <span class="n">traverse_object_tree</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">infer</span><span class="p">)</span></div>
 
@@ -475,6 +482,7 @@
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
     <script src="../../../_static/scripts/furo.js"></script>
     </body>
 </html>
