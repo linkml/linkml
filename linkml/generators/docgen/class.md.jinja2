@@ -12,9 +12,6 @@ _{{ element.description }}_
 {% if element.abstract %}
 * __NOTE__: this is an abstract class and should not be instantiated directly
 {% endif %}
-{% if element.mixin %}
-* __NOTE__: this is a mixin class intended to be used in combination with other classes, and not used directly
-{% endif %}
 
 URI: {{ gen.uri_link(element) }}
 
@@ -42,6 +39,16 @@ URI: {{ gen.uri_link(element) }}
 | {{ gen.link(schemaview.get_slot(i_slot)) }} | {{ gen.cardinality(schemaview.get_slot(i_slot)) }} <br/> {{ schemaview.get_slot(i_slot).range }} | {{ schemaview.get_slot(i_slot).description }} | {{ gen.links(gen.get_slot_inherited_from(element.name, i_slot))|join(', ') }} |
 {% endfor -%}
 {% endif -%}
+
+{% if schemaview.is_mixin(element.name) %}
+## Mixin Usage
+
+| mixed into | description |
+| --- | --- |
+{% for c in schemaview.class_children(element.name, is_a=False) -%}
+| {{ gen.link(c) }} | {{ schemaview.get_class(c).description|enshorten }} |
+{% endfor %}
+{% endif %}
 
 {% if schemaview.usage_index().get(element.name) %}
 ## Usages

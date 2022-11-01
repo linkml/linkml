@@ -37,8 +37,8 @@ URI: {{ gen.uri_link(element) }}
 
 | mixed into | description | range | domain |
 | --- | --- | --- | --- |
-{% for s in schemaview.slot_children(element.name) -%}
-| {{ gen.link(s) }} | {{ schemaview.get_slot(s).description }} | {{ schemaview.get_slot(s).range }} | {{ schemaview.get_classes_by_slot(schemaview.get_slot(s))|join(', ') }} |
+{% for s in schemaview.slot_children(element.name, is_a=False) -%}
+| {{ gen.link(s) }} | {{ schemaview.get_slot(s).description|enshorten }} | {{ schemaview.get_slot(s).range }} | {{ schemaview.get_classes_by_slot(schemaview.get_slot(s))|join(', ') }} |
 {% endfor %}
 {% endif %}
 
