@@ -98,6 +98,9 @@ classes:
       - P
     exact_mappings:
       - schema:Person
+    see_also:
+      - https://en.wikipedia.org/wiki/Person
+      - schema:Person
 
   Organization:
     rank: 3

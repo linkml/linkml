@@ -237,6 +237,17 @@ class DocGeneratorTestCase(unittest.TestCase):
             "tree_slot_C.md", "[mixin_slot_I](mixin_slot_I.md)"
         )
 
+        # test see_also hyperlinking
+        assert_mdfile_contains(
+            "Person.md", 
+            "[https://en.wikipedia.org/wiki/Person](https://en.wikipedia.org/wiki/Person)",
+            after="## See Also"
+        )
+        assert_mdfile_contains(
+            "Person.md", 
+            "[schema:Person](http://schema.org/Person)",
+            after="## See Also"
+            
         # test that Aliases is showing from common metadata
         assert_mdfile_contains(
             "EmploymentEventType.md", "* HR code", after="## Aliases"

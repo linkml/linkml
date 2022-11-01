@@ -38,6 +38,14 @@
 {% endfor %}
 {% endif -%}
 
+{% if element.see_also -%}
+## See Also
+
+{% for x in element.see_also -%}
+* {{ gen.uri_link(x) }}
+{% endfor %}
+{% endif -%}
+
 ## Identifier and Mapping Information
 
 {% if element.id_prefixes %}
