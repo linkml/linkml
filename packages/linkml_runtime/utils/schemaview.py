@@ -1324,6 +1324,10 @@ class SchemaView(object):
         return list(dict.fromkeys(slots_list))
 
     @lru_cache()
+    def get_slots_by_enum(self, enum_name: ENUM_NAME = None) -> List[SlotDefinition]:
+        return [s for s in self.all_slots().values() if s.range == enum_name]
+
+    @lru_cache()
     def usage_index(self) -> Dict[ElementName, List[SchemaUsage]]:
         """
         Fetch an index that shows the ways in which each element is used
