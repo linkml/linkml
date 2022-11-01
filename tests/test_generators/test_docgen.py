@@ -247,6 +247,10 @@ class DocGeneratorTestCase(unittest.TestCase):
             "Person.md", 
             "[schema:Person](http://schema.org/Person)",
             after="## See Also"
+            
+        # test that Aliases is showing from common metadata
+        assert_mdfile_contains(
+            "EmploymentEventType.md", "* HR code", after="## Aliases"
         )
 
     def test_docgen_rank_ordering(self):
