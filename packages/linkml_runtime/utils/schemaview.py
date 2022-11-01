@@ -1325,6 +1325,11 @@ class SchemaView(object):
 
     @lru_cache()
     def get_slots_by_enum(self, enum_name: ENUM_NAME = None) -> List[SlotDefinition]:
+        """Get all slots that use a given enum, either as schema defined or an attribute slot.
+
+        :param enum_name: enum in consideration
+        :return: list of slots, either schem or both class attribute defined
+        """
         return [s for s in self.all_slots().values() if s.range == enum_name]
 
     @lru_cache()
