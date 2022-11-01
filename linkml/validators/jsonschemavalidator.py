@@ -48,7 +48,7 @@ class JsonSchemaDataValidator(DataValidator):
             not_closed=not_closed,
         ).serialize(not_closed=not_closed)
         jsonschema_obj = json.loads(jsonschemastr)
-        return jsonschema.validate(inst_dict, schema=jsonschema_obj)
+        return jsonschema.validate(inst_dict, schema=jsonschema_obj, format_checker=jsonschema.Draft7Validator.FORMAT_CHECKER)
 
     def validate_dict(
         self, data: dict, target_class: ClassDefinitionName = None, closed: bool = True
@@ -76,7 +76,7 @@ class JsonSchemaDataValidator(DataValidator):
             not_closed=not_closed,
         ).serialize(not_closed=not_closed)
         jsonschema_obj = json.loads(jsonschemastr)
-        return jsonschema.validate(data, schema=jsonschema_obj)
+        return jsonschema.validate(data, schema=jsonschema_obj, format_checker=jsonschema.Draft7Validator.FORMAT_CHECKER)
 
 
 @click.command()

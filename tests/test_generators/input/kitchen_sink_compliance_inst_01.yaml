@@ -1,29 +1,27 @@
+# By default these cases are expected to *not* validate. Use valid: true
+# for cases that are expected to validate successfully.
+
 - description: name fails regex
-  skip: false
   dataset:
     persons:
       - id: P:001
         name: prince ## our schema is deliberately ultra-restrictive
 - description: missing ID
-  skip: false
   dataset:
     persons:
       - name: prince charming
 - description: wrong datatype for age
-  skip: false
   dataset:
     persons:
       - id: P
         name: prince charming
         age: "33"
 - description: wrong datatype for name
-  skip: false
   dataset:
     companies:
       - id: ROR:1
         name: 5
 - description: missing required type field
-  skip: false
   dataset:
     persons:
       - id: P:001
@@ -31,7 +29,6 @@
         has_familial_relationships:
           - related_to: P:002
 - description: wrong enum
-  skip: true ## https://github.com/linkml/linkml/issues/201
   dataset:
     persons:
       - id: P:001
@@ -40,28 +37,25 @@
           - related_to: P:002
             type: NON_EXISTENT_RELATION
 - description: age lower than threshold
-  skip: false
   dataset:
     persons:
       - id: P
         name: benjamin button
         age_in_years: -5
 - description: age higher than threshold
-  skip: false
   dataset:
     persons:
       - id: P
         name: dr who
         age_in_years: 5000
 - description: additional properties is closed
-  skip: false
   dataset:
     persons:
       - id: P
         name: john smith
         made_up_property: "abc"
 - description: optional open properties
-  skip: true
+  skip: not_closed value does not propagate to nested objects. By design?
   valid: true
   closed: false
   dataset:
@@ -70,7 +64,6 @@
         name: john smith
         made_up_property: "abc"
 - description: additional properties is closed on enclosing object
-  skip: false
   issue: https://github.com/linkml/linkml/issues/106
   dataset:
     persons:
@@ -78,7 +71,6 @@
         name: john smith
     made_up_property: "abc"
 - description: non-multivalued address
-  skip: false
   dataset:
     persons:
       - id: P
@@ -87,7 +79,6 @@
           street: 1 foo street
           city: foo city
 - description: valid cardinality
-  skip: false
   valid: true
   dataset:
     persons:
@@ -99,7 +90,6 @@
               id: CODE:D0001
               name: headache
 - description: multivalued value for singlevalued list
-  skip: false
   dataset:
     persons:
       - id: P
@@ -111,7 +101,6 @@
                 id: CODE:D0001
                 name: headache
 - description: multivalued value for singlevalued list
-  skip: false
   dataset:
     persons:
       - id: P
@@ -124,7 +113,6 @@
                 - headache
                 - cough
 - description: string used in place of object
-  skip: false
   dataset:
     persons:
       - id: P
@@ -132,20 +120,70 @@
         addresses:
           - "1 foo street, foo city"
 - description: inline used where reference expected
-  skip: false
   dataset:
     activities:
       - id: A1
         was_associated_with:
           id: Agent:987
+- description: inline used with reference
+  valid: true
+  dataset:
+    activities:
+      - id: A1
+        was_associated_with: Agent:987
+- description: inline as list used where inline as dictionary expected
+  dataset:
+    code_systems:
+      - id: "CODE:1"
+        name: one
+      - id: "CODE:2"
+        name: two
+- description: inline as dictionary used correctly
+  valid: true
+  dataset:
+    code_systems:
+      "CODE:1":
+        name: one
+      "CODE:2":
+        name: two
+- description: inline as dictionary used where inline as list expected
+  dataset:
+    persons:
+      "PERSON:1":
+        name: person one
+      "PERSON:2":
+        name: person two
+- description: inline as list used correctly
+  valid: true
+  dataset:
+    persons:
+      - id: "PERSON:1"
+        name: person one
+      - id: "PERSON:2"
+        name: person two
 - description: date format
-  skip: true
-  comment: :-
-    as per https://json-schema.org/understanding-json-schema/reference/string.html#format
-    "JSON Schema implementations are not required to implement this part of the specification, and many of them do not."
-    it appears the python json schema implementation does not implement this, so we skip for now
   dataset:
     activities:
       - id: A1
         started_at_time: "not a real date"
-
+- description: instance of linkml:Any class can have additional properties
+  valid: true
+  dataset:
+    metadata:
+      something: 1
+      anything: fine
+- description: value does not match slot pattern
+  dataset:
+    persons:
+      - id: P1
+        name: Toomany    Spaces
+- description: value does not match equals_string specification
+  dataset:
+    persons:
+      - id: P2
+        species_name: cat
+- description: value does not match equals_number specification
+  dataset:
+    persons:
+      - id: P3
+        stomach_count: 2

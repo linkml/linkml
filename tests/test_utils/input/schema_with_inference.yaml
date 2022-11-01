@@ -85,6 +85,7 @@ classes:
       - description
       - is_juvenile
       - age_category
+      - summary
     slot_usage:
       description:
         string_serialization: |-

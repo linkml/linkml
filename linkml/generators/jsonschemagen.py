@@ -1,17 +1,18 @@
+import json
 import logging
 import os
+from collections import UserDict
 from copy import deepcopy
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Tuple, Union
 
 import click
-from jsonasobj2 import JsonObj, as_json
 from linkml_runtime.linkml_model.meta import (ClassDefinition, EnumDefinition,
                                               PermissibleValue,
                                               PermissibleValueText,
-                                              SchemaDefinition, SlotDefinition, ClassDefinitionName)
+                                              SlotDefinition, ClassDefinitionName,
+                                              metamodel_version)
 from linkml_runtime.utils.formatutils import be, camelcase, underscore
-from linkml_runtime.utils.schemaview import SchemaView
 
 from linkml._version import __version__
 from linkml.utils.generator import Generator, shared_arguments
@@ -33,7 +34,81 @@ json_schema_types: Dict[str, Tuple[str, Optional[str]]] = {
     "xsdtime": ("string", "time"),
 }
 
-WITH_OPTIONAL_IDENTIFIER_SUFFIX = "__identifier_optional"
+class JsonSchema(UserDict):
+
+    OPTIONAL_IDENTIFIER_SUFFIX = "__identifier_optional"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._lax_forward_refs = {}
+
+    def add_def(self, name: str, subschema: "JsonSchema") -> None:
+        canonical_name = camelcase(name)
+
+        if '$defs' not in self:
+            self['$defs'] = {}
+
+        if 'title' not in subschema:
+            subschema['title'] = canonical_name
+
+        self['$defs'][canonical_name] = subschema
+
+        if canonical_name in self._lax_forward_refs:
+            identifier_name = self._lax_forward_refs.pop(canonical_name)
+            self.add_lax_def(canonical_name, identifier_name)
+
+    def add_lax_def(self, name: str, identifier_name: str) -> None:
+        # JSON-Schema does not have inheritance,
+        # so we duplicate slots from inherited parents and mixins
+        # Maps e.g. Person --> Person__identifier_optional
+        # for use when Person is a range of an inlined-as-dict slot
+        canonical_name = camelcase(name)
+
+        if "$defs" not in self or canonical_name not in self["$defs"]:
+            self._lax_forward_refs[canonical_name] = identifier_name
+        else:
+            lax_cls = deepcopy(self["$defs"][canonical_name])
+            lax_cls['required'].remove(identifier_name)
+            self["$defs"][canonical_name + self.OPTIONAL_IDENTIFIER_SUFFIX] = lax_cls
+
+    def add_property(self, name: str, subschema: "JsonSchema", required: bool = False) -> None:
+        canonical_name = underscore(name)
+        
+        if 'properties' not in self:
+            self['properties'] = {}
+        
+        self['properties'][canonical_name] = subschema
+
+        if required:
+            if 'required' not in self:
+                self['required'] = []
+            
+            self['required'].append(canonical_name)
+
+    def __str__(self) -> str:
+        return json.dumps(self.data, sort_keys=True, default=lambda d: d.data)
+
+    @classmethod
+    def ref_for(cls, class_name: Union[str, List[str]], identifier_optional: bool = False):
+        def _ref(class_name):
+            return { 
+                "$ref": f"#/$defs/{camelcase(class_name)}{cls.OPTIONAL_IDENTIFIER_SUFFIX if identifier_optional else ''}"
+            }
+        if isinstance(class_name, list):
+            return {
+                "oneOf": [_ref(name) for name in class_name]
+            }
+        else:
+            return _ref(class_name)
+
+    @classmethod
+    def array_of(cls, subschema: "JsonSchema") -> "JsonSchema":
+        schema = {
+            "type": "array",
+            "items": subschema
+        }
+
+        return JsonSchema(schema)
 
 
 @dataclass
@@ -50,12 +125,11 @@ class JsonSchemaGenerator(Generator):
 
     # ClassVars
     generatorname = os.path.basename(__file__)
-    generatorversion = "0.0.2"
+    generatorversion = "0.0.3"
     valid_formats = ["json"]
     visit_all_class_slots = True
     visit_all_slots = True
-    uses_schemaloader = True
-    #requires_metamodel = False
+    uses_schemaloader = False
 
     #@deprecated("Use top_class")
     topClass: Optional[str] = None
@@ -63,82 +137,59 @@ class JsonSchemaGenerator(Generator):
     not_closed: Optional[bool] = field(default_factory=lambda: True)
     """If not closed, then an open-ended set of attributes can be instantiated for any object"""
 
-    schemaobj: JsonObj = None
-    clsobj: JsonObj = None
     inline: bool = False
     top_class: Optional[ClassDefinitionName] = None  ## JSON object is one instance of this
     """Class instantiated by the root node of the document tree"""
 
-    entryProperties: dict = field(default_factory=lambda: {})
     include_range_class_descendants: bool = field(default_factory=lambda: False)
 
-    # JSON-Schema does not have inheritance,
-    # so we duplicate slots from inherited parents and mixins
-    # Maps e.g. Person --> Person__identifier_optional
-    # for use when Person is a range of an inlined-as-dict slot
-    optional_identifier_class_map: Dict[str, Tuple[str, str]] = field(default_factory=lambda: {})
+    top_level_schema: JsonSchema = None
 
     def __post_init__(self):
         if self.topClass:
-            logging.warning(f"topCls is deprecated - use top_class")
+            logging.warning(f"topClass is deprecated - use top_class")
             self.top_class = self.topClass
-        # TODO: consider moving up a level
-        self.schemaview = SchemaView(self.schema)
+
         super().__post_init__()
 
-    def visit_schema(self, inline: bool = False, **kwargs) -> None:
+    def start_schema(self, inline: bool = False, **kwargs) -> JsonSchema:
         self.inline = inline
-        #logging.error(f"NC: {self.not_closed}")
-        self.schemaobj = JsonObj(
-            title=self.schema.name,
-            type="object",
-            metamodel_version=self.schema.metamodel_version,
-            version=self.schema.version if self.schema.version else None,
-            properties={},
-            additionalProperties=self.not_closed,
-        )
-        for p, c in self.entryProperties.items():
-            self.schemaobj["properties"][p] = {
-                "type": "array",
-                "items": {"$ref": f"#/$defs/{camelcase(c)}"},
-            }
-        self.schemaobj["$schema"] = "http://json-schema.org/draft-07/schema#"
-        self.schemaobj["$id"] = self.schema.id
-        self.schemaobj["$defs"] = JsonObj()
-        self.schemaobj["required"] = []
 
-    def end_schema(self, **_) -> None:
-        # create more lax version of every class that is used as an inlined dict reference;
-        # in this version, the primary key/identifier is optional, since it is used as the key of the dict
-        for cls_name, (
-            id_slot,
-            cls_name_lax,
-        ) in self.optional_identifier_class_map.items():
-            lax_cls = deepcopy(self.schemaobj["$defs"][cls_name])
-            lax_cls.required.remove(id_slot)
-            self.schemaobj["$defs"][cls_name_lax] = lax_cls
-        print(as_json(self.schemaobj, sort_keys=True))
+        self.top_level_schema = JsonSchema({
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "$id": self.schema.id,
+            "metamodel_version": metamodel_version,
+            "version": self.schema.version if self.schema.version else None,
+            "title": self.schema.name,
+            "type": "object",
+            "additionalProperties": self.not_closed,
+        })
 
-    def visit_class(self, cls: ClassDefinition) -> bool:
+    def visit_class(self, cls: ClassDefinition) -> None:
         if cls.mixin or cls.abstract:
-            return False
+            return
+        
         additional_properties = False
         if self.is_class_unconstrained(cls):
             additional_properties = True
-        self.clsobj = JsonObj(
-            title=camelcase(cls.name),
-            type="object",
-            properties=JsonObj(),
-            required=[],
-            additionalProperties=additional_properties,
-            description=be(cls.description),
-        )
-        return True
+        
+        class_subschema = JsonSchema({
+            "type": "object",
+            "additionalProperties": additional_properties,
+            "description": be(cls.description),
+        })
 
-    def end_class(self, cls: ClassDefinition) -> None:
-        self.schemaobj["$defs"][camelcase(cls.name)] = self.clsobj
+        for slot_definition in self.schemaview.class_induced_slots(cls.name):
+            self.visit_class_slot(
+                subschema=class_subschema,
+                cls=cls,
+                aliased_slot_name=self.aliased_slot_name(slot_definition),
+                slot=slot_definition
+            )
 
-    def visit_enum(self, enum: EnumDefinition) -> bool:
+        self.top_level_schema.add_def(cls.name, class_subschema)
+
+    def visit_enum(self, enum: EnumDefinition) -> None:
         # TODO: this only works with explicitly permitted values. It will need to be extended to
         # support other pv_formula
 
@@ -155,136 +206,110 @@ class JsonSchemaGenerator(Generator):
             map(extract_permissible_text, enum.permissible_values or [])
         )
 
-        self.schemaobj["$defs"][camelcase(enum.name)] = JsonObj(
-            title=camelcase(enum.name),
-            type="string",
-            enum=permissible_values_texts,
-            description=be(enum.description),
-        )
-
-    def get_ref_for_descendants(self, descendants: List):
-        ref_list = []
-        for descendant in descendants:
-            descendant_class = self.schema.classes[descendant]
-            if descendant_class.abstract:
-                continue
-            descendant_ref = JsonObj()
-            descendant_ref_obj = camelcase(descendant)
-            descendant_ref["$ref"] = f"#/$defs/{descendant_ref_obj}"
-            ref_list.append(descendant_ref)
-        return ref_list
+        enum_schema = JsonSchema({
+            "type": "string",
+            "enum": permissible_values_texts,
+            "description": be(enum.description),
+        })
+        self.top_level_schema.add_def(enum.name, enum_schema)
 
     def visit_class_slot(
-        self, cls: ClassDefinition, aliased_slot_name: str, slot: SlotDefinition
+        self, subschema: JsonSchema, cls: ClassDefinition, aliased_slot_name: str, slot: SlotDefinition
     ) -> None:
         typ = None  # JSON Schema type (https://json-schema.org/understanding-json-schema/reference/type.html)
         reference = None  # Reference to a JSON schema entity (https://json-schema.org/understanding-json-schema/structuring.html#ref)
         fmt = None  # JSON Schema format (https://json-schema.org/understanding-json-schema/reference/string.html#format)
-        reference_obj = None
         descendants = None
-        if slot.range in self.schema.types:
-            (typ, fmt) = json_schema_types.get(
-                self.schema.types[slot.range].base.lower(), ("string", None)
-            )
-        elif slot.range in self.schema.enums:
-            reference_obj = camelcase(slot.range)
-            reference = f"#/$defs/{reference_obj}"
+
+        class_id_slot = self.schemaview.get_identifier_slot(cls.name, use_key=True)
+        slot_is_required = slot.required or slot == class_id_slot
+        slot_is_inlined = self.schemaview.is_inlined(slot)
+
+        if slot.range in self.schemaview.all_types().keys():
+            schema_type = self.schemaview.induced_type(slot.range)
+            (typ, fmt) = json_schema_types.get(schema_type.base.lower(), ("string", None))
+        elif slot.range in self.schemaview.all_enums().keys():
+            reference = slot.range
             typ = "object"
-        elif slot.range in self.schema.classes and slot.inlined:
-            reference_obj = camelcase(slot.range)
-            descendants = self.schemaview.class_descendants(slot.range)
-            reference = f"#/$defs/{reference_obj}"
+        elif slot_is_inlined and slot.range in self.schemaview.all_classes().keys():
+            reference = slot.range
+            descendants = [desc for desc in self.schemaview.class_descendants(slot.range) 
+                if not self.schemaview.get_class(desc).abstract]
             typ = "object"
         else:
             typ = "string"
-        if slot.inlined:
-            range_cls = self.schema.classes[slot.range]
-            id_slot = None
-            for sn in range_cls.slots:
-                s = self.schema.slots[sn]
-                # TODO: extension_tag should be declared as a key in extensions.yaml in metamodel
-                if (
-                    s.identifier
-                    or s.key
-                    or (
-                        s.alias == "tag"
-                        and (range_cls == "extension" or range_cls == "annotation")
-                    )
-                ):
-                    id_slot = s
-                    break
+        
+        if slot_is_inlined:
             # If inline we have to include redefined slots
-            ref = JsonObj()
-            ref["$ref"] = reference
             if slot.multivalued:
-                if id_slot is not None and not slot.inlined_as_list:
-                    prop = JsonObj(
-                        additionalProperties={
-                            "$ref": f"{reference}{WITH_OPTIONAL_IDENTIFIER_SUFFIX}"
-                        }
-                    )
-                    if id_slot.alias is not None:
-                        id_slot_name = id_slot.alias
-                    else:
-                        id_slot_name = id_slot.name
-                    self.optional_identifier_class_map[reference_obj] = (
-                        id_slot_name,
-                        f"{reference_obj}{WITH_OPTIONAL_IDENTIFIER_SUFFIX}",
-                    )
+                range_id_slot = self.schemaview.get_identifier_slot(slot.range, use_key=True)
+                if range_id_slot is not None and not slot.inlined_as_list:
+                    prop = JsonSchema({
+                        "type": "object",
+                        "additionalProperties": JsonSchema.ref_for(reference, identifier_optional=True)
+                    })
+                    self.top_level_schema.add_lax_def(reference, self.aliased_slot_name(range_id_slot))
                 else:
                     if descendants and self.include_range_class_descendants:
-                        items = JsonObj()
-                        ref_list = self.get_ref_for_descendants(descendants)
-                        items["oneOf"] = ref_list
-                        prop = JsonObj(type="array", items=items)
+                        prop = JsonSchema.array_of(JsonSchema.ref_for(descendants))
                     else:
-                        prop = JsonObj(type="array", items=ref)
+                        prop = JsonSchema.array_of(JsonSchema.ref_for(reference))
             else:
                 if descendants and self.include_range_class_descendants:
-                    prop = JsonObj()
-                    ref_list = self.get_ref_for_descendants(descendants)
-                    prop["oneOf"] = ref_list
+                    prop = JsonSchema.ref_for(descendants)
                 else:
-                    prop = ref
+                    prop = JsonSchema.ref_for(reference)
         else:
             if slot.multivalued:
                 if reference is not None:
-                    prop = JsonObj(type="array", items={"$ref": reference})
+                    prop = JsonSchema.array_of(JsonSchema.ref_for(reference))
                 elif fmt is None:
-                    prop = JsonObj(type="array", items={"type": typ})
+                    prop = JsonSchema.array_of(JsonSchema({"type": typ}))
                 else:
-                    prop = JsonObj(type="array", items={"type": typ, "format": fmt})
+                    prop = JsonSchema.array_of(JsonSchema({"type": typ, "format": fmt}))
             else:
                 if reference is not None:
-                    prop = JsonObj({"$ref": reference})
+                    prop = JsonSchema.ref_for(reference)
                 elif fmt is None:
-                    prop = JsonObj(type=typ)
+                    prop = JsonSchema({"type": typ})
                 else:
-                    prop = JsonObj(type=typ, format=fmt)
+                    prop = JsonSchema({"type": typ, "format": fmt})
 
         if slot.description:
-            prop.description = slot.description
-        if slot.required:
-            self.clsobj.required.append(underscore(aliased_slot_name))
+            prop['description'] = slot.description
+
         if slot.pattern:
             # See https://github.com/linkml/linkml/issues/193
-            prop.pattern = slot.pattern
+            prop['pattern'] = slot.pattern
+
         if slot.minimum_value is not None:
-            prop.minimum = slot.minimum_value
+            prop['minimum'] = slot.minimum_value
+
         if slot.maximum_value is not None:
-            prop.maximum = slot.maximum_value
+            prop['maximum'] = slot.maximum_value
+
         if slot.equals_string is not None:
-            prop.const = slot.equals_string
+            prop['const'] = slot.equals_string
+
         if slot.equals_number is not None:
-            prop.const = slot.equals_number
-        self.clsobj.properties[underscore(aliased_slot_name)] = prop
+            prop['const'] = slot.equals_number
+
+        subschema.add_property(aliased_slot_name, prop, slot_is_required)
+
         if (
             self.top_class is not None and camelcase(self.top_class) == camelcase(cls.name)
         ) or (self.top_class is None and cls.tree_root):
-            self.schemaobj.properties[underscore(aliased_slot_name)] = prop
+            self.top_level_schema.add_property(aliased_slot_name, prop, slot_is_required)
 
-            if slot.required:
-                self.schemaobj.required.append(underscore(aliased_slot_name))
+    def serialize(self, **kwargs) -> str:
+        self.start_schema(**kwargs)
+        for enum_definition in self.schemaview.all_enums().values():
+            self.visit_enum(enum_definition)
+
+        for class_definition in self.schemaview.all_classes().values():
+            self.visit_class(class_definition)
+
+        return str(self.top_level_schema)
 
 
 @shared_arguments(JsonSchemaGenerator)
