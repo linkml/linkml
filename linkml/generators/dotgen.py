@@ -12,6 +12,7 @@ from linkml_runtime.linkml_model.meta import (ClassDefinition,
                                               SchemaDefinition, SlotDefinition)
 from linkml_runtime.utils.formatutils import underscore
 
+from linkml._version import __version__
 from linkml.utils.generator import Generator, shared_arguments
 
 valid_formats = sorted(list(FORMATS))
@@ -146,6 +147,7 @@ class DotGenerator(Generator):
     "--out", "-o", help="Target file -- if supplied, one large graph will be generated"
 )
 @click.option("--classname", "-c", multiple=True, help="Class(es) to transform")
+@click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, out, **args):
     """Generate graphviz representations of the LinkML model"""
     DotGenerator(yamlfile, **args).serialize(filename=out, **args)

@@ -7,6 +7,7 @@ from linkml_runtime.linkml_model.meta import (ClassDefinition,
                                               SchemaDefinition, SlotDefinition)
 from linkml_runtime.utils.formatutils import camelcase, lcamelcase
 
+from linkml._version import __version__
 from linkml.utils.generator import Generator, shared_arguments
 
 
@@ -66,6 +67,7 @@ class ProtoGenerator(Generator):
 
 
 @shared_arguments(ProtoGenerator)
+@click.version_option(__version__, "-V", "--version")
 @click.command()
 def cli(yamlfile, **args):
     """Generate proto representation of LinkML model"""

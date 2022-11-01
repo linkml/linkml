@@ -16,6 +16,7 @@ from rdflib.plugin import Parser as rdflib_Parser
 from rdflib.plugin import plugins as rdflib_plugins
 
 from linkml import METAMODEL_CONTEXT_URI
+from linkml._version import __version__
 from linkml.generators.jsonldgen import JSONLDGenerator
 from linkml.utils.generator import Generator, shared_arguments
 
@@ -82,6 +83,7 @@ class RDFGenerator(Generator):
     multiple=True,
     help=f"JSONLD context file (default: {METAMODEL_CONTEXT_URI})",
 )
+@click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, **kwargs):
     """Generate an RDF representation of a LinkML model"""
     print(RDFGenerator(yamlfile, **kwargs).serialize(**kwargs))

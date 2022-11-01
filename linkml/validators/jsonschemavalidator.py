@@ -12,6 +12,7 @@ from linkml_runtime.utils.dictutils import as_simple_dict
 from linkml_runtime.utils.schemaview import SchemaView
 from linkml_runtime.utils.yamlutils import YAMLRoot
 
+from linkml._version import __version__
 from linkml.generators.jsonschemagen import JsonSchemaGenerator
 from linkml.generators.pythongen import PythonGenerator
 from linkml.utils import datautils
@@ -97,6 +98,7 @@ class JsonSchemaDataValidator(DataValidator):
 )
 @click.option("--schema", "-s", help="Path to schema specified as LinkML yaml")
 @click.argument("input")
+@click.version_option(__version__, "-V", "--version")
 def cli(
     input,
     module,

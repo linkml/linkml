@@ -14,6 +14,7 @@ from rdflib import BNode, Graph, Literal, URIRef
 from rdflib.collection import Collection
 from rdflib.namespace import RDF, RDFS, SH, XSD
 
+from linkml._version import __version__
 from linkml.utils.generator import Generator, shared_arguments
 
 
@@ -136,6 +137,7 @@ class ShaclGenerator(Generator):
 
 
 @shared_arguments(ShaclGenerator)
+@click.version_option(__version__, "-V", "--version")
 @click.command()
 def cli(yamlfile, **args):
     """Generate SHACL turtle from a LinkML model"""

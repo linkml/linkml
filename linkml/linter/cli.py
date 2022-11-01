@@ -6,6 +6,8 @@ from typing import Iterable
 import click
 import yaml
 
+from linkml._version import __version__
+
 from .config.datamodel.config import RuleLevel
 from .formatters import (JsonFormatter, MarkdownFormatter, TerminalFormatter,
                          TsvFormatter)
@@ -69,6 +71,7 @@ def get_yaml_files(root: Path) -> Iterable[str]:
     help="Do not exit with an error status if up to this number of warnings (and no errors) are found.",
 )
 @click.option("--fix/--no-fix", default=False)
+@click.version_option(__version__, "-V", "--version")
 def main(
     schema: Path,
     fix: bool,

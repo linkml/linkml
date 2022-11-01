@@ -20,6 +20,7 @@ from linkml_runtime.linkml_model.meta import (Annotation, ClassDefinition,
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.schemaview import SchemaView
 
+from linkml._version import __version__
 from linkml.utils.generator import Generator, shared_arguments
 
 type_map = {
@@ -163,6 +164,7 @@ class TypescriptGenerator(Generator):
 
 
 @shared_arguments(TypescriptGenerator)
+@click.version_option(__version__, "-V", "--version")
 @click.command()
 def cli(yamlfile, **args):
     """Generate typescript interfaces and types

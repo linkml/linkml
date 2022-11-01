@@ -21,6 +21,7 @@ from linkml_runtime.linkml_model.meta import (Annotation, ClassDefinition,
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.schemaview import SchemaView
 
+from linkml._version import __version__
 from linkml.utils.generator import Generator, shared_arguments
 
 
@@ -369,6 +370,14 @@ class DocGenerator(Generator):
             return self._markdown_link(camelcase(e.name))
         else:
             return e.name
+        
+    def links(self, e_list: List[DefinitionName]) -> List[str]:
+        """Render list of element documentation pages as hyperlinks.
+
+        :param e_list: list of elements
+        :return: list of hyperlinked elements
+        """
+        return list(map(self.link, e_list))
 
     def _exclude_type(self, t: TypeDefinition) -> bool:
         return self._is_external(t) and not self.schemaview.schema.id.startswith(
@@ -726,7 +735,19 @@ class DocGenerator(Generator):
         slot_list = [slot.name for slot in sv.class_induced_slots(class_name=cls.name)]
 
         return list(set(slot_list).difference(self.get_direct_slots(cls)))
+    
+    def get_slot_inherited_from(self, class_name: ClassDefinitionName, slot_name: SlotDefinitionName) -> List[ClassDefinitionName]:
+        """Get the name of the class that a given slot is inherited from.
 
+        :param class_name: name of the class whose slot we are checking
+        :param slot_name: name of slot in consideration
+        :return: list of classes
+        """
+        sv = self.schemaview
+        induced_slot = sv.induced_slot(slot_name, class_name)
+        ancestors = sv.class_ancestors(class_name)
+        return list(set(induced_slot.domain_of).intersection(ancestors))
+    
     def get_mixin_inherited_slots(self, cls: ClassDefinition) -> Dict[str, List[str]]:
         """Fetch list of all slots acquired through mixing.
 
@@ -769,6 +790,7 @@ class DocGenerator(Generator):
     default=False,
     help="Use IDs from slot_uri instead of names",
 )
+@click.version_option(__version__, "-V", "--version")
 @click.command()
 def cli(yamlfile, directory, dialect, template_directory, use_slot_uris, **args):
     """Generate documentation folder from a LinkML YAML schema

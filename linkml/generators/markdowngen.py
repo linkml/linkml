@@ -13,6 +13,7 @@ from linkml_runtime.linkml_model.meta import (ClassDefinition,
                                               TypeDefinition)
 from linkml_runtime.utils.formatutils import be, camelcase, underscore
 
+from linkml._version import __version__
 from linkml.generators.yumlgen import YumlGenerator
 from linkml.utils.generator import Generator, shared_arguments
 from linkml.utils.typereferences import References
@@ -513,7 +514,7 @@ class MarkdownGenerator(Generator):
         )
         return f"{self.directory}{subdir}/{filename}.md"
 
-    def mappings(self, obj: [SlotDefinition, ClassDefinition]) -> None:
+    def mappings(self, obj: Union[SlotDefinition, ClassDefinition]) -> None:
         # TODO: get rid of this?
         # self.header(2, 'Mappings')
         # for mapping in obj.mappings:
@@ -837,6 +838,7 @@ class MarkdownGenerator(Generator):
     "--notypesdir", is_flag=True, help="Do not create a separate types directory"
 )
 @click.option("--warnonexist", is_flag=True, help="Warn if output file already exists")
+@click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, map_fields, dir, img, index_file, notypesdir, warnonexist, **kwargs):
     """Generate markdown documentation of a LinkML model"""
     gen = MarkdownGenerator(
