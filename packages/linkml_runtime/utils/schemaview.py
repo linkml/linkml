@@ -1325,12 +1325,18 @@ class SchemaView(object):
 
     @lru_cache()
     def get_slots_by_enum(self, enum_name: ENUM_NAME = None) -> List[SlotDefinition]:
-        """Get all slots that use a given enum, either as schema defined or an attribute slot.
+        """Get all slots that use a given enum: schema defined, attribute, or slot_usage.
 
         :param enum_name: enum in consideration
         :return: list of slots, either schem or both class attribute defined
         """
-        return [s for s in self.all_slots().values() if s.range == enum_name]
+        enum_slots = [s for s in self.all_slots().values() if s.range == enum_name]
+        for class_definition in self.all_classes().values():
+            if class_definition.slot_usage:
+                for slot_definition in class_definition.slot_usage.values():
+                    if slot_definition.range == enum_name:
+                        enum_slots.append(slot_definition)
+        return enum_slots
 
     @lru_cache()
     def usage_index(self) -> Dict[ElementName, List[SchemaUsage]]:

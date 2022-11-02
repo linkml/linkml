@@ -32,5 +32,12 @@ class Issue998TestCase(TestCase):
         assert enum_slots[0].name == "relationship"
         assert enum_slots[1].name == "past_relationship"
 
+    def test_issue_998_slot_usage_range(self):
+        view = SchemaView(env.input_path('linkml_issue_998.yaml'))
+        enum_slots = view.get_slots_by_enum("TypeEnum")
+        assert len(enum_slots) == 1
+        assert enum_slots[0].name == "type"
+
+
 if __name__ == "__main__":
     unittest.main()
