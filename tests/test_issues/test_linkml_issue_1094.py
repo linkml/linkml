@@ -18,14 +18,10 @@ description: test
 classes:
   person:
     slots:
-      - id
-      - bikes
-    attributes:
-      - bikes:
-          range: bike
-          multivalued: true
-          inlined: true
-          required: true
+      - id      
+      - has_bikes
+    slot_usage:
+      - has_bikes:
   bike:
     slots:
       - name
@@ -39,7 +35,11 @@ slots:
       required: true
   - name
   - color
-  - bikes
+  - has_bikes:
+      range: bike
+      multivalued: true
+      inlined: true
+      required: true
 """
 
 
@@ -50,9 +50,9 @@ class Issue1094ConstCase(TestEnvironmentTestCase):
         gen = PydanticGenerator(schema_str)
         output = gen.serialize()
 
-        output_subset = [line for line in output.splitlines() if "bikes: " in line]
+        output_subset = [line for line in output.splitlines() if "has_bikes: " in line]
         assert len(output_subset) == 1
-        assert "bikes: Dict[str, Bike] = Field(default_factory=dict)" in output_subset[0]
+        assert "has_bikes: Dict[str, Bike] = Field(default_factory=dict)" in output_subset[0]
 
 
 if __name__ == "__main__":
