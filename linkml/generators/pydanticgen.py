@@ -208,12 +208,17 @@ class PydanticGenerator(OOCodeGenerator):
                             + slot_values[camelcase(class_def.name)][slot.name]
                             + "]"
                         )
-                # Have a default factory of list for multivalued fields that don't
-                # get any other sort of predefined value above this point
+                # Multivalued slots that are either not inlined (just an identifier) or are
+                # inlined as lists should get default_factory list, if they're inlined but
+                # not as a list, that means a dictionary
                 elif slot.multivalued:
-                    slot_values[camelcase(class_def.name)][
-                        slot.name
-                    ] = "default_factory=list"
+                    if slot.inlined and not slot.inlined_as_list and sv.get_identifier_slot(slot.range) is not None:
+                        slot_values[camelcase(class_def.name)][slot.name] = "default_factory=dict"
+                    else:
+                        slot_values[camelcase(class_def.name)][slot.name] = "default_factory=list"
+
+
+
         return slot_values
 
     def get_class_isa_plus_mixins(self) -> Dict[str, List[str]]:
@@ -341,6 +346,9 @@ class PydanticGenerator(OOCodeGenerator):
                 collection_key = None
                 if s.range in sv.all_classes():
                     pyrange = self.get_class_slot_range(s)
+                    identifier_slot = sv.get_identifier_slot(s.range)
+                    if identifier_slot:
+                        collection_key = _get_pyrange(sv.get_type(identifier_slot.range), sv)
                 elif s.range in sv.all_enums():
                     pyrange = f"{camelcase(s.range)}"
                 elif s.range in sv.all_types():
