@@ -32,27 +32,30 @@ type_map = {
 }
 
 default_template = """
-{% for c in view.all_classes().values() -%}
+{%- for c in view.all_classes().values() -%}
 {%- set cref = gen.classref(c) -%}
-{% if cref %}
+{% if cref -%}
 export type {{cref}} = string
-{% endif %}
-{%- endfor %}
+{% endif -%}
+{%- endfor -%}
 
-{% for c in view.all_classes().values() %}
-
+{% for c in view.all_classes().values() -%}
+{%- if c.description -%}
 /**
  * {{c.description}}
  */
+{%- endif -%} 
 {% set parents = gen.parents(c) %}
 export interface {{gen.name(c)}} {% if parents %} extends {{parents|join(', ')}} {% endif %} {
-    {% for sn in view.class_slots(c.name, direct=False) %}
+    {%- for sn in view.class_slots(c.name, direct=False) %}
     {% set s = view.induced_slot(sn, c.name) %}
+    {%- if s.description -%}
     /**
      * {{s.description}}
      */
+     {%- endif -%}
     {{gen.name(s)}}?: {{gen.range(s)}},
-    {% endfor %}
+    {%- endfor %}
 }
 {% endfor %}
 """
