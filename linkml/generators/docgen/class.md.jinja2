@@ -31,12 +31,12 @@ URI: {{ gen.uri_link(element) }}
 | ---  | --- | --- | --- |
 {%- if gen.get_direct_slots(element)|length > 0 %}
 {% for d_slot in gen.get_direct_slots(element) -%}
-| {{ gen.link(schemaview.get_slot(d_slot)) }} | {{ gen.cardinality(schemaview.get_slot(d_slot)) }} <br/> {{ schemaview.get_slot(d_slot).range }} | {{ schemaview.get_slot(d_slot).description }} | direct |
+| {{ gen.link(schemaview.get_slot(d_slot)) }} | {{ gen.cardinality(schemaview.get_slot(d_slot)) }} <br/> {{ gen.link(schemaview.get_slot(d_slot).range) }} | {{ schemaview.get_slot(d_slot).description|enshorten }} | direct |
 {% endfor -%}
 {% endif -%}
 {% if gen.get_indirect_slots(element)|length > 0 -%}
 {% for i_slot in gen.get_indirect_slots(element) -%}
-| {{ gen.link(schemaview.get_slot(i_slot)) }} | {{ gen.cardinality(schemaview.get_slot(i_slot)) }} <br/> {{ schemaview.get_slot(i_slot).range }} | {{ schemaview.get_slot(i_slot).description }} | {{ gen.links(gen.get_slot_inherited_from(element.name, i_slot))|join(', ') }} |
+| {{ gen.link(schemaview.get_slot(i_slot)) }} | {{ gen.cardinality(schemaview.get_slot(i_slot)) }} <br/> {{ gen.link(schemaview.get_slot(i_slot).range) }} | {{ schemaview.get_slot(i_slot).description|enshorten }} | {{ gen.links(gen.get_slot_inherited_from(element.name, i_slot))|join(', ') }} |
 {% endfor -%}
 {% endif -%}
 
@@ -56,7 +56,7 @@ URI: {{ gen.uri_link(element) }}
 | used by | used in | type | used |
 | ---  | --- | --- | --- |
 {% for usage in schemaview.usage_index().get(element.name) -%}
-| {{gen.link(usage.used_by)}} | {{gen.link(usage.slot)}} | {{usage.metaslot}} | {{usage.used }} |
+| {{gen.link(usage.used_by)}} | {{gen.link(usage.slot)}} | {{usage.metaslot}} | {{ gen.link(usage.used) }} |
 {% endfor %}
 {% endif %}
 
