@@ -45,19 +45,16 @@ URI: {{ gen.uri_link(element) }}
 ## Properties
 
 * Range: {{gen.link(element.range)}}
-{%- if element.multivalued != None %}
+{%- if element.multivalued %}
 * Multivalued: {{ element.multivalued }}
 {% endif %}
-{%- if element.required != None %}
+{%- if element.required %}
 * Required: {{ element.required }}
-{% elif element.recommended != None %}
+{% elif element.recommended %}
 * Recommended: {{ element.recommended }}
 {% endif %}
 {%- if schemaview.is_mixin(element.name) %}
 * Mixin: {{ element.mixin }}
-{% endif %}
-{%- if element.alias != None %}
-* {{ alias }}
 {% endif %}
 
 
