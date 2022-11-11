@@ -3,8 +3,6 @@ name: personinfo
 prefixes:
   linkml: https://w3id.org/linkml/
   schema: http://schema.org/
-  personinfo: https://w3id.org/linkml/examples/personinfo/
-  ORCID: https://orcid.org/
 imports:
   - linkml:types
 default_range: string
@@ -19,6 +17,16 @@ classes:
         range: EmploymentStatusEnum
       past_relationship:
         range: RelationshipStatusEnum
+    slots:
+      - type
+
+  Programmer:
+    slots:
+      - type
+    slot_usage:
+      type:
+        range: TypeEnum
+
 
 
 slots:
@@ -26,6 +34,8 @@ slots:
       range: PersonStatusEnum
     relationship:
       range: RelationshipStatusEnum
+    type:
+
 
 enums:
   PersonStatusEnum:
@@ -41,3 +51,6 @@ enums:
   RelationshipStatusEnum:
     permissible_values:
       UNKNOWN:
+  TypeEnum:
+    permissible_values:
+      UNKNOWN
