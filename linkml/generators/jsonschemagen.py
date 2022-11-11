@@ -7,7 +7,8 @@ from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Tuple, Union
 
 import click
-from linkml_runtime.linkml_model.meta import (ClassDefinition, EnumDefinition,
+from linkml_runtime.linkml_model.meta import (AnonymousClassExpression, 
+                                              ClassDefinition, EnumDefinition,
                                               PermissibleValue,
                                               PermissibleValueText,
                                               SlotDefinition, ClassDefinitionName,
@@ -127,8 +128,6 @@ class JsonSchemaGenerator(Generator):
     generatorname = os.path.basename(__file__)
     generatorversion = "0.0.3"
     valid_formats = ["json"]
-    visit_all_class_slots = True
-    visit_all_slots = True
     uses_schemaloader = False
 
     #@deprecated("Use top_class")
@@ -165,7 +164,7 @@ class JsonSchemaGenerator(Generator):
             "additionalProperties": self.not_closed,
         })
 
-    def visit_class(self, cls: ClassDefinition) -> None:
+    def handle_class(self, cls: ClassDefinition) -> None:
         if cls.mixin or cls.abstract:
             return
         
@@ -180,16 +179,81 @@ class JsonSchemaGenerator(Generator):
         })
 
         for slot_definition in self.schemaview.class_induced_slots(cls.name):
-            self.visit_class_slot(
+            self.handle_class_slot(
                 subschema=class_subschema,
                 cls=cls,
-                aliased_slot_name=self.aliased_slot_name(slot_definition),
                 slot=slot_definition
             )
 
+        rule_subschemas = []
+        for rule in cls.rules:
+            subschema = JsonSchema()
+
+            open_world = rule.open_world
+            if open_world is None:
+                open_world = False
+
+            if_subschema = self.get_subschema_for_anonymous_class(rule.preconditions, properties_required=True)
+            if if_subschema:
+                subschema["if"] = if_subschema
+            
+            then_subschema = self.get_subschema_for_anonymous_class(rule.postconditions, properties_required=not open_world)
+            if then_subschema:
+                subschema["then"] = then_subschema
+
+            # same as required requirements as postconditions?
+            else_subschema = self.get_subschema_for_anonymous_class(rule.elseconditions, properties_required=not open_world)
+            if else_subschema:
+                subschema["else"] = else_subschema
+
+            rule_subschemas.append(subschema)
+
+            if rule.bidirectional:
+                inverse_subschema = JsonSchema()
+
+                if then_subschema:
+                    inverse_subschema["if"] = then_subschema
+                
+                if if_subschema:
+                    inverse_subschema["then"] = if_subschema
+
+                rule_subschemas.append(inverse_subschema)
+
+        if len(rule_subschemas) == 1:
+            self.top_level_schema.update(rule_subschemas[0])
+        elif len(rule_subschemas) > 1:
+            self.top_level_schema["allOf"] = rule_subschemas
+
         self.top_level_schema.add_def(cls.name, class_subschema)
 
-    def visit_enum(self, enum: EnumDefinition) -> None:
+
+    def get_subschema_for_anonymous_class(self, cls: AnonymousClassExpression, properties_required: bool = False) -> Union[None, JsonSchema]:
+        if not cls:
+            return None
+
+        subschema = JsonSchema()
+        for slot in cls.slot_conditions.values():
+            prop = self.get_subschema_for_slot(slot, omit_type=True)
+            subschema.add_property(self.aliased_slot_name(slot), prop, properties_required)
+
+        if cls.any_of is not None and len(cls.any_of) > 0:
+            subschema["anyOf"] = [self.get_subschema_for_anonymous_class(c, properties_required) for c in cls.any_of]
+
+        if cls.all_of is not None and len(cls.all_of) > 0:
+            subschema["allOf"] = [self.get_subschema_for_anonymous_class(c, properties_required) for c in cls.all_of]
+
+        if cls.exactly_one_of is not None and len(cls.exactly_one_of) > 0:
+            subschema["oneOf"] = [self.get_subschema_for_anonymous_class(c, properties_required) for c in cls.exactly_one_of]
+
+        if cls.none_of is not None and len(cls.none_of) > 0:
+            subschema["not"] = {
+                "anyOf": [self.get_subschema_for_anonymous_class(c, properties_required) for c in cls.any_of]
+            }
+
+        return subschema
+
+
+    def handle_enum(self, enum: EnumDefinition) -> None:
         # TODO: this only works with explicitly permitted values. It will need to be extended to
         # support other pv_formula
 
@@ -213,67 +277,66 @@ class JsonSchemaGenerator(Generator):
         })
         self.top_level_schema.add_def(enum.name, enum_schema)
 
-    def visit_class_slot(
-        self, subschema: JsonSchema, cls: ClassDefinition, aliased_slot_name: str, slot: SlotDefinition
-    ) -> None:
+    def get_subschema_for_slot(self, slot: SlotDefinition, omit_type: bool = False) -> JsonSchema:
         typ = None  # JSON Schema type (https://json-schema.org/understanding-json-schema/reference/type.html)
         reference = None  # Reference to a JSON schema entity (https://json-schema.org/understanding-json-schema/structuring.html#ref)
         fmt = None  # JSON Schema format (https://json-schema.org/understanding-json-schema/reference/string.html#format)
         descendants = None
 
-        class_id_slot = self.schemaview.get_identifier_slot(cls.name, use_key=True)
-        slot_is_required = slot.required or slot == class_id_slot
-        slot_is_inlined = self.schemaview.is_inlined(slot)
-
-        if slot.range in self.schemaview.all_types().keys():
-            schema_type = self.schemaview.induced_type(slot.range)
-            (typ, fmt) = json_schema_types.get(schema_type.base.lower(), ("string", None))
-        elif slot.range in self.schemaview.all_enums().keys():
-            reference = slot.range
-            typ = "object"
-        elif slot_is_inlined and slot.range in self.schemaview.all_classes().keys():
-            reference = slot.range
-            descendants = [desc for desc in self.schemaview.class_descendants(slot.range) 
-                if not self.schemaview.get_class(desc).abstract]
-            typ = "object"
+        if omit_type:
+            prop = JsonSchema()
         else:
-            typ = "string"
-        
-        if slot_is_inlined:
-            # If inline we have to include redefined slots
-            if slot.multivalued:
-                range_id_slot = self.schemaview.get_identifier_slot(slot.range, use_key=True)
-                if range_id_slot is not None and not slot.inlined_as_list:
-                    prop = JsonSchema({
-                        "type": "object",
-                        "additionalProperties": JsonSchema.ref_for(reference, identifier_optional=True)
-                    })
-                    self.top_level_schema.add_lax_def(reference, self.aliased_slot_name(range_id_slot))
+            slot_is_inlined = self.schemaview.is_inlined(slot)
+
+            if slot.range in self.schemaview.all_types().keys():
+                schema_type = self.schemaview.induced_type(slot.range)
+                (typ, fmt) = json_schema_types.get(schema_type.base.lower(), ("string", None))
+            elif slot.range in self.schemaview.all_enums().keys():
+                reference = slot.range
+                typ = "object"
+            elif slot_is_inlined and slot.range in self.schemaview.all_classes().keys():
+                reference = slot.range
+                descendants = [desc for desc in self.schemaview.class_descendants(slot.range) 
+                    if not self.schemaview.get_class(desc).abstract]
+                typ = "object"
+            else:
+                typ = "string"
+            
+            if slot_is_inlined:
+                # If inline we have to include redefined slots
+                if slot.multivalued:
+                    range_id_slot = self.schemaview.get_identifier_slot(slot.range, use_key=True)
+                    if range_id_slot is not None and not slot.inlined_as_list:
+                        prop = JsonSchema({
+                            "type": "object",
+                            "additionalProperties": JsonSchema.ref_for(reference, identifier_optional=True)
+                        })
+                        self.top_level_schema.add_lax_def(reference, self.aliased_slot_name(range_id_slot))
+                    else:
+                        if descendants and self.include_range_class_descendants:
+                            prop = JsonSchema.array_of(JsonSchema.ref_for(descendants))
+                        else:
+                            prop = JsonSchema.array_of(JsonSchema.ref_for(reference))
                 else:
                     if descendants and self.include_range_class_descendants:
-                        prop = JsonSchema.array_of(JsonSchema.ref_for(descendants))
+                        prop = JsonSchema.ref_for(descendants)
                     else:
+                        prop = JsonSchema.ref_for(reference)
+            else:
+                if slot.multivalued:
+                    if reference is not None:
                         prop = JsonSchema.array_of(JsonSchema.ref_for(reference))
-            else:
-                if descendants and self.include_range_class_descendants:
-                    prop = JsonSchema.ref_for(descendants)
+                    elif fmt is None:
+                        prop = JsonSchema.array_of(JsonSchema({"type": typ}))
+                    else:
+                        prop = JsonSchema.array_of(JsonSchema({"type": typ, "format": fmt}))
                 else:
-                    prop = JsonSchema.ref_for(reference)
-        else:
-            if slot.multivalued:
-                if reference is not None:
-                    prop = JsonSchema.array_of(JsonSchema.ref_for(reference))
-                elif fmt is None:
-                    prop = JsonSchema.array_of(JsonSchema({"type": typ}))
-                else:
-                    prop = JsonSchema.array_of(JsonSchema({"type": typ, "format": fmt}))
-            else:
-                if reference is not None:
-                    prop = JsonSchema.ref_for(reference)
-                elif fmt is None:
-                    prop = JsonSchema({"type": typ})
-                else:
-                    prop = JsonSchema({"type": typ, "format": fmt})
+                    if reference is not None:
+                        prop = JsonSchema.ref_for(reference)
+                    elif fmt is None:
+                        prop = JsonSchema({"type": typ})
+                    else:
+                        prop = JsonSchema({"type": typ, "format": fmt})
 
         if slot.description:
             prop['description'] = slot.description
@@ -294,6 +357,29 @@ class JsonSchemaGenerator(Generator):
         if slot.equals_number is not None:
             prop['const'] = slot.equals_number
 
+        if slot.any_of is not None and len(slot.any_of) > 0:
+            prop['anyOf'] = [self.get_subschema_for_slot(s, omit_type) for s in slot.any_of]
+
+        if slot.all_of is not None and len(slot.all_of) > 0:
+            prop['allOf'] = [self.get_subschema_for_slot(s, omit_type) for s in slot.all_of]
+
+        if slot.exactly_one_of is not None and len(slot.exactly_one_of) > 0:
+            prop['oneOf'] = [self.get_subschema_for_slot(s, omit_type) for s in slot.exactly_one_of]
+
+        if slot.none_of is not None and len(slot.none_of) > 0:
+            prop['not'] = {
+                'anyOf': [self.get_subschema_for_slot(s, omit_type) for s in slot.none_of]
+            }
+
+        return prop
+
+
+    def handle_class_slot(self, subschema: JsonSchema, cls: ClassDefinition, slot: SlotDefinition) -> None:
+        class_id_slot = self.schemaview.get_identifier_slot(cls.name, use_key=True)
+        slot_is_required = slot.required or slot == class_id_slot
+
+        aliased_slot_name = self.aliased_slot_name(slot)
+        prop = self.get_subschema_for_slot(slot)
         subschema.add_property(aliased_slot_name, prop, slot_is_required)
 
         if (
@@ -304,10 +390,10 @@ class JsonSchemaGenerator(Generator):
     def serialize(self, **kwargs) -> str:
         self.start_schema(**kwargs)
         for enum_definition in self.schemaview.all_enums().values():
-            self.visit_enum(enum_definition)
+            self.handle_enum(enum_definition)
 
         for class_definition in self.schemaview.all_classes().values():
-            self.visit_class(class_definition)
+            self.handle_class(class_definition)
 
         return str(self.top_level_schema)
 

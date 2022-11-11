@@ -4,6 +4,7 @@ import unittest
 
 import jsonschema
 import yaml
+from linkml_runtime.linkml_model import SchemaDefinition
 from linkml_runtime.dumpers import json_dumper
 from linkml_runtime.loaders import yaml_loader
 
@@ -14,7 +15,7 @@ from tests.test_generators.test_pythongen import make_python
 SCHEMA = env.input_path("kitchen_sink.yaml")
 DATA = env.input_path("kitchen_sink_inst_01.yaml")
 COMPLIANCE_CASES = env.input_path("kitchen_sink_compliance_inst_01.yaml")
-
+RULES_CASES = env.input_path("jsonschema_conditional_cases.yaml")
 
 class JsonSchemaTestCase(unittest.TestCase):
     """
@@ -169,6 +170,82 @@ classes:
 
         self.assertIn("id", json_schema["$defs"]["Test"]["required"])
         self.assertIn("id", json_schema["required"])
+
+
+    def test_rules(self):
+        with open(RULES_CASES) as cases_file:
+            cases = yaml.safe_load(cases_file)
+
+        for case in cases:
+            with self.subTest(name=case['name']):
+                ncname = case['name'].replace(' ', '_')
+                schema = SchemaDefinition(
+                    id=f"http://example.org/test_rule_{ncname}",
+                    name=ncname,
+                    imports=[
+                        "https://w3id.org/linkml/types"
+                    ],
+                    slots={
+                        "s1": { "range": "integer" },
+                        "s2": { "range": "integer" },
+                        "s3": { "range": "integer" },
+                        "s4": { "range": "integer" },
+                    },
+                    classes={
+                        "Test": {
+                            "slots": ["s1", "s2", "s3", "s4"],
+                            "rules": case['linkml_rules']
+                        }
+                    }
+                )
+                generator = JsonSchemaGenerator(schema, top_class="Test")
+                actual_json_schema = json.loads(generator.serialize())
+
+                # Validate the structure of the generated JSON Schema
+                expected_json_schema_subset = case["json_schema"]
+                self.assertDictContainsSubset(expected_json_schema_subset, actual_json_schema)
+
+                # Validate data instances against the JSON Schema
+                for data_case in case.get('data_cases', []):
+                    data = data_case['data']
+                    with self.subTest(data=data):
+                        if 'error_message' in data_case:
+                            self.assertRaisesRegex(
+                                jsonschema.ValidationError, 
+                                data_case['error_message'],
+                                lambda: jsonschema.validate(data, actual_json_schema),
+                            )
+                        else:
+                            jsonschema.validate(data, actual_json_schema)
+
+    def test_union_as_range(self):
+        schema = """
+id: http://example.org/test_union_as_range
+name: test_union_as_range
+slots:
+  vital_status:
+    required: true
+    multivalued: true
+    range: MissingValueEnum
+classes:
+  Test:
+    slots:
+      - vital_status
+enums:
+  MissingValueEnum:
+    permissible_values:
+      INAPPLICABLE:
+      NOT_COLLECTED:
+      RESTRICTED:
+      OTHER:
+  VitalStatusEnum:
+    permissible_values:
+      LIVING:
+      DEAD:
+      UNDEAD:
+"""
+        generator = JsonSchemaGenerator(schema, top_class="Test")
+        print(generator.serialize())
 
 if __name__ == "__main__":
     unittest.main()
