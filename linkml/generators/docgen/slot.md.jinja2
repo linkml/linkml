@@ -27,7 +27,7 @@ URI: {{ gen.uri_link(element) }}
 | Name | Description |
 | --- | --- |
 {% for c in schemaview.get_classes_by_slot(element, include_induced=True) -%}
-{{ gen.link(c) }} | {{ schemaview.get_class(c).description }}
+{{ gen.link(c) }} | {{ schemaview.get_class(c).description|enshorten }}
 {% endfor %}
 
 {% endif %}
@@ -45,23 +45,26 @@ URI: {{ gen.uri_link(element) }}
 ## Properties
 
 * Range: {{gen.link(element.range)}}
-{%- if element.multivalued != None %}
+{%- if element.multivalued %}
 * Multivalued: {{ element.multivalued }}
 {% endif %}
-{%- if element.required != None %}
+{%- if element.required %}
 * Required: {{ element.required }}
-{% elif element.recommended != None %}
+{% elif element.recommended %}
 * Recommended: {{ element.recommended }}
 {% endif %}
 {%- if schemaview.is_mixin(element.name) %}
 * Mixin: {{ element.mixin }}
 {% endif %}
 
+
 {% if schemaview.usage_index().get(element.name) %}
+## Usages
+
 | used by | used in | type | used |
 | ---  | --- | --- | --- |
 {% for usage in schemaview.usage_index().get(element.name) -%}
-| {{gen.link(usage.used_by)}} | {{gen.link(usage.slot)}} | {{usage.metaslot}} | {{usage.used }} |
+| {{gen.link(usage.used_by)}} | {{gen.link(usage.slot)}} | {{usage.metaslot}} | {{ gen.link(usage.used) }} |
 {% endfor %}
 {% endif %}
 
