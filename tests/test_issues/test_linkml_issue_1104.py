@@ -8,9 +8,9 @@ from linkml_runtime import SchemaView
 from linkml_runtime.dumpers import json_dumper
 from linkml_runtime.loaders import yaml_loader
 
-import tests.test_data.model.issue_1104_classes
-from tests.test_data.model.issue_1104_classes import Database
-from tests.test_data.environment import env
+import tests.test_issues.model.issue_1104_classes
+from tests.test_issues.model.issue_1104_classes import Database
+from tests.test_issues.environment import env
 from linkml.utils.sqlutils import SQLStore
 
 SCHEMA = env.input_path("issue_1104_schema.yaml")
@@ -50,14 +50,14 @@ class TestActivityAgent(unittest.TestCase):
 
     def test_prepare_dump_sqlite(self):
         endpoint = SQLStore(SCHEMA, database_path=DB, include_schema_in_database=False)
-        endpoint.native_module = tests.test_data.model.issue_1104_classes
+        endpoint.native_module = tests.test_issues.model.issue_1104_classes
         endpoint.db_exists(force=True)
         endpoint.compile()
         database: Database = yaml_loader.load(DATA, target_class=Database)
 
     def test_do_dump_sqlite(self):
         endpoint = SQLStore(SCHEMA, database_path=DB, include_schema_in_database=False)
-        endpoint.native_module = tests.test_data.model.issue_1104_classes
+        endpoint.native_module = tests.test_issues.model.issue_1104_classes
         endpoint.db_exists(force=True)
         endpoint.compile()
         database: Database = yaml_loader.load(DATA, target_class=Database)
