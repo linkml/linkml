@@ -16,6 +16,7 @@ SCHEMA = env.input_path("kitchen_sink.yaml")
 DATA = env.input_path("kitchen_sink_inst_01.yaml")
 COMPLIANCE_CASES = env.input_path("kitchen_sink_compliance_inst_01.yaml")
 RULES_CASES = env.input_path("jsonschema_conditional_cases.yaml")
+RANGE_UNION_CASES = env.input_path("jsonschema_range_union_cases.yaml")
 
 class JsonSchemaTestCase(unittest.TestCase):
     """
@@ -218,34 +219,21 @@ classes:
                         else:
                             jsonschema.validate(data, actual_json_schema)
 
-    def test_union_as_range(self):
-        schema = """
-id: http://example.org/test_union_as_range
-name: test_union_as_range
-slots:
-  vital_status:
-    required: true
-    multivalued: true
-    range: MissingValueEnum
-classes:
-  Test:
-    slots:
-      - vital_status
-enums:
-  MissingValueEnum:
-    permissible_values:
-      INAPPLICABLE:
-      NOT_COLLECTED:
-      RESTRICTED:
-      OTHER:
-  VitalStatusEnum:
-    permissible_values:
-      LIVING:
-      DEAD:
-      UNDEAD:
-"""
-        generator = JsonSchemaGenerator(schema, top_class="Test")
-        print(generator.serialize())
+
+    def test_range_unions(self):
+        with open(RANGE_UNION_CASES, "r") as f:
+            cases = yaml.safe_load(f)
+
+        generator = JsonSchemaGenerator(yaml.dump(cases["schema"]), top_class="Test")
+        json_schema = json.loads(generator.serialize())
+
+        for valid_case in cases.get("valid_cases", []):
+            with self.subTest(valid_case=valid_case):
+                jsonschema.validate(valid_case, json_schema)
+
+        for invalid_case in cases.get("invalid_cases", []):
+            with self.subTest(invalid_case=invalid_case):
+                self.assertRaises(jsonschema.ValidationError, lambda: jsonschema.validate(invalid_case, json_schema))
 
 if __name__ == "__main__":
     unittest.main()

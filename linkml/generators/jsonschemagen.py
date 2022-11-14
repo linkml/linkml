@@ -7,7 +7,8 @@ from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Tuple, Union
 
 import click
-from linkml_runtime.linkml_model.meta import (AnonymousClassExpression, 
+from linkml_runtime.linkml_model.meta import (AnonymousClassExpression,
+                                              AnonymousSlotExpression,
                                               ClassDefinition, EnumDefinition,
                                               PermissibleValue,
                                               PermissibleValueText,
@@ -277,66 +278,84 @@ class JsonSchemaGenerator(Generator):
         })
         self.top_level_schema.add_def(enum.name, enum_schema)
 
-    def get_subschema_for_slot(self, slot: SlotDefinition, omit_type: bool = False) -> JsonSchema:
+    def get_type_info_for_slot_subschema(self, slot: AnonymousSlotExpression, slot_is_inlined: bool) -> Tuple[str, str, Union[str, List[str]]]:
         typ = None  # JSON Schema type (https://json-schema.org/understanding-json-schema/reference/type.html)
         reference = None  # Reference to a JSON schema entity (https://json-schema.org/understanding-json-schema/structuring.html#ref)
         fmt = None  # JSON Schema format (https://json-schema.org/understanding-json-schema/reference/string.html#format)
-        descendants = None
 
+        if slot.range in self.schemaview.all_types().keys():
+            schema_type = self.schemaview.induced_type(slot.range)
+            (typ, fmt) = json_schema_types.get(schema_type.base.lower(), ("string", None))
+        elif slot.range in self.schemaview.all_enums().keys():
+            reference = slot.range
+        elif slot_is_inlined and slot.range in self.schemaview.all_classes().keys():
+            descendants = [desc for desc in self.schemaview.class_descendants(slot.range) 
+                if not self.schemaview.get_class(desc).abstract]
+            if descendants and self.include_range_class_descendants:
+                reference = descendants
+            else:
+                reference = slot.range
+        else:
+            typ = "string"
+
+        return (typ, fmt, reference)
+
+    def get_subschema_for_slot(self, slot: SlotDefinition, omit_type: bool = False) -> JsonSchema:
+        slot_has_range_union = slot.any_of is not None and len(slot.any_of) > 0 and all(s.range is not None for s in slot.any_of)
         if omit_type:
             prop = JsonSchema()
         else:
             slot_is_inlined = self.schemaview.is_inlined(slot)
 
-            if slot.range in self.schemaview.all_types().keys():
-                schema_type = self.schemaview.induced_type(slot.range)
-                (typ, fmt) = json_schema_types.get(schema_type.base.lower(), ("string", None))
-            elif slot.range in self.schemaview.all_enums().keys():
-                reference = slot.range
-                typ = "object"
-            elif slot_is_inlined and slot.range in self.schemaview.all_classes().keys():
-                reference = slot.range
-                descendants = [desc for desc in self.schemaview.class_descendants(slot.range) 
-                    if not self.schemaview.get_class(desc).abstract]
-                typ = "object"
-            else:
-                typ = "string"
-            
-            if slot_is_inlined:
-                # If inline we have to include redefined slots
-                if slot.multivalued:
-                    range_id_slot = self.schemaview.get_identifier_slot(slot.range, use_key=True)
-                    if range_id_slot is not None and not slot.inlined_as_list:
-                        prop = JsonSchema({
-                            "type": "object",
-                            "additionalProperties": JsonSchema.ref_for(reference, identifier_optional=True)
-                        })
-                        self.top_level_schema.add_lax_def(reference, self.aliased_slot_name(range_id_slot))
+            if slot_has_range_union:
+                items = []
+                for sub_slot in slot.any_of:
+                    typ, fmt, reference = self.get_type_info_for_slot_subschema(sub_slot, slot_is_inlined)
+                    if reference is not None:
+                        item = JsonSchema.ref_for(reference)
+                    elif fmt is None:
+                        item = JsonSchema({"type": typ})
                     else:
-                        if descendants and self.include_range_class_descendants:
-                            prop = JsonSchema.array_of(JsonSchema.ref_for(descendants))
+                        item = JsonSchema({"type": typ, "format": fmt})
+                    items.append(item)
+                subschema = JsonSchema({
+                    "anyOf": items
+                })
+                if slot.multivalued:
+                    prop = JsonSchema.array_of(subschema)
+                else:
+                    prop = subschema
+            else:
+                typ, fmt, reference = self.get_type_info_for_slot_subschema(slot, slot_is_inlined)
+                if slot_is_inlined:
+                    # If inline we have to include redefined slots
+                    if slot.multivalued:
+                        range_id_slot = self.schemaview.get_identifier_slot(slot.range, use_key=True)
+                        if range_id_slot is not None and not slot.inlined_as_list:
+                            prop = JsonSchema({
+                                "type": "object",
+                                "additionalProperties": JsonSchema.ref_for(reference, identifier_optional=True)
+                            })
+                            self.top_level_schema.add_lax_def(reference, self.aliased_slot_name(range_id_slot))
                         else:
                             prop = JsonSchema.array_of(JsonSchema.ref_for(reference))
-                else:
-                    if descendants and self.include_range_class_descendants:
-                        prop = JsonSchema.ref_for(descendants)
                     else:
                         prop = JsonSchema.ref_for(reference)
-            else:
-                if slot.multivalued:
-                    if reference is not None:
-                        prop = JsonSchema.array_of(JsonSchema.ref_for(reference))
-                    elif fmt is None:
-                        prop = JsonSchema.array_of(JsonSchema({"type": typ}))
-                    else:
-                        prop = JsonSchema.array_of(JsonSchema({"type": typ, "format": fmt}))
                 else:
-                    if reference is not None:
-                        prop = JsonSchema.ref_for(reference)
-                    elif fmt is None:
-                        prop = JsonSchema({"type": typ})
+                    if slot.multivalued:
+                        if reference is not None:
+                            prop = JsonSchema.array_of(JsonSchema.ref_for(reference))
+                        elif fmt is None:
+                            prop = JsonSchema.array_of(JsonSchema({"type": typ}))
+                        else:
+                            prop = JsonSchema.array_of(JsonSchema({"type": typ, "format": fmt}))
                     else:
-                        prop = JsonSchema({"type": typ, "format": fmt})
+                        if reference is not None:
+                            prop = JsonSchema.ref_for(reference)
+                        elif fmt is None:
+                            prop = JsonSchema({"type": typ})
+                        else:
+                            prop = JsonSchema({"type": typ, "format": fmt})
 
         if slot.description:
             prop['description'] = slot.description
@@ -358,7 +377,8 @@ class JsonSchemaGenerator(Generator):
             prop['const'] = slot.equals_number
 
         if slot.any_of is not None and len(slot.any_of) > 0:
-            prop['anyOf'] = [self.get_subschema_for_slot(s, omit_type) for s in slot.any_of]
+            if not slot_has_range_union:
+                prop['anyOf'] = [self.get_subschema_for_slot(s, omit_type) for s in slot.any_of]
 
         if slot.all_of is not None and len(slot.all_of) > 0:
             prop['allOf'] = [self.get_subschema_for_slot(s, omit_type) for s in slot.all_of]
