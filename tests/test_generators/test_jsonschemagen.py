@@ -120,6 +120,7 @@ class JsonSchemaTestCase(unittest.TestCase):
                     self.assertRaises(jsonschema.ValidationError, do_validate)
 
     def test_type_inheritance(self):
+        """Tests that a type definition's typeof slot is correctly accounted for."""
         # TODO: can this be a compliance case too?
         schema = """
 id: http://example.org/test_type_inheritance
@@ -174,6 +175,19 @@ classes:
 
 
     def test_rules(self):
+        """Tests translation of various types of class rules.
+        
+        The external YAML file holds various test cases. Each test case defines
+        the `rules` that will be inserted into a class of the baseline schema, 
+        some expected JSON Schema, and various data instances. The test iterates
+        through each test case and:
+          1) constructs a LinkML schema and passes it to JsonSchemaGenerator
+          2) verifies that the expected JSON Schema is a subset of the actual
+             JSON Schema that was generated
+          3) validates each data instance against the JSON Schema and verifies
+             that it either successfully validates or does not validate with 
+             the expected error message
+        """
         with open(RULES_CASES) as cases_file:
             cases = yaml.safe_load(cases_file)
 
@@ -221,6 +235,18 @@ classes:
 
 
     def test_range_unions(self):
+        """Tests various permutations of range unions.
+        
+        The external YAML files holds a complete LinkML schema and various data 
+        instances. The schema defines one class with numerous slots. Each slot
+        represents a combination of:
+          * simple range vs range union
+          * ranges of enums, types, classes
+          * multivalued true vs false
+        The data instances are divided into cases that are expected to validate 
+        successfully against the generated JSON Schema and those that are expected
+        to throw a ValidationError.
+        """
         with open(RANGE_UNION_CASES, "r") as f:
             cases = yaml.safe_load(f)
 
