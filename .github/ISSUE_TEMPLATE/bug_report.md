@@ -17,9 +17,9 @@ assignees: ''
 ---
 
 **Describe the bug**
-A clear and concise description of what the bug is.
+A clear and concise description of what the bug is (including the error message that is printed, if any)
 
-**To Reproduce**
+**To reproduce**
 Steps to reproduce the behavior:
 1. Go to '...'
 2. Click on '....'
@@ -32,7 +32,7 @@ A clear and concise description of what you expected to happen.
 **Screenshots**
 If applicable, add screenshots to help explain your problem.
 
-**Desktop (if applicable, please complete the following information):**
+**About your computer (if applicable, please complete the following information):**
  - OS: [e.g. iOS]
  - Browser [e.g. chrome, safari]
  - Version [e.g. 22]
