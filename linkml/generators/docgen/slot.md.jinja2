@@ -27,7 +27,7 @@ URI: {{ gen.uri_link(element) }}
 | Name | Description |
 | --- | --- |
 {% for c in schemaview.get_classes_by_slot(element, include_induced=True) -%}
-{{ gen.link(c) }} | {{ schemaview.get_class(c).description }}
+{{ gen.link(c) }} | {{ schemaview.get_class(c).description|enshorten }}
 {% endfor %}
 
 {% endif %}
@@ -37,36 +37,34 @@ URI: {{ gen.uri_link(element) }}
 
 | mixed into | description | range | domain |
 | --- | --- | --- | --- |
-{% for s in schemaview.slot_children(element.name) -%}
-| {{ gen.link(s) }} | {{ schemaview.get_slot(s).description }} | {{ schemaview.get_slot(s).range }} | {{ schemaview.get_classes_by_slot(schemaview.get_slot(s))|join(', ') }} |
+{% for s in schemaview.slot_children(element.name, is_a=False) -%}
+| {{ gen.link(s) }} | {{ schemaview.get_slot(s).description|enshorten }} | {{ schemaview.get_slot(s).range }} | {{ schemaview.get_classes_by_slot(schemaview.get_slot(s))|join(', ') }} |
 {% endfor %}
 {% endif %}
 
 ## Properties
 
 * Range: {{gen.link(element.range)}}
+{%- if element.multivalued %}
 * Multivalued: {{ element.multivalued }}
-{% if element.aliases %}
-* Aliases:
-{% for alias in element.aliases %}
-    * {{ alias }}
-{% endfor %}
 {% endif %}
-
-{% if element.required %}
+{%- if element.required %}
 * Required: {{ element.required }}
 {% elif element.recommended %}
 * Recommended: {{ element.recommended }}
 {% endif %}
-{% if schemaview.is_mixin(element.name) %}
+{%- if schemaview.is_mixin(element.name) %}
 * Mixin: {{ element.mixin }}
 {% endif %}
 
+
 {% if schemaview.usage_index().get(element.name) %}
+## Usages
+
 | used by | used in | type | used |
 | ---  | --- | --- | --- |
 {% for usage in schemaview.usage_index().get(element.name) -%}
-| {{gen.link(usage.used_by)}} | {{gen.link(usage.slot)}} | {{usage.metaslot}} | {{usage.used }} |
+| {{gen.link(usage.used_by)}} | {{gen.link(usage.slot)}} | {{usage.metaslot}} | {{ gen.link(usage.used) }} |
 {% endfor %}
 {% endif %}
 

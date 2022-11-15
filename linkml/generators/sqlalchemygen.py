@@ -15,6 +15,7 @@ from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.schemaview import SchemaView
 from sqlalchemy import *
 
+from linkml._version import __version__
 from linkml.generators.pydanticgen import PydanticGenerator
 from linkml.generators.pythongen import PythonGenerator
 from linkml.generators.sqlalchemy import (sqlalchemy_declarative_template_str,
@@ -228,6 +229,7 @@ class SQLAlchemyGenerator(Generator):
     show_default=True,
     help="Emit FK declarations",
 )
+@click.version_option(__version__, "-V", "--version")
 @click.command()
 def cli(
     yamlfile, declarative, generate_classes, pydantic, use_foreign_keys=True, **args

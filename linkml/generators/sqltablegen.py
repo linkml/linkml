@@ -13,6 +13,7 @@ from sqlalchemy import Column, ForeignKey, MetaData, Table, create_mock_engine
 from sqlalchemy.types import (Boolean, Date, DateTime, Enum, Float, Integer,
                               Text, Time)
 
+from linkml._version import __version__
 from linkml.generators.yamlgen import YAMLGenerator
 from linkml.transformers.relmodel_transformer import (
     ForeignKeyPolicy, RelationalModelTransformer)
@@ -279,6 +280,7 @@ class SQLTableGenerator(Generator):
     show_default=True,
     help="Emit FK declarations",
 )
+@click.version_option(__version__, "-V", "--version")
 def cli(
     yamlfile,
     relmodel_output,

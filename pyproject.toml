@@ -42,6 +42,11 @@ packages = [
     { include = "linkml" }
 ]
 
+[tool.poetry-dynamic-versioning]
+enable = true
+vcs = "git"
+style = "pep440"
+
 [tool.poetry.scripts]    
 gen-jsonld-context = "linkml.generators.jsonldcontextgen:cli"
 gen-prefix-map = "linkml.generators.prefixmapgen:cli"
@@ -73,6 +78,7 @@ gen-sqla = "linkml.generators.sqlalchemygen:cli"
 gen-sqlddl = "linkml.generators.sqltablegen:cli"
 gen-sqlddl-legacy = "linkml.generators.sqlddlgen:cli"
 gen-sqltables = "linkml.generators.sqltablegen:cli"
+gen-summary = "linkml.generators.summarygen:cli"
 gen-project = "linkml.generators.projectgen:cli"
 run-tutorial = "linkml.utils.execute_tutorial:cli"
 linkml-ws = "linkml.workspaces.cli:main"
@@ -95,7 +101,7 @@ hbreader = "*"
 isodate = ">=0.6.0"
 jinja2 = ">= 3.1.0"
 jsonasobj2 = "==1.*,>=1.0.0,>=1.0.3"
-jsonschema = ">=3.0.1"
+jsonschema = {extras = ["format"], version = ">=4.0.0"}
 linkml-dataops = "*"
 linkml-runtime = "~1.3"
 myst-parser = "*"
@@ -117,6 +123,8 @@ sphinx-rtd-theme = "*"
 sqlalchemy = ">=1.4.31"
 watchdog = ">=0.9.0"
 tox = "^3.25.1"
+furo = {version = "^2022.9.29", extras = ["docs"]}
+sphinxcontrib-mermaid = {version = "^0.7.1", extras = ["docs"]}
 
 [tool.poetry.dev-dependencies]
 chardet = "*"
@@ -127,8 +135,8 @@ nbformat = "*"
 coverage = "^6.4.1"
 
 [tool.poetry.extras]
-docs = ["Sphinx", "sphinx-rtd-theme", "sphinxcontrib-mermaid", "furo"]
+docs = ["Sphinx", "sphinxcontrib-mermaid", "furo"]
 
 [build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning"]
+build-backend = "poetry_dynamic_versioning.backend"

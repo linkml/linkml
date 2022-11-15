@@ -17,6 +17,7 @@ from linkml_runtime.linkml_model.types import SHEX
 from linkml_runtime.utils.formatutils import be, camelcase, underscore
 from rdflib import XSD
 
+from linkml._version import __version__
 from linkml.utils.generator import Generator, shared_arguments
 
 URI_RANGES = (XSD.anyURI, SHEX.nonliteral, SHEX.bnode, SHEX.iri)
@@ -132,6 +133,7 @@ class PrefixGenerator(Generator):
 @click.command()
 @click.option("--base", help="Base URI for model")
 @click.option("--output", "-o", help="Output file path")
+@click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, **args):
     """Generate jsonld @context definition from LinkML model"""
     print(PrefixGenerator(yamlfile, **args).serialize(**args))

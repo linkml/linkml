@@ -13,6 +13,7 @@ from linkml_runtime.linkml_model.meta import (ClassDefinition,
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from sqlalchemy import *
 
+from linkml._version import __version__
 from linkml.utils.generator import Generator, shared_arguments
 
 TABLENAME = str
@@ -535,6 +536,7 @@ Map classes directly to
     show_default=True,
     help="Emit FK declarations",
 )
+@click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, sqla_file: str = None, python_import: str = None, **args):
     """Generate SQL DDL representation"""
     logging.warning("DEPRECATED: use sqltablegen instead")

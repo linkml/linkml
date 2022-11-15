@@ -2,7 +2,7 @@ import abc
 import re
 import unicodedata
 from dataclasses import dataclass, field
-from typing import List, Optional
+from typing import List, Optional, Dict
 
 from linkml_runtime.linkml_model.meta import (ClassDefinition,
                                               SchemaDefinition, SlotDefinition,
@@ -52,7 +52,9 @@ class OOClass:
 
     # ObjectVars
     name: SAFE_NAME
+    description: Optional[SAFE_NAME] = None
     is_a: Optional[SAFE_NAME] = None
+    mixin: Optional[bool] = None
     abstract: Optional[bool] = None
     mixins: List[SAFE_NAME] = field(default_factory=lambda: [])
     fields: List[OOField] = field(default_factory=lambda: [])
@@ -85,6 +87,10 @@ class OOCodeGenerator(Generator):
     def serialize(self, directory: str) -> None:
         raise NotImplementedError("Not implemented.")
 
+    @abc.abstractmethod
+    def default_value_for_type(self, typ: str) -> str:
+        raise NotImplementedError
+
     def get_class_name(self, cn):
         return camelcase(cn)
 
@@ -95,7 +101,7 @@ class OOCodeGenerator(Generator):
             safe_sn = underscore(sn)
         return safe_sn
 
-    def map_type(self, t: TypeDefinition) -> str:
+    def map_type(self, t: TypeDefinition, required: bool = False) -> str:
         return t.base
 
     def make_multivalued(self, range: str) -> str:
@@ -137,10 +143,14 @@ class OOCodeGenerator(Generator):
             )
             docs.append(oodoc)
             ooclass = OOClass(
-                name=safe_cn, package=self.package, fields=[], source_class=c
+                name=safe_cn, description=c.description, package=self.package, fields=[], source_class=c
             )
             # currently hardcoded for java style, one class per doc
             oodoc.classes = [ooclass]
+            if c.mixin:
+                ooclass.mixin = c.mixin
+            if c.mixins:
+                ooclass.mixins = [camelcase(x) for x in c.mixins]
             if c.abstract:
                 ooclass.abstract = c.abstract
             if c.is_a:
@@ -166,7 +176,7 @@ class OOCodeGenerator(Generator):
                     default_value = "null"
                 elif range in sv.all_types():
                     t = sv.get_type(range)
-                    range = self.map_type(t)
+                    range = self.map_type(t, slot.required)
                     if range is None:  # If mapping fails,
                         range = self.map_type(sv.all_types().get("string"))
                 elif range in sv.all_enums():
@@ -181,6 +191,9 @@ class OOCodeGenerator(Generator):
                     default_value = "0"
                 elif range == "String":
                     default_value = '""'
+
+                # TODO:
+                #  default_value = default_value_for_type(range)
 
                 if slot.multivalued:
                     range = self.make_multivalued(range)

@@ -10,6 +10,7 @@ from rdflib import Graph
 from SPARQLWrapper import (JSON, N3, RDF, RDFXML, TURTLE, SPARQLWrapper,
                            SPARQLWrapper2)
 
+from linkml._version import __version__
 from linkml.generators.sparqlgen import SparqlGenerator
 from linkml.generators.yamlgen import YAMLGenerator
 from linkml.reporting import CheckResult, Report
@@ -109,6 +110,7 @@ class SparqlDataValidator(DataValidator):
     help="Output format. Inferred from output suffix if not specified",
 )
 @click.option("--schema", "-s", help="Path to schema specified as LinkML yaml")
+@click.version_option(__version__, "-V", "--version")
 def cli(
     input,
     output=None,

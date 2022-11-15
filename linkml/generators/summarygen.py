@@ -12,6 +12,7 @@ from linkml_runtime.linkml_model.meta import (ClassDefinition,
                                               SchemaDefinition, SlotDefinition)
 from linkml_runtime.utils.formatutils import camelcase
 
+from linkml._version import __version__
 from linkml.utils.generator import Generator, shared_arguments
 
 
@@ -83,6 +84,7 @@ class SummaryGenerator(Generator):
 
 
 @shared_arguments(SummaryGenerator)
+@click.version_option(__version__, "-V", "--version")
 @click.command()
 def cli(yamlfile, **args):
     """Generate TSV summary files for viewing in Excel and the like"""

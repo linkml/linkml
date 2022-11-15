@@ -22,6 +22,7 @@ from ShExJSG.ShExJ import (IRIREF, EachOf, NodeConstraint, Shape, ShapeOr,
                            TripleConstraint)
 
 from linkml import METAMODEL_NAMESPACE, METAMODEL_NAMESPACE_NAME
+from linkml._version import __version__
 from linkml.utils.generator import Generator, shared_arguments
 
 
@@ -220,6 +221,7 @@ class ShExGenerator(Generator):
 @shared_arguments(ShExGenerator)
 @click.command()
 @click.option("-o", "--output", help="Output file name")
+@click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, **args):
     """Generate a ShEx Schema for a  LinkML model"""
     print(ShExGenerator(yamlfile, **args).serialize(**args))

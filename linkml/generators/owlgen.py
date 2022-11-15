@@ -25,6 +25,7 @@ from rdflib.plugin import Parser as rdflib_Parser
 from rdflib.plugin import plugins as rdflib_plugins
 
 from linkml import METAMODEL_NAMESPACE, METAMODEL_NAMESPACE_NAME
+from linkml._version import __version__
 from linkml.utils.generator import Generator, shared_arguments
 from linkml.utils.schemaloader import SchemaLoader
 
@@ -632,6 +633,7 @@ class OwlSchemaGenerator(Generator):
     show_default=True,
     help="Suffix to append to schema id to generate OWL Ontology IRI",
 )
+@click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, metadata_profile: str, **kwargs):
     """Generate an OWL representation of a LinkML model
 

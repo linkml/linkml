@@ -24,6 +24,7 @@ from sqlalchemy.engine import Engine
 from sqlalchemy.ext.associationproxy import _AssociationCollection
 from sqlalchemy.orm import sessionmaker
 
+from linkml._version import __version__
 from linkml.generators.pythongen import PythonGenerator
 from linkml.generators.sqlalchemygen import SQLAlchemyGenerator, TemplateEnum
 from linkml.generators.sqltablegen import SQLTableGenerator
@@ -266,6 +267,7 @@ class SQLStore:
               Increase the default limit for maximum field size.
               See https://docs.python.org/3/library/csv.html#csv.field_size_limit""",
 )
+@click.version_option(__version__, "-V", "--version")
 def main(verbose: int, quiet: bool, csv_field_size_limit: int):
     """Run the LinkML SQL CLI."""
     if verbose >= 2:

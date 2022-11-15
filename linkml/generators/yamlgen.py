@@ -9,6 +9,7 @@ import click
 from linkml_runtime.linkml_model.meta import SchemaDefinition
 from linkml_runtime.utils.yamlutils import as_yaml
 
+from linkml._version import __version__
 from linkml.utils.generator import Generator, shared_arguments
 from linkml.utils.schemaloader import load_raw_schema
 
@@ -50,6 +51,7 @@ class YAMLGenerator(Generator):
     show_default=True,
     help="Just validate / generate output (default: generate)",
 )
+@click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, raw: bool, **args):
     """Validate input and produce fully resolved yaml equivalent"""
     if raw:

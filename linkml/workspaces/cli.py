@@ -21,6 +21,7 @@ from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.loaders import yaml_loader
 from linkml_runtime.utils.formatutils import underscore
 
+from linkml._version import __version__
 from linkml.workspaces.datamodel.workspaces import Project, Workspace
 
 VERSION_STR = str
@@ -159,6 +160,7 @@ output_directory_option = click.option(
 @click.group()
 @click.option("-v", "--verbose", count=True)
 @click.option("-q", "--quiet")
+@click.version_option(__version__, "-V", "--version")
 def main(verbose: int, quiet: bool):
     """Run the linkML CLI."""
     if verbose >= 2:

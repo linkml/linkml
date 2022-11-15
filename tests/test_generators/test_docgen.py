@@ -237,6 +237,23 @@ class DocGeneratorTestCase(unittest.TestCase):
             "tree_slot_C.md", "[mixin_slot_I](mixin_slot_I.md)"
         )
 
+        # test see_also hyperlinking
+        assert_mdfile_contains(
+            "Person.md", 
+            "[https://en.wikipedia.org/wiki/Person](https://en.wikipedia.org/wiki/Person)",
+            after="## See Also"
+        )
+        assert_mdfile_contains(
+            "Person.md", 
+            "[schema:Person](http://schema.org/Person)",
+            after="## See Also"
+        )
+         
+        # test that Aliases is showing from common metadata
+        assert_mdfile_contains(
+            "EmploymentEventType.md", "* HR code", after="## Aliases"
+        )
+
     def test_docgen_rank_ordering(self):
         """Tests overriding default order"""
         gen = DocGenerator(SCHEMA, mergeimports=True, no_types_dir=True, sort_by="rank")
@@ -415,7 +432,7 @@ class DocGeneratorTestCase(unittest.TestCase):
         actual_result = gen.get_indirect_slots(cls)
         expected_result = ["ended at time", "metadata", "started at time", "is current"]
         
-        self.assertListEqual(sorted(expected_result), sorted(actual_result))
+        self.assertCountEqual(expected_result, actual_result)
 
         # test assertion for mixed in slots of a class
         cls = sv.get_class("Organization")
@@ -423,6 +440,18 @@ class DocGeneratorTestCase(unittest.TestCase):
         expected_result = {"HasAliases": ["aliases"]}
 
         self.assertDictEqual(actual_result, expected_result)
+
+    def test_class_slots_inheritance(self):
+        gen = DocGenerator(SCHEMA, mergeimports=True, no_types_dir=True)
+
+        sv = SchemaView(SCHEMA)
+        test_class = sv.get_class("BirthEvent")
+        test_slot = sv.get_slot("started at time")
+
+        expected_result = ["Event"]
+        actual_result = gen.get_slot_inherited_from(class_name=test_class.name, slot_name=test_slot.name)
+
+        self.assertListEqual(expected_result, actual_result)
 
     def test_use_slot_uris(self):
         tdir = env.input_path("docgen_html_templates")

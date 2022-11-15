@@ -21,6 +21,7 @@ from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.yamlutils import YAMLRoot
 
 from linkml import METAMODEL_CONTEXT_URI
+from linkml._version import __version__
 from linkml.generators.jsonldcontextgen import ContextGenerator
 from linkml.utils.generator import Generator, shared_arguments
 
@@ -193,6 +194,7 @@ class JSONLDGenerator(Generator):
     multiple=True,
     help=f"JSONLD context file (default: {METAMODEL_CONTEXT_URI} and <model>.prefixes.context.jsonld)",
 )
+@click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, **kwargs):
     """Generate JSONLD file from LinkML schema.
 

@@ -16,6 +16,7 @@ from linkml_runtime.linkml_model.meta import (ClassDefinition,
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from rdflib import Namespace
 
+from linkml._version import __version__
 from linkml.utils.generator import Generator, shared_arguments
 
 yuml_is_a = "^-"
@@ -333,6 +334,7 @@ class YumlGenerator(Generator):
     "-d",
     help="Output directory - if supplied, YUML rendering will be saved in file",
 )
+@click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, **args):
     """Generate a UML representation of a LinkML model"""
     print(YumlGenerator(yamlfile, **args).serialize(**args), end="")

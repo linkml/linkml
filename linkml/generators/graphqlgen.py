@@ -7,6 +7,7 @@ from linkml_runtime.linkml_model.meta import (ClassDefinition,
                                               SchemaDefinition, SlotDefinition)
 from linkml_runtime.utils.formatutils import camelcase, lcamelcase
 
+from linkml._version import __version__
 from linkml.utils.generator import Generator, shared_arguments
 
 
@@ -66,6 +67,7 @@ class GraphqlGenerator(Generator):
 
 @shared_arguments(GraphqlGenerator)
 @click.command()
+@click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, **args):
     """Generate graphql representation of a LinkML model"""
     print(GraphqlGenerator(yamlfile, **args).serialize(**args))
