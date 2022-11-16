@@ -273,31 +273,68 @@ imports:
   - https://w3id.org/linkml/types
 
 slots:
-  s:
+  int_list:
     range: integer
     multivalued: true
     minimum_cardinality: 2
     maximum_cardinality: 5
+  
+  int_dict:
+    range: KeyedInt
+    multivalued: true
+    inlined: true
+    inlined_as_list: false
+    minimum_cardinality: 3
+    maximum_cardinality: 4
+
+  id:
+    range: string
+    identifier: true
+
+  value:
+    range: integer
+    required: true
 
 classes:
+  KeyedInt:
+    slots:
+      - id
+      - value
   Test:
     slots:
-      - s
+      - int_list
+      - int_dict
 """
         generator = JsonSchemaGenerator(schema, top_class="Test")
         json_schema = json.loads(generator.serialize())
 
-        self.assertIn("minItems", json_schema["properties"]["s"])
-        self.assertEqual(json_schema["properties"]["s"]["minItems"], 2)
+        self.assertIn("minItems", json_schema["properties"]["int_list"])
+        self.assertEqual(json_schema["properties"]["int_list"]["minItems"], 2)
         
-        self.assertIn("maxItems", json_schema["properties"]["s"])
-        self.assertEqual(json_schema["properties"]["s"]["maxItems"], 5)
+        self.assertIn("maxItems", json_schema["properties"]["int_list"])
+        self.assertEqual(json_schema["properties"]["int_list"]["maxItems"], 5)
+
+        self.assertIn("minProperties", json_schema["properties"]["int_dict"])
+        self.assertEqual(json_schema["properties"]["int_dict"]["minProperties"], 3)
+
+        self.assertIn("maxProperties", json_schema["properties"]["int_dict"])
+        self.assertEqual(json_schema["properties"]["int_dict"]["maxProperties"], 4)
         
-        jsonschema.validate({"s": [1, 2]}, json_schema)
-        self.assertRaisesRegex(jsonschema.ValidationError, "Failed validating 'minItems'", lambda: jsonschema.validate({"s": [1]}, json_schema))
+        jsonschema.validate({"int_list": [1, 2]}, json_schema)
+        self.assertRaisesRegex(jsonschema.ValidationError, "Failed validating 'minItems'", lambda: jsonschema.validate({"int_list": [1]}, json_schema))
         
-        jsonschema.validate({"s": [1, 2, 3, 4, 5]}, json_schema)
-        self.assertRaisesRegex(jsonschema.ValidationError, "Failed validating 'maxItems'", lambda: jsonschema.validate({"s": [1, 2, 3, 4, 5, 6]}, json_schema))
+        jsonschema.validate({"int_list": [1, 2, 3, 4, 5]}, json_schema)
+        self.assertRaisesRegex(jsonschema.ValidationError, "Failed validating 'maxItems'", lambda: jsonschema.validate({"int_list": [1, 2, 3, 4, 5, 6]}, json_schema))
+
+        good_data = {f"{n}": { "value": n } for n in range(3)}
+        jsonschema.validate({"int_dict": good_data}, json_schema)
+        bad_data = {f"{n}": { "value": n } for n in range(2)}
+        self.assertRaisesRegex(jsonschema.ValidationError, "Failed validating 'minProperties'", lambda: jsonschema.validate({"int_dict": bad_data}, json_schema))
+        
+        good_data = {f"{n}": { "value": n } for n in range(4)}
+        jsonschema.validate({"int_dict": good_data}, json_schema)
+        bad_data = {f"{n}": { "value": n } for n in range(5)}
+        self.assertRaisesRegex(jsonschema.ValidationError, "Failed validating 'maxProperties'", lambda: jsonschema.validate({"int_dict": bad_data}, json_schema))
 
 
 if __name__ == "__main__":

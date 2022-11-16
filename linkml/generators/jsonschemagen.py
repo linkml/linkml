@@ -377,10 +377,16 @@ class JsonSchemaGenerator(Generator):
             prop['const'] = slot.equals_number
 
         if slot.minimum_cardinality is not None:
-            prop['minItems'] = slot.minimum_cardinality
+            if prop['type'] == 'array':
+                prop['minItems'] = slot.minimum_cardinality
+            elif prop['type'] == 'object':
+                prop['minProperties'] = slot.minimum_cardinality
 
         if slot.maximum_cardinality is not None:
-            prop['maxItems'] = slot.maximum_cardinality
+            if prop['type'] == 'array':
+                prop['maxItems'] = slot.maximum_cardinality
+            elif prop['type'] == 'object':
+                prop['maxProperties'] = slot.maximum_cardinality
 
         if slot.any_of is not None and len(slot.any_of) > 0:
             if not slot_has_range_union:
