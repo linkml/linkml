@@ -217,7 +217,7 @@ class RDFLibLoader(Loader):
             return {}
 
     def _uri_to_id(self, node: VALID_SUBJECT, id_slot: SlotDefinition, schemaview: SchemaView) -> str:
-        if schemaview.is_type_percent_encoded(id_slot.range):
+        if schemaview.is_slot_percent_encoded(id_slot):
             return urllib.parse.unquote(node).replace(schemaview.namespaces()._base, "")
         else:
             return schemaview.namespaces().curie_for(node)

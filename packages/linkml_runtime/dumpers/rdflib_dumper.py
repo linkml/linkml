@@ -9,6 +9,7 @@ from rdflib.namespace import RDF
 
 
 from linkml_runtime.dumpers.dumper_root import Dumper
+from linkml_runtime.linkml_model import SlotDefinition
 from linkml_runtime.utils.schemaview import SchemaView, ElementName, PermissibleValue, PermissibleValueText
 from linkml_runtime.utils.yamlutils import YAMLRoot
 
@@ -91,14 +92,14 @@ class RDFLibDumper(Dumper):
         element_vars = {k: v for k, v in vars(element).items() if not k.startswith('_')}
         if len(element_vars) == 0:
             id_slot = schemaview.get_identifier_slot(target_type)
-            return self._as_uri(element, id_slot.range, schemaview)
+            return self._as_uri(element, id_slot, schemaview)
             #return URIRef(schemaview.expand_curie(str(element)))
         element_type = type(element)
         cn = element_type.class_name
         id_slot = schemaview.get_identifier_slot(cn)
         if id_slot is not None:
             element_id = getattr(element, id_slot.name)
-            element_uri = self._as_uri(element_id, id_slot.range, schemaview)
+            element_uri = self._as_uri(element_id, id_slot, schemaview)
         else:
             element_uri = BNode()
         type_added = False
@@ -157,8 +158,8 @@ class RDFLibDumper(Dumper):
         return self.as_rdf_graph(element, schemaview, prefix_map=prefix_map).\
             serialize(format=fmt)
 
-    def _as_uri(self, element_id: str, id_slot_range: str, schemaview: SchemaView) -> URIRef:
-        if schemaview.is_type_percent_encoded(id_slot_range):
+    def _as_uri(self, element_id: str, id_slot: SlotDefinition, schemaview: SchemaView) -> URIRef:
+        if schemaview.is_slot_percent_encoded(id_slot):
             return URIRef(urllib.parse.quote(element_id))
         else:
             return schemaview.namespaces().uri_for(element_id)

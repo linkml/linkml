@@ -1338,20 +1338,23 @@ class SchemaView(object):
                         enum_slots.append(slot_definition)
         return enum_slots
 
-    def is_type_percent_encoded(self, type: TypeDefinitionName) -> bool:
+    def is_slot_percent_encoded(self, slot: SlotDefinitionName) -> bool:
         """
-        True if type is has a percent_encoded annotation.
+        True if slot or its range is has a percent_encoded annotation.
 
         This is true for type fields that are the range of identifier columns,
         where the identifier is not guaranteed to be a valid URI or CURIE
 
-        :param type:
+        :param slot:
         :return:
         """
-        id_slot_ranges = self.type_ancestors(type)
-        for t in id_slot_ranges:
-            anns = self.get_type(t).annotations
-            return "percent_encoded" in anns
+        if "percent_encoded" in slot.annotations:
+            return True
+        if slot.range in self.all_types():
+            id_slot_ranges = self.type_ancestors(slot.range)
+            for t in id_slot_ranges:
+                anns = self.get_type(t).annotations
+                return "percent_encoded" in anns
 
     @lru_cache()
     def usage_index(self) -> Dict[ElementName, List[SchemaUsage]]:
