@@ -1283,7 +1283,7 @@ class SchemaView(object):
             raise ValueError(f'Unrecognized range: {r}')
         return range_types
 
-    def slot_range_as_union(self, slot: SlotDefinition) -> List[EnumDefinitionName]:
+    def slot_range_as_union(self, slot: SlotDefinition) -> List[ElementName]:
         """
         Returns all applicable ranges for a slot
 
@@ -1337,6 +1337,21 @@ class SchemaView(object):
                     if slot_definition.range == enum_name:
                         enum_slots.append(slot_definition)
         return enum_slots
+
+    def is_type_percent_encoded(self, type: TypeDefinitionName) -> bool:
+        """
+        True if type is has a percent_encoded annotation.
+
+        This is true for type fields that are the range of identifier columns,
+        where the identifier is not guaranteed to be a valid URI or CURIE
+
+        :param type:
+        :return:
+        """
+        id_slot_ranges = self.type_ancestors(type)
+        for t in id_slot_ranges:
+            anns = self.get_type(t).annotations
+            return "percent_encoded" in anns
 
     @lru_cache()
     def usage_index(self) -> Dict[ElementName, List[SchemaUsage]]:
