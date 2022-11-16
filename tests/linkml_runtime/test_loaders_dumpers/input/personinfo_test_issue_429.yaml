@@ -35,6 +35,7 @@ classes:
 slots:
   id:
     identifier: true
+    range: uriorcurie
   full_name:
   age:
   phone:

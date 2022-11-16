@@ -1,4 +1,5 @@
 import logging
+import urllib
 from abc import abstractmethod
 from typing import Optional, Any, Dict
 
@@ -35,13 +36,18 @@ class RDFLibDumper(Dumper):
         logging.debug(f'PREFIXMAP={prefix_map}')
         if prefix_map:
             for k, v in prefix_map.items():
-                schemaview.namespaces()[k] = v
-                g.namespace_manager.bind(k, URIRef(v))
+                if k == "@base":
+                    schemaview.namespaces()._base = v
+                else:
+                    schemaview.namespaces()[k] = v
+                    g.namespace_manager.bind(k, URIRef(v))
             for prefix in schemaview.namespaces():
                 g.bind(prefix, URIRef(schemaview.namespaces()[prefix]))
         else:
             for prefix in schemaview.namespaces():
                 g.bind(prefix, URIRef(schemaview.namespaces()[prefix]))
+        if schemaview.namespaces()._base:
+            g.base = schemaview.namespaces()._base
         self.inject_triples(element, schemaview, g)
         return g
 
@@ -84,14 +90,15 @@ class RDFLibDumper(Dumper):
                 return Literal(element)
         element_vars = {k: v for k, v in vars(element).items() if not k.startswith('_')}
         if len(element_vars) == 0:
-            return URIRef(schemaview.expand_curie(str(element)))
+            id_slot = schemaview.get_identifier_slot(target_type)
+            return self._as_uri(element, id_slot.range, schemaview)
+            #return URIRef(schemaview.expand_curie(str(element)))
         element_type = type(element)
         cn = element_type.class_name
         id_slot = schemaview.get_identifier_slot(cn)
         if id_slot is not None:
             element_id = getattr(element, id_slot.name)
-            logging.debug(f'ELEMENT_ID={element_id} // {id_slot.name}')
-            element_uri = namespaces.uri_for(element_id)
+            element_uri = self._as_uri(element_id, id_slot.range, schemaview)
         else:
             element_uri = BNode()
         type_added = False
@@ -149,4 +156,10 @@ class RDFLibDumper(Dumper):
         """
         return self.as_rdf_graph(element, schemaview, prefix_map=prefix_map).\
             serialize(format=fmt)
+
+    def _as_uri(self, element_id: str, id_slot_range: str, schemaview: SchemaView) -> URIRef:
+        if schemaview.is_type_percent_encoded(id_slot_range):
+            return URIRef(urllib.parse.quote(element_id))
+        else:
+            return schemaview.namespaces().uri_for(element_id)
 
