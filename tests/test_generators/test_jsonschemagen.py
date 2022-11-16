@@ -261,5 +261,44 @@ classes:
             with self.subTest(invalid_case=invalid_case):
                 self.assertRaises(jsonschema.ValidationError, lambda: jsonschema.validate(invalid_case, json_schema))
 
+
+    def test_multivalued_slot_cardinality(self):
+        """Tests that cardinality constrains on multivalued slots are translated correctly."""
+
+        schema = """
+id: http://example.org/test_multivalued_slot_constraints
+name: test_multivalued_slot_constraints
+
+imports:
+  - https://w3id.org/linkml/types
+
+slots:
+  s:
+    range: integer
+    multivalued: true
+    minimum_cardinality: 2
+    maximum_cardinality: 5
+
+classes:
+  Test:
+    slots:
+      - s
+"""
+        generator = JsonSchemaGenerator(schema, top_class="Test")
+        json_schema = json.loads(generator.serialize())
+
+        self.assertIn("minItems", json_schema["properties"]["s"])
+        self.assertEqual(json_schema["properties"]["s"]["minItems"], 2)
+        
+        self.assertIn("maxItems", json_schema["properties"]["s"])
+        self.assertEqual(json_schema["properties"]["s"]["maxItems"], 5)
+        
+        jsonschema.validate({"s": [1, 2]}, json_schema)
+        self.assertRaisesRegex(jsonschema.ValidationError, "Failed validating 'minItems'", lambda: jsonschema.validate({"s": [1]}, json_schema))
+        
+        jsonschema.validate({"s": [1, 2, 3, 4, 5]}, json_schema)
+        self.assertRaisesRegex(jsonschema.ValidationError, "Failed validating 'maxItems'", lambda: jsonschema.validate({"s": [1, 2, 3, 4, 5, 6]}, json_schema))
+
+
 if __name__ == "__main__":
     unittest.main()
