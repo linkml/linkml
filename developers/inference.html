@@ -2,7 +2,7 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Using SQL Databases" href="using-sql-dbs.html" /><link rel="prev" title="Data Conversion: Loaders and Dumpers" href="loaders-and-dumpers.html" />
 
     <meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
@@ -382,7 +382,7 @@ can be used:</p>
 <span class="sig-prename descclassname"><span class="pre">linkml_runtime.utils.inference_utils.</span></span><span class="sig-name descname"><span class="pre">infer_slot_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">YAMLRoot</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slot_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">SlotDefinitionName</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schemaview</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="schemaview.html#linkml_runtime.utils.schemaview.SchemaView" title="linkml_runtime.utils.schemaview.SchemaView"><span class="pre">SchemaView</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">class_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ClassDefinitionName</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">policy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#linkml_runtime.utils.inference_utils.Policy" title="linkml_runtime.utils.inference_utils.Policy"><span class="pre">Policy</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Policy.STRICT</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#linkml_runtime.utils.inference_utils.Config" title="linkml_runtime.utils.inference_utils.Config"><span class="pre">Config</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Config(use_string_serialization=True,</span> <span class="pre">parse_string_serialization=False,</span> <span class="pre">use_rules=False,</span> <span class="pre">use_expressions=False,</span> <span class="pre">resolve_function=None)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/linkml_runtime/utils/inference_utils.html#infer_slot_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.inference_utils.infer_slot_value" title="Permalink to this definition">#</a></dt>
 <dd><p>Infer the value of a slot for an object</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>obj</strong> – mutable object to be transformed</p></li>
 <li><p><strong>slot_name</strong> – </p></li>
@@ -404,7 +404,7 @@ can be used:</p>
 <li><p>if a slot has a equals_expression metaslot, apply this. See <code class="xref py py-func docutils literal notranslate"><span class="pre">eval_expr()</span></code></p></li>
 </ul>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>obj</strong> – </p></li>
 <li><p><strong>schemaview</strong> – </p></li>
@@ -413,7 +413,7 @@ can be used:</p>
 <li><p><strong>config</strong> – </p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p></p>
 </dd>
 </dl>

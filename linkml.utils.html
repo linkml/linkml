@@ -2,7 +2,7 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" />
 
     <meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
@@ -413,13 +413,13 @@ Otherwise use the class that is not referenced as a range in any other class.</p
 <span class="sig-prename descclassname"><span class="pre">linkml.utils.execute_tutorial.</span></span><span class="sig-name descname"><span class="pre">execute_blocks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blocks</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#linkml.utils.execute_tutorial.Block" title="linkml.utils.execute_tutorial.Block"><span class="pre">Block</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/linkml/utils/execute_tutorial.html#execute_blocks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.utils.execute_tutorial.execute_blocks" title="Permalink to this definition">#</a></dt>
 <dd><p>Execute the code blocks embedded in a tutorial</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>directory</strong> – </p></li>
 <li><p><strong>blocks</strong> – </p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>errors</p>
 </dd>
 </dl>
@@ -430,10 +430,10 @@ Otherwise use the class that is not referenced as a range in any other class.</p
 <span class="sig-prename descclassname"><span class="pre">linkml.utils.execute_tutorial.</span></span><span class="sig-name descname"><span class="pre">parse_file_to_blocks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#linkml.utils.execute_tutorial.Block" title="linkml.utils.execute_tutorial.Block"><span class="pre">Block</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/linkml/utils/execute_tutorial.html#parse_file_to_blocks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.utils.execute_tutorial.parse_file_to_blocks" title="Permalink to this definition">#</a></dt>
 <dd><p>Parses a markdown tutorial file to code blacks to be executed</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>input</strong> – </p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p></p>
 </dd>
 </dl>
@@ -523,10 +523,10 @@ in classes, with recursive is_a’s being added first followed by mixins and fin
 <span class="sig-name descname"><span class="pre">class_identifier</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">def_or_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.ClassDefinition" title="linkml_runtime.linkml_model.meta.ClassDefinition"><span class="pre">ClassDefinition</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">TypeDefinition</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">SlotDefinitionName</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/linkml/utils/generator.html#Generator.class_identifier"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.utils.generator.Generator.class_identifier" title="Permalink to this definition">#</a></dt>
 <dd><p>Return the class identifier if any</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>def_or_name</strong> – class name or definition</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>name of class key (or identifier) if one exists</p>
 </dd>
 </dl>
@@ -538,13 +538,13 @@ in classes, with recursive is_a’s being added first followed by mixins and fin
 <dd><p>Return the path closure to a class identifier if the class has a key and force_non_key is false otherwise
 return a dictionary closure.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>cls_or_clsname</strong> – class definition</p></li>
 <li><p><strong>force_non_key</strong> – True means inlined even if the class has a key</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>path</p>
 </dd>
 </dl>
@@ -620,7 +620,7 @@ if the name isn’t valid</p>
 <dd><p>Return the default format for the name or the referenced element.  Slots are under_scored, all others are
 CamelCased. Slot names are the alias, not the actual name</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>el_or_elname</strong> – element or name to map</p></li>
 <li><p><strong>is_range_name</strong> – True means that we’re looking for a class or type.  False means Slot or Subset. Only</p></li>
@@ -652,10 +652,10 @@ mapping the metamodel slot “slot” to “field”</p>
 <p>This method also takes care of pluralization; e.g. if “slot” is mapped to
 “field”, then “slots” will be mapped to “fields”</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>slot_name</strong> – </p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p></p>
 </dd>
 </dl>
@@ -672,10 +672,10 @@ mapping the metamodel slot “slot” to “field”</p>
 <span class="sig-name descname"><span class="pre">is_class_unconstrained</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.ClassDefinition" title="linkml_runtime.linkml_model.meta.ClassDefinition"><span class="pre">ClassDefinition</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/linkml/utils/generator.html#Generator.is_class_unconstrained"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.utils.generator.Generator.is_class_unconstrained" title="Permalink to this definition">#</a></dt>
 <dd><p>Determine if the class is mapped to typing.Any, i.e the unconstrained class</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>cls</strong> – class definition</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>true if the class is unconstrained</p>
 </dd>
 </dl>
@@ -776,10 +776,10 @@ in the class is_a parent.  Own_slots include:</p>
 <span class="sig-name descname"><span class="pre">range_type_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">typ</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TypeDefinition</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/linkml/utils/generator.html#Generator.range_type_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.utils.generator.Generator.range_type_path" title="Permalink to this definition">#</a></dt>
 <dd><p>Return a formatted list of range types from the base up</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>typ</strong> – type definition whose name is to be formatted</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>List of possible types with base at the leftmost</p>
 </dd>
 </dl>
@@ -809,10 +809,10 @@ open file or a pre-parsed schema</p>
 <span class="sig-name descname"><span class="pre">serialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/linkml/utils/generator.html#Generator.serialize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.utils.generator.Generator.serialize" title="Permalink to this definition">#</a></dt>
 <dd><p>Generate output in the required format</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>kwargs</strong> – Generater specific parameters</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Generated output</p>
 </dd>
 </dl>
@@ -835,10 +835,10 @@ isn’t valid.</p>
 <span class="sig-name descname"><span class="pre">slot_range_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slot_or_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.SlotDefinition" title="linkml_runtime.linkml_model.meta.SlotDefinition"><span class="pre">SlotDefinition</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/linkml/utils/generator.html#Generator.slot_range_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.utils.generator.Generator.slot_range_path" title="Permalink to this definition">#</a></dt>
 <dd><p>Return a ordered list of slot ranges from distal to proximal</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>slot_or_name</strong> – slot whose range is being typed</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>ordered list of types from base type forward</p>
 </dd>
 </dl>
@@ -1047,7 +1047,7 @@ for any class that is inherited (class itself, is_a, mixin, apply_to).  Otherwis
 <span class="sig-prename descclassname"><span class="pre">linkml.utils.mergeutils.</span></span><span class="sig-name descname"><span class="pre">merge_classes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.SchemaDefinition" title="linkml_runtime.linkml_model.meta.SchemaDefinition"><span class="pre">SchemaDefinition</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.ClassDefinition" title="linkml_runtime.linkml_model.meta.ClassDefinition"><span class="pre">ClassDefinition</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.ClassDefinition" title="linkml_runtime.linkml_model.meta.ClassDefinition"><span class="pre">ClassDefinition</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">at_end</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/linkml/utils/mergeutils.html#merge_classes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.utils.mergeutils.merge_classes" title="Permalink to this definition">#</a></dt>
 <dd><p>Merge the slots in source into target</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>schema</strong> – Containing schema</p></li>
 <li><p><strong>target</strong> – mergee</p></li>
@@ -1068,7 +1068,7 @@ for any class that is inherited (class itself, is_a, mixin, apply_to).  Otherwis
 <span class="sig-prename descclassname"><span class="pre">linkml.utils.mergeutils.</span></span><span class="sig-name descname"><span class="pre">merge_enums</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.SchemaDefinition" title="linkml_runtime.linkml_model.meta.SchemaDefinition"><span class="pre">SchemaDefinition</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">EnumDefinition</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">EnumDefinition</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">at_end</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/linkml/utils/mergeutils.html#merge_enums"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.utils.mergeutils.merge_enums" title="Permalink to this definition">#</a></dt>
 <dd><p>Merge the slots in source into target</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>schema</strong> – Containing schema</p></li>
 <li><p><strong>target</strong> – mergee</p></li>
@@ -1084,14 +1084,14 @@ for any class that is inherited (class itself, is_a, mixin, apply_to).  Otherwis
 <span class="sig-prename descclassname"><span class="pre">linkml.utils.mergeutils.</span></span><span class="sig-name descname"><span class="pre">merge_namespaces</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.SchemaDefinition" title="linkml_runtime.linkml_model.meta.SchemaDefinition"><span class="pre">SchemaDefinition</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">mergee</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.SchemaDefinition" title="linkml_runtime.linkml_model.meta.SchemaDefinition"><span class="pre">SchemaDefinition</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">namespaces</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/linkml/utils/mergeutils.html#merge_namespaces"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.utils.mergeutils.merge_namespaces" title="Permalink to this definition">#</a></dt>
 <dd><p>Add the mergee namespace definitions to target</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>target</strong> – </p></li>
 <li><p><strong>mergee</strong> – </p></li>
 <li><p><strong>namespaces</strong> – </p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p></p>
 </dd>
 </dl>
@@ -1108,7 +1108,7 @@ for any class that is inherited (class itself, is_a, mixin, apply_to).  Otherwis
 <span class="sig-prename descclassname"><span class="pre">linkml.utils.mergeutils.</span></span><span class="sig-name descname"><span class="pre">merge_slots</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.SlotDefinition" title="linkml_runtime.linkml_model.meta.SlotDefinition"><span class="pre">SlotDefinition</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">TypeDefinition</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.SlotDefinition" title="linkml_runtime.linkml_model.meta.SlotDefinition"><span class="pre">SlotDefinition</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">TypeDefinition</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">SlotDefinitionName</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">TypeDefinitionName</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inheriting</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/linkml/utils/mergeutils.html#merge_slots"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.utils.mergeutils.merge_slots" title="Permalink to this definition">#</a></dt>
 <dd><p>Merge slot source into target</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>target</strong> – slot to merge into</p></li>
 <li><p><strong>source</strong> – slot to be merged from</p></li>
@@ -1131,13 +1131,13 @@ for any class that is inherited (class itself, is_a, mixin, apply_to).  Otherwis
 <div><p>Synthesize a unique name for an overridden slot</p>
 </div></blockquote>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>usage_name</strong> – </p></li>
 <li><p><strong>owning_class</strong> – </p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Synthesized name</p>
 </dd>
 </dl>
@@ -1193,7 +1193,7 @@ for any class that is inherited (class itself, is_a, mixin, apply_to).  Otherwis
 <span class="sig-name descname"><span class="pre">merge_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.ClassDefinition" title="linkml_runtime.linkml_model.meta.ClassDefinition"><span class="pre">ClassDefinition</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">merged_classes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">ClassDefinitionName</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/linkml/utils/schemaloader.html#SchemaLoader.merge_class"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.utils.schemaloader.SchemaLoader.merge_class" title="Permalink to this definition">#</a></dt>
 <dd><p>Merge parent class information into target class</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>cls</strong> – target class</p></li>
 <li><p><strong>merged_classes</strong> – list of class names that have been merged. Used to do distal ancestor resolution</p></li>
@@ -1207,7 +1207,7 @@ for any class that is inherited (class itself, is_a, mixin, apply_to).  Otherwis
 <span class="sig-name descname"><span class="pre">merge_enum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">enum</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">EnumDefinition</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">merged_enums</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">EnumDefinitionName</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/linkml/utils/schemaloader.html#SchemaLoader.merge_enum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.utils.schemaloader.SchemaLoader.merge_enum" title="Permalink to this definition">#</a></dt>
 <dd><p>Merge parent enumeration information into target enum</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>enum</strong> – target enumeration</p></li>
 <li><p><strong>merged_enums</strong> – list of enum names that have been merged. Used to do distal ancestor resolution</p></li>
@@ -1221,7 +1221,7 @@ for any class that is inherited (class itself, is_a, mixin, apply_to).  Otherwis
 <span class="sig-name descname"><span class="pre">merge_slot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slot</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.SlotDefinition" title="linkml_runtime.linkml_model.meta.SlotDefinition"><span class="pre">SlotDefinition</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">merged_slots</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">SlotDefinitionName</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/linkml/utils/schemaloader.html#SchemaLoader.merge_slot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.utils.schemaloader.SchemaLoader.merge_slot" title="Permalink to this definition">#</a></dt>
 <dd><p>Merge parent slot information into target slot</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>slot</strong> – target slot</p></li>
 <li><p><strong>merged_slots</strong> – list of slot names that have been merged.  Used to do a distal ancestor resolution</p></li>
@@ -1250,10 +1250,10 @@ definitions that are introduced strictly as usages and add them to the slots com
 <span class="sig-name descname"><span class="pre">process_slot_usages</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.ClassDefinition" title="linkml_runtime.linkml_model.meta.ClassDefinition"><span class="pre">ClassDefinition</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/linkml/utils/schemaloader.html#SchemaLoader.process_slot_usages"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.utils.schemaloader.SchemaLoader.process_slot_usages" title="Permalink to this definition">#</a></dt>
 <dd><p>Connect any slot usage items</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>cls</strong> – class to process</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>usage item</p>
 </dd>
 </dl>
@@ -1275,7 +1275,7 @@ definitions that are introduced strictly as usages and add them to the slots com
 <dd><p>Reconcile a loaded schema, applying is_a, mixins, apply_to’s and other such things.  Also validate the
 content and load a SchemaSynopsis entry</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Fully resolved definition</p>
 </dd>
 </dl>
@@ -1321,7 +1321,7 @@ content and load a SchemaSynopsis entry</p>
 <span class="sig-name descname"><span class="pre">add_ref</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fromtype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#linkml.utils.typereferences.RefType" title="linkml.utils.typereferences.RefType"><span class="pre">RefType</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">fromname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ElementName</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">totype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#linkml.utils.typereferences.RefType" title="linkml.utils.typereferences.RefType"><span class="pre">RefType</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">toname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ElementName</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/linkml/utils/schemasynopsis.html#SchemaSynopsis.add_ref"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.utils.schemasynopsis.SchemaSynopsis.add_ref" title="Permalink to this definition">#</a></dt>
 <dd><p>Add an inverse reference, indicating that to type/name is referenced by from type/name</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>fromtype</strong> – Referencer type</p></li>
 <li><p><strong>fromname</strong> – Referencer name</p></li>
@@ -1329,7 +1329,7 @@ content and load a SchemaSynopsis entry</p>
 <li><p><strong>toname</strong> – Referencee name</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p></p>
 </dd>
 </dl>
@@ -1445,13 +1445,13 @@ content and load a SchemaSynopsis entry</p>
 <span class="sig-name descname"><span class="pre">summarize_class_definition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ClassDefinitionName</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.ClassDefinition" title="linkml_runtime.linkml_model.meta.ClassDefinition"><span class="pre">ClassDefinition</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/linkml/utils/schemasynopsis.html#SchemaSynopsis.summarize_class_definition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.utils.schemasynopsis.SchemaSynopsis.summarize_class_definition" title="Permalink to this definition">#</a></dt>
 <dd><p>Summarize class definition element</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>k</strong> – Class name</p></li>
 <li><p><strong>v</strong> – Class definition</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p></p>
 </dd>
 </dl>
@@ -1462,14 +1462,14 @@ content and load a SchemaSynopsis entry</p>
 <span class="sig-name descname"><span class="pre">summarize_definition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">typ</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#linkml.utils.typereferences.RefType" title="linkml.utils.typereferences.RefType"><span class="pre">RefType</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DefinitionName</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Definition</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/linkml/utils/schemasynopsis.html#SchemaSynopsis.summarize_definition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.utils.schemasynopsis.SchemaSynopsis.summarize_definition" title="Permalink to this definition">#</a></dt>
 <dd><p>Summarize slot and class definitions</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>typ</strong> – type (slot or class)</p></li>
 <li><p><strong>k</strong> – name</p></li>
 <li><p><strong>v</strong> – definition</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p></p>
 </dd>
 </dl>
@@ -1482,14 +1482,14 @@ content and load a SchemaSynopsis entry</p>
 <div><p>Summarize element level items</p>
 </div></blockquote>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>typ</strong> – element type</p></li>
 <li><p><strong>k</strong> – element name</p></li>
 <li><p><strong>v</strong> – element deffinition</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p></p>
 </dd>
 </dl>
@@ -1500,13 +1500,13 @@ content and load a SchemaSynopsis entry</p>
 <span class="sig-name descname"><span class="pre">summarize_enum_definition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">EnumDefinitionName</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">EnumDefinition</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/linkml/utils/schemasynopsis.html#SchemaSynopsis.summarize_enum_definition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.utils.schemasynopsis.SchemaSynopsis.summarize_enum_definition" title="Permalink to this definition">#</a></dt>
 <dd><p>Summarize enum definition</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>k</strong> – Enum name</p></li>
 <li><p><strong>v</strong> – Enum definition</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p></p>
 </dd>
 </dl>
@@ -1526,13 +1526,13 @@ content and load a SchemaSynopsis entry</p>
 <span class="sig-name descname"><span class="pre">summarize_type_definition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TypeDefinitionName</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TypeDefinition</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/linkml/utils/schemasynopsis.html#SchemaSynopsis.summarize_type_definition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.utils.schemasynopsis.SchemaSynopsis.summarize_type_definition" title="Permalink to this definition">#</a></dt>
 <dd><p>Summarize type definition</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>k</strong> – Type name</p></li>
 <li><p><strong>v</strong> – Type definition</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p></p>
 </dd>
 </dl>
@@ -1632,7 +1632,7 @@ content and load a SchemaSynopsis entry</p>
 <span class="sig-prename descclassname"><span class="pre">linkml.utils.validation.</span></span><span class="sig-name descname"><span class="pre">validate_object</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">YAMLRoot</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">TextIO</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.SchemaDefinition" title="linkml_runtime.linkml_model.meta.SchemaDefinition"><span class="pre">SchemaDefinition</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_class</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Type</span><span class="p"><span class="pre">[</span></span><span class="pre">YAMLRoot</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">closed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/linkml/utils/validation.html#validate_object"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.utils.validation.validate_object" title="Permalink to this definition">#</a></dt>
 <dd><p>validates instance data against a schema</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>data</strong> – LinkML instance to be validates</p></li>
 <li><p><strong>schema</strong> – LinkML schema</p></li>
@@ -1640,7 +1640,7 @@ content and load a SchemaSynopsis entry</p>
 <li><p><strong>closed</strong> – </p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p></p>
 </dd>
 </dl>

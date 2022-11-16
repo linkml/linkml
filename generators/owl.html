@@ -2,7 +2,7 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Markdown" href="markdown.html" /><link rel="prev" title="SHACL" href="shacl.html" />
 
     <meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
@@ -403,10 +403,10 @@ translation of Biolink schema to OWL</p></li>
 <span class="sig-name descname"><span class="pre">--metadata-profile</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;metadata_profile&gt;</span></span><a class="headerlink" href="#cmdoption-gen-owl-metadata-profile" title="Permalink to this definition">#</a></dt>
 <dd><p>What kind of metadata profile to use for annotations on generated OWL objects</p>
 <dl class="field-list simple">
-<dt class="field-odd">Default</dt>
+<dt class="field-odd">Default<span class="colon">:</span></dt>
 <dd class="field-odd"><p>linkml</p>
 </dd>
-<dt class="field-even">Options</dt>
+<dt class="field-even">Options<span class="colon">:</span></dt>
 <dd class="field-even"><p>linkml | rdfs</p>
 </dd>
 </dl>
@@ -417,7 +417,7 @@ translation of Biolink schema to OWL</p></li>
 <span id="cmdoption-gen-owl-no-type-objects"></span><span class="sig-name descname"><span class="pre">--type-objects</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-type-objects</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-owl-type-objects" title="Permalink to this definition">#</a></dt>
 <dd><p>If true, will model linkml types as objects, not literals</p>
 <dl class="field-list simple">
-<dt class="field-odd">Default</dt>
+<dt class="field-odd">Default<span class="colon">:</span></dt>
 <dd class="field-odd"><p>True</p>
 </dd>
 </dl>
@@ -428,7 +428,7 @@ translation of Biolink schema to OWL</p></li>
 <span id="cmdoption-gen-owl-no-metaclasses"></span><span class="sig-name descname"><span class="pre">--metaclasses</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-metaclasses</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-owl-metaclasses" title="Permalink to this definition">#</a></dt>
 <dd><p>If true, include linkml metamodel classes as metaclasses. Note this introduces punning in OWL-DL</p>
 <dl class="field-list simple">
-<dt class="field-odd">Default</dt>
+<dt class="field-odd">Default<span class="colon">:</span></dt>
 <dd class="field-odd"><p>True</p>
 </dd>
 </dl>
@@ -439,7 +439,7 @@ translation of Biolink schema to OWL</p></li>
 <span id="cmdoption-gen-owl-no-add-ols-annotations"></span><span class="sig-name descname"><span class="pre">--add-ols-annotations</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-add-ols-annotations</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-owl-add-ols-annotations" title="Permalink to this definition">#</a></dt>
 <dd><p>If true, auto-include annotations from <a class="reference external" href="https://www.ebi.ac.uk/ols/docs/installation-guide">https://www.ebi.ac.uk/ols/docs/installation-guide</a></p>
 <dl class="field-list simple">
-<dt class="field-odd">Default</dt>
+<dt class="field-odd">Default<span class="colon">:</span></dt>
 <dd class="field-odd"><p>True</p>
 </dd>
 </dl>
@@ -450,7 +450,7 @@ translation of Biolink schema to OWL</p></li>
 <span class="sig-name descname"><span class="pre">--ontology-uri-suffix</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;ontology_uri_suffix&gt;</span></span><a class="headerlink" href="#cmdoption-gen-owl-ontology-uri-suffix" title="Permalink to this definition">#</a></dt>
 <dd><p>Suffix to append to schema id to generate OWL Ontology IRI</p>
 <dl class="field-list simple">
-<dt class="field-odd">Default</dt>
+<dt class="field-odd">Default<span class="colon">:</span></dt>
 <dd class="field-odd"><p>.owl.ttl</p>
 </dd>
 </dl>
@@ -467,10 +467,10 @@ translation of Biolink schema to OWL</p></li>
 <span id="cmdoption-gen-owl-format"></span><span class="sig-name descname"><span class="pre">-f</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--format</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;format&gt;</span></span><a class="headerlink" href="#cmdoption-gen-owl-f" title="Permalink to this definition">#</a></dt>
 <dd><p>Output format</p>
 <dl class="field-list simple">
-<dt class="field-odd">Default</dt>
+<dt class="field-odd">Default<span class="colon">:</span></dt>
 <dd class="field-odd"><p>owl</p>
 </dd>
-<dt class="field-even">Options</dt>
+<dt class="field-even">Options<span class="colon">:</span></dt>
 <dd class="field-even"><p>owl | ttl | json-ld | xml | n3 | turtle | ttl | ntriples | nt | nt11 | nquads | trix | trig | hext</p>
 </dd>
 </dl>
@@ -481,7 +481,7 @@ translation of Biolink schema to OWL</p></li>
 <span id="cmdoption-gen-owl-no-metadata"></span><span class="sig-name descname"><span class="pre">--metadata</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-metadata</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-owl-metadata" title="Permalink to this definition">#</a></dt>
 <dd><p>Include metadata in output</p>
 <dl class="field-list simple">
-<dt class="field-odd">Default</dt>
+<dt class="field-odd">Default<span class="colon">:</span></dt>
 <dd class="field-odd"><p>True</p>
 </dd>
 </dl>
@@ -492,7 +492,7 @@ translation of Biolink schema to OWL</p></li>
 <span id="cmdoption-gen-owl-metauris"></span><span class="sig-name descname"><span class="pre">--useuris</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--metauris</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-owl-useuris" title="Permalink to this definition">#</a></dt>
 <dd><p>Include metadata in output</p>
 <dl class="field-list simple">
-<dt class="field-odd">Default</dt>
+<dt class="field-odd">Default<span class="colon">:</span></dt>
 <dd class="field-odd"><p>True</p>
 </dd>
 </dl>
@@ -509,10 +509,10 @@ translation of Biolink schema to OWL</p></li>
 <span id="cmdoption-gen-owl-log-level"></span><span class="sig-name descname"><span class="pre">--log_level</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;log_level&gt;</span></span><a class="headerlink" href="#cmdoption-gen-owl-log_level" title="Permalink to this definition">#</a></dt>
 <dd><p>Logging level</p>
 <dl class="field-list simple">
-<dt class="field-odd">Default</dt>
+<dt class="field-odd">Default<span class="colon">:</span></dt>
 <dd class="field-odd"><p>WARNING</p>
 </dd>
-<dt class="field-even">Options</dt>
+<dt class="field-even">Options<span class="colon">:</span></dt>
 <dd class="field-even"><p>CRITICAL | ERROR | WARNING | INFO | DEBUG</p>
 </dd>
 </dl>
