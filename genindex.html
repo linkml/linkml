@@ -3353,6 +3353,10 @@
 </li>
         <li><a href="linkml.generators.html#linkml.generators.sqlddlgen.SQLDDLGenerator.get_sql_range">get_sql_range() (linkml.generators.sqlddlgen.SQLDDLGenerator method)</a>
 </li>
+        <li><a href="linkml.generators.html#linkml.generators.jsonschemagen.JsonSchemaGenerator.get_subschema_for_anonymous_class">get_subschema_for_anonymous_class() (linkml.generators.jsonschemagen.JsonSchemaGenerator method)</a>
+</li>
+        <li><a href="linkml.generators.html#linkml.generators.jsonschemagen.JsonSchemaGenerator.get_subschema_for_slot">get_subschema_for_slot() (linkml.generators.jsonschemagen.JsonSchemaGenerator method)</a>
+</li>
         <li><a href="developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.get_subset">get_subset() (linkml_runtime.utils.schemaview.SchemaView method)</a>
 </li>
         <li><a href="linkml.generators.html#linkml.generators.sqlddlgen.SQLSchema.get_table_by_class_name">get_table_by_class_name() (linkml.generators.sqlddlgen.SQLSchema method)</a>
@@ -3360,6 +3364,8 @@
         <li><a href="developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.get_type">get_type() (linkml_runtime.utils.schemaview.SchemaView method)</a>
 </li>
         <li><a href="developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.get_type_designator_slot">get_type_designator_slot() (linkml_runtime.utils.schemaview.SchemaView method)</a>
+</li>
+        <li><a href="linkml.generators.html#linkml.generators.jsonschemagen.JsonSchemaGenerator.get_type_info_for_slot_subschema">get_type_info_for_slot_subschema() (linkml.generators.jsonschemagen.JsonSchemaGenerator method)</a>
 </li>
         <li><a href="developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.get_uri">get_uri() (linkml_runtime.utils.schemaview.SchemaView method)</a>
 </li>
@@ -3381,6 +3387,14 @@
   <h2>H</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="linkml.generators.html#linkml.generators.jsonschemagen.JsonSchemaGenerator.handle_class">handle_class() (linkml.generators.jsonschemagen.JsonSchemaGenerator method)</a>
+</li>
+        <li><a href="linkml.generators.html#linkml.generators.jsonschemagen.JsonSchemaGenerator.handle_class_slot">handle_class_slot() (linkml.generators.jsonschemagen.JsonSchemaGenerator method)</a>
+</li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="linkml.generators.html#linkml.generators.jsonschemagen.JsonSchemaGenerator.handle_enum">handle_enum() (linkml.generators.jsonschemagen.JsonSchemaGenerator method)</a>
+</li>
         <li><a href="linkml.generators.html#linkml.generators.markdowngen.MarkdownGenerator.header">header() (linkml.generators.markdowngen.MarkdownGenerator method)</a>
 </li>
     </ul></td>
@@ -4884,8 +4898,6 @@
 </li>
           <li><a href="linkml.generators.html#linkml.generators.jsonldcontextgen.ContextGenerator.visit_all_class_slots">(linkml.generators.jsonldcontextgen.ContextGenerator attribute)</a>
 </li>
-          <li><a href="linkml.generators.html#linkml.generators.jsonschemagen.JsonSchemaGenerator.visit_all_class_slots">(linkml.generators.jsonschemagen.JsonSchemaGenerator attribute)</a>
-</li>
           <li><a href="linkml.generators.html#linkml.generators.markdowngen.MarkdownGenerator.visit_all_class_slots">(linkml.generators.markdowngen.MarkdownGenerator attribute)</a>
 </li>
           <li><a href="linkml.generators.html#linkml.generators.namespacegen.NamespaceGenerator.visit_all_class_slots">(linkml.generators.namespacegen.NamespaceGenerator attribute)</a>
@@ -4913,8 +4925,6 @@
           <li><a href="linkml.utils.html#linkml.utils.generator.Generator.visit_all_class_slots">(linkml.utils.generator.Generator attribute)</a>
 </li>
         </ul></li>
-        <li><a href="linkml.generators.html#linkml.generators.jsonschemagen.JsonSchemaGenerator.visit_all_slots">visit_all_slots (linkml.generators.jsonschemagen.JsonSchemaGenerator attribute)</a>
-</li>
         <li><a href="linkml.generators.html#linkml.generators.csvgen.CsvGenerator.visit_class">visit_class() (linkml.generators.csvgen.CsvGenerator method)</a>
 
         <ul>
@@ -4929,8 +4939,6 @@
           <li><a href="linkml.generators.html#linkml.generators.jsonldcontextgen.ContextGenerator.visit_class">(linkml.generators.jsonldcontextgen.ContextGenerator method)</a>
 </li>
           <li><a href="linkml.generators.html#linkml.generators.jsonldgen.JSONLDGenerator.visit_class">(linkml.generators.jsonldgen.JSONLDGenerator method)</a>
-</li>
-          <li><a href="linkml.generators.html#linkml.generators.jsonschemagen.JsonSchemaGenerator.visit_class">(linkml.generators.jsonschemagen.JsonSchemaGenerator method)</a>
 </li>
           <li><a href="linkml.generators.html#linkml.generators.markdowngen.MarkdownGenerator.visit_class">(linkml.generators.markdowngen.MarkdownGenerator method)</a>
 </li>
@@ -4962,8 +4970,6 @@
 </li>
           <li><a href="linkml.generators.html#linkml.generators.graphqlgen.GraphqlGenerator.visit_class_slot">(linkml.generators.graphqlgen.GraphqlGenerator method)</a>
 </li>
-          <li><a href="linkml.generators.html#linkml.generators.jsonschemagen.JsonSchemaGenerator.visit_class_slot">(linkml.generators.jsonschemagen.JsonSchemaGenerator method)</a>
-</li>
           <li><a href="linkml.generators.html#linkml.generators.protogen.ProtoGenerator.visit_class_slot">(linkml.generators.protogen.ProtoGenerator method)</a>
 </li>
           <li><a href="linkml.generators.html#linkml.generators.shexgen.ShExGenerator.visit_class_slot">(linkml.generators.shexgen.ShExGenerator method)</a>
@@ -4978,8 +4984,6 @@
         <li><a href="linkml.generators.html#linkml.generators.excelgen.ExcelGenerator.visit_enum">visit_enum() (linkml.generators.excelgen.ExcelGenerator method)</a>
 
         <ul>
-          <li><a href="linkml.generators.html#linkml.generators.jsonschemagen.JsonSchemaGenerator.visit_enum">(linkml.generators.jsonschemagen.JsonSchemaGenerator method)</a>
-</li>
           <li><a href="linkml.generators.html#linkml.generators.markdowngen.MarkdownGenerator.visit_enum">(linkml.generators.markdowngen.MarkdownGenerator method)</a>
 </li>
           <li><a href="linkml.generators.html#linkml.generators.owlgen.OwlSchemaGenerator.visit_enum">(linkml.generators.owlgen.OwlSchemaGenerator method)</a>
