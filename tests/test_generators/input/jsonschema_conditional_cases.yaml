@@ -1,0 +1,540 @@
+### Schema
+# - name: brief description of the test case
+# - linkml_rules: will be injected into the `rules` slot of a test class in a LinkML schema
+# - json_schema: a YAML representation of an expected subset of the generated JSON Schema
+# - data_cases: data instance validation tests. Must have a `data` field which will be validated
+#               against the JSON schema. By default it is expected to be valid. If the case is 
+#               expected to be invalid, provide an `error_message` field which will be matched 
+#               against the validation error message.
+
+- name: basic precondition and postcondition
+  linkml_rules:
+    - description: if s1 is 0, s2 must be 1 or greater
+      preconditions:
+        slot_conditions:
+          s1:
+            equals_number: 0
+      postconditions:
+        slot_conditions:
+          s2:
+            minimum_value: 1
+  json_schema:
+    if:
+      properties: 
+        s1: 
+          const: 0
+      required:
+        - s1
+    then:
+      properties:
+        s2:
+          minimum: 1
+      required:
+        - s2
+  data_cases:
+    - data:
+        s1: 0
+      error_message: "'s2' is a required property"
+    - data:
+        s1: 0
+        s2: 1
+    - data:
+        s1: 1
+        s2: 0
+    - data:
+        s2: 0
+    - data:
+        s1: 0
+        s2: 0
+      error_message: 0 is less than the minimum of 1
+
+- name: multiple constraints on slot conditions
+  linkml_rules:
+    - description: if s1 is between 0 and 10, s2 must between 10 and 20
+      preconditions:
+        slot_conditions:
+          s1:
+            minimum_value: 0
+            maximum_value: 10
+      postconditions:
+        slot_conditions:
+          s2:
+            minimum_value: 10
+            maximum_value: 20
+  json_schema:
+    if: 
+      properties:
+        s1:
+          minimum: 0
+          maximum: 10
+      required:
+        - s1
+    then:
+      properties:
+        s2:
+          minimum: 10
+          maximum: 20
+      required:
+        - s2
+  data_cases:
+    - data:
+        s1: 5
+      error_message: "'s2' is a required property"
+    - data:
+        s1: 5
+        s2: 15
+    - data:
+        s1: 15
+        s2: 5
+    - data:
+        s2: 5
+    - data:
+        s1: 5
+        s2: 25
+      error_message: 25 is greater than the maximum of 20
+
+- name: boolean operator in slot conditions
+  linkml_rules:
+    - description: if s1 is either 0 or 10, s2 cannot be either 0 or 10
+      preconditions:
+        slot_conditions:
+          s1:
+            any_of:
+              - equals_number: 0
+              - equals_number: 10
+      postconditions:
+        slot_conditions:
+          s2:
+            none_of:
+              - equals_number: 0
+              - equals_number: 10
+  json_schema:
+    if:
+      properties:
+        s1:
+          anyOf: 
+            - const: 0
+            - const: 10
+      required:
+        - s1
+    then:
+      properties:
+        s2:
+          not:
+            anyOf: 
+              - const: 0
+              - const: 10
+      required:
+        - s2
+  data_cases:
+    - data: 
+        s1: 0
+      error_message: "'s2' is a required property"
+    - data: 
+        s1: 5
+        s2: 0
+    - data: 
+        s1: 0
+        s2: 5
+    - data:
+        s2: 0
+    - data:
+        s1: 0
+        s2: 10
+      error_message: 10 should not be valid
+    - data:
+        s1: 10
+        s2: 10
+      error_message: 10 should not be valid
+    - data:
+        s1: 10
+        s2: 0
+      error_message: 0 should not be valid
+    - data:
+        s1: 0
+        s2: 0
+      error_message: 0 should not be valid
+
+- name: rule with elsecondition
+  linkml_rules:
+    - description: if s1 is 0 then s1 must be less than 10 otherwise it must be greater than 100
+      preconditions:
+        slot_conditions:
+          s1:
+            equals_number: 0
+      postconditions:
+        slot_conditions:
+          s2:
+            maximum_value: 10
+      elseconditions:
+        slot_conditions:
+          s2:
+            minimum_value: 100
+  json_schema:
+    if:
+      properties:
+        s1: 
+          const: 0
+      required: 
+        - s1
+    then:
+      properties:
+        s2:
+          maximum: 10
+      required:
+        - s2
+    else:
+      properties:
+        s2:
+          minimum: 100
+      required:
+        - s2
+  data_cases:
+    - data:
+        s1: 0
+      error_message: "'s2' is a required property"
+    - data:
+        s1: 1
+      error_message: "'s2' is a required property"
+    - data:
+        s2: 0
+      error_message: 0 is less than the minimum of 100
+    - data:
+        s1: 0
+        s2: 9
+    - data:
+        s1: 1
+        s2: 101
+    - data: 
+        s1: 0
+        s2: 11
+      error_message: 11 is greater than the maximum of 10
+    - data:
+        s1: 1
+        s2: 99
+      error_message: 99 is less than the minimum of 100
+    
+- name: conditions on multiple slots
+  linkml_rules:
+    - description: if s1 is 0 and s2 is 1 then s3 must be 2 or greater and s4 must be 3 or greater
+      preconditions:
+        slot_conditions:
+          s1:
+            equals_number: 0
+          s2:
+            equals_number: 1
+      postconditions:
+        slot_conditions:
+          s3:
+            minimum_value: 2
+          s4:
+            minimum_value: 3
+  json_schema:
+    if: 
+      properties:
+        s1: 
+          const: 0
+        s2:
+          const: 1
+      required:
+        - s1
+        - s2
+    then:
+      properties:
+        s3:
+          minimum: 2
+        s4:
+          minimum: 3
+      required:
+        - s3
+        - s4
+  data_cases:
+    - data:
+        s1: 0
+    - data:
+        s2: 1
+    - data:
+        s1: 0
+        s2: 0
+    - data:
+        s1: 0
+        s2: 1
+      error_message: "'s3' is a required property"
+    - data:
+        s1: 0
+        s2: 1
+        s3: 0
+      error_message: "'s4' is a required property"
+    - data:
+        s1: 0
+        s2: 1
+        s3: 1
+        s4: 3
+      error_message: 1 is less than the minimum of 2
+    - data:
+        s1: 0
+        s2: 1
+        s3: 2
+        s4: 2
+      error_message: 2 is less than the minimum of 3
+    - data:
+        s1: 0
+        s2: 1
+        s3: 2
+        s4: 3
+
+- name: boolean operator on multiple slots
+  linkml_rules:
+    - description: if either s1 is 1 or s2 is 2 then either s3 must be 3 or greater or s4 must be 4 or greater
+      preconditions:
+        any_of:
+          - slot_conditions:
+              s1:
+                equals_number: 1
+          - slot_conditions:
+              s2:
+                equals_number: 2
+      postconditions:
+        any_of:
+          - slot_conditions:
+              s3:
+                minimum_value: 3
+          - slot_conditions:
+              s4:
+                minimum_value: 4
+  json_schema:
+    if:
+      anyOf:
+        - properties:
+            s1: 
+              const: 1
+          required:
+            - s1
+        - properties:
+            s2:
+              const: 2
+          required:
+            - s2
+    then:
+      anyOf:
+        - properties:
+            s3: 
+              minimum: 3
+          required:
+            - s3
+        - properties:
+            s4:
+              minimum: 4
+          required: 
+            - s4
+  data_cases:
+    - data:
+        s1: 0
+    - data:
+        s2: 0
+    - data:
+        s1: 0
+        s2: 0
+    - data:
+        s1: 1
+        s2: 0
+      error_message: "Failed validating 'anyOf' in schema\\['then'\\]"
+    - data:
+        s1: 1
+        s2: 0
+        s3: 3
+    - data:
+        s1: 0
+        s2: 2
+      error_message: "Failed validating 'anyOf' in schema\\['then'\\]"
+    - data:
+        s1: 0
+        s2: 2
+        s4: 4
+    - data:
+        s1: 1
+        s2: 2
+        s3: 0
+        s4: 0
+      error_message: "Failed validating 'anyOf' in schema\\['then'\\]"
+
+- name: multiple rules
+  linkml_rules:
+    - description: if s1 is 1 then s2 is 2 or greater
+      preconditions:
+        slot_conditions:
+          s1:
+            equals_number: 1
+      postconditions:
+        slot_conditions:
+          s2:
+            minimum_value: 2
+    - description: if s3 is 3 then s4 is 4 or greater
+      preconditions:
+        slot_conditions:
+          s3:
+            equals_number: 3
+      postconditions:
+        slot_conditions:
+          s4:
+            minimum_value: 4
+  json_schema:
+    allOf:
+      - if: 
+          properties:
+            s1: 
+              const: 1
+          required:
+            - s1
+        then: 
+          properties:
+            s2:
+              minimum: 2
+          required:
+            - s2
+      - if:
+          properties:
+            s3:
+              const: 3
+          required:
+            - s3
+        then:
+          properties:
+            s4:
+              minimum: 4
+          required:
+            - s4
+  data_cases:
+    - data:
+        s1: 0
+    - data:
+        s2: 0
+    - data:
+        s3: 0
+    - data:
+        s4: 0
+    - data:
+        s1: 1
+      error_message: "'s2' is a required property"
+    - data:
+        s1: 1
+        s2: 1
+      error_message: 1 is less than the minimum of 2
+    - data:
+        s1: 1
+        s2: 2
+    - data:
+        s3: 3
+      error_message: "'s4' is a required property"
+    - data:
+        s3: 3
+        s4: 3
+      error_message: 3 is less than the minimum of 4
+    - data:
+        s3: 3
+        s4: 4
+    - data:
+        s1: 1
+        s2: 2
+        s3: 3
+        s4: 0
+      error_message: 0 is less than the minimum of 4
+    - data:
+        s1: 1
+        s2: 2
+        s3: 3
+        s4: 4
+
+- name: open world rule
+  linkml_rules:
+    - description: if s1 is 0, s2 must be 1 or greater
+      preconditions:
+        slot_conditions:
+          s1:
+            equals_number: 0
+      postconditions:
+        slot_conditions:
+          s2:
+            minimum_value: 1
+      open_world: true
+  json_schema:
+    if:
+      properties: 
+        s1: 
+          const: 0
+      required:
+        - s1
+    then:
+      properties:
+        s2:
+          minimum: 1
+  data_cases:
+    - data:
+        s1: 0
+    - data:
+        s1: 0
+        s2: 1
+    - data:
+        s1: 1
+        s2: 0
+    - data:
+        s2: 0
+    - data:
+        s1: 0
+        s2: 0
+      error_message: Failed validating 'minimum'
+
+- name: open world with elsecondition
+  linkml_rules:
+    - description: if s1 is 0 then s1 must be less than 10 otherwise it must be greater than 100
+      preconditions:
+        slot_conditions:
+          s1:
+            equals_number: 0
+      postconditions:
+        slot_conditions:
+          s2:
+            maximum_value: 10
+      elseconditions:
+        slot_conditions:
+          s2:
+            minimum_value: 100
+      open_world: true
+  json_schema:
+    if:
+      properties:
+        s1: 
+          const: 0
+      required: 
+        - s1
+    then:
+      properties:
+        s2:
+          maximum: 10
+    else:
+      properties:
+        s2:
+          minimum: 100
+  data_cases:
+    - data:
+        s1: 0
+    - data:
+        s1: 1
+    - data:
+        s2: 0
+      error_message: 0 is less than the minimum of 100
+    - data:
+        s1: 0
+        s2: 9
+    - data:
+        s1: 1
+        s2: 101
+    - data: 
+        s1: 0
+        s2: 11
+      error_message: 11 is greater than the maximum of 10
+    - data:
+        s1: 1
+        s2: 99
+      error_message: 99 is less than the minimum of 100
+    

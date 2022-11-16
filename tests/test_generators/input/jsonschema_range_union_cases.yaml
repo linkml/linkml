@@ -1,0 +1,176 @@
+schema:
+  id: http://example.org/test_range_unions
+  name: test_range_unions
+  imports:
+    - https://w3id.org/linkml/types
+  slots:
+    letter_enum_single_value:
+      multivalued: false
+      range: Letters
+    letter_enum_multi_value:
+      multivalued: true
+      range: Letters
+    letter_or_number_enum_single_value:
+      multivalued: false
+      any_of:
+        - range: Letters
+        - range: Numbers
+    letter_or_number_enum_multi_value:
+      multivalued: true
+      any_of:
+        - range: Letters
+        - range: Numbers
+    integer_single_value:
+      multivalued: false
+      range: integer
+    integer_multi_value:
+      multivalued: true
+      range: integer
+    integer_or_string_single_value:
+      multivalued: false
+      any_of:
+        - range: integer
+        - range: string
+    integer_or_string_multi_value:
+      multivalued: true
+      any_of:
+        - range: integer
+        - range: string
+    c1_single_value:
+      multivalued: false
+      range: C1
+    c1_mutli_value:
+      multivalued: true
+      range: C1
+    c1_or_c2_single_value:
+      multivalued: false
+      inlined: true
+      any_of:
+        - range: C1
+        - range: C2
+    c1_or_c2_multi_value:
+      multivalued: true
+      inlined_as_list: true
+      any_of:
+        - range: C1
+        - range: C2
+    grab_bag:
+      multivalued: true
+      inlined_as_list: true
+      any_of:
+        - range: integer
+        - range: Numbers
+        - range: C1
+    s1:
+      range: string
+      required: true
+    s2:
+      range: string
+      required: true
+  enums:
+    Letters:
+      permissible_values:
+        ALPHA:
+        BRAVO:
+        CHARLIE:
+        DELTA:
+    Numbers:
+      permissible_values:
+        ONE:
+        TWO:
+        THREE:
+        FOUR:
+  classes:
+    C1:
+      slots:
+        - s1
+    C2:
+      slots:
+        - s2
+    Test:
+      slots:
+        - letter_enum_single_value
+        - letter_enum_multi_value
+        - letter_or_number_enum_single_value
+        - letter_or_number_enum_multi_value
+        - integer_single_value
+        - integer_multi_value
+        - integer_or_string_single_value
+        - integer_or_string_multi_value
+        - c1_single_value
+        - c1_mutli_value
+        - c1_or_c2_single_value
+        - c1_or_c2_multi_value
+        - grab_bag
+
+valid_cases:
+  - letter_enum_single_value: "ALPHA"
+  - letter_enum_multi_value: ["BRAVO", "CHARLIE"]
+  - letter_or_number_enum_single_value: "ONE"
+  - letter_or_number_enum_multi_value: ["TWO", "DELTA"]
+  - integer_single_value: 0
+  - integer_multi_value: [0, 1]
+  - integer_or_string_single_value: "zero"
+  - integer_or_string_multi_value: ["zero", 1]
+  - c1_single_value:
+      s1: 'hi'
+  - c1_mutli_value:
+      - s1: 'hi'
+      - s1: 'hello'
+  - c1_or_c2_single_value:
+      s2: 'hi'
+  - c1_or_c2_multi_value:
+      - s1: 'hi'
+      - s2: 'hello'
+  - grab_bag:
+      - s1: 'two'
+      - ONE
+      - 0
+
+invalid_cases:
+  - letter_enum_single_value: "ONE"
+  - letter_enum_single_value: ["ALPHA", "BRAVO"]
+  - letter_enum_multi_value: "ALPHA"
+  - letter_enum_multi_value: ["ONE", "CHARLIE"]
+  - letter_or_number_enum_single_value: ["ONE"]
+  - letter_or_number_enum_single_value: "NOT_A_VALUE"
+  - letter_or_number_enum_multi_value: "ALPHA"
+  - letter_or_number_enum_multi_value: ["ALPHA", "THREE", "NOT_A_VALUE"]
+  - integer_single_value: [0]
+  - integer_single_value: "zero"
+  - integer_multi_value: 0
+  - integer_multi_value: ["zero"]
+  - integer_or_string_single_value: [0]
+  - integer_or_string_single_value: false
+  - integer_or_string_multi_value: "zero"
+  - integer_or_string_multi_value: [0, "one", false]
+  - c1_single_value:
+    - s1: 'hi'
+  - c1_single_value:
+      s2: 'hi'
+  - c1_mutli_value:
+      s2: 'hi'
+  - c1_mutli_value:
+    - s2: 'hi'
+  - c1_or_c2_single_value:
+    - s1: 'hi'
+  - c1_or_c2_single_value:
+      s3: 'hi'
+  - c1_or_c2_multi_value:
+      s1: 'hi'
+  - c1_or_c2_multi_value:
+    - s1: 'hi'
+    - s2: 'hello'
+    - s3: 'hola'
+  - grab_bag:
+    - s2: 'two'
+    - ONE
+    - 0
+  - grab_bag:
+    - s1: 'two'
+    - ONE
+    - false
+  - grab_bag:
+    - s1: 'two'
+    - five
+    - 5
