@@ -18,6 +18,17 @@ URI: {{ gen.uri_link(element) }}
 _This is a dynamic enum_
 {% endif %}
 
+{% set slots_for_enum = schemaview.get_slots_by_enum(element.name) %}
+{% if slots_for_enum is defined and slots_for_enum|length > 0 -%}
+## Slots
+
+| Name | Description |
+| ---  | --- |
+{% for s in schemaview.get_slots_by_enum(element.name) -%}
+| {{gen.link(s)}} | {{s.description|enshorten}} |
+{% endfor %}
+{% endif %}
+
 {% include "common_metadata.md.jinja2" %}
 
 ## LinkML Source
