@@ -18,6 +18,7 @@ import abc
 import logging
 import os
 import re
+import sys
 from contextlib import redirect_stdout
 from dataclasses import dataclass, field
 from io import StringIO
@@ -153,13 +154,17 @@ class Generator(metaclass=abc.ABCMeta):
     metamodel: SchemaLoader = None
     """A SchemaLoader instance that points to the LinkML metamodel (meta.yaml)"""
 
+    stacktrace: bool = False
+    """True means print stack trace, false just error message"""
+
     def __post_init__(self) -> None:
         if not self.logger:
             self.logger = logging.getLogger()
         #    logging.basicConfig()
         #    self.logger = logging.getLogger(self.__class__.__name__)
         #    self.logger.setLevel(log_level)
-
+        if not self.stacktrace:
+            sys.tracebacklimit = 0
         if self.format is None:
             self.format = self.valid_formats[0]
         if self.format not in self.valid_formats:
@@ -977,6 +982,14 @@ def shared_arguments(g: Type[Generator]) -> Callable[[Command], Command]:
                 help="Merge imports into source file (default=mergeimports)",
             )
         )
+        f.params.append(
+            Option(
+                ("--stacktrace/--no-stacktrace",),
+                default=False,
+                help="Print a stack trace when an error occurs (default=stacktrace)",
+            )
+        )
+
         return f
 
     return decorator
