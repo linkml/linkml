@@ -256,10 +256,16 @@ class DocGeneratorTestCase(unittest.TestCase):
 
         # test that slots for enums are being rendered
         assert_mdfile_contains(
-            "LifeStatusEnum.md", "life_status", after="## Slots"
+            "LifeStatusEnum.md", "life_st", after="## Slots",
+            followed_by=["## Identifier and Mapping Information", 
+                        "### Schema Source", 
+                        "## LinkML Source"],
         )
         assert_mdfile_contains(
-            "LifeStatusEnum.md", "is_living", after="## Slots"
+            "LifeStatusEnum.md", "is_livin", after="## Slots",
+            followed_by=["## Identifier and Mapping Information", 
+                        "### Schema Source", 
+                        "## LinkML Source"],
         )
 
     def test_docgen_rank_ordering(self):
