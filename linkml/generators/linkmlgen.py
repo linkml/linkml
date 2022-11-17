@@ -1,7 +1,7 @@
 import logging
 import os
 from dataclasses import dataclass, field
-from typing import TextIO, Union
+from typing import Union
 
 import click
 from linkml_runtime.dumpers import json_dumper, yaml_dumper
@@ -10,9 +10,11 @@ from linkml_runtime.utils.schemaview import SchemaView
 from linkml._version import __version__
 from linkml.utils.generator import Generator, shared_arguments
 from linkml.utils.helpers import write_to_file
-from linkml_runtime.utils.pattern import generate_patterns
 
 logger = logging.getLogger(__name__)
+
+# type annotation for file name
+FILE_TYPE = Union[str, bytes, os.PathLike]
 
 
 @dataclass
@@ -31,12 +33,10 @@ class LinkmlGenerator(Generator):
     materialize_attributes: bool = field(default_factory=lambda: False)
     materialize_patterns: bool = field(default_factory=lambda: False)
 
-
     def __post_init__(self):
         # TODO: consider moving up a level
         self.schemaview = SchemaView(self.schema)
         super().__post_init__()
-
 
     def materialize_classes(self) -> None:
         """Materialize class slots from schema as attribues, in place"""
@@ -95,15 +95,22 @@ class LinkmlGenerator(Generator):
     "-o",
     "--output",
     type=click.Path(),
-    help="""Name of JSON or YAML file to be created""",
+    help="Name of JSON or YAML file to be created",
 )
 @click.version_option(__version__, "-V", "--version")
 @click.command()
-def cli(yamlfile, materialize_attributes: bool, output, **kwargs):
+def cli(
+    yamlfile,
+    materialize_attributes: bool,
+    materialize_patterns: bool,
+    output: FILE_TYPE = None,
+    **kwargs,
+):
     gen = LinkmlGenerator(
         yamlfile,
         materialize_attributes=materialize_attributes,
-        **kwargs
+        materialize_patterns=materialize_patterns,
+        **kwargs,
     )
     print(gen.serialize(output=output))
 
