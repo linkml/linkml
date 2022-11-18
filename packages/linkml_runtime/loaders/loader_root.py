@@ -84,7 +84,7 @@ class Loader(ABC):
         :return: instance of target_class
         """
         results = self.load_any(*args, **kwargs)
-        if isinstance(results, Union[BaseModel, YAMLRoot]):
+        if isinstance(results, BaseModel) or isinstance(results, YAMLRoot):
             return results
         else:
             raise ValueError(f'Result is not an instance of BaseModel or YAMLRoot: {type(results)}')
