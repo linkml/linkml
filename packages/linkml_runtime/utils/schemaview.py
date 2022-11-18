@@ -1045,33 +1045,32 @@ class SchemaView(object):
             cls = None
         # attributes take priority over schema-level slot definitions, IF
         # the attributes is declared for the class or an ancestor
+        slot_comes_from_attribute = False
         if cls:
+            # traverse ancestors (reflexive), starting with
+            # the main class
             for an in self.class_ancestors(class_name):
                 a = self.get_class(an, imports)
                 if slot_name in a.attributes:
                     slot = a.attributes[slot_name]
+                    slot_comes_from_attribute = True
                     break
-        islot = None
-        if slot is not None:
-            # case 1: there is an explicit declaration of the slot
-            islot = deepcopy(slot)
+        else:
+            slot = self.get_slot(slot_name, imports, attributes=True)
+        if slot is None:
+            raise ValueError(f"Slot {slot_name} as an attribute of {class_name} ancestors"
+                             "or as a slot definition in the schema")
+        # copy the slot, as it will be modified
+        induced_slot = deepcopy(slot)
+        if not slot_comes_from_attribute:
             slot_anc_names = self.slot_ancestors(slot_name, reflexive=True)
             # inheritable slot: first propagate from ancestors
             for anc_sn in reversed(slot_anc_names):
                 anc_slot = self.get_slot(anc_sn, attributes=False)
                 for metaslot_name in SlotDefinition._inherited_slots:
                     if getattr(anc_slot, metaslot_name, None):
-                        setattr(islot, metaslot_name, deepcopy(getattr(anc_slot, metaslot_name)))
-            # then override with this
-            #for metaslot_name in SlotDefinition._inherited_slots:
-            #    if getattr(slot, metaslot_name, None):
-            #        setattr(islot, metaslot_name, deepcopy(getattr(slot, metaslot_name)))
-        else:
-            slot = self.get_slot(slot_name, imports, attributes=True)
-            if slot is None:
-                raise ValueError(f'No such slot: {slot_name} and no attribute by that name in ancestors of {class_name}')
-            islot = deepcopy(slot)
-
+                        setattr(induced_slot, metaslot_name, deepcopy(getattr(anc_slot, metaslot_name)))
+        # Apply slot-usages
         COMBINE = {
             'maximum_value': lambda x, y: min(x, y),
             'minimum_value': lambda x, y: max(x, y),
@@ -1080,15 +1079,13 @@ class SchemaView(object):
         for metaslot_name in self._metaslots_for_slot():
             # inheritance of slots; priority order
             #   slot-level assignment < ancestor slot_usage < self slot_usage
-            v = getattr(islot, metaslot_name, None)
+            v = getattr(induced_slot, metaslot_name, None)
             if not cls:
                 propagated_from = []
-            elif metaslot_name in SlotDefinition._inherited_slots:
-                propagated_from = self.class_ancestors(class_name, reflexive=True, mixins=True)
             else:
-                propagated_from = [class_name]
+                propagated_from = self.class_ancestors(class_name, reflexive=True, mixins=True)
             for an in reversed(propagated_from):
-                islot.owner = an
+                induced_slot.owner = an
                 a = self.get_class(an, imports)
                 anc_slot_usage = a.slot_usage.get(slot_name, {})
                 v2 = getattr(anc_slot_usage, metaslot_name, None)
@@ -1101,23 +1098,23 @@ class SchemaView(object):
                     else:
                         if v2 is not None:
                             v = v2
-                            logging.debug(f'{v} takes precedence over {v2} for {islot.name}.{metaslot_name}')
+                            logging.debug(f'{v} takes precedence over {v2} for {induced_slot.name}.{metaslot_name}')
             if v is None:
                 if metaslot_name == 'range':
                     v = self.schema.default_range
             if v is not None:
-                setattr(islot, metaslot_name, v)
+                setattr(induced_slot, metaslot_name, v)
         if slot.inlined_as_list:
             slot.inlined = True
         if mangle_name:
             mangled_name = f'{camelcase(class_name)}__{underscore(slot_name)}'
-            islot.name = mangled_name
-        if not islot.alias:
-            islot.alias = underscore(slot_name)
+            induced_slot.name = mangled_name
+        if not induced_slot.alias:
+            induced_slot.alias = underscore(slot_name)
         for c in self.all_classes().values():
-            if islot.name in c.slots or islot.name in c.attributes:
-                islot.domain_of.append(c.name)
-        return deepcopy(islot)
+            if induced_slot.name in c.slots or induced_slot.name in c.attributes:
+                induced_slot.domain_of.append(c.name)
+        return deepcopy(induced_slot)
 
     @lru_cache()
     def _metaslots_for_slot(self):
