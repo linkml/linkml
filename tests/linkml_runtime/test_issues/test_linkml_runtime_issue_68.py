@@ -97,7 +97,7 @@ class Issue68TestCase(TestCase):
         s2_induced_c2 = view.induced_slot('slot2', 'class2')
         assert s2_induced_c2.required
         logging.info(f"s2_induced_c2.description: {s2_induced_c2.description}")
-        assert s2_induced_c2.description == "non-induced slot2"
+        assert s2_induced_c2.description == "induced slot2"
         assert s2_induced.range == 'class1'
 
         s3_induced_c2 = view.induced_slot('slot3', 'class2')
@@ -110,13 +110,13 @@ class Issue68TestCase(TestCase):
         s2_induced_c2_1a = view.induced_slot('slot2', 'class2_1a')
         assert not s2_induced_c2_1a.required
         logging.info(f"s2_induced_c2_1a.description: {s2_induced_c2_1a.description}")
-        assert s2_induced_c2_1a.description == "non-induced slot2"
+        assert s2_induced_c2_1a.description == "mixin slot2"
         assert s2_induced_c2_1a.range == 'mixin1a'
 
         s2_induced_c2_1b = view.induced_slot('slot2', 'class2_1b')
         assert not s2_induced_c2_1b.required
         logging.info(f"s2_induced_c2_1a.description: {s2_induced_c2_1b.description}")
-        assert s2_induced_c2_1b.description == "non-induced slot2"
+        assert s2_induced_c2_1b.description == "mixin slot2"
         assert s2_induced_c2_1b.range == 'mixin1b'
 
 

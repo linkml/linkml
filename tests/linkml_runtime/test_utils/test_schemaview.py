@@ -494,11 +494,38 @@ class SchemaViewTestCase(unittest.TestCase):
         with self.assertRaises(ValueError):
             view.slot_ancestors('s5')
 
+    def test_attribute_inheritance(self):
+        """
+        Tests attribute inheritance edge cases
+        :return:
+        """
+        view = SchemaView(os.path.join(INPUT_DIR, 'attribute_edge_cases.yaml'))
+        expected = [
+            ('Root', 'a1', None, "a1"),
+            ('Root', 'a2', None, "a2"),
+            ('Root', 'a3', None, "a3"),
+            ('C1', 'a1', True, "a1m1"),
+            ('C1', 'a2', True, "a2c1"),
+            ('C1', 'a3', None, "a3"),
+            ('C1', 'a4', None, "a4"),
+            ('C2', 'a1', False, "a1m2"),
+            ('C2', 'a2', True, "a2c2"),
+            ('C2', 'a3', None, "a3"),
+            ('C2', 'a4', True, "a4m2"),
+            ('C1x', 'a1', True, "a1m1"),
+            ('C1x', 'a2', True, "a2c1x"),
+            ('C1x', 'a3', None, "a3"),
+            ('C1x', 'a4', None, "a4"),
+        ]
+        for cn, sn, req, desc in expected:
+            slot = view.induced_slot(sn, cn)
+            self.assertEqual(req, slot.required, f"in: {cn}.{sn}")
+            self.assertEqual(desc, slot.description, f"in: {cn}.{sn}")
+            self.assertEqual('string', slot.range, f"in: {cn}.{sn}")
+
     def test_ambiguous_attributes(self):
         """
         Tests behavior where multiple attributes share the same name
-
-        :return:
         """
         schema = SchemaDefinition(id='test', name='test')
         view = SchemaView(schema)
