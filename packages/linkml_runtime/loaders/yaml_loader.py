@@ -19,7 +19,8 @@ class YAMLLoader(Loader):
         def loader(data: Union[str, dict], source_file: FileInfo) -> Optional[Dict]:
             if isinstance(data, str):
                 data = StringIO(data)
-                data.name = os.path.relpath(source_file.source_file, source_file.base_path)
+                if source_file and source_file.source_file:
+                    data.name = os.path.relpath(source_file.source_file, source_file.base_path)
                 return yaml.load(data, DupCheckYamlLoader)
             else:
                 return data
