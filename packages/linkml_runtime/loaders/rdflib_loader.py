@@ -15,6 +15,7 @@ from linkml_runtime.loaders.loader_root import Loader
 from linkml_runtime.utils.formatutils import underscore
 from linkml_runtime.utils.schemaview import SchemaView, SlotDefinition
 from linkml_runtime.utils.yamlutils import YAMLRoot
+from pydantic import BaseModel
 
 VALID_SUBJECT = Union[URIRef, BNode]
 ANYDICT = Dict[str, Any]
@@ -29,11 +30,11 @@ class RDFLibLoader(Loader):
 
     Note: this is a more complete replacement for rdf_loader
     """
-    def from_rdf_graph(self, graph: Graph, schemaview: SchemaView, target_class: Type[YAMLRoot],
+    def from_rdf_graph(self, graph: Graph, schemaview: SchemaView, target_class: Type[Union[BaseModel, YAMLRoot]],
                        prefix_map: Dict[str, str] = None,
                        cast_literals: bool = True,
                        allow_unprocessed_triples: bool = True,
-                       ignore_unmapped_predicates: bool = False) -> List[YAMLRoot]:
+                       ignore_unmapped_predicates: bool = False) -> List[Union[BaseModel, YAMLRoot]]:
         """
         Loads objects from graph into lists of the python target_class structure,
         recursively walking RDF graph from instances of target_class.
@@ -223,12 +224,12 @@ class RDFLibLoader(Loader):
             return schemaview.namespaces().curie_for(node)
 
 
-    def load(self, source: Union[str, TextIO, Graph], target_class: Type[YAMLRoot], *,
+    def load(self, source: Union[str, TextIO, Graph], target_class: Type[Union[BaseModel, YAMLRoot]], *,
              schemaview: SchemaView = None,
              prefix_map: Dict[str, str] = None,
              fmt: Optional[str] = 'turtle',
              metadata: Optional[FileInfo] = None,
-             **kwargs) -> YAMLRoot:
+             **kwargs) -> Union[BaseModel, YAMLRoot]:
         """
         Load the RDF in source into the python target_class structure
 
@@ -257,10 +258,10 @@ class RDFLibLoader(Loader):
             raise DataNotFoundError(f'Got {len(objs)} of type {target_class} from source, expected exactly 1')
         return objs[0]
 
-    def loads(self, source: str, **kwargs) -> YAMLRoot:
+    def loads(self, source: str, **kwargs) -> Union[BaseModel, YAMLRoot]:
         return self.load(source, **kwargs)
 
-    def load_any(self, source: str, **kwargs) -> Union[YAMLRoot, List[YAMLRoot]]:
+    def load_any(self, source: str, **kwargs) -> Union[BaseModel, YAMLRoot, List[BaseModel], List[YAMLRoot]]:
         return self.load(source, **kwargs)
 
 

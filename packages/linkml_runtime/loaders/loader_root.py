@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import TextIO, Union, Optional, Callable, Dict, Type, Any, List
 
+from pydantic import BaseModel
 from hbreader import FileInfo, hbread
 from jsonasobj2 import as_dict, JsonObj
 
@@ -38,7 +39,7 @@ class Loader(ABC):
                     loader: Callable[[Union[str, Dict], FileInfo], Optional[Union[Dict, List]]],
                     target_class: Type[YAMLRoot],
                     accept_header: Optional[str] = "text/plain, application/yaml;q=0.9",
-                    metadata: Optional[FileInfo] = None) -> Optional[Union[YAMLRoot, List[YAMLRoot]]]:
+                    metadata: Optional[FileInfo] = None) -> Optional[Union[BaseModel, YAMLRoot, List[BaseModel], List[YAMLRoot]]]:
         """ Base loader - convert a file, url, string, open file handle or dictionary into an instance
         of target_class
 
@@ -71,7 +72,7 @@ class Loader(ABC):
         else:
             return None
 
-    def load(self, *args, **kwargs) -> YAMLRoot:
+    def load(self, *args, **kwargs) -> Union[BaseModel, YAMLRoot]:
         """
         Load source as an instance of target_class
 
@@ -83,14 +84,14 @@ class Loader(ABC):
         :return: instance of target_class
         """
         results = self.load_any(*args, **kwargs)
-        if isinstance(results, YAMLRoot):
+        if isinstance(results, Union[BaseModel, YAMLRoot]):
             return results
         else:
-            raise ValueError(f'Result is not an instance of YAMLRoot: {type(results)}')
+            raise ValueError(f'Result is not an instance of BaseModel or YAMLRoot: {type(results)}')
 
     @abstractmethod
-    def load_any(self, source: Union[str, dict, TextIO], target_class: Type[YAMLRoot], *, base_dir: Optional[str] = None,
-             metadata: Optional[FileInfo] = None, **_) -> Union[YAMLRoot, List[YAMLRoot]]:
+    def load_any(self, source: Union[str, dict, TextIO], target_class: Type[Union[BaseModel, YAMLRoot]], *, base_dir: Optional[str] = None,
+             metadata: Optional[FileInfo] = None, **_) -> Union[BaseModel, YAMLRoot, List[BaseModel], List[YAMLRoot]]:
         """
         Load source as an instance of target_class, or list of instances of target_class
 
@@ -103,7 +104,7 @@ class Loader(ABC):
         """
         raise NotImplementedError()
 
-    def loads_any(self, source: str, target_class: Type[YAMLRoot], *, metadata: Optional[FileInfo] = None, **_) -> Union[YAMLRoot, List[YAMLRoot]]:
+    def loads_any(self, source: str, target_class: Type[Union[BaseModel, YAMLRoot]], *, metadata: Optional[FileInfo] = None, **_) -> Union[BaseModel, YAMLRoot, List[BaseModel], List[YAMLRoot]]:
         """
         Load source as a string as an instance of target_class, or list of instances of target_class
         @param source: source
@@ -114,7 +115,7 @@ class Loader(ABC):
         """
         return self.load_any(source, target_class, metadata=metadata)
 
-    def loads(self, source: str, target_class: Type[YAMLRoot], *, metadata: Optional[FileInfo] = None, **_) -> YAMLRoot:
+    def loads(self, source: str, target_class: Type[Union[BaseModel, YAMLRoot]], *, metadata: Optional[FileInfo] = None, **_) -> Union[BaseModel, YAMLRoot]:
         """
         Load source as a string
         :param source: source

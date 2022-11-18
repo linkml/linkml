@@ -6,12 +6,12 @@ from hbreader import FileInfo
 
 from linkml_runtime.loaders.loader_root import Loader
 from linkml_runtime.utils.yamlutils import YAMLRoot
-
+from pydantic import BaseModel
 
 class JSONLoader(Loader):
 
-    def load_any(self, source: Union[str, dict, TextIO], target_class: Type[YAMLRoot], *, base_dir: Optional[str] = None,
-             metadata: Optional[FileInfo] = None, **_) -> Union[YAMLRoot, List[YAMLRoot]]:
+    def load_any(self, source: Union[str, dict, TextIO], target_class: Type[Union[BaseModel, YAMLRoot]], *, base_dir: Optional[str] = None,
+             metadata: Optional[FileInfo] = None, **_) -> Union[BaseModel, YAMLRoot, List[BaseModel], List[YAMLRoot]]:
         def loader(data: Union[str, dict], _: FileInfo) -> Optional[Dict]:
             data_as_dict = json.loads(data) if isinstance(data, str) else data
             if isinstance(data_as_dict, list):

@@ -2,6 +2,7 @@ from json_flattener import unflatten_from_csv, KeyConfig, GlobalConfig, Serializ
 import json
 from typing import Type, Union, List
 from linkml_runtime.utils.yamlutils import YAMLRoot
+from pydantic import BaseModel
 
 from linkml_runtime.loaders.loader_root import Loader
 from linkml_runtime.loaders.json_loader import JSONLoader
@@ -17,7 +18,7 @@ class CSVLoader(Loader):
 
 
     def loads(self, input,
-              target_class: Type[YAMLRoot],
+              target_class: Type[Union[BaseModel, YAMLRoot]],
               index_slot: SlotDefinitionName = None,
               schema: SchemaDefinition = None,
               schemaview: SchemaView = None,
@@ -30,7 +31,7 @@ class CSVLoader(Loader):
         return JSONLoader().loads(json.dumps({index_slot: objs}), target_class=target_class)
 
     def load(self, source: str,
-             target_class: Type[YAMLRoot],
+             target_class: Type[Union[BaseModel, YAMLRoot]],
              index_slot: SlotDefinitionName = None,
              schema: SchemaDefinition = None,
              schemaview: SchemaView = None,

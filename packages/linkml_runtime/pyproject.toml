@@ -51,6 +51,7 @@ prefixcommons = ">=0.1.12"
 pyyaml = "*"
 rdflib = ">=6.0.0"
 requests = "*"
+pydantic = "^1.10.2"
 
 [tool.poetry.dev-dependencies]
 coverage = "^6.2"

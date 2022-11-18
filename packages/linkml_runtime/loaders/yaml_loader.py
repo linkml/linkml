@@ -6,7 +6,7 @@ from hbreader import FileInfo
 
 from linkml_runtime.loaders.loader_root import Loader
 from linkml_runtime.utils.yamlutils import YAMLRoot, DupCheckYamlLoader
-
+from pydantic import BaseModel
 
 class YAMLLoader(Loader):
     """
@@ -14,7 +14,7 @@ class YAMLLoader(Loader):
     """
 
     def load_any(self, source: Union[str, dict, TextIO], target_class: Type[YAMLRoot], *, base_dir: Optional[str] = None,
-                 metadata: Optional[FileInfo] = None, **_) -> Union[YAMLRoot, List[YAMLRoot]]:
+                 metadata: Optional[FileInfo] = None, **_) -> Union[BaseModel, YAMLRoot, List[BaseModel], List[YAMLRoot]]:
         def loader(data: Union[str, dict], _: FileInfo) -> Optional[Dict]:
             return yaml.load(StringIO(data), DupCheckYamlLoader) if isinstance(data, str) else data
 
@@ -25,7 +25,7 @@ class YAMLLoader(Loader):
         return self.load_source(source, loader, target_class, accept_header="text/yaml, application/yaml;q=0.9",
                                 metadata=metadata)
 
-    def loads_any(self, source: str, target_class: Type[YAMLRoot], *, metadata: Optional[FileInfo] = None, **_) -> Union[YAMLRoot, List[YAMLRoot]]:
+    def loads_any(self, source: str, target_class: Type[Union[BaseModel, YAMLRoot]], *, metadata: Optional[FileInfo] = None, **_) -> Union[BaseModel, YAMLRoot, List[BaseModel], List[YAMLRoot]]:
         """
         Load source as a string
         @param source: source
