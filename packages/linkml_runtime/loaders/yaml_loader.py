@@ -1,3 +1,4 @@
+import os
 from io import StringIO
 from typing import Union, TextIO, Optional, Dict, Type, List
 
@@ -15,8 +16,14 @@ class YAMLLoader(Loader):
 
     def load_any(self, source: Union[str, dict, TextIO], target_class: Type[YAMLRoot], *, base_dir: Optional[str] = None,
                  metadata: Optional[FileInfo] = None, **_) -> Union[YAMLRoot, List[YAMLRoot]]:
-        def loader(data: Union[str, dict], _: FileInfo) -> Optional[Dict]:
-            return yaml.load(StringIO(data), DupCheckYamlLoader) if isinstance(data, str) else data
+        def loader(data: Union[str, dict], source_file: FileInfo) -> Optional[Dict]:
+            if isinstance(data, str):
+                data = StringIO(data)
+                if source_file and source_file.source_file:
+                    data.name = os.path.relpath(source_file.source_file, source_file.base_path)
+                return yaml.load(data, DupCheckYamlLoader)
+            else:
+                return data
 
         if not metadata:
             metadata = FileInfo()
