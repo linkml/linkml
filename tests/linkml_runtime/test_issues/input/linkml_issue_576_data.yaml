@@ -1,3 +1,4 @@
+source: ex:source
 persons:
   - id: ex:P1
     name: John Doe

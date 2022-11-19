@@ -3,7 +3,7 @@ import urllib
 from abc import abstractmethod
 from typing import Optional, Any, Dict
 
-from rdflib import Graph, URIRef
+from rdflib import Graph, URIRef, XSD
 from rdflib.term import Node, BNode, Literal
 from rdflib.namespace import RDF
 
