@@ -328,7 +328,7 @@
 <span class="s2">**/{</span><span class="si">% e</span><span class="s2">ndif %}</span>
 <span class="s2">@Data</span>
 <span class="s2">@EqualsAndHashCode(callSuper=false)</span>
-<span class="s2">public {</span><span class="si">% i</span><span class="s2">f cls.abstract -%}abstract {</span><span class="si">%- e</span><span class="s2">ndif %}class {{ cls.name }} {</span><span class="si">% i</span><span class="s2">f cls.is_a -%} extends {{ cls.is_a }} {</span><span class="si">%- e</span><span class="s2">ndif %} {</span>
+<span class="s2">public{</span><span class="si">% i</span><span class="s2">f cls.abstract %} abstract{</span><span class="si">% e</span><span class="s2">ndif %} class {{ cls.name }} {</span><span class="si">% i</span><span class="s2">f cls.is_a -%} extends {{ cls.is_a }} {</span><span class="si">%- e</span><span class="s2">ndif %} {</span>
 <span class="s2">{</span><span class="si">% f</span><span class="s2">or f in cls.fields %}</span>
 <span class="s2">  private {{f.range}} {{ f.name }};</span>
 <span class="s2">{</span><span class="si">%- e</span><span class="s2">ndfor %}</span>
