@@ -71,6 +71,8 @@ classes:
 
   Dataset:
     attributes:
+      source:
+        range: uriorcurie
       persons:
         multivalued: true
         range: Person

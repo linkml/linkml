@@ -23,9 +23,16 @@ class Issue576TestCase(TestCase):
         s = rdflib_dumper.dumps(inst, view, 'turtle', prefix_map={"@base": "http://example.org/default/"})
         self.assertIn("@base <http://example.org/default/> .", s)
         g = rdflib.Graph().parse(data=s, format='turtle')
-        #for t in g.triples((None, None, None)):
-        #    print(t)
+        for t in g.triples((None, None, None)):
+            print(t)
         cases = [
+            (None,
+             rdflib.term.URIRef('https://w3id.org/linkml/personinfo/source'),
+             rdflib.term.Literal('ex:source',
+                                 datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#anyURI'))),
+            (None,
+             rdflib.term.URIRef('https://w3id.org/linkml/personinfo/pets'),
+             rdflib.term.URIRef('https://example.org/PetA')),
             (rdflib.term.URIRef('http://example.org/default/org%201'),
              rdflib.term.URIRef('http://schema.org/name'),
              rdflib.term.Literal('Acme Inc. (US)')),
@@ -33,11 +40,15 @@ class Issue576TestCase(TestCase):
              rdflib.term.URIRef('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'),
              rdflib.term.URIRef('http://schema.org/Person')),
             (rdflib.term.URIRef('https://example.org/P1'),
-              rdflib.term.URIRef('http://schema.org/name'),
-              rdflib.term.Literal('John Doe')),
+             rdflib.term.URIRef('http://schema.org/name'),
+            rdflib.term.Literal('John Doe')),
         ]
         for case in cases:
-            self.assertIn(case, g)
+            s, p, o = case
+            if s is None:
+                self.assertIn(o, g.objects(s, p))
+            else:
+                self.assertIn(case, g)
         inst2 = rdflib_loader.load(g, target_class=Dataset, schemaview=view)
         #print(yaml_dumper.dumps(inst2))
         self.assertCountEqual(inst.persons, inst2.persons)
