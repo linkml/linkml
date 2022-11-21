@@ -22,7 +22,7 @@ COPY linkml linkml/
 RUN poetry build 
 
 #######################################
-FROM python:3.9-bullseye as runner
+FROM python:3.9-slim-bullseye as runner
 
 RUN useradd --create-home linkmluser
 WORKDIR /home/linkmluser
