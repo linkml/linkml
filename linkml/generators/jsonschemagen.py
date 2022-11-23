@@ -378,17 +378,17 @@ class JsonSchemaGenerator(Generator):
 
         if slot.any_of is not None and len(slot.any_of) > 0:
             if not slot_has_range_union:
-                prop['anyOf'] = [self.get_subschema_for_slot(s, omit_type) for s in slot.any_of]
+                prop['anyOf'] = [self.get_subschema_for_slot(s, omit_type=True) for s in slot.any_of]
 
         if slot.all_of is not None and len(slot.all_of) > 0:
-            prop['allOf'] = [self.get_subschema_for_slot(s, omit_type) for s in slot.all_of]
+            prop['allOf'] = [self.get_subschema_for_slot(s, omit_type=True) for s in slot.all_of]
 
         if slot.exactly_one_of is not None and len(slot.exactly_one_of) > 0:
-            prop['oneOf'] = [self.get_subschema_for_slot(s, omit_type) for s in slot.exactly_one_of]
+            prop['oneOf'] = [self.get_subschema_for_slot(s, omit_type=True) for s in slot.exactly_one_of]
 
         if slot.none_of is not None and len(slot.none_of) > 0:
             prop['not'] = {
-                'anyOf': [self.get_subschema_for_slot(s, omit_type) for s in slot.none_of]
+                'anyOf': [self.get_subschema_for_slot(s, omit_type=True) for s in slot.none_of]
             }
 
         return prop
