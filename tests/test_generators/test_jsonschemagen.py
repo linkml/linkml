@@ -173,6 +173,26 @@ classes:
         self.assertIn("id", json_schema["required"])
 
 
+    def test_value_constraints(self):
+        with open(env.input_path("jsonschema_value_constraints.yaml")) as f:
+            test_def = yaml.safe_load(f)
+        
+        generator = JsonSchemaGenerator(yaml.dump(test_def["schema"]), stacktrace=True, not_closed=False)
+        json_schema = json.loads(generator.serialize())
+
+        for data_case in test_def.get('data_cases', []):
+            data = data_case['data']
+            with self.subTest(data=data):
+                if 'error_message' in data_case:
+                    self.assertRaisesRegex(
+                        jsonschema.ValidationError, 
+                        data_case['error_message'],
+                        lambda: jsonschema.validate(data, json_schema),
+                    )
+                else:
+                    jsonschema.validate(data, json_schema)
+
+
     def test_rules(self):
         with open(RULES_CASES) as cases_file:
             cases = yaml.safe_load(cases_file)
