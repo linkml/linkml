@@ -1473,29 +1473,34 @@ class SchemaView(object):
     #def rename(self, old_name: str, new_name: str):
     #   todo: add to runtime
 
-    def merge_schema(self, schema: SchemaDefinition) -> None:
+    def merge_schema(self, schema: SchemaDefinition, clobber=False) -> None:
         """
-        merges another schema into this one
+        merges another schema into this one.
+
+        If the other schema has an element with the same name as an element in this schema,
+        then this element is NOT copied.
+
         :param schema: schema to be merged
+        :param clobber: if True, then overwrite existing elements
         """
         dest = self.schema
         for k, v in schema.prefixes.items():
-            if k not in dest.prefixes:
+            if clobber or k not in dest.prefixes:
                 dest.prefixes[k] = copy(v)
         for k, v in schema.classes.items():
-            if k not in dest.classes:
+            if clobber or k not in dest.classes:
                 dest.classes[k] = copy(v)
         for k, v in schema.slots.items():
-            if k not in dest.slots:
+            if clobber or k not in dest.slots:
                 dest.slots[k] = copy(v)
         for k, v in schema.types.items():
-            if k not in dest.types:
+            if clobber or k not in dest.types:
                 dest.types[k] = copy(v)
         for k, v in schema.enums.items():
-            if k not in dest.enums:
+            if clobber or k not in dest.enums:
                 dest.enums[k] = copy(v)
         for k, v in schema.subsets.items():
-            if k not in dest.subsets:
+            if clobber or k not in dest.subsets:
                 dest.subsets[k] = copy(v)
         self.set_modified()
 
