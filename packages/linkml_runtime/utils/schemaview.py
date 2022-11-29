@@ -1492,8 +1492,11 @@ class SchemaView(object):
             if k not in dest.types:
                 dest.types[k] = copy(v)
         for k, v in schema.enums.items():
-            if k not in dest.types:
+            if k not in dest.enums:
                 dest.enums[k] = copy(v)
+        for k, v in schema.subsets.items():
+            if k not in dest.subsets:
+                dest.subsets[k] = copy(v)
         self.set_modified()
 
     def merge_imports(self):
