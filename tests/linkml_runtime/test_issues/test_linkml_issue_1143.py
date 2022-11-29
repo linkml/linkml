@@ -4,9 +4,8 @@ from copy import deepcopy
 from typing import List
 from unittest import TestCase
 
-from examples import SchemaDefinition, ClassDefinition, SlotDefinition, EnumDefinition, TypeDefinition, Prefix, \
+from linkml_runtime.linkml_model import SchemaDefinition, ClassDefinition, SlotDefinition, EnumDefinition, TypeDefinition, Prefix, \
     SubsetDefinition
-from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.utils.schemaview import SchemaView
 
 from tests.test_issues.environment import env
