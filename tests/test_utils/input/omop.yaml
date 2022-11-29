@@ -1,0 +1,398 @@
+name: omop_vocabulary
+description: omop_vocabulary
+id: https://w3id.org/omop_vocabulary
+imports:
+- linkml:types
+prefixes:
+  linkml: https://w3id.org/linkml/
+  omop_vocabulary: https://w3id.org/omop_vocabulary
+default_prefix: omop_vocabulary
+enums:
+  domain_id_enum:
+    from_schema: https://w3id.org/omop_vocabulary
+    permissible_values:
+      Metadata:
+        description: Metadata
+  vocabulary_id_enum:
+    from_schema: https://w3id.org/omop_vocabulary
+    permissible_values:
+      CDM:
+        description: CDM
+  concept_class_id_enum:
+    from_schema: https://w3id.org/omop_vocabulary
+    permissible_values:
+      Field:
+        description: Field
+  standard_concept_enum:
+    from_schema: https://w3id.org/omop_vocabulary
+    permissible_values:
+      S:
+        description: S
+slots:
+  concept_id_1:
+    examples:
+    - value: '9'
+    from_schema: https://w3id.org/omop_vocabulary
+    range: integer
+  concept_id_2:
+    examples:
+    - value: '58'
+    from_schema: https://w3id.org/omop_vocabulary
+    range: integer
+  relationship_id:
+    examples:
+    - value: Concept replaced by
+    from_schema: https://w3id.org/omop_vocabulary
+    range: string
+  valid_start_date:
+    examples:
+    - value: '20151016'
+    from_schema: https://w3id.org/omop_vocabulary
+    range: integer
+  valid_end_date:
+    examples:
+    - value: '20991231'
+    from_schema: https://w3id.org/omop_vocabulary
+    range: integer
+  invalid_reason:
+    from_schema: https://w3id.org/omop_vocabulary
+    range: string
+  concept_relationship_list:
+    description: Container slot for CONCEPT_RELATIONSHIP.
+    from_schema: https://w3id.org/omop_vocabulary
+    multivalued: true
+    range: CONCEPT_RELATIONSHIP
+  ancestor_concept_id:
+    examples:
+    - value: '444112'
+    from_schema: https://w3id.org/omop_vocabulary
+    range: integer
+  descendant_concept_id:
+    examples:
+    - value: '4081245'
+    from_schema: https://w3id.org/omop_vocabulary
+    range: integer
+  min_levels_of_separation:
+    examples:
+    - value: '3'
+    from_schema: https://w3id.org/omop_vocabulary
+    range: integer
+  max_levels_of_separation:
+    examples:
+    - value: '4'
+    from_schema: https://w3id.org/omop_vocabulary
+    range: integer
+  concept_ancestor_list:
+    description: Container slot for CONCEPT_ANCESTOR.
+    from_schema: https://w3id.org/omop_vocabulary
+    multivalued: true
+    range: CONCEPT_ANCESTOR
+  concept_class_id:
+    examples:
+    - value: RNA Variant
+    from_schema: https://w3id.org/omop_vocabulary
+   # identifier: true
+    range: string
+  concept_class_name:
+    examples:
+    - value: RNA Variant
+    from_schema: https://w3id.org/omop_vocabulary
+    range: string
+  concept_class_concept_id:
+    examples:
+    - value: '32923'
+    from_schema: https://w3id.org/omop_vocabulary
+    range: integer
+  concept_class_list:
+    description: Container slot for CONCEPT_CLASS.
+    from_schema: https://w3id.org/omop_vocabulary
+    multivalued: true
+    range: CONCEPT_CLASS
+  concept_id:
+    examples:
+    - value: '40333864'
+    from_schema: https://w3id.org/omop_vocabulary
+    range: integer
+  concept_synonym_name:
+    examples:
+    - value: Destruction of lesion of spinal nerve root
+    from_schema: https://w3id.org/omop_vocabulary
+    range: string
+  language_concept_id:
+    examples:
+    - value: '4180186'
+    from_schema: https://w3id.org/omop_vocabulary
+    range: integer
+  concept_synonym_list:
+    description: Container slot for CONCEPT_SYNONYM.
+    from_schema: https://w3id.org/omop_vocabulary
+    multivalued: true
+    range: CONCEPT_SYNONYM
+  concept_name:
+    examples:
+    - value: procedure_occurrence.procedure_source_concept_id
+    from_schema: https://w3id.org/omop_vocabulary
+    range: string
+  domain_id:
+    examples:
+    - value: Metadata
+    from_schema: https://w3id.org/omop_vocabulary
+    range: domain_id_enum
+  vocabulary_id:
+    examples:
+    - value: CDM
+    from_schema: https://w3id.org/omop_vocabulary
+    range: vocabulary_id_enum
+  standard_concept:
+    examples:
+    - value: S
+    from_schema: https://w3id.org/omop_vocabulary
+    range: standard_concept_enum
+  concept_code:
+    examples:
+    - value: CDM1014
+    from_schema: https://w3id.org/omop_vocabulary
+    range: string
+  concept_list:
+    description: Container slot for CONCEPT.
+    from_schema: https://w3id.org/omop_vocabulary
+    multivalued: true
+    range: CONCEPT
+    inlined: true
+    inlined_as_list: true
+  domain_name:
+    examples:
+    - value: OMOP Condition Status
+    from_schema: https://w3id.org/omop_vocabulary
+    range: string
+  domain_concept_id:
+    examples:
+    - value: '32889'
+    from_schema: https://w3id.org/omop_vocabulary
+    range: integer
+  domain_list:
+    description: Container slot for DOMAIN.
+    from_schema: https://w3id.org/omop_vocabulary
+    multivalued: true
+    range: DOMAIN
+  relationship_name:
+    examples:
+    - value: RxNorm targeted therapy of (HemOnc)
+    from_schema: https://w3id.org/omop_vocabulary
+    range: string
+  is_hierarchical:
+    examples:
+    - value: '1'
+    from_schema: https://w3id.org/omop_vocabulary
+    range: integer
+  defines_ancestry:
+    examples:
+    - value: '1'
+    from_schema: https://w3id.org/omop_vocabulary
+    range: integer
+  reverse_relationship_id:
+    examples:
+    - value: Has targeted tx Rx
+    from_schema: https://w3id.org/omop_vocabulary
+    range: string
+  relationship_concept_id:
+    examples:
+    - value: '33048'
+    from_schema: https://w3id.org/omop_vocabulary
+    range: integer
+  relationship_list:
+    description: Container slot for RELATIONSHIP.
+    from_schema: https://w3id.org/omop_vocabulary
+    multivalued: true
+    range: RELATIONSHIP
+  vocabulary_name:
+    examples:
+    - value: Logical Observation Identifiers Names and Codes (Regenstrief Institute)
+    from_schema: https://w3id.org/omop_vocabulary
+    range: string
+  vocabulary_reference:
+    examples:
+    - value: http://loinc.org/downloads/loinc
+    from_schema: https://w3id.org/omop_vocabulary
+    range: string
+  vocabulary_version:
+    examples:
+    - value: LOINC 2.72
+    from_schema: https://w3id.org/omop_vocabulary
+    range: string
+  vocabulary_concept_id:
+    examples:
+    - value: '44819102'
+    from_schema: https://w3id.org/omop_vocabulary
+    range: integer
+  vocabulary_list:
+    description: Container slot for VOCABULARY.
+    from_schema: https://w3id.org/omop_vocabulary
+    multivalued: true
+    range: VOCABULARY
+classes:
+  CONCEPT_RELATIONSHIP:
+    from_schema: https://w3id.org/omop_vocabulary
+    slots:
+    - concept_id_1
+    - concept_id_2
+    - relationship_id
+    - valid_start_date
+    - valid_end_date
+    - invalid_reason
+    unique_keys:
+      invalid_reason_key:
+        unique_key_name: invalid_reason_key
+        unique_key_slots:
+        - invalid_reason
+  CONCEPT_RELATIONSHIP_CONTAINER:
+    from_schema: https://w3id.org/omop_vocabulary
+    slots:
+    - concept_relationship_list
+  CONCEPT_ANCESTOR:
+    from_schema: https://w3id.org/omop_vocabulary
+    slots:
+    - ancestor_concept_id
+    - descendant_concept_id
+    - min_levels_of_separation
+    - max_levels_of_separation
+    unique_keys:
+      descendant_concept_id_key:
+        unique_key_name: descendant_concept_id_key
+        unique_key_slots:
+        - descendant_concept_id
+  CONCEPT_ANCESTOR_CONTAINER:
+    from_schema: https://w3id.org/omop_vocabulary
+    slots:
+    - concept_ancestor_list
+  CONCEPT_CLASS:
+    from_schema: https://w3id.org/omop_vocabulary
+    slots:
+    - concept_class_id
+    - concept_class_name
+    - concept_class_concept_id
+    unique_keys:
+      concept_class_concept_id_key:
+        unique_key_name: concept_class_concept_id_key
+        unique_key_slots:
+        - concept_class_concept_id
+  CONCEPT_CLASS_CONTAINER:
+    from_schema: https://w3id.org/omop_vocabulary
+    slots:
+    - concept_class_list
+  CONCEPT_SYNONYM:
+    from_schema: https://w3id.org/omop_vocabulary
+    slots:
+    - concept_id
+    - concept_synonym_name
+    - language_concept_id
+    unique_keys:
+      concept_synonym_name_key:
+        unique_key_name: concept_synonym_name_key
+        unique_key_slots:
+        - concept_synonym_name
+  CONCEPT_SYNONYM_CONTAINER:
+    from_schema: https://w3id.org/omop_vocabulary
+    slots:
+    - concept_synonym_list
+  CONCEPT:
+    from_schema: https://w3id.org/omop_vocabulary
+    slots:
+    - concept_id
+    - concept_name
+    - domain_id
+    - vocabulary_id
+    - concept_class_id
+    - standard_concept
+    - concept_code
+    - valid_start_date
+    - valid_end_date
+    - invalid_reason
+    unique_keys:
+      concept_name_key:
+        unique_key_name: concept_name_key
+        unique_key_slots:
+        - concept_name
+      concept_code_key:
+        unique_key_name: concept_code_key
+        unique_key_slots:
+        - concept_code
+      invalid_reason_key:
+        unique_key_name: invalid_reason_key
+        unique_key_slots:
+        - invalid_reason
+  CONCEPT_CONTAINER:
+    from_schema: https://w3id.org/omop_vocabulary
+    slots:
+      - concept_list
+    tree_root: true
+  DOMAIN:
+    from_schema: https://w3id.org/omop_vocabulary
+    slots:
+    - domain_id
+    - domain_name
+    - domain_concept_id
+    unique_keys:
+      domain_name_key:
+        unique_key_name: domain_name_key
+        unique_key_slots:
+        - domain_name
+      domain_concept_id_key:
+        unique_key_name: domain_concept_id_key
+        unique_key_slots:
+        - domain_concept_id
+  DOMAIN_CONTAINER:
+    from_schema: https://w3id.org/omop_vocabulary
+    slots:
+    - domain_list
+  RELATIONSHIP:
+    from_schema: https://w3id.org/omop_vocabulary
+    slots:
+    - relationship_id
+    - relationship_name
+    - is_hierarchical
+    - defines_ancestry
+    - reverse_relationship_id
+    - relationship_concept_id
+    unique_keys:
+      relationship_name_key:
+        unique_key_name: relationship_name_key
+        unique_key_slots:
+        - relationship_name
+      reverse_relationship_id_key:
+        unique_key_name: reverse_relationship_id_key
+        unique_key_slots:
+        - reverse_relationship_id
+      relationship_concept_id_key:
+        unique_key_name: relationship_concept_id_key
+        unique_key_slots:
+        - relationship_concept_id
+  RELATIONSHIP_CONTAINER:
+    from_schema: https://w3id.org/omop_vocabulary
+    slots:
+    - relationship_list
+  VOCABULARY:
+    from_schema: https://w3id.org/omop_vocabulary
+    slots:
+    - vocabulary_id
+    - vocabulary_name
+    - vocabulary_reference
+    - vocabulary_version
+    - vocabulary_concept_id
+    unique_keys:
+      vocabulary_name_key:
+        unique_key_name: vocabulary_name_key
+        unique_key_slots:
+        - vocabulary_name
+      vocabulary_version_key:
+        unique_key_name: vocabulary_version_key
+        unique_key_slots:
+        - vocabulary_version
+      vocabulary_concept_id_key:
+        unique_key_name: vocabulary_concept_id_key
+        unique_key_slots:
+        - vocabulary_concept_id
+  VOCABULARY_CONTAINER:
+    from_schema: https://w3id.org/omop_vocabulary
+    slots:
+    - vocabulary_list

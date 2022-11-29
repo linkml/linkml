@@ -1,0 +1,20 @@
+concept_id	concept_name	domain_id	vocabulary_id	concept_class_id	standard_concept	concept_code	valid_start_date	valid_end_date	invalid_reason
+1146945	concept.concept_id	Metadata	CDM	Field	S	CDM1	20141111	20991231	
+1146954	concept.invalid_reason	Metadata	CDM	Field	S	CDM10	20141111	20991231	
+1147044	observation_period.observation_period_id	Metadata	CDM	Field	S	CDM100	20141111	20991231	
+756315	metadata.metadata_type_concept_id	Metadata	CDM	Field	S	CDM1000	20210925	20991231	
+756316	metadata.name	Metadata	CDM	Field	S	CDM1001	20210925	20991231	
+756317	metadata.value_as_concept_id	Metadata	CDM	Field	S	CDM1002	20210925	20991231	
+756318	metadata.value_as_number	Metadata	CDM	Field	S	CDM1003	20210925	20991231	
+756319	metadata.value_as_string	Metadata	CDM	Field	S	CDM1004	20210925	20991231	
+756320	note.note_event_field_concept_id	Metadata	CDM	Field	S	CDM1005	20210925	20991231	
+756321	note.note_event_id	Metadata	CDM	Field	S	CDM1006	20210925	20991231	
+756322	observation.observation_event_id	Metadata	CDM	Field	S	CDM1007	20210925	20991231	
+756323	observation.obs_event_field_concept_id	Metadata	CDM	Field	S	CDM1008	20210925	20991231	
+756324	observation.value_source_value	Metadata	CDM	Field	S	CDM1009	20210925	20991231	
+1147045	observation_period.person_id	Metadata	CDM	Field	S	CDM101	20141111	20991231	
+756325	procedure_occurrence.modifier_concept_id	Metadata	CDM	Field	S	CDM1010	20210925	20991231	
+756326	procedure_occurrence.modifier_source_value	Metadata	CDM	Field	S	CDM1011	20210925	20991231	
+756327	procedure_occurrence.procedure_end_date	Metadata	CDM	Field	S	CDM1012	20210925	20991231	
+756328	procedure_occurrence.procedure_end_datetime	Metadata	CDM	Field	S	CDM1013	20210925	20991231	
+756329	procedure_occurrence.procedure_source_concept_id	Metadata	CDM	Field	S	CDM1014	20210925	20991231	
