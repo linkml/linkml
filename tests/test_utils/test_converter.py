@@ -11,7 +11,10 @@ DATA_IN = env.input_path("data_example.yaml")
 JSON_OUT = env.expected_path("data_example.out.json")
 YAML_OUT = env.expected_path("data_example.out.yaml")
 RDF_OUT = env.expected_path("data_example.out.ttl")
-
+OMOP_SCHEMA = env.input_path("omop.yaml")
+OMOP_DATA_IN = env.input_path("CONCEPT.csv")
+OMOP_PY = env.input_path("omop.py")
+OMOP_RDF_OUT = env.expected_path("CONCEPT.out.ttl")
 
 class TestCommandLineInterface(unittest.TestCase):
     def setUp(self) -> None:
@@ -25,6 +28,13 @@ class TestCommandLineInterface(unittest.TestCase):
         # print(err)
         self.assertIn("INPUT", out)
         # self.assertEqual(0, result.exit_code)
+
+    def test_omop(self):
+        result = self.runner.invoke(
+            cli, ["-s", OMOP_SCHEMA, OMOP_DATA_IN, "-t", "rdf", "-o", OMOP_RDF_OUT, "-m", OMOP_PY,
+                  "--index-slot", "concept_list",
+                  "-C", "CONCEPT", OMOP_DATA_IN]
+        )
 
     def test_infer_and_convert(self):
         """
@@ -58,6 +68,8 @@ class TestCommandLineInterface(unittest.TestCase):
             self.assertEqual(p2["age_in_months"], 240)
             self.assertEqual(p2["age_category"], "adult")
             self.assertEqual(p2["full_name"], "first2 last2")
+
+
 
     def test_version(self):
         runner = CliRunner(mix_stderr=False)
