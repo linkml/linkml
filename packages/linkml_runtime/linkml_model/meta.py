@@ -873,7 +873,8 @@ class EnumDefinition(Definition):
     code_set_tag: Optional[str] = None
     code_set_version: Optional[str] = None
     pv_formula: Optional[Union[str, "PvFormulaOptions"]] = None
-    permissible_values: Optional[Union[Dict[Union[str, PermissibleValueText], Union[dict, "PermissibleValue"]], List[Union[dict, "PermissibleValue"]]]] = empty_dict()
+    permissible_values: Optional[Union[Dict[Union[str, PermissibleValueText], Union[dict, "PermissibleValue"]],
+                                       List[Union[dict, "PermissibleValue"]]]] = empty_dict()
     include: Optional[Union[Union[dict, AnonymousEnumExpression], List[Union[dict, AnonymousEnumExpression]]]] = empty_list()
     minus: Optional[Union[Union[dict, AnonymousEnumExpression], List[Union[dict, AnonymousEnumExpression]]]] = empty_list()
     inherits: Optional[Union[Union[str, EnumDefinitionName], List[Union[str, EnumDefinitionName]]]] = empty_list()

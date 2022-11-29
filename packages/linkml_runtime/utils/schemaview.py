@@ -44,6 +44,7 @@ def _closure(f, x, reflexive=True, depth_first=True, **kwargs):
         rv = [x]
     else:
         rv = []
+    print("rv", rv)
     visited = []
     todo = [x]
     while len(todo) > 0:
@@ -54,6 +55,7 @@ def _closure(f, x, reflexive=True, depth_first=True, **kwargs):
             todo = todo[1:]
         visited.append(i)
         vals = f(i)
+        print("vals", vals)
         for v in vals:
             if v not in visited:
                 todo.append(v)
@@ -120,7 +122,7 @@ class SchemaView(object):
         self.uuid = str(uuid.uuid4())
 
     def __key(self):
-        return (self.schema.id, self.uuid, self.modifications)
+        return self.schema.id, self.uuid, self.modifications
 
     def __eq__(self, other):
         if isinstance(other, SchemaView):
@@ -542,21 +544,20 @@ class SchemaView(object):
         return self._parents(e, imports, mixins, is_a=is_a)
 
     @lru_cache()
-    def permissible_value_parents(self, enum_name: ENUM_NAME, permissible_value: str) -> Union[
+    def permissible_value_parents(self, permissible_value: PermissibleValue, enum_name: ENUM_NAME) -> Union[
         str, PermissibleValueText, None, list[Any], ValueError]:
         """
         :param enum_name: child enum name
         :param permissible_value: permissible value
         :return: all direct parent enum names (is_a)
         """
-        e = self.get_enum(enum_name, strict=True)
+        enum = self.get_enum(enum_name, strict=True)
         parents = []
-        if e:
-            for pv, v in e.permissible_values.items():
-                if pv == permissible_value:
-                    return parents.append(v.is_a)
-                else:
-                    return parents
+        if enum:
+            if permissible_value in enum.permissible_values:
+                if permissible_value.is_a:
+                    print(permissible_value.is_a)
+                    return parents.append(permissible_value.is_a)
         else:
             return parents
 
@@ -627,15 +628,24 @@ class SchemaView(object):
                         reflexive=reflexive, depth_first=depth_first)
 
     @lru_cache()
-    def permissible_value_ancestors(self, enum_name: ENUM_NAME, permissible_value: str, reflexive=True, is_a=True,
+    def permissible_value_ancestors(self, permissible_value_text: str,
+                                    enum_name: ENUM_NAME,
+                                    reflexive=True,
                                     depth_first=True) -> Optional[list[Any]]:
         """
         Closure of permissible_value_parents method
-
+        :enum
         """
-        return _closure(lambda x: self.permissible_value_parents(enum_name, x),
-                        permissible_value,
-                        reflexive=reflexive, depth_first=depth_first)
+
+        enum = self.get_enum(enum_name)
+        if enum and enum.permissible_values:
+            for pv, v in enum.permissible_values.items():
+                if v == permissible_value_text:
+                    return _closure(lambda x: self.permissible_value_parents(x, enum_name=enum_name),
+                                    pv,
+                                    reflexive=reflexive, depth_first=depth_first)
+        else:
+            return [permissible_value_text]
 
     @lru_cache()
     def enum_ancestors(self, enum_name: ENUM_NAME, imports=True, mixins=True, reflexive=True, is_a=True,

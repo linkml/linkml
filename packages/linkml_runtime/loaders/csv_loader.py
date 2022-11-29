@@ -1,4 +1,4 @@
-from json_flattener import unflatten_from_csv, KeyConfig, GlobalConfig, Serializer
+ from json_flattener import unflatten_from_csv, KeyConfig, GlobalConfig, Serializer
 import json
 from typing import Type, Union, List
 from linkml_runtime.utils.yamlutils import YAMLRoot

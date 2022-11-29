@@ -85,7 +85,7 @@ classes:
       aliases:
         multivalued: true
         exact_mappings:
-          - schema:alternateName
+          - schema:alternateNamef
 
 
   Organization:
