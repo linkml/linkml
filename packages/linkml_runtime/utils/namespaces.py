@@ -236,6 +236,8 @@ class Namespaces(CaseInsensitiveDict):
         :param include_defaults: if True, take defaults from the map.
         :return:
         """
+        # combined_map =
+
         for k, v in curie_util.read_biocontext(map_name).items():
             if not k:
                 if include_defaults and not self._default:

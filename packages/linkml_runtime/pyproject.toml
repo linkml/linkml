@@ -39,7 +39,7 @@ packages = [
 comparefiles = "linkml_runtime.utils.comparefiles:cli"
 
 [tool.poetry.dependencies]
-python = "^3.7.1"
+python = "^3.7.6"
 
 click = "*"
 deprecated = "*"
@@ -51,6 +51,7 @@ prefixcommons = ">=0.1.12"
 pyyaml = "*"
 rdflib = ">=6.0.0"
 requests = "*"
+prefixmaps = { git = "https://github.com/linkml/prefixmaps.git", branch = "version_maintenance" }
 
 [tool.poetry.dev-dependencies]
 coverage = "^6.2"
