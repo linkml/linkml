@@ -239,7 +239,7 @@ class Namespaces(CaseInsensitiveDict):
         :return:
         """
 
-        if map_name == 'prefixmaps':
+        if map_name == 'prefixmaps_merged':
             context = load_multi_context(["merged"])
             prefix_map = context.as_dict()
         else:
