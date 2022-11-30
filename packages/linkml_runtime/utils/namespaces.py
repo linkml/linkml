@@ -5,6 +5,8 @@ from prefixcommons import curie_util
 from rdflib import Namespace, URIRef, Graph, BNode
 from rdflib.namespace import is_ncname
 from requests.structures import CaseInsensitiveDict
+from prefixmaps.io.parser import load_multi_context
+from curies import Converter
 
 from linkml_runtime.utils.yamlutils import TypedNode
 
@@ -236,9 +238,16 @@ class Namespaces(CaseInsensitiveDict):
         :param include_defaults: if True, take defaults from the map.
         :return:
         """
-        # combined_map =
 
-        for k, v in curie_util.read_biocontext(map_name).items():
+        if map_name == 'prefixmaps':
+            context = load_multi_context(["merged"])
+            prefix_map = context
+            print(prefix_map)
+        else:
+            prefix_map = curie_util.read_biocontext(map_name)
+            print(prefix_map)
+
+        for k, v in prefix_map.items():
             if not k:
                 if include_defaults and not self._default:
                     self._default = v

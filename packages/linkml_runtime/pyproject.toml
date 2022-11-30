@@ -52,10 +52,11 @@ pyyaml = "*"
 rdflib = ">=6.0.0"
 requests = "*"
 prefixmaps = { git = "https://github.com/linkml/prefixmaps.git", branch = "version_maintenance" }
+curies = "^0.4.0"
 
 [tool.poetry.dev-dependencies]
 coverage = "^6.2"
-importlib-metadata = {version = "^1.0", python = "<3.8"}
+importlib-metadata = {version = "^4.12.0", python = "<3.8"}
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

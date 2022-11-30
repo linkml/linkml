@@ -77,6 +77,11 @@ class NamespacesTestCase(unittest.TestCase):
         with self.assertRaises(ValueError):
             ns.uri_for("1abc:junk")
 
+    def test_prefixmaps_integration(self):
+        pmns = Namespaces()
+        pmns.add_prefixmap('prefixmaps')
+        print(pmns.keys())
+
 
 if __name__ == '__main__':
     unittest.main()
