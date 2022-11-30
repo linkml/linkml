@@ -241,13 +241,9 @@ class Namespaces(CaseInsensitiveDict):
 
         if map_name == 'prefixmaps':
             context = load_multi_context(["merged"])
-            prefix_map = context.as_extended_prefix_map()
-            print(type(prefix_map))
-            print(prefix_map)
+            prefix_map = context.as_dict()
         else:
             prefix_map = curie_util.read_biocontext(map_name)
-            print(type(prefix_map))
-            print(prefix_map)
 
         for k, v in prefix_map.items():
             if not k:
