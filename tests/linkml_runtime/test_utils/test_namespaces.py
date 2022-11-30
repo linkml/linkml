@@ -6,6 +6,15 @@ from rdflib.namespace import SKOS
 from linkml_runtime.utils.namespaces import Namespaces
 
 
+def test_prefixmaps_integration():
+    ns = Namespaces()
+    ns.add_prefixmap("monarch_context")
+
+    pmns = Namespaces()
+    pmns.add_prefixmap('prefixmaps')
+    print(pmns.keys())
+
+
 class NamespacesTestCase(unittest.TestCase):
     def test_namespaces(self):
         ns = Namespaces()
@@ -76,11 +85,6 @@ class NamespacesTestCase(unittest.TestCase):
         self.assertIsNone(ns.curie_for("http://google.com/test"))
         with self.assertRaises(ValueError):
             ns.uri_for("1abc:junk")
-
-    def test_prefixmaps_integration(self):
-        pmns = Namespaces()
-        pmns.add_prefixmap('prefixmaps')
-        print(pmns.keys())
 
 
 if __name__ == '__main__':
