@@ -57,7 +57,7 @@ URI: {{ gen.uri_link(element) }}
 * Minimum Value: {{ element.minimum_value }}
 {% endif %}
 {%- if element.maximum_value %}
-* Minimum Value: {{ element.maximum_value }}
+* Maximum Value: {{ element.maximum_value }}
 {% endif %}
 {%- if schemaview.is_mixin(element.name) %}
 * Mixin: {{ element.mixin }}
