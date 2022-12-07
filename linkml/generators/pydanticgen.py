@@ -98,7 +98,9 @@ class {{ c.name }}
 
 
 def _get_pyrange(t: TypeDefinition, sv: SchemaView) -> str:
-    pyrange = t.repr
+    if t is None:
+        print("stuff")
+    pyrange = t.repr if t is not None else None
     if pyrange is None:
         pyrange = t.base
     if t.base == "XSDDateTime":
@@ -347,7 +349,7 @@ class PydanticGenerator(OOCodeGenerator):
                 if s.range in sv.all_classes():
                     pyrange = self.get_class_slot_range(s)
                     identifier_slot = sv.get_identifier_slot(s.range)
-                    if identifier_slot:
+                    if identifier_slot is not None and identifier_slot.range is not None:
                         collection_key = _get_pyrange(sv.get_type(identifier_slot.range), sv)
                 elif s.range in sv.all_enums():
                     pyrange = f"{camelcase(s.range)}"
