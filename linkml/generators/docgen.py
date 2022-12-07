@@ -170,7 +170,7 @@ class DocGenerator(Generator):
             out_str = template.render(
                 gen=self, schema=imported_schema, schemaview=sv, **template_vars
             )
-            self._write(out_str, directory, imported_schema.name)
+            self._write(out_str, directory + "/schemas/", imported_schema.name)
         template = self._get_template("class")
         for cn, c in sv.all_classes().items():
             if self._is_external(c):
@@ -179,7 +179,7 @@ class DocGenerator(Generator):
             out_str = template.render(
                 gen=self, element=c, schemaview=sv, **template_vars
             )
-            self._write(out_str, directory, n)
+            self._write(out_str, directory + "/classes/", n)
         template = self._get_template("slot")
         for sn, s in sv.all_slots().items():
             if self._is_external(s):
@@ -189,7 +189,7 @@ class DocGenerator(Generator):
             out_str = template.render(
                 gen=self, element=s, schemaview=sv, **template_vars
             )
-            self._write(out_str, directory, n)
+            self._write(out_str, directory + "/slots/", n)
         template = self._get_template("enum")
         for en, e in sv.all_enums().items():
             if self._is_external(e):
@@ -198,7 +198,7 @@ class DocGenerator(Generator):
             out_str = template.render(
                 gen=self, element=e, schemaview=sv, **template_vars
             )
-            self._write(out_str, directory, n)
+            self._write(out_str, directory + "/enums/", n)
         template = self._get_template("type")
         for tn, t in sv.all_types().items():
             if self._exclude_type(t):
@@ -208,7 +208,7 @@ class DocGenerator(Generator):
             out_str = template.render(
                 gen=self, element=t, schemaview=sv, **template_vars
             )
-            self._write(out_str, directory, n)
+            self._write(out_str, directory + "/types/", n)
         template = self._get_template("subset")
         for _, s in sv.all_subsets().items():
             if self._is_external(c):
@@ -217,7 +217,7 @@ class DocGenerator(Generator):
             out_str = template.render(
                 gen=self, element=s, schemaview=sv, **template_vars
             )
-            self._write(out_str, directory, n)
+            self._write(out_str, directory + "/subsets/", n)
 
     def _write(self, out_str: str, directory: str, name: str) -> None:
         """
@@ -358,19 +358,19 @@ class DocGenerator(Generator):
         if self._is_external(e):
             return self.uri_link(e)
         elif isinstance(e, ClassDefinition):
-            return self._markdown_link(camelcase(e.name))
+            return self._markdown_link(camelcase(e.name), subfolder="classes")
         elif isinstance(e, EnumDefinition):
-            return self._markdown_link(camelcase(e.name))
+            return self._markdown_link(camelcase(e.name), subfolder="enums")
         elif isinstance(e, SlotDefinition):
             if self.use_slot_uris:
                 curie = self.schemaview.get_uri(e)
                 if curie is not None:
-                    return self._markdown_link(n=curie.split(":")[1], name=e.name)
-            return self._markdown_link(underscore(e.name))
+                    return self._markdown_link(n=curie.split(":")[1], name=e.name, subfolder="slots")
+            return self._markdown_link(underscore(e.name), subfolder="slots")
         elif isinstance(e, TypeDefinition):
-            return self._markdown_link(camelcase(e.name))
+            return self._markdown_link(camelcase(e.name), subfolder="types")
         elif isinstance(e, SubsetDefinition):
-            return self._markdown_link(camelcase(e.name))
+            return self._markdown_link(camelcase(e.name), subfolder="subsets")
         else:
             return e.name
         
