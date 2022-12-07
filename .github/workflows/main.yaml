@@ -64,12 +64,6 @@ jobs:
         uses: ts-graphviz/setup-graphviz@v1
 
       #----------------------------------------------
-      #    install your root project, if required
-      #----------------------------------------------
-      - name: Install library
-        run: poetry install --no-interaction
-
-      #----------------------------------------------
       #    Linting
       #----------------------------------------------
       - name: Lint with black and isort

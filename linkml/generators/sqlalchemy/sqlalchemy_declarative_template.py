@@ -22,7 +22,7 @@ class {{classname(c.name)}}({% if c.is_a %}{{ classname(c.is_a) }}{% else %}Base
            {%- if 'autoincrement' in s.annotations -%}, autoincrement=True {% endif -%}
            )
     {% if 'foreign_key' in s.annotations and 'original_slot' in s.annotations -%}
-    {{s.annotations['original_slot'].value}} = relationship("{{classname(s.range)}}", uselist=False)
+    {{s.annotations['original_slot'].value}} = relationship("{{classname(s.range)}}", uselist=False, foreign_keys=[{{s.alias}}])
     {% endif -%}
     {% endfor %}
     

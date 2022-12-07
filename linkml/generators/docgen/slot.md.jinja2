@@ -53,6 +53,12 @@ URI: {{ gen.uri_link(element) }}
 {% elif element.recommended %}
 * Recommended: {{ element.recommended }}
 {% endif %}
+{%- if element.minimum_value %}
+* Minimum Value: {{ element.minimum_value }}
+{% endif %}
+{%- if element.maximum_value %}
+* Maximum Value: {{ element.maximum_value }}
+{% endif %}
 {%- if schemaview.is_mixin(element.name) %}
 * Mixin: {{ element.mixin }}
 {% endif %}

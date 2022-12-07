@@ -4,6 +4,7 @@ import unittest
 
 import jsonschema
 import yaml
+from linkml_runtime.linkml_model import SchemaDefinition
 from linkml_runtime.dumpers import json_dumper
 from linkml_runtime.loaders import yaml_loader
 
@@ -14,7 +15,8 @@ from tests.test_generators.test_pythongen import make_python
 SCHEMA = env.input_path("kitchen_sink.yaml")
 DATA = env.input_path("kitchen_sink_inst_01.yaml")
 COMPLIANCE_CASES = env.input_path("kitchen_sink_compliance_inst_01.yaml")
-
+RULES_CASES = env.input_path("jsonschema_conditional_cases.yaml")
+RANGE_UNION_CASES = env.input_path("jsonschema_range_union_cases.yaml")
 
 class JsonSchemaTestCase(unittest.TestCase):
     """
@@ -169,6 +171,89 @@ classes:
 
         self.assertIn("id", json_schema["$defs"]["Test"]["required"])
         self.assertIn("id", json_schema["required"])
+
+
+    def test_value_constraints(self):
+        with open(env.input_path("jsonschema_value_constraints.yaml")) as f:
+            test_def = yaml.safe_load(f)
+        
+        generator = JsonSchemaGenerator(yaml.dump(test_def["schema"]), stacktrace=True, not_closed=False)
+        json_schema = json.loads(generator.serialize())
+
+        for data_case in test_def.get('data_cases', []):
+            data = data_case['data']
+            with self.subTest(data=data):
+                if 'error_message' in data_case:
+                    self.assertRaisesRegex(
+                        jsonschema.ValidationError, 
+                        data_case['error_message'],
+                        lambda: jsonschema.validate(data, json_schema),
+                    )
+                else:
+                    jsonschema.validate(data, json_schema)
+
+
+    def test_rules(self):
+        with open(RULES_CASES) as cases_file:
+            cases = yaml.safe_load(cases_file)
+
+        for case in cases:
+            with self.subTest(name=case['name']):
+                ncname = case['name'].replace(' ', '_')
+                schema = SchemaDefinition(
+                    id=f"http://example.org/test_rule_{ncname}",
+                    name=ncname,
+                    imports=[
+                        "https://w3id.org/linkml/types"
+                    ],
+                    slots={
+                        "s1": { "range": "integer" },
+                        "s2": { "range": "integer" },
+                        "s3": { "range": "integer" },
+                        "s4": { "range": "integer" },
+                    },
+                    classes={
+                        "Test": {
+                            "slots": ["s1", "s2", "s3", "s4"],
+                            "rules": case['linkml_rules']
+                        }
+                    }
+                )
+                generator = JsonSchemaGenerator(schema, top_class="Test")
+                actual_json_schema = json.loads(generator.serialize())
+
+                # Validate the structure of the generated JSON Schema
+                expected_json_schema_subset = case["json_schema"]
+                self.assertDictContainsSubset(expected_json_schema_subset, actual_json_schema)
+
+                # Validate data instances against the JSON Schema
+                for data_case in case.get('data_cases', []):
+                    data = data_case['data']
+                    with self.subTest(data=data):
+                        if 'error_message' in data_case:
+                            self.assertRaisesRegex(
+                                jsonschema.ValidationError, 
+                                data_case['error_message'],
+                                lambda: jsonschema.validate(data, actual_json_schema),
+                            )
+                        else:
+                            jsonschema.validate(data, actual_json_schema)
+
+
+    def test_range_unions(self):
+        with open(RANGE_UNION_CASES, "r") as f:
+            cases = yaml.safe_load(f)
+
+        generator = JsonSchemaGenerator(yaml.dump(cases["schema"]), top_class="Test")
+        json_schema = json.loads(generator.serialize())
+
+        for valid_case in cases.get("valid_cases", []):
+            with self.subTest(valid_case=valid_case):
+                jsonschema.validate(valid_case, json_schema)
+
+        for invalid_case in cases.get("invalid_cases", []):
+            with self.subTest(invalid_case=invalid_case):
+                self.assertRaises(jsonschema.ValidationError, lambda: jsonschema.validate(invalid_case, json_schema))
 
 if __name__ == "__main__":
     unittest.main()

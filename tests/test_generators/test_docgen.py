@@ -254,6 +254,20 @@ class DocGeneratorTestCase(unittest.TestCase):
             "EmploymentEventType.md", "* HR code", after="## Aliases"
         )
 
+        # test that slots for enums are being rendered
+        assert_mdfile_contains(
+            "LifeStatusEnum.md", "life_st", after="## Slots",
+            followed_by=["## Identifier and Mapping Information", 
+                        "### Schema Source", 
+                        "## LinkML Source"],
+        )
+        assert_mdfile_contains(
+            "LifeStatusEnum.md", "is_livin", after="## Slots",
+            followed_by=["## Identifier and Mapping Information", 
+                        "### Schema Source", 
+                        "## LinkML Source"],
+        )
+
     def test_docgen_rank_ordering(self):
         """Tests overriding default order"""
         gen = DocGenerator(SCHEMA, mergeimports=True, no_types_dir=True, sort_by="rank")

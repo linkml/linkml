@@ -1,0 +1,143 @@
+name: was_associated_with
+id: http://example.org/was_associated_with
+default_prefix: nmdc
+default_range: string
+prefixes:
+  dcterms: http://purl.org/dc/terms/
+  linkml: https://w3id.org/linkml/
+  nmdc: https://w3id.org/nmdc/
+  xsd: http://www.w3.org/2001/XMLSchema#
+imports:
+  - linkml:types
+classes:
+  NamedThing:
+    abstract: true
+    slots:
+      - id
+      - name
+      - description
+      - alternative_identifiers
+  ConcreteThing:
+    is_a: NamedThing
+  Agent:
+    slots:
+      - acted_on_behalf_of
+      - was_informed_by
+  Activity:
+    slots:
+      - id
+      - name
+      - was_informed_by
+      - was_associated_with
+      - used
+  WorkflowExecutionActivity:
+    is_a: Activity
+    slots:
+      - raw_type
+      - execution_resource
+      - has_input
+      - has_output
+      - part_of
+      - type
+    slot_usage:
+      was_associated_with:
+        range: WorkflowExecutionActivity # MAM I don't think this is a reasonable override of the global range of Agent
+        # but commenting that line out does not, on its own, fix the conversion to SQLite
+        inlined: false # allow for strings of IDs
+      has_input:
+        required: true
+      has_output:
+        required: true
+      was_informed_by:
+        required: true
+      execution_resource:
+        required: true
+  MetatranscriptomeAssembly:
+    is_a: WorkflowExecutionActivity
+    slots:
+      - insdc_assembly_identifiers
+  MetatranscriptomeActivity:
+    is_a: WorkflowExecutionActivity
+    slots:
+      - raw_type
+  Database:
+    tree_root: true
+    slots:
+      - activity_set
+      - metatranscriptome_activity_set
+      - concrete_thing_set
+slots:
+  concrete_thing_set:
+    domain: Database
+    inlined_as_list: true
+    mixins: object_set
+    multivalued: true
+    range: ConcreteThing
+  was_informed_by:
+    range: Activity
+  was_associated_with:
+    range: Agent
+  acted_on_behalf_of:
+    range: Agent
+  was_generated_by:
+    range: Activity
+  used:
+    domain: Activity
+  object_set:
+    mixin: true
+    domain: Database
+    multivalued: true
+    inlined_as_list: true
+  activity_set:
+    mixins: object_set
+    domain: Database
+    range: WorkflowExecutionActivity
+    multivalued: true
+  metatranscriptome_activity_set:
+    mixins: object_set
+    domain: Database
+    range: MetatranscriptomeActivity
+    multivalued: true
+  id:
+    identifier: true
+  name:
+    range: string
+  execution_resource:
+    is_a: attribute
+  has_input:
+    domain: NamedThing
+    range: NamedThing
+    multivalued: true
+  has_output:
+    domain: NamedThing
+    range: NamedThing
+    multivalued: true
+  part_of:
+    range: NamedThing
+    domain: NamedThing
+    multivalued: true
+    slot_uri: dcterms:isPartOf
+  type:
+    deprecated: >-
+      Due to confusion about what values are used for this slot, it is best not to use this slot.
+      See https://github.com/microbiomedata/nmdc-schema/issues/248.
+    range: string
+    designates_type: true
+  insdc_assembly_identifiers:
+    is_a: assembly_identifiers
+    pattern: "^insdc.sra:[A-Z]+[0-9]+(\\.[0-9]+)?$"
+    mixins:
+      - insdc_identifiers
+  description:
+    range: string
+    slot_uri: dcterms:description
+  alternative_identifiers:
+    range: string
+    multivalued: true
+  attribute:
+    abstract: true
+  assembly_identifiers:
+    abstract: true
+  insdc_identifiers:
+    mixin: true
+  raw_type: { }

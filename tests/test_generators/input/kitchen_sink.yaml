@@ -93,6 +93,9 @@ classes:
       - has birth event
       - species name
       - stomach count
+    attributes:
+      is_living:
+        range: LifeStatusEnum
     slot_usage:
       name:
         pattern: "^\\S+ \\S+$"  ## do not do this in a real schema, people have all kinds of names
@@ -367,6 +370,8 @@ slots:
     mixins: mixin_slot_I
   mixin_slot_I:
     mixin: true
+  life_status:
+    range: LifeStatusEnum
     
 
 enums:
@@ -400,3 +405,8 @@ enums:
     permissible_values:
       a b:
       #1+2:
+  LifeStatusEnum:
+    permissible_values:
+      LIVING:
+      DEAD:
+      UNKNOWN:
