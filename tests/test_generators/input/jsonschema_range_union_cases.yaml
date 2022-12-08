@@ -88,6 +88,7 @@ schema:
       slots:
         - s2
     Test:
+      tree_root: true
       slots:
         - letter_enum_single_value
         - letter_enum_multi_value
@@ -103,74 +104,139 @@ schema:
         - c1_or_c2_multi_value
         - grab_bag
 
-valid_cases:
-  - letter_enum_single_value: "ALPHA"
-  - letter_enum_multi_value: ["BRAVO", "CHARLIE"]
-  - letter_or_number_enum_single_value: "ONE"
-  - letter_or_number_enum_multi_value: ["TWO", "DELTA"]
-  - integer_single_value: 0
-  - integer_multi_value: [0, 1]
-  - integer_or_string_single_value: "zero"
-  - integer_or_string_multi_value: ["zero", 1]
-  - c1_single_value:
-      s1: 'hi'
-  - c1_mutli_value:
-      - s1: 'hi'
-      - s1: 'hello'
-  - c1_or_c2_single_value:
-      s2: 'hi'
-  - c1_or_c2_multi_value:
-      - s1: 'hi'
-      - s2: 'hello'
-  - grab_bag:
-      - s1: 'two'
-      - ONE
-      - 0
-
-invalid_cases:
-  - letter_enum_single_value: "ONE"
-  - letter_enum_single_value: ["ALPHA", "BRAVO"]
-  - letter_enum_multi_value: "ALPHA"
-  - letter_enum_multi_value: ["ONE", "CHARLIE"]
-  - letter_or_number_enum_single_value: ["ONE"]
-  - letter_or_number_enum_single_value: "NOT_A_VALUE"
-  - letter_or_number_enum_multi_value: "ALPHA"
-  - letter_or_number_enum_multi_value: ["ALPHA", "THREE", "NOT_A_VALUE"]
-  - integer_single_value: [0]
-  - integer_single_value: "zero"
-  - integer_multi_value: 0
-  - integer_multi_value: ["zero"]
-  - integer_or_string_single_value: [0]
-  - integer_or_string_single_value: false
-  - integer_or_string_multi_value: "zero"
-  - integer_or_string_multi_value: [0, "one", false]
-  - c1_single_value:
-    - s1: 'hi'
-  - c1_single_value:
-      s2: 'hi'
-  - c1_mutli_value:
-      s2: 'hi'
-  - c1_mutli_value:
-    - s2: 'hi'
-  - c1_or_c2_single_value:
-    - s1: 'hi'
-  - c1_or_c2_single_value:
-      s3: 'hi'
-  - c1_or_c2_multi_value:
-      s1: 'hi'
-  - c1_or_c2_multi_value:
-    - s1: 'hi'
-    - s2: 'hello'
-    - s3: 'hola'
-  - grab_bag:
-    - s2: 'two'
-    - ONE
-    - 0
-  - grab_bag:
-    - s1: 'two'
-    - ONE
-    - false
-  - grab_bag:
-    - s1: 'two'
-    - five
-    - 5
+data_cases:
+  - data:
+      letter_enum_single_value: ALPHA
+  - data:
+      letter_enum_multi_value: [BRAVO, CHARLIE]
+  - data:
+      letter_or_number_enum_single_value: ONE
+  - data:
+      letter_or_number_enum_multi_value: [TWO, DELTA]
+  - data:
+      integer_single_value: 0
+  - data:
+      integer_multi_value: [0, 1]
+  - data:
+      integer_or_string_single_value: zero
+  - data:
+      integer_or_string_multi_value: [zero, 1]
+  - data:
+      c1_single_value:
+        s1: hi
+  - data:
+      c1_mutli_value:
+        - s1: hi
+        - s1: hello
+  - data:
+      c1_or_c2_single_value:
+        s2: hi
+  - data:
+      c1_or_c2_multi_value:
+        - s1: hi
+        - s2: hello
+  - data:
+      grab_bag:
+        - s1: two
+        - ONE
+        - 0
+  - data:
+      letter_enum_single_value: ONE
+    error_message: is not one of
+  - data:
+      letter_enum_single_value: [ALPHA, BRAVO]
+    error_message: is not one of
+  - data:
+      letter_enum_multi_value: ALPHA
+    error_message: is not of type 'array'
+  - data:
+      letter_enum_multi_value: [ONE, CHARLIE]
+    error_message: is not one of
+  - data:
+      letter_or_number_enum_single_value: [ONE]
+    error_message: Failed validating 'anyOf' in schema
+  - data:
+      letter_or_number_enum_single_value: NOT_A_VALUE
+    error_message: Failed validating 'anyOf' in schema
+  - data:
+      letter_or_number_enum_multi_value: ALPHA
+    error_message: is not of type 'array'
+  - data:
+      letter_or_number_enum_multi_value: [ALPHA, THREE, NOT_A_VALUE]
+    error_message: Failed validating 'anyOf' in schema
+  - data:
+      integer_single_value: [0]
+    error_message: is not of type 'integer'
+  - data:
+      integer_single_value: zero
+    error_message: is not of type 'integer'
+  - data:
+      integer_multi_value: 0
+    error_message: is not of type 'array'
+  - data:
+      integer_multi_value: [zero]
+    error_message: is not of type 'integer'
+  - data:
+      integer_or_string_single_value: [0]
+    error_message: Failed validating 'anyOf' in schema
+  - data:
+      integer_or_string_single_value: false
+    error_message: Failed validating 'anyOf' in schema
+  - data:
+      integer_or_string_multi_value: zero
+    error_message: is not of type 'array'
+  - data:
+      integer_or_string_multi_value: [0, one, false]
+    error_message: Failed validating 'anyOf' in schema
+  - data:
+      c1_single_value:
+        - s1: 'hi'
+    error_message: is not of type 'object'
+  - data:
+      c1_single_value:
+        s2: 'hi'
+    error_message: Additional properties are not allowed
+  - data:
+      c1_mutli_value:
+        s2: 'hi'
+    error_message: is not of type 'array'
+  - data:
+      c1_mutli_value:
+        - s2: 'hi'
+    error_message: Additional properties are not allowed
+  - data:
+      c1_or_c2_single_value:
+        - s1: 'hi'
+    error_message: Failed validating 'anyOf' in schema
+  - data:
+      c1_or_c2_single_value:
+        s3: 'hi'
+    error_message: Failed validating 'anyOf' in schema
+  - data:
+      c1_or_c2_multi_value:
+        s1: 'hi'
+    error_message: is not of type 'array'
+  - data:
+      c1_or_c2_multi_value:
+        - s1: 'hi'
+        - s2: 'hello'
+        - s3: 'hola'
+    error_message: Failed validating 'anyOf' in schema
+  - data:
+      grab_bag:
+        - s2: 'two'
+        - ONE
+        - 0
+    error_message: Failed validating 'anyOf' in schema
+  - data:
+      grab_bag:
+        - s1: 'two'
+        - ONE
+        - false
+    error_message: Failed validating 'anyOf' in schema
+  - data:
+      grab_bag:
+        - s1: 'two'
+        - five
+        - 5
+    error_message: is not one of
