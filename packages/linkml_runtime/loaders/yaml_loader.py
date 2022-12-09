@@ -14,7 +14,10 @@ class YAMLLoader(Loader):
     A Loader that is capable of instantiating LinkML data objects from a YAML file
     """
 
-    def load_any(self, source: Union[str, dict, TextIO], Union[Type[YAMLRoot],Type[BaseModel]], *, base_dir: Optional[str] = None,
+    def load_any(self,
+                 source: Union[str, dict, TextIO],
+                 target_class: Union[Type[YAMLRoot],Type[BaseModel]],
+                 *, base_dir: Optional[str] = None,
                  metadata: Optional[FileInfo] = None, **_) -> Union[YAMLRoot, List[YAMLRoot]]:
         def loader(data: Union[str, dict], source_file: FileInfo) -> Optional[Dict]:
             if isinstance(data, str):
