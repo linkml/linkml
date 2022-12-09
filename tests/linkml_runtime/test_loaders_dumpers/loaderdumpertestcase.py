@@ -56,7 +56,7 @@ class LoaderDumperTestCase(TestEnvironmentTestCase):
         metadata = FileInfo()
         name, typ = filename.rsplit('.', 1)
         expected_yaml = self.env.expected_path('load', name + '_' + typ + ".yaml")
-        if model == YAMLRoot:
+        if issubclass(model, YAMLRoot):
             python_obj: YAMLRoot = loader.load(filename, model, metadata=metadata, base_dir=self.env.indir)
         elif issubclass(model, BaseModel):
             python_obj: BaseModel = loader.load(filename, model, metadata=metadata, base_dir=self.env.indir)
