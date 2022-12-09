@@ -13,10 +13,15 @@ class YAMLLoader(Loader):
     A Loader that is capable of instantiating LinkML data objects from a YAML file
     """
 
-    def load_any(self, source: Union[str, dict, TextIO], target_class: Type[YAMLRoot], *, base_dir: Optional[str] = None,
+    def load_any(self, source: Union[str, dict, TextIO],
+                 target_class: Union[Type[YAMLRoot],Type[BaseModel]],
+                 *, base_dir: Optional[str] = None,
                  metadata: Optional[FileInfo] = None, **_) -> Union[BaseModel, YAMLRoot, List[BaseModel], List[YAMLRoot]]:
         def loader(data: Union[str, dict], _: FileInfo) -> Optional[Dict]:
-            return yaml.load(StringIO(data), DupCheckYamlLoader) if isinstance(data, str) else data
+            if target_class == YAMLRoot or issubclass(target_class, BaseModel):
+                return yaml.load(StringIO(data), DupCheckYamlLoader) if isinstance(data, str) else data
+            else:
+                raise TypeError(f"Unknown target class: {target_class}")
 
         if not metadata:
             metadata = FileInfo()

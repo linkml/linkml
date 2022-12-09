@@ -37,7 +37,7 @@ class Loader(ABC):
     def load_source(self,
                     source: Union[str, dict, TextIO],
                     loader: Callable[[Union[str, Dict], FileInfo], Optional[Union[Dict, List]]],
-                    target_class: Type[YAMLRoot],
+                    target_class: Union[Type[YAMLRoot], Type[BaseModel]],
                     accept_header: Optional[str] = "text/plain, application/yaml;q=0.9",
                     metadata: Optional[FileInfo] = None) -> Optional[Union[BaseModel, YAMLRoot, List[BaseModel], List[YAMLRoot]]]:
         """ Base loader - convert a file, url, string, open file handle or dictionary into an instance
@@ -60,11 +60,22 @@ class Loader(ABC):
         else:
             data = source
         data_as_dict = loader(data, metadata)
+
         if data_as_dict:
             if isinstance(data_as_dict, list):
-                return [target_class(**as_dict(x)) for x in data_as_dict]
+               if target_class == YAMLRoot:
+                   return [target_class(**as_dict(x)) for x in data_as_dict]
+               elif issubclass(target_class, BaseModel):
+                   return [target_class.parse_obj(**as_dict(x)) for x in data_as_dict]
+               else:
+                   raise ValueError(f'Cannot load list of {target_class}')
             elif isinstance(data_as_dict, dict):
-                return target_class(**data_as_dict)
+                if target_class == YAMLRoot:
+                    return target_class(**data_as_dict)
+                elif issubclass(target_class, BaseModel):
+                    return target_class.parse_obj(data_as_dict)
+                else:
+                    raise ValueError(f'Cannot load {target_class}')
             elif isinstance(data_as_dict, JsonObj):
                 return [target_class(**as_dict(x)) for x in data_as_dict]
             else:
