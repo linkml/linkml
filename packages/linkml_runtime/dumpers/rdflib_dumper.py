@@ -4,7 +4,7 @@ from abc import abstractmethod
 from typing import Optional, Any, Dict, Union
 from pydantic import BaseModel
 
-from rdflib import Graph, URIRef
+from rdflib import Graph, URIRef, XSD
 from rdflib.term import Node, BNode, Literal
 from rdflib.namespace import RDF
 
@@ -86,6 +86,8 @@ class RDFLibDumper(Dumper):
                 elif dt_uri == 'xsd:string':
                     return Literal(element)
                 else:
+                    if "xsd" not in namespaces:
+                        namespaces["xsd"] = XSD
                     return Literal(element, datatype=namespaces.uri_for(dt_uri))
             else:
                 logging.warning(f'No datatype specified for : {t.name}, using plain Literal')

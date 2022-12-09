@@ -1,5 +1,5 @@
 # Auto generated from linkml_issue_576.yaml by pythongen.py version: 0.9.0
-# Generation date: 2022-11-15T16:23:46
+# Generation date: 2022-11-18T12:51:30
 # Schema: personinfo
 #
 # id: https://w3id.org/linkml/examples/personinfo
@@ -157,11 +157,15 @@ class Dataset(YAMLRoot):
     class_name: ClassVar[str] = "Dataset"
     class_model_uri: ClassVar[URIRef] = PERSONINFO.Dataset
 
+    source: Optional[Union[str, URIorCURIE]] = None
     persons: Optional[Union[Dict[Union[str, PersonId], Union[dict, Person]], List[Union[dict, Person]]]] = empty_dict()
     organizations: Optional[Union[Dict[Union[str, OrganizationId], Union[dict, Organization]], List[Union[dict, Organization]]]] = empty_dict()
     pets: Optional[Union[Dict[Union[str, PetId], Union[dict, Pet]], List[Union[dict, Pet]]]] = empty_dict()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self.source is not None and not isinstance(self.source, URIorCURIE):
+            self.source = URIorCURIE(self.source)
+
         self._normalize_inlined_as_dict(slot_name="persons", slot_type=Person, key_name="id", keyed=True)
 
         self._normalize_inlined_as_dict(slot_name="organizations", slot_type=Organization, key_name="id", keyed=True)
@@ -204,6 +208,9 @@ slots.organization__name = Slot(uri=SCHEMA.name, name="organization__name", curi
 
 slots.organization__part_of = Slot(uri=PERSONINFO.part_of, name="organization__part_of", curie=PERSONINFO.curie('part_of'),
                    model_uri=PERSONINFO.organization__part_of, domain=None, range=Optional[Union[Union[str, OrganizationId], List[Union[str, OrganizationId]]]])
+
+slots.dataset__source = Slot(uri=PERSONINFO.source, name="dataset__source", curie=PERSONINFO.curie('source'),
+                   model_uri=PERSONINFO.dataset__source, domain=None, range=Optional[Union[str, URIorCURIE]])
 
 slots.dataset__persons = Slot(uri=PERSONINFO.persons, name="dataset__persons", curie=PERSONINFO.curie('persons'),
                    model_uri=PERSONINFO.dataset__persons, domain=None, range=Optional[Union[Dict[Union[str, PersonId], Union[dict, Person]], List[Union[dict, Person]]]])
