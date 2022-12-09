@@ -28,6 +28,7 @@ from datetime import datetime, date
 from enum import Enum
 from typing import List, Dict, Optional, Any
 from pydantic import BaseModel as BaseModel, Field
+from linkml_runtime.linkml_model import Decimal
 
 metamodel_version = "{{metamodel_version}}"
 version = "{{version if version else None}}"
@@ -98,8 +99,6 @@ class {{ c.name }}
 
 
 def _get_pyrange(t: TypeDefinition, sv: SchemaView) -> str:
-    if t is None:
-        print("stuff")
     pyrange = t.repr if t is not None else None
     if pyrange is None:
         pyrange = t.base
