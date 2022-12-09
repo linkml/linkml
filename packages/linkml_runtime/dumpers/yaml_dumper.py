@@ -13,11 +13,8 @@ class YAMLDumper(Dumper):
         # Internal note: remove_empty_items will also convert Decimals to int/float;
         # this is necessary until https://github.com/yaml/pyyaml/pull/372 is merged
 
-        if isinstance(element, YAMLRoot):
-            element_as_dict = element.to_dict()
-        elif isinstance(element, BaseModel):
-            element_as_dict = element.dict()
-        return yaml.dump(remove_empty_items(element_as_dict, hide_protected_keys=True),
+        dumper_safe_element = element.dict() if isinstance(element, BaseModel) else element
+        return yaml.dump(remove_empty_items(dumper_safe_element, hide_protected_keys=True),
                          Dumper=yaml.SafeDumper, sort_keys=False, 
                          allow_unicode=True,
                          **kwargs)

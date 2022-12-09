@@ -13,7 +13,7 @@ from typing import List
 class LoadersUnitTest(LoaderDumperTestCase):
     env = env
 
-    def test_yaml_loader(self):
+    def test_yaml_loader_single(self):
         """ Load obo_sample.yaml, emit obo_sample_yaml.yaml and compare to obo_sample_output.yaml """
         self.loader_test('book_series_lotr.yaml', BookSeries, yaml_loader)
 

@@ -63,19 +63,17 @@ class Loader(ABC):
 
         if data_as_dict:
             if isinstance(data_as_dict, list):
-               if target_class == YAMLRoot:
+               if issubclass(target_class, YAMLRoot):
                    return [target_class(**as_dict(x)) for x in data_as_dict]
                elif issubclass(target_class, BaseModel):
                    return [target_class.parse_obj(**as_dict(x)) for x in data_as_dict]
                else:
                    raise ValueError(f'Cannot load list of {target_class}')
             elif isinstance(data_as_dict, dict):
-                if target_class == YAMLRoot:
-                    return target_class(**data_as_dict)
-                elif issubclass(target_class, BaseModel):
+                if issubclass(target_class, BaseModel):
                     return target_class.parse_obj(data_as_dict)
                 else:
-                    raise ValueError(f'Cannot load {target_class}')
+                    return target_class(**data_as_dict)
             elif isinstance(data_as_dict, JsonObj):
                 return [target_class(**as_dict(x)) for x in data_as_dict]
             else:
