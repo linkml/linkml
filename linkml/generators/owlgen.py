@@ -507,7 +507,7 @@ class OwlSchemaGenerator(Generator):
         for k, v in el.__dict__.items():
             if k in self.metamodel.schema.slots:
                 defining_slot = self.metamodel.schema.slots[k]
-                if v is not None and "owl" in defining_slot.in_subset:
+                if v is not None and "OwlProfile" in defining_slot.in_subset:
                     ve = v if isinstance(v, list) else [v]
                     for e in ve:
                         if (
