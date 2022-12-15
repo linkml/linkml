@@ -1,0 +1,19 @@
+id: http://example.org/issue-1168
+name: issue_1168
+description: Tests forward reference edge case
+see_also:
+  - https://github.com/linkml/linkml/issues/1168
+
+classes:
+  C:
+    is_a: D
+    attributes:
+      d:
+        range: D
+  D:
+    attributes:
+      c:
+        range: C
+
+
+
