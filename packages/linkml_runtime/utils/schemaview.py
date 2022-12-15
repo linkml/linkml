@@ -105,16 +105,19 @@ class SchemaView(object):
     schema: SchemaDefinition = None
     schema_map: Dict[SchemaDefinitionName, SchemaDefinition] = None
     importmap: Optional[Mapping[str, str]] = None
+    """Optional mapping between schema names and local paths/URLs"""
     modifications: int = 0
     uuid: str = None
 
     def __init__(self, schema: Union[str, SchemaDefinition],
-                 importmap: Optional[Mapping[str, str]] = None):
+                 importmap: Optional[Mapping[str, str]] = None, merge_imports: bool = False):
         if isinstance(schema, str):
             schema = load_schema_wrap(schema)
         self.schema = schema
         self.schema_map = {schema.name: schema}
         self.importmap = parse_import_map(importmap, self.base_dir) if self.importmap is not None else dict()
+        if merge_imports:
+            self.merge_imports()
         self.uuid = str(uuid.uuid4())
 
     def __key(self):
@@ -148,13 +151,15 @@ class SchemaView(object):
         return schema
 
     @lru_cache()
-    def imports_closure(self, traverse=True, inject_metadata=True) -> List[SchemaDefinitionName]:
+    def imports_closure(self, imports: bool = True, traverse=True, inject_metadata=True) -> List[SchemaDefinitionName]:
         """
         Return all imports
 
         :param traverse: if true, traverse recursively
         :return: all schema names in the transitive reflexive imports closure
         """
+        if not imports:
+            return [self.schema.name]
         if self.schema_map is None:
             self.schema_map = {self.schema.name: self.schema}
         closure = []
@@ -185,7 +190,7 @@ class SchemaView(object):
 
 
     @lru_cache()
-    def all_schema(self, imports: True) -> List[SchemaDefinition]:
+    def all_schema(self, imports: bool = True) -> List[SchemaDefinition]:
         """
         :param imports: include imports closure
         :return: all schemas
