@@ -17,9 +17,9 @@ class LoadersUnitTest(LoaderDumperTestCase):
         """ Load obo_sample.yaml, emit obo_sample_yaml.yaml and compare to obo_sample_output.yaml """
         self.loader_test('book_series_lotr.yaml', BookSeries, yaml_loader)
 
-    # def test_json_loader(self):
-    #     """ Load obo_sample.json, emit obo_sample_json.yaml and check the results """
-    #     self.loader_test('obo_sample.json', Package, json_loader)
+    def test_json_loader(self):
+        """ Load obo_sample.json, emit obo_sample_json.yaml and check the results """
+        self.loader_test('book_series_lotr.json', BookSeries, json_loader)
 
 
 
