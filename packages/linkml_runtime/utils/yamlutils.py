@@ -190,7 +190,8 @@ class YAMLRoot(JsonObj):
                     order_up(list_entry, slot_type(**{key_name: list_entry}))
         else:
             # We have a dictionary
-            if key_name in raw_slot and not isinstance(raw_slot[key_name], (list, dict, JsonObj)):
+            if key_name in raw_slot and raw_slot[key_name] is not None \
+                    and not isinstance(raw_slot[key_name], (list, dict, JsonObj)):
                 # Vanilla dictionary - {key: v11, s12: v12, ...}
                 order_up(raw_slot[key_name], slot_type(**as_dict(raw_slot)))
             else:
