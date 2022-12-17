@@ -87,8 +87,8 @@ class JsonSchema(UserDict):
             
             self['required'].append(canonical_name)
 
-    def __str__(self) -> str:
-        return json.dumps(self.data, sort_keys=True, default=lambda d: d.data)
+    def to_json(self, **kwargs) -> str:
+        return json.dumps(self.data, default=lambda d: d.data, **kwargs)
 
     @classmethod
     def ref_for(cls, class_name: Union[str, List[str]], identifier_optional: bool = False):
@@ -152,7 +152,7 @@ class JsonSchemaGenerator(Generator):
 
         super().__post_init__()
 
-    def start_schema(self, inline: bool = False, **kwargs) -> JsonSchema:
+    def start_schema(self, inline: bool = False) -> JsonSchema:
         self.inline = inline
 
         self.top_level_schema = JsonSchema({
@@ -419,15 +419,15 @@ class JsonSchemaGenerator(Generator):
         ) or (self.top_class is None and cls.tree_root):
             self.top_level_schema.add_property(aliased_slot_name, prop, slot_is_required)
 
-    def serialize(self, **kwargs) -> str:
-        self.start_schema(**kwargs)
+    def serialize(self, indent: int) -> str:
+        self.start_schema()
         for enum_definition in self.schemaview.all_enums().values():
             self.handle_enum(enum_definition)
 
         for class_definition in self.schemaview.all_classes().values():
             self.handle_class(class_definition)
 
-        return str(self.top_level_schema)
+        return self.top_level_schema.to_json(sort_keys=True, indent=indent if indent > 0 else None)
 
 
 @shared_arguments(JsonSchemaGenerator)
@@ -464,10 +464,19 @@ Set additionalProperties=False if closed otherwise true if not closed at the glo
 When handling range constraints, include all descendants of the range class instead of just the range class
 """,
 )
+@click.option(
+    "--indent",
+    default=4,
+    show_default=True,
+    help="""
+If this is a positive number the resulting JSON will be pretty-printed with that indent level. Set to 0 to
+disable pretty-printing and return the most compact JSON representation
+"""
+)
 @click.version_option(__version__, "-V", "--version")
-def cli(yamlfile, **kwargs):
+def cli(yamlfile, indent, **kwargs):
     """Generate JSON Schema representation of a LinkML model"""
-    print(JsonSchemaGenerator(yamlfile, **kwargs).serialize(**kwargs))
+    print(JsonSchemaGenerator(yamlfile, **kwargs).serialize(indent))
 
 
 if __name__ == "__main__":
