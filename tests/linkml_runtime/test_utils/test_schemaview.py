@@ -415,7 +415,7 @@ class SchemaViewTestCase(unittest.TestCase):
         self.assertEquals(view.get_uri('TestClass'), 'core:TestClass')
         self.assertEquals(view.get_uri('TestClass', expand=True), 'https://w3id.org/linkml/tests/core/TestClass')
 
-        self.assertEquals(view.get_uri('string') == 'xsd:string')
+        self.assertEquals(view.get_uri('string'), 'xsd:string')
 
         # dynamic enums
         e = view.get_enum('HCAExample')
