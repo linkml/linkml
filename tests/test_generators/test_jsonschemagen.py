@@ -268,7 +268,7 @@ class JsonSchemaTestCase(unittest.TestCase):
             if isinstance(full[key], dict):
                 self.assertDictSubset(subset[key], full[key], new_path)
             else:
-                self.assertEquals(full[key], subset[key], f"in path {new_path}")
+                self.assertEqual(full[key], subset[key], f"in path {new_path}")
 
 
 if __name__ == "__main__":

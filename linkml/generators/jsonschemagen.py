@@ -419,7 +419,7 @@ class JsonSchemaGenerator(Generator):
         ) or (self.top_class is None and cls.tree_root):
             self.top_level_schema.add_property(aliased_slot_name, prop, slot_is_required)
 
-    def serialize(self, indent: int) -> str:
+    def serialize(self, indent: int = 4) -> str:
         self.start_schema()
         for enum_definition in self.schemaview.all_enums().values():
             self.handle_enum(enum_definition)
