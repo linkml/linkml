@@ -3,6 +3,7 @@ import unittest
 import logging
 from copy import copy
 from typing import List
+from unittest import TestCase
 
 from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.linkml_model.meta import SchemaDefinition, ClassDefinition, SlotDefinitionName, SlotDefinition, \
@@ -28,22 +29,22 @@ class SchemaViewTestCase(unittest.TestCase):
             if e.name == "Animals":
                 for pv, v in e.permissible_values.items():
                     if pv == "CAT":
-                        assert view.permissible_value_ancestors(pv, e.name) == ['CAT']
+                        self.assertEqua(view.permissible_value_ancestors(pv, e.name), ['CAT'])
                     if pv == "ANGRY_LION":
-                        assert view.permissible_value_ancestors(pv, e.name) == ['ANGRY_LION', 'LION', 'CAT']
+                        self.assertEqual(view.permissible_value_ancestors(pv, e.name), ['ANGRY_LION', 'LION', 'CAT'])
         for cn, c in view.all_classes().items():
             if c.name == "Adult":
-                assert view.class_ancestors(c.name) == ['Adult', 'Person', 'HasAliases', 'Thing']
+                self.assertEqual(view.class_ancestors(c.name), ['Adult', 'Person', 'HasAliases', 'Thing'])
 
     def test_schemaview(self):
         # no import schema
         view = SchemaView(SCHEMA_NO_IMPORTS)
         logging.debug(view.imports_closure())
-        assert len(view.imports_closure()) == 1
+        self.assertEqual(len(view.imports_closure()), 1)
         all_cls = view.all_classes()
         logging.debug(f'n_cls = {len(all_cls)}')
 
-        assert list(view.annotation_dict('is current').values()) == ['bar']
+        self.assertEqual(list(view.annotation_dict('is current').values()), ['bar'])
         logging.debug(view.annotation_dict('employed at'))
         e = view.get_element('employed at')
         logging.debug(e.annotations)
@@ -51,38 +52,38 @@ class SchemaViewTestCase(unittest.TestCase):
         logging.debug(e.annotations)
 
         elements = view.get_elements_applicable_by_identifier("ORCID:1234")
-        assert "Person" in elements
+        self.assertIn("Person", elements)
         elements = view.get_elements_applicable_by_identifier("PMID:1234")
-        assert "Organization" in elements
+        self.assertIn("Organization", elements)
         elements = view.get_elements_applicable_by_identifier("http://www.ncbi.nlm.nih.gov/pubmed/1234")
-        assert "Organization" in elements
+        self.assertIn("Organization", elements)
         elements = view.get_elements_applicable_by_identifier("TEST:1234")
-        assert "anatomical entity" not in elements
-        assert list(view.annotation_dict(SlotDefinitionName('is current')).values()) == ['bar']
+        self.assertNotIn("anatomical entity", elements)
+        self.assertEqual(list(view.annotation_dict(SlotDefinitionName('is current')).values()), ['bar'])
         logging.debug(view.annotation_dict(SlotDefinitionName('employed at')))
         element = view.get_element(SlotDefinitionName('employed at'))
         logging.debug(element.annotations)
         element = view.get_element(SlotDefinitionName('has employment history'))
         logging.debug(element.annotations)
 
-        assert view.is_mixin('WithLocation')
-        assert not view.is_mixin('BirthEvent')
+        self.assertTrue(view.is_mixin('WithLocation'))
+        self.assertFalse(view.is_mixin('BirthEvent'))
 
-        assert view.inverse('employment history of') == 'has employment history'
-        assert view.inverse('has employment history') == 'employment history of'
+        self.assertTrue(view.inverse('employment history of'), 'has employment history')
+        self.assertTrue(view.inverse('has employment history'), 'employment history of')
         
         mapping = view.get_mapping_index()
-        assert mapping is not None
+        self.assertTrue(mapping is not None)
 
         category_mapping = view.get_element_by_mapping("GO:0005198")
-        assert category_mapping == ['activity']
+        self.assertTrue(category_mapping, ['activity'])
 
-        assert view.is_multivalued('aliases') is True
-        assert view.is_multivalued('id') is False
-        assert view.is_multivalued('dog addresses') is True
+        self.assertTrue(view.is_multivalued('aliases'))
+        self.assertFalse(view.is_multivalued('id'))
+        self.assertTrue(view.is_multivalued('dog addresses'))
 
-        assert view.slot_is_true_for_metadata_property('aliases', 'multivalued') is True
-        assert view.slot_is_true_for_metadata_property('id', 'identifier') is True
+        self.assertTrue(view.slot_is_true_for_metadata_property('aliases', 'multivalued'))
+        self.assertTrue(view.slot_is_true_for_metadata_property('id', 'identifier'))
         with self.assertRaises(ValueError):
             view.slot_is_true_for_metadata_property('aliases', 'aliases')
 
@@ -142,11 +143,11 @@ class SchemaViewTestCase(unittest.TestCase):
                                ],
                               view.class_slots('Company'))
 
-        assert view.get_class('agent').class_uri == 'prov:Agent'
-        assert view.get_uri('agent') == 'prov:Agent'
+        self.assertEqual(view.get_class('agent').class_uri, 'prov:Agent')
+        self.assertEqual(view.get_uri('agent'), 'prov:Agent')
         logging.debug(view.get_class('Company').class_uri)
 
-        assert view.get_uri('Company') == 'ks:Company'
+        self.assertEqual(view.get_uri('Company'), 'ks:Company')
 
         # test induced slots
 
@@ -156,37 +157,37 @@ class SchemaViewTestCase(unittest.TestCase):
             self.assertEqual(islot.owner, c, 'owner does not match')
             self.assertEqual(view.get_uri(islot, expand=True), 'https://w3id.org/linkml/tests/kitchen_sink/aliases')
 
-        assert view.get_identifier_slot('Company').name == 'id'
-        assert view.get_identifier_slot('Thing').name == 'id'
-        assert view.get_identifier_slot('FamilialRelationship') is None
+        self.assertEqual(view.get_identifier_slot('Company').name, 'id')
+        self.assertEqual(view.get_identifier_slot('Thing').name, 'id')
+        self.assertTrue(view.get_identifier_slot('FamilialRelationship') is None)
         for c in ['Company', 'Person', 'Organization', 'Thing']:
-            assert view.induced_slot('id', c).identifier is True
-            assert view.induced_slot('name', c).identifier is not True
-            assert view.induced_slot('name', c).required is False
-            assert view.induced_slot('name', c).range == 'string'
+            self.assertTrue(view.induced_slot('id', c).identifier)
+            self.assertFalse(view.induced_slot('name', c).identifier)
+            self.assertFalse(view.induced_slot('name', c).required)
+            self.assertEqual(view.induced_slot('name', c).range, 'string')
             self.assertEqual(view.induced_slot('id', c).owner, c, 'owner does not match')
             self.assertEqual(view.induced_slot('name', c).owner, c, 'owner does not match')
         for c in ['Event', 'EmploymentEvent', 'MedicalEvent']:
             s = view.induced_slot('started at time', c)
             logging.debug(f's={s.range} // c = {c}')
-            assert s.range == 'date'
-            assert s.slot_uri == 'prov:startedAtTime'
+            self.assertEqual(s.range, 'date')
+            self.assertEqual(s.slot_uri, 'prov:startedAtTime')
             self.assertEqual(s.owner, c, 'owner does not match')
             c_induced = view.induced_class(c)
             # an induced class should have no slots
-            assert c_induced.slots == []
-            assert c_induced.attributes != []
+            self.assertEqual(c_induced.slots, [])
+            self.assertNotEqual(c_induced.attributes, [])
             s2 = c_induced.attributes['started at time']
-            assert s2.range == 'date'
-            assert s2.slot_uri == 'prov:startedAtTime'
+            self.assertEqual(s2.range, 'date')
+            self.assertEqual(s2.slot_uri, 'prov:startedAtTime')
         # test slot_usage
-        assert view.induced_slot('age in years', 'Person').minimum_value == 0
-        assert view.induced_slot('age in years', 'Adult').minimum_value == 16
-        assert view.induced_slot('name', 'Person').pattern is not None
-        assert view.induced_slot('type', 'FamilialRelationship').range == 'FamilialRelationshipType'
-        assert view.induced_slot('related to', 'FamilialRelationship').range == 'Person'
-        assert view.get_slot('related to').range == 'Thing'
-        assert view.induced_slot('related to', 'Relationship').range == 'Thing'
+        self.assertEqual(view.induced_slot('age in years', 'Person').minimum_value, 0)
+        self.assertEqual(view.induced_slot('age in years', 'Adult').minimum_value, 16)
+        self.assertTrue(view.induced_slot('name', 'Person').pattern is not None)
+        self.assertEqual(view.induced_slot('type', 'FamilialRelationship').range, 'FamilialRelationshipType')
+        self.assertEqual(view.induced_slot('related to', 'FamilialRelationship').range, 'Person')
+        self.assertEqual(view.get_slot('related to').range, 'Thing')
+        self.assertEqual(view.induced_slot('related to', 'Relationship').range, 'Thing')
         # https://github.com/linkml/linkml/issues/875
         self.assertCountEqual(['Thing', 'Place'], view.induced_slot('name').domain_of)
 
@@ -200,16 +201,16 @@ class SchemaViewTestCase(unittest.TestCase):
         for k, v in u.items():
             #print(f' {k} = {v}')
             logging.debug(f' {k} = {v}')
-        assert SchemaUsage(used_by='FamilialRelationship', slot='related to',
-                           metaslot='range', used='Person', inferred=False) in u['Person']
+        self.assertIn(SchemaUsage(used_by='FamilialRelationship', slot='related to',
+                           metaslot='range', used='Person', inferred=False), u['Person'])
 
         # test methods also work for attributes
         leaves = view.class_leaves()
         logging.debug(f'LEAVES={leaves}')
-        assert 'MedicalEvent' in leaves
+        self.assertIn('MedicalEvent', leaves)
         roots = view.class_roots()
         logging.debug(f'ROOTS={roots}')
-        assert 'Dataset' in roots
+        self.assertIn('Dataset', roots)
         ds_slots = view.class_slots('Dataset')
         logging.debug(ds_slots)
         assert len(ds_slots) == 3
