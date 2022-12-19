@@ -348,10 +348,10 @@ class SchemaViewTestCase(unittest.TestCase):
         self.assertEquals(view.in_schema(SlotDefinitionName('name')), 'core')
         self.assertEquals(view.in_schema(SlotDefinitionName('activity')), 'core')
         self.assertEquals(view.in_schema(SlotDefinitionName('string')), 'types')
-        assert 'activity' in view.all_classes()
-        assert 'activity' not in view.all_classes(imports=False)
-        assert 'string' in view.all_types()
-        assert 'string' not in view.all_types(imports=False)
+        self.assertIn('activity', view.all_classes())
+        self.assertNotIn('activity', view.all_classes(imports=False))
+        self.assertIn('string', view.all_types())
+        self.assertNotIn('string', view.all_types(imports=False))
         self.assertCountEqual(['SymbolString', 'string'], view.type_ancestors('SymbolString'))
 
         for tn, t in view.all_types().items():
@@ -392,34 +392,30 @@ class SchemaViewTestCase(unittest.TestCase):
                 if s in view.all_classes(imports=False).values():
                     self.assertIsNotNone(s.slot_uri)
                     self.assertEqual('https://w3id.org/linkml/tests/kitchen_sink', s.from_schema)
-                #else:
-                #    self.assertEqual('https://w3id.org/linkml/tests/core', s.from_schema)
-
 
         for c in ['Company', 'Person', 'Organization', 'Thing']:
-            assert view.induced_slot('id', c).identifier is True
-            assert view.induced_slot('name', c).identifier is not True
-            assert view.induced_slot('name', c).required is False
-            assert view.induced_slot('name', c).range == 'string'
+            self.assertTrue(view.induced_slot('id', c).identifier)
+            self.assertFalse(view.induced_slot('name', c).identifier)
+            self.assertFalse(view.induced_slot('name', c).required)
+            self.assertEquals(view.induced_slot('name', c).range, 'string')
         for c in ['Event', 'EmploymentEvent', 'MedicalEvent']:
             s = view.induced_slot('started at time', c)
-            #print(f's={s.range} // c = {c}')
-            assert s.range == 'date'
-            assert s.slot_uri == 'prov:startedAtTime'
-        assert view.induced_slot('age in years', 'Person').minimum_value == 0
-        assert view.induced_slot('age in years', 'Adult').minimum_value == 16
+            self.assertEquals(s.range, 'date')
+            self.assertEquals(s.slot_uri, 'prov:startedAtTime')
+        self.assertEquals(view.induced_slot('age in years', 'Person').minimum_value, 0)
+        self.assertEquals(view.induced_slot('age in years', 'Adult').minimum_value, 16)
 
-        assert view.get_class('agent').class_uri == 'prov:Agent'
-        assert view.get_uri('agent') == 'prov:Agent'
+        self.assertEquals(view.get_class('agent').class_uri, 'prov:Agent')
+        self.assertEquals(view.get_uri('agent'), 'prov:Agent')
         logging.debug(view.get_class('Company').class_uri)
 
-        assert view.get_uri('Company') == 'ks:Company'
-        assert view.get_uri('Company', expand=True) == 'https://w3id.org/linkml/tests/kitchen_sink/Company'
+        self.assertEquals(view.get_uri('Company'), 'ks:Company')
+        self.assertEquals(view.get_uri('Company', expand=True), 'https://w3id.org/linkml/tests/kitchen_sink/Company')
         logging.debug(view.get_uri("TestClass"))
-        assert view.get_uri('TestClass') == 'core:TestClass'
-        assert view.get_uri('TestClass', expand=True) == 'https://w3id.org/linkml/tests/core/TestClass'
+        self.assertEquals(view.get_uri('TestClass'), 'core:TestClass')
+        self.assertEquals(view.get_uri('TestClass', expand=True), 'https://w3id.org/linkml/tests/core/TestClass')
 
-        assert view.get_uri('string') == 'xsd:string'
+        self.assertEquals(view.get_uri('string') == 'xsd:string')
 
         # dynamic enums
         e = view.get_enum('HCAExample')
@@ -438,12 +434,12 @@ class SchemaViewTestCase(unittest.TestCase):
         view = SchemaView(SCHEMA_WITH_IMPORTS)
         all_c = copy(view.all_classes())
         all_c_noi = copy(view.all_classes(imports=False))
-        assert len(all_c_noi) < len(all_c)
+        self.assertLess(len(all_c_noi), len(all_c))
         view.merge_imports()
         all_c2 = copy(view.all_classes())
         self.assertCountEqual(all_c, all_c2)
         all_c2_noi = copy(view.all_classes(imports=False))
-        assert len(all_c2_noi) == len(all_c2)
+        self.assertLess(len(all_c2_noi), len(all_c2))
 
     def test_traversal(self):
         schema = SchemaDefinition(id='test', name='traversal-test')
@@ -462,8 +458,8 @@ class SchemaViewTestCase(unittest.TestCase):
         view.add_class(ClassDefinition('AZ', is_a='RootMixin', mixin=True))
         view.add_class(ClassDefinition('BY', is_a='RootMixin', mixin=True))
         view.add_class(ClassDefinition('CX', is_a='RootMixin', mixin=True))
+
         def check(ancs: List, expected: List):
-            #print(ancs)
             self.assertEqual(ancs, expected)
         check(view.class_ancestors('C', depth_first=True),
               ['C', 'Cm1', 'Cm2', 'CX', 'B', 'Bm1', 'Bm2', 'BY', 'A', 'Am1', 'Am2', 'AZ', 'Root', 'RootMixin'])
@@ -490,18 +486,18 @@ class SchemaViewTestCase(unittest.TestCase):
         view.add_slot(SlotDefinition('s4', is_a='s2', mixins=['m1'], range='W'))
         view.add_slot(SlotDefinition('m1', mixin=True, multivalued=False, range='Z'))
         slot1 = view.induced_slot('s1', 'C')
-        assert not slot1.is_a
+        self.assertIsNot(slot1.is_a)
         self.assertEqual('D', slot1.range)
-        assert slot1.multivalued
+        self.assertIs(slot1.multivalued)
         slot2 = view.induced_slot('s2', 'C')
         self.assertEqual(slot2.is_a, 's1')
         self.assertEqual('D', slot2.range)
-        assert slot2.multivalued
+        self.assertIs(slot2.multivalued)
         slot3 = view.induced_slot('s3', 'C')
-        assert slot3.multivalued
+        self.assertIs(slot3.multivalued)
         self.assertEqual('Z', slot3.range)
         slot4 = view.induced_slot('s4', 'C')
-        assert slot4.multivalued
+        self.assertIs(slot4.multivalued)
         self.assertEqual('W', slot4.range)
         # test dangling
         view.add_slot(SlotDefinition('s5', is_a='does-not-exist'))
@@ -569,18 +565,18 @@ class SchemaViewTestCase(unittest.TestCase):
     def test_metamodel_in_schemaview(self):
         view = package_schemaview('linkml_runtime.linkml_model.meta')
         for cn in ['class_definition', 'type_definition', 'slot_definition']:
-            assert cn in view.all_classes()
-            assert cn in view.all_classes(imports=False)
-            assert view.get_identifier_slot(cn).name == 'name'
+            self.assertIn(cn, view.all_classes())
+            self.assertIn(cn, view.all_classes(imports=False))
+            self.assertEqual(view.get_identifier_slot(cn).name, 'name')
         for cn in ['annotation', 'extension']:
-            assert cn in view.all_classes()
-            assert cn not in view.all_classes(imports=False)
+            self.assertIn(cn, view.all_classes())
+            self.assertNotIn(cn, view.all_classes(imports=False))
         for sn in ['id', 'name', 'description']:
-            assert sn in view.all_slots()
+            self.assertIn(sn, view.all_slots())
         for tn in ['uriorcurie', 'string', 'float']:
-            assert tn in view.all_types()
+            self.assertIn(tn, view.all_types())
         for tn in ['uriorcurie', 'string', 'float']:
-            assert tn not in view.all_types(imports=False)
+            self.assertNotIn(tn, view.all_types(imports=False))
         for cn, c in view.all_classes().items():
             uri = view.get_uri(cn, expand=True)
             #print(f'{cn}: {c.class_uri} // {uri}')
@@ -681,6 +677,7 @@ class SchemaViewTestCase(unittest.TestCase):
                 "shex"], 
                 prefixes_list
         )
+
 
 if __name__ == '__main__':
     unittest.main()
