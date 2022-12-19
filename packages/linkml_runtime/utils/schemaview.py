@@ -44,7 +44,6 @@ def _closure(f, x, reflexive=True, depth_first=True, **kwargs):
         rv = [x]
     else:
         rv = []
-    print("rv", rv)
     visited = []
     todo = [x]
     while len(todo) > 0:
@@ -58,11 +57,10 @@ def _closure(f, x, reflexive=True, depth_first=True, **kwargs):
             vals = f(i, kwargs.get('enum'))
         else:
             vals = f(i)
-        print("vals", vals)
-        for v in vals:
-            if v not in visited:
-                todo.append(v)
-                if v not in rv:
+        if vals is not None:
+            for v in vals:
+                if v not in visited and v not in rv:
+                    todo.append(v)
                     rv.append(v)
     return rv
 
@@ -554,7 +552,7 @@ class SchemaView(object):
         return self._parents(e, imports, mixins, is_a=is_a)
 
     @lru_cache()
-    def permissible_value_parents(self, permissible_value: PermissibleValue, enum_name: ENUM_NAME) -> Union[
+    def permissible_value_parents(self, permissible_value: str, enum_name: ENUM_NAME) -> Union[
         str, PermissibleValueText, None, list[Any], ValueError]:
         """
         :param enum_name: child enum name
@@ -562,14 +560,13 @@ class SchemaView(object):
         :return: all direct parent enum names (is_a)
         """
         enum = self.get_enum(enum_name, strict=True)
-        parents = []
         if enum:
             if permissible_value in enum.permissible_values:
-                if permissible_value.is_a:
-                    print(permissible_value.is_a)
-                    return parents.append(permissible_value.is_a)
+                pv = enum.permissible_values[permissible_value]
+                if pv.is_a:
+                    return [pv.is_a]
         else:
-            return parents
+            return []
 
     @lru_cache()
     def slot_parents(self, slot_name: SLOT_NAME, imports=True, mixins=True, is_a=True) -> List[SlotDefinitionName]:
@@ -650,18 +647,11 @@ class SchemaView(object):
         :enum
         """
 
-        enum = self.get_enum(enum_name)
-        if enum and enum.permissible_values:
-            for pv, v in enum.permissible_values.items():
-                if v == permissible_value_text:
-                    # lambda x,y: pass in two variables
-                    return _closure(lambda x, y: self.permissible_value_parents(x, enum_name),
-                                    pv,
-                                    reflexive=reflexive,
-                                    depth_first=depth_first,
-                                    enum=enum_name)
-        else:
-            return [permissible_value_text]
+        return _closure(lambda x, enum_name_c: self.permissible_value_parents(x, enum_name_c),
+                        permissible_value_text,
+                        reflexive=reflexive,
+                        depth_first=depth_first,
+                        enum=enum_name)
 
     @lru_cache()
     def enum_ancestors(self, enum_name: ENUM_NAME, imports=True, mixins=True, reflexive=True, is_a=True,
@@ -1605,7 +1595,7 @@ class SchemaView(object):
             if class_definition.slot_usage:
                 for slot_definition in class_definition.slot_usage.values():
                     materialize_pattern_into_slot_definition(slot_definition)
-        
+
             if class_definition.attributes:
                 for slot_definition in class_definition.attributes.values():
                     materialize_pattern_into_slot_definition(slot_definition)

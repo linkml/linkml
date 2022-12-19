@@ -27,14 +27,13 @@ class SchemaViewTestCase(unittest.TestCase):
         for en, e in view.all_enums().items():
             if e.name == "Animals":
                 for pv, v in e.permissible_values.items():
-                    print("permissible value", pv)
-                    print("parent", view.permissible_value_parents(pv))
-                    print("ancestors", view.permissible_value_ancestors(pv))
+                    if pv == "CAT":
+                        assert view.permissible_value_ancestors(pv, e.name) == ['CAT']
+                    if pv == "ANGRY_LION":
+                        assert view.permissible_value_ancestors(pv, e.name) == ['ANGRY_LION', 'LION', 'CAT']
         for cn, c in view.all_classes().items():
-            if c.name == "Adult" or "Thing":
-                print("class_name", c.name)
-                print("parent", view.class_parents(c.name))
-                print("ancestors", view.class_ancestors(c.name))
+            if c.name == "Adult":
+                assert view.class_ancestors(c.name) == ['Adult', 'Person', 'HasAliases', 'Thing']
 
     def test_schemaview(self):
         # no import schema
