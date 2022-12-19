@@ -29,7 +29,7 @@ class SchemaViewTestCase(unittest.TestCase):
             if e.name == "Animals":
                 for pv, v in e.permissible_values.items():
                     if pv == "CAT":
-                        self.assertEqua(view.permissible_value_ancestors(pv, e.name), ['CAT'])
+                        self.assertEqual(view.permissible_value_ancestors(pv, e.name), ['CAT'])
                     if pv == "ANGRY_LION":
                         self.assertEqual(view.permissible_value_ancestors(pv, e.name), ['ANGRY_LION', 'LION', 'CAT'])
         for cn, c in view.all_classes().items():
