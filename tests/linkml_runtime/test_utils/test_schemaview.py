@@ -15,6 +15,7 @@ from tests.test_utils import INPUT_DIR
 
 SCHEMA_NO_IMPORTS = os.path.join(INPUT_DIR, 'kitchen_sink_noimports.yaml')
 SCHEMA_WITH_IMPORTS = os.path.join(INPUT_DIR, 'kitchen_sink.yaml')
+SCHEMA_WITH_STRUCTURED_PATTERNS = os.path.join(INPUT_DIR, "pattern-example.yaml")
 
 yaml_loader = YAMLLoader()
 
@@ -475,8 +476,6 @@ class SchemaViewTestCase(unittest.TestCase):
         check(view.class_ancestors('C', is_a=False),
               ['C', 'Cm1', 'Cm2', 'CX'])
 
-
-
     def test_slot_inheritance(self):
         schema = SchemaDefinition(id='test', name='test')
         view = SchemaView(schema)
@@ -511,6 +510,62 @@ class SchemaViewTestCase(unittest.TestCase):
         with self.assertRaises(ValueError):
             view.slot_ancestors('s5')
 
+    def test_attribute_inheritance(self):
+        """
+        Tests attribute inheritance edge cases
+        :return:
+        """
+        view = SchemaView(os.path.join(INPUT_DIR, 'attribute_edge_cases.yaml'))
+        expected = [
+            ('Root', 'a1', None, "a1"),
+            ('Root', 'a2', None, "a2"),
+            ('Root', 'a3', None, "a3"),
+            ('C1', 'a1', True, "a1m1"),
+            ('C1', 'a2', True, "a2c1"),
+            ('C1', 'a3', None, "a3"),
+            ('C1', 'a4', None, "a4"),
+            ('C2', 'a1', False, "a1m2"),
+            ('C2', 'a2', True, "a2c2"),
+            ('C2', 'a3', None, "a3"),
+            ('C2', 'a4', True, "a4m2"),
+            ('C1x', 'a1', True, "a1m1"),
+            ('C1x', 'a2', True, "a2c1x"),
+            ('C1x', 'a3', None, "a3"),
+            ('C1x', 'a4', None, "a4"),
+        ]
+        for cn, sn, req, desc in expected:
+            slot = view.induced_slot(sn, cn)
+            self.assertEqual(req, slot.required, f"in: {cn}.{sn}")
+            self.assertEqual(desc, slot.description, f"in: {cn}.{sn}")
+            self.assertEqual('string', slot.range, f"in: {cn}.{sn}")
+
+    def test_ambiguous_attributes(self):
+        """
+        Tests behavior where multiple attributes share the same name
+        """
+        schema = SchemaDefinition(id='test', name='test')
+        view = SchemaView(schema)
+        a1 = SlotDefinition('a1', range='string')
+        a2 = SlotDefinition('a2', range='FooEnum')
+        a3 = SlotDefinition('a3', range='C3')
+        view.add_class(ClassDefinition('C1', attributes={a1.name: a1, a2.name: a2, a3.name: a3}))
+        a1x = SlotDefinition('a1', range='integer')
+        a2x = SlotDefinition('a2', range='BarEnum')
+        view.add_class(ClassDefinition('C2', attributes={a1x.name: a1x, a2x.name: a2x}))
+        # a1 and a2 are ambiguous: only stub information available
+        # without class context
+        self.assertIsNone(view.get_slot(a1.name).range)
+        self.assertIsNone(view.get_slot(a2.name).range)
+        self.assertIsNotNone(view.get_slot(a3.name).range)
+        self.assertEqual(3, len(view.all_slots(attributes=True)))
+        self.assertEqual(0, len(view.all_slots(attributes=False)))
+        # default is to include attributes
+        self.assertEqual(3, len(view.all_slots()))
+        self.assertEqual(a3.range, view.induced_slot(a3.name).range)
+        self.assertEqual(a1.range, view.induced_slot(a1.name, 'C1').range)
+        self.assertEqual(a2.range, view.induced_slot(a2.name, 'C1').range)
+        self.assertEqual(a1x.range, view.induced_slot(a1x.name, 'C2').range)
+        self.assertEqual(a2x.range, view.induced_slot(a2x.name, 'C2').range)
 
 
     def test_metamodel_in_schemaview(self):
@@ -558,7 +613,7 @@ class SchemaViewTestCase(unittest.TestCase):
         self.assertListEqual(actual_result, expected_result)
 
     def test_materialize_patterns(self):
-        sv = SchemaView(os.path.join(INPUT_DIR, "pattern-example.yaml"))
+        sv = SchemaView(SCHEMA_WITH_STRUCTURED_PATTERNS)
 
         sv.materialize_patterns()
 
@@ -568,6 +623,66 @@ class SchemaViewTestCase(unittest.TestCase):
         self.assertEqual(height_slot.pattern, "\d+[\.\d+] (centimeter|meter|inch)")
         self.assertEqual(weight_slot.pattern, "\d+[\.\d+] (kg|g|lbs|stone)")
 
+    def test_materialize_patterns_slot_usage(self):
+        sv = SchemaView(SCHEMA_WITH_STRUCTURED_PATTERNS)
+
+        sv.materialize_patterns()
+
+        name_slot_usage = sv.get_class("FancyPersonInfo").slot_usage['name']
+
+        self.assertEqual(name_slot_usage.pattern, "\\S+ \\S+-\\S+")
+
+    def test_materialize_patterns_attribute(self):
+        sv = SchemaView(SCHEMA_WITH_STRUCTURED_PATTERNS)
+
+        sv.materialize_patterns()
+
+        weight_attribute = sv.get_class('ClassWithAttributes').attributes['weight']
+
+        self.assertEqual(weight_attribute.pattern, "\d+[\.\d+] (kg|g|lbs|stone)")
+
+    def test_mergeimports(self):
+        sv = SchemaView(SCHEMA_WITH_IMPORTS, merge_imports=False)
+        # activity class is in core, but not in kitchen_sink
+        classes_list = list(sv.schema.classes.keys())
+        self.assertNotIn("activity", classes_list)
+
+        # was generated by slot is in core, but not in kitchen_sink
+        slots_list = list(sv.schema.slots.keys())
+        self.assertNotIn("was generated by", slots_list)
+
+        # list of prefixes only in kitchen_sink
+        prefixes_list = list(sv.schema.prefixes.keys())
+        self.assertListEqual(
+                ["pav", "dce", "lego", "linkml", "biolink", "ks", "RO", "BFO", "tax"], 
+                prefixes_list
+        )
+
+        # merge_imports=True, so activity class should be present
+        sv = SchemaView(SCHEMA_WITH_IMPORTS, merge_imports=True)
+        classes_list = list(sv.schema.classes.keys())
+        self.assertIn("activity", classes_list)
+
+        slots_list = list(sv.schema.slots.keys())
+        self.assertIn("was generated by", slots_list)
+
+        prefixes_list = list(sv.schema.prefixes.keys())
+        self.assertListEqual(
+                ["pav", 
+                "dce", 
+                "lego", 
+                "linkml", 
+                "biolink", 
+                "ks", 
+                "RO", 
+                "BFO", 
+                "tax", 
+                "core", 
+                "prov", 
+                "xsd", 
+                "shex"], 
+                prefixes_list
+        )
 
 if __name__ == '__main__':
     unittest.main()

@@ -15,9 +15,11 @@ prefixes:
   prov: http://www.w3.org/ns/prov#
   GSSO: http://purl.obolibrary.org/obo/GSSO_
   famrel: https://example.org/FamilialRelations#
-  bizcodes: https://example.org/bizcodes/
-  HP: http://purl.obolibrary.org/obo/HP_
-  skos: http://www.w3.org/2004/02/skos/core#
+  # DATA PREFIXES
+  P: http://example.org/P/
+  ROR: http://example.org/ror/
+  CODE: http://example.org/code/
+  GEO: http://example.org/geoloc/
 default_prefix: personinfo
 default_range: string
 
@@ -26,22 +28,6 @@ emit_prefixes:
   - rdfs
   - xsd
   - skos
-
-types:
-
-  CrossReference:
-    typeof: uriorcurie
-    description: A string URI or CURIE representation of an external identifier, modeled as a Resource in RDF
-    base: str
-    uri: rdfs:Resource
-
-  ImageURL:
-    typeof: uri
-    base: str
-    uri: xsd:anyURI
-
-  SalaryType:
-    typeof: decimal
 
 classes:
 
@@ -53,9 +39,8 @@ classes:
       - name
       - description
       - image
-      - depicted_by
     close_mappings:
-     - schema:Thing
+      - schema:Thing
 
   Person:
     is_a: NamedThing
@@ -72,12 +57,16 @@ classes:
       - current_address
       - has_employment_history
       - has_familial_relationships
-      - has_interpersonal_relationships
       - has_medical_history
     slot_usage:
       primary_email:
-        pattern: "^\\S+@[\\S+\\.]+\\S+"  
-  
+        pattern: "^\\S+@[\\S+\\.]+\\S+"
+      description:
+        string_serialization: "name: {name} address: {current_address.street}"
+        #equals_expression: "'name: '+name+(' address: ' + current_address.street if current_address else '')"
+    in_subset:
+      - basic_subset
+
   HasAliases:
     description: >-
       A mixin applied to any class that can have aliases/alternateNames
@@ -86,7 +75,7 @@ classes:
       aliases:
         multivalued: true
         exact_mappings:
-          - schema:alternateNamef
+          - schema:alternateName
 
 
   Organization:
@@ -100,23 +89,6 @@ classes:
       - mission_statement
       - founding_date
       - founding_location
-      - categories
-      - score
-      - min_salary
-    slot_usage:
-      categories:
-        range: OrganizationType
-    rules:
-      - postconditions:
-          slot_conditions:
-            score:
-              maximum_value: 0
-        preconditions:
-          slot_conditions:
-            min_salary:
-              maximum_value: 80000.00
-            
-            
 
   Place:
     mixins:
@@ -124,8 +96,7 @@ classes:
     slots:
       - id
       - name
-      - depicted_by
-      
+
   Address:
     class_uri: schema:PostalAddress
     slots:
@@ -144,100 +115,64 @@ classes:
 
   Concept:
     is_a: NamedThing
-    attributes:
-      code system:
-        range: code system
-      mappings:
-        slot_uri: skos:exactMatch
-        multivalued: true
-        range: CrossReference
 
   DiagnosisConcept:
     is_a: Concept
 
   ProcedureConcept:
     is_a: Concept
-    slots:
-      - subtype
 
-
-  OperationProcedureConcept:
-    is_a: ProcedureConcept
-
-  ImagingProcedureConcept:
-    is_a: ProcedureConcept
-
-  code system:
-    slots:
-      - id
-      - name
 
   Relationship:
     slots:
       - started_at_time
       - ended_at_time
       - related_to
-      - type
 
   FamilialRelationship:
     is_a: Relationship
+    slots:
+      - type
     slot_usage:
       type:
         range: FamilialRelationshipType
         required: true
-      related to:
+      related_to:
         range: Person
         required: true
+      #string_serialization: "{type} {related_to.name}"
 
-  InterPersonalRelationship:
-    is_a: Relationship
-    slot_usage:
-      type:
-        any_of:
-          - range: FamilialRelationshipType
-          - range: NonFamilialRelationshipType
-        required: true
-      related to:
-        range: Person
-        required: true
 
   EmploymentEvent:
     is_a: Event
     slots:
       - employed_at
-      - salary
+      - type
 
   MedicalEvent:
     is_a: Event
     slots:
-      - in location
+      - in_location
       - diagnosis
       - procedure
+      - type
 
   WithLocation:
     mixin: true
     slots:
-      - in location
+      - in_location
 
+  # TODO: annotate that this is a container/root class
   Container:
     tree_root: true
-    attributes:
-      persons:
-        range: Person
-        inlined: true
-        inlined_as_list: true
-        multivalued: true
-      organizations:
-        range: Organization
-        inlined_as_list: false
-        inlined: true
-        multivalued: true
+    slots:
+      - persons
+      - organizations
 
 slots:
   id:
     identifier: true
     slot_uri: schema:identifier
-    range: uriorcurie
   name:
     slot_uri: schema:name
   description:
@@ -267,11 +202,7 @@ slots:
     range: FamilialRelationship
     multivalued: true
     inlined_as_list: true
-  has_interpersonal_relationships:
-    range: InterPersonalRelationship
-    multivalued: true
-    inlined_as_list: true
-  in location:
+  in_location:
     range: Place
   current_address:
     description: >-
@@ -281,19 +212,9 @@ slots:
     range: integer
     minimum_value: 0
     maximum_value: 999
-  score:
-    description: A score between 0 and 5, represented as a decimal
-    range: decimal
-    minimum_value: 0.0
-    maximum_value: 5.0
   related_to:
-    range: NamedThing
-  depicted_by:
-    range: ImageURL
   type:
-  subtype:
-    designates_type: true
-    range: Concept
+    range: RelationshipType
   street:
   city:
   mission_statement:
@@ -318,17 +239,21 @@ slots:
     slot_uri: prov:endedAtTime
     range: date
 
-  categories:
+  persons:
+    range: Person
+    inlined: true
+    inlined_as_list: true
+    multivalued: true
+  organizations:
+    range: Organization
+    inlined_as_list: true
+    inlined: true
     multivalued: true
 
-  salary:
-    range: SalaryType
-  min_salary:
-    range: SalaryType
-
-    
 enums:
+  RelationshipType:
   FamilialRelationshipType:
+    is_a: RelationshipType
     permissible_values:
       SIBLING_OF:
         meaning: famrel:01
@@ -336,14 +261,8 @@ enums:
         meaning: famrel:02
       CHILD_OF:
         meaning: famrel:01
-  NonFamilialRelationshipType:
-    permissible_values:
-      COWORKER_OF:
-        meaning: famrel:70
-      ROOMMATE_OF:
-        meaning: famrel:71
-      BEST_FRIEND_OF:
-      MORTAL_ENEMY_OF:
+      FATHER_OF:
+        meaning: famrel:11
   GenderType:
     permissible_values:
       nonbinary man:
@@ -359,16 +278,7 @@ enums:
       cisgender woman:
         meaning: GSSO:000385
   DiagnosisType:
-    permissible_values:
-      todo:
-  OrganizationType:
-    permissible_values:
-      non profit:
-      for profit:
-      offshore:
-      charity:
-        meaning: bizcodes:001
-      shell company:
-      loose organization:
 
-
+subsets:
+  basic_subset:
+    description: A subset of the schema that handles basic information

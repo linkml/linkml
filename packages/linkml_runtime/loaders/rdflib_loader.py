@@ -1,4 +1,5 @@
 import logging
+import urllib
 from copy import copy
 from dataclasses import dataclass
 from typing import Optional, Any, Dict, Type, Union, TextIO, List, Tuple, Set
@@ -121,19 +122,26 @@ class RDFLibLoader(Loader):
                         v = Pointer(o)
                     else:
                         if ClassDefinition.class_name in range_applicable_elements:
-                            v = namespaces.curie_for(o)
+                            if slot.range in schemaview.all_classes():
+                                id_slot = schemaview.get_identifier_slot(slot.range)
+                                v = self._uri_to_id(o, id_slot, schemaview)
+                            else:
+                                v = namespaces.curie_for(o)
                             if v is None:
                                 logging.debug(f'No CURIE for {p}={o} in {subject} [{subject_class}]')
                                 v = str(o)
                         elif EnumDefinition.class_name in range_applicable_elements:
+                            range_union_elements = schemaview.slot_range_as_union(slot)
+                            enum_names = [e for e in range_union_elements if e in schemaview.all_enums()]
                             # if a PV has a meaning URI declared, map this
                             # back to a text representation
                             v = namespaces.curie_for(o)
-                            e = schemaview.get_enum(slot.range)
-                            for pv in e.permissible_values.values():
-                                if v == pv.meaning or str(o) == pv.meaning:
-                                    v = pv.text
-                                    break
+                            for enum_name in enum_names:
+                                e = schemaview.get_enum(enum_name)
+                                for pv in e.permissible_values.values():
+                                    if v == pv.meaning or str(o) == pv.meaning:
+                                        v = pv.text
+                                        break
                         elif TypeDefinition.class_name in range_applicable_elements:
                             if cast_literals:
                                 v = namespaces.curie_for(o)
@@ -198,7 +206,8 @@ class RDFLibLoader(Loader):
     def _get_id_dict(self, node: VALID_SUBJECT, schemaview: SchemaView, cn: ClassDefinitionName) -> ANYDICT:
         id_slot = schemaview.get_identifier_slot(cn)
         if not isinstance(node, BNode):
-            id_val = schemaview.namespaces().curie_for(node)
+            id_val = self._uri_to_id(node, id_slot, schemaview)
+            #id_val = schemaview.namespaces().curie_for(node)
             if id_val == None:
                 id_val = str(node)
             return {id_slot.name: id_val}
@@ -206,6 +215,12 @@ class RDFLibLoader(Loader):
             if id_slot is not None:
                 raise Exception(f'Unexpected blank node {node}, type {cn} expects {id_slot.name} identifier')
             return {}
+
+    def _uri_to_id(self, node: VALID_SUBJECT, id_slot: SlotDefinition, schemaview: SchemaView) -> str:
+        if schemaview.is_slot_percent_encoded(id_slot):
+            return urllib.parse.unquote(node).replace(schemaview.namespaces()._base, "")
+        else:
+            return schemaview.namespaces().curie_for(node)
 
 
     def load(self, source: Union[str, TextIO, Graph], target_class: Type[YAMLRoot], *,

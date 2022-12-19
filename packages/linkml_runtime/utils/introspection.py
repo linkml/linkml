@@ -1,12 +1,29 @@
 import logging
+import sys
 from functools import lru_cache
-from typing import List, Type
+from pathlib import Path
+from types import ModuleType
+from typing import List, Type, Union
 
 from linkml_runtime.linkml_model import ClassDefinition
 from linkml_runtime.utils.distroutils import get_schema_string
 from linkml_runtime.utils.schemaview import SchemaView
 from linkml_runtime.utils.yamlutils import YAMLRoot
 
+
+SCHEMA_PATH_VAR = 'schema_path'
+
+def package_schema_path(package: Union[str, ModuleType]) -> Path:
+    if isinstance(package, str):
+        package = sys.modules[package]
+    if SCHEMA_PATH_VAR in vars(package):
+        return package[SCHEMA_PATH_VAR]
+    package_location = Path(package.__file__)
+    name = package_location.name
+    for rel_path in [".", "linkml", "schema", "model", Path("model") / "schema"]:
+        path = package_location.parent / rel_path / name
+        if path.exists():
+            return path
 
 
 @lru_cache()

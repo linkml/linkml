@@ -5,7 +5,7 @@ from typing import Union, Optional, Any, Dict, Callable
 from jsonasobj2 import JsonObj, items
 
 from linkml_runtime import SchemaView
-from linkml_runtime.linkml_model import SlotDefinitionName, PermissibleValue
+from linkml_runtime.linkml_model import SlotDefinitionName, PermissibleValue, ClassDefinitionName
 from linkml_runtime.utils.enumerations import EnumDefinitionImpl
 from linkml_runtime.utils.eval_utils import eval_expr
 from linkml_runtime.utils.walker_utils import traverse_object_tree
@@ -24,7 +24,7 @@ def obj_as_dict_nonrecursive(obj: YAMLRoot, resolve_function: RESOLVE_FUNC = Non
     if resolve_function:
         return {k: resolve_function(v, k) for k, v in items(obj)}
     else:
-        return {k: v for k, v in items(obj)}
+        return {k: v for k, v in vars(obj).items()}
 
 @dataclass
 class Config:
@@ -51,6 +51,7 @@ class Policy(Enum):
 
 
 def generate_slot_value(obj: YAMLRoot, slot_name: Union[str, SlotDefinitionName], schemaview: SchemaView,
+                        class_name: Union[str, ClassDefinitionName] = None,
                         config: Config = Config()) -> Optional[Any]:
     """
     Infer the value of a slot for a given object
@@ -63,13 +64,15 @@ def generate_slot_value(obj: YAMLRoot, slot_name: Union[str, SlotDefinitionName]
     :param obj: object with slot whose value is be generated (not mutated)
     :param slot_name: slot whose value is to be filled
     :param schemaview:
+    :param class_name:
     :param config: determines which rules to apply
     :return: inferred value, or None if not inference performed
     """
-    cls_name = type(obj).class_name
+    if class_name is None:
+        class_name = type(obj).class_name
     mapped_slot = schemaview.slot_name_mappings()[slot_name]
     slot_name = mapped_slot.name
-    slot = schemaview.induced_slot(slot_name, cls_name)
+    slot = schemaview.induced_slot(slot_name, class_name)
     logging.debug(f'   CONF={config}')
     if config.use_string_serialization:
         if slot.string_serialization:
@@ -87,20 +90,22 @@ def generate_slot_value(obj: YAMLRoot, slot_name: Union[str, SlotDefinitionName]
 
 
 def infer_slot_value(obj: YAMLRoot, slot_name: Union[str, SlotDefinitionName], schemaview: SchemaView,
-                       policy: Policy = Policy.STRICT, config: Config = Config()):
+                     class_name: Union[str, ClassDefinitionName] = None,
+                     policy: Policy = Policy.STRICT, config: Config = Config()):
     """
     Infer the value of a slot for an object
 
     :param obj: mutable object to be transformed
     :param slot_name:
     :param schemaview:
+    :param class_name:
     :param policy:
     :param config:
     """
     v = getattr(obj, slot_name, None)
     if v is not None and policy == Policy.KEEP:
         return v
-    new_v = generate_slot_value(obj, slot_name, schemaview, config=config)
+    new_v = generate_slot_value(obj, slot_name, schemaview, class_name=class_name, config=config)
     logging.debug(f'SETTING {slot_name} = {new_v} // current={v}, {policy}')
     if new_v:
         # check if new value is different; not str check is necessary as enums may not be converted
@@ -117,6 +122,7 @@ def infer_slot_value(obj: YAMLRoot, slot_name: Union[str, SlotDefinitionName], s
 
 
 def infer_all_slot_values(obj: YAMLRoot, schemaview: SchemaView,
+                          class_name: Union[str, ClassDefinitionName] = None,
                           policy: Policy = Policy.STRICT, config: Config = Config()):
     """
     Walks object tree inferring all slot values.
@@ -126,6 +132,7 @@ def infer_all_slot_values(obj: YAMLRoot, schemaview: SchemaView,
 
     :param obj:
     :param schemaview:
+    :param class_name:
     :param policy: default is STRICT
     :param config:
     :return:
@@ -135,7 +142,7 @@ def infer_all_slot_values(obj: YAMLRoot, schemaview: SchemaView,
         if isinstance(in_obj, YAMLRoot) and not isinstance(in_obj, EnumDefinitionImpl) and not isinstance(in_obj, PermissibleValue):
             for k, v in vars(in_obj).items():
                 #print(f'  ISV={k} curr={v} policy={policy} in_obj={type(in_obj)}')
-                infer_slot_value(in_obj, k, schemaview, policy=policy, config=config)
+                infer_slot_value(in_obj, k, schemaview, class_name=class_name, policy=policy, config=config)
         return in_obj
     traverse_object_tree(obj, infer)
 

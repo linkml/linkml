@@ -8,12 +8,10 @@ from rdflib.namespace import RDF, SKOS, XSD
 from rdflib import Namespace
 
 from linkml_runtime import MappingError, DataNotFoundError
-from linkml_runtime.loaders import json_loader
 from linkml_runtime.dumpers import rdflib_dumper, yaml_dumper
 from linkml_runtime.loaders import yaml_loader
 from linkml_runtime.loaders import rdflib_loader
 from linkml_runtime.utils.schemaview import SchemaView
-from linkml_runtime.utils.schemaops import roll_up, roll_down
 from tests.test_loaders_dumpers import INPUT_DIR, OUTPUT_DIR
 from tests.test_loaders_dumpers.models.personinfo import Container, Person, Address, Organization, OrganizationType
 from tests.test_loaders_dumpers.models.node_object import NodeObject, Triple
@@ -59,6 +57,29 @@ P:001 a unmapped:Person ;
     sdo:gender <http://purl.obolibrary.org/obo/GSSO_000371> ;
     sdo:name "fred bloggs" ;
     personinfo:age_in_years 33 .
+"""
+
+enum_union_type_test_ttl = """
+@prefix P: <http://example.org/P/> .
+@prefix personinfo: <https://w3id.org/linkml/examples/personinfo/> .
+@prefix sdo: <http://schema.org/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix famrel: <https://example.org/FamilialRelations#> .
+
+P:001 a sdo:Person ;
+    sdo:email "fred.bloggs@example.com" ;
+    sdo:name "fred bloggs" ;
+    personinfo:age_in_years 33 ;
+    personinfo:has_interpersonal_relationships [ 
+      a personinfo:InterpersonalRelationship ;
+      personinfo:type famrel:70 ;
+      personinfo:related_to P:002 
+    ] ,
+    [ 
+      a personinfo:InterpersonalRelationship ;
+      personinfo:type "BEST_FRIEND_OF" ;
+      personinfo:related_to P:003 
+    ] .
 """
 
 blank_node_test_ttl = """
@@ -173,6 +194,27 @@ class RdfLibDumperTestCase(unittest.TestCase):
         self.assertEqual(person.age_in_years, 33)
         self.assertEqual(str(person.gender), "cisgender man")
         yaml_dumper.dump(person, to_file=UNMAPPED_ROUNDTRIP)
+
+
+    def test_any_of_enum(self):
+        """
+        Tests https://github.com/linkml/linkml/issues/1023
+        """
+        view = SchemaView(SCHEMA)
+        # default behavior is to raise error on unmapped predicates
+        person = rdflib_loader.loads(enum_union_type_test_ttl, target_class=Person,
+                                schemaview=view, prefix_map=prefix_map)
+        self.assertEqual(person.id, 'P:001')
+        self.assertEqual(person.age_in_years, 33)
+        yaml_dumper.dump(person, to_file=UNMAPPED_ROUNDTRIP)
+        cases = [
+            ("P:002", "COWORKER_OF"),
+            ("P:003", "BEST_FRIEND_OF"),
+        ]
+        tups = []
+        for r in person.has_interpersonal_relationships:
+            tups.append((r.related_to, r.type))
+        self.assertCountEqual(cases, tups)
 
     def test_unmapped_type(self):
         """

@@ -1,3 +1,4 @@
+import logging
 from json_flattener import KeyConfig, GlobalConfig, Serializer
 from json_flattener.flattener import CONFIGMAP
 from linkml_runtime.linkml_model.meta import SlotDefinitionName, SchemaDefinition, \
@@ -14,8 +15,11 @@ def get_configmap(schemaview: SchemaView, index_slot: SlotDefinitionName) -> CON
     :param index_slot: key that indexes the top level object
     :return: mapping between top level keys and denormalization configurations
     """
+    slot = None
     if index_slot is not None and schemaview is not None:
         slot = schemaview.get_slot(index_slot)
+
+    if slot is not None:
         if slot.range is not None and slot.range in schemaview.all_classes():
             cm = {}
             for sn in schemaview.class_slots(slot.range):
@@ -24,9 +28,9 @@ def get_configmap(schemaview: SchemaView, index_slot: SlotDefinitionName) -> CON
                     cm[sn] = config
             return cm
         else:
-            logging.warn(f'Index slot range not to class: {slot.range}')
+            logging.warning(f'Index slot range not to class: {slot.range}')
     else:
-        logging.warn(f'Index slot or schema not specified')
+        logging.warning(f'Index slot or schema not specified')
     return {}
 
 def _get_key_config(schemaview: SchemaView, tgt_cls: ClassDefinitionName, sn: SlotDefinitionName, sep='_'):
