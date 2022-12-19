@@ -213,13 +213,11 @@ class SchemaViewTestCase(unittest.TestCase):
         self.assertIn('Dataset', roots)
         ds_slots = view.class_slots('Dataset')
         logging.debug(ds_slots)
-        assert len(ds_slots) == 3
+        self.assertEquals(len(ds_slots), 3)
         self.assertCountEqual(['persons', 'companies', 'activities'], ds_slots)
         for sn in ds_slots:
             s = view.induced_slot(sn, 'Dataset')
             logging.debug(s)
-
-
 
     def test_all_classes_ordered_lexical(self):
         view = SchemaView(SCHEMA_NO_IMPORTS)
@@ -228,7 +226,7 @@ class SchemaViewTestCase(unittest.TestCase):
         ordered_c = []
         for c in classes.values():
             ordered_c.append(c.name)
-        assert ordered_c == sorted(ordered_c)
+        self.assertEquals(ordered_c, sorted(ordered_c))
 
     def test_all_classes_ordered_rank(self):
         view = SchemaView(SCHEMA_NO_IMPORTS)
@@ -243,8 +241,8 @@ class SchemaViewTestCase(unittest.TestCase):
                 first_in_line.append(name)
             elif definition.rank == 2:
                 second_in_line.append(name)
-        assert ordered_c[0] in first_in_line
-        assert ordered_c[10] not in second_in_line
+        self.assertIn(ordered_c[0], first_in_line)
+        self.assertNotIn(ordered_c[10], second_in_line)
 
     def test_all_classes_ordered_no_ordered_by(self):
         view = SchemaView(SCHEMA_NO_IMPORTS)
@@ -263,7 +261,7 @@ class SchemaViewTestCase(unittest.TestCase):
         for s in slots.values():
             ordered_s.append(s.name)
         print(ordered_s)
-        assert ordered_s == sorted(ordered_s)
+        self.assertEqual(ordered_s, sorted(ordered_s))
 
     def test_all_slots_ordered_rank(self):
         view = SchemaView(SCHEMA_NO_IMPORTS)
@@ -279,8 +277,8 @@ class SchemaViewTestCase(unittest.TestCase):
                 first_in_line.append(name)
             elif definition.rank == 2:
                 second_in_line.append(name)
-        assert ordered_s[0] in first_in_line
-        assert ordered_s[10] not in second_in_line
+        self.assertIn(ordered_s[0], first_in_line)
+        self.assertNotIn(ordered_s[10], second_in_line)
 
 
     def test_rollup_rolldown(self):
@@ -295,7 +293,7 @@ class SchemaViewTestCase(unittest.TestCase):
         self.assertCountEqual(['started at time', 'ended at time', 'is current', 'in location', 'employed at', 'married to'],
                               induced_slot_names)
         # check to make sure rolled-up classes are deleted
-        assert view.class_descendants(element_name, reflexive=False) == []
+        self.assertEqual(view.class_descendants(element_name, reflexive=False), [])
         roll_down(view, view.class_leaves())
 
         for element_name in view.all_classes():
@@ -304,9 +302,9 @@ class SchemaViewTestCase(unittest.TestCase):
             logging.debug(f'  {element_name} SLOTS(i) = {view.class_slots(element_name)}')
             logging.debug(f'  {element_name} SLOTS(d) = {view.class_slots(element_name, direct=True)}')
             self.assertCountEqual(view.class_slots(element_name), view.class_slots(element_name, direct=True))
-        assert 'Thing' not in view.all_classes()
-        assert 'Person' not in view.all_classes()
-        assert 'Adult' in view.all_classes()
+        self.assertNotIn('Thing', view.all_classes())
+        self.assertNotIn('Person', view.all_classes())
+        self.assertIn('Adult', view.all_classes())
         
     def test_caching(self):
         """
@@ -345,11 +343,11 @@ class SchemaViewTestCase(unittest.TestCase):
         self.assertCountEqual(['kitchen_sink', 'core', 'linkml:types'], view.imports_closure())
         for t in view.all_types().keys():
             logging.debug(f'T={t} in={view.in_schema(t)}')
-        assert view.in_schema(ClassDefinitionName('Person')) == 'kitchen_sink'
-        assert view.in_schema(SlotDefinitionName('id')) == 'core'
-        assert view.in_schema(SlotDefinitionName('name')) == 'core'
-        assert view.in_schema(SlotDefinitionName('activity')) == 'core'
-        assert view.in_schema(SlotDefinitionName('string')) == 'types'
+        self.assertEquals(view.in_schema(ClassDefinitionName('Person')), 'kitchen_sink')
+        self.assertEquals(view.in_schema(SlotDefinitionName('id')), 'core')
+        self.assertEquals(view.in_schema(SlotDefinitionName('name')), 'core')
+        self.assertEquals(view.in_schema(SlotDefinitionName('activity')), 'core')
+        self.assertEquals(view.in_schema(SlotDefinitionName('string')), 'types')
         assert 'activity' in view.all_classes()
         assert 'activity' not in view.all_classes(imports=False)
         assert 'string' in view.all_types()
