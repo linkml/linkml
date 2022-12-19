@@ -53,10 +53,7 @@ def _closure(f, x, reflexive=True, depth_first=True, **kwargs):
             i = todo[0]
             todo = todo[1:]
         visited.append(i)
-        if kwargs.get('enum', False):
-            vals = f(i, kwargs.get('enum'))
-        else:
-            vals = f(i)
+        vals = f(i)
         if vals is not None:
             for v in vals:
                 if v not in visited and v not in rv:
@@ -647,11 +644,10 @@ class SchemaView(object):
         :enum
         """
 
-        return _closure(lambda x, enum_name_c: self.permissible_value_parents(x, enum_name_c),
+        return _closure(lambda x: self.permissible_value_parents(x, enum_name),
                         permissible_value_text,
                         reflexive=reflexive,
-                        depth_first=depth_first,
-                        enum=enum_name)
+                        depth_first=depth_first)
 
     @lru_cache()
     def enum_ancestors(self, enum_name: ENUM_NAME, imports=True, mixins=True, reflexive=True, is_a=True,
