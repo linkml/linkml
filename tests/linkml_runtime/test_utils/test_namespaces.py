@@ -8,11 +8,14 @@ from linkml_runtime.utils.namespaces import Namespaces
 
 def test_prefixmaps_integration():
 
-    pmns = Namespaces()
-    pmns.add_prefixmap('prefixmaps_merged')
-    print(len(pmns))
-    pmns.add_prefixmap('monarch_context')
-    print(len(pmns))
+    prefixmap_merged = Namespaces()
+    prefixmap_merged.add_prefixmap('bio_prefixmaps_merged')
+    assert len(prefixmap_merged) > 3780
+    print(len(prefixmap_merged))
+
+    prefixmap_merged.add_prefixmap('monarch_context')
+    assert len(prefixmap_merged) > 3850
+    print(len(prefixmap_merged))
 
 
 class NamespacesTestCase(unittest.TestCase):
