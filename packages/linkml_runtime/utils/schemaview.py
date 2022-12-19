@@ -553,7 +553,7 @@ class SchemaView(object):
 
     @lru_cache()
     def permissible_value_parents(self, permissible_value: str, enum_name: ENUM_NAME) -> Union[
-        str, PermissibleValueText, None, list[Any], ValueError]:
+        str, PermissibleValueText, None, ValueError]:
         """
         :param enum_name: child enum name
         :param permissible_value: permissible value
@@ -641,7 +641,7 @@ class SchemaView(object):
     def permissible_value_ancestors(self, permissible_value_text: str,
                                     enum_name: ENUM_NAME,
                                     reflexive=True,
-                                    depth_first=True) -> Optional[list[Any]]:
+                                    depth_first=True) -> List[str]:
         """
         Closure of permissible_value_parents method
         :enum
