@@ -6,7 +6,6 @@ from rdflib import Namespace, URIRef, Graph, BNode
 from rdflib.namespace import is_ncname
 from requests.structures import CaseInsensitiveDict
 from prefixmaps.io.parser import load_multi_context
-from curies import Converter
 
 from linkml_runtime.utils.yamlutils import TypedNode
 
@@ -232,14 +231,24 @@ class Namespaces(CaseInsensitiveDict):
 
     def add_prefixmap(self, map_name: str, include_defaults: bool = True) -> None:
         """
-        Add a prefixcommons map.  Only prefixes that have not been previously defined are added.
+        Add a prefixcommons map or the merged map from prefixmaps repo, note the
+        special name "prefixmaps_merged" -- in our schemas, the "prefixes" directive
+        hard-codes specialized prefix contexts by name (e.g. monarch_context, idot_context, etc...).  These
+        are incorporated to the main context, via the curie_util.read_biocontext method, whereas the
+        content of prefixmaps merged context is added via the load_multi_context method.
+        prefixcommons and prefixmaps.merged overlap, but are not one to one as prefixmaps.merged
+        also contains the output from bioregistry's context files, using obo expansions with priority.
+        and this method merges them into a single
+        dictionary/context.
+
+        Only prefixes that have not been previously defined are added.
 
         :param map_name: prefixcommons map name
         :param include_defaults: if True, take defaults from the map.
         :return:
         """
 
-        if map_name == 'bio_prefixmaps_merged':
+        if map_name == 'prefixmaps_merged':
             context = load_multi_context(["merged"])
             prefix_map = context.as_dict()
         else:
