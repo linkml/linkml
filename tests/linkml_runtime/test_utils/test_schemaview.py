@@ -439,7 +439,7 @@ class SchemaViewTestCase(unittest.TestCase):
         all_c2 = copy(view.all_classes())
         self.assertCountEqual(all_c, all_c2)
         all_c2_noi = copy(view.all_classes(imports=False))
-        self.assertLess(len(all_c2_noi), len(all_c2))
+        self.assertEqual(len(all_c2_noi), len(all_c2))
 
     def test_traversal(self):
         schema = SchemaDefinition(id='test', name='traversal-test')
@@ -486,18 +486,18 @@ class SchemaViewTestCase(unittest.TestCase):
         view.add_slot(SlotDefinition('s4', is_a='s2', mixins=['m1'], range='W'))
         view.add_slot(SlotDefinition('m1', mixin=True, multivalued=False, range='Z'))
         slot1 = view.induced_slot('s1', 'C')
-        self.assertIsNot(slot1.is_a)
+        self.assertEquals(slot1.is_a, None)
         self.assertEqual('D', slot1.range)
-        self.assertIs(slot1.multivalued)
+        self.assertIsNotNone(slot1.multivalued)
         slot2 = view.induced_slot('s2', 'C')
         self.assertEqual(slot2.is_a, 's1')
         self.assertEqual('D', slot2.range)
-        self.assertIs(slot2.multivalued)
+        self.assertIsNotNone(slot2.multivalued)
         slot3 = view.induced_slot('s3', 'C')
-        self.assertIs(slot3.multivalued)
+        self.assertIsNotNone(slot3.multivalued)
         self.assertEqual('Z', slot3.range)
         slot4 = view.induced_slot('s4', 'C')
-        self.assertIs(slot4.multivalued)
+        self.assertIsNotNone(slot4.multivalued)
         self.assertEqual('W', slot4.range)
         # test dangling
         view.add_slot(SlotDefinition('s5', is_a='does-not-exist'))
@@ -560,7 +560,6 @@ class SchemaViewTestCase(unittest.TestCase):
         self.assertEqual(a2.range, view.induced_slot(a2.name, 'C1').range)
         self.assertEqual(a1x.range, view.induced_slot(a1x.name, 'C2').range)
         self.assertEqual(a2x.range, view.induced_slot(a2x.name, 'C2').range)
-
 
     def test_metamodel_in_schemaview(self):
         view = package_schemaview('linkml_runtime.linkml_model.meta')
