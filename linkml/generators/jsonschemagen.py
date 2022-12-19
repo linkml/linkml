@@ -137,6 +137,8 @@ class JsonSchemaGenerator(Generator):
     not_closed: Optional[bool] = field(default_factory=lambda: True)
     """If not closed, then an open-ended set of attributes can be instantiated for any object"""
 
+    indent: int = 4
+
     inline: bool = False
     top_class: Optional[ClassDefinitionName] = None  ## JSON object is one instance of this
     """Class instantiated by the root node of the document tree"""
@@ -419,7 +421,7 @@ class JsonSchemaGenerator(Generator):
         ) or (self.top_class is None and cls.tree_root):
             self.top_level_schema.add_property(aliased_slot_name, prop, slot_is_required)
 
-    def serialize(self, indent: int = 4) -> str:
+    def serialize(self, **kwargs) -> str:
         self.start_schema()
         for enum_definition in self.schemaview.all_enums().values():
             self.handle_enum(enum_definition)
@@ -427,7 +429,7 @@ class JsonSchemaGenerator(Generator):
         for class_definition in self.schemaview.all_classes().values():
             self.handle_class(class_definition)
 
-        return self.top_level_schema.to_json(sort_keys=True, indent=indent if indent > 0 else None)
+        return self.top_level_schema.to_json(sort_keys=True, indent=self.indent if self.indent > 0 else None)
 
 
 @shared_arguments(JsonSchemaGenerator)
@@ -474,9 +476,9 @@ disable pretty-printing and return the most compact JSON representation
 """
 )
 @click.version_option(__version__, "-V", "--version")
-def cli(yamlfile, indent, **kwargs):
+def cli(yamlfile, **kwargs):
     """Generate JSON Schema representation of a LinkML model"""
-    print(JsonSchemaGenerator(yamlfile, **kwargs).serialize(indent))
+    print(JsonSchemaGenerator(yamlfile, **kwargs).serialize(**kwargs))
 
 
 if __name__ == "__main__":
