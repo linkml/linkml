@@ -354,3 +354,14 @@ enums:
     permissible_values:
       a:
       b:
+  Animals:
+    is_a: OtherEnum
+    permissible_values:
+      CAT:
+      LION:
+        is_a: CAT
+      ANGRY_LION:
+        is_a: LION
+      BIRD:
+      EAGLE:
+        is_a: BIRD
