@@ -24,7 +24,8 @@ EMPLOYED_AT = 'employed at'
 COMPANY = 'Company'
 AGENT = 'agent'
 ACTIVITY = 'activity'
-
+RELATED_TO = 'related to'
+AGE_IN_YEARS = 'age in years'
 
 class SchemaViewTestCase(unittest.TestCase):
 
@@ -68,8 +69,8 @@ class SchemaViewTestCase(unittest.TestCase):
         elements = view.get_elements_applicable_by_identifier("TEST:1234")
         self.assertNotIn("anatomical entity", elements)
         self.assertEqual(list(view.annotation_dict(SlotDefinitionName(IS_CURRENT)).values()), ['bar'])
-        logging.debug(view.annotation_dict(SlotDefinitionName('employed at')))
-        element = view.get_element(SlotDefinitionName('employed at'))
+        logging.debug(view.annotation_dict(SlotDefinitionName(EMPLOYED_AT)))
+        element = view.get_element(SlotDefinitionName(EMPLOYED_AT))
         logging.debug(element.annotations)
         element = view.get_element(SlotDefinitionName('has employment history'))
         logging.debug(element.annotations)
@@ -140,7 +141,7 @@ class SchemaViewTestCase(unittest.TestCase):
 
         self.assertCountEqual(['id', 'name',  ## From Thing
                                'has employment history', 'has familial relationships', 'has medical history',
-                               'age in years', 'addresses', 'has birth event', ## From Person
+                               AGE_IN_YEARS, 'addresses', 'has birth event', ## From Person
                                'aliases'  ## From HasAliases
                                 ],
                               view.class_slots('Person'))
@@ -189,13 +190,13 @@ class SchemaViewTestCase(unittest.TestCase):
             self.assertEqual(s2.range, 'date')
             self.assertEqual(s2.slot_uri, 'prov:startedAtTime')
         # test slot_usage
-        self.assertEqual(view.induced_slot('age in years', 'Person').minimum_value, 0)
-        self.assertEqual(view.induced_slot('age in years', 'Adult').minimum_value, 16)
+        self.assertEqual(view.induced_slot(AGE_IN_YEARS, 'Person').minimum_value, 0)
+        self.assertEqual(view.induced_slot(AGE_IN_YEARS, 'Adult').minimum_value, 16)
         self.assertTrue(view.induced_slot('name', 'Person').pattern is not None)
         self.assertEqual(view.induced_slot('type', 'FamilialRelationship').range, 'FamilialRelationshipType')
-        self.assertEqual(view.induced_slot('related to', 'FamilialRelationship').range, 'Person')
-        self.assertEqual(view.get_slot('related to').range, 'Thing')
-        self.assertEqual(view.induced_slot('related to', 'Relationship').range, 'Thing')
+        self.assertEqual(view.induced_slot(RELATED_TO, 'FamilialRelationship').range, 'Person')
+        self.assertEqual(view.get_slot(RELATED_TO).range, 'Thing')
+        self.assertEqual(view.induced_slot(RELATED_TO, 'Relationship').range, 'Thing')
         # https://github.com/linkml/linkml/issues/875
         self.assertCountEqual(['Thing', 'Place'], view.induced_slot('name').domain_of)
 
@@ -209,7 +210,7 @@ class SchemaViewTestCase(unittest.TestCase):
         for k, v in u.items():
             #print(f' {k} = {v}')
             logging.debug(f' {k} = {v}')
-        self.assertIn(SchemaUsage(used_by='FamilialRelationship', slot='related to',
+        self.assertIn(SchemaUsage(used_by='FamilialRelationship', slot=RELATED_TO,
                            metaslot='range', used='Person', inferred=False), u['Person'])
 
         # test methods also work for attributes
@@ -405,8 +406,8 @@ class SchemaViewTestCase(unittest.TestCase):
             s = view.induced_slot('started at time', c)
             self.assertEquals(s.range, 'date')
             self.assertEquals(s.slot_uri, 'prov:startedAtTime')
-        self.assertEquals(view.induced_slot('age in years', 'Person').minimum_value, 0)
-        self.assertEquals(view.induced_slot('age in years', 'Adult').minimum_value, 16)
+        self.assertEquals(view.induced_slot(AGE_IN_YEARS, 'Person').minimum_value, 0)
+        self.assertEquals(view.induced_slot(AGE_IN_YEARS, 'Adult').minimum_value, 16)
 
         self.assertEquals(view.get_class('agent').class_uri, 'prov:Agent')
         self.assertEquals(view.get_uri(AGENT), 'prov:Agent')
@@ -595,8 +596,7 @@ class SchemaViewTestCase(unittest.TestCase):
     def test_get_classes_by_slot(self):
         sv = SchemaView(SCHEMA_WITH_IMPORTS)
 
-        TEST_SLOT = "age in years"
-        slot = sv.get_slot(TEST_SLOT)
+        slot = sv.get_slot(AGE_IN_YEARS)
 
         actual_result = sv.get_classes_by_slot(slot)
         expected_result = ["Person"]
