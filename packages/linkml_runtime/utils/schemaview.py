@@ -54,7 +54,10 @@ def _closure(f, x, reflexive=True, depth_first=True, **kwargs):
             i = todo[0]
             todo = todo[1:]
         visited.append(i)
-        vals = f(i)
+        if kwargs.get('enum', False):
+            vals = f(i, kwargs.get('enum'))
+        else:
+            vals = f(i)
         print("vals", vals)
         for v in vals:
             if v not in visited:
@@ -651,9 +654,12 @@ class SchemaView(object):
         if enum and enum.permissible_values:
             for pv, v in enum.permissible_values.items():
                 if v == permissible_value_text:
-                    return _closure(lambda x: self.permissible_value_parents(x, enum_name=enum_name),
+                    # lambda x,y: pass in two variables
+                    return _closure(lambda x, y: self.permissible_value_parents(x, enum_name),
                                     pv,
-                                    reflexive=reflexive, depth_first=depth_first)
+                                    reflexive=reflexive,
+                                    depth_first=depth_first,
+                                    enum=enum_name)
         else:
             return [permissible_value_text]
 
