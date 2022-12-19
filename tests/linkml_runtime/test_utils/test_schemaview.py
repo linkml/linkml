@@ -29,11 +29,11 @@ class SchemaViewTestCase(unittest.TestCase):
             if e.name == "Animals":
                 for pv, v in e.permissible_values.items():
                     if pv == "CAT":
-                        print(view.permissible_value_parents(pv, e.name))
-                        self.assertEqual(view.permissible_value_parents(pv, e.name), None)
+                        print(view.permissible_value_parent(pv, e.name))
+                        self.assertEqual(view.permissible_value_parent(pv, e.name), None)
                         self.assertEqual(view.permissible_value_ancestors(pv, e.name), ['CAT'])
                     if pv == "ANGRY_LION":
-                        self.assertEqual(view.permissible_value_parents(pv, e.name), ['LION'])
+                        self.assertEqual(view.permissible_value_parent(pv, e.name), ['LION'])
                         self.assertEqual(view.permissible_value_ancestors(pv, e.name), ['ANGRY_LION', 'LION', 'CAT'])
         for cn, c in view.all_classes().items():
             if c.name == "Adult":

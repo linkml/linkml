@@ -549,7 +549,7 @@ class SchemaView(object):
         return self._parents(e, imports, mixins, is_a=is_a)
 
     @lru_cache()
-    def permissible_value_parents(self, permissible_value: str, enum_name: ENUM_NAME) -> Union[
+    def permissible_value_parent(self, permissible_value: str, enum_name: ENUM_NAME) -> Union[
         str, PermissibleValueText, None, ValueError]:
         """
         :param enum_name: child enum name
@@ -644,7 +644,7 @@ class SchemaView(object):
         :enum
         """
 
-        return _closure(lambda x: self.permissible_value_parents(x, enum_name),
+        return _closure(lambda x: self.permissible_value_parent(x, enum_name),
                         permissible_value_text,
                         reflexive=reflexive,
                         depth_first=depth_first)
