@@ -248,11 +248,14 @@ class Namespaces(CaseInsensitiveDict):
         :return:
         """
 
-        if map_name == 'prefixmaps_merged':
-            context = load_multi_context(["merged"])
-            prefix_map = context.as_dict()
-        else:
+        try:
             prefix_map = curie_util.read_biocontext(map_name)
+        except FileNotFoundError:
+            try:
+                context = load_multi_context([map_name])
+                prefix_map = context.as_dict()
+            except FileNotFoundError:
+                raise ValueError(f"Unknown prefix map: {map_name}")
 
         for k, v in prefix_map.items():
             if not k:
