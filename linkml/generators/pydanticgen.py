@@ -209,6 +209,7 @@ class PydanticGenerator(OOCodeGenerator):
                             + slot_values[camelcase(class_def.name)][slot.name]
                             + "]"
                         )
+                    slot_values[camelcase(class_def.name)][slot.name] = slot_values[camelcase(class_def.name)][slot.name] + ", const=True"
                 # Multivalued slots that are either not inlined (just an identifier) or are
                 # inlined as lists should get default_factory list, if they're inlined but
                 # not as a list, that means a dictionary
@@ -272,7 +273,10 @@ class PydanticGenerator(OOCodeGenerator):
             sv.get_identifier_slot(range_cls.name) is None
             and not sv.is_mixin(range_cls.name)
         ):
-            return f"{camelcase(slot.range)}"
+            if len([x for x in sv.class_induced_slots(slot.range) if x.designates_type]) > 0:
+                return f"Union[" + ",".join([camelcase(c) for c in sv.class_descendants(slot.range)]) + "]"
+            else:
+                return f"{camelcase(slot.range)}"
 
         # For the more difficult cases, set string as the default and attempt to improve it
         range_cls_identifier_slot_range = "str"
