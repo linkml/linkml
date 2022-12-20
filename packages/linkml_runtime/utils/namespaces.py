@@ -11,6 +11,32 @@ from linkml_runtime.utils.yamlutils import TypedNode
 
 META_NS = "meta"
 META_URI = "https://w3id.org/linkml/meta"
+BIOCONTEXT_CONTEXTS = [
+    "monarch_context",
+    "semweb_context",
+    "idot_context",
+    "biocaddie-context",
+    "commons_context",
+    "globi_context",
+    "go_context",
+    "go_obo_context",
+    "idot_nr_context",
+    "minerva_context",
+    "obo_context",
+    "ro_vocab_context",
+    "semweb_vocab_context"
+]
+PREFIXMAPS_CONTEXTS = [
+    "merged",
+    "merged.oak",
+    "obo",
+    "go",
+    "linked_data",
+    "bioportal",
+    "bioregistry.upper",
+    "bioregistry",
+    "prefixcc"
+]
 
 
 class Namespaces(CaseInsensitiveDict):
@@ -231,15 +257,7 @@ class Namespaces(CaseInsensitiveDict):
 
     def add_prefixmap(self, map_name: str, include_defaults: bool = True) -> None:
         """
-        Add a prefixcommons map or the merged map from prefixmaps repo, note the
-        special name "prefixmaps_merged" -- in our schemas, the "prefixes" directive
-        hard-codes specialized prefix contexts by name (e.g. monarch_context, idot_context, etc...).  These
-        are incorporated to the main context, via the curie_util.read_biocontext method, whereas the
-        content of prefixmaps merged context is added via the load_multi_context method.
-        prefixcommons and prefixmaps.merged overlap, but are not one to one as prefixmaps.merged
-        also contains the output from bioregistry's context files, using obo expansions with priority.
-        and this method merges them into a single
-        dictionary/context.
+        Add a prefixcommons map or the merged map from prefixmaps repo.
 
         Only prefixes that have not been previously defined are added.
 
@@ -248,14 +266,13 @@ class Namespaces(CaseInsensitiveDict):
         :return:
         """
 
-        try:
+        if map_name in BIOCONTEXT_CONTEXTS:
             prefix_map = curie_util.read_biocontext(map_name)
-        except FileNotFoundError:
-            try:
-                context = load_multi_context([map_name])
-                prefix_map = context.as_dict()
-            except FileNotFoundError:
-                raise ValueError(f"Unknown prefix map: {map_name}, check for pre-build contexts in the prefixmaps repo")
+        elif map_name in PREFIXMAPS_CONTEXTS:
+            context = load_multi_context([map_name])
+            prefix_map = context.as_dict()
+        else:
+            raise ValueError(f"Unknown prefix map: {map_name}")
 
         for k, v in prefix_map.items():
             if not k:
