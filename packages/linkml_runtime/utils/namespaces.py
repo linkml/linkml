@@ -5,7 +5,7 @@ from prefixcommons import curie_util
 from rdflib import Namespace, URIRef, Graph, BNode
 from rdflib.namespace import is_ncname
 from requests.structures import CaseInsensitiveDict
-from prefixmaps.io.parser import load_multi_context
+from prefixmaps.io.parser import load_context
 
 from linkml_runtime.utils.yamlutils import TypedNode
 
@@ -269,7 +269,7 @@ class Namespaces(CaseInsensitiveDict):
         if map_name in BIOCONTEXT_CONTEXTS:
             prefix_map = curie_util.read_biocontext(map_name)
         elif map_name in PREFIXMAPS_CONTEXTS:
-            context = load_multi_context([map_name])
+            context = load_context(map_name)
             prefix_map = context.as_dict()
         else:
             raise ValueError(f"Unknown prefix map: {map_name}")
