@@ -9,7 +9,7 @@ from linkml_runtime.utils.namespaces import Namespaces
 def test_prefixmaps_integration():
 
     prefixmap_merged = Namespaces()
-    prefixmap_merged.add_prefixmap('prefixmaps_merged')
+    prefixmap_merged.add_prefixmap('merged')
     assert len(prefixmap_merged) > 3780
     print(len(prefixmap_merged))
 

@@ -255,7 +255,7 @@ class Namespaces(CaseInsensitiveDict):
                 context = load_multi_context([map_name])
                 prefix_map = context.as_dict()
             except FileNotFoundError:
-                raise ValueError(f"Unknown prefix map: {map_name}")
+                raise ValueError(f"Unknown prefix map: {map_name}, check for pre-build contexts in the prefixmaps repo")
 
         for k, v in prefix_map.items():
             if not k:
