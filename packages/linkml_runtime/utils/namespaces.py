@@ -12,29 +12,29 @@ from linkml_runtime.utils.yamlutils import TypedNode
 META_NS = "meta"
 META_URI = "https://w3id.org/linkml/meta"
 BIOCONTEXT_CONTEXTS = [
-    "monarch_context",
-    "semweb_context",
-    "idot_context",
     "biocaddie-context",
     "commons_context",
     "globi_context",
     "go_context",
     "go_obo_context",
+    "idot_context",
     "idot_nr_context",
     "minerva_context",
+    "monarch_context",
     "obo_context",
     "ro_vocab_context",
+    "semweb_context",
     "semweb_vocab_context"
 ]
 PREFIXMAPS_CONTEXTS = [
+    "bioportal",
+    "bioregistry",
+    "bioregistry.upper",
+    "go",
+    "linked_data",
     "merged",
     "merged.oak",
     "obo",
-    "go",
-    "linked_data",
-    "bioportal",
-    "bioregistry.upper",
-    "bioregistry",
     "prefixcc"
 ]
 
