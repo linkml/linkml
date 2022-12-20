@@ -16,6 +16,12 @@ Options:
                                   When handling range constraints, include all
                                   descendants of the range class instead of
                                   just the range class
+  --indent INTEGER                If this is a positive number the resulting
+                                  JSON will be pretty-printed with that indent
+                                  level. Set to 0 to disable pretty-printing
+                                  and return the most compact JSON
+                                  representation  [default: 4]
+  -V, --version                   Show the version and exit.
   -f, --format [json]             Output format  [default: json]
   --metadata / --no-metadata      Include metadata in output  [default:
                                   metadata]
@@ -28,4 +34,6 @@ Options:
   --mergeimports / --no-mergeimports
                                   Merge imports into source file
                                   (default=mergeimports)
+  --stacktrace / --no-stacktrace  Print a stack trace when an error occurs
+                                  (default=stacktrace)
   --help                          Show this message and exit.
