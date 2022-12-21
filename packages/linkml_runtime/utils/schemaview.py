@@ -920,6 +920,21 @@ class SchemaView(object):
         return applicable_elements
 
     @lru_cache()
+    def all_aliases(self) -> List[str]:
+        """
+        Get the aliases
+
+        :return: list of aliases
+        """
+        aliases = []
+
+        for e in self.all_elements():
+            if e.aliases is not None:
+                for alias in e.aliases:
+                    aliases.append(alias)
+        return aliases
+
+    @lru_cache()
     def get_mappings(self, element_name: ElementName = None, imports=True, expand=False) -> Dict[
         MAPPING_TYPE, List[URIorCURIE]]:
         """
