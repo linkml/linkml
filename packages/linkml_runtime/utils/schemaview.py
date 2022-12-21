@@ -602,9 +602,10 @@ class SchemaView(object):
         """
         children = []
         for e, el in self.all_elements().items():
-            if "is_a" in el and el["is_a"] == name:
-                children.append(el.name)
-            if "mixins" in el and mixin and name in el.mixins:
+            if isinstance(el, (ClassDefinition, SlotDefinition, EnumDefinition)):
+                if el.is_a and el.is_a == name:
+                    children.append(el.name)
+            if el.mixins and name in el.mixins:
                 children.append(el.name)
         return children
 
