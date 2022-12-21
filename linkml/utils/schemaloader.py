@@ -190,8 +190,7 @@ class SchemaLoader:
                     #  see https://github.com/linkml/linkml/issues/872
                     logging.warning(
                         f'Class: "{cls.name}" attribute "{attribute.name}" - '
-                        f"mangled name: {mangled_slot_name} already exists",
-                        attribute.name,
+                        f"mangled name: {mangled_slot_name} already exists"
                     )
                 new_slot = SlotDefinition(**attribute.__dict__)
                 new_slot.domain_of.append(cls.name)
