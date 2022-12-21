@@ -27,7 +27,21 @@ ACTIVITY = 'activity'
 RELATED_TO = 'related to'
 AGE_IN_YEARS = 'age in years'
 
+
 class SchemaViewTestCase(unittest.TestCase):
+
+    def test_children_method(self):
+        view = SchemaView(SCHEMA_NO_IMPORTS)
+        children = view.get_children("Person")
+        self.assertEqual(children, ['Adult'])
+
+    def test_all_aliases(self):
+        view = SchemaView(SCHEMA_NO_IMPORTS)
+        aliases = view.all_aliases()
+        self.assertIn("identifier", aliases)
+        self.assertIn("A", aliases)
+        self.assertIn("B", aliases)
+        self.assertNotIn("test", aliases)
 
     def test_schemaview_enums(self):
         view = SchemaView(SCHEMA_NO_IMPORTS)

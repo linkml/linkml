@@ -593,6 +593,22 @@ class SchemaView(object):
             return []
 
     @lru_cache()
+    def get_children(self, name: str, mixin: bool = True) -> List[str]:
+        """
+        get the children of an element (any class, slot, enum, type)
+        :param name: name of the parent element
+        :param mixin: include mixins
+        :return: list of child element
+        """
+        children = []
+        for e, el in self.all_elements().items():
+            if "is_a" in el and el["is_a"] == name:
+                children.append(el.name)
+            if "mixins" in el and mixin and name in el.mixins:
+                children.append(el.name)
+        return children
+
+    @lru_cache()
     def class_children(self, class_name: CLASS_NAME, imports=True, mixins=True, is_a=True) -> List[ClassDefinitionName]:
         """
         :param class_name: parent class name
@@ -928,9 +944,9 @@ class SchemaView(object):
         """
         aliases = []
 
-        for e in self.all_elements():
-            if e.aliases is not None:
-                for alias in e.aliases:
+        for e, el in self.all_elements().items():
+            if "aliases" in el and el.aliases is not None:
+                for alias in el.aliases:
                     aliases.append(alias)
         return aliases
 
