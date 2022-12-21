@@ -605,8 +605,8 @@ class SchemaView(object):
             if isinstance(el, (ClassDefinition, SlotDefinition, EnumDefinition)):
                 if el.is_a and el.is_a == name:
                     children.append(el.name)
-            if el.mixins and name in el.mixins:
-                children.append(el.name)
+                if mixin and el.mixins and name in el.mixins:
+                    children.append(el.name)
         return children
 
     @lru_cache()
