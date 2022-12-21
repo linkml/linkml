@@ -41,6 +41,7 @@ class SchemaViewTestCase(unittest.TestCase):
         self.assertIn("identifier", aliases)
         self.assertIn("A", aliases)
         self.assertIn("B", aliases)
+        self.assertIn("dad", aliases)
         self.assertNotIn("test", aliases)
 
     def test_schemaview_enums(self):

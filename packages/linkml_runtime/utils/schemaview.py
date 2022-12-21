@@ -951,7 +951,7 @@ class SchemaView(object):
                     aliases.append(alias)
             if el.structured_aliases and el.structured_aliases is not None:
                 for alias in el.structured_aliases:
-                    aliases.append(alias.literal_form)
+                    aliases.append(alias)
         return aliases
 
     @lru_cache()
