@@ -946,7 +946,7 @@ class SchemaView(object):
         aliases = []
 
         for e, el in self.all_elements().items():
-            if "aliases" in el and el.aliases is not None:
+            if el.aliases and el.aliases is not None:
                 for alias in el.aliases:
                     aliases.append(alias)
         return aliases
