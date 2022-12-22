@@ -801,6 +801,7 @@ class Generator(metaclass=abc.ABCMeta):
             for slot in [self.schema.slots[sn] for sn in cls.slots]
             if cls.name in slot.domain_of
             or (set(cls.mixins).intersection(slot.domain_of))
+            or slot.designates_type
         ]
 
     def add_mappings(self, defn: Definition) -> None:

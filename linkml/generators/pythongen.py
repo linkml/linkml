@@ -4,6 +4,7 @@ import os
 import re
 from dataclasses import dataclass, field
 from types import ModuleType
+from linkml_runtime import SchemaView
 from typing import (Callable, Dict, Iterator, List, Optional, Set, TextIO,
                     Tuple, Union)
 
@@ -54,6 +55,7 @@ class PythonGenerator(Generator):
 
     def __post_init__(self) -> None:
         self.sourcefile = self.schema
+        self.schemaview = SchemaView(self.schema)
         super().__post_init__()
         if self.format is None:
             self.format = self.valid_formats[0]
@@ -392,6 +394,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
         parentref = f'({self.formatted_element_name(cls.is_a, True) if cls.is_a else "YAMLRoot"})'
         slotdefs = self.gen_class_variables(cls)
         postinits = self.gen_postinits(cls)
+        construct = self.gen_construct(cls)
 
         wrapped_description = (
             f'\n\t"""\n\t{wrapped_annotation(be(cls.description))}\n\t"""'
@@ -409,6 +412,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
             + f"{self.gen_class_meta(cls)}"
             + (f"\n\t{slotdefs}" if slotdefs else "")
             + (f"\n{postinits}" if postinits else "")
+            + (f"\n{construct}" if construct else "")
         )
 
     def gen_inherited_slots(self, cls: ClassDefinition) -> str:
@@ -769,6 +773,36 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
                 return len(rng.slots) - len(pkeys) == 1
         return False
 
+    def gen_construct(self, cls: ClassDefinition) -> Optional[str]:
+        rlines: List[str] = []
+        designators = [x for x  in self.domain_slots(cls) if x.designates_type]
+        if len(designators) > 0:
+            slot = designators[0]
+            aliased_slot_name = self.slot_name(
+                slot.name
+            )
+            rlines.append("def __new__(cls, *args, **kwargs):")
+            rlines.append(f"\tmappings_{aliased_slot_name} = {{")
+            for descendant in self.schemaview.class_descendants(cls.name):
+                d = self.schema.classes[descendant]
+                descendant_class_uri = str(self.namespaces.uri_for(d.class_uri)) 
+                    # the URI defined in the schemaview is empty so i need to take it out of the schemaloader.
+                    # this seems suboptimal since this will eventually move to schemaview
+                rlines.append(f"\t\t\"{descendant_class_uri}\": {self.class_or_type_name(d.name)},")
+            rlines.append(f"\t}}")
+
+            rlines.append(f"""
+        type_designator = "{aliased_slot_name}"
+        if not type_designator in kwargs:
+            return super().__new__(cls,*args,**kwargs)
+        else:
+            return super().__new__(mappings_{aliased_slot_name}[kwargs[type_designator]],*args,**kwargs)
+""")
+
+        if rlines:
+            rlines.append("")
+        return ("\n\t" if len(rlines) > 0 else "") +  "\n\t".join(rlines)
+
     def gen_postinit(self, cls: ClassDefinition, slot: SlotDefinition) -> Optional[str]:
         """Generate python post init rules for slot in class"""
         rlines: List[str] = []
@@ -793,7 +827,9 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
         indent = len(f"self.{aliased_slot_name} = [") * " "
         # NOTE: if you set this to true, we will cast all types.   This may be what we really want
         if not slot.multivalued:
-            if slot.required:
+            if slot.designates_type:
+                pass
+            elif slot.required:
                 rlines.append(
                     f"if not isinstance(self.{aliased_slot_name}, {base_type_name}):"
                 )
@@ -802,8 +838,11 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
                     f"if self.{aliased_slot_name} is not None and "
                     f"not isinstance(self.{aliased_slot_name}, {base_type_name}):"
                 )
-            # A really wierd case -- a class that has no properties
-            if (
+            if slot.designates_type:
+                class_class_uri = str(self.namespaces.uri_for(cls.class_uri))
+                rlines.append(f"self.{aliased_slot_name} = \"{class_class_uri}\"")
+            elif (
+                # A really wierd case -- a class that has no properties
                 slot.range in self.schema.classes
                 and not self.schema.classes[slot.range].slots
             ):
