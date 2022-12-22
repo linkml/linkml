@@ -195,6 +195,7 @@ class Generator(metaclass=abc.ABCMeta):
         else:
             self.schemaview = SchemaView(schema)
             self.schema = self.schemaview.schema
+        self._init_namespaces()
 
     def _initialize_using_schemaloader(self, schema: Union[str, TextIO, SchemaDefinition, "Generator"]):
         # currently generators are very liberal in what they accept, including
@@ -244,10 +245,12 @@ class Generator(metaclass=abc.ABCMeta):
             self.source_file_size = loader.source_file_size
             self.schema_location = loader.schema_location
             self.schema_defaults = loader.schema_defaults
-            if self.namespaces is None:
-                self.namespaces = Namespaces()
-                for prefix in self.schema.prefixes.values():
-                    self.namespaces[prefix.prefix_prefix] = prefix.prefix_reference
+
+    def _init_namespaces(self):
+        if self.namespaces is None:
+            self.namespaces = Namespaces()
+            for prefix in self.schema.prefixes.values():
+                self.namespaces[prefix.prefix_prefix] = prefix.prefix_reference
 
     def serialize(self, **kwargs) -> str:
         """
