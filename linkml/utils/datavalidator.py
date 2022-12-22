@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from linkml_runtime.linkml_model import SchemaDefinition
+from linkml_runtime.linkml_model import SchemaDefinition, ClassDefinitionName
 
 
 @dataclass
@@ -10,3 +10,8 @@ class DataValidator:
     """
 
     schema: SchemaDefinition = None
+
+    def validate_dict(
+            self, data: dict, target_class: ClassDefinitionName = None, closed: bool = True
+    ) -> None:
+        raise NotImplementedError
