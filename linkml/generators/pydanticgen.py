@@ -200,9 +200,11 @@ class PydanticGenerator(OOCodeGenerator):
             for slot_name in sv.class_slots(class_def.name):
                 slot = sv.induced_slot(slot_name, class_def.name)
                 if slot.designates_type:
+                    class_curie = f'{default_prefix}:{camelcase(class_def.name)}'
+                    class_uri = str(self.namespaces.uri_for(class_curie) if ":" in class_curie else class_curie)
                     slot_values[camelcase(class_def.name)][
                         slot.name
-                    ] = f'"{default_prefix}:{camelcase(class_def.name)}"'
+                    ] = f'"{class_uri}"'
                     if slot.multivalued:
                         slot_values[camelcase(class_def.name)][slot.name] = (
                             "["
