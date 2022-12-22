@@ -304,12 +304,16 @@ class JsonSchemaGenerator(Generator):
 
     def get_subschema_for_slot(self, slot: SlotDefinition, omit_type: bool = False) -> JsonSchema:
         slot_has_range_union = slot.any_of is not None and len(slot.any_of) > 0 and all(s.range is not None for s in slot.any_of)
+        #raise Exception(f"f{slot.range}")
+        if slot.range in self.schema.classes:
+            slot_has_poly_range = len([x for x in self.schemaview.class_induced_slots(slot.range) if x.designates_type]) > 0
+        else:
+            slot_has_poly_range = False
         if omit_type:
             prop = JsonSchema()
         else:
-            slot_is_inlined = self.schemaview.is_inlined(slot)
-
-            if slot_has_range_union:
+            slot_is_inlined = self.schemaview.is_inlined(slot)                
+            if slot_has_range_union or slot_has_poly_range:
                 items = []
                 for sub_slot in slot.any_of:
                     typ, fmt, reference = self.get_type_info_for_slot_subschema(sub_slot, slot_is_inlined)
@@ -320,6 +324,18 @@ class JsonSchemaGenerator(Generator):
                     else:
                         item = JsonSchema({"type": typ, "format": fmt})
                     items.append(item)
+                orig_range = slot.range
+                for sub_range in self.schemaview.class_descendants(slot.range):
+                    slot.range = sub_range
+                    typ, fmt, reference = self.get_type_info_for_slot_subschema(slot, slot_is_inlined)
+                    if reference is not None:
+                        item = JsonSchema.ref_for(reference)
+                    elif fmt is None:
+                        item = JsonSchema({"type": typ})
+                    else:
+                        item = JsonSchema({"type": typ, "format": fmt})
+                    items.append(item)
+                slot.range = orig_range
                 subschema = JsonSchema({
                     "anyOf": items
                 })
