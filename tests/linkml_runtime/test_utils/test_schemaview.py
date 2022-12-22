@@ -38,11 +38,12 @@ class SchemaViewTestCase(unittest.TestCase):
     def test_all_aliases(self):
         view = SchemaView(SCHEMA_NO_IMPORTS)
         aliases = view.all_aliases()
-        self.assertIn("identifier", aliases)
-        self.assertIn("A", aliases)
-        self.assertIn("B", aliases)
-        self.assertIn("dad", aliases)
-        self.assertNotIn("test", aliases)
+        print(aliases)
+        self.assertIn("identifier", aliases["id"])
+        self.assertIn("A", aliases["subset A"])
+        self.assertIn("B", aliases["subset B"])
+        self.assertIn("dad", aliases["Adult"])
+        self.assertNotIn("test", aliases["Adult"])
 
     def test_schemaview_enums(self):
         view = SchemaView(SCHEMA_NO_IMPORTS)

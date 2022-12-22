@@ -943,16 +943,19 @@ class SchemaView(object):
 
         :return: list of aliases
         """
-        aliases = []
+        element_aliases = {}
 
         for e, el in self.all_elements().items():
+            if el.name not in element_aliases.keys():
+                element_aliases[el.name] = []
             if el.aliases and el.aliases is not None:
-                for alias in el.aliases:
-                    aliases.append(alias)
+                for a in el.aliases:
+                    element_aliases[el.name].append(a)
             if el.structured_aliases and el.structured_aliases is not None:
-                for alias in el.structured_aliases:
-                    aliases.append(alias)
-        return aliases
+                for sa in el.structured_aliases:
+                    element_aliases[el.name].append(sa)
+
+        return element_aliases
 
     @lru_cache()
     def get_mappings(self, element_name: ElementName = None, imports=True, expand=False) -> Dict[
