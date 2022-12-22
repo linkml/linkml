@@ -269,7 +269,7 @@ class PydanticGenerator(OOCodeGenerator):
 
         # Inline the class itself only if the class is defined as inline, or if the class has no
         # identifier slot and also isn't a mixin.
-        if slot.inlined or (
+        if slot.inlined or slot.inlined_as_list or (
             sv.get_identifier_slot(range_cls.name) is None
             and not sv.is_mixin(range_cls.name)
         ):
@@ -367,7 +367,7 @@ class PydanticGenerator(OOCodeGenerator):
                     # logging.error(f'range: {s.range} is unknown')
                     raise Exception(f"range: {s.range}")
                 if s.multivalued:
-                    if collection_key is None:
+                    if collection_key is None or s.inlined_as_list:
                         pyrange = f"List[{pyrange}]"
                     else:
                         pyrange = f"Dict[{collection_key}, {pyrange}]"
