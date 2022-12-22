@@ -48,13 +48,13 @@ class ExampleRunner:
     """Custom prefix map, for emitting RDF/turtle."""
 
     _validator: DataValidator = None
+    """Validator capable of validating instance data against a target class in a LinkML schema."""
 
     @property
     def python_module(self) -> ModuleType:
-        """
-        Load the python module containing the classes that all examples instantiate.
+        """Load the python module containing the classes that all examples instantiate.
 
-        :return:
+        :return: Python module
         """
         if self._python_module is None:
             pygen = PythonGenerator(self.schemaview.schema)
@@ -66,13 +66,13 @@ class ExampleRunner:
         """
         Get the current validator
 
-        :return:
+        :return: JsonSchemaDataValidator() or implemented DataValidator()
         """
         if self._validator is None:
             self._validator = JsonSchemaDataValidator(self.schemaview.schema)
         return self._validator
 
-    def process_examples(self):
+    def process_examples(self) -> None:
         """
         Process all examples in the input directory.
 
@@ -81,8 +81,7 @@ class ExampleRunner:
          - CLASSNAME-EXAMPLENAME.yaml
 
          E.g Person-001.yaml
-
-        :return:
+        
         """
         input_dir = self.input_directory
         counter_example_dir = self.counter_example_input_directory
@@ -97,7 +96,12 @@ class ExampleRunner:
         self.process_examples_from_list(input_examples, False)
         self.process_examples_from_list(input_counter_examples, True)
 
-    def process_examples_from_list(self, input_examples: list, counter_examples: bool = True):
+    def process_examples_from_list(self, input_examples: list, counter_examples: bool = True) -> None:
+        """Process list of example or counter examples yaml files from respective yaml files.
+
+        :param input_examples: List of example or counter example yaml files
+        :param counter_examples: Assert if list of files are counter examples or not, defaults to True
+        """
         sv = self.schemaview
         validator = self.validator
         for input_example in input_examples:
@@ -125,16 +129,18 @@ class ExampleRunner:
                 rdflib_dumper.dump(obj, to_file=f"{base}.ttl", schemaview=sv, prefix_map=self.prefix_map)
 
     def _load_from_dict(self, dict_obj: Any, target_class: Union[str, ElementName] = None) -> Any:
-        """
-        Load an object from a dict, using the target class to determine the type of object to create.
+        """Load an object from a dict, using the target class to determine the type of object to create.
 
         TODO: move logic into core
 
-        :param dict_obj:
-        :param target_class:
-        :return:
+        :param dict_obj: YAML instance data parsed into dictionary
+        :param target_class: Explicit target class from schema to be validated against, defaults to None
+        :return: 
         """
         sv = self.schemaview
+        # There are a number cases that have been handled for inferring target class
+        # Case 1: if explicit target class not provided, then use first class from 
+        # list of classes associated with tree root class
         if target_class is None:
             target_class_names = [c.name for c in sv.all_classes().values() if c.tree_root]
             if len(target_class_names) != 1:
@@ -144,12 +150,15 @@ class ExampleRunner:
             if target_class not in sv.all_classes():
                 raise ValueError(f"No such class as {target_class}")
             td_slot = sv.get_type_designator_slot(target_class) if target_class else None
+            # Case 2: use slot with designates_type set to true
             if td_slot:
                 if td_slot.name in dict_obj:
                     target_class = dict_obj[td_slot.name]
+            # Case 3: '@type' key asserted in instance data dictionary
             elif "@type" in dict_obj:
                 target_class = dict_obj["@type"]
                 del dict_obj["@type"]
+            # Case 4: if CURIE has been provided as target class argument instead of class name
             if ":" in target_class:
                 target_classes = [c for c in sv.all_classes() if sv.get_uri(c) == target_class]
                 if len(target_classes) != 1:
