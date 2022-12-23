@@ -131,7 +131,7 @@ class GenContextTestCase(ClickTestCase):
         #   WARNING:ContextGenerator:No namespace defined for URI: http://example.org/slot/su
         #   WARNING:ContextGenerator:No namespace defined for URI: http://example.org/class/cu
         self.do_test(
-            PurePath(env.input_path("uri_tests.yaml")).as_posix(),
+            [PurePath(env.input_path("uri_tests.yaml")).as_posix(), "--no-metadata"],
             "uri_tests.jsonld",
             filtr=ldcontext_metadata_filter,
             add_yaml=False,
