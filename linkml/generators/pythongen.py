@@ -813,7 +813,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
                     )
                 else:
                     rlines.append(
-                        f"\tself.{aliased_slot_name} = {base_type_name}(**as_dict(self.{aliased_slot_name}))"
+                         f"\tself.{aliased_slot_name} = self._normalize_assignment(self.{aliased_slot_name}, {base_type_name})"
                     )
         elif slot.inlined:
             slot_range_cls = self.schema.classes[slot.range]
@@ -854,7 +854,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
                 rlines.append(f"if not isinstance({sn}, list):")
                 rlines.append(f"\t{sn} = [{sn}] if {sn} is not None else []")
                 rlines.append(
-                    f"{sn} = [v if isinstance(v, {base_type_name}) else {base_type_name}(**as_dict(v)) for v in {sn}]"
+                    f"{sn} = [v if isinstance(v, {base_type_name}) else self._normalize_assignment(v, {base_type_name}) for v in {sn}]"
                 )
         else:
             # Multivalued and not inlined

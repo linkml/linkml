@@ -25,6 +25,13 @@ classes:
         thelist:
             multivalued: true
             
+  C1i:
+    description: class with a list of integers
+    attributes:
+        thelist:
+            multivalued: true
+            range: integer
+            
   C2:
     description: |-
         class with an inline list of unkeyed classes. Note that ~line 821 in pythongen states that first 
@@ -43,11 +50,14 @@ classes:
             multivalued: true
             inlined: true
             
-  ThreeClasses:
+  FourClasses:
     description: an upper level container for the above defs
     attributes:
         c1_slot:
             range: C1
+            inlined: true
+        c1i_slot:
+            range: C1i
             inlined: true
         c2_slot:
             range: C2
@@ -56,11 +66,15 @@ classes:
             range: C3
             inlined: true
             
-  ThreeClassesMulti:
+  FourClassesMulti:
     description: an upper level container for the above defs
     attributes:
         c1_slot:
             range: C1
+            inlined: true
+            multivalued: true
+        c1i_slot:
+            range: C1i
             inlined: true
             multivalued: true
         c2_slot:
@@ -95,6 +109,10 @@ input_1 = """
 - ghi
 """
 
+input_1i = """
+[1, 27, -12, 0]
+"""
+
 input_2 = """
 - member1: i2_i1_m1
   member2: i2_i1_m2
@@ -116,6 +134,7 @@ c1_slot:
   - abc
   - def
   - ghi
+c1i_slot: [1, 27, -12, 0]
 c2_slot:
   - member1: i2_i1_m1
     member2: i2_i1_m2
@@ -147,12 +166,12 @@ c3_slot:
   - i3_s1_i1_id:  
       member11: i3_s1_i1_member11  
       member12: i3_s1_i1_member12  
-    i3_s1_i2_id:  
-      member11: i3_s1_i2_member11  
-      member12: i3_s1_i2_member12  
-  - i3_s2_i2_id:  
+  - i3_s2_i1_id:  
+      member11: i3_s2_i1_member11  
+      member12: i3_s2_i1_member12 
+    i3_s2_i2_id:  
       member11: i3_s2_i2_member11  
-      member12: i3_s2_i2_member12 
+      member12: i3_s2_i2_member12  
     
 """
 
@@ -160,7 +179,7 @@ UPDATE_PYTHON = True
 # If you need to debug, you can uncomment this line and switch from self.mod to issue_1188 for imports
 # Example
 #     from .output.issue_1188 import issue_1188
-#     instance = YAMLLoader().load_any(input_three_classes_multi, issue_1188.ThreeClassesMulti, base_dir=env.cwd)
+#     instance = YAMLLoader().load_any(input_three_classes_multi, issue_1188.FourClassesMulti, base_dir=env.cwd)
 
 class InlineListTestCase(unittest.TestCase):
 
@@ -186,9 +205,11 @@ class InlineListTestCase(unittest.TestCase):
         """ Test a list of strings as a root node """
         instance = YAMLLoader().load_any(input_1, self.mod.C1, base_dir=env.cwd)
         self.assertEqual(['abc', 'def', 'ghi'], instance.thelist)
+        instance = YAMLLoader().load_any(input_1i, self.mod.C1i, base_dir=env.cwd)
+        self.assertEqual([1, 27, -12, 0], instance.thelist)
 
     def test_root_inline_unkeyed(self):
-        """ Test a list of inlined unkeyed structures as a root node """
+        """ Test a list of inlined unkeyed classes as a root node """
         instance = YAMLLoader().load_any(input_2, self.mod.C2, base_dir=env.cwd)
         self.assertEqual('i2_i2_m2', instance.thelist[1].member2)
 
@@ -199,17 +220,19 @@ class InlineListTestCase(unittest.TestCase):
 
     def test_three_classes(self):
         """ Test various inlined lists as slots IN a root node w/ single occurrences """
-        instance = YAMLLoader().load_any(input_three_classes, self.mod.ThreeClasses, base_dir=env.cwd)
+        # instance = YAMLLoader().load_any(input_three_classes, self.mod.FourClasses, base_dir=env.cwd)
+        from .output.issue_1188 import issue_1188
+        instance = YAMLLoader().load_any(input_three_classes, issue_1188.FourClasses, base_dir=env.cwd)
         self.assertEqual(['abc', 'def', 'ghi'], instance.c1_slot.thelist)
+        self.assertEqual([1, 27, -12, 0], instance.c1i_slot.thelist)
         self.assertEqual('i2_i2_m2', instance.c2_slot.thelist[1].member2)
         self.assertEqual('i3_i2_member12', instance.c3_slot.thelist['i3_i2_id'].member12)
 
-    @unittest.skipIf(True, msg="Finish this case once we make sure we haven't broken anything else")
     def test_three_classes_multi(self):
         """ Test various inlined lists as slots in a root node w/ multi occurrences """
-        # instance = YAMLLoader().load_any(input_three_classes_multi, self.mod.ThreeClassesMulti, base_dir=env.cwd)
+        # instance = YAMLLoader().load_any(input_three_classes_multi, self.mod.FourClassesMulti, base_dir=env.cwd)
         from .output.issue_1188 import issue_1188
-        instance = YAMLLoader().load_any(input_three_classes_multi, issue_1188.ThreeClassesMulti, base_dir=env.cwd)
+        instance = YAMLLoader().load_any(input_three_classes_multi, issue_1188.FourClassesMulti, base_dir=env.cwd)
         self.assertEqual(['jkl'], instance.c1_slot[1].thelist)
         self.assertEqual('i2_s2_i2_m2', instance.c2_slot[1].thelist[0].member2)
 
