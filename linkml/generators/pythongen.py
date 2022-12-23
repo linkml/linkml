@@ -562,7 +562,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
             if slot.ifabsent is not None
             else None
         )
-        if ifabsent_text:
+        if ifabsent_text is not None:
             default = f"= {ifabsent_text}"
         else:
             default = f"= {default_val}" if default_val else ""

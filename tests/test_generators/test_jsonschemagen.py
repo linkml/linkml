@@ -7,6 +7,7 @@ import yaml
 from linkml_runtime.linkml_model import SchemaDefinition
 from linkml_runtime.dumpers import json_dumper
 from linkml_runtime.loaders import yaml_loader
+from typing import Union
 
 from linkml.generators.jsonschemagen import JsonSchemaGenerator
 from tests.test_generators.environment import env
@@ -23,19 +24,6 @@ class JsonSchemaTestCase(unittest.TestCase):
     Tests generation of JSON-Schema
     """
 
-    def setUp(self):
-        generator = JsonSchemaGenerator(
-            SCHEMA, 
-            mergeimports=True, 
-            top_class="Dataset", 
-            not_closed=False
-        )
-        self.kitchen_sink_json_schema = json.loads(generator.serialize())
-
-        generator.not_closed = True
-        self.kitchen_sink_json_schema_not_closed = json.loads(generator.serialize())
-
-
     def test_jsonschema_integration(self):
         """Integration test for JsonSchemaGenerator.
         
@@ -45,6 +33,14 @@ class JsonSchemaTestCase(unittest.TestCase):
         and uses the jsonschema library to verify that the generated JSON Schema is 
         able to validate the instance data.
         """
+
+        generator = JsonSchemaGenerator(
+            SCHEMA, 
+            mergeimports=True, 
+            top_class="Dataset", 
+            not_closed=False
+        )
+        kitchen_sink_json_schema = json.loads(generator.serialize())
 
         kitchen_module = make_python(False)
         inst: Dataset
@@ -72,7 +68,7 @@ class JsonSchemaTestCase(unittest.TestCase):
         json_instance = json.loads(json_dumper.dumps(inst))
         del json_instance['@type']
 
-        jsonschema.validate(json_instance, self.kitchen_sink_json_schema)
+        jsonschema.validate(json_instance, kitchen_sink_json_schema)
         
 
     def test_class_uri_any(self):
@@ -82,8 +78,7 @@ class JsonSchemaTestCase(unittest.TestCase):
         See also https://github.com/linkml/linkml/issues/579
         """
 
-        self.assertIn("$defs", self.kitchen_sink_json_schema)
-        self.assertTrue(self.kitchen_sink_json_schema["$defs"]["AnyObject"]["additionalProperties"])
+        self.assertSchemaValidates(SCHEMA, { "$defs": { "AnyObject": { "additionalProperties": True } }})
 
 
     def test_compliance_cases(self):
@@ -94,6 +89,18 @@ class JsonSchemaTestCase(unittest.TestCase):
         validated against the kitchen sink schema. By default each instance is expected to *fail*
         validation, but cases can also be marked with valid: true if validation should pass.
         """
+
+        generator = JsonSchemaGenerator(
+            SCHEMA, 
+            mergeimports=True, 
+            top_class="Dataset", 
+            not_closed=False
+        )
+        kitchen_sink_json_schema = json.loads(generator.serialize())
+
+        generator.not_closed = True
+        kitchen_sink_json_schema_not_closed = json.loads(generator.serialize())
+
         with open(COMPLIANCE_CASES, "r") as io:
             cases = yaml.load(io, Loader=yaml.loader.SafeLoader)
 
@@ -107,9 +114,9 @@ class JsonSchemaTestCase(unittest.TestCase):
                 expected_valid = case.get("valid", False)
                 
                 if case.get("closed", True):
-                    schema = self.kitchen_sink_json_schema
+                    schema = kitchen_sink_json_schema
                 else:
-                    schema = self.kitchen_sink_json_schema_not_closed
+                    schema = kitchen_sink_json_schema_not_closed
                 
                 do_validate = lambda: jsonschema.validate(dataset, schema, format_checker=jsonschema.Draft7Validator.FORMAT_CHECKER)
                 if expected_valid:
@@ -120,60 +127,52 @@ class JsonSchemaTestCase(unittest.TestCase):
                     self.assertRaises(jsonschema.ValidationError, do_validate)
 
     def test_type_inheritance(self):
-        # TODO: can this be a compliance case too?
-        schema = """
-id: http://example.org/test_type_inheritance
-name: test_type_inheritance
+        """Tests that a type definition's typeof slot is correctly accounted for."""
 
-types:
-  alpha:
-    base: double 
-  beta:
-    typeof: alpha
+        self.externalFileTest("jsonschema_type_inheritance.yaml")
 
-slots:
-  alpha_slot:
-    range: alpha
-  beta_slot:
-    range: beta
-
-classes:
-  Test:
-    slots:
-      - alpha_slot
-      - beta_slot
-"""
-        generator = JsonSchemaGenerator(schema, top_class="Test")
-        json_schema = json.loads(generator.serialize())
-        test_def_properties = json_schema['$defs']['Test']['properties']
-        self.assertEqual(test_def_properties['alpha_slot']['type'], 'number')
-        self.assertEqual(test_def_properties['beta_slot']['type'], 'number')
 
     def test_top_class_identifier(self):
         """Test that an identifier slot on the top_class becomes a required
         property in the JSON Schema."""
 
-        schema = """
-id: http://example.org/test_top_class_identifier
-name: test_top_class_identifier
+        self.externalFileTest("jsonschema_top_class_identifier.yaml")
 
-slots:
-  id:
-    identifier: true
 
-classes:
-  Test:
-    slots:
-      - id
-"""
-        generator = JsonSchemaGenerator(schema, top_class="Test")
+    def test_value_constraints(self):
+        with open(env.input_path("jsonschema_value_constraints.yaml")) as f:
+            test_def = yaml.safe_load(f)
+        
+        generator = JsonSchemaGenerator(yaml.dump(test_def["schema"]), stacktrace=True, not_closed=False)
         json_schema = json.loads(generator.serialize())
 
-        self.assertIn("id", json_schema["$defs"]["Test"]["required"])
-        self.assertIn("id", json_schema["required"])
+        for data_case in test_def.get('data_cases', []):
+            data = data_case['data']
+            with self.subTest(data=data):
+                if 'error_message' in data_case:
+                    self.assertRaisesRegex(
+                        jsonschema.ValidationError, 
+                        data_case['error_message'],
+                        lambda: jsonschema.validate(data, json_schema),
+                    )
+                else:
+                    jsonschema.validate(data, json_schema)
 
 
     def test_rules(self):
+        """Tests translation of various types of class rules.
+        
+        The external YAML file holds various test cases. Each test case defines
+        the `rules` that will be inserted into a class of the baseline schema, 
+        some expected JSON Schema, and various data instances. The test iterates
+        through each test case and:
+          1) constructs a LinkML schema and passes it to JsonSchemaGenerator
+          2) verifies that the expected JSON Schema is a subset of the actual
+             JSON Schema that was generated
+          3) validates each data instance against the JSON Schema and verifies
+             that it either successfully validates or does not validate with 
+             the expected error message
+        """
         with open(RULES_CASES) as cases_file:
             cases = yaml.safe_load(cases_file)
 
@@ -194,46 +193,83 @@ classes:
                     },
                     classes={
                         "Test": {
+                            "tree_root": True,
                             "slots": ["s1", "s2", "s3", "s4"],
                             "rules": case['linkml_rules']
                         }
                     }
                 )
-                generator = JsonSchemaGenerator(schema, top_class="Test")
-                actual_json_schema = json.loads(generator.serialize())
 
-                # Validate the structure of the generated JSON Schema
-                expected_json_schema_subset = case["json_schema"]
-                self.assertDictContainsSubset(expected_json_schema_subset, actual_json_schema)
-
-                # Validate data instances against the JSON Schema
-                for data_case in case.get('data_cases', []):
-                    data = data_case['data']
-                    with self.subTest(data=data):
-                        if 'error_message' in data_case:
-                            self.assertRaisesRegex(
-                                jsonschema.ValidationError, 
-                                data_case['error_message'],
-                                lambda: jsonschema.validate(data, actual_json_schema),
-                            )
-                        else:
-                            jsonschema.validate(data, actual_json_schema)
+                self.assertSchemaValidates(schema, case["json_schema"], case.get('data_cases', []))
 
 
     def test_range_unions(self):
-        with open(RANGE_UNION_CASES, "r") as f:
-            cases = yaml.safe_load(f)
+        """Tests various permutations of range unions.
+        
+        The external YAML files holds a complete LinkML schema and various data 
+        instances. The schema defines one class with numerous slots. Each slot
+        represents a combination of:
+          * simple range vs range union
+          * ranges of enums, types, classes
+          * multivalued true vs false
+        """
 
-        generator = JsonSchemaGenerator(yaml.dump(cases["schema"]), top_class="Test")
+        self.externalFileTest("jsonschema_range_union_cases.yaml")
+
+
+    def test_multivalued_slot_cardinality(self):
+        """Tests that cardinality constrains on multivalued slots are translated correctly."""
+
+        self.externalFileTest("jsonschema_multivalued_slot_cardinality.yaml")
+
+
+    # **********************************************************
+    #
+    #    Utility methods
+    # 
+    # **********************************************************
+
+
+    def externalFileTest(self, file: str) -> None:
+        with open(env.input_path(file)) as f:
+            test_definition = yaml.safe_load(f)
+
+        self.assertSchemaValidates(yaml.dump(test_definition["schema"]),
+                                   test_definition.get("json_schema", {}),
+                                   test_definition.get('data_cases', []))
+
+
+    def assertSchemaValidates(self, schema: Union[str, SchemaDefinition], expected_json_schema_subset = {}, data_cases = []):
+        generator = JsonSchemaGenerator(schema)
         json_schema = json.loads(generator.serialize())
 
-        for valid_case in cases.get("valid_cases", []):
-            with self.subTest(valid_case=valid_case):
-                jsonschema.validate(valid_case, json_schema)
+        self.assertDictSubset(expected_json_schema_subset, json_schema)
 
-        for invalid_case in cases.get("invalid_cases", []):
-            with self.subTest(invalid_case=invalid_case):
-                self.assertRaises(jsonschema.ValidationError, lambda: jsonschema.validate(invalid_case, json_schema))
+        for data_case in data_cases:
+            data = data_case['data']
+            with self.subTest(data=data):
+                if 'error_message' in data_case:
+                    self.assertRaisesRegex(
+                        jsonschema.ValidationError, 
+                        data_case['error_message'],
+                        lambda: jsonschema.validate(data, json_schema),
+                    )
+                else:
+                    jsonschema.validate(data, json_schema)
+
+    def assertDictSubset(self, subset: dict, full: dict, path = ''):
+        for key in subset.keys():
+            self.assertIn(key, full, f"in path {path}")
+
+            new_path = f'{path}["{key}"]'
+
+            self.assertIsInstance(full[key], subset[key].__class__, f"in path {new_path}")
+
+            if isinstance(full[key], dict):
+                self.assertDictSubset(subset[key], full[key], new_path)
+            else:
+                self.assertEqual(full[key], subset[key], f"in path {new_path}")
+
 
 if __name__ == "__main__":
     unittest.main()
