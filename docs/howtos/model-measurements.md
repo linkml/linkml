@@ -327,7 +327,7 @@ Example data in YAML/JSON:
 Tabular:
 
 |id|mass|mass_unit|height|height_unit|bmi|
-|---|---|---|---|
+|---|---|---|---|---|---|
 |P001|70.0|kg|1.53|m|29.9|
 
 Properties:
@@ -593,7 +593,7 @@ data:
         has decimal value: 1.53
 ```
 
-# OBOE
+### OBOE
 
 Concepts:
 
