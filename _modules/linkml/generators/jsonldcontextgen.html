@@ -353,9 +353,8 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                <span class="s2">&quot;Schema text must be supplied to context generater.  Preparsed schema will not work&quot;</span>
+                <span class="s2">&quot;Schema text must be supplied to context generator.  Preparsed schema will not work&quot;</span>
             <span class="p">)</span>
-
 
 <div class="viewcode-block" id="ContextGenerator.visit_schema"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.jsonldcontextgen.ContextGenerator.visit_schema">[docs]</a>    <span class="k">def</span> <span class="nf">visit_schema</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">base</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">output</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">_</span>
@@ -397,20 +396,25 @@
             <span class="n">model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span>
         <span class="n">context</span> <span class="o">=</span> <span class="n">JsonObj</span><span class="p">()</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">emit_metadata</span><span class="p">:</span>
-            <span class="n">comments</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;Auto generated from </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">source_file</span><span class="si">}</span><span class="s2"> by </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">generatorname</span><span class="si">}</span><span class="s2"> version: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">generatorversion</span><span class="si">}</span><span class="s2">&quot;&quot;&quot;</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">generation_date</span><span class="p">:</span>
-                <span class="n">comments</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">    Generation date: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">generation_date</span><span class="si">}</span><span class="s2"></span>
-<span class="s2">    Schema: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"></span>
-<span class="s2">    metamodel version: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">metamodel_version</span><span class="si">}</span><span class="s2"></span>
-<span class="s2">    model version: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">version</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">version</span> <span class="k">else</span> <span class="kc">None</span><span class="si">}</span><span class="s2"></span>
-<span class="s2">    &quot;&quot;&quot;</span>
-            <span class="n">comments</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">    id: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"></span>
-<span class="s2">    description: </span><span class="si">{</span><span class="n">be</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">description</span><span class="p">)</span><span class="si">}</span><span class="s2"></span>
-<span class="s2">    license: </span><span class="si">{</span><span class="n">be</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">license</span><span class="p">)</span><span class="si">}</span><span class="s2"></span>
-<span class="s2">    &quot;&quot;&quot;</span>
-            <span class="n">context</span><span class="p">[</span><span class="s2">&quot;_comments&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">comments</span>
+            <span class="n">comments</span> <span class="o">=</span> <span class="n">JsonObj</span><span class="p">()</span>
+            <span class="n">comments</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Auto generated by LinkML jsonld context generator&quot;</span>
+            <span class="n">comments</span><span class="o">.</span><span class="n">generation_date</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">generation_date</span>
+            <span class="n">comments</span><span class="o">.</span><span class="n">source</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">source_file</span>
+    <span class="c1">#</span>
+    <span class="c1">#         comments = f&quot;&quot;&quot;Auto generated from {self.schema.source_file} by {self.generatorname} version: {self.generatorversion}&quot;&quot;&quot;</span>
+    <span class="c1">#         if self.schema.generation_date:</span>
+    <span class="c1">#             comments += f&quot;&quot;&quot;</span>
+    <span class="c1">#</span>
+    <span class="c1"># Schema: {self.schema.name}</span>
+    <span class="c1"># metamodel version: {self.schema.metamodel_version}</span>
+    <span class="c1"># model version: {self.schema.version if self.schema.version else None}</span>
+    <span class="c1"># &quot;&quot;&quot;</span>
+    <span class="c1">#         comments += f&quot;&quot;&quot;</span>
+    <span class="c1"># id: {self.schema.id}</span>
+    <span class="c1"># description: {be(self.schema.description)}</span>
+    <span class="c1"># license: {be(self.schema.license)}</span>
+    <span class="c1"># &quot;&quot;&quot;</span>
+            <span class="n">context</span><span class="o">.</span><span class="n">comments</span> <span class="o">=</span> <span class="n">comments</span>
         <span class="n">context_content</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">if</span> <span class="n">base</span><span class="p">:</span>
             <span class="k">if</span> <span class="s2">&quot;://&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">base</span><span class="p">:</span>
