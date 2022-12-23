@@ -833,6 +833,11 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
                 # Place for future expansion
                 keyed = True
             if identifier:
+                rlines.extend([
+                    f"if not self.{aliased_slot_name} and kwargs:",
+                    f"\tself.{aliased_slot_name} = kwargs",
+                    f"\tkwargs = {{}}"
+                ])
                 if not slot.inlined_as_list:
                     rlines.append(
                         f'self._normalize_inlined_as_dict(slot_name="{aliased_slot_name}", '
