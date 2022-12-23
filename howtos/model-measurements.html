@@ -228,7 +228,6 @@
 <li class="toctree-l2"><a class="reference internal" href="port-linkml.html">Porting LinkML tools to other programming languages</a></li>
 <li class="toctree-l2"><a class="reference internal" href="linkml-ws.html">LinkML Workspace Generator</a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">How to model quantities and measurements</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#oboe">OBOE</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples of use</a></li>
@@ -635,9 +634,28 @@ The units are also fixed, but ranges are supported.</p>
 </pre></div>
 </div>
 <p>Tabular:</p>
-<p>|id|mass|mass_unit|height|height_unit|bmi|
-|—|—|—|—|
-|P001|70.0|kg|1.53|m|29.9|</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>id</p></th>
+<th class="head"><p>mass</p></th>
+<th class="head"><p>mass_unit</p></th>
+<th class="head"><p>height</p></th>
+<th class="head"><p>height_unit</p></th>
+<th class="head"><p>bmi</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>P001</p></td>
+<td><p>70.0</p></td>
+<td><p>kg</p></td>
+<td><p>1.53</p></td>
+<td><p>m</p></td>
+<td><p>29.9</p></td>
+</tr>
+</tbody>
+</table>
+</div>
 <p>Properties:</p>
 <ul class="simple">
 <li><p>nesting levels: 0</p></li>
@@ -922,10 +940,8 @@ However, the use of strings means values must be parsed.</p>
 </pre></div>
 </div>
 </section>
-</section>
-</section>
 <section id="oboe">
-<h1>OBOE<a class="headerlink" href="#oboe" title="Permalink to this heading">#</a></h1>
+<h3>OBOE<a class="headerlink" href="#oboe" title="Permalink to this heading">#</a></h3>
 <p>Concepts:</p>
 <ul class="simple">
 <li><p><strong>Observation</strong>: an event in which one or more measurements are taken</p></li>
@@ -936,8 +952,10 @@ However, the use of strings means values must be parsed.</p>
 <li><p><strong>Protocol</strong>: the procedures followed to obtain measurements (e.g., DensityProtocol2014)</p></li>
 </ul>
 <p><img alt="img" src="https://ars.els-cdn.com/content/image/1-s2.0-S1574954107000362-gr1.jpg" /></p>
+</section>
 <section id="cf">
-<h2>CF<a class="headerlink" href="#cf" title="Permalink to this heading">#</a></h2>
+<h3>CF<a class="headerlink" href="#cf" title="Permalink to this heading">#</a></h3>
+</section>
 </section>
 <section id="further-reading">
 <h2>Further Reading<a class="headerlink" href="#further-reading" title="Permalink to this heading">#</a></h2>
@@ -1024,12 +1042,10 @@ However, the use of strings means values must be parsed.</p>
 <li><a class="reference internal" href="#mixs">MIxS</a></li>
 <li><a class="reference internal" href="#qudt">QUDT</a></li>
 <li><a class="reference internal" href="#obi">OBI</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a class="reference internal" href="#oboe">OBOE</a><ul>
+<li><a class="reference internal" href="#oboe">OBOE</a></li>
 <li><a class="reference internal" href="#cf">CF</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#further-reading">Further Reading</a></li>
 </ul>
 </li>
