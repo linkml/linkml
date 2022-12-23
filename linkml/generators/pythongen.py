@@ -74,7 +74,12 @@ class PythonGenerator(Generator):
         :return:
         """
         pycode = self.serialize(**kwargs)
-        return compile_python(pycode)
+        try:
+            return compile_python(pycode)
+        except NameError as e:
+            logging.error(f"Code:\n{pycode}")
+            logging.error(f"Error compiling generated python code: {e}")
+            raise e
 
     def visit_schema(self, **kwargs) -> None:
         # Add explicitly declared prefixes
@@ -655,6 +660,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
         prox_type_name = rangelist[-1]
 
         # Quote forward references - note that enums always gen at the end
+        logging.info(f"CHECK: {slot.name} => {slot.range} ")
         if slot.range in self.schema.enums or (
             cls
             and slot.inlined
@@ -920,6 +926,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
 
     def forward_reference(self, slot_range: str, owning_class: str) -> bool:
         """Determine whether slot_range is a forward reference"""
+        #logging.info(f"CHECKING: {slot_range} {owning_class}")
         if (
             slot_range in self.schema.classes
             and self.schema.classes[slot_range].imported_from
@@ -927,13 +934,16 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
             slot_range in self.schema.enums
             and self.schema.enums[slot_range].imported_from
         ):
+            logging.info(f"FALSE: FORWARD: {slot_range} {owning_class} // IMP={self.schema.classes[slot_range].imported_from}")
             return False
         if slot_range in self.schema.enums:
             return True
         for cname in self.schema.classes:
             if cname == owning_class:
+                logging.info(f"TRUE: OCCURS SAME: {cname} == {slot_range} owning: {owning_class}")
                 return True  # Occurs on or after
             elif cname == slot_range:
+                logging.info(f"FALSE: OCCURS BEFORE: {cname} == {slot_range} owning: {owning_class}")
                 return False  # Occurs before
         return True
 
@@ -1157,18 +1167,28 @@ class {enum_name}(EnumDefinitionImpl):
     show_default=True,
     help="Generate Slot information",
 )
+@click.option(
+    "--validate/--no-validate",
+    default=False,
+    show_default=True,
+    help="Validate generated code by compiling it",
+)
 @click.version_option(__version__, "-V", "--version")
-def cli(yamlfile, head=True, genmeta=False, classvars=True, slots=True, **args):
+def cli(yamlfile, head=True, genmeta=False, classvars=True, slots=True, validate=False, **args):
     """Generate python classes to represent a LinkML model"""
-    print(
-        PythonGenerator(
+    gen = PythonGenerator(
             yamlfile,
             emit_metadata=head,
             genmeta=genmeta,
             gen_classvars=classvars,
             gen_slots=slots,
             **args,
-        ).serialize(emit_metadata=head, **args)
+        )
+    if validate:
+        mod = gen.compile_module()
+        logging.info(f"Module {mod} compiled successfully")
+    print(
+        gen.serialize(emit_metadata=head, **args)
     )
 
 
