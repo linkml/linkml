@@ -593,6 +593,23 @@ class SchemaView(object):
             return []
 
     @lru_cache()
+    def get_children(self, name: str, mixin: bool = True) -> List[str]:
+        """
+        get the children of an element (any class, slot, enum, type)
+        :param name: name of the parent element
+        :param mixin: include mixins
+        :return: list of child element
+        """
+        children = []
+        for e, el in self.all_elements().items():
+            if isinstance(el, (ClassDefinition, SlotDefinition, EnumDefinition)):
+                if el.is_a and el.is_a == name:
+                    children.append(el.name)
+                if mixin and el.mixins and name in el.mixins:
+                    children.append(el.name)
+        return children
+
+    @lru_cache()
     def class_children(self, class_name: CLASS_NAME, imports=True, mixins=True, is_a=True) -> List[ClassDefinitionName]:
         """
         :param class_name: parent class name
@@ -918,6 +935,27 @@ class SchemaView(object):
                 applicable_elements.append(category_element.name)
 
         return applicable_elements
+
+    @lru_cache()
+    def all_aliases(self) -> List[str]:
+        """
+        Get the aliases
+
+        :return: list of aliases
+        """
+        element_aliases = {}
+
+        for e, el in self.all_elements().items():
+            if el.name not in element_aliases.keys():
+                element_aliases[el.name] = []
+            if el.aliases and el.aliases is not None:
+                for a in el.aliases:
+                    element_aliases[el.name].append(a)
+            if el.structured_aliases and el.structured_aliases is not None:
+                for sa in el.structured_aliases:
+                    element_aliases[el.name].append(sa)
+
+        return element_aliases
 
     @lru_cache()
     def get_mappings(self, element_name: ElementName = None, imports=True, expand=False) -> Dict[

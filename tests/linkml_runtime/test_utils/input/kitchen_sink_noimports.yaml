@@ -96,6 +96,12 @@ classes:
     slot_usage:
       age in years:
         minimum_value: 16
+    structured_aliases:
+      dad:
+        predicate: EXACT_SYNONYM
+      mom:
+        predicate: EXACT_SYNONYM
+
 
   Organization:
     is_a: Thing
