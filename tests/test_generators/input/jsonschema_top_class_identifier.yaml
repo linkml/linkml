@@ -1,0 +1,16 @@
+schema:
+  id: http://example.org/test_top_class_identifier
+  name: test_top_class_identifier
+
+  slots:
+    id:
+      identifier: true
+
+  classes:
+    Test:
+      tree_root: true
+      slots:
+        - id
+json_schema:
+  required:
+    - id
