@@ -775,7 +775,15 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
             slot.name
         )  # Mangled name by which the slot is known in python
         range_type, base_type, base_type_name = self.class_reference_type(slot, cls)
-        slot_identifier = self.class_identifier(slot.range)
+        # Address the case of key/value tuple.  This doesn't cover everything, but catches the vast majority of the
+        # cases
+        if slot.identifier and len(cls.slots) == 2:
+            aliased_data_name = self.slot_name(cls.slots[1])
+            rlines.append(f"if self.{aliased_slot_name} is None and len(kwargs) == 1:")
+            rlines.append("\tfor k in kwargs:")
+            rlines.append(f"\t\tself.{aliased_slot_name} = k")
+            rlines.append(f"\t\tself.{aliased_data_name} = kwargs[k]")
+            rlines.append("\t\tkwargs = {}")
 
         # Generate existence check for required slots.  Note that inherited classes have to do post init checks because
         # You can't have required elements after optional elements in the parent class

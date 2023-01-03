@@ -175,7 +175,7 @@ c3_slot:
     
 """
 
-UPDATE_PYTHON = False
+UPDATE_PYTHON = True
 # If you need to debug, you can uncomment this line and switch from self.mod to issue_1188 for imports
 # Example
 #     from .output.issue_1188 import issue_1188
