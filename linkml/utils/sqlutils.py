@@ -2,7 +2,6 @@ import csv
 import inspect
 import logging
 import os
-import sqlite3
 from dataclasses import dataclass
 from pathlib import Path
 from types import ModuleType
@@ -29,14 +28,14 @@ from linkml.generators.pythongen import PythonGenerator
 from linkml.generators.sqlalchemygen import SQLAlchemyGenerator, TemplateEnum
 from linkml.generators.sqltablegen import SQLTableGenerator
 from linkml.utils import datautils, validation
-from linkml.utils.datautils import (_get_format, _is_xsv, dumpers_loaders,
-                                    get_dumper, get_loader, infer_root_class)
+from linkml.utils.datautils import (_get_context, _get_format, _is_xsv, dumpers_loaders,
+                                    get_dumper, get_loader, infer_root_class, infer_index_slot)
 
 
 @dataclass
 class SQLStore:
     """
-    A wrapper for a SQLLite database.
+    A wrapper for a SQLite database.
 
     This provides two core operations for storing and retrieving data
 
@@ -67,20 +66,19 @@ class SQLStore:
         :return: path
         """
         if not self.database_path:
-            raise ValueError(f"database_path not set")
+            raise ValueError("database_path not set")
         db_exists = os.path.exists(self.database_path)
         if force or (create and not db_exists):
             if force:
                 Path(self.database_path).unlink(missing_ok=True)
             self.engine = create_engine(f"sqlite:///{self.database_path}")
-            con = sqlite3.connect(self.database_path)
-            cur = con.cursor()
-            ddl = SQLTableGenerator(self.schema).generate_ddl()
-            cur.executescript(ddl)
-            if self.include_schema_in_database:
-                metamodel_sv = package_schemaview(metamodel.__name__)
-                meta_ddl = SQLTableGenerator(metamodel_sv.schema).generate_ddl()
-                cur.executescript(ddl)
+            with self.engine.connect() as con:
+                ddl = SQLTableGenerator(self.schema).generate_ddl()
+                con.connection.executescript(ddl)
+                if self.include_schema_in_database:
+                    metamodel_sv = package_schemaview(metamodel.__name__)
+                    meta_ddl = SQLTableGenerator(metamodel_sv.schema).generate_ddl()
+                    con.connection.executescript(meta_ddl)
         if not os.path.exists(self.database_path):
             raise ValueError(f"No database: {self.database_path}")
         return self.database_path
@@ -123,17 +121,18 @@ class SQLStore:
     def load_all(
         self, target_class: Union[str, Type[YAMLRoot]] = None
     ) -> List[YAMLRoot]:
-        if target_class == None:
+        if target_class is None:
             target_class_name = infer_root_class(self.schemaview)
             target_class = self.native_module.__dict__[target_class_name]
         if self.engine is None:
             self.engine = create_engine(f"sqlite:///{self.database_path}")
         session_class = sessionmaker(bind=self.engine)
-        session = session_class()
-        typ = self.to_sqla_type(target_class)
-        q = session.query(typ)
-        all_objs = q.all()
-        return self.from_sqla(all_objs)
+        with session_class.begin() as session:
+            typ = self.to_sqla_type(target_class)
+            q = session.query(typ)
+            all_objs = q.all()
+            tmp = self.from_sqla(all_objs)
+        return tmp  
 
     def dump(self, element: YAMLRoot, append=True) -> None:
         """
@@ -144,14 +143,14 @@ class SQLStore:
         :return:
         """
         if self.engine is None:
-            raise ValueError(f"Must set self.engine")
+            raise ValueError("Must set self.engine")
         session_class = sessionmaker(bind=self.engine)
-        session = session_class()
-        nu_obj = self.to_sqla(element)
-        if not append:
-            session.query(type(nu_obj)).delete()
-        session.add(nu_obj)
-        session.commit()
+        with session_class.begin() as session:
+            nu_obj = self.to_sqla(element)
+            if not append:
+                session.query(type(nu_obj)).delete()
+            session.add(nu_obj)
+            session.commit()
 
     def to_sqla_type(self, target_class: Type[YAMLRoot]) -> Any:
         for n, nu_typ in inspect.getmembers(self.module):
@@ -450,12 +449,12 @@ def load(
     output_format = _get_format(output, output_format, default="json")
     outargs = {}
     if output_format == "json-ld":
-        if len(context) == 0:
-            if schema is not None:
-                context = [_get_context(schema)]
-            else:
-                raise Exception("Must pass in context OR schema for RDF output")
-        outargs["contexts"] = list(context)
+        if schema is not None:
+            context = [_get_context(schema)]
+        else:
+            raise Exception("Must pass in context OR schema for RDF output")
+        if context:
+            outargs["contexts"] = list(context)
         outargs["fmt"] = "json-ld"
     if output_format == "rdf" or output_format == "ttl":
         if sv is None:

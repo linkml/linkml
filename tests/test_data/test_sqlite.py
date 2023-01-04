@@ -77,6 +77,7 @@ class SQLiteStoreTest(unittest.TestCase):
         q = session.query(endpoint.module.FamilialRelationship)
         for r in q.all():
             print(r)
+        session.close()
         # step 4: test loading from SQLStore
         # 4a: first test load_all, diff to original data should be empty
         x = endpoint.load_all(target_class=Container)
@@ -87,6 +88,7 @@ class SQLiteStoreTest(unittest.TestCase):
         self.assertEqual(diff, "")
         # 4b: next test load implicit object, diff to original data should be empty
         container_loaded = endpoint.load()
+        endpoint.engine.dispose()
         yaml_dumper.dump(container_loaded, to_file=DATA_RECAP)
         y = yaml_dumper.dumps(container_loaded)
         diff = compare_yaml(DATA, DATA_RECAP)
@@ -170,6 +172,10 @@ class SQLiteStoreTest(unittest.TestCase):
                             index_slot="Person_index",
                             schema=schema,
                         )
+                # mod holds a reference to sqlite that prevents file closing
+                del mod
+                # dispose engine to allow creating of a new engine of same name
+                endpoint.engine.dispose()
 
 
 if __name__ == "__main__":
