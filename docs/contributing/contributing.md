@@ -102,9 +102,10 @@ If the PyPI release failed, make fixes, [delete](https://docs.github.com/en/ente
 #### PRs 
 
 * PRs should be in a DRAFT state until they are ready for review and tests are passing.
-  * PRs should be reviewed by at least one other person.
+* PRs should be reviewed by at least one other person.
   * All automated tests should be passing via GitHub actions before a code review is requested.
-* Make a DRAFT PR for your branc even if you've just started working on something.  This gives other developers
+  * Reviews can be requested of any contributing member of the LinkML organization.
+* Make a DRAFT PR for your branch even if you've just started working on something.  This gives other developers
 insight into your work and allows them to provide feedback early on.
 * In general, each PR should be associated with a ticket.
 
