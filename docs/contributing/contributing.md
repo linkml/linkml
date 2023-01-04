@@ -4,7 +4,6 @@
 
 #### PRs 
 
-* Commit early and often
 * PRs should be in a DRAFT state until they are ready for review and tests are passing.
   * PRs should be reviewed by at least one other person.
   * All automated tests should be passing via GitHub actions before a code review is requested.
@@ -14,8 +13,18 @@ insight into your work and allows them to provide feedback early on.
 
 #### Ticket/Issue Creation
 
+* Search existing issues before creating a new one.
+* Give your issue a short but actionable title
+* Describe the problem and the context and include a repeatable example.
+* Clearly state what needs to be done to close the ticket.
 
+#### Example of a Good Issue:
 
+![](a_good_issue.png)
+
+#### Example of a Bad Issue:
+
+![](a_bad_issue.png)
 
 ### LinkML Testing Framework
 
@@ -54,6 +63,12 @@ You can run the full test suite in the following way:
 ```bash
 poetry run python -m unittest discover
 ```
+
+or via a shortcut Makefile target:
+```bash
+make test
+```
+
 
 * When you create a Pull Request with your unit test on the linkml repo, a GitHub Action run will be set off which 
 runs the entire test suite with the new test case that you added, on that test case branch too.
