@@ -179,6 +179,8 @@ class ERDiagramGenerator(Generator):
         diagram = ERDiagram()
         while stack:
             cn, depth = stack.pop()
+            if cn in visited:
+                continue
             self.add_class(cn, diagram)
             visited.add(cn)
             if max_hops is not None and depth >= max_hops:
