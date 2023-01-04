@@ -1,0 +1,27 @@
+{
+  "$defs": {
+    "C": {
+      "additionalProperties": false,
+      "description": "",
+      "properties": {
+        "1x": {
+          "type": "string"
+        }
+      },
+      "title": "C",
+      "type": "object"
+    }
+  },
+  "$id": "http://example.org/test-schema",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": false,
+  "metamodel_version": "1.7.0",
+  "properties": {
+    "1x": {
+      "type": "string"
+    }
+  },
+  "title": "test-schema",
+  "type": "object",
+  "version": null
+}
