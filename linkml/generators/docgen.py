@@ -22,6 +22,7 @@ from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.schemaview import SchemaView
 
 from linkml._version import __version__
+from linkml.generators.erdiagramgen import ERDiagramGenerator
 from linkml.utils.generator import Generator, shared_arguments
 
 
@@ -29,6 +30,10 @@ class MarkdownDialect(Enum):
     python = "python"  ## https://python-markdown.github.io/ -- used by mkdocs
     myst = "myst"  ## https://myst-parser.readthedocs.io/en/latest/ -- used by sphinx
 
+
+class DiagramType(Enum):
+    uml_class_diagram = "uml_class_diagram"
+    er_diagram = "er_diagram"
 
 # In future this may become a Union statement, but for now we only have dialects for markdown
 DIALECT = MarkdownDialect
@@ -119,6 +124,12 @@ class DocGenerator(Generator):
     template_directory: str = None
     """directory for custom templates"""
 
+    diagram_type: Optional[Union[DiagramType, str]] = None
+    """style of diagram (ER, UML)"""
+
+    include_top_level_diagram: bool = field(default_factory=lambda: False)
+    """Whether the index page should include a schema diagram"""
+
     genmeta: bool = field(default_factory=lambda: False)
     gen_classvars: bool = field(default_factory=lambda: True)
     gen_slots: bool = field(default_factory=lambda: True)
@@ -139,6 +150,8 @@ class DocGenerator(Generator):
                 else:
                     raise NotImplemented(f"{dialect} not supported")
             self.dialect = dialect
+        if isinstance(self.diagram_type, str):
+            self.diagram_type = DiagramType[self.diagram_type]
         super().__post_init__()
 
     def serialize(self, directory: str = None) -> None:
@@ -153,7 +166,9 @@ class DocGenerator(Generator):
             directory = self.directory
         if directory is None:
             raise ValueError(f"Directory must be provided")
-        template_vars = {"sort_by": self.sort_by}
+        template_vars = {"sort_by": self.sort_by,
+                         "diagram_type": self.diagram_type.value if self.diagram_type else None,
+                         "include_top_level_diagram": self.include_top_level_diagram}
         template = self._get_template("index")
         out_str = template.render(
             gen=self, schema=sv.schema, schemaview=sv, **template_vars
@@ -558,6 +573,24 @@ class DocGenerator(Generator):
         else:
             return "mermaid"
 
+    def mermaid_diagram(self, class_names: List[Union[str, ClassDefinitionName]] = None) -> str:
+        """
+        Render a mermaid diagram for a set of classes
+
+        :param class_names:
+        :return:
+        """
+        if self.diagram_type.value == DiagramType.er_diagram.value:
+            erdgen = ERDiagramGenerator(self.schemaview.schema, format="mermaid")
+            if class_names:
+                return erdgen.serialize_classes(class_names, follow_references=True, max_hops=2)
+            else:
+                return erdgen.serialize()
+        elif self.diagram_type == DiagramType.uml_class_diagram:
+            raise NotImplementedError("This is currently handled in the jinja templates")
+        else:
+            raise NotImplementedError(f"Diagram type {self.diagram_type} not implemented")
+
     def latex(self, text: Optional[str]) -> str:
         """
         Makes text safe for latex
@@ -775,6 +808,13 @@ class DocGenerator(Generator):
     help="Folder to which document files are written",
 )
 @click.option("--dialect", help="Dialect or 'flavor' of Markdown used.")
+@click.option("--diagram-type",
+              type=click.Choice([e.value for e in DiagramType]),
+              help="er_diagram is an experimental feature.")
+@click.option("--include-top-level-diagram/--no-include-top-level-diagram",
+              default=False,
+              show_default=True,
+              help="EXPERIMENTAL: (ER diagram only) Include a diagram of the whole schema.")
 @click.option(
     "--sort-by",
     default="name",

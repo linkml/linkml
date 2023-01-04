@@ -5,6 +5,15 @@
 URI: {{ schema.id }}
 Name: {{ schema.name }}
 
+{% if include_top_level_diagram %}
+
+## Schema Diagram
+
+```{{ gen.mermaid_directive() }}
+{{ gen.mermaid_diagram() }}
+```
+{% endif %}
+
 ## Classes
 
 | Class | Description |

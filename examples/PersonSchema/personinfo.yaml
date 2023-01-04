@@ -133,7 +133,7 @@ classes:
       type:
         range: FamilialRelationshipType
         required: true
-      related to:
+      related_to:
         range: Person
         required: true
 
