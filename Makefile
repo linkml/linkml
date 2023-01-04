@@ -12,6 +12,9 @@ all-examples-%:  examples/%.py examples/%.schema.json  examples/%.shex  examples
 
 RUN=pipenv run
 
+test:
+    $(RUN) pytest tests/*
+
 ## Example schema products
 examples/%.py: examples/%.yaml
 	$(RUN) gen-py-classes $< > $@ && $(RUN) python -m examples.$*
