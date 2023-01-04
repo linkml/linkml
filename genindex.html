@@ -207,6 +207,7 @@
 <li class="toctree-l2"><a class="reference internal" href="generators/shacl.html">SHACL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generators/owl.html">OWL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generators/markdown.html">Markdown</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generators/erdiagram.html">ER Diagrams</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generators/project-generator.html">Project Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generators/python.html">Python</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generators/pydantic.html">Pydantic</a></li>
@@ -320,6 +321,8 @@
     --classes
 
         <ul>
+          <li><a href="generators/erdiagram.html#cmdoption-gen-erdiagram-c">gen-erdiagram command line option</a>
+</li>
           <li><a href="generators/markdown.html#cmdoption-gen-markdown-c">gen-markdown command line option</a>
 </li>
         </ul></li>
@@ -398,6 +401,13 @@
 </li>
         </ul></li>
         <li>
+    --exclude-attributes
+
+        <ul>
+          <li><a href="generators/erdiagram.html#cmdoption-gen-erdiagram-exclude-attributes">gen-erdiagram command line option</a>
+</li>
+        </ul></li>
+        <li>
     --flatprefixes
 
         <ul>
@@ -405,9 +415,18 @@
 </li>
         </ul></li>
         <li>
+    --follow-references
+
+        <ul>
+          <li><a href="generators/erdiagram.html#cmdoption-gen-erdiagram-follow-references">gen-erdiagram command line option</a>
+</li>
+        </ul></li>
+        <li>
     --format
 
         <ul>
+          <li><a href="generators/erdiagram.html#cmdoption-gen-erdiagram-f">gen-erdiagram command line option</a>
+</li>
           <li><a href="generators/excel.html#cmdoption-gen-excel-f">gen-excel command line option</a>
 </li>
           <li><a href="generators/graphql.html#cmdoption-gen-graphql-f">gen-graphql command line option</a>
@@ -489,6 +508,8 @@
     --importmap
 
         <ul>
+          <li><a href="generators/erdiagram.html#cmdoption-gen-erdiagram-im">gen-erdiagram command line option</a>
+</li>
           <li><a href="generators/excel.html#cmdoption-gen-excel-im">gen-excel command line option</a>
 </li>
           <li><a href="generators/graphql.html#cmdoption-gen-graphql-im">gen-graphql command line option</a>
@@ -584,6 +605,8 @@
     --log_level
 
         <ul>
+          <li><a href="generators/erdiagram.html#cmdoption-gen-erdiagram-log_level">gen-erdiagram command line option</a>
+</li>
           <li><a href="generators/excel.html#cmdoption-gen-excel-log_level">gen-excel command line option</a>
 </li>
           <li><a href="generators/graphql.html#cmdoption-gen-graphql-log_level">gen-graphql command line option</a>
@@ -627,9 +650,18 @@
 </li>
         </ul></li>
         <li>
+    --max-hops
+
+        <ul>
+          <li><a href="generators/erdiagram.html#cmdoption-gen-erdiagram-max-hops">gen-erdiagram command line option</a>
+</li>
+        </ul></li>
+        <li>
     --mergeimports
 
         <ul>
+          <li><a href="generators/erdiagram.html#cmdoption-gen-erdiagram-mergeimports">gen-erdiagram command line option</a>
+</li>
           <li><a href="generators/excel.html#cmdoption-gen-excel-mergeimports">gen-excel command line option</a>
 </li>
           <li><a href="generators/graphql.html#cmdoption-gen-graphql-mergeimports">gen-graphql command line option</a>
@@ -678,6 +710,8 @@
     --metadata
 
         <ul>
+          <li><a href="generators/erdiagram.html#cmdoption-gen-erdiagram-metadata">gen-erdiagram command line option</a>
+</li>
           <li><a href="generators/excel.html#cmdoption-gen-excel-metadata">gen-excel command line option</a>
 </li>
           <li><a href="generators/graphql.html#cmdoption-gen-graphql-metadata">gen-graphql command line option</a>
@@ -724,6 +758,8 @@
     --metauris
 
         <ul>
+          <li><a href="generators/erdiagram.html#cmdoption-gen-erdiagram-useuris">gen-erdiagram command line option</a>
+</li>
           <li><a href="generators/excel.html#cmdoption-gen-excel-useuris">gen-excel command line option</a>
 </li>
           <li><a href="generators/graphql.html#cmdoption-gen-graphql-useuris">gen-graphql command line option</a>
@@ -802,10 +838,24 @@
 </li>
         </ul></li>
         <li>
+    --no-exclude-attributes
+
+        <ul>
+          <li><a href="generators/erdiagram.html#cmdoption-gen-erdiagram-exclude-attributes">gen-erdiagram command line option</a>
+</li>
+        </ul></li>
+        <li>
     --no-flatprefixes
 
         <ul>
           <li><a href="generators/jsonld-context.html#cmdoption-gen-jsonld-context-flatprefixes">gen-jsonld-context command line option</a>
+</li>
+        </ul></li>
+        <li>
+    --no-follow-references
+
+        <ul>
+          <li><a href="generators/erdiagram.html#cmdoption-gen-erdiagram-follow-references">gen-erdiagram command line option</a>
 </li>
         </ul></li>
         <li>
@@ -847,6 +897,8 @@
     --no-mergeimports
 
         <ul>
+          <li><a href="generators/erdiagram.html#cmdoption-gen-erdiagram-mergeimports">gen-erdiagram command line option</a>
+</li>
           <li><a href="generators/excel.html#cmdoption-gen-excel-mergeimports">gen-excel command line option</a>
 </li>
           <li><a href="generators/graphql.html#cmdoption-gen-graphql-mergeimports">gen-graphql command line option</a>
@@ -895,6 +947,8 @@
     --no-metadata
 
         <ul>
+          <li><a href="generators/erdiagram.html#cmdoption-gen-erdiagram-metadata">gen-erdiagram command line option</a>
+</li>
           <li><a href="generators/excel.html#cmdoption-gen-excel-metadata">gen-excel command line option</a>
 </li>
           <li><a href="generators/graphql.html#cmdoption-gen-graphql-metadata">gen-graphql command line option</a>
@@ -969,6 +1023,8 @@
     --no-stacktrace
 
         <ul>
+          <li><a href="generators/erdiagram.html#cmdoption-gen-erdiagram-stacktrace">gen-erdiagram command line option</a>
+</li>
           <li><a href="generators/excel.html#cmdoption-gen-excel-stacktrace">gen-excel command line option</a>
 </li>
           <li><a href="generators/graphql.html#cmdoption-gen-graphql-stacktrace">gen-graphql command line option</a>
@@ -1006,6 +1062,13 @@
         </ul></li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li>
+    --no-structural
+
+        <ul>
+          <li><a href="generators/erdiagram.html#cmdoption-gen-erdiagram-structural">gen-erdiagram command line option</a>
+</li>
+        </ul></li>
         <li>
     --no-target-class-from-path
 
@@ -1169,6 +1232,8 @@
     --stacktrace
 
         <ul>
+          <li><a href="generators/erdiagram.html#cmdoption-gen-erdiagram-stacktrace">gen-erdiagram command line option</a>
+</li>
           <li><a href="generators/excel.html#cmdoption-gen-excel-stacktrace">gen-excel command line option</a>
 </li>
           <li><a href="generators/graphql.html#cmdoption-gen-graphql-stacktrace">gen-graphql command line option</a>
@@ -1202,6 +1267,13 @@
           <li><a href="generators/sssom.html#cmdoption-gen-sssom-stacktrace">gen-sssom command line option</a>
 </li>
           <li><a href="generators/typescript.html#cmdoption-gen-typescript-stacktrace">gen-typescript command line option</a>
+</li>
+        </ul></li>
+        <li>
+    --structural
+
+        <ul>
+          <li><a href="generators/erdiagram.html#cmdoption-gen-erdiagram-structural">gen-erdiagram command line option</a>
 </li>
         </ul></li>
         <li>
@@ -1257,6 +1329,8 @@
     --useuris
 
         <ul>
+          <li><a href="generators/erdiagram.html#cmdoption-gen-erdiagram-useuris">gen-erdiagram command line option</a>
+</li>
           <li><a href="generators/excel.html#cmdoption-gen-excel-useuris">gen-excel command line option</a>
 </li>
           <li><a href="generators/graphql.html#cmdoption-gen-graphql-useuris">gen-graphql command line option</a>
@@ -1305,6 +1379,8 @@
     --verbose
 
         <ul>
+          <li><a href="generators/erdiagram.html#cmdoption-gen-erdiagram-0">gen-erdiagram command line option</a>
+</li>
           <li><a href="generators/excel.html#cmdoption-gen-excel-0">gen-excel command line option</a>
 </li>
           <li><a href="generators/graphql.html#cmdoption-gen-graphql-0">gen-graphql command line option</a>
@@ -1346,6 +1422,8 @@
     --version
 
         <ul>
+          <li><a href="generators/erdiagram.html#cmdoption-gen-erdiagram-V">gen-erdiagram command line option</a>
+</li>
           <li><a href="generators/excel.html#cmdoption-gen-excel-V">gen-excel command line option</a>
 </li>
           <li><a href="generators/graphql.html#cmdoption-gen-graphql-V">gen-graphql command line option</a>
@@ -1414,6 +1492,8 @@
     -c
 
         <ul>
+          <li><a href="generators/erdiagram.html#cmdoption-gen-erdiagram-c">gen-erdiagram command line option</a>
+</li>
           <li><a href="generators/markdown.html#cmdoption-gen-markdown-c">gen-markdown command line option</a>
 </li>
           <li><a href="data/conversion.html#cmdoption-linkml-convert-1">linkml-convert command line option</a>
@@ -1434,6 +1514,8 @@
     -f
 
         <ul>
+          <li><a href="generators/erdiagram.html#cmdoption-gen-erdiagram-f">gen-erdiagram command line option</a>
+</li>
           <li><a href="generators/excel.html#cmdoption-gen-excel-f">gen-excel command line option</a>
 </li>
           <li><a href="generators/graphql.html#cmdoption-gen-graphql-f">gen-graphql command line option</a>
@@ -1493,6 +1575,8 @@
     -im
 
         <ul>
+          <li><a href="generators/erdiagram.html#cmdoption-gen-erdiagram-im">gen-erdiagram command line option</a>
+</li>
           <li><a href="generators/excel.html#cmdoption-gen-excel-im">gen-excel command line option</a>
 </li>
           <li><a href="generators/graphql.html#cmdoption-gen-graphql-im">gen-graphql command line option</a>
@@ -1600,6 +1684,8 @@
     -V
 
         <ul>
+          <li><a href="generators/erdiagram.html#cmdoption-gen-erdiagram-V">gen-erdiagram command line option</a>
+</li>
           <li><a href="generators/excel.html#cmdoption-gen-excel-V">gen-excel command line option</a>
 </li>
           <li><a href="generators/graphql.html#cmdoption-gen-graphql-V">gen-graphql command line option</a>
@@ -1645,6 +1731,8 @@
     -v
 
         <ul>
+          <li><a href="generators/erdiagram.html#cmdoption-gen-erdiagram-0">gen-erdiagram command line option</a>
+</li>
           <li><a href="generators/excel.html#cmdoption-gen-excel-0">gen-excel command line option</a>
 </li>
           <li><a href="generators/graphql.html#cmdoption-gen-graphql-0">gen-graphql command line option</a>
@@ -2269,6 +2357,8 @@
           <li><a href="linkml.utils.html#linkml.utils.typereferences.References.enumrefs">(linkml.utils.typereferences.References attribute)</a>
 </li>
         </ul></li>
+        <li><a href="generators/erdiagram.html#linkml.generators.erdiagramgen.ERDiagramGenerator">ERDiagramGenerator (class in linkml.generators.erdiagramgen)</a>
+</li>
         <li><a href="linkml.reporting.html#linkml.reporting.model.SeverityOptions.ERROR">ERROR (linkml.reporting.model.SeverityOptions attribute)</a>
 </li>
         <li><a href="linkml.utils.html#linkml.utils.execute_tutorial.Block.error">error (linkml.utils.execute_tutorial.Block attribute)</a>
@@ -2335,6 +2425,65 @@
   <h2>G</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li>
+    gen-erdiagram command line option
+
+        <ul>
+          <li><a href="generators/erdiagram.html#cmdoption-gen-erdiagram-c">--classes</a>
+</li>
+          <li><a href="generators/erdiagram.html#cmdoption-gen-erdiagram-exclude-attributes">--exclude-attributes</a>
+</li>
+          <li><a href="generators/erdiagram.html#cmdoption-gen-erdiagram-follow-references">--follow-references</a>
+</li>
+          <li><a href="generators/erdiagram.html#cmdoption-gen-erdiagram-f">--format</a>
+</li>
+          <li><a href="generators/erdiagram.html#cmdoption-gen-erdiagram-im">--importmap</a>
+</li>
+          <li><a href="generators/erdiagram.html#cmdoption-gen-erdiagram-log_level">--log_level</a>
+</li>
+          <li><a href="generators/erdiagram.html#cmdoption-gen-erdiagram-max-hops">--max-hops</a>
+</li>
+          <li><a href="generators/erdiagram.html#cmdoption-gen-erdiagram-mergeimports">--mergeimports</a>
+</li>
+          <li><a href="generators/erdiagram.html#cmdoption-gen-erdiagram-metadata">--metadata</a>
+</li>
+          <li><a href="generators/erdiagram.html#cmdoption-gen-erdiagram-useuris">--metauris</a>
+</li>
+          <li><a href="generators/erdiagram.html#cmdoption-gen-erdiagram-exclude-attributes">--no-exclude-attributes</a>
+</li>
+          <li><a href="generators/erdiagram.html#cmdoption-gen-erdiagram-follow-references">--no-follow-references</a>
+</li>
+          <li><a href="generators/erdiagram.html#cmdoption-gen-erdiagram-mergeimports">--no-mergeimports</a>
+</li>
+          <li><a href="generators/erdiagram.html#cmdoption-gen-erdiagram-metadata">--no-metadata</a>
+</li>
+          <li><a href="generators/erdiagram.html#cmdoption-gen-erdiagram-stacktrace">--no-stacktrace</a>
+</li>
+          <li><a href="generators/erdiagram.html#cmdoption-gen-erdiagram-structural">--no-structural</a>
+</li>
+          <li><a href="generators/erdiagram.html#cmdoption-gen-erdiagram-stacktrace">--stacktrace</a>
+</li>
+          <li><a href="generators/erdiagram.html#cmdoption-gen-erdiagram-structural">--structural</a>
+</li>
+          <li><a href="generators/erdiagram.html#cmdoption-gen-erdiagram-useuris">--useuris</a>
+</li>
+          <li><a href="generators/erdiagram.html#cmdoption-gen-erdiagram-0">--verbose</a>
+</li>
+          <li><a href="generators/erdiagram.html#cmdoption-gen-erdiagram-V">--version</a>
+</li>
+          <li><a href="generators/erdiagram.html#cmdoption-gen-erdiagram-c">-c</a>
+</li>
+          <li><a href="generators/erdiagram.html#cmdoption-gen-erdiagram-f">-f</a>
+</li>
+          <li><a href="generators/erdiagram.html#cmdoption-gen-erdiagram-im">-im</a>
+</li>
+          <li><a href="generators/erdiagram.html#cmdoption-gen-erdiagram-V">-V</a>
+</li>
+          <li><a href="generators/erdiagram.html#cmdoption-gen-erdiagram-0">-v</a>
+</li>
+          <li><a href="generators/erdiagram.html#cmdoption-gen-erdiagram-arg-YAMLFILE">YAMLFILE</a>
+</li>
+        </ul></li>
         <li>
     gen-excel command line option
 
@@ -4683,9 +4832,11 @@
 </li>
         <li><a href="linkml.generators.html#linkml.generators.csvgen.CsvGenerator.sep">sep (linkml.generators.csvgen.CsvGenerator attribute)</a>
 </li>
-        <li><a href="generators/java.html#linkml.generators.javagen.JavaGenerator.serialize">serialize() (linkml.generators.javagen.JavaGenerator method)</a>, <a href="linkml.generators.html#linkml.generators.javagen.JavaGenerator.serialize">[1]</a>
+        <li><a href="generators/erdiagram.html#linkml.generators.erdiagramgen.ERDiagramGenerator.serialize">serialize() (linkml.generators.erdiagramgen.ERDiagramGenerator method)</a>
 
         <ul>
+          <li><a href="generators/java.html#linkml.generators.javagen.JavaGenerator.serialize">(linkml.generators.javagen.JavaGenerator method)</a>, <a href="linkml.generators.html#linkml.generators.javagen.JavaGenerator.serialize">[1]</a>
+</li>
           <li><a href="generators/jsonld-context.html#linkml.generators.jsonldcontextgen.ContextGenerator.serialize">(linkml.generators.jsonldcontextgen.ContextGenerator method)</a>
 </li>
           <li><a href="code.html#linkml.generators.jsonschemagen.JsonSchemaGenerator.serialize">(linkml.generators.jsonschemagen.JsonSchemaGenerator method)</a>, <a href="generators/json-schema.html#linkml.generators.jsonschemagen.JsonSchemaGenerator.serialize">[1]</a>, <a href="linkml.generators.html#linkml.generators.jsonschemagen.JsonSchemaGenerator.serialize">[2]</a>
@@ -4711,6 +4862,8 @@
           <li><a href="linkml.utils.html#linkml.utils.generator.Generator.serialize">(linkml.utils.generator.Generator method)</a>
 </li>
         </ul></li>
+        <li><a href="generators/erdiagram.html#linkml.generators.erdiagramgen.ERDiagramGenerator.serialize_classes">serialize_classes() (linkml.generators.erdiagramgen.ERDiagramGenerator method)</a>
+</li>
         <li><a href="linkml.utils.html#linkml.utils.mergeutils.set_from_schema">set_from_schema() (in module linkml.utils.mergeutils)</a>
 </li>
         <li><a href="linkml.reporting.html#linkml.reporting.model.slots.severity">severity (linkml.reporting.model.slots attribute)</a>
@@ -4759,10 +4912,10 @@
 </li>
         <li><a href="linkml.generators.html#linkml.generators.markdowngen.MarkdownGenerator.slot_link">slot_link() (linkml.generators.markdowngen.MarkdownGenerator method)</a>
 </li>
-        <li><a href="linkml.utils.html#linkml.utils.generator.Generator.slot_name">slot_name() (linkml.utils.generator.Generator method)</a>
-</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="linkml.utils.html#linkml.utils.generator.Generator.slot_name">slot_name() (linkml.utils.generator.Generator method)</a>
+</li>
         <li><a href="linkml.utils.html#linkml.utils.schemaloader.SchemaLoader.slot_name_for">slot_name_for() (linkml.utils.schemaloader.SchemaLoader static method)</a>
 </li>
         <li><a href="developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.slot_name_mappings">slot_name_mappings() (linkml_runtime.utils.schemaview.SchemaView method)</a>
@@ -5293,6 +5446,8 @@
     YAMLFILE
 
         <ul>
+          <li><a href="generators/erdiagram.html#cmdoption-gen-erdiagram-arg-YAMLFILE">gen-erdiagram command line option</a>
+</li>
           <li><a href="generators/excel.html#cmdoption-gen-excel-arg-YAMLFILE">gen-excel command line option</a>
 </li>
           <li><a href="generators/graphql.html#cmdoption-gen-graphql-arg-YAMLFILE">gen-graphql command line option</a>

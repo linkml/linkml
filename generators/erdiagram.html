@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="How-to Guides" href="../howtos/index.html" /><link rel="prev" title="TerminusDB" href="terminusdb.html" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Project Generator" href="project-generator.html" /><link rel="prev" title="Markdown" href="markdown.html" />
 
     <!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
-        <title>Excel Spreadsheet - linkml documentation</title>
+        <title>ER Diagrams - linkml documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
@@ -209,7 +209,7 @@
 <li class="toctree-l2"><a class="reference internal" href="shacl.html">SHACL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="owl.html">OWL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="markdown.html">Markdown</a></li>
-<li class="toctree-l2"><a class="reference internal" href="erdiagram.html">ER Diagrams</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">ER Diagrams</a></li>
 <li class="toctree-l2"><a class="reference internal" href="project-generator.html">Project Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="python.html">Python</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pydantic.html">Pydantic</a></li>
@@ -220,7 +220,7 @@
 <li class="toctree-l2"><a class="reference internal" href="linkml.html">LinkML Generators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="sssom.html">SSSOM</a></li>
 <li class="toctree-l2"><a class="reference internal" href="terminusdb.html">TerminusDB</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Excel Spreadsheet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="excel.html">Excel Spreadsheet</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../howtos/index.html">How-to Guides</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -295,78 +295,136 @@
           </label>
         </div>
         <article role="main">
-          <section id="excel-spreadsheet">
-<h1>Excel Spreadsheet<a class="headerlink" href="#excel-spreadsheet" title="Permalink to this heading">#</a></h1>
-<p>This generator allows you to create a spreadsheet template from your
-LinkML schema.</p>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p><a class="reference external" href="https://github.com/linkml/schemasheets">SchemaSheets</a>
-for maintaining schemas as spreadsheets</p>
-</div>
-<section id="example-output">
-<h2>Example Output<a class="headerlink" href="#example-output" title="Permalink to this heading">#</a></h2>
-<p>Using the Person LinkML <a class="reference external" href="https://github.com/linkml/linkml/blob/main/examples/PersonSchema/personinfo.yaml">schema</a> as
-input, the generated Excel spreadsheet looks as follows: <a class="reference external" href="https://github.com/linkml/linkml/tree/main/examples/PersonSchema/personinfo/excel/personinfo.xlsx">personinfo.xlsx</a></p>
-</section>
+          <section id="er-diagrams">
+<h1>ER Diagrams<a class="headerlink" href="#er-diagrams" title="Permalink to this heading">#</a></h1>
 <section id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Permalink to this heading">#</a></h2>
-<p>You can create an Excel template of a LinkML schema as follows:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gen-excel<span class="w"> </span>~/path/to/personinfo.yaml<span class="w"> </span>--output<span class="w"> </span>~/path/to/personinfo.xlsx
+<p>Entity-Relationship (ER) Diagrams are a graphical representation of the structure of a schema.</p>
+<p>LinkML uses the [Mermaid ER Diagram](<a class="reference external" href="https://mermaid-js.github.io/mermaid/#/entityRelationshipDiagram">https://mermaid-js.github.io/mermaid/#/entityRelationshipDiagram</a>)
+syntax to represent ER diagrams.</p>
+<p>To run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gen-erdiagram<span class="w"> </span>personinfo.yaml
 </pre></div>
 </div>
-<p>Currently, in the generated Excel workbook there can be one or more associated worksheets, each corresponding to classes
-from the LinkML schema.</p>
-<p>The generator also supports validation at the enum level. In that, each slot with a range property
-that is of enum type will have associated drop downs for all cells corresponding to that slot in the excel spreadsheet.</p>
-<p>Note: It works best for “flat” or denormalized schemas.</p>
-<p>Additional validation support to be added:</p>
+<p>This will generate a single markdown-ready ER diagram file, that can be embedded
+in a mkdocs or sphinx site, or included in a GitHub issue.</p>
+<p>By default, the output includes markdown fence blocks:</p>
+<div class="highlight-markdown notranslate"><div class="highlight"><pre><span></span><span class="sb">```mermaid</span>
+<span class="s">erDiagram</span>
+<span class="s">   ...</span>
+<span class="sb">```</span>
+</pre></div>
+</div>
+<p>To generate the mermaid without the fencing block, use <code class="docutils literal notranslate"><span class="pre">--format</span> <span class="pre">mermaid</span></code>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gen-erdiagram<span class="w"> </span>--format<span class="w"> </span>mermaid<span class="w"> </span>personinfo.yaml
+</pre></div>
+</div>
+</section>
+<section id="customization">
+<h2>Customization<a class="headerlink" href="#customization" title="Permalink to this heading">#</a></h2>
+<p>The default behavior is:</p>
+<ul>
+<li><p>Check if the schema has a <a class="reference external" href="https://w3id.org/linkml/tree_root">tree root</a> assigned</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>If assigned, then include this entity, and everything reachable from it</p></li>
+<li><p>If not assigned, then include all entities</p></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+<p>Here, “reachable” means reachable via <a class="reference external" href="https://w3id.org/linkml/inlined">inlined</a> references</p>
+<p>If you want to draw a diagram for a particular class, and all reachable nodes,
+you can pass these on the command line:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gen-erdiagram<span class="w"> </span>personinfo.yaml<span class="w"> </span>-c<span class="w"> </span>MedicalEvent
+</pre></div>
+</div>
+<p>This generates:</p>
+<p>By default, only inlined references are followed. State <code class="docutils literal notranslate"><span class="pre">--follow-references</span></code> to also
+follow non-inlined references.</p>
+<p>For large ER diagrams, to get a big-picture overview, you may want to exclude attributes:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gen-erdiagram<span class="w"> </span>personinfo.yaml<span class="w"> </span>-c<span class="w"> </span>Person<span class="w"> </span>--exclude-attributes
+</pre></div>
+</div>
+<p>Generates:</p>
+</section>
+<section id="limitations">
+<h2>Limitations<a class="headerlink" href="#limitations" title="Permalink to this heading">#</a></h2>
 <ul class="simple">
-<li><p>Color schemes to indicate whether a field is required or recommended</p></li>
-<li><p>Constraints based on the range of a slot, e.g. constraining int fields to be numbers</p></li>
-<li><p>Tooltip notes describing what each field indicates</p></li>
+<li><p>There is currently no way to directly generate PNGs/PDFs/etc from the mermaid code.
+You can use the [mermaid live editor](<a class="reference external" href="https://mermaid-js.github.io/mermaid-live-editor">https://mermaid-js.github.io/mermaid-live-editor</a>)
+to generate these.</p></li>
+<li><p>The mermaid diagrams are not yet directly integrated into the documentation generated
+by <code class="docutils literal notranslate"><span class="pre">gen-docs</span></code>.</p></li>
 </ul>
 </section>
 <section id="docs">
 <h2>Docs<a class="headerlink" href="#docs" title="Permalink to this heading">#</a></h2>
 <section id="command-line">
 <h3>Command Line<a class="headerlink" href="#command-line" title="Permalink to this heading">#</a></h3>
-<section id="gen-excel">
-<h4>gen-excel<a class="headerlink" href="#gen-excel" title="Permalink to this heading">#</a></h4>
-<p>Generate Excel representation of a LinkML model</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>gen-excel<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>YAMLFILE
+<section id="gen-erdiagram">
+<h4>gen-erdiagram<a class="headerlink" href="#gen-erdiagram" title="Permalink to this heading">#</a></h4>
+<p>Generate a mermaid ER diagram from a schema.</p>
+<p>By default, all entities traversable from the tree_root are included. If no tree_root is
+present, then all entities are included.</p>
+<p>To create an ER diagram for selected classes, use the –classes option.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>gen-erdiagram<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>YAMLFILE
 </pre></div>
 </div>
 <p class="rubric">Options</p>
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-excel-o">
-<span id="cmdoption-gen-excel-output"></span><span class="sig-name descname"><span class="pre">-o</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--output</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;output&gt;</span></span><a class="headerlink" href="#cmdoption-gen-excel-o" title="Permalink to this definition">#</a></dt>
-<dd><p>Name of Excel spreadsheet to be created</p>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-excel-V">
-<span id="cmdoption-gen-excel-v"></span><span id="cmdoption-gen-excel-version"></span><span class="sig-name descname"><span class="pre">-V</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--version</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-excel-V" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object std" id="cmdoption-gen-erdiagram-V">
+<span id="cmdoption-gen-erdiagram-v"></span><span id="cmdoption-gen-erdiagram-version"></span><span class="sig-name descname"><span class="pre">-V</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--version</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-erdiagram-V" title="Permalink to this definition">#</a></dt>
 <dd><p>Show the version and exit.</p>
 </dd></dl>
 
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-excel-f">
-<span id="cmdoption-gen-excel-format"></span><span class="sig-name descname"><span class="pre">-f</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--format</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;format&gt;</span></span><a class="headerlink" href="#cmdoption-gen-excel-f" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object std" id="cmdoption-gen-erdiagram-c">
+<span id="cmdoption-gen-erdiagram-classes"></span><span class="sig-name descname"><span class="pre">-c</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--classes</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;classes&gt;</span></span><a class="headerlink" href="#cmdoption-gen-erdiagram-c" title="Permalink to this definition">#</a></dt>
+<dd><p>List of classes to serialize</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-erdiagram-max-hops">
+<span class="sig-name descname"><span class="pre">--max-hops</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;max_hops&gt;</span></span><a class="headerlink" href="#cmdoption-gen-erdiagram-max-hops" title="Permalink to this definition">#</a></dt>
+<dd><p>Maximum number of hops</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-erdiagram-follow-references">
+<span id="cmdoption-gen-erdiagram-no-follow-references"></span><span class="sig-name descname"><span class="pre">--follow-references</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-follow-references</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-erdiagram-follow-references" title="Permalink to this definition">#</a></dt>
+<dd><p>If True, follow references even if not inlined</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-erdiagram-exclude-attributes">
+<span id="cmdoption-gen-erdiagram-no-exclude-attributes"></span><span class="sig-name descname"><span class="pre">--exclude-attributes</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-exclude-attributes</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-erdiagram-exclude-attributes" title="Permalink to this definition">#</a></dt>
+<dd><p>If True, do not include attributes in entities</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-erdiagram-structural">
+<span id="cmdoption-gen-erdiagram-no-structural"></span><span class="sig-name descname"><span class="pre">--structural</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-structural</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-erdiagram-structural" title="Permalink to this definition">#</a></dt>
+<dd><p>If True, then only the tree_root and entities reachable from the root are drawn</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-erdiagram-f">
+<span id="cmdoption-gen-erdiagram-format"></span><span class="sig-name descname"><span class="pre">-f</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--format</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;format&gt;</span></span><a class="headerlink" href="#cmdoption-gen-erdiagram-f" title="Permalink to this definition">#</a></dt>
 <dd><p>Output format</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">xlsx</span></code></p>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">markdown</span></code></p>
 </dd>
 <dt class="field-even">Options<span class="colon">:</span></dt>
-<dd class="field-even"><p>xlsx</p>
+<dd class="field-even"><p>markdown | mermaid</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-excel-metadata">
-<span id="cmdoption-gen-excel-no-metadata"></span><span class="sig-name descname"><span class="pre">--metadata</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-metadata</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-excel-metadata" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object std" id="cmdoption-gen-erdiagram-metadata">
+<span id="cmdoption-gen-erdiagram-no-metadata"></span><span class="sig-name descname"><span class="pre">--metadata</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-metadata</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-erdiagram-metadata" title="Permalink to this definition">#</a></dt>
 <dd><p>Include metadata in output</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
@@ -376,8 +434,8 @@ that is of enum type will have associated drop downs for all cells corresponding
 </dd></dl>
 
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-excel-useuris">
-<span id="cmdoption-gen-excel-metauris"></span><span class="sig-name descname"><span class="pre">--useuris</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--metauris</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-excel-useuris" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object std" id="cmdoption-gen-erdiagram-useuris">
+<span id="cmdoption-gen-erdiagram-metauris"></span><span class="sig-name descname"><span class="pre">--useuris</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--metauris</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-erdiagram-useuris" title="Permalink to this definition">#</a></dt>
 <dd><p>Include metadata in output</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
@@ -387,14 +445,14 @@ that is of enum type will have associated drop downs for all cells corresponding
 </dd></dl>
 
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-excel-im">
-<span id="cmdoption-gen-excel-importmap"></span><span class="sig-name descname"><span class="pre">-im</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--importmap</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;importmap&gt;</span></span><a class="headerlink" href="#cmdoption-gen-excel-im" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object std" id="cmdoption-gen-erdiagram-im">
+<span id="cmdoption-gen-erdiagram-importmap"></span><span class="sig-name descname"><span class="pre">-im</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--importmap</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;importmap&gt;</span></span><a class="headerlink" href="#cmdoption-gen-erdiagram-im" title="Permalink to this definition">#</a></dt>
 <dd><p>Import mapping file</p>
 </dd></dl>
 
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-excel-log_level">
-<span id="cmdoption-gen-excel-log-level"></span><span class="sig-name descname"><span class="pre">--log_level</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;log_level&gt;</span></span><a class="headerlink" href="#cmdoption-gen-excel-log_level" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object std" id="cmdoption-gen-erdiagram-log_level">
+<span id="cmdoption-gen-erdiagram-log-level"></span><span class="sig-name descname"><span class="pre">--log_level</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;log_level&gt;</span></span><a class="headerlink" href="#cmdoption-gen-erdiagram-log_level" title="Permalink to this definition">#</a></dt>
 <dd><p>Logging level</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
@@ -407,27 +465,27 @@ that is of enum type will have associated drop downs for all cells corresponding
 </dd></dl>
 
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-excel-0">
-<span id="cmdoption-gen-excel-verbose"></span><span class="sig-name descname"><span class="pre">-v</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--verbose</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-excel-0" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object std" id="cmdoption-gen-erdiagram-0">
+<span id="cmdoption-gen-erdiagram-verbose"></span><span class="sig-name descname"><span class="pre">-v</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--verbose</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-erdiagram-0" title="Permalink to this definition">#</a></dt>
 <dd><p>verbosity</p>
 </dd></dl>
 
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-excel-mergeimports">
-<span id="cmdoption-gen-excel-no-mergeimports"></span><span class="sig-name descname"><span class="pre">--mergeimports</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-mergeimports</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-excel-mergeimports" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object std" id="cmdoption-gen-erdiagram-mergeimports">
+<span id="cmdoption-gen-erdiagram-no-mergeimports"></span><span class="sig-name descname"><span class="pre">--mergeimports</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-mergeimports</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-erdiagram-mergeimports" title="Permalink to this definition">#</a></dt>
 <dd><p>Merge imports into source file (default=mergeimports)</p>
 </dd></dl>
 
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-excel-stacktrace">
-<span id="cmdoption-gen-excel-no-stacktrace"></span><span class="sig-name descname"><span class="pre">--stacktrace</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-stacktrace</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-excel-stacktrace" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object std" id="cmdoption-gen-erdiagram-stacktrace">
+<span id="cmdoption-gen-erdiagram-no-stacktrace"></span><span class="sig-name descname"><span class="pre">--stacktrace</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-stacktrace</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-erdiagram-stacktrace" title="Permalink to this definition">#</a></dt>
 <dd><p>Print a stack trace when an error occurs (default=stacktrace)</p>
 </dd></dl>
 
 <p class="rubric">Arguments</p>
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-excel-arg-YAMLFILE">
-<span id="cmdoption-gen-excel-arg-yamlfile"></span><span class="sig-name descname"><span class="pre">YAMLFILE</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-excel-arg-YAMLFILE" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object std" id="cmdoption-gen-erdiagram-arg-YAMLFILE">
+<span id="cmdoption-gen-erdiagram-arg-yamlfile"></span><span class="sig-name descname"><span class="pre">YAMLFILE</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-erdiagram-arg-YAMLFILE" title="Permalink to this definition">#</a></dt>
 <dd><p>Required argument</p>
 </dd></dl>
 
@@ -435,6 +493,49 @@ that is of enum type will have associated drop downs for all cells corresponding
 </section>
 <section id="code">
 <h3>Code<a class="headerlink" href="#code" title="Permalink to this heading">#</a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="linkml.generators.erdiagramgen.ERDiagramGenerator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linkml.generators.erdiagramgen.</span></span><span class="sig-name descname"><span class="pre">ERDiagramGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">schema:</span> <span class="pre">~typing.Union[str,</span> <span class="pre">~typing.TextIO,</span> <span class="pre">~linkml_runtime.linkml_model.meta.SchemaDefinition,</span> <span class="pre">~linkml.utils.generator.Generator],</span> <span class="pre">schemaview:</span> <span class="pre">~typing.Optional[~linkml_runtime.utils.schemaview.SchemaView]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">format:</span> <span class="pre">~typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">metadata:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">useuris:</span> <span class="pre">~typing.Optional[bool]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">log_level:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">30,</span> <span class="pre">mergeimports:</span> <span class="pre">~typing.Optional[bool]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">source_file_date:</span> <span class="pre">~typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">source_file_size:</span> <span class="pre">~typing.Optional[int]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">logger:</span> <span class="pre">~typing.Optional[~logging.Logger]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">verbose:</span> <span class="pre">~typing.Optional[bool]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">output:</span> <span class="pre">~typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">namespaces:</span> <span class="pre">~typing.Optional[~linkml_runtime.utils.namespaces.Namespaces]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">directory_output:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False,</span> <span class="pre">base_dir:</span> <span class="pre">~typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">metamodel_name_map:</span> <span class="pre">~typing.Optional[~typing.Dict[str,</span> <span class="pre">str]]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">importmap:</span> <span class="pre">~typing.Optional[~typing.Union[str,</span> <span class="pre">~typing.Mapping[str,</span> <span class="pre">str]]]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">emit_prefixes:</span> <span class="pre">~typing.Set[str]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">metamodel:</span> <span class="pre">~typing.Optional[~linkml.utils.schemaloader.SchemaLoader]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">stacktrace:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False,</span> <span class="pre">structural:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True,</span> <span class="pre">exclude_attributes:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False,</span> <span class="pre">genmeta:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">gen_classvars:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">gen_slots:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">no_types_dir:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">use_slot_uris:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">**_kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/linkml/generators/erdiagramgen.html#ERDiagramGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.erdiagramgen.ERDiagramGenerator" title="Permalink to this definition">#</a></dt>
+<dd><p>A generator for serializing schemas as Entity-Relationship diagrams.</p>
+<p>Currently this generates diagrams in mermaid syntax, but in future
+this could easily be extended to have for example a direct SVG or PNG
+generator using PyGraphViz, similar to erdantic.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml.generators.erdiagramgen.ERDiagramGenerator.serialize">
+<span class="sig-name descname"><span class="pre">serialize</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/linkml/generators/erdiagramgen.html#ERDiagramGenerator.serialize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.erdiagramgen.ERDiagramGenerator.serialize" title="Permalink to this definition">#</a></dt>
+<dd><p>Serialize a schema as an ER Diagram.</p>
+<p>If a tree_root is present in the schema, then only Entities traversable
+from here will be included. Otherwise, all Entities will be included.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>mermaid string</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml.generators.erdiagramgen.ERDiagramGenerator.serialize_classes">
+<span class="sig-name descname"><span class="pre">serialize_classes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">class_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ClassDefinitionName</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">follow_references</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_hops</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/linkml/generators/erdiagramgen.html#ERDiagramGenerator.serialize_classes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.erdiagramgen.ERDiagramGenerator.serialize_classes" title="Permalink to this definition">#</a></dt>
+<dd><p>Serialize a list of classes as an ER Diagram.</p>
+<p>This will also traverse the reference graph and include any Entities reachable from the
+specified classes.</p>
+<p>By default, all reachable Entities are included, unless max_hops is specified.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>class_names</strong> – initial seed</p></li>
+<li><p><strong>follow_references</strong> – if True, follow references even if not inlined</p></li>
+<li><p><strong>max_hops</strong> – maximum number of hops to follow references</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 </section>
 </section>
@@ -444,23 +545,23 @@ that is of enum type will have associated drop downs for all cells corresponding
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="../howtos/index.html">
+          <a class="next-page" href="project-generator.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">How-to Guides</div>
+                <div class="title">Project Generator</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="terminusdb.html">
+          <a class="prev-page" href="markdown.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">TerminusDB</div>
+                <div class="title">Markdown</div>
                 
               </div>
             </a>
@@ -494,15 +595,23 @@ that is of enum type will have associated drop downs for all cells corresponding
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">Excel Spreadsheet</a><ul>
-<li><a class="reference internal" href="#example-output">Example Output</a></li>
+<li><a class="reference internal" href="#">ER Diagrams</a><ul>
 <li><a class="reference internal" href="#overview">Overview</a></li>
+<li><a class="reference internal" href="#customization">Customization</a></li>
+<li><a class="reference internal" href="#limitations">Limitations</a></li>
 <li><a class="reference internal" href="#docs">Docs</a><ul>
 <li><a class="reference internal" href="#command-line">Command Line</a><ul>
-<li><a class="reference internal" href="#gen-excel">gen-excel</a></li>
+<li><a class="reference internal" href="#gen-erdiagram">gen-erdiagram</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#code">Code</a></li>
+<li><a class="reference internal" href="#code">Code</a><ul>
+<li><a class="reference internal" href="#linkml.generators.erdiagramgen.ERDiagramGenerator"><code class="docutils literal notranslate"><span class="pre">ERDiagramGenerator</span></code></a><ul>
+<li><a class="reference internal" href="#linkml.generators.erdiagramgen.ERDiagramGenerator.serialize"><code class="docutils literal notranslate"><span class="pre">ERDiagramGenerator.serialize()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.erdiagramgen.ERDiagramGenerator.serialize_classes"><code class="docutils literal notranslate"><span class="pre">ERDiagramGenerator.serialize_classes()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
