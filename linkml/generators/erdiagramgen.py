@@ -152,7 +152,7 @@ class ERDiagramGenerator(Generator):
             return self.serialize_classes(structural_roots, follow_references=True)
         else:
             diagram = ERDiagram()
-            for cn in sv.all_classes(imports=False):
+            for cn in sv.all_classes():
                 self.add_class(cn, diagram)
             return self.serialize_diagram(diagram)
 
@@ -220,7 +220,7 @@ class ERDiagramGenerator(Generator):
             # TODO: schemaview should infer this
             if slot.range is None:
                 slot.range = sv.schema.default_range or "string"
-            if slot.range in sv.all_classes(imports=False):
+            if slot.range in sv.all_classes():
                 self.add_relationship(entity, slot, diagram)
             else:
                 self.add_attribute(entity, slot)
