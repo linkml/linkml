@@ -1,5 +1,22 @@
 ## Contribution Guidelines
 
+### GitHub Best Practices 
+
+#### PRs 
+
+* Commit early and often
+* PRs should be in a DRAFT state until they are ready for review and tests are passing.
+  * PRs should be reviewed by at least one other person.
+  * All automated tests should be passing via GitHub actions before a code review is requested.
+* Make a DRAFT PR for your branch even if you've just started working on something.  This gives other developers
+insight into your work and allows them to provide feedback early on.
+* In general, each PR should be associated with a ticket.
+
+#### Ticket/Issue Creation
+
+
+
+
 ### LinkML Testing Framework
 
 * The LinkML test suite can be found in the [tests](../../tests/) folder. The tests are written under specific subfolders within the main aggregated [tests](../../tests/) suite. 
@@ -34,13 +51,15 @@ poetry run pytest tests/test_issues/test_linkml_issue_NNN.py
 ```
 You can run the full test suite in the following way:
 
-```
+```bash
 poetry run python -m unittest discover
 ```
 
-* When you create a Pull Request with your unit test on the linkml repo, the a GitHub Action run will be set off which runs the entire test suite with the new test case that you added, on that test case branch too.
+* When you create a Pull Request with your unit test on the linkml repo, a GitHub Action run will be set off which 
+runs the entire test suite with the new test case that you added, on that test case branch too.
 
-Note: You will see a number of issues which are named `test_issue_NNN.py`. The numbers and convention for those issues are with reference to the old *biolinkml* issue numbering convention.
+Note: You will see a number of issues which are named `test_issue_NNN.py`. The numbers and convention for those 
+issues are with reference to the old *biolinkml* issue numbering convention.
 
 #### General Tips
 
