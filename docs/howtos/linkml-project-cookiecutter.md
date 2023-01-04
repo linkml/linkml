@@ -12,7 +12,7 @@ In your poetry virtual environment:
 poetry add cruft
 ```
 
-### Step 3:  Use cruft to create your brand new LinkML project:
+### Use cruft to create your brand new LinkML project:
 
 In your poetry virtual environment:
 
@@ -24,16 +24,9 @@ cruft create https://github.com/linkml/linkml-project-cookiecutter
 Answer the prompted questions to customize your project.  More details on the prompts and how to answer 
 them can be found [here]((https://github.com/linkml/linkml-project-cookiecutter/blob/main/README.md)).
 
-### Step 4:  Build your LinkML project
+### Build your LinkML project
 
 ```bash
 cd linkml-projects/my-awesome-schema  # using the folder example above
 make setup
-```
-
-### Step 5: Edit your model files
-
-Edit the schema (the .yaml file) in the linkml-projects/my-awesome-schema/src/my_awesome_schema/schema folder
-```bash
-nano src/my_awesome_schema/schema/my_awesome_schema.yaml
 ```
