@@ -60,6 +60,7 @@ published on static hosting sites.
 
    markdown
    docgen
+   erdiagram
    yuml
    project-generator
    
