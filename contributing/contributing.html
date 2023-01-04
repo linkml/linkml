@@ -5,10 +5,10 @@
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="FAQ" href="../faq/index.html" /><link rel="prev" title="LinkML specification" href="../specifications/linkml-spec.html" />
 
-    <meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
+    <!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
         <title>Contribution Guidelines - linkml documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     
     
@@ -152,7 +152,7 @@
   <span class="sidebar-brand-text">linkml  documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
-  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form>
@@ -226,7 +226,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../howtos/yq-for-schemas.html">Using yq for querying and manipulating schemas</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtos/using-jsonld.html">Using JSON-LD</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtos/port-linkml.html">Porting LinkML tools to other programming languages</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../howtos/linkml-ws.html">LinkML Workspace Generator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtos/linkml-project-cookiecutter.html">LinkML Project Cookiecutter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtos/model-measurements.html">How to model quantities and measurements</a></li>
 </ul>
 </li>
@@ -333,13 +333,19 @@
 </pre></div>
 </div>
 <p>You can run the full test suite in the following way:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">poetry</span> <span class="n">run</span> <span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">unittest</span> <span class="n">discover</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>poetry<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>-m<span class="w"> </span>unittest<span class="w"> </span>discover
+</pre></div>
+</div>
+<p>or via a shortcut Makefile target:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make<span class="w"> </span><span class="nb">test</span>
 </pre></div>
 </div>
 <ul class="simple">
-<li><p>When you create a Pull Request with your unit test on the linkml repo, the a GitHub Action run will be set off which runs the entire test suite with the new test case that you added, on that test case branch too.</p></li>
+<li><p>When you create a Pull Request with your unit test on the linkml repo, a GitHub Action run will be set off which
+runs the entire test suite with the new test case that you added, on that test case branch too.</p></li>
 </ul>
-<p>Note: You will see a number of issues which are named <code class="docutils literal notranslate"><span class="pre">test_issue_NNN.py</span></code>. The numbers and convention for those issues are with reference to the old <em>biolinkml</em> issue numbering convention.</p>
+<p>Note: You will see a number of issues which are named <code class="docutils literal notranslate"><span class="pre">test_issue_NNN.py</span></code>. The numbers and convention for those
+issues are with reference to the old <em>biolinkml</em> issue numbering convention.</p>
 </section>
 <section id="general-tips">
 <h3>General Tips<a class="headerlink" href="#general-tips" title="Permalink to this heading">#</a></h3>
@@ -392,6 +398,41 @@
 <p>After the release is created, the GitHub action will be triggered to publish to PyPI. The release version will be used to create the PyPI package.</p>
 <p>If the PyPI release failed, make fixes, <a class="reference external" href="https://docs.github.com/en/enterprise/2.16/user/github/administering-a-repository/editing-and-deleting-releases#deleting-a-release">delete</a> the GitHub release, and recreate a release with the same version again.</p>
 </section>
+<section id="github-best-practices">
+<h2>GitHub Best Practices<a class="headerlink" href="#github-best-practices" title="Permalink to this heading">#</a></h2>
+<section id="prs">
+<h3>PRs<a class="headerlink" href="#prs" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>PRs should be in a DRAFT state until they are ready for review and tests are passing.</p></li>
+<li><p>PRs should be reviewed by at least one other person.</p>
+<ul>
+<li><p>All automated tests should be passing via GitHub actions before a code review is requested.</p></li>
+<li><p>Reviews can be requested of any contributing member of the LinkML organization.</p></li>
+</ul>
+</li>
+<li><p>Make a DRAFT PR for your branch even if you’ve just started working on something.  This gives other developers
+insight into your work and allows them to provide feedback early on.</p></li>
+<li><p>In general, each PR should be associated with a ticket.</p></li>
+</ul>
+</section>
+<section id="ticket-issue-creation">
+<h3>Ticket/Issue Creation<a class="headerlink" href="#ticket-issue-creation" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Search existing issues before creating a new one.</p></li>
+<li><p>Give your issue a short but actionable title</p></li>
+<li><p>Describe the problem and the context and include a repeatable example.</p></li>
+<li><p>Clearly state what needs to be done to close the ticket.</p></li>
+</ul>
+</section>
+<section id="example-of-a-good-issue">
+<h3>Example of a Good Issue:<a class="headerlink" href="#example-of-a-good-issue" title="Permalink to this heading">#</a></h3>
+<p><img alt="" src="../_images/a_good_issue.png" /></p>
+</section>
+<section id="example-of-a-bad-issue">
+<h3>Example of a Bad Issue:<a class="headerlink" href="#example-of-a-bad-issue" title="Permalink to this heading">#</a></h3>
+<p><img alt="" src="../_images/a_bad_issue.png" /></p>
+</section>
+</section>
 </section>
 
         </article>
@@ -431,9 +472,7 @@
             
           </div>
           <div class="right-details">
-            <div class="icons">
-              
-            </div>
+            
           </div>
         </div>
         
@@ -459,6 +498,13 @@
 </ul>
 </li>
 <li><a class="reference internal" href="#release-to-pypi">Release to PyPI</a></li>
+<li><a class="reference internal" href="#github-best-practices">GitHub Best Practices</a><ul>
+<li><a class="reference internal" href="#prs">PRs</a></li>
+<li><a class="reference internal" href="#ticket-issue-creation">Ticket/Issue Creation</a></li>
+<li><a class="reference internal" href="#example-of-a-good-issue">Example of a Good Issue:</a></li>
+<li><a class="reference internal" href="#example-of-a-bad-issue">Example of a Bad Issue:</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

@@ -12,6 +12,6 @@ Some of these guides are works in progress
    yq-for-schemas
    using-jsonld
    port-linkml
-   linkml-ws
+   linkml-project-cookiecutter
    model-measurements
 

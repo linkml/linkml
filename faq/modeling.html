@@ -5,10 +5,10 @@
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="FAQ: Tools" href="tools.html" /><link rel="prev" title="FAQ: Why LinkML" href="why-linkml.html" />
 
-    <meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
+    <!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
         <title>FAQ: Modeling - linkml documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     
     
@@ -152,7 +152,7 @@
   <span class="sidebar-brand-text">linkml  documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
-  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form>
@@ -226,7 +226,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../howtos/yq-for-schemas.html">Using yq for querying and manipulating schemas</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtos/using-jsonld.html">Using JSON-LD</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtos/port-linkml.html">Porting LinkML tools to other programming languages</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../howtos/linkml-ws.html">LinkML Workspace Generator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtos/linkml-project-cookiecutter.html">LinkML Project Cookiecutter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtos/model-measurements.html">How to model quantities and measurements</a></li>
 </ul>
 </li>
@@ -347,17 +347,17 @@ maps to string behind the scenes. But this provides additional cues,
 e.g. that the value of this field is intended to be human-readable
 text.</p>
 <p>An example of a type section might be:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">types</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">CountType</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">xsd:integer</span><span class="w"></span>
-<span class="w">    </span><span class="nt">base</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">int</span><span class="w"></span>
-<span class="w">    </span><span class="nt">minimum_value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span><span class="w"></span>
-<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">An integer that specifies cardinality</span><span class="w"></span>
-<span class="w">  </span><span class="nt">SymbolType</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">xsd:string</span><span class="w"></span>
-<span class="w">    </span><span class="nt">base</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">str</span><span class="w"></span>
-<span class="w">    </span><span class="nt">pattern</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;^\\w+$&quot;</span><span class="w"></span>
-<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">A symbol is a string used as a shorthand identifier that is restriced to a subset of characters</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">types</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">CountType</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">xsd:integer</span>
+<span class="w">    </span><span class="nt">base</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">int</span>
+<span class="w">    </span><span class="nt">minimum_value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
+<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">An integer that specifies cardinality</span>
+<span class="w">  </span><span class="nt">SymbolType</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">xsd:string</span>
+<span class="w">    </span><span class="nt">base</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">str</span>
+<span class="w">    </span><span class="nt">pattern</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;^\\w+$&quot;</span>
+<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">A symbol is a string used as a shorthand identifier that is restriced to a subset of characters</span>
 </pre></div>
 </div>
 <p>Some applications may choose to interpret this in particular ways. E.g. you may want to define all narrative text fields as being amenable to spellchecking, or machine learning natual language processing, or special kinds of indexing in ElasticSearch/Solr</p>
@@ -382,29 +382,29 @@ text.</p>
 <h3>How do I constrain a slot to a fixed set of ontology terms?<a class="headerlink" href="#how-do-i-constrain-a-slot-to-a-fixed-set-of-ontology-terms" title="Permalink to this heading">#</a></h3>
 <p>You can do this using an <a class="reference external" href="https://w3id.org/linkml/enum">enum</a>.</p>
 <p>For example, if we wanted to model a DNA sequence variant type as being a fixed set of terms from SO:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">prefixes</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">SO</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://purl.obolibrary.org/obo/SO_</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">prefixes</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">SO</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://purl.obolibrary.org/obo/SO_</span>
 
-<span class="nt">classes</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">variant</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">slots</span><span class="p">:</span><span class="w"></span>
-<span class="w">       </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">...</span><span class="w"></span>
-<span class="w">       </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">variant type</span><span class="w"></span>
+<span class="nt">classes</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">variant</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">slots</span><span class="p">:</span>
+<span class="w">       </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">...</span>
+<span class="w">       </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">variant type</span>
 <span class="w">        </span>
-<span class="nt">slots</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">variant type</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">variant_type_enum</span><span class="w"></span>
-<span class="w">  </span><span class="nt">...</span><span class="p">:</span><span class="w"></span>
+<span class="nt">slots</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">variant type</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">variant_type_enum</span>
+<span class="w">  </span><span class="nt">...</span><span class="p">:</span>
 
-<span class="nt">enums</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">variant_type_enum</span><span class="p">:</span><span class="w"></span>
+<span class="nt">enums</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">variant_type_enum</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">permissible_values</span><span class="p">:</span><span class="w"> </span>
-<span class="w">      </span><span class="nt">point_mutation</span><span class="p">:</span><span class="w"></span>
-<span class="w">          </span><span class="nt">meaning</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SO:12345</span><span class="w"></span>
-<span class="w">      </span><span class="nt">deletion</span><span class="p">:</span><span class="w"></span>
-<span class="w">          </span><span class="nt">meaning</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SO:24681</span><span class="w"></span>
+<span class="w">      </span><span class="nt">point_mutation</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">meaning</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SO:12345</span>
+<span class="w">      </span><span class="nt">deletion</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">meaning</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SO:24681</span>
 <span class="w">      </span><span class="nt">insertion</span><span class="p">:</span><span class="w"> </span>
-<span class="w">          </span><span class="nt">meaning</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SO:36912</span><span class="w"></span>
+<span class="w">          </span><span class="nt">meaning</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SO:36912</span>
 </pre></div>
 </div>
 <p>Note that we are mapping each permissible value to an ontology term</p>
@@ -420,89 +420,89 @@ text.</p>
 to a very large vocabulary - for example, any job code from an
 occupation ontology, any body part from an anatomical ontology.</p>
 <p>In this case, you can use <em>dynamic enums</em>:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">slots</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">cell_type</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">CellTypeEnum</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">slots</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">cell_type</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">CellTypeEnum</span>
 
-<span class="nt">enums</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">CellTypeEnum</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">reachable_from</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">source_ontology</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">obo:cl</span><span class="w"></span>
-<span class="w">      </span><span class="nt">source_nodes</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">CL:0000000</span><span class="w"></span>
-<span class="w">      </span><span class="nt">include_self</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span><span class="w"></span>
-<span class="w">      </span><span class="nt">relationship_types</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">rdfs:subClassOf</span><span class="w"></span>
+<span class="nt">enums</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">CellTypeEnum</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">reachable_from</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">source_ontology</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">obo:cl</span>
+<span class="w">      </span><span class="nt">source_nodes</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">CL:0000000</span>
+<span class="w">      </span><span class="nt">include_self</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">      </span><span class="nt">relationship_types</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">rdfs:subClassOf</span>
 </pre></div>
 </div>
 <p>This restricts to any subclass (transitive, non-self) of the term <a class="reference external" href="http://purl.obolibrary.org/obo/CL_0000000">cell</a> in the cell ontology.</p>
 <p>An alternative pattern is to use a regular expression:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">types</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">CellTypeId</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">typeof</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uriorcurie</span><span class="w"></span>
-<span class="w">    </span><span class="nt">pattern</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;^CL:\d+$&#39;</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">types</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">CellTypeId</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">typeof</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uriorcurie</span>
+<span class="w">    </span><span class="nt">pattern</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;^CL:\d+$&#39;</span>
 
-<span class="nt">slots</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">cell_type</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">CellTypeId</span><span class="w"></span>
+<span class="nt">slots</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">cell_type</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">CellTypeId</span>
 </pre></div>
 </div>
 <p>However, this has a number of limitations</p>
 <p>You can also model ontology terms directly, e.g</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">default_prefix</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_schema</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">default_prefix</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_schema</span>
 
-<span class="nt">classes</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">variant</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">slots</span><span class="p">:</span><span class="w"></span>
-<span class="w">       </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">variant type</span><span class="w"></span>
-<span class="w">  </span><span class="nt">ontology term</span><span class="p">:</span><span class="w"></span>
-<span class="w">     </span><span class="nt">slots</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">name</span><span class="w"></span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">id</span><span class="w"></span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ontology namespace</span><span class="w"></span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">synonyms</span><span class="w"></span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">secondary ids</span><span class="w"></span>
+<span class="nt">classes</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">variant</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">slots</span><span class="p">:</span>
+<span class="w">       </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">variant type</span>
+<span class="w">  </span><span class="nt">ontology term</span><span class="p">:</span>
+<span class="w">     </span><span class="nt">slots</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">name</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">id</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ontology namespace</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">synonyms</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">secondary ids</span>
 
 
-<span class="nt">slots</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">variant type</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ontology term</span><span class="w"></span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">id</span><span class="p">:</span><span class="w"></span>
-<span class="w">     </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uriorcurie</span><span class="w"></span>
-<span class="w">  </span><span class="nt">ontology namespace</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">synonyms</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">secondary ids</span><span class="p">:</span><span class="w"></span>
+<span class="nt">slots</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">variant type</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ontology term</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">id</span><span class="p">:</span>
+<span class="w">     </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uriorcurie</span>
+<span class="w">  </span><span class="nt">ontology namespace</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">synonyms</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">secondary ids</span><span class="p">:</span>
 </pre></div>
 </div>
 <p>declare id_prefixes for a class that constrain the kinds of identifiers used to describe the class</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">default_prefix</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_schema</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">default_prefix</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_schema</span>
 
-<span class="nt">classes</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">variant</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">slots</span><span class="p">:</span><span class="w"></span>
-<span class="w">       </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">variant type</span><span class="w"></span>
-<span class="w">  </span><span class="nt">sequence ontology term</span><span class="p">:</span><span class="w"></span>
-<span class="w">     </span><span class="nt">slots</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">name</span><span class="w"></span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">id</span><span class="w"></span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ontology namespace</span><span class="w"></span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">synonyms</span><span class="w"></span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">secondary ids</span><span class="w"></span>
-<span class="w">  </span><span class="w w-Error">  </span><span class="nt">id_prefixes</span><span class="p">:</span><span class="w"></span>
-<span class="w">       </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SO</span><span class="w"></span>
+<span class="nt">classes</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">variant</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">slots</span><span class="p">:</span>
+<span class="w">       </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">variant type</span>
+<span class="w">  </span><span class="nt">sequence ontology term</span><span class="p">:</span>
+<span class="w">     </span><span class="nt">slots</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">name</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">id</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ontology namespace</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">synonyms</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">secondary ids</span>
+<span class="w">  </span><span class="w w-Error">  </span><span class="nt">id_prefixes</span><span class="p">:</span>
+<span class="w">       </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SO</span>
 
 
-<span class="nt">slots</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">variant type</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sequence ontology term</span><span class="w"></span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">id</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">identifier</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
-<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uriorcurie</span><span class="w"></span>
-<span class="w">  </span><span class="nt">ontology namespace</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">synonyms</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">secondary ids</span><span class="p">:</span><span class="w"></span>
+<span class="nt">slots</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">variant type</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sequence ontology term</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">id</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">identifier</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uriorcurie</span>
+<span class="w">  </span><span class="nt">ontology namespace</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">synonyms</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">secondary ids</span><span class="p">:</span>
 </pre></div>
 </div>
 </section>
@@ -521,10 +521,10 @@ occupation ontology, any body part from an anatomical ontology.</p>
 <h2>Can I reuse regular expression patterns?<a class="headerlink" href="#can-i-reuse-regular-expression-patterns" title="Permalink to this heading">#</a></h2>
 <p>Yes, you can do this via the <a class="reference external" href="https://w3id.org/linkml/structured_pattern">structured_pattern</a> metaslot</p>
 <p>First you declare the patterns to be reused in the top level of your schema:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">settings</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">float</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;\\d+[\\.\\d+]&quot;</span><span class="w"></span>
-<span class="w">  </span><span class="nt">unit</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;\\S+&quot;</span><span class="w"></span>
-<span class="w">  </span><span class="nt">email</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;\\S+@\\S+{\\.\\w}+&quot;</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">settings</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">float</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;\\d+[\\.\\d+]&quot;</span>
+<span class="w">  </span><span class="nt">unit</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;\\S+&quot;</span>
+<span class="w">  </span><span class="nt">email</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;\\S+@\\S+{\\.\\w}+&quot;</span>
 </pre></div>
 </div>
 <p>You can then use this inside a structured pattern:</p>
@@ -556,12 +556,12 @@ occupation ontology, any body part from an anatomical ontology.</p>
 schemas. However, when translating to other formalisms such as
 JSON-Schema, RDF, Python then those naming conventions are applied.</p>
 <p>For example, if you define a class:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">default_prefix</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_schema</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">default_prefix</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_schema</span>
 
-<span class="nt">classes</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">my class</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">my slot</span><span class="p">:</span><span class="w"></span>
+<span class="nt">classes</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">my class</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">my slot</span><span class="p">:</span>
 </pre></div>
 </div>
 <p>Then this will translate as follows:</p>
@@ -582,23 +582,23 @@ JSON-Schema, RDF, Python then those naming conventions are applied.</p>
 <p>Note in the RDF/OWL representation, seperate <code class="docutils literal notranslate"><span class="pre">rdfs:label</span></code> triples will be generated retaining the original human-friendly name.</p>
 <p>This has the advantage of keeping human-friendly nomenclature in the appropriate places without specifying redundant computer names and human names</p>
 <p>However, the autotmatic translation can be confusing, so some schemas opt to follow standard naming conventions in the schema:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">default_prefix</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_schema</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">default_prefix</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_schema</span>
 
-<span class="nt">classes</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">MyClass</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">my_slot</span><span class="p">:</span><span class="w"></span>
+<span class="nt">classes</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">MyClass</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">my_slot</span><span class="p">:</span>
 </pre></div>
 </div>
 <p>you have the option of specifying human-friendly <em>titles</em> for each element:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">default_prefix</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_schema</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">default_prefix</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_schema</span>
 
-<span class="nt">classes</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">MyClass</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my class</span><span class="w"></span>
-<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">my_slot</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my slot</span><span class="w"></span>
+<span class="nt">classes</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">MyClass</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my class</span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">my_slot</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my slot</span>
 </pre></div>
 </div>
 <p>Note that one current limitation of the LinkML generator framework is
@@ -620,76 +620,76 @@ Python keyword, and the generated python code will raise errors. For now the rec
 <li><p>via objects that capture the two objects and the relationship between those concepts.</p></li>
 </ul>
 <p>via slots that dictate the link via domain and range constraints</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">default_prefix</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_schema</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">default_prefix</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_schema</span>
 
-<span class="nt">classes</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">allele</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">slots</span><span class="p">:</span><span class="w"></span>
-<span class="w">       </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">allele of</span><span class="w"></span>
-<span class="w">  </span><span class="nt">gene</span><span class="p">:</span><span class="w"></span>
+<span class="nt">classes</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">allele</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">slots</span><span class="p">:</span>
+<span class="w">       </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">allele of</span>
+<span class="w">  </span><span class="nt">gene</span><span class="p">:</span>
 <span class="w">     </span>
-<span class="nt">slots</span><span class="p">:</span><span class="w"></span>
+<span class="nt">slots</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">allele of</span><span class="p">:</span><span class="w"> </span>
-<span class="w">     </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uriorcurie</span><span class="w"></span>
-<span class="w">     </span><span class="nt">domain</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">allele</span><span class="w"></span>
-<span class="w">     </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">gene</span><span class="w"></span>
+<span class="w">     </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uriorcurie</span>
+<span class="w">     </span><span class="nt">domain</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">allele</span>
+<span class="w">     </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">gene</span>
 </pre></div>
 </div>
 <p>via objects that capture the two objects and the relationship between those concepts</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">default_prefix</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_schema</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">default_prefix</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_schema</span>
 
-<span class="nt">classes</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">allele</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">gene</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">allele gene relation</span><span class="p">:</span><span class="w"></span>
-<span class="w">     </span><span class="nt">slots</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">subject</span><span class="w"></span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">object</span><span class="w"></span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">predicate</span><span class="w"></span>
+<span class="nt">classes</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">allele</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">gene</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">allele gene relation</span><span class="p">:</span>
+<span class="w">     </span><span class="nt">slots</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">subject</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">object</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">predicate</span>
 <span class="w">      </span>
-<span class="nt">slots</span><span class="p">:</span><span class="w"></span>
+<span class="nt">slots</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">predicate</span><span class="p">:</span><span class="w"> </span>
-<span class="w">     </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">predicate_enum</span><span class="w"></span>
-<span class="w">  </span><span class="nt">subject</span><span class="p">:</span><span class="w"></span>
-<span class="w">     </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">allele</span><span class="w"></span>
-<span class="w">  </span><span class="nt">object</span><span class="p">:</span><span class="w"></span>
-<span class="w">     </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">gene</span><span class="w"></span>
+<span class="w">     </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">predicate_enum</span>
+<span class="w">  </span><span class="nt">subject</span><span class="p">:</span>
+<span class="w">     </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">allele</span>
+<span class="w">  </span><span class="nt">object</span><span class="p">:</span>
+<span class="w">     </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">gene</span>
 
-<span class="nt">enums</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">predicate_enum</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">permissible_values</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">allele_of</span><span class="p">:</span><span class="w"></span>
+<span class="nt">enums</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">predicate_enum</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">permissible_values</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">allele_of</span><span class="p">:</span>
 </pre></div>
 </div>
 <p>You can further annotate your schema with information that two of
 your classes represent <em>entities</em> and one represents a <em>relationship</em>:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">default_prefix</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_schema</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">default_prefix</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_schema</span>
 
-<span class="nt">classes</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">allele</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">gene</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">allele gene relation</span><span class="p">:</span><span class="w"></span>
-<span class="w">     </span><span class="nt">represents_relationship</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
-<span class="w">     </span><span class="nt">slots</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">subject</span><span class="w"></span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">object</span><span class="w"></span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">predicate</span><span class="w"></span>
+<span class="nt">classes</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">allele</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">gene</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">allele gene relation</span><span class="p">:</span>
+<span class="w">     </span><span class="nt">represents_relationship</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">     </span><span class="nt">slots</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">subject</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">object</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">predicate</span>
 <span class="w">      </span>
-<span class="nt">slots</span><span class="p">:</span><span class="w"></span>
+<span class="nt">slots</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">predicate</span><span class="p">:</span><span class="w"> </span>
-<span class="w">     </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">predicate_enum</span><span class="w"></span>
-<span class="w">     </span><span class="nt">relational_role</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">PREDICATE</span><span class="w"></span>
-<span class="w">  </span><span class="nt">subject</span><span class="p">:</span><span class="w"></span>
-<span class="w">     </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">allele</span><span class="w"></span>
-<span class="w">     </span><span class="nt">relational_role</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SUBJECT</span><span class="w"></span>
-<span class="w">  </span><span class="nt">object</span><span class="p">:</span><span class="w"></span>
-<span class="w">     </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">gene</span><span class="w"></span>
-<span class="w">     </span><span class="nt">relational_role</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">OBJECT</span><span class="w"></span>
+<span class="w">     </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">predicate_enum</span>
+<span class="w">     </span><span class="nt">relational_role</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">PREDICATE</span>
+<span class="w">  </span><span class="nt">subject</span><span class="p">:</span>
+<span class="w">     </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">allele</span>
+<span class="w">     </span><span class="nt">relational_role</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SUBJECT</span>
+<span class="w">  </span><span class="nt">object</span><span class="p">:</span>
+<span class="w">     </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">gene</span>
+<span class="w">     </span><span class="nt">relational_role</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">OBJECT</span>
 
-<span class="nt">enums</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">predicate_enum</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">permissible_values</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">allele_of</span><span class="p">:</span><span class="w"></span>
+<span class="nt">enums</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">predicate_enum</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">permissible_values</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">allele_of</span><span class="p">:</span>
 </pre></div>
 </div>
 <p>Applications can make use of this metadata - e.g for compact
@@ -782,9 +782,7 @@ will need to answer:</p>
             
           </div>
           <div class="right-details">
-            <div class="icons">
-              
-            </div>
+            
           </div>
         </div>
         

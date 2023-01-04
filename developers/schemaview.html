@@ -5,10 +5,10 @@
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Data Conversion: Loaders and Dumpers" href="loaders-and-dumpers.html" /><link rel="prev" title="Manipulating Schemas" href="manipulating-schemas.html" />
 
-    <meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
+    <!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
         <title>SchemaView - linkml documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     
     
@@ -152,7 +152,7 @@
   <span class="sidebar-brand-text">linkml  documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
-  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form>
@@ -226,7 +226,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../howtos/yq-for-schemas.html">Using yq for querying and manipulating schemas</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtos/using-jsonld.html">Using JSON-LD</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtos/port-linkml.html">Porting LinkML tools to other programming languages</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../howtos/linkml-ws.html">LinkML Workspace Generator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtos/linkml-project-cookiecutter.html">LinkML Project Cookiecutter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtos/model-measurements.html">How to model quantities and measurements</a></li>
 </ul>
 </li>
@@ -378,6 +378,17 @@ into the schema rather than providing dynamic methods.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml_runtime.utils.schemaview.SchemaView.all_aliases">
+<span class="sig-name descname"><span class="pre">all_aliases</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView.all_aliases"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView.all_aliases" title="Permalink to this definition">#</a></dt>
+<dd><p>Get the aliases</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list of aliases</p>
 </dd>
 </dl>
 </dd></dl>
@@ -829,6 +840,15 @@ into the schema rather than providing dynamic methods.</p>
 <dd><p>Expands a URI or CURIE to a full URI
 :param uri:
 :return: URI as a string</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml_runtime.utils.schemaview.SchemaView.get_children">
+<span class="sig-name descname"><span class="pre">get_children</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mixin</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView.get_children"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView.get_children" title="Permalink to this definition">#</a></dt>
+<dd><p>get the children of an element (any class, slot, enum, type)
+:param name: name of the parent element
+:param mixin: include mixins
+:return: list of child element</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1582,9 +1602,7 @@ but a proposed feature in LinkML 1.2 is range expressions, where ranges can be d
             
           </div>
           <div class="right-details">
-            <div class="icons">
-              
-            </div>
+            
           </div>
         </div>
         
@@ -1609,6 +1627,7 @@ but a proposed feature in LinkML 1.2 is range expressions, where ranges can be d
 <li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.add_slot"><code class="docutils literal notranslate"><span class="pre">SchemaView.add_slot()</span></code></a></li>
 <li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.add_subset"><code class="docutils literal notranslate"><span class="pre">SchemaView.add_subset()</span></code></a></li>
 <li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.add_type"><code class="docutils literal notranslate"><span class="pre">SchemaView.add_type()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.all_aliases"><code class="docutils literal notranslate"><span class="pre">SchemaView.all_aliases()</span></code></a></li>
 <li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.all_class"><code class="docutils literal notranslate"><span class="pre">SchemaView.all_class()</span></code></a></li>
 <li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.all_classes"><code class="docutils literal notranslate"><span class="pre">SchemaView.all_classes()</span></code></a></li>
 <li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.all_element"><code class="docutils literal notranslate"><span class="pre">SchemaView.all_element()</span></code></a></li>
@@ -1640,6 +1659,7 @@ but a proposed feature in LinkML 1.2 is range expressions, where ranges can be d
 <li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.enum_ancestors"><code class="docutils literal notranslate"><span class="pre">SchemaView.enum_ancestors()</span></code></a></li>
 <li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.enum_parents"><code class="docutils literal notranslate"><span class="pre">SchemaView.enum_parents()</span></code></a></li>
 <li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.expand_curie"><code class="docutils literal notranslate"><span class="pre">SchemaView.expand_curie()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.get_children"><code class="docutils literal notranslate"><span class="pre">SchemaView.get_children()</span></code></a></li>
 <li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.get_class"><code class="docutils literal notranslate"><span class="pre">SchemaView.get_class()</span></code></a></li>
 <li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.get_classes_by_slot"><code class="docutils literal notranslate"><span class="pre">SchemaView.get_classes_by_slot()</span></code></a></li>
 <li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.get_element"><code class="docutils literal notranslate"><span class="pre">SchemaView.get_element()</span></code></a></li>

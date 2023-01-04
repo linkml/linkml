@@ -3,12 +3,12 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="How to model quantities and measurements" href="model-measurements.html" /><link rel="prev" title="Porting LinkML tools to other programming languages" href="port-linkml.html" />
 
-    <meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
-        <title>How to initialize a LinkML project - linkml documentation</title>
+    <!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
+        <title>LinkML Project Cookiecutter - linkml documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     
     
@@ -152,13 +152,13 @@
   <span class="sidebar-brand-text">linkml  documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
-  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../intro/overview.html">LinkML at a glance</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../intro/install.html">Quick Install Guide</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../intro/tutorial.html">Tutorial</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -222,11 +222,11 @@
 <li class="toctree-l2"><a class="reference internal" href="../generators/excel.html">Excel Spreadsheet</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="index.html">How-to Guides</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">How-to Guides</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="yq-for-schemas.html">Using yq for querying and manipulating schemas</a></li>
 <li class="toctree-l2"><a class="reference internal" href="using-jsonld.html">Using JSON-LD</a></li>
 <li class="toctree-l2"><a class="reference internal" href="port-linkml.html">Porting LinkML tools to other programming languages</a></li>
-<li class="toctree-l2"><a class="reference internal" href="linkml-ws.html">LinkML Workspace Generator</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">LinkML Project Cookiecutter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="model-measurements.html">How to model quantities and measurements</a></li>
 </ul>
 </li>
@@ -294,68 +294,35 @@
           </label>
         </div>
         <article role="main">
-          <section id="how-to-initialize-a-linkml-project">
-<h1>How to initialize a LinkML project<a class="headerlink" href="#how-to-initialize-a-linkml-project" title="Permalink to this heading">#</a></h1>
-<section id="standard-protocol">
-<h2>Standard Protocol<a class="headerlink" href="#standard-protocol" title="Permalink to this heading">#</a></h2>
-<section id="step-1-install-cruft-and-poetry">
-<h3>Step 1: Install cruft and poetry<a class="headerlink" href="#step-1-install-cruft-and-poetry" title="Permalink to this heading">#</a></h3>
-<p>1a: <a class="reference external" href="https://python-poetry.org/docs/">install poetry</a>:</p>
-<p><code class="docutils literal notranslate"><span class="pre">curl</span> <span class="pre">-sSL</span> <span class="pre">https://install.python-poetry.org</span> <span class="pre">|</span> <span class="pre">python3</span> <span class="pre">-</span></code></p>
-<p>1b: <a class="reference external" href="https://cruft.github.io/cruft/">install cruft</a>:</p>
-<p><code class="docutils literal notranslate"><span class="pre">pip3</span> <span class="pre">install</span> <span class="pre">cruft</span></code></p>
-</section>
-<section id="use-cruft-to-generate-a-new-project">
-<h3>Use cruft to generate a new project:<a class="headerlink" href="#use-cruft-to-generate-a-new-project" title="Permalink to this heading">#</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">cruft</span> <span class="pre">https://github.com/linkml/linkml-project-cookiecutter</span></code></p>
-<p>Then follow the instructions on the screen, answering questions as best you can.</p>
-<p>General guidelines:</p>
-<ul class="simple">
-<li><p>projects should be in kebab-case, with no spaces</p></li>
-</ul>
-<p>Note: if you don’t intend to generate and release python classes, you can ignore
-the question about PYPI.</p>
-<p>If you intend to use schemasheets for your project, you will need the ID of your sheet,
-plus the names of the tabs. We recommend using names with no spaces for the tabs.</p>
-<p>If you are not using schemasheets, you can ignore this question.</p>
-<p>See <a class="reference external" href="https://github.com/linkml/linkml-project-cookiecutter">linkml/linkml-project-cookiecutter</a> for more docs.</p>
-</section>
-<section id="setup-the-project">
-<h3>Setup the project<a class="headerlink" href="#setup-the-project" title="Permalink to this heading">#</a></h3>
-<p>Change to the folder your generated project is in</p>
-<p>type:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make setup
+          <section id="linkml-project-cookiecutter">
+<h1>LinkML Project Cookiecutter<a class="headerlink" href="#linkml-project-cookiecutter" title="Permalink to this heading">#</a></h1>
+<p>To start a new LinkML project, please use the <a class="reference external" href="https://github.com/linkml/linkml-project-cookiecutter">LinkML Project Cookiecutter</a>
+command line tool.  This tool will generate a LinkML project directory for you, including the directory structure
+and commands necessary to build and test your project.  For  step-by-step instructions on using the linkml-project-cookiecutter, please
+<a class="reference external" href="https://github.com/linkml/linkml-project-cookiecutter/blob/main/README.md">consult the documentation here</a>.</p>
+<section id="linkml-project-cookiecutter-quickstart">
+<h2>LinkML Project Cookiecutter Quickstart<a class="headerlink" href="#linkml-project-cookiecutter-quickstart" title="Permalink to this heading">#</a></h2>
+<p>In your poetry virtual environment:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>poetry<span class="w"> </span>add<span class="w"> </span>cruft
 </pre></div>
 </div>
 </section>
-<section id="edit-the-schema">
-<h3>Edit the schema<a class="headerlink" href="#edit-the-schema" title="Permalink to this heading">#</a></h3>
-<p>Edit the schema in the src folder</p>
+<section id="use-cruft-to-create-your-brand-new-linkml-project">
+<h2>Use cruft to create your brand new LinkML project:<a class="headerlink" href="#use-cruft-to-create-your-brand-new-linkml-project" title="Permalink to this heading">#</a></h2>
+<p>In your poetry virtual environment:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>poetry<span class="w"> </span>shell
+cruft<span class="w"> </span>create<span class="w"> </span>https://github.com/linkml/linkml-project-cookiecutter
+</pre></div>
+</div>
+<p>Answer the prompted questions to customize your project.  More details on the prompts and how to answer
+them can be found <span class="xref myst">here</span>.</p>
 </section>
-<section id="validate-the-schema">
-<h3>Validate the schema<a class="headerlink" href="#validate-the-schema" title="Permalink to this heading">#</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">test</span></code></p>
-</section>
-<section id="test-the-documentation">
-<h3>Test the documentation<a class="headerlink" href="#test-the-documentation" title="Permalink to this heading">#</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">server</span></code></p>
-<p>An look at the URL provided</p>
-</section>
-<section id="create-a-github-project">
-<h3>Create a github project<a class="headerlink" href="#create-a-github-project" title="Permalink to this heading">#</a></h3>
-<p>Go to https://github.com/new and follow the instructions</p>
-</section>
-<section id="deploy-documentation">
-<h3>Deploy documentation<a class="headerlink" href="#deploy-documentation" title="Permalink to this heading">#</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">deploy</span></code></p>
-</section>
-<section id="register-the-schema">
-<h3>Register the schema<a class="headerlink" href="#register-the-schema" title="Permalink to this heading">#</a></h3>
-<p>See <a class="reference internal" href="../faq/contributing.html"><span class="doc std std-doc">How to register a schema</span></a></p>
-</section>
-</section>
-<section id="alternative-protocols">
-<h2>Alternative protocols<a class="headerlink" href="#alternative-protocols" title="Permalink to this heading">#</a></h2>
+<section id="build-your-linkml-project">
+<h2>Build your LinkML project<a class="headerlink" href="#build-your-linkml-project" title="Permalink to this heading">#</a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>linkml-projects/my-awesome-schema<span class="w">  </span><span class="c1"># using the folder example above</span>
+make<span class="w"> </span>setup
+</pre></div>
+</div>
 </section>
 </section>
 
@@ -364,8 +331,26 @@ plus the names of the tabs. We recommend using names with no spaces for the tabs
       <footer>
         
         <div class="related-pages">
-          
-          
+          <a class="next-page" href="model-measurements.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">How to model quantities and measurements</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="port-linkml.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Porting LinkML tools to other programming languages</div>
+                
+              </div>
+            </a>
         </div>
         <div class="bottom-of-page">
           <div class="left-details">
@@ -378,9 +363,7 @@ plus the names of the tabs. We recommend using names with no spaces for the tabs
             
           </div>
           <div class="right-details">
-            <div class="icons">
-              
-            </div>
+            
           </div>
         </div>
         
@@ -398,20 +381,10 @@ plus the names of the tabs. We recommend using names with no spaces for the tabs
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">How to initialize a LinkML project</a><ul>
-<li><a class="reference internal" href="#standard-protocol">Standard Protocol</a><ul>
-<li><a class="reference internal" href="#step-1-install-cruft-and-poetry">Step 1: Install cruft and poetry</a></li>
-<li><a class="reference internal" href="#use-cruft-to-generate-a-new-project">Use cruft to generate a new project:</a></li>
-<li><a class="reference internal" href="#setup-the-project">Setup the project</a></li>
-<li><a class="reference internal" href="#edit-the-schema">Edit the schema</a></li>
-<li><a class="reference internal" href="#validate-the-schema">Validate the schema</a></li>
-<li><a class="reference internal" href="#test-the-documentation">Test the documentation</a></li>
-<li><a class="reference internal" href="#create-a-github-project">Create a github project</a></li>
-<li><a class="reference internal" href="#deploy-documentation">Deploy documentation</a></li>
-<li><a class="reference internal" href="#register-the-schema">Register the schema</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#alternative-protocols">Alternative protocols</a></li>
+<li><a class="reference internal" href="#">LinkML Project Cookiecutter</a><ul>
+<li><a class="reference internal" href="#linkml-project-cookiecutter-quickstart">LinkML Project Cookiecutter Quickstart</a></li>
+<li><a class="reference internal" href="#use-cruft-to-create-your-brand-new-linkml-project">Use cruft to create your brand new LinkML project:</a></li>
+<li><a class="reference internal" href="#build-your-linkml-project">Build your LinkML project</a></li>
 </ul>
 </li>
 </ul>

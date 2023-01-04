@@ -4,10 +4,10 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
-    <meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
+    <!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
         <title>linkml.utils.schemasynopsis - linkml documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     
     
@@ -151,7 +151,7 @@
   <span class="sidebar-brand-text">linkml  documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
-  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form>
@@ -225,7 +225,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../howtos/yq-for-schemas.html">Using yq for querying and manipulating schemas</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../howtos/using-jsonld.html">Using JSON-LD</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../howtos/port-linkml.html">Porting LinkML tools to other programming languages</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../howtos/linkml-ws.html">LinkML Workspace Generator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../howtos/linkml-project-cookiecutter.html">LinkML Project Cookiecutter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../howtos/model-measurements.html">How to model quantities and measurements</a></li>
 </ul>
 </li>
@@ -429,7 +429,7 @@
 <div class="viewcode-block" id="SchemaSynopsis.summarize_slot_definition"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.schemasynopsis.SchemaSynopsis.summarize_slot_definition">[docs]</a>    <span class="k">def</span> <span class="nf">summarize_slot_definition</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="n">SlotDefinitionName</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="n">SlotDefinition</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Summarize a slot definition</span>
 <span class="sd">        :param k: slot name</span>
 <span class="sd">        :param v: slot definition</span>
@@ -453,7 +453,7 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="SchemaSynopsis.summarize_type_definition"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.schemasynopsis.SchemaSynopsis.summarize_type_definition">[docs]</a>    <span class="k">def</span> <span class="nf">summarize_type_definition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="n">TypeDefinitionName</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="n">TypeDefinition</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Summarize type definition</span>
 
 <span class="sd">        :param k: Type name</span>
@@ -470,7 +470,7 @@
 <div class="viewcode-block" id="SchemaSynopsis.summarize_class_definition"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.schemasynopsis.SchemaSynopsis.summarize_class_definition">[docs]</a>    <span class="k">def</span> <span class="nf">summarize_class_definition</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="n">ClassDefinitionName</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="n">ClassDefinition</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Summarize class definition element</span>
 
 <span class="sd">        :param k: Class name</span>
@@ -489,7 +489,7 @@
             <span class="c1">#     self.add_ref(ClassType, k, SlotType, cast(SlotDefinitionName, slot_alias))</span>
 
 <div class="viewcode-block" id="SchemaSynopsis.summarize_enum_definition"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.schemasynopsis.SchemaSynopsis.summarize_enum_definition">[docs]</a>    <span class="k">def</span> <span class="nf">summarize_enum_definition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="n">EnumDefinitionName</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="n">EnumDefinition</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Summarize enum definition</span>
 
 <span class="sd">        :param k: Enum name</span>
@@ -501,7 +501,7 @@
 <div class="viewcode-block" id="SchemaSynopsis.summarize_definition"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.schemasynopsis.SchemaSynopsis.summarize_definition">[docs]</a>    <span class="k">def</span> <span class="nf">summarize_definition</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">typ</span><span class="p">:</span> <span class="n">RefType</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="n">DefinitionName</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="n">Definition</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Summarize slot and class definitions</span>
 
 <span class="sd">        :param typ: type (slot or class)</span>
@@ -529,7 +529,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">add_ref</span><span class="p">(</span><span class="n">typ</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">typ</span><span class="p">,</span> <span class="n">applyto</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="SchemaSynopsis.summarize_element"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.schemasynopsis.SchemaSynopsis.summarize_element">[docs]</a>    <span class="k">def</span> <span class="nf">summarize_element</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">typ</span><span class="p">:</span> <span class="n">RefType</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="n">ElementName</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="n">Element</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">         Summarize element level items</span>
 
 <span class="sd">        :param typ: element type</span>
@@ -551,7 +551,7 @@
         <span class="n">totype</span><span class="p">:</span> <span class="n">RefType</span><span class="p">,</span>
         <span class="n">toname</span><span class="p">:</span> <span class="n">ElementName</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Add an inverse reference, indicating that to type/name is referenced by from type/name</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add an inverse reference, indicating that to type/name is referenced by from type/name</span>
 
 <span class="sd">        :param fromtype: Referencer type</span>
 <span class="sd">        :param fromname: Referencer name</span>
@@ -807,9 +807,7 @@
             
           </div>
           <div class="right-details">
-            <div class="icons">
-              
-            </div>
+            
           </div>
         </div>
         

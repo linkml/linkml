@@ -4,10 +4,10 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
-    <meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
+    <!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
         <title>linkml.utils.schemaloader - linkml documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     
     
@@ -151,7 +151,7 @@
   <span class="sidebar-brand-text">linkml  documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
-  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form>
@@ -225,7 +225,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../howtos/yq-for-schemas.html">Using yq for querying and manipulating schemas</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../howtos/using-jsonld.html">Using JSON-LD</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../howtos/port-linkml.html">Porting LinkML tools to other programming languages</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../howtos/linkml-ws.html">LinkML Workspace Generator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../howtos/linkml-project-cookiecutter.html">LinkML Project Cookiecutter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../howtos/model-measurements.html">How to model quantities and measurements</a></li>
 </ul>
 </li>
@@ -338,7 +338,7 @@
         <span class="n">source_file_date</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">source_file_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Constructor - load and process a YAML or pre-processed schema</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Constructor - load and process a YAML or pre-processed schema</span>
 
 <span class="sd">        :param data: YAML schema text, python dict loaded from yaml,  URL, file name, open file or SchemaDefinition</span>
 <span class="sd">        :param base_dir: base directory or URL where Schema came from</span>
@@ -387,7 +387,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">emit_metadata</span> <span class="o">=</span> <span class="n">emit_metadata</span>
 
 <div class="viewcode-block" id="SchemaLoader.resolve"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.schemaloader.SchemaLoader.resolve">[docs]</a>    <span class="k">def</span> <span class="nf">resolve</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SchemaDefinition</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Reconcile a loaded schema, applying is_a, mixins, apply_to&#39;s and other such things.  Also validate the</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Reconcile a loaded schema, applying is_a, mixins, apply_to&#39;s and other such things.  Also validate the</span>
 <span class="sd">        content and load a SchemaSynopsis entry</span>
 
 <span class="sd">        :return: Fully resolved definition</span>
@@ -757,7 +757,7 @@
         <span class="k">def</span> <span class="nf">domain_range_alignment</span><span class="p">(</span>
             <span class="n">fwd_slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">,</span> <span class="n">inverse_slot</span><span class="p">:</span> <span class="n">SlotDefinition</span>
         <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-            <span class="sd">&quot;&quot;&quot;Determine whether the range of fwd_slot is compatible with the domain of inverse_slot&quot;&quot;&quot;</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;Determine whether the range of fwd_slot is compatible with the domain of inverse_slot&quot;&quot;&quot;</span>
             <span class="c1"># TODO: Determine what to do about class and slot hierarchy</span>
             <span class="k">if</span> <span class="n">fwd_slot</span><span class="o">.</span><span class="n">range</span> <span class="ow">and</span> <span class="n">fwd_slot</span><span class="o">.</span><span class="n">range</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">classes</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
@@ -972,7 +972,7 @@
 <div class="viewcode-block" id="SchemaLoader.merge_enum"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.schemaloader.SchemaLoader.merge_enum">[docs]</a>    <span class="k">def</span> <span class="nf">merge_enum</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">enum</span><span class="p">:</span> <span class="n">EnumDefinition</span><span class="p">,</span> <span class="n">merged_enums</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">EnumDefinitionName</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Merge parent enumeration information into target enum</span>
 
 <span class="sd">        :param enum: target enumeration</span>
@@ -993,7 +993,7 @@
 <div class="viewcode-block" id="SchemaLoader.merge_slot"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.schemaloader.SchemaLoader.merge_slot">[docs]</a>    <span class="k">def</span> <span class="nf">merge_slot</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">,</span> <span class="n">merged_slots</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">SlotDefinitionName</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Merge parent slot information into target slot</span>
 
 <span class="sd">        :param slot: target slot</span>
@@ -1029,7 +1029,7 @@
 <div class="viewcode-block" id="SchemaLoader.merge_class"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.schemaloader.SchemaLoader.merge_class">[docs]</a>    <span class="k">def</span> <span class="nf">merge_class</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">merged_classes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ClassDefinitionName</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Merge parent class information into target class</span>
 
 <span class="sd">        :param cls: target class</span>
@@ -1059,7 +1059,7 @@
                     <span class="p">)</span></div>
 
 <div class="viewcode-block" id="SchemaLoader.process_slot_usage_definitions"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.schemaloader.SchemaLoader.process_slot_usage_definitions">[docs]</a>    <span class="k">def</span> <span class="nf">process_slot_usage_definitions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Slot usages can be used to completely define slots.  Iterate over the class hierarchy finding all slot</span>
 <span class="sd">        definitions that are introduced strictly as usages and add them to the slots component</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1071,7 +1071,7 @@
         <span class="k">def</span> <span class="nf">located_aliased_parent_slot</span><span class="p">(</span>
             <span class="n">owning_class</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">usage_slot</span><span class="p">:</span> <span class="n">SlotDefinition</span>
         <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-            <span class="sd">&quot;&quot;&quot;Determine whether we are overriding an attributes style slot in the parent class</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;Determine whether we are overriding an attributes style slot in the parent class</span>
 <span class="sd">            Preconditions: usage_slot is NOT in schema.slots</span>
 <span class="sd">            &quot;&quot;&quot;</span>
             <span class="n">usage_attribute_name</span> <span class="o">=</span> <span class="n">mangled_attribute_name</span><span class="p">(</span>
@@ -1129,7 +1129,7 @@
             <span class="n">visit</span><span class="p">(</span><span class="n">classname</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="SchemaLoader.process_slot_usages"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.schemaloader.SchemaLoader.process_slot_usages">[docs]</a>    <span class="k">def</span> <span class="nf">process_slot_usages</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Connect any slot usage items</span>
 
 <span class="sd">        :param cls: class to process</span>
@@ -1219,7 +1219,7 @@
 <div class="viewcode-block" id="SchemaLoader.merge_type"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.schemaloader.SchemaLoader.merge_type">[docs]</a>    <span class="k">def</span> <span class="nf">merge_type</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">typ</span><span class="p">:</span> <span class="n">TypeDefinition</span><span class="p">,</span> <span class="n">merged_types</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">TypeDefinitionName</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Merge parent type information into target type</span>
 <span class="sd">        :param typ: target type</span>
 <span class="sd">        :param merged_types: list of type names that have bee merged.</span>
@@ -1247,7 +1247,7 @@
 <div class="viewcode-block" id="SchemaLoader.slot_definition_for"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.schemaloader.SchemaLoader.slot_definition_for">[docs]</a>    <span class="k">def</span> <span class="nf">slot_definition_for</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">slotname</span><span class="p">:</span> <span class="n">SlotDefinitionName</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">SlotDefinition</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Find the most proximal definition for slotname in the context of cls&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Find the most proximal definition for slotname in the context of cls&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">is_a</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">is_a</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">classes</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">raise_value_error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown parent class: </span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="n">is_a</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">is_a</span><span class="p">)</span>
@@ -1275,7 +1275,7 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
 <div class="viewcode-block" id="SchemaLoader.check_prefixes"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.schemaloader.SchemaLoader.check_prefixes">[docs]</a>    <span class="k">def</span> <span class="nf">check_prefixes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Iterate over the entire schema checking all prefixes</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">check_prefix</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">default_prefix</span><span class="p">)</span>
@@ -1339,7 +1339,7 @@
             <span class="n">locs</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">TypedNode</span><span class="o">.</span><span class="n">yaml_loc</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">loc_str</span><span class="p">)</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">locs</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">TypedNode</span><span class="o">.</span><span class="n">yaml_loc</span><span class="p">(</span><span class="n">loc_str</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span></div>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">TypedNode</span><span class="o">.</span><span class="n">yaml_loc</span><span class="p">(</span><span class="n">loc_str</span><span class="p">,</span><span class="w"> </span><span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="SchemaLoader.logger_warning"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.schemaloader.SchemaLoader.logger_warning">[docs]</a>    <span class="k">def</span> <span class="nf">logger_warning</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -1351,7 +1351,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">warning</span><span class="si">}</span><span class="se">\n\t</span><span class="si">{</span><span class="n">locs</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">warning</span><span class="si">}</span><span class="se">\n\t</span><span class="si">{</span><span class="n">TypedNode</span><span class="o">.</span><span class="n">yaml_loc</span><span class="p">(</span><span class="n">loc_str</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span>
+                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">warning</span><span class="si">}</span><span class="se">\n\t</span><span class="si">{</span><span class="n">TypedNode</span><span class="o">.</span><span class="n">yaml_loc</span><span class="p">(</span><span class="n">loc_str</span><span class="p">,</span><span class="w"> </span><span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span>
             <span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_get_base_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stated_base</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
@@ -1387,9 +1387,7 @@
             
           </div>
           <div class="right-details">
-            <div class="icons">
-              
-            </div>
+            
           </div>
         </div>
         

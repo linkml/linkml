@@ -4,10 +4,10 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
-    <meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
+    <!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
         <title>linkml.generators.sqlddlgen - linkml documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     
     
@@ -151,7 +151,7 @@
   <span class="sidebar-brand-text">linkml  documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
-  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form>
@@ -225,7 +225,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../howtos/yq-for-schemas.html">Using yq for querying and manipulating schemas</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../howtos/using-jsonld.html">Using JSON-LD</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../howtos/port-linkml.html">Porting LinkML tools to other programming languages</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../howtos/linkml-ws.html">LinkML Workspace Generator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../howtos/linkml-project-cookiecutter.html">LinkML Project Cookiecutter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../howtos/model-measurements.html">How to model quantities and measurements</a></li>
 </ul>
 </li>
@@ -346,7 +346,7 @@
 <div class="viewcode-block" id="DDLEntity"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.sqlddlgen.DDLEntity">[docs]</a><span class="nd">@deprecated</span><span class="p">(</span><span class="s2">&quot;Use SQLTableGenerator instead&quot;</span><span class="p">)</span>
 <span class="nd">@dataclass</span><span class="p">(</span><span class="n">unsafe_hash</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">DDLEntity</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    abstract grouping</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -356,7 +356,7 @@
 <div class="viewcode-block" id="SQLColumn"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.sqlddlgen.SQLColumn">[docs]</a><span class="nd">@deprecated</span><span class="p">(</span><span class="s2">&quot;Use SQLTableGenerator instead&quot;</span><span class="p">)</span>
 <span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">SQLColumn</span><span class="p">(</span><span class="n">DDLEntity</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    represents a Relational Table Column</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -378,7 +378,7 @@
 <div class="viewcode-block" id="SQLTable"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.sqlddlgen.SQLTable">[docs]</a><span class="nd">@deprecated</span><span class="p">(</span><span class="s2">&quot;Use SQLTableGenerator instead&quot;</span><span class="p">)</span>
 <span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">SQLTable</span><span class="p">(</span><span class="n">DDLEntity</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    represents a Relational Table</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -410,7 +410,7 @@
 <div class="viewcode-block" id="SQLSchema"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.sqlddlgen.SQLSchema">[docs]</a><span class="nd">@deprecated</span><span class="p">(</span><span class="s2">&quot;Use SQLTableGenerator instead&quot;</span><span class="p">)</span>
 <span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">SQLSchema</span><span class="p">(</span><span class="n">DDLEntity</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    represents a Relational Schema</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -437,7 +437,7 @@
 
 <div class="viewcode-block" id="SQLDDLGenerator"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.sqlddlgen.SQLDDLGenerator">[docs]</a><span class="nd">@deprecated</span><span class="p">(</span><span class="s2">&quot;Use SQLTableGenerator instead&quot;</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">SQLDDLGenerator</span><span class="p">(</span><span class="n">Generator</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A `Generator` for creating SQL DDL</span>
 
 <span class="sd">    DEPRECATED: Use SQLTableGenerator instead</span>
@@ -525,7 +525,7 @@
             <span class="k">return</span> <span class="kc">True</span>
 
     <span class="k">def</span> <span class="nf">_class_name_to_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cn</span><span class="p">:</span> <span class="n">ClassDefinitionName</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        https://stackoverflow.com/questions/1881123/table-naming-underscore-vs-camelcase-namespaces-singular-vs-plural</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">underscore</span><span class="p">(</span><span class="n">cn</span><span class="p">)</span>
@@ -650,7 +650,7 @@
             <span class="n">t</span><span class="o">.</span><span class="n">primary_keys</span> <span class="o">=</span> <span class="n">pks</span>
 
 <div class="viewcode-block" id="SQLDDLGenerator.get_sql_range"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.sqlddlgen.SQLDDLGenerator.get_sql_range">[docs]</a>    <span class="k">def</span> <span class="nf">get_sql_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        returns a SQL Alchemy column type</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">range</span> <span class="o">=</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span>
@@ -715,7 +715,7 @@
         <span class="n">schema_metadata</span><span class="o">.</span><span class="n">create_all</span><span class="p">(</span><span class="n">engine</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="SQLDDLGenerator.write_sqla_python_imperative"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.sqlddlgen.SQLDDLGenerator.write_sqla_python_imperative">[docs]</a>    <span class="k">def</span> <span class="nf">write_sqla_python_imperative</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        imperative mapping:</span>
 <span class="sd">        https://docs.sqlalchemy.org/en/14/orm/mapping_styles.html#imperative-mapping-with-dataclasses-and-attrs</span>
 
@@ -833,7 +833,7 @@
 <span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">version_option</span><span class="p">(</span><span class="n">__version__</span><span class="p">,</span> <span class="s2">&quot;-V&quot;</span><span class="p">,</span> <span class="s2">&quot;--version&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">cli</span><span class="p">(</span><span class="n">yamlfile</span><span class="p">,</span> <span class="n">sqla_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">python_import</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">args</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Generate SQL DDL representation&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate SQL DDL representation&quot;&quot;&quot;</span>
     <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;DEPRECATED: use sqltablegen instead&quot;</span><span class="p">)</span>
     <span class="n">gen</span> <span class="o">=</span> <span class="n">SQLDDLGenerator</span><span class="p">(</span><span class="n">yamlfile</span><span class="p">,</span> <span class="o">**</span><span class="n">args</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">gen</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="o">**</span><span class="n">args</span><span class="p">))</span>
@@ -867,9 +867,7 @@
             
           </div>
           <div class="right-details">
-            <div class="icons">
-              
-            </div>
+            
           </div>
         </div>
         

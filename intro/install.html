@@ -5,10 +5,10 @@
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Tutorial" href="tutorial.html" /><link rel="prev" title="LinkML at a glance" href="overview.html" />
 
-    <meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
+    <!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
         <title>Quick Install Guide - linkml documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     
     
@@ -152,7 +152,7 @@
   <span class="sidebar-brand-text">linkml  documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
-  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form>
@@ -226,7 +226,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../howtos/yq-for-schemas.html">Using yq for querying and manipulating schemas</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtos/using-jsonld.html">Using JSON-LD</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtos/port-linkml.html">Porting LinkML tools to other programming languages</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../howtos/linkml-ws.html">LinkML Workspace Generator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtos/linkml-project-cookiecutter.html">LinkML Project Cookiecutter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtos/model-measurements.html">How to model quantities and measurements</a></li>
 </ul>
 </li>
@@ -300,9 +300,9 @@
 <h2>Install Python<a class="headerlink" href="#install-python" title="Permalink to this heading">#</a></h2>
 <p>Get the latest version of Python at https://www.python.org/downloads/ or with your operating system’s package manager.</p>
 <p>You can verify that Python is installed by typing <code class="docutils literal notranslate"><span class="pre">python</span></code> from your shell; you should see something like:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Python <span class="m">3</span>.9.5 <span class="o">(</span>v3.9.5:0a7dcbdb13, May  <span class="m">3</span> <span class="m">2021</span>, <span class="m">13</span>:17:02<span class="o">)</span> 
-<span class="o">[</span>Clang <span class="m">6</span>.0 <span class="o">(</span>clang-600.0.57<span class="o">)]</span> on darwin
-Type <span class="s2">&quot;help&quot;</span>, <span class="s2">&quot;copyright&quot;</span>, <span class="s2">&quot;credits&quot;</span> or <span class="s2">&quot;license&quot;</span> <span class="k">for</span> more information.
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Python<span class="w"> </span><span class="m">3</span>.9.5<span class="w"> </span><span class="o">(</span>v3.9.5:0a7dcbdb13,<span class="w"> </span>May<span class="w">  </span><span class="m">3</span><span class="w"> </span><span class="m">2021</span>,<span class="w"> </span><span class="m">13</span>:17:02<span class="o">)</span><span class="w"> </span>
+<span class="o">[</span>Clang<span class="w"> </span><span class="m">6</span>.0<span class="w"> </span><span class="o">(</span>clang-600.0.57<span class="o">)]</span><span class="w"> </span>on<span class="w"> </span>darwin
+Type<span class="w"> </span><span class="s2">&quot;help&quot;</span>,<span class="w"> </span><span class="s2">&quot;copyright&quot;</span>,<span class="w"> </span><span class="s2">&quot;credits&quot;</span><span class="w"> </span>or<span class="w"> </span><span class="s2">&quot;license&quot;</span><span class="w"> </span><span class="k">for</span><span class="w"> </span>more<span class="w"> </span>information.
 &gt;&gt;&gt;
 </pre></div>
 </div>
@@ -310,14 +310,14 @@ Type <span class="s2">&quot;help&quot;</span>, <span class="s2">&quot;copyright&
 <section id="install-linkml">
 <h2>Install LinkML<a class="headerlink" href="#install-linkml" title="Permalink to this heading">#</a></h2>
 <p>The latest version can always be installed with:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install linkml
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>linkml
 </pre></div>
 </div>
 </section>
 <section id="alternative-protocol-use-docker">
 <h2>Alternative protocol: Use Docker<a class="headerlink" href="#alternative-protocol-use-docker" title="Permalink to this heading">#</a></h2>
 <p>You can also use the Docker image, courtesy of the Monarch Initiative:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker run -v <span class="k">$(</span>PWD<span class="k">)</span>:/work -w /work/ --rm -ti monarchinitiative/linkml
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>run<span class="w"> </span>-v<span class="w"> </span><span class="k">$(</span>PWD<span class="k">)</span>:/work<span class="w"> </span>-w<span class="w"> </span>/work/<span class="w"> </span>--rm<span class="w"> </span>-ti<span class="w"> </span>monarchinitiative/linkml
 </pre></div>
 </div>
 <p>This comes with LinkML already installed</p>
@@ -365,9 +365,7 @@ Type <span class="s2">&quot;help&quot;</span>, <span class="s2">&quot;copyright&
             
           </div>
           <div class="right-details">
-            <div class="icons">
-              
-            </div>
+            
           </div>
         </div>
         

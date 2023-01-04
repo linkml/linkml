@@ -4,10 +4,10 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
-    <meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
+    <!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
         <title>linkml_runtime.linkml_model.meta - linkml documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     
     
@@ -151,7 +151,7 @@
   <span class="sidebar-brand-text">linkml  documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
-  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form>
@@ -225,7 +225,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../howtos/yq-for-schemas.html">Using yq for querying and manipulating schemas</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../howtos/using-jsonld.html">Using JSON-LD</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../howtos/port-linkml.html">Porting LinkML tools to other programming languages</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../howtos/linkml-ws.html">LinkML Workspace Generator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../howtos/linkml-project-cookiecutter.html">LinkML Project Cookiecutter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../howtos/model-measurements.html">How to model quantities and measurements</a></li>
 </ul>
 </li>
@@ -423,7 +423,7 @@
 
 <span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">CommonMetadata</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generic metadata shared across definitions</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_inherited_slots</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
@@ -551,7 +551,7 @@
 
 <span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">Element</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    a named element in the model</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_inherited_slots</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
@@ -707,7 +707,7 @@
 
 <div class="viewcode-block" id="SchemaDefinition"><a class="viewcode-back" href="../../../code.html#linkml_runtime.linkml_model.meta.SchemaDefinition">[docs]</a><span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">SchemaDefinition</span><span class="p">(</span><span class="n">Element</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    a collection of subset, type, slot and class definitions</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_inherited_slots</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
@@ -895,7 +895,7 @@
 
 <span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">TypeDefinition</span><span class="p">(</span><span class="n">Element</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A data type definition.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_inherited_slots</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;base&quot;</span><span class="p">,</span> <span class="s2">&quot;uri&quot;</span><span class="p">,</span> <span class="s2">&quot;repr&quot;</span><span class="p">,</span> <span class="s2">&quot;pattern&quot;</span><span class="p">,</span> <span class="s2">&quot;structured_pattern&quot;</span><span class="p">,</span> <span class="s2">&quot;equals_string&quot;</span><span class="p">,</span> <span class="s2">&quot;equals_string_in&quot;</span><span class="p">,</span> <span class="s2">&quot;equals_number&quot;</span><span class="p">,</span> <span class="s2">&quot;minimum_value&quot;</span><span class="p">,</span> <span class="s2">&quot;maximum_value&quot;</span><span class="p">]</span>
@@ -996,7 +996,7 @@
 
 <span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">SubsetDefinition</span><span class="p">(</span><span class="n">Element</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    the name and description of a subset</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_inherited_slots</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
@@ -1019,7 +1019,7 @@
 
 <span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">Definition</span><span class="p">(</span><span class="n">Element</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    base class for definitions</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_inherited_slots</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
@@ -1088,7 +1088,7 @@
 
 <span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">AnonymousEnumExpression</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    An enum_expression that is not named</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_inherited_slots</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
@@ -1152,7 +1152,7 @@
 
 <span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">EnumDefinition</span><span class="p">(</span><span class="n">Definition</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    List of values that constrain the range of a slot</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_inherited_slots</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
@@ -1227,7 +1227,7 @@
 
 <span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">MatchQuery</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A query that is used on an enum expression to dynamically obtain a set of permissivle values via a query that</span>
 <span class="sd">    matches on properties of the external concepts</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1253,7 +1253,7 @@
 
 <span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">ReachabilityQuery</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A query that is used on an enum expression to dynamically obtain a set of permissible values via walking from a</span>
 <span class="sd">    set of source nodes to a set of descendants or ancestors over a set of relationship types</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1297,7 +1297,7 @@
 
 <span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">StructuredAlias</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    object that contains meta data about a synonym or alias including where it came from (source) and its scope</span>
 <span class="sd">    (narrow, broad, etc.)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1446,7 +1446,7 @@
 
 
 <span class="k">class</span> <span class="nc">Expression</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    general mixin for any class that can represent some form of expression</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_inherited_slots</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
@@ -1530,7 +1530,7 @@
 
 <span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">EnumExpression</span><span class="p">(</span><span class="n">Expression</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    An expression that constrains the range of a slot</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_inherited_slots</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
@@ -1725,7 +1725,7 @@
 
 <span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">PathExpression</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    An expression that describes an abstract path from an object to another through a sequence of slot lookups</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_inherited_slots</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
@@ -1895,7 +1895,7 @@
 
 <span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">SlotExpression</span><span class="p">(</span><span class="n">Expression</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    an expression that constrains the range of values a slot can take</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_inherited_slots</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;range&quot;</span><span class="p">,</span> <span class="s2">&quot;required&quot;</span><span class="p">,</span> <span class="s2">&quot;recommended&quot;</span><span class="p">,</span> <span class="s2">&quot;inlined&quot;</span><span class="p">,</span> <span class="s2">&quot;inlined_as_list&quot;</span><span class="p">,</span> <span class="s2">&quot;minimum_value&quot;</span><span class="p">,</span> <span class="s2">&quot;maximum_value&quot;</span><span class="p">,</span> <span class="s2">&quot;pattern&quot;</span><span class="p">,</span> <span class="s2">&quot;structured_pattern&quot;</span><span class="p">,</span> <span class="s2">&quot;equals_string&quot;</span><span class="p">,</span> <span class="s2">&quot;equals_string_in&quot;</span><span class="p">,</span> <span class="s2">&quot;equals_number&quot;</span><span class="p">,</span> <span class="s2">&quot;equals_expression&quot;</span><span class="p">,</span> <span class="s2">&quot;minimum_cardinality&quot;</span><span class="p">,</span> <span class="s2">&quot;maximum_cardinality&quot;</span><span class="p">]</span>
@@ -2134,7 +2134,7 @@
 
 <div class="viewcode-block" id="SlotDefinition"><a class="viewcode-back" href="../../../code.html#linkml_runtime.linkml_model.meta.SlotDefinition">[docs]</a><span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">SlotDefinition</span><span class="p">(</span><span class="n">Definition</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    the definition of a property or a slot</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_inherited_slots</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;domain&quot;</span><span class="p">,</span> <span class="s2">&quot;multivalued&quot;</span><span class="p">,</span> <span class="s2">&quot;inherited&quot;</span><span class="p">,</span> <span class="s2">&quot;readonly&quot;</span><span class="p">,</span> <span class="s2">&quot;ifabsent&quot;</span><span class="p">,</span> <span class="s2">&quot;list_elements_unique&quot;</span><span class="p">,</span> <span class="s2">&quot;list_elements_ordered&quot;</span><span class="p">,</span> <span class="s2">&quot;shared&quot;</span><span class="p">,</span> <span class="s2">&quot;key&quot;</span><span class="p">,</span> <span class="s2">&quot;identifier&quot;</span><span class="p">,</span> <span class="s2">&quot;designates_type&quot;</span><span class="p">,</span> <span class="s2">&quot;role&quot;</span><span class="p">,</span> <span class="s2">&quot;relational_role&quot;</span><span class="p">,</span> <span class="s2">&quot;range&quot;</span><span class="p">,</span> <span class="s2">&quot;required&quot;</span><span class="p">,</span> <span class="s2">&quot;recommended&quot;</span><span class="p">,</span> <span class="s2">&quot;inlined&quot;</span><span class="p">,</span> <span class="s2">&quot;inlined_as_list&quot;</span><span class="p">,</span> <span class="s2">&quot;minimum_value&quot;</span><span class="p">,</span> <span class="s2">&quot;maximum_value&quot;</span><span class="p">,</span> <span class="s2">&quot;pattern&quot;</span><span class="p">,</span> <span class="s2">&quot;structured_pattern&quot;</span><span class="p">,</span> <span class="s2">&quot;equals_string&quot;</span><span class="p">,</span> <span class="s2">&quot;equals_string_in&quot;</span><span class="p">,</span> <span class="s2">&quot;equals_number&quot;</span><span class="p">,</span> <span class="s2">&quot;equals_expression&quot;</span><span class="p">,</span> <span class="s2">&quot;minimum_cardinality&quot;</span><span class="p">,</span> <span class="s2">&quot;maximum_cardinality&quot;</span><span class="p">]</span>
@@ -2426,7 +2426,7 @@
 
 <span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">ClassExpression</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A boolean expression that can be used to dynamically determine membership of a class</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_inherited_slots</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
@@ -2507,7 +2507,7 @@
 
 <div class="viewcode-block" id="ClassDefinition"><a class="viewcode-back" href="../../../code.html#linkml_runtime.linkml_model.meta.ClassDefinition">[docs]</a><span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">ClassDefinition</span><span class="p">(</span><span class="n">Definition</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    the definition of a class or interface</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_inherited_slots</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;defining_slots&quot;</span><span class="p">,</span> <span class="s2">&quot;represents_relationship&quot;</span><span class="p">]</span>
@@ -2629,7 +2629,7 @@
 
 
 <span class="k">class</span> <span class="nc">ClassLevelRule</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A rule that is applied to classes</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_inherited_slots</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
@@ -2642,7 +2642,7 @@
 
 <span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">ClassRule</span><span class="p">(</span><span class="n">ClassLevelRule</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A rule that applies to instances of a class</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_inherited_slots</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
@@ -2800,7 +2800,7 @@
 
 <span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">PatternExpression</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    a regular expression pattern used to evaluate conformance of a string</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_inherited_slots</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;syntax&quot;</span><span class="p">]</span>
@@ -2946,7 +2946,7 @@
 
 <span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">ImportExpression</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    an expression describing an import</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_inherited_slots</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
@@ -3093,7 +3093,7 @@
 
 <span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">Setting</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    assignment of a key to a value</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_inherited_slots</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
@@ -3122,7 +3122,7 @@
 
 <span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">Prefix</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    prefix URI tuple</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_inherited_slots</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
@@ -3151,7 +3151,7 @@
 
 <span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">LocalName</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    an attributed label</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_inherited_slots</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
@@ -3180,7 +3180,7 @@
 
 <span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">Example</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    usage example and description</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_inherited_slots</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
@@ -3205,7 +3205,7 @@
 
 <span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">AltDescription</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    an attributed description</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_inherited_slots</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
@@ -3234,7 +3234,7 @@
 
 <span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">PermissibleValue</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    a permissible value, accompanied by intended text and an optional mapping to a concept URI</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_inherited_slots</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
@@ -3391,7 +3391,7 @@
 
 <span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">UniqueKey</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    a collection of slots whose values uniquely identify an instance of a class</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_inherited_slots</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
@@ -3538,7 +3538,7 @@
 
 <span class="c1"># Enumerations</span>
 <span class="k">class</span> <span class="nc">PvFormulaOptions</span><span class="p">(</span><span class="n">EnumDefinitionImpl</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The formula used to generate the set of permissible values from the code_set values</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">CODE</span> <span class="o">=</span> <span class="n">PermissibleValue</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s2">&quot;CODE&quot;</span><span class="p">,</span>
@@ -3556,7 +3556,7 @@
     <span class="p">)</span>
 
 <span class="k">class</span> <span class="nc">PresenceEnum</span><span class="p">(</span><span class="n">EnumDefinitionImpl</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    enumeration of conditions by which a slot value should be set</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">UNCOMMITTED</span> <span class="o">=</span> <span class="n">PermissibleValue</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s2">&quot;UNCOMMITTED&quot;</span><span class="p">)</span>
@@ -3569,7 +3569,7 @@
     <span class="p">)</span>
 
 <span class="k">class</span> <span class="nc">RelationalRoleEnum</span><span class="p">(</span><span class="n">EnumDefinitionImpl</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    enumeration of roles a slot on a relationship class can play</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">SUBJECT</span> <span class="o">=</span> <span class="n">PermissibleValue</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s2">&quot;SUBJECT&quot;</span><span class="p">,</span>
@@ -3628,9 +3628,7 @@
             
           </div>
           <div class="right-details">
-            <div class="icons">
-              
-            </div>
+            
           </div>
         </div>
         

@@ -5,10 +5,10 @@
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="How-to Guides" href="../howtos/index.html" /><link rel="prev" title="TerminusDB" href="terminusdb.html" />
 
-    <meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
+    <!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
         <title>Excel Spreadsheet - linkml documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     
     
@@ -152,7 +152,7 @@
   <span class="sidebar-brand-text">linkml  documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
-  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form>
@@ -226,7 +226,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../howtos/yq-for-schemas.html">Using yq for querying and manipulating schemas</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtos/using-jsonld.html">Using JSON-LD</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtos/port-linkml.html">Porting LinkML tools to other programming languages</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../howtos/linkml-ws.html">LinkML Workspace Generator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtos/linkml-project-cookiecutter.html">LinkML Project Cookiecutter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtos/model-measurements.html">How to model quantities and measurements</a></li>
 </ul>
 </li>
@@ -311,7 +311,7 @@ input, the generated Excel spreadsheet looks as follows: <a class="reference ext
 <section id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Permalink to this heading">#</a></h2>
 <p>You can create an Excel template of a LinkML schema as follows:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gen-excel ~/path/to/personinfo.yaml --output ~/path/to/personinfo.xlsx
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gen-excel<span class="w"> </span>~/path/to/personinfo.yaml<span class="w"> </span>--output<span class="w"> </span>~/path/to/personinfo.xlsx
 </pre></div>
 </div>
 <p>Currently, in the generated Excel workbook there can be one or more associated worksheets, each corresponding to classes
@@ -333,7 +333,7 @@ that is of enum type will have associated drop downs for all cells corresponding
 <section id="gen-excel">
 <h4>gen-excel<a class="headerlink" href="#gen-excel" title="Permalink to this heading">#</a></h4>
 <p>Generate Excel representation of a LinkML model</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>gen-excel <span class="o">[</span>OPTIONS<span class="o">]</span> YAMLFILE
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>gen-excel<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>YAMLFILE
 </pre></div>
 </div>
 <p class="rubric">Options</p>
@@ -355,7 +355,7 @@ that is of enum type will have associated drop downs for all cells corresponding
 <dd><p>Output format</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
-<dd class="field-odd"><p>xlsx</p>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">xlsx</span></code></p>
 </dd>
 <dt class="field-even">Options<span class="colon">:</span></dt>
 <dd class="field-even"><p>xlsx</p>
@@ -369,7 +369,7 @@ that is of enum type will have associated drop downs for all cells corresponding
 <dd><p>Include metadata in output</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
-<dd class="field-odd"><p>True</p>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p>
 </dd>
 </dl>
 </dd></dl>
@@ -380,7 +380,7 @@ that is of enum type will have associated drop downs for all cells corresponding
 <dd><p>Include metadata in output</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
-<dd class="field-odd"><p>True</p>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p>
 </dd>
 </dl>
 </dd></dl>
@@ -397,7 +397,7 @@ that is of enum type will have associated drop downs for all cells corresponding
 <dd><p>Logging level</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
-<dd class="field-odd"><p>WARNING</p>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">WARNING</span></code></p>
 </dd>
 <dt class="field-even">Options<span class="colon">:</span></dt>
 <dd class="field-even"><p>CRITICAL | ERROR | WARNING | INFO | DEBUG</p>
@@ -475,9 +475,7 @@ that is of enum type will have associated drop downs for all cells corresponding
             
           </div>
           <div class="right-details">
-            <div class="icons">
-              
-            </div>
+            
           </div>
         </div>
         

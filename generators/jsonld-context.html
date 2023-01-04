@@ -5,10 +5,10 @@
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="SPARQL" href="sparql.html" /><link rel="prev" title="GraphQL" href="graphql.html" />
 
-    <meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
+    <!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
         <title>JSON-LD Contexts - linkml documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     
     
@@ -152,7 +152,7 @@
   <span class="sidebar-brand-text">linkml  documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
-  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form>
@@ -226,7 +226,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../howtos/yq-for-schemas.html">Using yq for querying and manipulating schemas</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtos/using-jsonld.html">Using JSON-LD</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtos/port-linkml.html">Porting LinkML tools to other programming languages</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../howtos/linkml-ws.html">LinkML Workspace Generator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtos/linkml-project-cookiecutter.html">LinkML Project Cookiecutter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtos/model-measurements.html">How to model quantities and measurements</a></li>
 </ul>
 </li>
@@ -310,7 +310,7 @@ directives except at the top level.</p>
 <h2>Overview<a class="headerlink" href="#overview" title="Permalink to this heading">#</a></h2>
 <p><a class="reference external" href="https://www.w3.org/TR/json-ld/#the-context">JSON-LD context</a>
 provides mapping from JSON to RDF.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gen-jsonld-context personinfo.yaml &gt; personinfo.context.jsonld
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gen-jsonld-context<span class="w"> </span>personinfo.yaml<span class="w"> </span>&gt;<span class="w"> </span>personinfo.context.jsonld
 </pre></div>
 </div>
 <p>You can control the output via
@@ -342,12 +342,12 @@ i.e this is not correct:</p>
 </div>
 <p>However, the former can still be convenient, so this can be done with
 a flag:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gen-jsonld-context --flatprefixes personinfo.yaml &gt; personinfo.context.jsonld
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gen-jsonld-context<span class="w"> </span>--flatprefixes<span class="w"> </span>personinfo.yaml<span class="w"> </span>&gt;<span class="w"> </span>personinfo.context.jsonld
 </pre></div>
 </div>
 <p>However, this is not recommended and newer applications should switch
 to gen-prefix-map:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gen-prefix-map --flatprefixes personinfo.yaml &gt; personinfo.prefixmap.json
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gen-prefix-map<span class="w"> </span>--flatprefixes<span class="w"> </span>personinfo.yaml<span class="w"> </span>&gt;<span class="w"> </span>personinfo.prefixmap.json
 </pre></div>
 </div>
 </section>
@@ -358,7 +358,7 @@ to gen-prefix-map:</p>
 <section id="gen-jsonld-context">
 <h4>gen-jsonld-context<a class="headerlink" href="#gen-jsonld-context" title="Permalink to this heading">#</a></h4>
 <p>Generate jsonld &#64;context definition from LinkML model</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>gen-jsonld-context <span class="o">[</span>OPTIONS<span class="o">]</span> YAMLFILE
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>gen-jsonld-context<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>YAMLFILE
 </pre></div>
 </div>
 <p class="rubric">Options</p>
@@ -374,7 +374,7 @@ to gen-prefix-map:</p>
 <dd><p>Emit context for prefixes (default=–prefixes)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
-<dd class="field-odd"><p>True</p>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p>
 </dd>
 </dl>
 </dd></dl>
@@ -385,7 +385,7 @@ to gen-prefix-map:</p>
 <dd><p>Emit context for model elements (default=–model)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
-<dd class="field-odd"><p>True</p>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p>
 </dd>
 </dl>
 </dd></dl>
@@ -396,7 +396,7 @@ to gen-prefix-map:</p>
 <dd><p>Emit non-JSON-LD compliant prefixes as an object (deprecated: use gen-prefix-map instead).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
-<dd class="field-odd"><p>False</p>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p>
 </dd>
 </dl>
 </dd></dl>
@@ -413,7 +413,7 @@ to gen-prefix-map:</p>
 <dd><p>Output format</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
-<dd class="field-odd"><p>context</p>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">context</span></code></p>
 </dd>
 <dt class="field-even">Options<span class="colon">:</span></dt>
 <dd class="field-even"><p>context | json</p>
@@ -427,7 +427,7 @@ to gen-prefix-map:</p>
 <dd><p>Include metadata in output</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
-<dd class="field-odd"><p>True</p>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p>
 </dd>
 </dl>
 </dd></dl>
@@ -438,7 +438,7 @@ to gen-prefix-map:</p>
 <dd><p>Include metadata in output</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
-<dd class="field-odd"><p>True</p>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p>
 </dd>
 </dl>
 </dd></dl>
@@ -455,7 +455,7 @@ to gen-prefix-map:</p>
 <dd><p>Logging level</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
-<dd class="field-odd"><p>WARNING</p>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">WARNING</span></code></p>
 </dd>
 <dt class="field-even">Options<span class="colon">:</span></dt>
 <dd class="field-even"><p>CRITICAL | ERROR | WARNING | INFO | DEBUG</p>
@@ -552,9 +552,7 @@ to gen-prefix-map:</p>
             
           </div>
           <div class="right-details">
-            <div class="icons">
-              
-            </div>
+            
           </div>
         </div>
         

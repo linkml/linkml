@@ -5,10 +5,10 @@
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Typescript" href="typescript.html" /><link rel="prev" title="Pydantic" href="pydantic.html" />
 
-    <meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
+    <!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
         <title>Java - linkml documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     
     
@@ -152,7 +152,7 @@
   <span class="sidebar-brand-text">linkml  documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
-  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form>
@@ -226,7 +226,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../howtos/yq-for-schemas.html">Using yq for querying and manipulating schemas</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtos/using-jsonld.html">Using JSON-LD</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtos/port-linkml.html">Porting LinkML tools to other programming languages</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../howtos/linkml-ws.html">LinkML Workspace Generator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtos/linkml-project-cookiecutter.html">LinkML Project Cookiecutter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtos/model-measurements.html">How to model quantities and measurements</a></li>
 </ul>
 </li>
@@ -309,7 +309,7 @@ classes with alternate annotations or additional documentation.</p>
 <section id="gen-java">
 <h4>gen-java<a class="headerlink" href="#gen-java" title="Permalink to this heading">#</a></h4>
 <p>Generate java classes to represent a LinkML model</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>gen-java <span class="o">[</span>OPTIONS<span class="o">]</span> YAMLFILE
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>gen-java<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>YAMLFILE
 </pre></div>
 </div>
 <p class="rubric">Options</p>
@@ -343,7 +343,7 @@ classes with alternate annotations or additional documentation.</p>
 <dd><p>Output directory for individually generated class files</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
-<dd class="field-odd"><p>output</p>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">output</span></code></p>
 </dd>
 </dl>
 </dd></dl>
@@ -354,7 +354,7 @@ classes with alternate annotations or additional documentation.</p>
 <dd><p>Output format</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
-<dd class="field-odd"><p>java</p>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">java</span></code></p>
 </dd>
 <dt class="field-even">Options<span class="colon">:</span></dt>
 <dd class="field-even"><p>java</p>
@@ -368,7 +368,7 @@ classes with alternate annotations or additional documentation.</p>
 <dd><p>Include metadata in output</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
-<dd class="field-odd"><p>True</p>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p>
 </dd>
 </dl>
 </dd></dl>
@@ -379,7 +379,7 @@ classes with alternate annotations or additional documentation.</p>
 <dd><p>Include metadata in output</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
-<dd class="field-odd"><p>True</p>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p>
 </dd>
 </dl>
 </dd></dl>
@@ -396,7 +396,7 @@ classes with alternate annotations or additional documentation.</p>
 <dd><p>Logging level</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
-<dd class="field-odd"><p>WARNING</p>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">WARNING</span></code></p>
 </dd>
 <dt class="field-even">Options<span class="colon">:</span></dt>
 <dd class="field-even"><p>CRITICAL | ERROR | WARNING | INFO | DEBUG</p>
@@ -467,20 +467,20 @@ classes with alternate annotations or additional documentation.</p>
 <section id="biolink-example">
 <h2>Biolink Example<a class="headerlink" href="#biolink-example" title="Permalink to this heading">#</a></h2>
 <p>Begin by downloading the Biolink Model YAML and adding a virtual environment and installing linkml.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl -OJ https://raw.githubusercontent.com/biolink/biolink-model/master/biolink-model.yaml
-python3 -m venv venv
-<span class="nb">source</span> venv/bin/activate
-pip install linkml
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>-OJ<span class="w"> </span>https://raw.githubusercontent.com/biolink/biolink-model/master/biolink-model.yaml
+python3<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>venv
+<span class="nb">source</span><span class="w"> </span>venv/bin/activate
+pip<span class="w"> </span>install<span class="w"> </span>linkml
 </pre></div>
 </div>
 <p>Now generate the classes using the <cite>gen-java</cite> command</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gen-java --package org.biolink.model --output_directory org/biolink/model biolink-model.yaml
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gen-java<span class="w"> </span>--package<span class="w"> </span>org.biolink.model<span class="w"> </span>--output_directory<span class="w"> </span>org/biolink/model<span class="w"> </span>biolink-model.yaml
 </pre></div>
 </div>
 <p>Finally, fetch the Lombok jar, build the java classes and package into a jar file</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl -OJ https://repo1.maven.org/maven2/org/projectlombok/lombok/1.18.20/lombok-1.18.20.jar
-javac org/biolink/model/*.java -cp lombok-1.18.20.jar
-jar -cf biolink-model.jar org
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>-OJ<span class="w"> </span>https://repo1.maven.org/maven2/org/projectlombok/lombok/1.18.20/lombok-1.18.20.jar
+javac<span class="w"> </span>org/biolink/model/*.java<span class="w"> </span>-cp<span class="w"> </span>lombok-1.18.20.jar
+jar<span class="w"> </span>-cf<span class="w"> </span>biolink-model.jar<span class="w"> </span>org
 </pre></div>
 </div>
 </section>
@@ -554,9 +554,7 @@ public class {{ cls.name }} {% if cls.is_a -%} extends {{ cls.is_a }} {%- endif 
             
           </div>
           <div class="right-details">
-            <div class="icons">
-              
-            </div>
+            
           </div>
         </div>
         

@@ -5,10 +5,10 @@
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Working with RDF and LinkML" href="rdf.html" /><link rel="prev" title="Converting between different representations" href="conversion.html" />
 
-    <meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
+    <!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
         <title>Data Validation - linkml documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     
     
@@ -152,7 +152,7 @@
   <span class="sidebar-brand-text">linkml  documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
-  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form>
@@ -226,7 +226,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../howtos/yq-for-schemas.html">Using yq for querying and manipulating schemas</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtos/using-jsonld.html">Using JSON-LD</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtos/port-linkml.html">Porting LinkML tools to other programming languages</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../howtos/linkml-ws.html">LinkML Workspace Generator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtos/linkml-project-cookiecutter.html">LinkML Project Cookiecutter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtos/model-measurements.html">How to model quantities and measurements</a></li>
 </ul>
 </li>
@@ -329,32 +329,32 @@ of massive databases.</p>
 <li><p>execution of those queries on an in-memory graph or external triplestore</p></li>
 </ul>
 <p>The user can choose to run only the first step, to obtain a bank of SPARQL queries that can be applied selectively</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>linkml-sparql-validate --help
-Usage: linkml-sparql-validate <span class="o">[</span>OPTIONS<span class="o">]</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>linkml-sparql-validate<span class="w"> </span>--help
+Usage:<span class="w"> </span>linkml-sparql-validate<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span>
 
-  Validates sparql
+<span class="w">  </span>Validates<span class="w"> </span>sparql
 
-  Example:
+<span class="w">  </span>Example:
 
-      linkml-sparql-validate -U http://sparql.hegroup.org/sparql -s
-      tests/test_validation/input/omo.yaml
+<span class="w">      </span>linkml-sparql-validate<span class="w"> </span>-U<span class="w"> </span>http://sparql.hegroup.org/sparql<span class="w"> </span>-s
+<span class="w">      </span>tests/test_validation/input/omo.yaml
 
 Options:
-  -G, --named-graph TEXT          Constrain query to a named graph
-  -i, --input TEXT                Input file to validate
-  -U, --endpoint-url TEXT         URL of sparql endpoint
-  -L, --limit TEXT                Max results per query
-  -o, --output TEXT               Path to report file
-  -f, --input-format <span class="o">[</span>yaml<span class="p">|</span>json<span class="p">|</span>rdf<span class="p">|</span>csv<span class="p">|</span>tsv<span class="o">]</span>
-                                  Input format. Inferred from input suffix <span class="k">if</span>
-                                  not specified
+<span class="w">  </span>-G,<span class="w"> </span>--named-graph<span class="w"> </span>TEXT<span class="w">          </span>Constrain<span class="w"> </span>query<span class="w"> </span>to<span class="w"> </span>a<span class="w"> </span>named<span class="w"> </span>graph
+<span class="w">  </span>-i,<span class="w"> </span>--input<span class="w"> </span>TEXT<span class="w">                </span>Input<span class="w"> </span>file<span class="w"> </span>to<span class="w"> </span>validate
+<span class="w">  </span>-U,<span class="w"> </span>--endpoint-url<span class="w"> </span>TEXT<span class="w">         </span>URL<span class="w"> </span>of<span class="w"> </span>sparql<span class="w"> </span>endpoint
+<span class="w">  </span>-L,<span class="w"> </span>--limit<span class="w"> </span>TEXT<span class="w">                </span>Max<span class="w"> </span>results<span class="w"> </span>per<span class="w"> </span>query
+<span class="w">  </span>-o,<span class="w"> </span>--output<span class="w"> </span>TEXT<span class="w">               </span>Path<span class="w"> </span>to<span class="w"> </span>report<span class="w"> </span>file
+<span class="w">  </span>-f,<span class="w"> </span>--input-format<span class="w"> </span><span class="o">[</span>yaml<span class="p">|</span>json<span class="p">|</span>rdf<span class="p">|</span>csv<span class="p">|</span>tsv<span class="o">]</span>
+<span class="w">                                  </span>Input<span class="w"> </span>format.<span class="w"> </span>Inferred<span class="w"> </span>from<span class="w"> </span>input<span class="w"> </span>suffix<span class="w"> </span><span class="k">if</span>
+<span class="w">                                  </span>not<span class="w"> </span>specified
 
-  -t, --output-format <span class="o">[</span>yaml<span class="p">|</span>json<span class="p">|</span>rdf<span class="p">|</span>csv<span class="p">|</span>tsv<span class="o">]</span>
-                                  Output format. Inferred from output suffix
-                                  <span class="k">if</span> not specified
+<span class="w">  </span>-t,<span class="w"> </span>--output-format<span class="w"> </span><span class="o">[</span>yaml<span class="p">|</span>json<span class="p">|</span>rdf<span class="p">|</span>csv<span class="p">|</span>tsv<span class="o">]</span>
+<span class="w">                                  </span>Output<span class="w"> </span>format.<span class="w"> </span>Inferred<span class="w"> </span>from<span class="w"> </span>output<span class="w"> </span>suffix
+<span class="w">                                  </span><span class="k">if</span><span class="w"> </span>not<span class="w"> </span>specified
 
-  -s, --schema TEXT               Path to schema specified as LinkML yaml
-  --help                          Show this message and exit.
+<span class="w">  </span>-s,<span class="w"> </span>--schema<span class="w"> </span>TEXT<span class="w">               </span>Path<span class="w"> </span>to<span class="w"> </span>schema<span class="w"> </span>specified<span class="w"> </span>as<span class="w"> </span>LinkML<span class="w"> </span>yaml
+<span class="w">  </span>--help<span class="w">                          </span>Show<span class="w"> </span>this<span class="w"> </span>message<span class="w"> </span>and<span class="w"> </span>exit.
 </pre></div>
 </div>
 </section>
@@ -424,9 +424,7 @@ Options:
             
           </div>
           <div class="right-details">
-            <div class="icons">
-              
-            </div>
+            
           </div>
         </div>
         

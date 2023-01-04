@@ -4,10 +4,10 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
-    <meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
+    <!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
         <title>linkml.generators.pythongen - linkml documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     
     
@@ -151,7 +151,7 @@
   <span class="sidebar-brand-text">linkml  documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
-  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form>
@@ -225,7 +225,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../howtos/yq-for-schemas.html">Using yq for querying and manipulating schemas</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../howtos/using-jsonld.html">Using JSON-LD</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../howtos/port-linkml.html">Porting LinkML tools to other programming languages</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../howtos/linkml-ws.html">LinkML Workspace Generator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../howtos/linkml-project-cookiecutter.html">LinkML Project Cookiecutter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../howtos/model-measurements.html">How to model quantities and measurements</a></li>
 </ul>
 </li>
@@ -328,7 +328,7 @@
 
 <div class="viewcode-block" id="PythonGenerator"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.pythongen.PythonGenerator">[docs]</a><span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">PythonGenerator</span><span class="p">(</span><span class="n">Generator</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generates Python dataclasses from a LinkML model</span>
 
 <span class="sd">    See `Python Generator Docs &lt;https://linkml.io/linkml/generators/python.html&gt;`_</span>
@@ -364,7 +364,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">source_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sourcefile</span><span class="p">)</span>
 
 <div class="viewcode-block" id="PythonGenerator.compile_module"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.pythongen.PythonGenerator.compile_module">[docs]</a>    <span class="k">def</span> <span class="nf">compile_module</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ModuleType</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compiles generated python code to a module</span>
 <span class="sd">        :return:</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -426,18 +426,18 @@
             <span class="n">split_line</span><span class="p">(</span><span class="n">be</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">description</span><span class="p">),</span> <span class="n">split_len</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
         <span class="p">)</span>
         <span class="n">head</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;&quot;&quot;# Auto generated from </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">source_file</span><span class="si">}</span><span class="s2"> by </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">generatorname</span><span class="si">}</span><span class="s2"> version: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">generatorversion</span><span class="si">}</span><span class="s2"></span>
-<span class="s2"># Generation date: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">generation_date</span><span class="si">}</span><span class="s2"></span>
-<span class="s2"># Schema: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"></span>
+            <span class="sa">f</span><span class="s2">&quot;&quot;&quot;# Auto generated from </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">source_file</span><span class="si">}</span><span class="s2"> by </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">generatorname</span><span class="si">}</span><span class="s2"> version: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">generatorversion</span><span class="si">}</span>
+<span class="s2"># Generation date: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">generation_date</span><span class="si">}</span>
+<span class="s2"># Schema: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">name</span><span class="si">}</span>
 <span class="s2">#&quot;&quot;&quot;</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">emit_metadata</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">generation_date</span>
             <span class="k">else</span> <span class="s2">&quot;&quot;</span>
         <span class="p">)</span>
 
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span><span class="si">{</span><span class="n">head</span><span class="si">}</span><span class="s2"></span>
-<span class="s2"># id: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"></span>
-<span class="s2"># description: </span><span class="si">{</span><span class="n">split_descripton</span><span class="si">}</span><span class="s2"></span>
-<span class="s2"># license: </span><span class="si">{</span><span class="n">be</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">license</span><span class="p">)</span><span class="si">}</span><span class="s2"></span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span><span class="si">{</span><span class="n">head</span><span class="si">}</span>
+<span class="s2"># id: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">id</span><span class="si">}</span>
+<span class="s2"># description: </span><span class="si">{</span><span class="n">split_descripton</span><span class="si">}</span>
+<span class="s2"># license: </span><span class="si">{</span><span class="n">be</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">license</span><span class="p">)</span><span class="si">}</span>
 
 <span class="s2">import dataclasses</span>
 <span class="s2">import sys</span>
@@ -445,36 +445,36 @@
 <span class="s2">from jsonasobj2 import JsonObj, as_dict</span>
 <span class="s2">from typing import Optional, List, Union, Dict, ClassVar, Any</span>
 <span class="s2">from dataclasses import dataclass</span>
-<span class="si">{</span><span class="n">enumimports</span><span class="si">}</span><span class="s2"></span>
+<span class="si">{</span><span class="n">enumimports</span><span class="si">}</span>
 <span class="s2">from linkml_runtime.utils.slot import Slot</span>
 <span class="s2">from linkml_runtime.utils.metamodelcore import empty_list, empty_dict, bnode</span>
 <span class="s2">from linkml_runtime.utils.yamlutils import YAMLRoot, extended_str, extended_float, extended_int</span>
 <span class="s2">from linkml_runtime.utils.dataclass_extensions_376 import dataclasses_init_fn_with_kwargs</span>
 <span class="s2">from linkml_runtime.utils.formatutils import camelcase, underscore, sfx</span>
-<span class="si">{</span><span class="n">handlerimport</span><span class="si">}</span><span class="s2"></span>
+<span class="si">{</span><span class="n">handlerimport</span><span class="si">}</span>
 <span class="s2">from rdflib import Namespace, URIRef</span>
 <span class="s2">from linkml_runtime.utils.curienamespace import CurieNamespace</span>
-<span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">gen_imports</span><span class="p">()</span><span class="si">}</span><span class="s2"></span>
+<span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">gen_imports</span><span class="p">()</span><span class="si">}</span>
 
 <span class="s2">metamodel_version = &quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">metamodel_version</span><span class="si">}</span><span class="s2">&quot;</span>
-<span class="s2">version = </span><span class="si">{</span><span class="s1">&#39;&quot;&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">version</span> <span class="o">+</span> <span class="s1">&#39;&quot;&#39;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">version</span> <span class="k">else</span> <span class="kc">None</span><span class="si">}</span><span class="s2"></span>
+<span class="s2">version = </span><span class="si">{</span><span class="s1">&#39;&quot;&#39;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">version</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s1">&#39;&quot;&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">version</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="kc">None</span><span class="si">}</span>
 
 <span class="s2"># Overwrite dataclasses _init_fn to add **kwargs in __init__</span>
 <span class="s2">dataclasses._init_fn = dataclasses_init_fn_with_kwargs</span>
 
 <span class="s2"># Namespaces</span>
-<span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">gen_namespaces</span><span class="p">()</span><span class="si">}</span><span class="s2"></span>
+<span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">gen_namespaces</span><span class="p">()</span><span class="si">}</span>
 
 
 <span class="s2"># Types</span>
-<span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">gen_typedefs</span><span class="p">()</span><span class="si">}</span><span class="s2"></span>
+<span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">gen_typedefs</span><span class="p">()</span><span class="si">}</span>
 <span class="s2"># Class references</span>
-<span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">gen_references</span><span class="p">()</span><span class="si">}</span><span class="s2"></span>
+<span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">gen_references</span><span class="p">()</span><span class="si">}</span>
 
-<span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">gen_classdefs</span><span class="p">()</span><span class="si">}</span><span class="s2"></span>
+<span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">gen_classdefs</span><span class="p">()</span><span class="si">}</span>
 
 <span class="s2"># Enumerations</span>
-<span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">gen_enumerations</span><span class="p">()</span><span class="si">}</span><span class="s2"></span>
+<span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">gen_enumerations</span><span class="p">()</span><span class="si">}</span>
 
 <span class="s2"># Slots</span>
 <span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">gen_slotdefs</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;&quot;&quot;</span></div>
@@ -492,7 +492,7 @@
         <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">listents</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="PythonGenerator.gen_import_list"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.pythongen.PythonGenerator.gen_import_list">[docs]</a>    <span class="k">def</span> <span class="nf">gen_import_list</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate a list of types to import</span>
 
 <span class="sd">        :return: source file followed by elements to import</span>
@@ -610,7 +610,7 @@
         <span class="p">)</span>
         <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
             <span class="p">[</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pfx</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2"> = CurieNamespace(&#39;</span><span class="si">{</span><span class="n">pfx</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39;, &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="p">[</span><span class="n">pfx</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39;)&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pfx</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;_&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;_&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2"> = CurieNamespace(&#39;</span><span class="si">{</span><span class="n">pfx</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;_&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39;, &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="p">[</span><span class="n">pfx</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39;)&quot;</span>
                 <span class="k">for</span> <span class="n">pfx</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">emit_prefixes</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">pfx</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span>
             <span class="p">]</span>
@@ -618,7 +618,7 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="PythonGenerator.gen_references"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.pythongen.PythonGenerator.gen_references">[docs]</a>    <span class="k">def</span> <span class="nf">gen_references</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Generate python type declarations for all identifiers (primary keys)&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate python type declarations for all identifiers (primary keys)&quot;&quot;&quot;</span>
         <span class="n">rval</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sort_classes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">classes</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">cls</span><span class="o">.</span><span class="n">imported_from</span><span class="p">:</span>
@@ -655,7 +655,7 @@
         <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n\n\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rval</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="PythonGenerator.gen_typedefs"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.pythongen.PythonGenerator.gen_typedefs">[docs]</a>    <span class="k">def</span> <span class="nf">gen_typedefs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Generate python type declarations for all defined types&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate python type declarations for all defined types&quot;&quot;&quot;</span>
         <span class="n">rval</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">typ</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">types</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">typ</span><span class="o">.</span><span class="n">imported_from</span><span class="p">:</span>
@@ -675,16 +675,16 @@
         <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rval</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="PythonGenerator.gen_classdefs"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.pythongen.PythonGenerator.gen_classdefs">[docs]</a>    <span class="k">def</span> <span class="nf">gen_classdefs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Create class definitions for all non-mixin classes in the model</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create class definitions for all non-mixin classes in the model</span>
 <span class="sd">        Note that apply_to classes are transformed to mixins</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">clist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sort_classes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">classes</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
         <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">gen_classdef</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">clist</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">v</span><span class="o">.</span><span class="n">imported_from</span><span class="p">])</span></div>
 
 <div class="viewcode-block" id="PythonGenerator.gen_classdef"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.pythongen.PythonGenerator.gen_classdef">[docs]</a>    <span class="k">def</span> <span class="nf">gen_classdef</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Generate python definition for class cls&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate python definition for class cls&quot;&quot;&quot;</span>
 
-        <span class="n">parentref</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">formatted_element_name</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">is_a</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span> <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">is_a</span> <span class="k">else</span> <span class="s2">&quot;YAMLRoot&quot;</span><span class="si">}</span><span class="s1">)&#39;</span>
+        <span class="n">parentref</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">formatted_element_name</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">is_a</span><span class="p">,</span><span class="w"> </span><span class="kc">True</span><span class="p">)</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="bp">cls</span><span class="o">.</span><span class="n">is_a</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s2">&quot;YAMLRoot&quot;</span><span class="si">}</span><span class="s1">)&#39;</span>
         <span class="n">slotdefs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gen_class_variables</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
         <span class="n">postinits</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gen_postinits</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
 
@@ -788,7 +788,7 @@
         <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n\t</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">vars</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="PythonGenerator.gen_class_variables"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.pythongen.PythonGenerator.gen_class_variables">[docs]</a>    <span class="k">def</span> <span class="nf">gen_class_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate the variable declarations for a dataclass.</span>
 
 <span class="sd">        :param cls: class containing variables to be rendered in inheritence hierarchy</span>
@@ -843,7 +843,7 @@
 <div class="viewcode-block" id="PythonGenerator.gen_class_variable"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.pythongen.PythonGenerator.gen_class_variable">[docs]</a>    <span class="k">def</span> <span class="nf">gen_class_variable</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">,</span> <span class="n">can_be_positional</span><span class="p">:</span> <span class="nb">bool</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate a class variable declaration for the supplied slot.  Note: the can_be_positional attribute works,</span>
 <span class="sd">        but it makes tag/value lists unduly complex, as you can&#39;t load them with tag=..., value=... -- you HAVE</span>
 <span class="sd">        to load positionally. We currently ignore this parameter, meaning that we have a tag/value option for</span>
@@ -874,7 +874,7 @@
         <span class="bp">cls</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClassDefinition</span><span class="p">],</span>
         <span class="n">positional_allowed</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the range type including initializers, etc.</span>
 <span class="sd">        Generate a class variable declaration for the supplied slot.  Note: the positional_allowed attribute works,</span>
 <span class="sd">        but it makes tag/value lists unduly complex, as you can&#39;t load them with tag=..., value=... -- you HAVE</span>
@@ -939,7 +939,7 @@
 <div class="viewcode-block" id="PythonGenerator.class_reference_type"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.pythongen.PythonGenerator.class_reference_type">[docs]</a>    <span class="k">def</span> <span class="nf">class_reference_type</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClassDefinition</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the type of a slot referencing a class</span>
 
 <span class="sd">        :param slot: slot to be typed</span>
@@ -967,7 +967,7 @@
 
 <div class="viewcode-block" id="PythonGenerator.gen_class_reference"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.pythongen.PythonGenerator.gen_class_reference">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">gen_class_reference</span><span class="p">(</span><span class="n">rangelist</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a basic or a union type depending on the number of elements in range list</span>
 
 <span class="sd">        :param rangelist: List of types from distal to proximal</span>
@@ -977,7 +977,7 @@
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Union[</span><span class="si">{</span><span class="n">base</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">rangelist</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">]&quot;</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">rangelist</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">base</span></div>
 
 <div class="viewcode-block" id="PythonGenerator.gen_postinits"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.pythongen.PythonGenerator.gen_postinits">[docs]</a>    <span class="k">def</span> <span class="nf">gen_postinits</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Generate all the typing and existence checks post initialize&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate all the typing and existence checks post initialize&quot;&quot;&quot;</span>
         <span class="n">post_inits_pre_super</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">slot</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">domain_slots</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">ifabsent</span><span class="p">:</span>
@@ -1019,7 +1019,7 @@
             <span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):</span>
-<span class="s2">        </span><span class="si">{</span><span class="n">post_inits_pre_super_line</span><span class="si">}{</span><span class="n">post_inits_line</span><span class="si">}</span><span class="s2"></span>
+<span class="s2">        </span><span class="si">{</span><span class="n">post_inits_pre_super_line</span><span class="si">}{</span><span class="n">post_inits_line</span><span class="si">}</span>
 <span class="s2">        super().__post_init__(**kwargs)&quot;&quot;&quot;</span>
                 <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
             <span class="p">)</span>
@@ -1051,7 +1051,7 @@
         <span class="k">return</span> <span class="n">slist</span>
 
 <div class="viewcode-block" id="PythonGenerator.is_key_value_class"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.pythongen.PythonGenerator.is_key_value_class">[docs]</a>    <span class="k">def</span> <span class="nf">is_key_value_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">range_name</span><span class="p">:</span> <span class="n">DefinitionName</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return True if range_name references a class with exactly one key and one value</span>
 
 <span class="sd">        :param range_name: class definition (name)</span>
@@ -1065,7 +1065,7 @@
         <span class="k">return</span> <span class="kc">False</span></div>
 
 <div class="viewcode-block" id="PythonGenerator.gen_postinit"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.pythongen.PythonGenerator.gen_postinit">[docs]</a>    <span class="k">def</span> <span class="nf">gen_postinit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Generate python post init rules for slot in class&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate python post init rules for slot in class&quot;&quot;&quot;</span>
         <span class="n">rlines</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
 
         <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">classes</span><span class="p">:</span>
@@ -1177,7 +1177,7 @@
         <span class="n">test</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">SlotDefinition</span><span class="p">],</span> <span class="nb">bool</span><span class="p">],</span>
         <span class="n">first_hit_only</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">SlotDefinition</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Return the representation for the set of own slots in cls that pass test</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the representation for the set of own slots in cls that pass test</span>
 
 <span class="sd">        :param cls: Class containing a set of slots</span>
 <span class="sd">        :param test: Slot test function</span>
@@ -1191,7 +1191,7 @@
                     <span class="k">break</span>
 
 <div class="viewcode-block" id="PythonGenerator.primary_keys_for"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.pythongen.PythonGenerator.primary_keys_for">[docs]</a>    <span class="k">def</span> <span class="nf">primary_keys_for</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">SlotDefinitionName</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Return the primary key for cls.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the primary key for cls.</span>
 
 <span class="sd">        Note: At the moment we return at most one entry.  At some point, keys will be expanded to support</span>
 <span class="sd">              composite keys.</span>
@@ -1212,7 +1212,7 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
 <div class="viewcode-block" id="PythonGenerator.range_type_name"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.pythongen.PythonGenerator.range_type_name">[docs]</a>    <span class="k">def</span> <span class="nf">range_type_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Generate the type name for the slot&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate the type name for the slot&quot;&quot;&quot;</span>
         <span class="n">cidpath</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">slot_range_path</span><span class="p">(</span><span class="n">slot</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">cidpath</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">cidpath</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -1220,7 +1220,7 @@
             <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Union[</span><span class="si">{</span><span class="n">cidpath</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">cidpath</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">]&quot;</span></div>
 
 <div class="viewcode-block" id="PythonGenerator.forward_reference"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.pythongen.PythonGenerator.forward_reference">[docs]</a>    <span class="k">def</span> <span class="nf">forward_reference</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slot_range</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">owning_class</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Determine whether slot_range is a forward reference&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Determine whether slot_range is a forward reference&quot;&quot;&quot;</span>
         <span class="c1">#logging.info(f&quot;CHECKING: {slot_range} {owning_class}&quot;)</span>
         <span class="k">if</span> <span class="p">(</span>
             <span class="n">slot_range</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">classes</span>
@@ -1245,7 +1245,7 @@
 <div class="viewcode-block" id="PythonGenerator.python_uri_for"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.pythongen.PythonGenerator.python_uri_for">[docs]</a>    <span class="k">def</span> <span class="nf">python_uri_for</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">uriorcurie</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">URIRef</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
-        <span class="sd">&quot;&quot;&quot;Return the python form of uriorcurie</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the python form of uriorcurie</span>
 <span class="sd">        :param uriorcurie:</span>
 <span class="sd">        :return: URI and CURIE form</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1326,8 +1326,8 @@
         <span class="n">enum_name</span> <span class="o">=</span> <span class="n">camelcase</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">class </span><span class="si">{</span><span class="n">enum_name</span><span class="si">}</span><span class="s2">(EnumDefinitionImpl):</span>
-<span class="s2">    </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">gen_enum_comment</span><span class="p">(</span><span class="n">enum</span><span class="p">)</span><span class="si">}</span><span class="s2"></span>
-<span class="s2">    </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">gen_enum_description</span><span class="p">(</span><span class="n">enum</span><span class="p">,</span> <span class="n">enum_name</span><span class="p">)</span><span class="si">}</span><span class="s2"></span>
+<span class="s2">    </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">gen_enum_comment</span><span class="p">(</span><span class="n">enum</span><span class="p">)</span><span class="si">}</span>
+<span class="s2">    </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">gen_enum_description</span><span class="p">(</span><span class="n">enum</span><span class="p">,</span><span class="w"> </span><span class="n">enum_name</span><span class="p">)</span><span class="si">}</span>
 <span class="s2">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="PythonGenerator.gen_enum_comment"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.pythongen.PythonGenerator.gen_enum_comment">[docs]</a>    <span class="k">def</span> <span class="nf">gen_enum_comment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">enum</span><span class="p">:</span> <span class="n">EnumDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -1339,14 +1339,14 @@
 
 <div class="viewcode-block" id="PythonGenerator.gen_enum_description"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.pythongen.PythonGenerator.gen_enum_description">[docs]</a>    <span class="k">def</span> <span class="nf">gen_enum_description</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">enum</span><span class="p">:</span> <span class="n">EnumDefinition</span><span class="p">,</span> <span class="n">enum_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">    </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">gen_pvs</span><span class="p">(</span><span class="n">enum</span><span class="p">)</span><span class="si">}</span><span class="s2"></span>
+<span class="s2">    </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">gen_pvs</span><span class="p">(</span><span class="n">enum</span><span class="p">)</span><span class="si">}</span>
 
-<span class="s2">    </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">gen_enum_definition</span><span class="p">(</span><span class="n">enum</span><span class="p">,</span> <span class="n">enum_name</span><span class="p">)</span><span class="si">}</span><span class="s2"></span>
-<span class="s2">    </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">gen_pvs2</span><span class="p">(</span><span class="n">enum</span><span class="p">)</span><span class="si">}</span><span class="s2"></span>
+<span class="s2">    </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">gen_enum_definition</span><span class="p">(</span><span class="n">enum</span><span class="p">,</span><span class="w"> </span><span class="n">enum_name</span><span class="p">)</span><span class="si">}</span>
+<span class="s2">    </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">gen_pvs2</span><span class="p">(</span><span class="n">enum</span><span class="p">)</span><span class="si">}</span>
 <span class="s2">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="PythonGenerator.gen_pvs"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.pythongen.PythonGenerator.gen_pvs">[docs]</a>    <span class="k">def</span> <span class="nf">gen_pvs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">enum</span><span class="p">:</span> <span class="n">EnumDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate the python compliant permissible value initializers as a set of class variables</span>
 <span class="sd">        @param enum:</span>
 <span class="sd">        @return:</span>
@@ -1368,7 +1368,7 @@
         <span class="p">)</span>
         <span class="n">desc</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="se">\t\t</span><span class="s1">description=&quot;</span><span class="si">{</span><span class="n">enum_desc</span><span class="si">}</span><span class="s1">&quot;,</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="k">if</span> <span class="n">enum</span><span class="o">.</span><span class="n">description</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
         <span class="n">cs</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t\t</span><span class="s2">code_set=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">curie_for</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">uri_for</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">code_set</span><span class="p">),</span> <span class="n">default_ok</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">pythonform</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="si">}</span><span class="s2">,</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t\t</span><span class="s2">code_set=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">curie_for</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">uri_for</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">code_set</span><span class="p">),</span><span class="w"> </span><span class="n">default_ok</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="w"> </span><span class="n">pythonform</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="si">}</span><span class="s2">,</span><span class="se">\n</span><span class="s2">&quot;</span>
             <span class="k">if</span> <span class="n">enum</span><span class="o">.</span><span class="n">code_set</span>
             <span class="k">else</span> <span class="s2">&quot;&quot;</span>
         <span class="p">)</span>
@@ -1387,7 +1387,7 @@
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;_defn = EnumDefinition(</span><span class="se">\n\t\t</span><span class="s2">name=&quot;</span><span class="si">{</span><span class="n">enum_name</span><span class="si">}</span><span class="s2">&quot;,</span><span class="se">\n</span><span class="si">{</span><span class="n">desc</span><span class="si">}{</span><span class="n">cs</span><span class="si">}{</span><span class="n">tag</span><span class="si">}{</span><span class="n">ver</span><span class="si">}{</span><span class="n">vf</span><span class="si">}</span><span class="se">\t</span><span class="s2">)&quot;&quot;&quot;</span></div>
 
 <div class="viewcode-block" id="PythonGenerator.gen_pvs2"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.pythongen.PythonGenerator.gen_pvs2">[docs]</a>    <span class="k">def</span> <span class="nf">gen_pvs2</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">enum</span><span class="p">:</span> <span class="n">EnumDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate the non-python compliant permissible value initializers as a set of setattr instructions</span>
 <span class="sd">        @param enum:</span>
 <span class="sd">        @return:</span>
@@ -1415,7 +1415,7 @@
         <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">init_list</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="PythonGenerator.gen_pv_constructor"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.pythongen.PythonGenerator.gen_pv_constructor">[docs]</a>    <span class="k">def</span> <span class="nf">gen_pv_constructor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pv</span><span class="p">:</span> <span class="n">PermissibleValue</span><span class="p">,</span> <span class="n">indent</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate a permissible value constructor</span>
 <span class="sd">        @param pv: Value to be constructed</span>
 <span class="sd">        @param indent: number of additional spaces to add on successive lines</span>
@@ -1470,7 +1470,7 @@
 <span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">version_option</span><span class="p">(</span><span class="n">__version__</span><span class="p">,</span> <span class="s2">&quot;-V&quot;</span><span class="p">,</span> <span class="s2">&quot;--version&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">cli</span><span class="p">(</span><span class="n">yamlfile</span><span class="p">,</span> <span class="n">head</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">genmeta</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">classvars</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">args</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Generate python classes to represent a LinkML model&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate python classes to represent a LinkML model&quot;&quot;&quot;</span>
     <span class="n">gen</span> <span class="o">=</span> <span class="n">PythonGenerator</span><span class="p">(</span>
             <span class="n">yamlfile</span><span class="p">,</span>
             <span class="n">emit_metadata</span><span class="o">=</span><span class="n">head</span><span class="p">,</span>
@@ -1509,9 +1509,7 @@
             
           </div>
           <div class="right-details">
-            <div class="icons">
-              
-            </div>
+            
           </div>
         </div>
         

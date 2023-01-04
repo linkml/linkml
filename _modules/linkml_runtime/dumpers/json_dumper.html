@@ -4,10 +4,10 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
-    <meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
+    <!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
         <title>linkml_runtime.dumpers.json_dumper - linkml documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     
     
@@ -151,7 +151,7 @@
   <span class="sidebar-brand-text">linkml  documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
-  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form>
@@ -225,7 +225,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../howtos/yq-for-schemas.html">Using yq for querying and manipulating schemas</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../howtos/using-jsonld.html">Using JSON-LD</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../howtos/port-linkml.html">Porting LinkML tools to other programming languages</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../howtos/linkml-ws.html">LinkML Workspace Generator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../howtos/linkml-project-cookiecutter.html">LinkML Project Cookiecutter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../howtos/model-measurements.html">How to model quantities and measurements</a></li>
 </ul>
 </li>
@@ -309,7 +309,7 @@
 <div class="viewcode-block" id="JSONDumper"><a class="viewcode-back" href="../../../developers/loaders-and-dumpers.html#linkml_runtime.dumpers.json_dumper.JSONDumper">[docs]</a><span class="k">class</span> <span class="nc">JSONDumper</span><span class="p">(</span><span class="n">Dumper</span><span class="p">):</span>
 
 <div class="viewcode-block" id="JSONDumper.dump"><a class="viewcode-back" href="../../../developers/loaders-and-dumpers.html#linkml_runtime.dumpers.json_dumper.JSONDumper.dump">[docs]</a>    <span class="k">def</span> <span class="nf">dump</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">:</span> <span class="n">YAMLRoot</span><span class="p">,</span> <span class="n">to_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">contexts</span><span class="p">:</span> <span class="n">CONTEXTS_PARAM_TYPE</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Write element as json to to_file</span>
 <span class="sd">        :param element: LinkML object to be serialized as YAML</span>
 <span class="sd">        :param to_file: file to write to</span>
@@ -324,7 +324,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">to_file</span><span class="p">,</span> <span class="n">contexts</span><span class="o">=</span><span class="n">contexts</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="JSONDumper.dumps"><a class="viewcode-back" href="../../../developers/loaders-and-dumpers.html#linkml_runtime.dumpers.json_dumper.JSONDumper.dumps">[docs]</a>    <span class="k">def</span> <span class="nf">dumps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">:</span> <span class="n">YAMLRoot</span><span class="p">,</span> <span class="n">contexts</span><span class="p">:</span> <span class="n">CONTEXTS_PARAM_TYPE</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">inject_type</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return element as a JSON or a JSON-LD string</span>
 <span class="sd">        :param element: LinkML object to be emitted</span>
 <span class="sd">        :param contexts: JSON-LD context(s) in the form of:</span>
@@ -354,7 +354,7 @@
     <span class="nd">@staticmethod</span>
     <span class="nd">@deprecated</span><span class="p">(</span><span class="s2">&quot;Use `utils/formatutils/remove_empty_items` instead&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">remove_empty_items</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Remove empty items from obj</span>
 <span class="sd">        :param obj:</span>
 <span class="sd">        :return: copy of dictionary with empty lists/dicts and Nones removed</span>
@@ -362,7 +362,7 @@
         <span class="k">return</span> <span class="n">formatutils</span><span class="o">.</span><span class="n">remove_empty_items</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">hide_protected_keys</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">to_json_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">:</span> <span class="n">YAMLRoot</span><span class="p">,</span> <span class="n">contexts</span><span class="p">:</span> <span class="n">CONTEXTS_PARAM_TYPE</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">inject_type</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JsonObj</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        As dumps(), except returns a JsonObj, not a string</span>
 
 <span class="sd">        :param element: LinkML object to be emitted</span>
@@ -379,7 +379,7 @@
         <span class="k">return</span> <span class="n">as_json_object</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">contexts</span><span class="p">,</span> <span class="n">inject_type</span><span class="o">=</span><span class="n">inject_type</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">:</span> <span class="n">YAMLRoot</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JsonObj</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        As dumps(), except returns a JsonObj, not a string</span>
 
 <span class="sd">        :param element: LinkML object to be emitted</span>
@@ -414,9 +414,7 @@
             
           </div>
           <div class="right-details">
-            <div class="icons">
-              
-            </div>
+            
           </div>
         </div>
         

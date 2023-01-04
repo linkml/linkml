@@ -5,10 +5,10 @@
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Derived models" href="derived-models.html" /><link rel="prev" title="Mapping schemas to other frameworks" href="generators.html" />
 
-    <meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
+    <!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
         <title>Schema Linter - linkml documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     
     
@@ -152,7 +152,7 @@
   <span class="sidebar-brand-text">linkml  documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
-  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form>
@@ -226,7 +226,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../howtos/yq-for-schemas.html">Using yq for querying and manipulating schemas</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtos/using-jsonld.html">Using JSON-LD</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtos/port-linkml.html">Porting LinkML tools to other programming languages</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../howtos/linkml-ws.html">LinkML Workspace Generator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtos/linkml-project-cookiecutter.html">LinkML Project Cookiecutter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtos/model-measurements.html">How to model quantities and measurements</a></li>
 </ul>
 </li>
@@ -301,46 +301,46 @@
 <h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this heading">#</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">linkml-lint</span></code> command performs checks on a schema which – while valid – may not represent best practices or may indicate a likely mistake in the schema. These checks are referred to as <a class="reference internal" href="#rules"><span class="std std-doc">rules</span></a> and without additional <a class="reference internal" href="#configuration"><span class="std std-doc">configuration</span></a> a default set of rules will be used.</p>
 <p>To lint a single schema file:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>linkml-lint schema.yaml
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>linkml-lint<span class="w"> </span>schema.yaml
 </pre></div>
 </div>
 <p>To recursively lint a directory of schema files:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>linkml-lint schemas
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>linkml-lint<span class="w"> </span>schemas
 </pre></div>
 </div>
 </section>
 <section id="configuration">
 <h2>Configuration<a class="headerlink" href="#configuration" title="Permalink to this heading">#</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">linkml-lint</span></code> command can be configured with a YAML configuration file. The configuration file can be provided using the <code class="docutils literal notranslate"><span class="pre">--config</span></code> command line option:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>linkml-lint --config myconfig.yaml myschema.yaml
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>linkml-lint<span class="w"> </span>--config<span class="w"> </span>myconfig.yaml<span class="w"> </span>myschema.yaml
 </pre></div>
 </div>
 <p>Alternatively, if there is a file named <code class="docutils literal notranslate"><span class="pre">.linkmllint.yaml</span></code> in the current working directory when you run <code class="docutils literal notranslate"><span class="pre">linkml-lint</span></code> that file will automatically be loaded as the configuration file. If all or most of the schema files in a project can be checked with the same rules, storing the configuration at the root of the project in a <code class="docutils literal notranslate"><span class="pre">.linkmllink.yaml</span></code> file can make it more convenient to check them without having to pass the <code class="docutils literal notranslate"><span class="pre">--config</span></code> option.</p>
 <p>Here is an example of a configuration file which includes all of the recommended rules and enables an additional rule named <code class="docutils literal notranslate"><span class="pre">no_empty_title</span></code>:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># Use all of the recommended rule and also enable the no_empty_title rule</span><span class="w"></span>
-<span class="nt">extends</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">recommended</span><span class="w"></span>
-<span class="nt">rules</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">no_empty_title</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">level</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">error</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># Use all of the recommended rule and also enable the no_empty_title rule</span>
+<span class="nt">extends</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">recommended</span>
+<span class="nt">rules</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">no_empty_title</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">level</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">error</span>
 </pre></div>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">extends</span></code> field of the configuration file allows you to inherit from an existing configuration. Currently the only valid value for this field is <code class="docutils literal notranslate"><span class="pre">recommended</span></code>.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">rules</span></code> field is a dictionary where each key is a rule name and the value is the configuration for that rule. Every rule has at least one configurable property: <code class="docutils literal notranslate"><span class="pre">level</span></code>. Each rule’s <code class="docutils literal notranslate"><span class="pre">level</span></code> can be set to <code class="docutils literal notranslate"><span class="pre">disabled</span></code> (the default) meaning the schema will not be checked with that rule, or <code class="docutils literal notranslate"><span class="pre">level</span></code> can be set to <code class="docutils literal notranslate"><span class="pre">warning</span></code> or <code class="docutils literal notranslate"><span class="pre">error</span></code>. If set to <code class="docutils literal notranslate"><span class="pre">warning</span></code> or <code class="docutils literal notranslate"><span class="pre">error</span></code> the schema will be checked with that rule and violations will be reported. The distinction between <code class="docutils literal notranslate"><span class="pre">warning</span></code> and <code class="docutils literal notranslate"><span class="pre">error</span></code> is solely cosmetic and is designed to help you prioritize issues to fix. If you are unsure there is no harm in only using the <code class="docutils literal notranslate"><span class="pre">error</span></code> level. Some rules have additional configuration beyond the <code class="docutils literal notranslate"><span class="pre">level</span></code> property, as described in the <a class="reference internal" href="#rules"><span class="std std-doc">Rules</span></a> section.</p>
 <p>To use the recommended configuration set except for one of the rules, manually specify <code class="docutils literal notranslate"><span class="pre">level:</span> <span class="pre">disabled</span></code> for that rule:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># Use the recommended rule set except for the standard_naming rule</span><span class="w"></span>
-<span class="nt">extends</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">recommended</span><span class="w"></span>
-<span class="nt">rules</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">standard_naming</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">level</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">disabled</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># Use the recommended rule set except for the standard_naming rule</span>
+<span class="nt">extends</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">recommended</span>
+<span class="nt">rules</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">standard_naming</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">level</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">disabled</span>
 </pre></div>
 </div>
 <p>It is also acceptable to <em>not</em> extend the recommended set. Simply omit the <code class="docutils literal notranslate"><span class="pre">extends</span></code> field from your configuration. In that case, only the rules that your configuration enables are checked:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># Only the no_empty_title and standard_naming rules will be checked</span><span class="w"></span>
-<span class="nt">rules</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">no_empty_title</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">level</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">error</span><span class="w"></span>
-<span class="w">  </span><span class="nt">standard_naming</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">level</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">error</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># Only the no_empty_title and standard_naming rules will be checked</span>
+<span class="nt">rules</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">no_empty_title</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">level</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">error</span>
+<span class="w">  </span><span class="nt">standard_naming</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">level</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">error</span>
 </pre></div>
 </div>
 </section>
@@ -407,7 +407,7 @@
 <p>The valid values for <code class="docutils literal notranslate"><span class="pre">--format</span></code> are terminal (the default), markdown, json, and tsv.</p>
 <p>If the <code class="docutils literal notranslate"><span class="pre">--output</span></code> option is provided the report will be written to the specified file instead of the terminal.</p>
 <p>For example, to generate a markdown report in a file named <code class="docutils literal notranslate"><span class="pre">linter-results.md</span></code>:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>linkml-lint --format markdown --output linter-results.md myschema.yaml
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>linkml-lint<span class="w"> </span>--format<span class="w"> </span>markdown<span class="w"> </span>--output<span class="w"> </span>linter-results.md<span class="w"> </span>myschema.yaml
 </pre></div>
 </div>
 </section>
@@ -456,9 +456,7 @@
             
           </div>
           <div class="right-details">
-            <div class="icons">
-              
-            </div>
+            
           </div>
         </div>
         

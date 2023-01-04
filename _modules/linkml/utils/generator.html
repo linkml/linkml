@@ -4,10 +4,10 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
-    <meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
+    <!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
         <title>linkml.utils.generator - linkml documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     
     
@@ -151,7 +151,7 @@
   <span class="sidebar-brand-text">linkml  documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
-  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form>
@@ -225,7 +225,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../howtos/yq-for-schemas.html">Using yq for querying and manipulating schemas</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../howtos/using-jsonld.html">Using JSON-LD</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../howtos/port-linkml.html">Porting LinkML tools to other programming languages</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../howtos/linkml-ws.html">LinkML Workspace Generator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../howtos/linkml-project-cookiecutter.html">LinkML Project Cookiecutter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../howtos/model-measurements.html">How to model quantities and measurements</a></li>
 </ul>
 </li>
@@ -354,7 +354,7 @@
 
 <div class="viewcode-block" id="Generator"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.generator.Generator">[docs]</a><span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">Generator</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">abc</span><span class="o">.</span><span class="n">ABCMeta</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base class for generators</span>
 
 <span class="sd">    For usage `Generator Docs &lt;https://linkml.io/linkml/generators/&gt;`_</span>
@@ -362,95 +362,95 @@
 
     <span class="c1"># ClassVars</span>
     <span class="n">schema</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">SchemaDefinition</span><span class="p">,</span> <span class="s2">&quot;Generator&quot;</span><span class="p">]</span>
-    <span class="sd">&quot;&quot;&quot;metamodel compliant schema.  Can be URI, file name, actual schema, another generator, an</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;metamodel compliant schema.  Can be URI, file name, actual schema, another generator, an</span>
 <span class="sd">        open file or a pre-parsed schema&quot;&quot;&quot;</span>
 
     <span class="n">generatorname</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="sd">&quot;&quot;&quot; Name of the generator. Override with os.path.basename(__file__)&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Name of the generator. Override with os.path.basename(__file__)&quot;&quot;&quot;</span>
 
     <span class="n">generatorversion</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Generator version identifier</span>
-    <span class="sd">&quot;&quot;&quot;Version of the generator. Consider deprecating and instead use overall linkml version&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Version of the generator. Consider deprecating and instead use overall linkml version&quot;&quot;&quot;</span>
 
     <span class="n">uses_schemaloader</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="sd">&quot;&quot;&quot;Old-style generator that uses the SchemaLoader and visitor pattern&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Old-style generator that uses the SchemaLoader and visitor pattern&quot;&quot;&quot;</span>
 
     <span class="c1">#uses_schemaview: ClassVar[bool] = True</span>
     <span class="c1">#&quot;&quot;&quot;New-style generator that uses SchemaView&quot;&quot;&quot;</span>
 
     <span class="n">requires_metamodel</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="sd">&quot;&quot;&quot;Generator queries an instance of the metamodel&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generator queries an instance of the metamodel&quot;&quot;&quot;</span>
 
     <span class="n">valid_formats</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="sd">&quot;&quot;&quot;Allowed formats - first format is default&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Allowed formats - first format is default&quot;&quot;&quot;</span>
 
     <span class="n">visit_all_class_slots</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="sd">&quot;&quot;&quot;Visitor ClassVar: False means only visit own slots, True means visit all slots&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Visitor ClassVar: False means only visit own slots, True means visit all slots&quot;&quot;&quot;</span>
 
     <span class="n">visits_are_sorted</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="sd">&quot;&quot;&quot;Visitor ClassVar: True means visit basic types in alphabetial order, false in entry&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Visitor ClassVar: True means visit basic types in alphabetial order, false in entry&quot;&quot;&quot;</span>
 
     <span class="n">sort_class_slots</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="sd">&quot;&quot;&quot;Visitor ClassVar: True means visit class slots in alphabetical order&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Visitor ClassVar: True means visit class slots in alphabetical order&quot;&quot;&quot;</span>
 
     <span class="c1"># Object-level Vars</span>
     <span class="n">schemaview</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">SchemaView</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="sd">&quot;&quot;&quot;A wrapper onto the schema object&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A wrapper onto the schema object&quot;&quot;&quot;</span>
 
     <span class="nb">format</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="sd">&quot;&quot;&quot;expected output format&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;expected output format&quot;&quot;&quot;</span>
 
     <span class="n">metadata</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="kc">True</span><span class="p">)</span>
-    <span class="sd">&quot;&quot;&quot;True means include date, generator, etc. information in source header if appropriate&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;True means include date, generator, etc. information in source header if appropriate&quot;&quot;&quot;</span>
 
     <span class="n">useuris</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="sd">&quot;&quot;&quot;True means declared class slot uri&#39;s are used.  False means use model uris&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;True means declared class slot uri&#39;s are used.  False means use model uris&quot;&quot;&quot;</span>
 
     <span class="n">log_level</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">DEFAULT_LOG_LEVEL_INT</span>
-    <span class="sd">&quot;&quot;&quot;Logging level, 0 is minimum&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Logging level, 0 is minimum&quot;&quot;&quot;</span>
 
     <span class="n">mergeimports</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="kc">True</span><span class="p">)</span>
-    <span class="sd">&quot;&quot;&quot;True means merge non-linkml sources into importing package.  False means separate packages&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;True means merge non-linkml sources into importing package.  False means separate packages&quot;&quot;&quot;</span>
 
     <span class="n">source_file_date</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="sd">&quot;&quot;&quot;Modification date of input source file&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Modification date of input source file&quot;&quot;&quot;</span>
 
     <span class="n">source_file_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="sd">&quot;&quot;&quot;Size of the source file in bytes&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Size of the source file in bytes&quot;&quot;&quot;</span>
 
     <span class="n">logger</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="sd">&quot;&quot;&quot;Logger to use for logging messages&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Logger to use for logging messages&quot;&quot;&quot;</span>
 
     <span class="n">verbose</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="sd">&quot;&quot;&quot;Verbosity&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verbosity&quot;&quot;&quot;</span>
 
     <span class="n">output</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="sd">&quot;&quot;&quot;Path to output file. Note all generators may not implement this uniformly, see https://github.com/linkml/linkml/issues/923&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Path to output file. Note all generators may not implement this uniformly, see https://github.com/linkml/linkml/issues/923&quot;&quot;&quot;</span>
 
     <span class="n">namespaces</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Namespaces</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="sd">&quot;&quot;&quot;All prefix expansions used&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;All prefix expansions used&quot;&quot;&quot;</span>
 
     <span class="n">directory_output</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="sd">&quot;&quot;&quot;True means output is to a directory, False is to stdout&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;True means output is to a directory, False is to stdout&quot;&quot;&quot;</span>
 
     <span class="n">base_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Base directory of schema</span>
-    <span class="sd">&quot;&quot;&quot;Working directory or base URL of sources&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Working directory or base URL of sources&quot;&quot;&quot;</span>
 
     <span class="n">metamodel_name_map</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span>
         <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span>
     <span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="sd">&quot;&quot;&quot;Allows mapping of names of metamodel elements such as slot, etc&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Allows mapping of names of metamodel elements such as slot, etc&quot;&quot;&quot;</span>
 
     <span class="n">importmap</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]]]</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="sd">&quot;&quot;&quot;File name of import mapping file -- maps import name/uri to target&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;File name of import mapping file -- maps import name/uri to target&quot;&quot;&quot;</span>
 
     <span class="n">emit_prefixes</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="nb">set</span><span class="p">())</span>
-    <span class="sd">&quot;&quot;&quot;Prefixes to emit, for RDF-based generators&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Prefixes to emit, for RDF-based generators&quot;&quot;&quot;</span>
 
     <span class="n">metamodel</span><span class="p">:</span> <span class="n">SchemaLoader</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="sd">&quot;&quot;&quot;A SchemaLoader instance that points to the LinkML metamodel (meta.yaml)&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A SchemaLoader instance that points to the LinkML metamodel (meta.yaml)&quot;&quot;&quot;</span>
 
     <span class="n">stacktrace</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="sd">&quot;&quot;&quot;True means print stack trace, false just error message&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;True means print stack trace, false just error message&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">:</span>
@@ -545,7 +545,7 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="p">[</span><span class="n">prefix</span><span class="o">.</span><span class="n">prefix_prefix</span><span class="p">]</span> <span class="o">=</span> <span class="n">prefix</span><span class="o">.</span><span class="n">prefix_reference</span>
 
 <div class="viewcode-block" id="Generator.serialize"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.generator.Generator.serialize">[docs]</a>    <span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate output in the required format</span>
 
 <span class="sd">        :param kwargs: Generater specific parameters</span>
@@ -601,21 +601,21 @@
         <span class="k">return</span> <span class="n">output</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Generator.visit_schema"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.generator.Generator.visit_schema">[docs]</a>    <span class="k">def</span> <span class="nf">visit_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Visited once at the beginning of generation</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Visited once at the beginning of generation</span>
 
 <span class="sd">        @param kwargs: Arguments passed through from CLI -- implementation dependent</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="o">...</span></div>
 
 <div class="viewcode-block" id="Generator.end_schema"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.generator.Generator.end_schema">[docs]</a>    <span class="k">def</span> <span class="nf">end_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Visited once at the end of generation</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Visited once at the end of generation</span>
 
 <span class="sd">        @param kwargs: Arguments passed through from CLI -- implementation dependent</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="o">...</span></div>
 
 <div class="viewcode-block" id="Generator.visit_class"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.generator.Generator.visit_class">[docs]</a>    <span class="k">def</span> <span class="nf">visit_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Visited once per schema class</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Visited once per schema class</span>
 
 <span class="sd">        @param cls: class being visited</span>
 <span class="sd">        @return: Visit slots and end class.  False means skip and go on</span>
@@ -623,7 +623,7 @@
         <span class="k">return</span> <span class="kc">True</span></div>
 
 <div class="viewcode-block" id="Generator.end_class"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.generator.Generator.end_class">[docs]</a>    <span class="k">def</span> <span class="nf">end_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Visited after visit_class_slots (if visit_class returned true)</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Visited after visit_class_slots (if visit_class returned true)</span>
 
 <span class="sd">        @param cls: class being visited</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -632,7 +632,7 @@
 <div class="viewcode-block" id="Generator.visit_class_slot"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.generator.Generator.visit_class_slot">[docs]</a>    <span class="k">def</span> <span class="nf">visit_class_slot</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">aliased_slot_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Visited for each slot in a class.  If class level visit_all_slots is true, this is visited once</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Visited for each slot in a class.  If class level visit_all_slots is true, this is visited once</span>
 <span class="sd">        for any class that is inherited (class itself, is_a, mixin, apply_to).  Otherwise just the own slots.</span>
 
 <span class="sd">        @param cls: containing class</span>
@@ -642,7 +642,7 @@
         <span class="o">...</span></div>
 
 <div class="viewcode-block" id="Generator.visit_slot"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.generator.Generator.visit_slot">[docs]</a>    <span class="k">def</span> <span class="nf">visit_slot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">aliased_slot_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Visited once for every slot definition in the schema.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Visited once for every slot definition in the schema.</span>
 
 <span class="sd">        @param aliased_slot_name: Aliased name of the slot.  May not be unique</span>
 <span class="sd">        @param slot: visited slot</span>
@@ -650,21 +650,21 @@
         <span class="o">...</span></div>
 
 <div class="viewcode-block" id="Generator.visit_type"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.generator.Generator.visit_type">[docs]</a>    <span class="k">def</span> <span class="nf">visit_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">typ</span><span class="p">:</span> <span class="n">TypeDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Visited once for every type definition in the schema</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Visited once for every type definition in the schema</span>
 
 <span class="sd">        @param typ: Type definition</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="o">...</span></div>
 
 <div class="viewcode-block" id="Generator.visit_subset"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.generator.Generator.visit_subset">[docs]</a>    <span class="k">def</span> <span class="nf">visit_subset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subset</span><span class="p">:</span> <span class="n">SubsetDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Visited once for every subset definition in the schema</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Visited once for every subset definition in the schema</span>
 
 <span class="sd">        #param subset: Subset definition</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="o">...</span></div>
 
 <div class="viewcode-block" id="Generator.visit_enum"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.generator.Generator.visit_enum">[docs]</a>    <span class="k">def</span> <span class="nf">visit_enum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">enum</span><span class="p">:</span> <span class="n">EnumDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Visited once for every enum definition in the schema</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Visited once for every enum definition in the schema</span>
 
 <span class="sd">        @param enum: Enum definition</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -676,7 +676,7 @@
 <div class="viewcode-block" id="Generator.own_slots"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.generator.Generator.own_slots">[docs]</a>    <span class="k">def</span> <span class="nf">own_slots</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">ClassDefinitionName</span><span class="p">,</span> <span class="n">ClassDefinition</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">SlotDefinition</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Return the list of slots owned the class definition.  An &quot;own slot&quot; is any ``cls`` slot that does not appear</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the list of slots owned the class definition.  An &quot;own slot&quot; is any ``cls`` slot that does not appear</span>
 <span class="sd">        in the class is_a parent.  Own_slots include:</span>
 
 <span class="sd">            * any slot whose domain is cls</span>
@@ -713,7 +713,7 @@
         <span class="n">cls_slots_first</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">seen</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Set</span><span class="p">[</span><span class="n">ClassDefinitionName</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">SlotDefinition</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Return all slots that are part of the class definition.  This includes all is_a, mixin and apply_to slots</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return all slots that are part of the class definition.  This includes all is_a, mixin and apply_to slots</span>
 <span class="sd">        but does NOT include slot_usage targets.  If class B has a slot_usage entry for slot &quot;s&quot;, only the slot</span>
 <span class="sd">        definition for the redefined slot will be included, not its base.  Slots are added in the order they appear</span>
 <span class="sd">        in classes, with recursive is_a&#39;s being added first followed by mixins and finally apply_tos</span>
@@ -753,7 +753,7 @@
 <div class="viewcode-block" id="Generator.parent"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.generator.Generator.parent">[docs]</a>    <span class="k">def</span> <span class="nf">parent</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">SlotDefinition</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">SlotDefinition</span><span class="p">]]:</span>
-        <span class="sd">&quot;&quot;&quot;Return the parent of element, if any&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the parent of element, if any&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">(</span>
             <span class="kc">None</span>
             <span class="k">if</span> <span class="n">element</span><span class="o">.</span><span class="n">is_a</span> <span class="ow">is</span> <span class="kc">None</span>
@@ -765,7 +765,7 @@
 <div class="viewcode-block" id="Generator.ancestors"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.generator.Generator.ancestors">[docs]</a>    <span class="k">def</span> <span class="nf">ancestors</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">SlotDefinition</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">ElementName</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Return an ordered list of ancestor names for the supplied slot or class</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return an ordered list of ancestor names for the supplied slot or class</span>
 
 <span class="sd">        @param element: Slot or class name or definition</span>
 <span class="sd">        @return: Ordered list of of ancestor names</span>
@@ -777,7 +777,7 @@
 <div class="viewcode-block" id="Generator.neighborhood"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.generator.Generator.neighborhood">[docs]</a>    <span class="k">def</span> <span class="nf">neighborhood</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">elements</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ElementName</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">ElementName</span><span class="p">]]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">References</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return a list of all slots, classes and types that touch any element in elements, including the element</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a list of all slots, classes and types that touch any element in elements, including the element</span>
 <span class="sd">        itself</span>
 
 <span class="sd">        @param elements: Element names to do proximity with</span>
@@ -855,7 +855,7 @@
         <span class="k">return</span> <span class="n">touches</span></div>
 
 <div class="viewcode-block" id="Generator.range_type_path"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.generator.Generator.range_type_path">[docs]</a>    <span class="k">def</span> <span class="nf">range_type_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">typ</span><span class="p">:</span> <span class="n">TypeDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a formatted list of range types from the base up</span>
 
 <span class="sd">        :param typ: type definition whose name is to be formatted</span>
@@ -874,7 +874,7 @@
 <div class="viewcode-block" id="Generator.class_identifier"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.generator.Generator.class_identifier">[docs]</a>    <span class="k">def</span> <span class="nf">class_identifier</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">def_or_name</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">TypeDefinition</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">SlotDefinitionName</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the class identifier if any</span>
 
 <span class="sd">        :param def_or_name: class name or definition</span>
@@ -895,7 +895,7 @@
 <div class="viewcode-block" id="Generator.enum_identifier_path"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.generator.Generator.enum_identifier_path">[docs]</a>    <span class="k">def</span> <span class="nf">enum_identifier_path</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">enum_or_enumname</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">EnumDefinition</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Return an enum_identifier path&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return an enum_identifier path&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[</span>
             <span class="s2">&quot;str&quot;</span><span class="p">,</span>
             <span class="n">camelcase</span><span class="p">(</span>
@@ -908,7 +908,7 @@
 <div class="viewcode-block" id="Generator.class_identifier_path"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.generator.Generator.class_identifier_path">[docs]</a>    <span class="k">def</span> <span class="nf">class_identifier_path</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">cls_or_clsname</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ClassDefinition</span><span class="p">],</span> <span class="n">force_non_key</span><span class="p">:</span> <span class="nb">bool</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the path closure to a class identifier if the class has a key and force_non_key is false otherwise</span>
 <span class="sd">        return a dictionary closure.</span>
 
@@ -940,7 +940,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">slot_range_path</span><span class="p">(</span><span class="n">identifier_slot</span><span class="p">)</span> <span class="o">+</span> <span class="p">[</span><span class="n">pathname</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="Generator.slot_range_path"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.generator.Generator.slot_range_path">[docs]</a>    <span class="k">def</span> <span class="nf">slot_range_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slot_or_name</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">SlotDefinition</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a ordered list of slot ranges from distal to proximal</span>
 
 <span class="sd">        :param slot_or_name: slot whose range is being typed</span>
@@ -965,7 +965,7 @@
 <div class="viewcode-block" id="Generator.aliased_slot_name"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.generator.Generator.aliased_slot_name">[docs]</a>    <span class="k">def</span> <span class="nf">aliased_slot_name</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">SlotDefinitionName</span><span class="p">,</span> <span class="n">SlotDefinition</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SlotDefinitionName</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return the overloaded slot name -- the alias if one exists otherwise the actual name</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the overloaded slot name -- the alias if one exists otherwise the actual name</span>
 
 <span class="sd">        @param slot: either a slot name or a definition</span>
 <span class="sd">        @return: overloaded name</span>
@@ -975,7 +975,7 @@
         <span class="k">return</span> <span class="n">slot</span><span class="o">.</span><span class="n">alias</span> <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">alias</span> <span class="k">else</span> <span class="n">slot</span><span class="o">.</span><span class="n">name</span></div>
 
 <div class="viewcode-block" id="Generator.class_or_type_for"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.generator.Generator.class_or_type_for">[docs]</a>    <span class="k">def</span> <span class="nf">class_or_type_for</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Element</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the corresponding class or type for name</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">classes</span><span class="p">:</span>
@@ -987,7 +987,7 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
 <div class="viewcode-block" id="Generator.class_or_type_name"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.generator.Generator.class_or_type_name">[docs]</a>    <span class="k">def</span> <span class="nf">class_or_type_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the camelcase representation of clsname if it is a valid class or type.  Prepend &quot;Unknown&quot;</span>
 <span class="sd">        if the name isn&#39;t valid</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1006,7 +1006,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">slots</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Generator.slot_name"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.generator.Generator.slot_name">[docs]</a>    <span class="k">def</span> <span class="nf">slot_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the underscored version of the aliased slot name if name is a slot. Prepend &quot;unknown_&quot; if the name</span>
 <span class="sd">        isn&#39;t valid.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1023,7 +1023,7 @@
 <div class="viewcode-block" id="Generator.formatted_element_name"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.generator.Generator.formatted_element_name">[docs]</a>    <span class="k">def</span> <span class="nf">formatted_element_name</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">el_or_elname</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">ElementName</span><span class="p">,</span> <span class="n">Element</span><span class="p">],</span> <span class="n">is_range_name</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the default format for the name or the referenced element.  Slots are under_scored, all others are</span>
 <span class="sd">        CamelCased. Slot names are the alias, not the actual name</span>
 
@@ -1074,7 +1074,7 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">class_or_type_for</span><span class="p">(</span><span class="n">el_or_elname</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Generator.default_prefix"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.generator.Generator.default_prefix">[docs]</a>    <span class="k">def</span> <span class="nf">default_prefix</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Return the default prefix for the schema</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the default prefix for the schema</span>
 
 <span class="sd">        @return: URI or NCNAME of default prefix&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="s2">&quot;://&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">default_prefix</span><span class="p">:</span>
@@ -1087,7 +1087,7 @@
 
     <span class="c1"># TODO: add lru cache once we get identity into the classes</span>
 <div class="viewcode-block" id="Generator.domain_slots"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.generator.Generator.domain_slots">[docs]</a>    <span class="k">def</span> <span class="nf">domain_slots</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">SlotDefinition</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Return all slots in the class definition that are owned by the class&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return all slots in the class definition that are owned by the class&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[</span>
             <span class="n">slot</span>
             <span class="k">for</span> <span class="n">slot</span> <span class="ow">in</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">slots</span><span class="p">[</span><span class="n">sn</span><span class="p">]</span> <span class="k">for</span> <span class="n">sn</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">slots</span><span class="p">]</span>
@@ -1096,7 +1096,7 @@
         <span class="p">]</span></div>
 
 <div class="viewcode-block" id="Generator.add_mappings"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.generator.Generator.add_mappings">[docs]</a>    <span class="k">def</span> <span class="nf">add_mappings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">defn</span><span class="p">:</span> <span class="n">Definition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Process any mappings in defn, adding all of the mappings prefixes to the namespace map</span>
 <span class="sd">        :param defn: Class or Slot Definition</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1136,7 +1136,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">add_prefix</span><span class="p">(</span><span class="n">id_prefix</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Generator.add_prefix"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.generator.Generator.add_prefix">[docs]</a>    <span class="k">def</span> <span class="nf">add_prefix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ncname</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Add a prefix to the list of prefixes to emit</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a prefix to the list of prefixes to emit</span>
 
 <span class="sd">        @param ncname: name to add</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1146,7 +1146,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">emit_prefixes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">ncname</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Generator.get_metamodel_slot_name"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.generator.Generator.get_metamodel_slot_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_metamodel_slot_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slot_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Allows for localization of some generators, such as markdown generator</span>
 
 <span class="sd">        The client can control how metamodel elements are displayed; e.g.</span>
@@ -1186,7 +1186,7 @@
             <span class="k">return</span> <span class="n">slot_name</span></div>
 
 <div class="viewcode-block" id="Generator.is_class_unconstrained"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.generator.Generator.is_class_unconstrained">[docs]</a>    <span class="k">def</span> <span class="nf">is_class_unconstrained</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Determine if the class is mapped to typing.Any, i.e the unconstrained class</span>
 
 <span class="sd">        :param cls: class definition</span>
@@ -1308,9 +1308,7 @@
             
           </div>
           <div class="right-details">
-            <div class="icons">
-              
-            </div>
+            
           </div>
         </div>
         

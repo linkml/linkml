@@ -5,10 +5,10 @@
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Subsets" href="subsets.html" /><link rel="prev" title="Inlining objects" href="inlining.html" />
 
-    <meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
+    <!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
         <title>Adding constraints and rules - linkml documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     
     
@@ -152,7 +152,7 @@
   <span class="sidebar-brand-text">linkml  documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
-  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form>
@@ -226,7 +226,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../howtos/yq-for-schemas.html">Using yq for querying and manipulating schemas</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtos/using-jsonld.html">Using JSON-LD</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtos/port-linkml.html">Porting LinkML tools to other programming languages</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../howtos/linkml-ws.html">LinkML Workspace Generator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtos/linkml-project-cookiecutter.html">LinkML Project Cookiecutter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtos/model-measurements.html">How to model quantities and measurements</a></li>
 </ul>
 </li>
@@ -302,30 +302,30 @@
 <p>A class can declare <a class="reference external" href="https://w3id.org/linkml/unique_keys">unique_keys</a>, a set of slots that are unique for members of that class.</p>
 <p>For example, a database of chemical entities may with to declare the tuple of atomic number and neutron number
 as a unique key for an isotope:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="w">  </span><span class="nt">ChemicalEntity</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">slots</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">id</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">symbol</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">inchi</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">atomic_number</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">neutron_number</span><span class="w"></span>
-<span class="w">  </span><span class="nt">ChemicalElement</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">is_a</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ChemicalEntity</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="w">  </span><span class="nt">ChemicalEntity</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">slots</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">id</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">symbol</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">inchi</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">atomic_number</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">neutron_number</span>
+<span class="w">  </span><span class="nt">ChemicalElement</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">is_a</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ChemicalEntity</span>
 <span class="w">    </span>
-<span class="w">  </span><span class="nt">Isotope</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">is_a</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ChemicalEntity</span><span class="w"></span>
-<span class="w">    </span><span class="nt">unique_keys</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">main</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">An isotope is uniquely identifier by atomic and neutron number</span><span class="w"></span>
-<span class="w">        </span><span class="nt">unique_key_slots</span><span class="p">:</span><span class="w"></span>
-<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">atomic_number</span><span class="w"></span>
-<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">neutron_number</span><span class="w"></span>
-<span class="w">      </span><span class="nt">symbol</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">An isotope is uniquely identifier by its symbol</span><span class="w"></span>
-<span class="w">        </span><span class="nt">notes</span><span class="p">:</span><span class="w"></span>
-<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">we could have opted to use a simple key slot here as this is not a compound key but this allows us to annotate the key</span><span class="w"></span>
-<span class="w">        </span><span class="nt">unique_key_slots</span><span class="p">:</span><span class="w"></span>
-<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">symbol</span><span class="w"></span>
+<span class="w">  </span><span class="nt">Isotope</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">is_a</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ChemicalEntity</span>
+<span class="w">    </span><span class="nt">unique_keys</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">main</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">An isotope is uniquely identifier by atomic and neutron number</span>
+<span class="w">        </span><span class="nt">unique_key_slots</span><span class="p">:</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">atomic_number</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">neutron_number</span>
+<span class="w">      </span><span class="nt">symbol</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">An isotope is uniquely identifier by its symbol</span>
+<span class="w">        </span><span class="nt">notes</span><span class="p">:</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">we could have opted to use a simple key slot here as this is not a compound key but this allows us to annotate the key</span>
+<span class="w">        </span><span class="nt">unique_key_slots</span><span class="p">:</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">symbol</span>
 </pre></div>
 </div>
 <p><a class="reference external" href="https://w3id.org/linkml/identifier">identifier</a>s are special cases of unique keys.</p>
@@ -333,13 +333,13 @@ as a unique key for an isotope:</p>
 <section id="string-serialization">
 <h2>String serialization<a class="headerlink" href="#string-serialization" title="Permalink to this heading">#</a></h2>
 <p>A rule for generating the string value of a slot can be specified as a <a class="reference external" href="https://w3id.org/linkml/string_serialization">string_serialization</a></p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">Person</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">first</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">last</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">full</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">string_serialization</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;{first}</span><span class="nv"> </span><span class="s">{last}&quot;</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">Person</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">first</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">last</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">full</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">string_serialization</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;{first}</span><span class="nv"> </span><span class="s">{last}&quot;</span>
 </pre></div>
 </div>
 <ul class="simple">
@@ -360,9 +360,9 @@ as a unique key for an isotope:</p>
 <h2>Patterns<a class="headerlink" href="#patterns" title="Permalink to this heading">#</a></h2>
 <p>The value of a slot can be constrained to conform to a particular string pattern using the <a class="reference external" href="https://w3id.org/linkml/pattern">pattern</a> metaslot</p>
 <p>Example:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="w">  </span><span class="nt">slots</span><span class="p">:</span><span class="w"></span>
-<span class="w">     </span><span class="nt">phone</span><span class="p">:</span><span class="w"></span>
-<span class="w">       </span><span class="nt">pattern</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;^[\\d\\(\\)\\-]+$&quot;</span><span class="w">   </span><span class="c1">## regular expression</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="w">  </span><span class="nt">slots</span><span class="p">:</span>
+<span class="w">     </span><span class="nt">phone</span><span class="p">:</span>
+<span class="w">       </span><span class="nt">pattern</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;^[\\d\\(\\)\\-]+$&quot;</span><span class="w">   </span><span class="c1">## regular expression</span>
 </pre></div>
 </div>
 <p>See:</p>
@@ -375,19 +375,19 @@ as a unique key for an isotope:</p>
 <p>The <a class="reference external" href="https://w3id.org/linkml/structured_pattern">structured_pattern</a> construct
 allows you to provide patterns in a more structured way, and to <em>reuse</em> sub-patterns.</p>
 <p>First you declare the patterns to be reused in the top level of your schema:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">settings</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">float</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;\\d+[\\.\\d+]&quot;</span><span class="w"></span>
-<span class="w">  </span><span class="nt">unit</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;\\S+&quot;</span><span class="w"></span>
-<span class="w">  </span><span class="nt">email</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;\\S+@\\S+{\\.\\w}+&quot;</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">settings</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">float</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;\\d+[\\.\\d+]&quot;</span>
+<span class="w">  </span><span class="nt">unit</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;\\S+&quot;</span>
+<span class="w">  </span><span class="nt">email</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;\\S+@\\S+{\\.\\w}+&quot;</span>
 </pre></div>
 </div>
 <p>You can then use this inside a structured pattern:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="w">  </span><span class="nt">height</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span><span class="w"></span>
-<span class="w">    </span><span class="nt">structured_pattern</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">syntax</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;{float}</span><span class="nv"> </span><span class="s">{unit.length}&quot;</span><span class="w"></span>
-<span class="w">      </span><span class="nt">interpolated</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
-<span class="w">      </span><span class="nt">partial_match</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="w">  </span><span class="nt">height</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="w">    </span><span class="nt">structured_pattern</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">syntax</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;{float}</span><span class="nv"> </span><span class="s">{unit.length}&quot;</span>
+<span class="w">      </span><span class="nt">interpolated</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">      </span><span class="nt">partial_match</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
 </pre></div>
 </div>
 <p>You can use <a class="reference internal" href="../generators/linkml.html"><span class="doc std std-doc">gen-linkml</span></a> to expand these into structured patterns</p>
@@ -444,9 +444,7 @@ to write rules and expressions for more expressive constraints.</p>
             
           </div>
           <div class="right-details">
-            <div class="icons">
-              
-            </div>
+            
           </div>
         </div>
         

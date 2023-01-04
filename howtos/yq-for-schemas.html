@@ -5,10 +5,10 @@
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Using JSON-LD" href="using-jsonld.html" /><link rel="prev" title="How-to Guides" href="index.html" />
 
-    <meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
+    <!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
         <title>Using yq for querying and manipulating schemas - linkml documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     
     
@@ -152,7 +152,7 @@
   <span class="sidebar-brand-text">linkml  documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
-  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form>
@@ -226,7 +226,7 @@
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Using yq for querying and manipulating schemas</a></li>
 <li class="toctree-l2"><a class="reference internal" href="using-jsonld.html">Using JSON-LD</a></li>
 <li class="toctree-l2"><a class="reference internal" href="port-linkml.html">Porting LinkML tools to other programming languages</a></li>
-<li class="toctree-l2"><a class="reference internal" href="linkml-ws.html">LinkML Workspace Generator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="linkml-project-cookiecutter.html">LinkML Project Cookiecutter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="model-measurements.html">How to model quantities and measurements</a></li>
 </ul>
 </li>
@@ -320,66 +320,66 @@ how LinkML schemas are rendered as YAML.</p>
 <section id="top-level-lookups">
 <h2>top level lookups<a class="headerlink" href="#top-level-lookups" title="Permalink to this heading">#</a></h2>
 <p>Fetch the schema identifier:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ yq e <span class="s1">&#39;.id&#39;</span> personinfo.yaml
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>yq<span class="w"> </span>e<span class="w"> </span><span class="s1">&#39;.id&#39;</span><span class="w"> </span>personinfo.yaml
 https://w3id.org/linkml/examples/personinfo
 </pre></div>
 </div>
 </section>
 <section id="all-class-names">
 <h2>all class names<a class="headerlink" href="#all-class-names" title="Permalink to this heading">#</a></h2>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>✗ yq e <span class="s1">&#39;.classes | keys&#39;</span> personinfo.yaml
-- NamedThing
-- Person
-- HasAliases
-- Organization
-- Place
-- Address
-- Event
-- Concept
-- DiagnosisConcept
-- ProcedureConcept
-- Relationship
-- FamilialRelationship
-- EmploymentEvent
-- MedicalEvent
-- WithLocation
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>✗<span class="w"> </span>yq<span class="w"> </span>e<span class="w"> </span><span class="s1">&#39;.classes | keys&#39;</span><span class="w"> </span>personinfo.yaml
+-<span class="w"> </span>NamedThing
+-<span class="w"> </span>Person
+-<span class="w"> </span>HasAliases
+-<span class="w"> </span>Organization
+-<span class="w"> </span>Place
+-<span class="w"> </span>Address
+-<span class="w"> </span>Event
+-<span class="w"> </span>Concept
+-<span class="w"> </span>DiagnosisConcept
+-<span class="w"> </span>ProcedureConcept
+-<span class="w"> </span>Relationship
+-<span class="w"> </span>FamilialRelationship
+-<span class="w"> </span>EmploymentEvent
+-<span class="w"> </span>MedicalEvent
+-<span class="w"> </span>WithLocation
 <span class="c1"># TODO: annotate that this is a container/root class</span>
-- Container
+-<span class="w"> </span>Container
 </pre></div>
 </div>
 </section>
 <section id="classes-with-their-is-a-parents">
 <h2>classes with their is-a parents<a class="headerlink" href="#classes-with-their-is-a-parents" title="Permalink to this heading">#</a></h2>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ yq e <span class="s1">&#39;.classes | to_entries | .[] | {&quot;child&quot;: .key, &quot;parent&quot;: .value.is_a}&#39;</span> personinfo.yaml
-child: NamedThing
-parent: null
-child: Person
-parent: NamedThing
-child: HasAliases
-parent: null
-child: Organization
-parent: NamedThing
-child: Place
-parent: null
-child: Address
-parent: null
-child: Event
-parent: null
-child: Concept
-parent: NamedThing
-child: DiagnosisConcept
-parent: Concept
-child: ProcedureConcept
-parent: Concept
-child: Relationship
-parent: null
-child: FamilialRelationship
-parent: Relationship
-child: EmploymentEvent
-parent: Event
-child: MedicalEvent
-parent: Event
-child: WithLocation
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>yq<span class="w"> </span>e<span class="w"> </span><span class="s1">&#39;.classes | to_entries | .[] | {&quot;child&quot;: .key, &quot;parent&quot;: .value.is_a}&#39;</span><span class="w"> </span>personinfo.yaml
+child:<span class="w"> </span>NamedThing
+parent:<span class="w"> </span>null
+child:<span class="w"> </span>Person
+parent:<span class="w"> </span>NamedThing
+child:<span class="w"> </span>HasAliases
+parent:<span class="w"> </span>null
+child:<span class="w"> </span>Organization
+parent:<span class="w"> </span>NamedThing
+child:<span class="w"> </span>Place
+parent:<span class="w"> </span>null
+child:<span class="w"> </span>Address
+parent:<span class="w"> </span>null
+child:<span class="w"> </span>Event
+parent:<span class="w"> </span>null
+child:<span class="w"> </span>Concept
+parent:<span class="w"> </span>NamedThing
+child:<span class="w"> </span>DiagnosisConcept
+parent:<span class="w"> </span>Concept
+child:<span class="w"> </span>ProcedureConcept
+parent:<span class="w"> </span>Concept
+child:<span class="w"> </span>Relationship
+parent:<span class="w"> </span>null
+child:<span class="w"> </span>FamilialRelationship
+parent:<span class="w"> </span>Relationship
+child:<span class="w"> </span>EmploymentEvent
+parent:<span class="w"> </span>Event
+child:<span class="w"> </span>MedicalEvent
+parent:<span class="w"> </span>Event
+child:<span class="w"> </span>WithLocation
 </pre></div>
 </div>
 <p>TODO</p>
@@ -399,29 +399,29 @@ description: |-
 <section id="lookup-a-class-by-name">
 <h2>lookup a class by name<a class="headerlink" href="#lookup-a-class-by-name" title="Permalink to this heading">#</a></h2>
 <p>Lookup the class Person:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>✗ yq e <span class="s1">&#39;.classes.Person&#39;</span> personinfo.yaml
-is_a: NamedThing
-description: &gt;-
-  A person <span class="o">(</span>alive, dead, undead, or fictional<span class="o">)</span>.
-class_uri: schema:Person
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>✗<span class="w"> </span>yq<span class="w"> </span>e<span class="w"> </span><span class="s1">&#39;.classes.Person&#39;</span><span class="w"> </span>personinfo.yaml
+is_a:<span class="w"> </span>NamedThing
+description:<span class="w"> </span>&gt;-
+<span class="w">  </span>A<span class="w"> </span>person<span class="w"> </span><span class="o">(</span>alive,<span class="w"> </span>dead,<span class="w"> </span>undead,<span class="w"> </span>or<span class="w"> </span>fictional<span class="o">)</span>.
+class_uri:<span class="w"> </span>schema:Person
 mixins:
-  - HasAliases
+<span class="w">  </span>-<span class="w"> </span>HasAliases
 slots:
-  - primary_email
-  - birth_date
-  - age_in_years
-  - gender
-  - current_address
-  - has_employment_history
-  - has_familial_relationships
-  - has_medical_history
+<span class="w">  </span>-<span class="w"> </span>primary_email
+<span class="w">  </span>-<span class="w"> </span>birth_date
+<span class="w">  </span>-<span class="w"> </span>age_in_years
+<span class="w">  </span>-<span class="w"> </span>gender
+<span class="w">  </span>-<span class="w"> </span>current_address
+<span class="w">  </span>-<span class="w"> </span>has_employment_history
+<span class="w">  </span>-<span class="w"> </span>has_familial_relationships
+<span class="w">  </span>-<span class="w"> </span>has_medical_history
 slot_usage:
-  primary_email:
-    pattern: <span class="s2">&quot;^\\S+@[\\S+\\.]+\\S+&quot;</span>
+<span class="w">  </span>primary_email:
+<span class="w">    </span>pattern:<span class="w"> </span><span class="s2">&quot;^\\S+@[\\S+\\.]+\\S+&quot;</span>
 </pre></div>
 </div>
 <p>Looking up a particular slot:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>✗ yq e <span class="s1">&#39;.classes.Person.is_a&#39;</span> personinfo.yaml <span class="p">|</span> less  
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>✗<span class="w"> </span>yq<span class="w"> </span>e<span class="w"> </span><span class="s1">&#39;.classes.Person.is_a&#39;</span><span class="w"> </span>personinfo.yaml<span class="w"> </span><span class="p">|</span><span class="w"> </span>less<span class="w">  </span>
 NamedThing
 </pre></div>
 </div>
@@ -455,23 +455,23 @@ GEO: http://example.org/geoloc/
 <li><p>this will not include <em>imported</em> prefixes. Use SchemaView to get these.</p></li>
 </ul>
 <p>just the keys:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>✗ yq e <span class="s1">&#39;.prefixes | keys&#39;</span> personinfo.yaml <span class="p">|</span> less
-- personinfo
-- linkml
-- schema
-- rdfs
-- prov
-- GSSO
-- famrel
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>✗<span class="w"> </span>yq<span class="w"> </span>e<span class="w"> </span><span class="s1">&#39;.prefixes | keys&#39;</span><span class="w"> </span>personinfo.yaml<span class="w"> </span><span class="p">|</span><span class="w"> </span>less
+-<span class="w"> </span>personinfo
+-<span class="w"> </span>linkml
+-<span class="w"> </span>schema
+-<span class="w"> </span>rdfs
+-<span class="w"> </span>prov
+-<span class="w"> </span>GSSO
+-<span class="w"> </span>famrel
 <span class="c1"># DATA PREFIXES</span>
-- P
-- ROR
-- CODE
-- GEO
+-<span class="w"> </span>P
+-<span class="w"> </span>ROR
+-<span class="w"> </span>CODE
+-<span class="w"> </span>GEO
 </pre></div>
 </div>
 <p>just the values:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>yq e <span class="s1">&#39;.prefixes | to_entries | .[].value&#39;</span> personinfo.yaml
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>yq<span class="w"> </span>e<span class="w"> </span><span class="s1">&#39;.prefixes | to_entries | .[].value&#39;</span><span class="w"> </span>personinfo.yaml
 https://w3id.org/linkml/examples/personinfo/
 https://w3id.org/linkml/
 http://schema.org/
@@ -529,9 +529,7 @@ http://example.org/geoloc/
             
           </div>
           <div class="right-details">
-            <div class="icons">
-              
-            </div>
+            
           </div>
         </div>
         

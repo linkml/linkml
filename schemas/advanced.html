@@ -5,10 +5,10 @@
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Mapping schemas to other frameworks" href="generators.html" /><link rel="prev" title="Imports" href="imports.html" />
 
-    <meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
+    <!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
         <title>Advanced features - linkml documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     
     
@@ -152,7 +152,7 @@
   <span class="sidebar-brand-text">linkml  documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
-  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form>
@@ -226,7 +226,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../howtos/yq-for-schemas.html">Using yq for querying and manipulating schemas</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtos/using-jsonld.html">Using JSON-LD</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtos/port-linkml.html">Porting LinkML tools to other programming languages</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../howtos/linkml-ws.html">LinkML Workspace Generator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtos/linkml-project-cookiecutter.html">LinkML Project Cookiecutter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtos/model-measurements.html">How to model quantities and measurements</a></li>
 </ul>
 </li>
@@ -301,19 +301,19 @@
 <h2>LinkML Any type<a class="headerlink" href="#linkml-any-type" title="Permalink to this heading">#</a></h2>
 <p>LinkML is currently best suited to ‘strict’ schemas, and doesn’t have full support for being able to model arbitrary dictionaries/objects. Each slot must have a defined range, the range must be exactly one of a Class, Type, or Enum. It is currently impossible to define unions of these core ranges.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">linkml:Any</span></code> type is an experimental feature for allowing arbitrary objects</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span>
 
-<span class="w">  </span><span class="nt">MetaObject</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">class_uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">linkml:Any</span><span class="w"></span>
+<span class="w">  </span><span class="nt">MetaObject</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">class_uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">linkml:Any</span>
 
-<span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">...</span><span class="w"></span>
+<span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">...</span>
 
-<span class="w">  </span><span class="nt">Person</span><span class="p">:</span><span class="w"></span>
-<span class="w">   </span><span class="nt">attributes</span><span class="p">:</span><span class="w"></span>
-<span class="w">     </span><span class="nt">id</span><span class="p">:</span><span class="w"></span>
-<span class="w">     </span><span class="nt">name</span><span class="p">:</span><span class="w"></span>
-<span class="w">     </span><span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
-<span class="w">       </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MetaObject</span><span class="w"></span>
+<span class="w">  </span><span class="nt">Person</span><span class="p">:</span>
+<span class="w">   </span><span class="nt">attributes</span><span class="p">:</span>
+<span class="w">     </span><span class="nt">id</span><span class="p">:</span>
+<span class="w">     </span><span class="nt">name</span><span class="p">:</span>
+<span class="w">     </span><span class="nt">metadata</span><span class="p">:</span>
+<span class="w">       </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MetaObject</span>
 </pre></div>
 </div>
 </section>
@@ -321,24 +321,24 @@
 <h2>Unions as ranges<a class="headerlink" href="#unions-as-ranges" title="Permalink to this heading">#</a></h2>
 <p><a class="reference external" href="https://w3id.org/linkml/any_of">any_of</a> can be used to express that a range must satisfy any of a set of ranges.</p>
 <p>One way this can be used is to compose enums together, for example if we have a <code class="docutils literal notranslate"><span class="pre">vital_status</span></code> enum that can take on any a set of enums from VitalStatus OR a missing value with the type of missing value defined by an enum:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">slots</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">vital_status</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
-<span class="w">    </span><span class="nt">any_of</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MissingValueEnum</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">VitalStatusEnum</span><span class="w"></span>
-<span class="nt">enums</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">MissingValueEnum</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">permissible_values</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">INAPPLICABLE</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">NOT_COLLECTED</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">RESTRICTED</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">OTHER</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">VitalStatusEnum</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">permissible_values</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">LIVING</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">DEAD</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">UNDEAD</span><span class="p">:</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">slots</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">vital_status</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">any_of</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MissingValueEnum</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">VitalStatusEnum</span>
+<span class="nt">enums</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">MissingValueEnum</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">permissible_values</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">INAPPLICABLE</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">NOT_COLLECTED</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">RESTRICTED</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">OTHER</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">VitalStatusEnum</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">permissible_values</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">LIVING</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">DEAD</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">UNDEAD</span><span class="p">:</span>
 </pre></div>
 </div>
 <p>Note that these constructs may ignored by some generators in the linkml 1.1 series.</p>
@@ -380,23 +380,23 @@
 <p>A subset of slots for a class can be declared as <a class="reference external" href="https://w3id.org/linkml/">defining
 slots</a>, indicating that membership of the
 class can be inferred based on ranges of those slots</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span>
 
-<span class="w">  </span><span class="nt">Interaction</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">slots</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">subject</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">object</span><span class="w"></span>
+<span class="w">  </span><span class="nt">Interaction</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">slots</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">subject</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">object</span>
 
-<span class="w">  </span><span class="nt">ProteinProteinInteraction</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">is_a</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Interaction</span><span class="w"></span>
-<span class="w">    </span><span class="nt">slot_usage</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">subject</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Protein</span><span class="w"></span>
-<span class="w">      </span><span class="nt">object</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Protein</span><span class="w"></span>
-<span class="w">    </span><span class="nt">defining_slots</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">subject</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">object</span><span class="w"></span>
+<span class="w">  </span><span class="nt">ProteinProteinInteraction</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">is_a</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Interaction</span>
+<span class="w">    </span><span class="nt">slot_usage</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">subject</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Protein</span>
+<span class="w">      </span><span class="nt">object</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Protein</span>
+<span class="w">    </span><span class="nt">defining_slots</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">subject</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">object</span>
 </pre></div>
 </div>
 <p>This indicates that if we have an interaction object <code class="docutils literal notranslate"><span class="pre">I</span></code>, and the subject and object slot values for <code class="docutils literal notranslate"><span class="pre">I</span></code> are both of type Protein, then <code class="docutils literal notranslate"><span class="pre">I</span></code> can be inferred to be of type ProteinProteinInteraction</p>
@@ -415,19 +415,19 @@ where that expression can contain other slot values as terms.</p>
 <p>For example, a schema may allow two separate age slots for specifying
 age in years or in months. <code class="docutils literal notranslate"><span class="pre">equals_expression</span></code> is used to specify one in terns
 of another:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">slots</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">...</span><span class="w"></span>
-<span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">age_in_years</span><span class="p p-Indicator">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">decimal</span><span class="w"></span>
-<span class="w">    </span><span class="nt">minimum_value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span><span class="w"></span>
-<span class="w">    </span><span class="nt">maximum_value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">999</span><span class="w"></span>
-<span class="w">    </span><span class="nt">equals_expression</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;{age_in_months}</span><span class="nv"> </span><span class="s">/</span><span class="nv"> </span><span class="s">12&quot;</span><span class="w"></span>
-<span class="w">  </span><span class="nt">age_in_months</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">decimal</span><span class="w"></span>
-<span class="w">    </span><span class="nt">equals_expression</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;{age_in_years}</span><span class="nv"> </span><span class="s">*</span><span class="nv"> </span><span class="s">12&quot;</span><span class="w"></span>
-<span class="w">  </span><span class="nt">is_juvenile</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">boolean</span><span class="w"></span>
-<span class="w">    </span><span class="nt">equals_expression</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;{age_in_years}</span><span class="nv"> </span><span class="s">&lt;</span><span class="nv"> </span><span class="s">18&quot;</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">slots</span><span class="p">:</span>
+<span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">...</span>
+<span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">age_in_years</span><span class="p p-Indicator">:</span>
+<span class="w">    </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">decimal</span>
+<span class="w">    </span><span class="nt">minimum_value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
+<span class="w">    </span><span class="nt">maximum_value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">999</span>
+<span class="w">    </span><span class="nt">equals_expression</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;{age_in_months}</span><span class="nv"> </span><span class="s">/</span><span class="nv"> </span><span class="s">12&quot;</span>
+<span class="w">  </span><span class="nt">age_in_months</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">decimal</span>
+<span class="w">    </span><span class="nt">equals_expression</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;{age_in_years}</span><span class="nv"> </span><span class="s">*</span><span class="nv"> </span><span class="s">12&quot;</span>
+<span class="w">  </span><span class="nt">is_juvenile</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">boolean</span>
+<span class="w">    </span><span class="nt">equals_expression</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;{age_in_years}</span><span class="nv"> </span><span class="s">&lt;</span><span class="nv"> </span><span class="s">18&quot;</span>
 </pre></div>
 </div>
 <p>The expression is specified using a simple subset of Python.
@@ -477,9 +477,7 @@ details of how to use this in code.</p>
             
           </div>
           <div class="right-details">
-            <div class="icons">
-              
-            </div>
+            
           </div>
         </div>
         
