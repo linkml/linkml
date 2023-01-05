@@ -191,7 +191,6 @@ class SchemaLoader:
                     logging.warning(
                         f'Class: "{cls.name}" attribute "{attribute.name}" - '
                         f"mangled name: {mangled_slot_name} already exists",
-                        attribute.name,
                     )
                 new_slot = SlotDefinition(**attribute.__dict__)
                 new_slot.domain_of.append(cls.name)
