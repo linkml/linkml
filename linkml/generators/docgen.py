@@ -750,16 +750,40 @@ class DocGenerator(Generator):
         else:
             return False
 
-    def get_direct_slots(self, cls: ClassDefinition) -> List[SlotDefinitionName]:
+    def inject_slot_info(self, slot: SlotDefinition) -> SlotDefinition:
+        """
+        Injects additional information into a slot
+
+        TODO: move this functionality into schemaview
+        :param slot:
+        :return:
+        """
+        sv = self.schemaview
+        if not slot.range:
+            slot.range = sv.schema.default_range
+        if not slot.range:
+            slot.range = "string"
+        return slot
+
+    def get_direct_slot_names(self, cls: ClassDefinition) -> List[SlotDefinitionName]:
+        """Fetch list of all own attributes of a class, i.e.,
+        all slot names of slots that belong to the domain of a class.
+
+        :param cls: class for which we want to determine the attributes
+        :return: list of names of all own attributes of a class
+        """
+        return cls.slots + list(cls.attributes.keys())
+
+    def get_direct_slots(self, cls: ClassDefinition) -> List[SlotDefinition]:
         """Fetch list of all own attributes of a class, i.e., 
         all slots that belong to the domain of a class.
 
         :param cls: class for which we want to determine the attributes
         :return: list of all own attributes of a class
         """
-        return cls.slots + list(cls.attributes.keys())
+        return [self.inject_slot_info(self.schemaview.induced_slot(sn)) for sn in self.get_direct_slot_names(cls)]
 
-    def get_indirect_slots(self, cls: ClassDefinition) -> List[SlotDefinitionName]:
+    def get_indirect_slots(self, cls: ClassDefinition) -> List[SlotDefinition]:
         """Fetch list of all inherited attributes of a class, i.e., 
         all slots that belong to the domain of a class.
 
@@ -767,11 +791,9 @@ class DocGenerator(Generator):
         :return: list of all own attributes of a class
         """
         sv = self.schemaview
-        
-        slot_list = [slot.name for slot in sv.class_induced_slots(class_name=cls.name)]
+        direct_slot_names = self.get_direct_slot_names(cls)
+        return [self.inject_slot_info(slot) for slot in sv.class_induced_slots(cls.name) if slot.name not in direct_slot_names]
 
-        return list(set(slot_list).difference(self.get_direct_slots(cls)))
-    
     def get_slot_inherited_from(self, class_name: ClassDefinitionName, slot_name: SlotDefinitionName) -> List[ClassDefinitionName]:
         """Get the name of the class that a given slot is inherited from.
 
