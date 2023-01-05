@@ -272,7 +272,7 @@ class TestEnvironment:
         if not self.eval_single_file(expected_file, actual, filtr, comparator):
             if self.fail_on_error:
                 self.make_temp_dir(os.path.dirname(actual_file), clear=False)
-                with open(actual_file, "w") as actualf:
+                with open(actual_file, "w", encoding="UTF-8") as actualf:
                     actualf.write(actual)
         return actual
 
@@ -303,7 +303,7 @@ class TestEnvironment:
             self.log(expected_file_path, msg)
         if msg and not self.fail_on_error:
             self.make_temp_dir(os.path.dirname(expected_file_path), clear=False)
-            with open(expected_file_path, "w") as outf:
+            with open(expected_file_path, "w", encoding="UTF-8") as outf:
                 outf.write(actual_text)
         return not msg
 
