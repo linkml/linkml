@@ -1418,6 +1418,9 @@ class SchemaView(object):
                         enum_slots.append(slot_definition)
         return enum_slots
 
+    def get_classes_modifying_slot(self, slot_name: SLOT_NAME = None) -> List[ClassDefinition]:
+        pass
+
     def is_slot_percent_encoded(self, slot: SlotDefinitionName) -> bool:
         """
         True if slot or its range is has a percent_encoded annotation.
