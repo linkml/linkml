@@ -312,7 +312,7 @@ class PydanticGenerator(OOCodeGenerator):
         pyschema = SchemaDefinition(
             id=schema.id,
             name=schema.name,
-            description=schema.description.replace('"', '\\"'),
+            description=schema.description.replace('"', '\\"') if schema.description else None,
         )
         enums = self.generate_enums(sv.all_enums())
 
@@ -363,7 +363,7 @@ class PydanticGenerator(OOCodeGenerator):
                     # logging.error(f'range: {s.range} is unknown')
                     raise Exception(f"range: {s.range}")
                 if s.multivalued:
-                    if collection_key is None:
+                    if not s.inlined or collection_key is None or s.inlined_as_list:
                         pyrange = f"List[{pyrange}]"
                     else:
                         pyrange = f"Dict[{collection_key}, {pyrange}]"

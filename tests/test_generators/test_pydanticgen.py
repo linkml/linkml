@@ -1,11 +1,15 @@
 import unittest
+from collections import namedtuple
 
 import yaml
 from linkml_runtime import SchemaView
+from linkml_runtime.dumpers import yaml_dumper
+from linkml_runtime.linkml_model import SlotDefinition
 from linkml_runtime.utils.compile_python import compile_python
 from pydantic import ValidationError
 
 from linkml.generators.pydanticgen import PydanticGenerator
+from linkml.utils.schema_builder import SchemaBuilder
 from tests.test_generators.environment import env
 
 SCHEMA = env.input_path("kitchen_sink.yaml")
@@ -96,6 +100,64 @@ enums:
             == "This & that, plus maybe a 🎩"
         )
         assert enum["values"]["Ohio"] == "Ohio"
+
+    def test_pydantic_inlining(self):
+        #Case = namedtuple("multivalued", "inlined", "inlined_as_list", "B_has_identities")
+        expected_default_factories = {
+            "Optional[List[str]]": "Field(default_factory=list)",
+            "Optional[List[B]]": "Field(default_factory=list)",
+            "Optional[Dict[str, B]]": "Field(default_factory=dict)",
+        }
+        cases = [
+            # block 1: primitives are NEVER inlined
+            ("T", True, False, False, True, "Optional[List[str]]",
+             "primitives are never inlined"),
+            # attempting to inline a type
+            # TBD: does the spec actively forbid this
+            ("T", True, True, True, True, "Optional[List[str]]",
+             "primitives are never inlined, even if requested"),
+            # block 2: referenced element is a class
+            ("B", True, False, False, False, "Optional[List[B]]",
+             "references to classes without identifiers ALWAYS inlined as list"),
+            ("B", True, True, False, False, "Optional[List[B]]",
+             "references to classes without identifiers ALWAYS inlined as list"),
+            ("B", True, True, True, False, "Optional[List[B]]",
+             "references to classes without identifiers ALWAYS inlined as list"),
+            ("B", True, True, False, True, "Optional[Dict[str, B]]",
+             "references to class with identifier inlined ONLY ON REQUEST, with dict as default"),
+            # TODO: fix the next two
+            ("B", True, True, True, True, "Optional[List[B]]",
+             "references to class with identifier inlined as list ONLY ON REQUEST"),
+            ("B", True, False, False, True, "Optional[List[str]]",
+             ""),
+        ]
+        for range, multivalued, inlined, inlined_as_list, B_has_identifier, expected, notes in cases:
+            sb = SchemaBuilder("test")
+            sb.add_type("T", typeof="string")
+            a2b = SlotDefinition("a2b",
+                                 range=range,
+                                 multivalued=multivalued,
+                                 inlined=inlined,
+                                 inlined_as_list=inlined_as_list)
+            sb.add_class("A", slots=[a2b])
+            b_id = SlotDefinition("id", identifier=B_has_identifier)
+            sb.add_class("B", slots=[b_id, "name"])
+            sb.add_defaults()
+            schema = sb.schema
+            schema_str = yaml_dumper.dumps(schema)
+            gen = PydanticGenerator(schema_str, package=PACKAGE)
+            code = gen.serialize()
+            # print(code)
+            lines = code.splitlines()
+            ix = lines.index("class A(ConfiguredBaseModel):")
+            self.assertGreater(ix, 0)
+            # assume a single blank line separating
+            slot_line = lines[ix + 2]
+            self.assertIn(f"a2b: {expected}", slot_line)
+            if expected not in expected_default_factories:
+                raise ValueError(f"unexpected default factory for {expected}")
+            self.assertIn(expected_default_factories[expected], slot_line)
+
 
 
 if __name__ == "__main__":
