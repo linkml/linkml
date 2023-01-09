@@ -778,21 +778,23 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
         rlines: List[str] = []
         designators = [x for x  in self.domain_slots(cls) if x.designates_type]
         if len(designators) > 0:
-            slot = designators[0]
-            aliased_slot_name = self.slot_name(
-                slot.name
-            )
-            rlines.append("def __new__(cls, *args, **kwargs):")
-            rlines.append(f"\tmappings_{aliased_slot_name} = {{")
-            for descendant in self.schemaview.class_descendants(cls.name):
-                d = self.schema.classes[descendant]
-                descendant_class_tv = get_type_designator_value(self.schemaview, slot, d)
-                    # the URI defined in the schemaview is empty so i need to take it out of the schemaloader.
-                    # this seems suboptimal since this will eventually move to schemaview
-                rlines.append(f"\t\t\"{descendant_class_tv}\": {self.class_or_type_name(d.name)},")
-            rlines.append(f"\t}}")
+            descendants = self.schemaview.class_descendants(cls.name)
+            if len(descendants) > 1:
+                slot = designators[0]
+                aliased_slot_name = self.slot_name(
+                    slot.name
+                )
+                rlines.append("def __new__(cls, *args, **kwargs):")
+                rlines.append(f"\tmappings_{aliased_slot_name} = {{")
+                for descendant in descendants:
+                    d = self.schema.classes[descendant]
+                    descendant_class_tv = get_type_designator_value(self.schemaview, slot, d)
+                        # the URI defined in the schemaview is empty so i need to take it out of the schemaloader.
+                        # this seems suboptimal since this will eventually move to schemaview
+                    rlines.append(f"\t\t\"{descendant_class_tv}\": {self.class_or_type_name(d.name)},")
+                rlines.append(f"\t}}")
 
-            rlines.append(f"""
+                rlines.append(f"""
         type_designator = "{aliased_slot_name}"
         if not type_designator in kwargs:
             return super().__new__(cls,*args,**kwargs)
