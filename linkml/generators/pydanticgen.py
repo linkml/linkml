@@ -14,6 +14,7 @@ from linkml_runtime.linkml_model.meta import (Annotation, ClassDefinition,
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.schemaview import SchemaView
 
+from linkml.generators.common import get_type_designator_value
 from linkml._version import __version__
 from linkml.generators.oocodegen import OOCodeGenerator
 from linkml.utils.generator import shared_arguments
@@ -200,11 +201,10 @@ class PydanticGenerator(OOCodeGenerator):
             for slot_name in sv.class_slots(class_def.name):
                 slot = sv.induced_slot(slot_name, class_def.name)
                 if slot.designates_type:
-                    class_curie = f'{default_prefix}:{camelcase(class_def.name)}'
-                    class_uri = str(self.namespaces.uri_for(class_curie) if ":" in class_curie else class_curie)
+                    target_value = get_type_designator_value(sv, slot, class_def)
                     slot_values[camelcase(class_def.name)][
                         slot.name
-                    ] = f'"{class_uri}"'
+                    ] = f'"{target_value}"'
                     if slot.multivalued:
                         slot_values[camelcase(class_def.name)][slot.name] = (
                             "["
