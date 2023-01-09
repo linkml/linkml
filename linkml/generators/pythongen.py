@@ -27,6 +27,7 @@ import linkml
 from linkml._version import __version__
 from linkml.generators import PYTHON_GEN_VERSION
 from linkml.utils.generator import Generator, shared_arguments
+from linkml.generators.common import get_type_designator_value
 from linkml.utils.ifabsent_functions import (default_curie_or_uri,
                                              ifabsent_postinit_declaration,
                                              ifabsent_value_declaration)
@@ -785,10 +786,10 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
             rlines.append(f"\tmappings_{aliased_slot_name} = {{")
             for descendant in self.schemaview.class_descendants(cls.name):
                 d = self.schema.classes[descendant]
-                descendant_class_uri = str(self.namespaces.uri_for(d.class_uri)) 
+                descendant_class_tv = get_type_designator_value(self.schemaview, slot, d)
                     # the URI defined in the schemaview is empty so i need to take it out of the schemaloader.
                     # this seems suboptimal since this will eventually move to schemaview
-                rlines.append(f"\t\t\"{descendant_class_uri}\": {self.class_or_type_name(d.name)},")
+                rlines.append(f"\t\t\"{descendant_class_tv}\": {self.class_or_type_name(d.name)},")
             rlines.append(f"\t}}")
 
             rlines.append(f"""
