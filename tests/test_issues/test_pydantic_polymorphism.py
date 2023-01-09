@@ -58,13 +58,13 @@ data_str = """
 {
   "things": [
     {
-      "id": 1,
+      "id": "1",
       "thingtype": "x:Person",
       "full_name": "phoebe",
       "height": 10
     },
     {
-      "id": 2,
+      "id": "2",
       "thingtype": "x:Organisation",
       "full_name": "University of Earth",
       "number_of_employees": 2
