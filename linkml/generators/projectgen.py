@@ -228,7 +228,7 @@ def cli(
 
     Configuration, via yaml file:
 
-        gen-project --config config.yaml personinfo.yaml
+        gen-project --config-file config.yaml personinfo.yaml
 
     config.yaml:
 
