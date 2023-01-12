@@ -9,9 +9,9 @@ Some of these guides are works in progress
    :maxdepth: 2
    :caption: Contents:
 
+   linkml-project-cookiecutter
    yq-for-schemas
    using-jsonld
-   port-linkml
-   linkml-project-cookiecutter
    model-measurements
+   port-linkml
 

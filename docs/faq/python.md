@@ -136,21 +136,6 @@ Yes, [SQLStore](https://linkml.io/linkml/developers/sqlstore.html) can perform i
 See [SQL-Examples notebook](https://github.com/linkml/linkml/blob/main/notebooks/SQL-examples.ipynb.ipynb)
 for example code
 
-## How do I work programmatically with RDF data?
-
-TODO
-
-## Is LinkML compatible with RDFLib?
-
-TODO
-
-## Is LinkML compatible with Flask?
-
-TODO
-
-## Is LinkML compatible with Python GraphQL frameworks?
-
-TODO
 
 
 

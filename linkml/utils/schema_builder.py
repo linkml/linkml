@@ -1,47 +1,83 @@
 from dataclasses import dataclass, field
-from typing import Dict, List, Union
+from typing import Dict, List, Union, Optional
 
 from linkml_runtime.linkml_model import (ClassDefinition, EnumDefinition,
                                          PermissibleValue, Prefix,
                                          SchemaDefinition, SlotDefinition,
                                          TypeDefinition)
 from linkml_runtime.utils.formatutils import camelcase, underscore
+from linkml_runtime.utils.schema_as_dict import schema_as_dict
 
 
 @dataclass
 class SchemaBuilder:
     """
-    Builder class for SchemaDefinitions
+    Builder class for SchemaDefinitions.
+
+    Example:
+
+        >>> from linkml.utils.schema_builder import SchemaBuilder
+        >>> sb = SchemaBuilder('test-schema')
+        >>> sb.add_class('Person', slots=['name', 'age'])
+        >>> sb.add_class('Organization', slots=['name', 'employees'])
+        >>> sb.add_slot('name',description='Name of the person or organization')
+        >>> sb.add_slot('age',description='Age of the person', range='integer')
+        >>> schema = sb.schema
+        >>> print()
+
+    Most builder methods accepts either a string, an instance of a metamodel element,
+    or a dictionary.  If a string is provided, then a new element is created with this
+    as the name.
+
+    This follows the standard Builder pattern, so the results of a build operation
+    are a builder, allowing chaining. For example:
+
+        >>> sb = SchemaBuilder('test-schema').add_class('Person', slots=['name', 'age'])
+
     """
 
-    name: str = None
+    name: Optional[str] = None
+    """Initialized name for the schema."""
+
+    id: Optional[str] = None
+    """Initialized id for the schema."""
+
     schema: SchemaDefinition = None
+    """generated SchemaDefinition object."""
 
     def __post_init__(self):
         name = self.name
         if name is None:
             name = "test-schema"
-        self.schema = SchemaDefinition(id=f"http://example.org/{name}", name=name)
+        id = self.id if self.id else f"http://example.org/{name}"
+        self.schema = SchemaDefinition(id=id, name=name)
 
     def add_class(
         self,
-        cls: Union[ClassDefinition, str],
+        cls: Union[ClassDefinition, Dict, str],
         slots: List[Union[str, SlotDefinition]] = None,
         slot_usage: Dict[str, SlotDefinition] = None,
+        replace_if_present=False,
         use_attributes=False,
         **kwargs,
     ) -> "SchemaBuilder":
         """
-        Adds a class to the schema
+        Adds a class to the schema.
 
-        :param cls:
-        :param slots:
-        :param slot_usage:
-        :param kwargs:
+        :param cls: name, dict object, or ClassDefinition object to add
+        :param slots: slot of slot names or slot objects.
+        :param slot_usage: slots keyed by slot name
+        :param replace_if_present: if True, replace existing class if present
+        :param kwargs: additional ClassDefinition properties
         :return: builder
+        :raises ValueError: if class already exists and replace_if_present=False
         """
-        if not isinstance(cls, ClassDefinition):
-            cls = ClassDefinition(cls)
+        if isinstance(cls, str):
+            cls = ClassDefinition(cls, **kwargs)
+        if isinstance(cls, dict):
+            cls = ClassDefinition(**{**cls, **kwargs})
+        if cls.name is self.schema.classes and not replace_if_present:
+            raise ValueError(f"Class {cls.name} already exists")
         self.schema.classes[cls.name] = cls
         if use_attributes:
             for s in slots:
@@ -54,6 +90,9 @@ class SchemaBuilder:
         else:
             if slots is not None:
                 for s in slots:
+                    if isinstance(s, str) and s in self.schema.slots:
+                        # top-level slot already exists
+                        continue
                     self.add_slot(s, cls.name)
             if slot_usage:
                 for k, v in slot_usage.items():
@@ -63,19 +102,24 @@ class SchemaBuilder:
         return self
 
     def add_slot(
-        self, slot: Union[SlotDefinition, Dict, str], class_name: str = None
+        self, slot: Union[SlotDefinition, Dict, str], class_name: str = None, replace_if_present=False, **kwargs
     ) -> "SchemaBuilder":
         """
-        Adds the slot to the schema
+        Adds the slot to the schema.
 
-        :param slot:
-        :param class_name: if specified, this will become a valid slot for the class
+        :param slot: name, dict object, or SlotDefinition object to add
+        :param class_name: if specified, this will become a valid slot for this class
+        :param replace_if_present: if True, replace existing slot if present
+        :param kwargs: additional properties
         :return: builder
+        :raises ValueError: if slot already exists and replace_if_present=False
         """
         if isinstance(slot, str):
-            slot = SlotDefinition(slot)
+            slot = SlotDefinition(slot, **kwargs)
         elif isinstance(slot, dict):
-            slot = SlotDefinition(**slot)
+            slot = SlotDefinition(**{**slot, **kwargs})
+        if not replace_if_present and slot.name in self.schema.slots:
+            raise ValueError(f"Slot {slot.name} already exists")
         self.schema.slots[slot.name] = slot
         if class_name is not None:
             self.schema.classes[class_name].slots.append(slot.name)
@@ -96,18 +140,27 @@ class SchemaBuilder:
 
     def add_enum(
         self,
-        enum_def: Union[EnumDefinition, str],
+        enum_def: Union[EnumDefinition, dict, str],
         permissible_values: List[Union[str, PermissibleValue]] = None,
+        replace_if_present=False,
+        **kwargs,
     ) -> "SchemaBuilder":
         """
         Adds an enum to the schema
 
         :param enum_def:
         :param permissible_values:
+        :param replace_if_present:
+        :param kwargs:
         :return: builder
+        :raises ValueError: if enum already exists and replace_if_present=False
         """
         if not isinstance(enum_def, EnumDefinition):
-            enum_def = EnumDefinition(enum_def)
+            enum_def = EnumDefinition(enum_def, **kwargs)
+        if isinstance(enum_def, dict):
+            enum_def = EnumDefinition(**{**enum_def, **kwargs})
+        if enum_def.name in self.schema.enums and not replace_if_present:
+            raise ValueError(f"Enum {enum_def.name} already exists")
         self.schema.enums[enum_def.name] = enum_def
         if permissible_values is not None:
             for pv in permissible_values:
@@ -116,15 +169,18 @@ class SchemaBuilder:
                     enum_def.permissible_values[pv.text] = pv
         return self
 
-    def add_prefix(self, prefix: str, url: str) -> "SchemaBuilder":
+    def add_prefix(self, prefix: str, url: str, replace_if_present = False) -> "SchemaBuilder":
         """
         Adds a prefix for use with CURIEs
 
         :param prefix:
         :param url:
         :return: builder
+        :raises ValueError: if prefix already exists and replace_if_present=False
         """
         obj = Prefix(prefix_prefix=prefix, prefix_reference=url)
+        if prefix in self.schema.prefixes and not replace_if_present:
+            raise ValueError(f"Prefix {prefix} already exists")
         self.schema.prefixes[obj.prefix_prefix] = obj
         return self
 
@@ -147,18 +203,44 @@ class SchemaBuilder:
         self.add_prefix(name, f"{uri}/")
         return self
 
-    def add_type(self, type: Union[TypeDefinition, Dict, str], **kwargs) -> "SchemaBuilder":
+    def add_type(
+            self,
+            type: Union[TypeDefinition, Dict, str],
+            typeof: str = None,
+            uri: str = None,
+            replace_if_present=False,
+            **kwargs
+    ) -> "SchemaBuilder":
         """
         Adds the type to the schema
 
         :param type:
+        :param typeof: if specified, the parent type
+        :param uri: if specified, the URI or curie of the type
+        :param replace_if_present:
+        :param kwargs:
         :return: builder
+        :raises ValueError: if type already exists and replace_if_present=False
         """
         if isinstance(type, str):
             type = TypeDefinition(type)
         elif isinstance(type, dict):
             type = TypeDefinition(**type)
+        if typeof:
+            type.typeof = typeof
+        if not replace_if_present and type.name in self.schema.types:
+            raise ValueError(f"Type {type.name} already exists")
         self.schema.types[type.name] = type
         for k, v in kwargs.items():
             setattr(type, k, v)
         return self
+
+    def as_dict(self) -> Dict:
+        """
+        Returns the schema as a dictionary.
+
+        Compaction is performed to eliminate redundant keys
+
+        :return: dictionary representation
+        """
+        return schema_as_dict(self.schema)
