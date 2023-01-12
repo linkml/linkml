@@ -3,6 +3,7 @@ from datetime import datetime, date
 from enum import Enum
 from typing import List, Dict, Optional, Any
 from pydantic import BaseModel as BaseModel, Field
+from linkml_runtime.linkml_model import Decimal
 
 metamodel_version = "None"
 version = "None"
@@ -48,6 +49,14 @@ class OtherCodes(str, Enum):
     
     
 
+class LifeStatusEnum(str, Enum):
+    
+    LIVING = "LIVING"
+    DEAD = "DEAD"
+    UNKNOWN = "UNKNOWN"
+    
+    
+
 class HasAliases(ConfiguredBaseModel):
     
     aliases: Optional[List[str]] = Field(default_factory=list)
@@ -72,6 +81,9 @@ class Person(HasAliases):
     age_in_years: Optional[int] = Field(None, description="""number of years since birth""", ge=0, le=999)
     addresses: Optional[List[Address]] = Field(default_factory=list)
     has_birth_event: Optional[BirthEvent] = Field(None)
+    species_name: Optional[str] = Field(None)
+    stomach_count: Optional[int] = Field(None)
+    is_living: Optional[LifeStatusEnum] = Field(None)
     aliases: Optional[List[str]] = Field(default_factory=list)
     
 
@@ -229,6 +241,7 @@ class CodeSystem(ConfiguredBaseModel):
 
 class Dataset(ConfiguredBaseModel):
     
+    metadata: Optional[Any] = Field(None, description="""Example of a slot that has an unconstrained range""")
     persons: Optional[List[Person]] = Field(default_factory=list)
     companies: Optional[List[Company]] = Field(default_factory=list)
     activities: Optional[List[Activity]] = Field(default_factory=list)

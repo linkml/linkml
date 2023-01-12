@@ -147,7 +147,7 @@ class SchemaBuilder:
         self.add_prefix(name, f"{uri}/")
         return self
 
-    def add_type(self, type: Union[TypeDefinition, Dict, str]) -> "SchemaBuilder":
+    def add_type(self, type: Union[TypeDefinition, Dict, str], **kwargs) -> "SchemaBuilder":
         """
         Adds the type to the schema
 
@@ -159,4 +159,6 @@ class SchemaBuilder:
         elif isinstance(type, dict):
             type = TypeDefinition(**type)
         self.schema.types[type.name] = type
+        for k, v in kwargs.items():
+            setattr(type, k, v)
         return self

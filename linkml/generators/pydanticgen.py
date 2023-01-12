@@ -318,7 +318,7 @@ class PydanticGenerator(OOCodeGenerator):
         pyschema = SchemaDefinition(
             id=schema.id,
             name=schema.name,
-            description=schema.description.replace('"', '\\"'),
+            description=schema.description.replace('"', '\\"') if schema.description else None,
         )
         enums = self.generate_enums(sv.all_enums())
 
