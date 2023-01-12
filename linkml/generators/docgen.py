@@ -24,6 +24,7 @@ from linkml_runtime.utils.schemaview import SchemaView
 from linkml._version import __version__
 from linkml.generators.erdiagramgen import ERDiagramGenerator
 from linkml.utils.generator import Generator, shared_arguments
+from linkml.workspaces.example_runner import ExampleRunner
 
 
 class MarkdownDialect(Enum):
@@ -130,6 +131,9 @@ class DocGenerator(Generator):
     include_top_level_diagram: bool = field(default_factory=lambda: False)
     """Whether the index page should include a schema diagram"""
 
+    example_directory: Optional[str] = None
+    example_runner: ExampleRunner = field(default_factory=lambda: ExampleRunner())
+
     genmeta: bool = field(default_factory=lambda: False)
     gen_classvars: bool = field(default_factory=lambda: True)
     gen_slots: bool = field(default_factory=lambda: True)
@@ -152,6 +156,8 @@ class DocGenerator(Generator):
             self.dialect = dialect
         if isinstance(self.diagram_type, str):
             self.diagram_type = DiagramType[self.diagram_type]
+        if self.example_directory:
+            self.example_runner = ExampleRunner(input_directory=Path(self.example_directory))
         super().__post_init__()
 
     def serialize(self, directory: str = None) -> None:
@@ -821,6 +827,22 @@ class DocGenerator(Generator):
             
         return mixed_in_slots
 
+    def example_object_blobs(self, class_name: str) -> List[Tuple[str, str]]:
+        """Fetch list of all examples of a class.
+
+        :param cls: class for which we want to determine the examples
+        :return: list of all examples of a class
+        """
+        if not self.example_runner:
+            return []
+        inputs = self.example_runner.example_source_inputs(class_name)
+        objs = []
+        for input in inputs:
+            stem = Path(input).stem
+            objs.append((stem, open(input, encoding="utf-8").read()))
+        return objs
+
+
 
 @shared_arguments(DocGenerator)
 @click.option(
@@ -854,6 +876,10 @@ class DocGenerator(Generator):
     "--use-slot-uris/--no-use-slot-uris",
     default=False,
     help="Use IDs from slot_uri instead of names",
+)
+@click.option(
+    "--example-directory",
+    help="Folder in which example files are found. These are used to make inline examples"
 )
 @click.version_option(__version__, "-V", "--version")
 @click.command()
