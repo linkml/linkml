@@ -35,6 +35,7 @@ class LinkmlGenerator(Generator):
 
     def __post_init__(self):
         # TODO: consider moving up a level
+        super().__post_init__()
         self.schemaview = SchemaView(self.schema, merge_imports=self.mergeimports)
 
     def materialize_classes(self) -> None:
