@@ -889,7 +889,17 @@ def cli(yamlfile, directory, dialect, template_directory, use_slot_uris, **args)
     Currently a default set of templates for markdown is provided (see the folder linkml/generators/docgen/)
 
     If you specify another format (e.g. html) then you need to provide a template_directory argument, with a template for
-    each type of entity inside
+    each type of entity inside.
+
+    Examples can optionally be integrated into the documentation; to enable this, pass in the
+    --example-directory argument.  The example directory should contain one file per example,
+    following the naming convention <ClassName>-<ExampleName>.<extension>.
+
+    For example, to include examples on the page for Person, include examples
+
+    Person-001.yaml, Person-002.yaml, etc.
+
+    Currently examples must be in yaml
     """
     gen = DocGenerator(
         yamlfile,
