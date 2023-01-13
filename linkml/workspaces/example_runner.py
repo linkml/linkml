@@ -2,12 +2,15 @@
 
 """
 import glob
+import json
 import logging
 import os
-from dataclasses import dataclass
+import sys
+from dataclasses import dataclass, field
+from io import StringIO
 from pathlib import Path
 from types import ModuleType
-from typing import Union, Any, Mapping
+from typing import Union, Any, Mapping, Optional, List, TextIO
 
 import click
 import yaml
@@ -22,6 +25,26 @@ from linkml.validators import JsonSchemaDataValidator
 
 
 @dataclass
+class SummaryDocument:
+    """
+    An object describing the summary for processing a set of examples
+    """
+    text: StringIO = field(default_factory=lambda: StringIO())
+
+    inputs: List[str] = field(default_factory=list)
+
+    outputs: List[str] = field(default_factory=list)
+
+    def add(self, *lines: str):
+        for line in lines:
+            self.text.write(line)
+            self.text.write("\n")
+
+    def __str__(self) -> str:
+        return self.text.getvalue()
+
+
+@dataclass
 class ExampleRunner:
     """
     Processes a collection of positive and negative examples.
@@ -29,25 +52,31 @@ class ExampleRunner:
     Background: https://github.com/linkml/linkml/issues/501
     """
 
-    input_directory: Path = None
+    input_directory: Optional[Path] = None
     """Directory in which positive instance examples are found."""
 
-    counter_example_input_directory: Path = None
+    input_formats: Optional[List[str]] = field(default_factory=lambda: ['yaml'])
+
+    counter_example_input_directory: Optional[Path] = None
     """Directory in which negative instance examples are found. These are expected to fail."""
 
-    output_directory: Path = None
+    output_directory: Optional[Path] = None
     """Directory where processed examples are written to."""
 
-    schemaview: SchemaView = None
+    output_formats: Optional[List[str]] = field(default_factory=lambda: ['yaml', 'json', 'ttl'])
+
+    schemaview: Optional[SchemaView] = None
     """View over schema which all examples adhere to."""
 
-    _python_module: ModuleType = None
+    summary: SummaryDocument = field(default_factory=lambda: SummaryDocument())
+
+    _python_module: Optional[ModuleType] = None
     """Module containing classes that all examples instantiate."""
 
-    prefix_map: Mapping[str, str] = None
+    prefix_map: Optional[Mapping[str, str]] = None
     """Custom prefix map, for emitting RDF/turtle."""
 
-    _validator: DataValidator = None
+    _validator: Optional[DataValidator] = None
 
     @property
     def python_module(self) -> ModuleType:
@@ -90,24 +119,59 @@ class ExampleRunner:
             input_dir = Path.cwd() / "examples"
         if counter_example_dir is None:
             counter_example_dir = Path.cwd() / "counter_examples"
-        input_examples = glob.glob(os.path.join(str(input_dir), '*.yaml'))
-        input_counter_examples = glob.glob(os.path.join(str(counter_example_dir), '*.yaml'))
-        if not input_counter_examples:
-            logging.warning(f"No counter examples found in {self.counter_example_input_directory}")
-        self.process_examples_from_list(input_examples, False)
-        self.process_examples_from_list(input_counter_examples, True)
+        for fmt in self.input_formats:
+            input_examples = glob.glob(os.path.join(str(input_dir), f'*.{fmt}'))
+            input_counter_examples = glob.glob(os.path.join(str(counter_example_dir), f'*.{fmt}'))
+            if not input_counter_examples:
+                logging.warning(f"No counter examples found in {self.counter_example_input_directory}")
+            self.process_examples_from_list(input_examples, fmt, False)
+            self.process_examples_from_list(input_counter_examples, fmt, True)
+            
+    def example_source_inputs(self, class_name: str = None) -> List[str]:
+        """
+        Get the list of example source inputs.
 
-    def process_examples_from_list(self, input_examples: list, counter_examples: bool = True):
+        :param class_name:
+        :return:
+        """
+        input_dir = self.input_directory
+        if input_dir is None:
+            return []
+        all_inputs = []
+        for fmt in self.input_formats:
+            glob_expr = f'*.{fmt}'
+            if class_name is not None:
+                glob_expr = f'{class_name}-{glob_expr}'
+            input_examples = glob.glob(os.path.join(str(input_dir), glob_expr))
+            all_inputs.extend(input_examples)
+        return all_inputs
+
+
+    def process_examples_from_list(self, input_examples: list, input_format: str, counter_examples: bool = True):
         sv = self.schemaview
         validator = self.validator
+        summary = self.summary
         for input_example in input_examples:
             stem = Path(input_example).stem
             base = Path(self.output_directory) / stem
+            if base in summary.inputs:
+                raise ValueError(f"Duplicate example: {base}")
+            summary.inputs.append(str(stem))
             base.parent.mkdir(exist_ok=True, parents=True)
             parts = stem.split("-")
             tc = parts[0]
             with open(input_example) as file:
-                input_dict = yaml.safe_load(file)
+                if input_format == "yaml":
+                    input_dict = yaml.safe_load(file)
+                elif input_format == "json":
+                    input_dict = json.load(file)
+                else:
+                    raise NotImplementedError(f"Cannot handle format: {input_format}")
+                summary.add(f"## {stem}",
+                            f"### Input",
+                            f"```yaml",
+                            f"{yaml.dump(input_dict)}",
+                            f"```")
                 success = True
                 try:
                     validator.validate_dict(input_dict, tc, closed=True)
@@ -120,9 +184,17 @@ class ExampleRunner:
                         raise ValueError(f"Counter example {input_example} succeeded validation")
                     continue
                 obj = self._load_from_dict(input_dict, target_class=tc)
-                yaml_dumper.dump(obj, to_file=f"{base}.yaml")
-                json_dumper.dump(obj, to_file=f"{base}.json")
-                rdflib_dumper.dump(obj, to_file=f"{base}.ttl", schemaview=sv, prefix_map=self.prefix_map)
+                for fmt in self.output_formats:
+                    output_file = f"{base}.{fmt}"
+                    if fmt == 'yaml':
+                        yaml_dumper.dump(obj, to_file=output_file)
+                    elif fmt == 'json':
+                        json_dumper.dump(obj, to_file=output_file)
+                    elif fmt == 'ttl':
+                        rdflib_dumper.dump(obj, to_file=output_file, schemaview=sv, prefix_map=self.prefix_map)
+                    else:
+                        raise NotImplementedError(f"Cannot output in format: {fmt}")
+                    summary.outputs.append(f"{stem}.{fmt}")
 
     def _load_from_dict(self, dict_obj: Any, target_class: Union[str, ElementName] = None) -> Any:
         """
@@ -187,10 +259,27 @@ class ExampleRunner:
               "-d",
               required=True,
               help="folder containing positive examples that MUST pass validation")
-def cli(schema, prefixes, **kwargs):
-    """Process examples.
+@click.option("--input-formats",
+              "-f",
+              multiple=True,
+              default=["yaml"],
+              show_default=True,
+              help="Target formats to be converted to (yaml, json)")
+@click.option("--output-formats",
+              "-t",
+              multiple=True,
+              default=["yaml", "json", "ttl"],
+              show_default=True,
+              help="Target formats to be converted to (yaml, json, ttl)")
+@click.option("--output",
+              "-o",
+              default=sys.stdout,
+              type=click.File("w", encoding="utf-8"),
+              help="Output file for markdown summary")
+def cli(schema, prefixes, output: TextIO, **kwargs):
+    """Process a folder of examples and a folder of counter examples.
 
-    Status: testing
+    Each example in the folder
 
     For context, see: https://github.com/linkml/linkml/issues/501
     """
@@ -200,6 +289,7 @@ def cli(schema, prefixes, **kwargs):
                            prefix_map=prefix_map,
                            **kwargs)
     runner.process_examples()
+    output.write(str(runner.summary))
 
 
 if __name__ == "__main__":

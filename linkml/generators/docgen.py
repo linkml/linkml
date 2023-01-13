@@ -24,6 +24,7 @@ from linkml_runtime.utils.schemaview import SchemaView
 from linkml._version import __version__
 from linkml.generators.erdiagramgen import ERDiagramGenerator
 from linkml.utils.generator import Generator, shared_arguments
+from linkml.workspaces.example_runner import ExampleRunner
 
 
 class MarkdownDialect(Enum):
@@ -130,6 +131,9 @@ class DocGenerator(Generator):
     include_top_level_diagram: bool = field(default_factory=lambda: False)
     """Whether the index page should include a schema diagram"""
 
+    example_directory: Optional[str] = None
+    example_runner: ExampleRunner = field(default_factory=lambda: ExampleRunner())
+
     genmeta: bool = field(default_factory=lambda: False)
     gen_classvars: bool = field(default_factory=lambda: True)
     gen_slots: bool = field(default_factory=lambda: True)
@@ -152,6 +156,8 @@ class DocGenerator(Generator):
             self.dialect = dialect
         if isinstance(self.diagram_type, str):
             self.diagram_type = DiagramType[self.diagram_type]
+        if self.example_directory:
+            self.example_runner = ExampleRunner(input_directory=Path(self.example_directory))
         super().__post_init__()
 
     def serialize(self, directory: str = None) -> None:
@@ -821,6 +827,22 @@ class DocGenerator(Generator):
             
         return mixed_in_slots
 
+    def example_object_blobs(self, class_name: str) -> List[Tuple[str, str]]:
+        """Fetch list of all examples of a class.
+
+        :param cls: class for which we want to determine the examples
+        :return: list of all examples of a class
+        """
+        if not self.example_runner:
+            return []
+        inputs = self.example_runner.example_source_inputs(class_name)
+        objs = []
+        for input in inputs:
+            stem = Path(input).stem
+            objs.append((stem, open(input, encoding="utf-8").read()))
+        return objs
+
+
 
 @shared_arguments(DocGenerator)
 @click.option(
@@ -855,6 +877,10 @@ class DocGenerator(Generator):
     default=False,
     help="Use IDs from slot_uri instead of names",
 )
+@click.option(
+    "--example-directory",
+    help="Folder in which example files are found. These are used to make inline examples"
+)
 @click.version_option(__version__, "-V", "--version")
 @click.command()
 def cli(yamlfile, directory, dialect, template_directory, use_slot_uris, **args):
@@ -863,7 +889,17 @@ def cli(yamlfile, directory, dialect, template_directory, use_slot_uris, **args)
     Currently a default set of templates for markdown is provided (see the folder linkml/generators/docgen/)
 
     If you specify another format (e.g. html) then you need to provide a template_directory argument, with a template for
-    each type of entity inside
+    each type of entity inside.
+
+    Examples can optionally be integrated into the documentation; to enable this, pass in the
+    --example-directory argument.  The example directory should contain one file per example,
+    following the naming convention <ClassName>-<ExampleName>.<extension>.
+
+    For example, to include examples on the page for Person, include examples
+
+    Person-001.yaml, Person-002.yaml, etc.
+
+    Currently examples must be in yaml
     """
     gen = DocGenerator(
         yamlfile,
