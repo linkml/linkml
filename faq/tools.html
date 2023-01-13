@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="FAQ: Getting Help" href="getting-help.html" /><link rel="prev" title="FAQ: Modeling" href="modeling.html" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="FAQ: Python" href="python.html" /><link rel="prev" title="FAQ: Modeling" href="modeling.html" />
 
     <!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
         <title>FAQ: Tools - linkml documentation</title>
@@ -224,11 +224,11 @@
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../howtos/index.html">How-to Guides</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../howtos/linkml-project-cookiecutter.html">LinkML Project Cookiecutter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtos/yq-for-schemas.html">Using yq for querying and manipulating schemas</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtos/using-jsonld.html">Using JSON-LD</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../howtos/port-linkml.html">Porting LinkML tools to other programming languages</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../howtos/linkml-project-cookiecutter.html">LinkML Project Cookiecutter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtos/model-measurements.html">How to model quantities and measurements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtos/port-linkml.html">Porting LinkML tools to other programming languages</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples of use</a></li>
@@ -240,6 +240,7 @@
 <li class="toctree-l2"><a class="reference internal" href="why-linkml.html">FAQ: Why LinkML</a></li>
 <li class="toctree-l2"><a class="reference internal" href="modeling.html">FAQ: Modeling</a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">FAQ: Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python.html">FAQ: Python</a></li>
 <li class="toctree-l2"><a class="reference internal" href="getting-help.html">FAQ: Getting Help</a></li>
 <li class="toctree-l2"><a class="reference internal" href="contributing.html">FAQ: Contributing</a></li>
 </ul>
@@ -252,6 +253,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../developers/notebooks.html">Jupyter Notebooks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../developers/manipulating-schemas.html">Manipulating Schemas</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../developers/schemaview.html">SchemaView</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../developers/schemabuilder.html">SchemaBuilder</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../developers/loaders-and-dumpers.html">Data Conversion: Loaders and Dumpers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../developers/inference.html">Inferring Missing Values</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../developers/using-sql-dbs.html">Using SQL Databases</a></li>
@@ -359,7 +361,12 @@ schema class in the metamodel)</p>
 </section>
 <section id="how-can-i-check-my-schema-is-valid">
 <h2>How can I check my schema is valid?<a class="headerlink" href="#how-can-i-check-my-schema-is-valid" title="Permalink to this heading">#</a></h2>
-<p>You can use any of the generator tools distributed as part of linkml to check for errors in your schema</p>
+<p>You can use any of the generator tools distributed as part of linkml to check for errors in your schema.</p>
+</section>
+<section id="is-there-a-linter-for-linkml">
+<h2>Is there a linter for LinkML?<a class="headerlink" href="#is-there-a-linter-for-linkml" title="Permalink to this heading">#</a></h2>
+<p>Yes! See the documentation for <a class="reference external" href="https://linkml.io/linkml/schemas/linter">the schema linter</a>.</p>
+<p>The linter will attempt to ensure your schema follows best practice.</p>
 </section>
 <section id="are-there-tools-to-create-a-schema-from-json-schema-shacl-sql-ddl">
 <h2>Are there tools to create a schema from JSON-Schema/SHACL/SQL DDL/…?<a class="headerlink" href="#are-there-tools-to-create-a-schema-from-json-schema-shacl-sql-ddl" title="Permalink to this heading">#</a></h2>
@@ -420,7 +427,8 @@ bootstrap a new schema.</p>
 </pre></div>
 </div>
 <p>You can also write similar code in most languages.</p>
-<p>While this should work fine, the approach has some disadvantages. In particular you get no IDE support and there is no guard against making mistakes in key names or structure until you come to run the code.</p>
+<p>While this should work fine, the approach has some disadvantages.
+In particular, you get no IDE support and there is no guard against making mistakes in key names or structure until you come to run the code.</p>
 <p>A better approach for Python developers is to use the Python object model that is generated from the metamodel.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model.meta</span> <span class="kn">import</span> <span class="n">SchemaDefinition</span><span class="p">,</span> <span class="n">ClassDefinition</span>
 
@@ -429,6 +437,7 @@ bootstrap a new schema.</p>
 </pre></div>
 </div>
 <p>You can also use the SchemaView classes, see the developers guide section on <a class="reference external" href="https://linkml.io/linkml/developers/manipulating-schemas.html">manipulating schemas</a></p>
+<p>Another approach is to use <a class="reference external" href="https://linkml.io/linkml/developers/schemabuilder.html">SchemaBuilder schemas</a> objects.</p>
 </section>
 <section id="how-can-i-check-my-data-is-valid">
 <h2>How can I check my data is valid?<a class="headerlink" href="#how-can-i-check-my-data-is-valid" title="Permalink to this heading">#</a></h2>
@@ -576,12 +585,12 @@ but there may be scenarios where you have a CSV with large data values, e.g</p>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="getting-help.html">
+          <a class="next-page" href="python.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">FAQ: Getting Help</div>
+                <div class="title">FAQ: Python</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
@@ -634,6 +643,7 @@ but there may be scenarios where you have a CSV with large data values, e.g</p>
 <li><a class="reference internal" href="#is-there-a-tool-to-manage-schemas-as-spreadsheets">Is there a tool to manage schemas as spreadsheets?</a></li>
 <li><a class="reference internal" href="#how-do-i-browse-a-schema">How do I browse a schema?</a></li>
 <li><a class="reference internal" href="#how-can-i-check-my-schema-is-valid">How can I check my schema is valid?</a></li>
+<li><a class="reference internal" href="#is-there-a-linter-for-linkml">Is there a linter for LinkML?</a></li>
 <li><a class="reference internal" href="#are-there-tools-to-create-a-schema-from-json-schema-shacl-sql-ddl">Are there tools to create a schema from JSON-Schema/SHACL/SQL DDL/…?</a></li>
 <li><a class="reference internal" href="#are-there-tools-to-infer-a-schema-from-data">Are there tools to infer a schema from data?</a></li>
 <li><a class="reference internal" href="#how-do-i-programmatically-create-schemas">How do I programmatically create schemas?</a></li>

@@ -224,11 +224,11 @@
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../howtos/index.html">How-to Guides</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../howtos/linkml-project-cookiecutter.html">LinkML Project Cookiecutter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtos/yq-for-schemas.html">Using yq for querying and manipulating schemas</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtos/using-jsonld.html">Using JSON-LD</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../howtos/port-linkml.html">Porting LinkML tools to other programming languages</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../howtos/linkml-project-cookiecutter.html">LinkML Project Cookiecutter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtos/model-measurements.html">How to model quantities and measurements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtos/port-linkml.html">Porting LinkML tools to other programming languages</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples of use</a></li>
@@ -240,6 +240,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../faq/why-linkml.html">FAQ: Why LinkML</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../faq/modeling.html">FAQ: Modeling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../faq/tools.html">FAQ: Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/python.html">FAQ: Python</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../faq/getting-help.html">FAQ: Getting Help</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../faq/contributing.html">FAQ: Contributing</a></li>
 </ul>
@@ -252,6 +253,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../developers/notebooks.html">Jupyter Notebooks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../developers/manipulating-schemas.html">Manipulating Schemas</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../developers/schemaview.html">SchemaView</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../developers/schemabuilder.html">SchemaBuilder</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../developers/loaders-and-dumpers.html">Data Conversion: Loaders and Dumpers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../developers/inference.html">Inferring Missing Values</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../developers/using-sql-dbs.html">Using SQL Databases</a></li>
@@ -400,21 +402,14 @@ are inherited from NamedThing, and <cite>aliases</cite> are inherited from a mix
 <li><p>not</p></li>
 </ul>
 <p>See <a class="reference external" href="https://json-schema.org/understanding-json-schema/reference/combining.html">Schema Composition</a></p>
-<p>LinkML 1.2 supports analogous constructs:</p>
+<p>LinkML supports analogous elements:</p>
 <ul class="simple">
 <li><p><a class="reference external" href="https://w3id.org/linkml/any_of">any_of</a></p></li>
 <li><p><a class="reference external" href="https://w3id.org/linkml/all_of">all_of</a></p></li>
 <li><p><a class="reference external" href="https://w3id.org/linkml/exactly_one_of">exactly_one_of</a></p></li>
 <li><p><a class="reference external" href="https://w3id.org/linkml/none_of">none_of</a></p></li>
 </ul>
-<p>Note that many uses of the above constructs may be better handled by
-using inheritance (see below) in LinkML. Future versions of LinkML may
-support translation of certain object oriented patterns to JSON-Schema
-compositions, for example:</p>
-<ul class="simple">
-<li><p>The <a class="reference external" href="https://w3id.org/linkml/union_of">union_of</a> slot could be
-used to generate oneOf</p></li>
-</ul>
+<p>Use of these elements will be translated into the appropriate JSON-Schema construct.</p>
 </section>
 <section id="inlining">
 <h3>Inlining<a class="headerlink" href="#inlining" title="Permalink to this heading">#</a></h3>
@@ -608,6 +603,29 @@ regular expressions.</p>
 <span class="p">}</span>
 </pre></div>
 </div>
+<p>LinkML also supports <a class="reference external" href="https://w3id.org/linkml/structured_pattern">Structured patterns</a>, these are
+compiled down to patterns during JSON Schema generation.</p>
+</section>
+<section id="rules">
+<h3>Rules<a class="headerlink" href="#rules" title="Permalink to this heading">#</a></h3>
+<p>LinkML supports <a class="reference external" href="https://linkml.io/linkml/schemas/advanced.html">Rules</a> which allow for conditional
+application of constraints.</p>
+<p>These are converted to if/then/else constructs in JSON-Schema.</p>
+</section>
+<section id="uniqueness-constraints">
+<h3>Uniqueness constraints<a class="headerlink" href="#uniqueness-constraints" title="Permalink to this heading">#</a></h3>
+<p>LinkML provides different mechanisms for stating uniqueness constraints:</p>
+<ul class="simple">
+<li><p>The <a class="reference external" href="https://w3id.org/linkml/identifier">identifier</a> and <a class="reference external" href="https://w3id.org/linkml/key">key</a> slots
+metamodel slots allow a class to have a single primary key</p></li>
+<li><p>The <a class="reference external" href="https://w3id.org/linkml/unique_keys">unique_keys</a> slot allows for additional unique keys. These can be singular or compound.</p></li>
+</ul>
+<p>Currently JSON-Schema does not yet support unique keys. See <a class="reference external" href="https://stackoverflow.com/questions/24763759/make-sure-item-property-in-array-is-unique-in-json-schema">This stackoverflow question</a>
+for a discussion.</p>
+<p>It is possible to get a limited form of uniqueness key checking in JSON-Schema: slots
+marked as <code class="docutils literal notranslate"><span class="pre">identifier</span></code> or <code class="docutils literal notranslate"><span class="pre">key</span></code> that are also <a class="reference external" href="https://w3id.org/linkml/inlined">inlined</a>
+are enforced to be unique by virtue of the fact that the slot is used as the key in a dictionary,
+and dictionaries in JSON cannot have duplicate keys.</p>
 </section>
 <section id="enums">
 <h3>Enums<a class="headerlink" href="#enums" title="Permalink to this heading">#</a></h3>
@@ -917,6 +935,8 @@ disable pretty-printing and return the most compact JSON representation</p>
 <li><a class="reference internal" href="#composition">Composition</a></li>
 <li><a class="reference internal" href="#inlining">Inlining</a></li>
 <li><a class="reference internal" href="#patterns">Patterns</a></li>
+<li><a class="reference internal" href="#rules">Rules</a></li>
+<li><a class="reference internal" href="#uniqueness-constraints">Uniqueness constraints</a></li>
 <li><a class="reference internal" href="#enums">Enums</a></li>
 </ul>
 </li>

@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="FAQ: Getting Help" href="getting-help.html" /><link rel="prev" title="FAQ: Tools" href="tools.html" />
 
     <!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
         <title>FAQ: Python - linkml documentation</title>
@@ -158,7 +158,7 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../intro/overview.html">LinkML at a glance</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../intro/install.html">Quick Install Guide</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../intro/tutorial.html">Tutorial</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -224,22 +224,23 @@
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../howtos/index.html">How-to Guides</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../howtos/linkml-project-cookiecutter.html">LinkML Project Cookiecutter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtos/yq-for-schemas.html">Using yq for querying and manipulating schemas</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtos/using-jsonld.html">Using JSON-LD</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../howtos/port-linkml.html">Porting LinkML tools to other programming languages</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../howtos/linkml-project-cookiecutter.html">LinkML Project Cookiecutter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtos/model-measurements.html">How to model quantities and measurements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtos/port-linkml.html">Porting LinkML tools to other programming languages</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples of use</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../ecosystem.html">The LinkML Ecosystem</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../specifications/linkml-spec.html">LinkML specification</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributing/contributing.html">Contribution Guidelines</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="index.html">FAQ</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">FAQ</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="general.html">FAQ: General</a></li>
 <li class="toctree-l2"><a class="reference internal" href="why-linkml.html">FAQ: Why LinkML</a></li>
 <li class="toctree-l2"><a class="reference internal" href="modeling.html">FAQ: Modeling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tools.html">FAQ: Tools</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">FAQ: Python</a></li>
 <li class="toctree-l2"><a class="reference internal" href="getting-help.html">FAQ: Getting Help</a></li>
 <li class="toctree-l2"><a class="reference internal" href="contributing.html">FAQ: Contributing</a></li>
 </ul>
@@ -252,6 +253,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../developers/notebooks.html">Jupyter Notebooks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../developers/manipulating-schemas.html">Manipulating Schemas</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../developers/schemaview.html">SchemaView</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../developers/schemabuilder.html">SchemaBuilder</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../developers/loaders-and-dumpers.html">Data Conversion: Loaders and Dumpers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../developers/inference.html">Inferring Missing Values</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../developers/using-sql-dbs.html">Using SQL Databases</a></li>
@@ -427,22 +429,6 @@ interest in Pydantic, especially as this works well with the popular FastAPI fra
 <p>See <a class="reference external" href="https://github.com/linkml/linkml/blob/main/notebooks/SQL-examples.ipynb.ipynb">SQL-Examples notebook</a>
 for example code</p>
 </section>
-<section id="how-do-i-work-programmatically-with-rdf-data">
-<h2>How do I work programmatically with RDF data?<a class="headerlink" href="#how-do-i-work-programmatically-with-rdf-data" title="Permalink to this heading">#</a></h2>
-<p>TODO</p>
-</section>
-<section id="is-linkml-compatible-with-rdflib">
-<h2>Is LinkML compatible with RDFLib?<a class="headerlink" href="#is-linkml-compatible-with-rdflib" title="Permalink to this heading">#</a></h2>
-<p>TODO</p>
-</section>
-<section id="is-linkml-compatible-with-flask">
-<h2>Is LinkML compatible with Flask?<a class="headerlink" href="#is-linkml-compatible-with-flask" title="Permalink to this heading">#</a></h2>
-<p>TODO</p>
-</section>
-<section id="is-linkml-compatible-with-python-graphql-frameworks">
-<h2>Is LinkML compatible with Python GraphQL frameworks?<a class="headerlink" href="#is-linkml-compatible-with-python-graphql-frameworks" title="Permalink to this heading">#</a></h2>
-<p>TODO</p>
-</section>
 </section>
 
         </article>
@@ -450,8 +436,26 @@ for example code</p>
       <footer>
         
         <div class="related-pages">
-          
-          
+          <a class="next-page" href="getting-help.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">FAQ: Getting Help</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="tools.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">FAQ: Tools</div>
+                
+              </div>
+            </a>
         </div>
         <div class="bottom-of-page">
           <div class="left-details">
@@ -492,10 +496,6 @@ for example code</p>
 <li><a class="reference internal" href="#why-do-i-get-a-not-json-serializable-message">Why do I get a “not JSON serializable” message?</a></li>
 <li><a class="reference internal" href="#what-is-the-difference-between-gen-python-and-gen-pydantic-and-gen-sqla">What is the difference between gen-python and gen-pydantic and gen-sqla?</a></li>
 <li><a class="reference internal" href="#can-i-convert-between-sql-alchemy-models-and-dataclasses-pydantic">Can I convert between SQL Alchemy models and dataclasses/pydantic</a></li>
-<li><a class="reference internal" href="#how-do-i-work-programmatically-with-rdf-data">How do I work programmatically with RDF data?</a></li>
-<li><a class="reference internal" href="#is-linkml-compatible-with-rdflib">Is LinkML compatible with RDFLib?</a></li>
-<li><a class="reference internal" href="#is-linkml-compatible-with-flask">Is LinkML compatible with Flask?</a></li>
-<li><a class="reference internal" href="#is-linkml-compatible-with-python-graphql-frameworks">Is LinkML compatible with Python GraphQL frameworks?</a></li>
 </ul>
 </li>
 </ul>

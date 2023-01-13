@@ -14,7 +14,7 @@ We use the sphinx framework.
 To build the doc locally:
 
 ```bash
-pipenv run make html
+poetry run make html
 ```
 
 This will build docs in `_build/html/`. You can check these with your browser.
@@ -25,7 +25,7 @@ After you are satisfied they look good run:
 make deploy
 ```
 
-(this is a simple copy and doesn't need to be done in pipenv)
+(this is a simple copy and doesn't need to be done in poetry)
 
 This will copy to [docs/](https://github.com/linkml/linkml/tree/main/docs) where they can be committed
 
@@ -37,10 +37,10 @@ Currently we do not do these steps by github actions. It is recommended you comm
 
 **never** run `make html` directly
 
-**always** run this from inside the pipenv shell or via:
+**always** run this from inside the poetry shell or via:
 
 ```bash
-pipenv run make html
+poetry run make html
 ```
 
 If you don't do this then docstrings from linkml will not be included. Always check the generator docs to ensure command line options are present.

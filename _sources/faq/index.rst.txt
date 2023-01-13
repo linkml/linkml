@@ -12,6 +12,7 @@ FAQ
    installation
    modeling
    tools
+   python
    getting-help
    contributing
    troubleshooting

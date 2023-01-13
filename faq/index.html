@@ -224,11 +224,11 @@
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../howtos/index.html">How-to Guides</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../howtos/linkml-project-cookiecutter.html">LinkML Project Cookiecutter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtos/yq-for-schemas.html">Using yq for querying and manipulating schemas</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtos/using-jsonld.html">Using JSON-LD</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../howtos/port-linkml.html">Porting LinkML tools to other programming languages</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../howtos/linkml-project-cookiecutter.html">LinkML Project Cookiecutter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtos/model-measurements.html">How to model quantities and measurements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtos/port-linkml.html">Porting LinkML tools to other programming languages</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples of use</a></li>
@@ -240,6 +240,7 @@
 <li class="toctree-l2"><a class="reference internal" href="why-linkml.html">FAQ: Why LinkML</a></li>
 <li class="toctree-l2"><a class="reference internal" href="modeling.html">FAQ: Modeling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tools.html">FAQ: Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python.html">FAQ: Python</a></li>
 <li class="toctree-l2"><a class="reference internal" href="getting-help.html">FAQ: Getting Help</a></li>
 <li class="toctree-l2"><a class="reference internal" href="contributing.html">FAQ: Contributing</a></li>
 </ul>
@@ -252,6 +253,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../developers/notebooks.html">Jupyter Notebooks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../developers/manipulating-schemas.html">Manipulating Schemas</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../developers/schemaview.html">SchemaView</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../developers/schemabuilder.html">SchemaBuilder</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../developers/loaders-and-dumpers.html">Data Conversion: Loaders and Dumpers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../developers/inference.html">Inferring Missing Values</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../developers/using-sql-dbs.html">Using SQL Databases</a></li>
@@ -349,6 +351,7 @@
 <li class="toctree-l2"><a class="reference internal" href="tools.html#is-there-a-tool-to-manage-schemas-as-spreadsheets">Is there a tool to manage schemas as spreadsheets?</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tools.html#how-do-i-browse-a-schema">How do I browse a schema?</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tools.html#how-can-i-check-my-schema-is-valid">How can I check my schema is valid?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.html#is-there-a-linter-for-linkml">Is there a linter for LinkML?</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tools.html#are-there-tools-to-create-a-schema-from-json-schema-shacl-sql-ddl">Are there tools to create a schema from JSON-Schema/SHACL/SQL DDL/…?</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tools.html#are-there-tools-to-infer-a-schema-from-data">Are there tools to infer a schema from data?</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tools.html#how-do-i-programmatically-create-schemas">How do I programmatically create schemas?</a></li>
@@ -365,6 +368,18 @@
 <li class="toctree-l2"><a class="reference internal" href="tools.html#can-i-use-my-schema-to-do-reasoning-over-my-data">Can I use my schema to do reasoning over my data?</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tools.html#what-does-if-missing-mean-in-my-json-output">What does _if_missing mean in my JSON output?</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tools.html#what-does-csv-error-field-larger-than-field-limit-131072-mean">What does _csv.Error: field larger than field limit (131072) mean?</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="python.html">FAQ: Python</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="python.html#why-would-i-use-linkml-in-my-python-code">Why would I use LinkML in my Python code?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python.html#where-do-i-find-out-more">Where do I find out more?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python.html#which-packages-do-i-need-to-install">Which packages do I need to install?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python.html#how-do-i-get-started">How do I get started?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python.html#what-is-a-loader-or-a-dumper">What is a loader or a dumper?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python.html#what-formats-are-supported">What formats are supported?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python.html#why-do-i-get-a-not-json-serializable-message">Why do I get a “not JSON serializable” message?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python.html#what-is-the-difference-between-gen-python-and-gen-pydantic-and-gen-sqla">What is the difference between gen-python and gen-pydantic and gen-sqla?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python.html#can-i-convert-between-sql-alchemy-models-and-dataclasses-pydantic">Can I convert between SQL Alchemy models and dataclasses/pydantic</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="getting-help.html">FAQ: Getting Help</a><ul>

@@ -65,7 +65,13 @@ There are a few strategies:
 
 ## How can I check my schema is valid?
 
-You can use any of the generator tools distributed as part of linkml to check for errors in your schema
+You can use any of the generator tools distributed as part of linkml to check for errors in your schema.
+
+## Is there a linter for LinkML?
+
+Yes! See the documentation for [the schema linter](https://linkml.io/linkml/schemas/linter).
+
+The linter will attempt to ensure your schema follows best practice.
 
 ## Are there tools to create a schema from JSON-Schema/SHACL/SQL DDL/...?
 
@@ -133,7 +139,8 @@ print(yaml.dump(schema))
 
 You can also write similar code in most languages.
 
-While this should work fine, the approach has some disadvantages. In particular you get no IDE support and there is no guard against making mistakes in key names or structure until you come to run the code.
+While this should work fine, the approach has some disadvantages.
+In particular, you get no IDE support and there is no guard against making mistakes in key names or structure until you come to run the code.
 
 A better approach for Python developers is to use the Python object model that is generated from the metamodel.
 
@@ -145,6 +152,9 @@ s = SchemaDefinition(id= my_schema_id,
 ```
 
 You can also use the SchemaView classes, see the developers guide section on [manipulating schemas](https://linkml.io/linkml/developers/manipulating-schemas.html)
+
+Another approach is to use [SchemaBuilder schemas](https://linkml.io/linkml/developers/schemabuilder.html) objects.
+
 
 ## How can I check my data is valid?
 
