@@ -20,6 +20,7 @@ class {{classname(c.name)}}({% if c.is_a %}{{ classname(c.is_a) }}{% else %}Base
            {%- if 'foreign_key' in s.annotations -%}, ForeignKey('{{ s.annotations['foreign_key'].value }}') {%- endif -%}
            {%- if 'primary_key' in s.annotations -%}, primary_key=True {%- endif -%}
            {%- if 'autoincrement' in s.annotations -%}, autoincrement=True {% endif -%}
+           {%- if "required" in s.annotations -%}, nullable=False {% endif -%}
            )
     {% if 'foreign_key' in s.annotations and 'original_slot' in s.annotations -%}
     {{s.annotations['original_slot'].value}} = relationship("{{classname(s.range)}}", uselist=False, foreign_keys=[{{s.alias}}])
