@@ -305,6 +305,9 @@ class RelationalModelTransformer:
                             comments=[f"Linking class generated from {cn}.{slot_name}"],
                         )
                         slot.name = sn_singular
+                        # On the linking table, it's inlined.
+                        # This triggers that the slot.name gets appended with the pk column name on the target side
+                        slot.inlined = True
                         add_attribute(linker_class.attributes, backref_slot)
                         add_attribute(linker_class.attributes, slot)
                         slot.slot_uri = "rdf:object"
@@ -328,7 +331,7 @@ class RelationalModelTransformer:
                                 MultivaluedScalar(
                                     source_class=cn,
                                     source_slot=src_slot.name,
-                                    target_slot=slot.name,
+                                    target_slot=sn_singular,
                                     join_class=linker_class.name,
                                 )
                             )
