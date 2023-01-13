@@ -363,6 +363,7 @@ class SchemaViewTestCase(unittest.TestCase):
         view should by default dynamically include imports chain
         """
         view = SchemaView(SCHEMA_WITH_IMPORTS)
+        self.assertIsNotNone(view.schema.source_file)
         logging.debug(view.imports_closure())
         self.assertCountEqual(['kitchen_sink', 'core', 'linkml:types'], view.imports_closure())
         for t in view.all_types().keys():
@@ -446,6 +447,15 @@ class SchemaViewTestCase(unittest.TestCase):
         # units
         height = view.get_slot('height_in_m')
         self.assertEqual("m", height.unit.ucum_code)
+
+    def test_imports_from_schemaview(self):
+        """
+        view should by default dynamically include imports chain
+        """
+        view = SchemaView(SCHEMA_WITH_IMPORTS)
+        view2 = SchemaView(view.schema)
+        self.assertCountEqual(view.all_classes(), view2.all_classes())
+        self.assertCountEqual(view.all_classes(imports=False), view2.all_classes(imports=False))
 
     def test_merge_imports(self):
         """
