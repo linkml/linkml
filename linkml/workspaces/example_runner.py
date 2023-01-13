@@ -86,7 +86,11 @@ class ExampleRunner:
         :return:
         """
         if self._python_module is None:
-            pygen = PythonGenerator(self.schemaview.schema)
+            # See: https://github.com/linkml/linkml/issues/1219
+            src = self.schemaview.schema.source_file
+            if not src:
+                src = self.schemaview.schema
+            pygen = PythonGenerator(src)
             self._python_module = pygen.compile_module()
         return self._python_module
 
