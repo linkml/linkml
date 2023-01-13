@@ -94,7 +94,7 @@ class SchemaBuilder:
                     if isinstance(s, str) and s in self.schema.slots:
                         # top-level slot already exists
                         continue
-                    self.add_slot(s)
+                    self.add_slot(s, replace_if_present=replace_if_present)
             if slot_usage:
                 for k, v in slot_usage.items():
                     cls.slot_usage[k] = v

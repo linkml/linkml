@@ -5,6 +5,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.linkml_model import SlotDefinition
 from linkml_runtime.utils.introspection import package_schemaview
 from sqlalchemy import create_engine
@@ -157,6 +158,7 @@ class SQLAlchemyGeneratorTestCase(unittest.TestCase):
         b.add_class("my_abstract", slots=["my_abstract_slot"], abstract=True)
         b.add_class("my_class1", is_a="my_abstract", mixins=["my_mixin"])
         b.add_class("my_class2", slots=["ref_to_c1"])
+        print(yaml_dumper.dumps(b.schema))
         gen = SQLAlchemyGenerator(b.schema)
         code = gen.generate_sqla(template=TemplateEnum.DECLARATIVE)
         print(code)
@@ -165,7 +167,9 @@ class SQLAlchemyGeneratorTestCase(unittest.TestCase):
         # with open(META_OUT_SQLA, "w") as stream:
         #    stream.write(code)
         mod = gen.compile_sqla(template=TemplateEnum.DECLARATIVE)
+        print(mod)
         i1 = mod.MyClass1(my_mixin_slot="v1", my_abstract_slot="v2")
+        print(i1)
         mod.MyClass2(ref_to_c1=i1)
 
     def test_sqla_compile_imperative(self):
