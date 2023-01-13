@@ -35,8 +35,8 @@ class LinkmlGenerator(Generator):
 
     def __post_init__(self):
         # TODO: consider moving up a level
-        self.schemaview = SchemaView(self.schema)
         super().__post_init__()
+        self.schemaview = SchemaView(self.schema, merge_imports=self.mergeimports)
 
     def materialize_classes(self) -> None:
         """Materialize class slots from schema as attribues, in place"""
