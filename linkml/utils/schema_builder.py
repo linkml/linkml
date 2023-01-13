@@ -90,10 +90,11 @@ class SchemaBuilder:
         else:
             if slots is not None:
                 for s in slots:
+                    cls.slots.append(s.name if isinstance(s, SlotDefinition) else s)
                     if isinstance(s, str) and s in self.schema.slots:
                         # top-level slot already exists
                         continue
-                    self.add_slot(s, cls.name)
+                    self.add_slot(s)
             if slot_usage:
                 for k, v in slot_usage.items():
                     cls.slot_usage[k] = v
