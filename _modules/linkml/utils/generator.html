@@ -458,11 +458,6 @@
     <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span>
-        <span class="c1">#    logging.basicConfig()</span>
-        <span class="c1">#    self.logger = logging.getLogger(self.__class__.__name__)</span>
-        <span class="c1">#    self.logger.setLevel(log_level)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">stacktrace</span><span class="p">:</span>
-            <span class="n">sys</span><span class="o">.</span><span class="n">tracebacklimit</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">format</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">format</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">valid_formats</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">format</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">valid_formats</span><span class="p">:</span>
@@ -1218,6 +1213,10 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">)</span>
 
+    <span class="k">def</span> <span class="nf">stacktrace_callback</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">param</span><span class="p">,</span> <span class="n">stacktrace</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">stacktrace</span><span class="p">:</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">tracebacklimit</span> <span class="o">=</span> <span class="mi">0</span>
+
     <span class="k">def</span> <span class="nf">log_level_callback</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">param</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">_log_level_string_to_int</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
 
@@ -1284,7 +1283,9 @@
             <span class="n">Option</span><span class="p">(</span>
                 <span class="p">(</span><span class="s2">&quot;--stacktrace/--no-stacktrace&quot;</span><span class="p">,),</span>
                 <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Print a stack trace when an error occurs (default=stacktrace)&quot;</span><span class="p">,</span>
+                <span class="n">show_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Print a stack trace when an error occurs&quot;</span><span class="p">,</span>
+                <span class="n">callback</span><span class="o">=</span><span class="n">stacktrace_callback</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="p">)</span>
 
