@@ -1,0 +1,41 @@
+name: test-schema
+id: http://example.org/test-schema
+
+imports:
+  - linkml:types
+prefixes:
+  linkml: https://w3id.org/linkml/
+  test_schema: http://example.org/test-schema/
+default_prefix: test_schema
+default_range: string
+slots:
+  id:
+    range: string
+    identifier: true
+    description: A unique identifier for instances of this class
+  name:
+    range: string
+    description: A human-friendly name for instances of this class
+  person_set:
+    range: Person
+    multivalued: true
+    inlined_as_list: true
+    description: A collection of persons
+classes:
+  Person:
+    description: A human being
+    slots:
+      - id
+      - name
+    unique_keys:
+      id_unique_key:
+        unique_key_slots:
+          - id
+      name_unique_key:
+        unique_key_slots:
+          - name
+  Database:
+    description: An outer collection of class-specific collections
+    name: Database
+    slots:
+      - person_set
