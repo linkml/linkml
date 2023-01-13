@@ -119,22 +119,14 @@ JSON-Schema supports schema *composition* through:
 
 See `Schema Composition <https://json-schema.org/understanding-json-schema/reference/combining.html>`_
 
-LinkML 1.2 supports analogous constructs:
+LinkML supports analogous elements:
 
 * `any_of <https://w3id.org/linkml/any_of>`_
 * `all_of <https://w3id.org/linkml/all_of>`_
 * `exactly_one_of <https://w3id.org/linkml/exactly_one_of>`_
 * `none_of <https://w3id.org/linkml/none_of>`_
 
-
-Note that many uses of the above constructs may be better handled by
-using inheritance (see below) in LinkML. Future versions of LinkML may
-support translation of certain object oriented patterns to JSON-Schema
-compositions, for example:
-
-* The `union_of <https://w3id.org/linkml/union_of>`_ slot could be
-  used to generate oneOf
-
+Use of these elements will be translated into the appropriate JSON-Schema construct.
 
 Inlining
 ^^^^^^^^
@@ -359,6 +351,34 @@ will generate:
                "pattern": "^\\S+@[\\S+\\.]+\\S+",
                "type": "string"
             }
+
+LinkML also supports `Structured patterns <https://w3id.org/linkml/structured_pattern>`_, these are
+compiled down to patterns during JSON Schema generation.
+
+Rules
+^^^^^
+
+LinkML supports `Rules <https://linkml.io/linkml/schemas/advanced.html>`_ which allow for conditional
+application of constraints.
+
+These are converted to if/then/else constructs in JSON-Schema.
+
+Uniqueness constraints
+^^^^^^^^^^^^^^^^^^^^^^
+
+LinkML provides different mechanisms for stating uniqueness constraints:
+
+* The `identifier <https://w3id.org/linkml/identifier>`_ and `key <https://w3id.org/linkml/key>`_ slots
+  metamodel slots allow a class to have a single primary key
+* The `unique_keys <https://w3id.org/linkml/unique_keys>`_ slot allows for additional unique keys. These can be singular or compound.
+
+Currently JSON-Schema does not yet support unique keys. See `This stackoverflow question <https://stackoverflow.com/questions/24763759/make-sure-item-property-in-array-is-unique-in-json-schema>`_
+for a discussion.
+
+It is possible to get a limited form of uniqueness key checking in JSON-Schema: slots
+marked as ``identifier`` or ``key`` that are also `inlined <https://w3id.org/linkml/inlined>`_
+are enforced to be unique by virtue of the fact that the slot is used as the key in a dictionary,
+and dictionaries in JSON cannot have duplicate keys.
 
 Enums
 ^^^^^
