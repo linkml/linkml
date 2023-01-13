@@ -76,6 +76,17 @@ URI: {{ gen.uri_link(element) }}
 
 {% endif -%}
 
+{% if gen.example_object_blobs(element.name) -%}
+## Examples
+{% for name, blob in gen.example_object_blobs(element.name) -%}
+### Example: {{name}}
+
+```yaml
+{{ blob }}
+```
+{% endfor %}
+{% endif %}
+
 
 ## LinkML Source
 

@@ -18,6 +18,8 @@ MD_DIR = env.expected_path("kitchen_sink_md")
 META_MD_DIR = env.expected_path("meta_md")
 MD_DIR2 = env.expected_path("kitchen_sink_md2")
 HTML_DIR = env.expected_path("kitchen_sink_html")
+EXAMPLE_DIR = env.input_path("examples")
+
 
 
 def assert_mdfile_does_not_contain(*args, **kwargs) -> None:
@@ -79,7 +81,9 @@ class DocGeneratorTestCase(unittest.TestCase):
 
     def test_docgen(self):
         """Tests basic document generator functionality"""
-        gen = DocGenerator(SCHEMA, mergeimports=True, no_types_dir=True)
+        gen = DocGenerator(SCHEMA, mergeimports=True, no_types_dir=True, example_directory=EXAMPLE_DIR)
+        blobs = gen.example_object_blobs("Person")
+        self.assertGreater(len(blobs), 0)
         md = gen.serialize(directory=MD_DIR)
         # test class docs
         assert_mdfile_contains("Organization.md", "Organization", after="Inheritance")
@@ -293,6 +297,11 @@ class DocGeneratorTestCase(unittest.TestCase):
              "|  | [HasAliases](HasAliases.md) |"),
             after="## Slots",
         )
+        # Examples
+        assert_mdfile_contains(
+            "Person.md",
+            "Example: Person",
+            after="## Examples",)
 
     def test_docgen_rank_ordering(self):
         """Tests overriding default order"""
