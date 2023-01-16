@@ -14,7 +14,7 @@ from linkml_runtime.linkml_model.meta import (Annotation, ClassDefinition,
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.schemaview import SchemaView
 
-from linkml.generators.common import get_type_designator_value
+from linkml.generators.common.type_designators import get_type_designator_value
 from linkml._version import __version__
 from linkml.generators.oocodegen import OOCodeGenerator
 from linkml.utils.generator import shared_arguments
