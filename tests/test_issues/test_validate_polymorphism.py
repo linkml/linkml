@@ -19,8 +19,8 @@ class PydanticPolymorphismTestCase(TestEnvironmentTestCase):
         mod = compile_python(output, "testschema")
         json_data = json.loads(data_str)
         cont = mod.Container(**json_data)
-        assert len([x for x in cont.things if type(x) == mod.Person]) == 1
-        assert len([x for x in cont.things if type(x) == mod.Organisation]) == 1
+        self.assertEquals(len([x for x in cont.things if type(x) == mod.Person]),1)
+        self.assertEquals(len([x for x in cont.things if type(x) == mod.Organisation]),1)
         
     def test_jsonschema_validates_poly(self):
         sv = SchemaView(schema_str)
