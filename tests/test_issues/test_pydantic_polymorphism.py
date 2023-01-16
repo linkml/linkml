@@ -81,24 +81,26 @@ class PydanticPolymorphismTestCase(TestEnvironmentTestCase):
         gen = PydanticGenerator(schema_str)
         output = gen.serialize()
         output_subset = [line for line in output.splitlines() if "thingtype" in line]
-        assert len(output_subset) > 0
-        assert "const=True" in output_subset[0]
-        assert len([x for x in output_subset if 'x:Person' in x]) == 1
+        self.assertGreater(len(output_subset), 0)
+        
+        self.assertTrue("const=True" in output_subset[0])
+        self.assertEqual(len([x for x in output_subset if 'x:Person' in x]),1)
 
         gen = PydanticGenerator(schema_str.replace("uriorcurie","uri"))
         output = gen.serialize()
         output_subset = [line for line in output.splitlines() if "thingtype" in line]
-        assert len(output_subset) > 0
-        assert "const=True" in output_subset[0]
-        assert len([x for x in output_subset if 'http://example.org/Person' in x]) == 1
+        self.assertGreater(len(output_subset), 0)
+        self.assertTrue("const=True" in output_subset[0])
+        self.assertEqual(len([x for x in output_subset if 'http://example.org/Person' in x]) ,1)
 
     def test_pydantic_load_poly_data(self):
         gen = PydanticGenerator(schema_str)
         output = gen.serialize()
         mod = compile_python(output, "testschema")
         data = mod.Container.parse_raw(data_str)
-        assert len([x for x in data.things if type(x) == mod.Person]) == 1
-        assert len([x for x in data.things if type(x) == mod.Organisation]) == 1
+        
+        self.assertEqual(len([x for x in data.things if isinstance(x,mod.Person)]),1)
+        self.assertEqual(len([x for x in data.things if isinstance(x,mod.Organisation)]),1)
 
 
 
