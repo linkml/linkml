@@ -27,7 +27,7 @@ import linkml
 from linkml._version import __version__
 from linkml.generators import PYTHON_GEN_VERSION
 from linkml.utils.generator import Generator, shared_arguments
-from linkml.generators.common import get_type_designator_value
+from linkml.generators.common.type_designators import get_type_designator_value
 from linkml.utils.ifabsent_functions import (default_curie_or_uri,
                                              ifabsent_postinit_declaration,
                                              ifabsent_value_declaration)
