@@ -71,11 +71,11 @@ class SQLTableGeneratorTestCase(unittest.TestCase):
         test dialect options
         """
         b = SchemaBuilder()
-        slots = ["full name", "description", "age"]
-        b.add_class(DUMMY_CLASS, slots, description="My dummy class")
         b.add_slot(
             SlotDefinition("age", range="integer", description="age of person in years")
         )
+        slots = ["full name", "description", "age"]
+        b.add_class(DUMMY_CLASS, slots, description="My dummy class")
         b.add_defaults()
         for dialect in ["postgresql", "sqlite", "mysql"]:
             gen = SQLTableGenerator(b.schema, dialect=dialect)

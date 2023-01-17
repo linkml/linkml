@@ -13,6 +13,7 @@ This section of the documentation is aimed primarily at Python developers who wa
    notebooks
    manipulating-schemas
    schemaview
+   schemabuilder
    loaders-and-dumpers
    inference
    using-sql-dbs

@@ -352,6 +352,9 @@ class RelationalModelTransformer:
                 if pk_slot is None or a.name == pk_slot.name:
                     ann = Annotation("primary_key", "true")
                     a.annotations[ann.tag] = ann
+                if a.required:
+                    ann = Annotation("required", "true")
+                    a.annotations[ann.tag] = ann
                 if a.range in target.classes:
                     tc = target.classes[a.range]
                     # tc_pk_slot = target_sv.get_identifier_slot(tc.name)

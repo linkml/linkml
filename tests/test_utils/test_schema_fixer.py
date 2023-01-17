@@ -1,7 +1,6 @@
 import unittest
 from copy import deepcopy
 
-from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.linkml_model import SlotDefinitionName, SlotDefinition
 
 from linkml.utils.schema_builder import SchemaBuilder
@@ -130,7 +129,7 @@ class SchemaFixerTestCase(unittest.TestCase):
         )
         # add a slot usage that is fully redundant
         c.slot_usage[DESC] = SlotDefinition(DESC, range="string")
-        b.add_slot(deepcopy(slot1)).add_slot(deepcopy(slot2))
+        b.add_slot(deepcopy(slot1), replace_if_present=True).add_slot(deepcopy(slot2), replace_if_present=True)
         b.add_defaults()
         fixer = SchemaFixer()
         fixer.remove_redundant_slot_usage(s)
@@ -159,6 +158,7 @@ class SchemaFixerTestCase(unittest.TestCase):
                 SlotDefinition(FULL_NAME, description="full name2", range="string"),
                 SlotDefinition(DESC, description="description"),
             ],
+            replace_if_present=True,
         )
         s = b.schema
         fixer = SchemaFixer()

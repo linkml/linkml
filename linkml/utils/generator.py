@@ -160,11 +160,6 @@ class Generator(metaclass=abc.ABCMeta):
     def __post_init__(self) -> None:
         if not self.logger:
             self.logger = logging.getLogger()
-        #    logging.basicConfig()
-        #    self.logger = logging.getLogger(self.__class__.__name__)
-        #    self.logger.setLevel(log_level)
-        if not self.stacktrace:
-            sys.tracebacklimit = 0
         if self.format is None:
             self.format = self.valid_formats[0]
         if self.format not in self.valid_formats:
@@ -920,6 +915,10 @@ def shared_arguments(g: Type[Generator]) -> Callable[[Command], Command]:
         else:
             logging.basicConfig(level=logging.WARNING)
 
+    def stacktrace_callback(ctx, param, stacktrace):
+        if not stacktrace:
+            sys.tracebacklimit = 0
+
     def log_level_callback(ctx, param, value):
         logging.basicConfig(level=_log_level_string_to_int(value))
 
@@ -986,7 +985,9 @@ def shared_arguments(g: Type[Generator]) -> Callable[[Command], Command]:
             Option(
                 ("--stacktrace/--no-stacktrace",),
                 default=False,
-                help="Print a stack trace when an error occurs (default=stacktrace)",
+                show_default=True,
+                help="Print a stack trace when an error occurs",
+                callback=stacktrace_callback,
             )
         )
 

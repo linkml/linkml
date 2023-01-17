@@ -158,15 +158,11 @@ class SQLAlchemyGeneratorTestCase(unittest.TestCase):
         b.add_class("my_class1", is_a="my_abstract", mixins=["my_mixin"])
         b.add_class("my_class2", slots=["ref_to_c1"])
         gen = SQLAlchemyGenerator(b.schema)
-        code = gen.generate_sqla(template=TemplateEnum.DECLARATIVE)
-        print(code)
-        # assert "class ClassDefinition(" in code
-        # assert "class Annotation(" in code
-        # with open(META_OUT_SQLA, "w") as stream:
-        #    stream.write(code)
         mod = gen.compile_sqla(template=TemplateEnum.DECLARATIVE)
         i1 = mod.MyClass1(my_mixin_slot="v1", my_abstract_slot="v2")
-        mod.MyClass2(ref_to_c1=i1)
+        i2 = mod.MyClass2(ref_to_c1=[i1])
+        self.assertEqual(i2.ref_to_c1[0], i1)
+
 
     def test_sqla_compile_imperative(self):
         """
