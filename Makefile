@@ -10,10 +10,11 @@ all-examples: all-examples-organization
 all-examples-%:  examples/%.py examples/%.schema.json  examples/%.shex  examples/%.graphql  examples/%.graphql  examples/%.shex examples/%.proto  examples/%.shex examples/%.valid examples/%-data.nt
 	echo done
 
-RUN=pipenv run
+#RUN=pipenv run
+RUN=poetry run
 
 test:
-    $(RUN) python -m unittest discover
+	$(RUN) python -m unittest discover
 
 ## Example schema products
 examples/%.py: examples/%.yaml
