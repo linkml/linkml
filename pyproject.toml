@@ -47,7 +47,7 @@ enable = true
 vcs = "git"
 style = "pep440"
 
-[tool.poetry.scripts]    
+[tool.poetry.scripts]
 gen-jsonld-context = "linkml.generators.jsonldcontextgen:cli"
 gen-prefix-map = "linkml.generators.prefixmapgen:cli"
 gen-csv = "linkml.generators.csvgen:cli"

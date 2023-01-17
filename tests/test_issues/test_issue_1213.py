@@ -1,10 +1,13 @@
 import importlib
+import re
 import unittest
 
 from linkml_runtime import SchemaView
 from linkml_runtime.loaders import yaml_loader
 
 from linkml.generators.pythongen import PythonGenerator
+from linkml.generators.sqlddlgen import SQLDDLGenerator
+from linkml.generators.sqltablegen import SQLTableGenerator
 from linkml.validators import JsonSchemaDataValidator
 from tests.test_data.environment import env
 
@@ -13,6 +16,9 @@ DATA_VALID = env.input_path("issue_1213_data_valid.yaml")
 DATA_DUPE_IDS = env.input_path("issue_1213_data_dupeids.yaml")
 DATA_DUPE_NAMES = env.input_path("issue_1213_data_dupenames.yaml")
 CLASSES = env.input_path("issue_1213_classes.py")
+DB = env.expected_path("issue_1213.db")
+DDL_PATH = env.expected_path("issue_1213.ddl.sql")
+SQLDDLLOG = env.expected_path("issue_1213_sqlddl_log.txt")
 
 
 class UniqueKeyTestCase(unittest.TestCase):
@@ -201,3 +207,25 @@ class UniqueKeyTestCase(unittest.TestCase):
             errs = True
 
         self.assertTrue(errs)
+
+    def test_sql_ddl_gen(self):
+        # what do these options mean?
+        gen = SQLDDLGenerator(SCHEMA, mergeimports=True, direct_mapping=True)
+        # # DEPRECATED: Use SQLTableGenerator instead
+        ddl = gen.serialize()
+        print(type(ddl))
+        # print(ddl)
+        table_finds = re.findall("TABLE", ddl)
+        unique_finds = re.findall("UNIQUE", ddl)
+        primary_finds = re.findall("PRIMARY", ddl)
+        print(table_finds)
+        self.assertGreater(len(unique_finds), 0)
+
+    def test_sql_table_gen(self):
+        gen = SQLTableGenerator(SCHEMA, use_foreign_keys=False)
+        ddl = gen.generate_ddl()
+        print(ddl)
+        primary_finds = re.findall("PRIMARY KEY.*", ddl)
+        primary_name_finds = re.findall("PRIMARY KEY (name)", ddl)
+        print(primary_finds)
+        self.assertGreater(len(primary_name_finds), 0)
