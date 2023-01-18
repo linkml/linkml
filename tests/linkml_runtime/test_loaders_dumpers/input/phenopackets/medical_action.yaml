@@ -1,0 +1,264 @@
+ 
+classes: 
+  DoseInterval: 
+    attributes: 
+      interval: 
+        annotations: 
+          rank: 3
+        description: ''
+        inlined: true
+        range: TimeInterval
+      quantity: 
+        annotations: 
+          rank: 1
+        description: ''
+        range: Quantity
+      scheduleFrequency: 
+        annotations: 
+          rank: 2
+        description: ''
+        inlined: true
+        range: OntologyClass
+    description: e.g. 50mg/ml 3 times daily for two weeks
+  MedicalAction: 
+    attributes: 
+      adverseEvents: 
+        annotations: 
+          rank: 8
+        description: ARGO mapping treatment::adverse_events
+        exact_mappings: 
+          - ARGO:treatment.adverse_events
+        inlined: true
+        multivalued: true
+        range: OntologyClass
+      procedure: 
+        annotations: 
+          rank: 1
+        description: ''
+        range: Procedure
+      radiationTherapy: 
+        annotations: 
+          rank: 3
+        description: ''
+        range: RadiationTherapy
+      responseToTreatment: 
+        annotations: 
+          rank: 7
+        description: ARGO mapping treatment::response_to_treatment
+        exact_mappings: 
+          - ARGO:treatment.response_to_treatment
+        inlined: true
+        range: OntologyClass
+      therapeuticRegimen: 
+        annotations: 
+          rank: 4
+        description: ''
+        range: TherapeuticRegimen
+      treatment: 
+        annotations: 
+          rank: 2
+        description: ''
+        range: Treatment
+      treatmentIntent: 
+        annotations: 
+          rank: 6
+        description: Whether the intention of the treatment was curative, palliative, ARGO mapping treatment::treatment_intent
+        exact_mappings: 
+          - ARGO:treatment.treatment_intent
+        inlined: true
+        range: OntologyClass
+      treatmentTarget: 
+        annotations: 
+          rank: 5
+        description: The condition or disease that this treatment was intended to address. FHIR mapping Procedure::reasonCode
+        inlined: true
+        range: OntologyClass
+      treatmentTerminationReason: 
+        annotations: 
+          rank: 9
+        description: ARGO mapping treatment::treatment_outcome
+        exact_mappings: 
+          - ARGO:treatment.treatment_outcome
+        inlined: true
+        range: OntologyClass
+    description: medication, procedure, other actions taken for clinical management
+    rules: 
+      - 
+        postconditions: 
+          exactly_one_of: 
+            - 
+              slot_conditions: 
+                procedure: 
+                  required: true
+            - 
+              slot_conditions: 
+                treatment: 
+                  required: true
+            - 
+              slot_conditions: 
+                radiationTherapy: 
+                  required: true
+            - 
+              slot_conditions: 
+                therapeuticRegimen: 
+                  required: true
+  RadiationTherapy: 
+    attributes: 
+      bodySite: 
+        annotations: 
+          rank: 2
+        description: The anatomical site where radiation therapy was administered. REQUIRED. ARGO mapping radiation::anatomical_site_irradiated
+        exact_mappings: 
+          - ARGO:radiation.anatomical_site_irradiated
+        inlined: true
+        range: OntologyClass
+        required: true
+      dosage: 
+        annotations: 
+          rank: 3
+        description: The total dose given in units of Gray (Gy). REQUIRED. ARGO mapping radiation::radiation_therapy_dosage
+        exact_mappings: 
+          - ARGO:radiation.radiation_therapy_dosage
+        range: integer
+        required: true
+      fractions: 
+        annotations: 
+          rank: 4
+        description: The total number of fractions delivered as part of treatment. REQUIRED. ARGO mapping radiation::radiation_therapy_fractions
+        exact_mappings: 
+          - ARGO:radiation.radiation_therapy_fractions
+        range: integer
+        required: true
+      modality: 
+        annotations: 
+          rank: 1
+        description: The modality of radiation therapy (e.g., electron, photon,…). REQUIRED. ARGO mapping radiation::radiation_therapy_modality
+        exact_mappings: 
+          - ARGO:radiation.radiation_therapy_modality
+        inlined: true
+        range: OntologyClass
+        required: true
+    description: RadiationTherapy
+  TherapeuticRegimen: 
+    attributes: 
+      endTime: 
+        annotations: 
+          rank: 4
+        description: end time can be empty which would indicate ongoing
+        inlined: true
+        range: TimeElement
+      externalReference: 
+        annotations: 
+          rank: 1
+        description: ''
+        inlined: true
+        range: ExternalReference
+      ontologyClass: 
+        annotations: 
+          rank: 2
+        description: ''
+        inlined: true
+        range: OntologyClass
+      regimenStatus: 
+        annotations: 
+          rank: 5
+        description: ''
+        range: RegimenStatus
+      startTime: 
+        annotations: 
+          rank: 3
+        description: possibly undefined;
+        inlined: true
+        range: TimeElement
+    description: ARGO mapping radiation::radiation_therapy_type (missing)
+    rules: 
+      - 
+        postconditions: 
+          exactly_one_of: 
+            - 
+              slot_conditions: 
+                externalReference: 
+                  required: true
+            - 
+              slot_conditions: 
+                ontologyClass: 
+                  required: true
+  Treatment: 
+    attributes: 
+      agent: 
+        annotations: 
+          rank: 1
+        description: ''
+        inlined: true
+        range: OntologyClass
+      cumulativeDose: 
+        annotations: 
+          rank: 5
+        description: ARGO mapping chemotherapy::cumulative_drug_dosage
+        exact_mappings: 
+          - ARGO:chemotherapy.cumulative_drug_dosage
+        range: Quantity
+      doseIntervals: 
+        annotations: 
+          rank: 3
+        description: ''
+        inlined: true
+        multivalued: true
+        range: DoseInterval
+      drugType: 
+        annotations: 
+          rank: 4
+        description: ''
+        range: DrugType
+      routeOfAdministration: 
+        annotations: 
+          rank: 2
+        description: ''
+        inlined: true
+        range: OntologyClass
+    description: ARGO mapping treatment::is_primary_treatment (missing) treatment with an agent, such as a drug
+default_prefix: medical_action
+description: "Automatic translation of phenopackets protobuf to LinkML. Status: EXPERIMENTAL."
+enums: 
+  DrugType: 
+    description: A simplified version of ODHSI-DRUG_EXPOSURE
+    permissible_values: 
+      ADMINISTRATION_RELATED_TO_PROCEDURE: 
+        description: ''
+      EHR_MEDICATION_LIST: 
+        description: ''
+      PRESCRIPTION: 
+        description: ''
+      UNKNOWN_DRUG_TYPE: 
+        description: ''
+  RegimenStatus: 
+    description: ''
+    permissible_values: 
+      COMPLETED: 
+        description: ''
+      DISCONTINUED: 
+        description: ''
+      STARTED: 
+        description: ''
+      UNKNOWN_STATUS: 
+        description: ''
+id: https://w3id.org/linkml/phenopackets/medical_action
+imports: 
+  - linkml:types
+  - base
+  - measurement
+name: medical_action
+prefixes: 
+  GENO: http://purl.obolibrary.org/obo/GENO_
+  HP: http://purl.obolibrary.org/obo/HP_
+  LOINC: https://loinc.org/
+  MONDO: http://purl.obolibrary.org/obo/MONDO_
+  NCIT: http://purl.obolibrary.org/obo/NCIT_
+  UBERON: http://purl.obolibrary.org/obo/UBERON_
+  UCUM: http://unitsofmeasure.org/
+  UO: http://purl.obolibrary.org/obo/UO_
+  argo: https://docs.icgc-argo.org/dictionary/
+  linkml: https://w3id.org/linkml/
+  medical_action: https://w3id.org/linkml/phenopackets/medical_action/
+slots: {}
+

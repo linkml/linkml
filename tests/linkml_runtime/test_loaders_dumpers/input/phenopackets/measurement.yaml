@@ -1,0 +1,160 @@
+ 
+classes: 
+  ComplexValue: 
+    attributes: 
+      typedQuantities: 
+        annotations: 
+          rank: 1
+        description: The quantities required to fully describe the complex value. For example the systolic and diastolic blood pressure quantities
+        inlined: true
+        multivalued: true
+        range: TypedQuantity
+    description: ''
+  Measurement: 
+    attributes: 
+      assay: 
+        annotations: 
+          rank: 2
+        description: "An ontology class which describes the assay used to produce the measurement. For example \"body temperature\" (CMO:0000015) or \"Platelets [#/volume] in Blood\" (LOINC:26515-7) FHIR mapping: Observation.code"
+        inlined: true
+        range: OntologyClass
+      complexValue: 
+        annotations: 
+          rank: 4
+        description: ''
+        range: ComplexValue
+      description: 
+        annotations: 
+          rank: 1
+        description: Free-text description of the feature. Note this is not a acceptable place to document/describe the phenotype - the type and onset etc... fields should be used for this purpose.
+        range: string
+      procedure: 
+        annotations: 
+          rank: 6
+        description: Clinical procedure performed on the subject in order to produce the measurement.
+        range: Procedure
+      timeObserved: 
+        annotations: 
+          rank: 5
+        description: The time at which the measurement was made
+        inlined: true
+        range: TimeElement
+      value: 
+        annotations: 
+          rank: 3
+        description: ''
+        range: Value
+    description: "FHIR mapping: Observation (https://www.hl7.org/fhir/observation.html)"
+    rules: 
+      - 
+        postconditions: 
+          exactly_one_of: 
+            - 
+              slot_conditions: 
+                value: 
+                  required: true
+            - 
+              slot_conditions: 
+                complexValue: 
+                  required: true
+  Quantity: 
+    attributes: 
+      referenceRange: 
+        annotations: 
+          rank: 3
+        description: Reference range for the quantity e.g. The normal range of platelets is 150,000 to 450,000 platelets/uL.
+        range: ReferenceRange
+      unit: 
+        annotations: 
+          rank: 1
+        description: For instance, NCIT subhierarchy, Unit of Measure (Code C25709), https://www.ebi.ac.uk/ols/ontologies/uo
+        inlined: true
+        range: OntologyClass
+      value: 
+        annotations: 
+          rank: 2
+        description: the  value of the quantity in the units  e.g. 2.0 mg
+        range: double
+    description: ''
+  ReferenceRange: 
+    attributes: 
+      high: 
+        annotations: 
+          rank: 3
+        description: ''
+        range: double
+      low: 
+        annotations: 
+          rank: 2
+        description: ''
+        range: double
+      unit: 
+        annotations: 
+          rank: 1
+        description: ''
+        inlined: true
+        range: OntologyClass
+    description: ''
+  TypedQuantity: 
+    attributes: 
+      quantity: 
+        annotations: 
+          rank: 2
+        description: e.g. mm Hg
+        range: Quantity
+      type: 
+        annotations: 
+          rank: 1
+        description: e.g. diastolic, systolic
+        inlined: true
+        range: OntologyClass
+    description: For complex measurements, such as blood pressure where more than one component quantity is required to describe the measurement
+  Value: 
+    attributes: 
+      ontologyClass: 
+        annotations: 
+          rank: 2
+        description: for use with things such as categories 'red', 'yellow' or 'absent'/'present'
+        inlined: true
+        range: OntologyClass
+      quantity: 
+        annotations: 
+          rank: 1
+        description: ''
+        range: Quantity
+    description: ''
+    rules: 
+      - 
+        postconditions: 
+          exactly_one_of: 
+            - 
+              slot_conditions: 
+                quantity: 
+                  required: true
+            - 
+              slot_conditions: 
+                ontologyClass: 
+                  required: true
+default_prefix: measurement
+description: "Automatic translation of phenopackets protobuf to LinkML. Status: EXPERIMENTAL."
+enums: {}
+
+id: https://w3id.org/linkml/phenopackets/measurement
+imports: 
+  - linkml:types
+  - base
+name: measurement
+prefixes: 
+  GENO: http://purl.obolibrary.org/obo/GENO_
+  HP: http://purl.obolibrary.org/obo/HP_
+  LOINC: https://loinc.org/
+  MONDO: http://purl.obolibrary.org/obo/MONDO_
+  NCIT: http://purl.obolibrary.org/obo/NCIT_
+  UBERON: http://purl.obolibrary.org/obo/UBERON_
+  UCUM: http://unitsofmeasure.org/
+  UO: http://purl.obolibrary.org/obo/UO_
+  argo: https://docs.icgc-argo.org/dictionary/
+  linkml: https://w3id.org/linkml/
+  measurement: https://w3id.org/linkml/phenopackets/measurement/
+slots: {}
+

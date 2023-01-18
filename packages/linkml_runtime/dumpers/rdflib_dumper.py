@@ -160,8 +160,8 @@ class RDFLibDumper(Dumper):
         return self.as_rdf_graph(element, schemaview, prefix_map=prefix_map).\
             serialize(format=fmt)
 
-    def _as_uri(self, element_id: str, id_slot: SlotDefinition, schemaview: SchemaView) -> URIRef:
-        if schemaview.is_slot_percent_encoded(id_slot):
+    def _as_uri(self, element_id: str, id_slot: Optional[SlotDefinition], schemaview: SchemaView) -> URIRef:
+        if id_slot and schemaview.is_slot_percent_encoded(id_slot):
             return URIRef(urllib.parse.quote(element_id))
         else:
             return schemaview.namespaces().uri_for(element_id)
