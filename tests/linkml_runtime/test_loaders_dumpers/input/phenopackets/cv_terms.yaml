@@ -1,0 +1,144 @@
+id: https://w3id.org/linkml/phenopackets/cv_terms
+imports:
+  - linkml:types
+  - constants
+name: cv_terms
+title: Controlled Terms
+source: https://phenopacket-schema.readthedocs.io/en/latest/recommended-ontologies.html
+description: >-
+  Enumerations/Terms for encoding ontology terms in phenopackets.
+
+  The phenopacket schema can be used with any ontologies. The phenopacket can be compared to a hierarchical structure with “slots” for ontology terms and other data. Different use cases may require different ontology terms to cover the subject matter or to fulfil requirements of a specific research project. The spectrum of requirements is so broad that we do not think it is appropriate to require a specific set of ontologies for use with phenopackets. Nonetheless, the value of phenopacket-encoded data will be greatly increased if the community of users converges towards a common set of ontologies (to the extent possible). Here, we provide general recommendations for ontologies that we have found to be useful. This list is incomplete and we would welcome feedback from the community about ontologies that should be added to this page.
+
+see_also:
+  - http://phenopackets.org/phenopacket-tools/constants.html
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+  bioregistry: https://bioregistry.io/registry/
+  MONDO: http://purl.obolibrary.org/obo/MONDO_
+  UBERON: http://purl.obolibrary.org/obo/UBERON_
+  NCIT: http://purl.obolibrary.org/obo/NCIT_
+  GENO: http://purl.obolibrary.org/obo/GENO_
+  HP: http://purl.obolibrary.org/obo/HP_
+  UO: http://purl.obolibrary.org/obo/UO_
+  LOINC: https://loinc.org/
+  UCUM: http://unitsofmeasure.org/
+  EFO: http://www.ebi.ac.uk/efo/EFO_
+
+enums:
+  MondoDiseaseTerms:
+    description: >-
+      Mondo Disease Ontology provides a comprehensive logically structured ontology of diseases that integrates multiple other disease ontologies.
+    examples:
+      - description: incontinentia pigmenti
+        value: MONDO:0010631
+      - description: dilated cardiomyopathy 3B
+        value: MONDO:0010542
+    reachable_from:
+      source_ontology: bioregistry:mondo
+      source_nodes:
+        - MONDO:0000001  ## disease or disorder
+      is_direct: false
+      include_self: false
+      relationship_types:
+        - rdfs:subClassOf
+
+  NCITDiseaseTerms:
+    description: All disease terms from the NCI Thesaurus
+    reachable_from:
+      source_ontology: bioregistry:ncit
+      source_nodes:
+        - NCIT:C2991 ## Disease or Disorder
+      is_direct: false
+      include_self: false
+      relationship_types:
+        - rdfs:subClassOf
+
+  NCITNeoplasmTerms:
+    description: All neoplasm terms from the NCI Thesaurus
+    reachable_from:
+      source_ontology: bioregistry:ncit
+      source_nodes:
+        - NCIT:C3262 ## Neoplasm
+      is_direct: false
+      include_self: false
+      relationship_types:
+        - rdfs:subClassOf
+
+  HPOAbnormalityTerms:
+    description: >-
+      The Human Phenotype Ontology (HPO) provides a comprehensive logical standard to describe and computationally analyze phenotypic abnormalities found in human disease.
+    examples:
+      - description: Arachnodactyly
+        value: HP:0001166
+      - description: Patent ductus arteriosus
+        value: HP:0001643
+    reachable_from:
+      source_ontology: bioregistry:hp
+      source_nodes:
+        - HP:0000118 ## Phenotypic abnormality
+      is_direct: false
+      include_self: false
+      relationship_types:
+        - rdfs:subClassOf
+
+  UberonAnatomicalEntityTerms:
+    description: >-
+      UBERON is an integrated cross-species ontology with classes representing a variety of anatomical entities.
+    reachable_from:
+      source_ontology: bioregistry:uberon
+      source_nodes:
+        - UBERON:0001062 ## anatomical entity
+      is_direct: false
+      include_self: false
+      relationship_types:
+        - rdfs:subClassOf
+
+  HGNCGeneTerms:
+    description: >-
+      The HUGO Gene Nomenclature Committee (HGNC) provides standard names, symbols, and IDs for human genes.
+    reachable_from:
+      source_ontology: bioregistry:hgnc
+
+  UOUnitTerms:
+    description: >-
+      The Units of measurement ontology (denoted UO) provides terms for units commonly encountered in medical data. The following table shows some typical examples.
+    examples:
+      - description: millimolar
+        value: UO:0000063
+    reachable_from:
+      source_ontology: bioregistry:uo
+      source_nodes:
+        - UO:0000000 ! unit
+      is_direct: false
+      include_self: false
+      relationship_types:
+        - rdfs:subClassOf
+
+  GENOZygosityTerms:
+    description: >-
+      GENO is an ontology of genotypes their more fundamental sequence components. This enum refers to the zygosity subset of GENO
+    examples:
+      - description: heteroyzgous
+        value: GENO:0000135
+      - description: homozygous
+        value: GENO:0000136
+    reachable_from:
+      source_ontology: bioregistry:geno
+      source_nodes:
+        - GENO:0000133 ## zygosity
+      is_direct: false
+      include_self: false
+      relationship_types:
+        - rdfs:subClassOf
+
+  LOINCMeasurementTerms:
+    description: >-
+      Logical Observation Identifiers Names and Codes (LOINC) is a database and universal standard for identifying medical laboratory observations. It can be used to denote clinical assays in the Measurement element.    examples:
+    examples:
+      - description: Platelets [#/volume] in Blood
+        value: LOINC:26515-7
+    reachable_from:
+      source_ontology: bioregistry:loinc
+
