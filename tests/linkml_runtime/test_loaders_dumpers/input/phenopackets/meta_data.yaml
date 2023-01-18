@@ -46,8 +46,10 @@ classes:
     description: ''
   Resource: 
     attributes: 
-      id: 
+      id:
+        identifier: true
         annotations: 
+          percent_encoded: true
           rank: 1
         description: "for OBO Ontologies, the value of this string MUST always be the official OBO ID, which is always equivalent to the ID prefix in lower case. Examples: hp, go, mp, mondo Consult http://obofoundry.org for a complete list For other ontologies (e.g. SNOMED), use the prefix in identifiers.org"
         range: string

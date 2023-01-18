@@ -61,6 +61,7 @@ classes:
         range: Diagnosis
       id: 
         annotations: 
+          percent_encoded: true
           rank: 1
         description: id of the interpretation
         range: string

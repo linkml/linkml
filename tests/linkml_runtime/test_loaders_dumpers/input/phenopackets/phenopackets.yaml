@@ -16,6 +16,7 @@ classes:
         range: File
       id: 
         annotations: 
+          percent_encoded: true
           rank: 1
         description: ''
         range: string
@@ -49,6 +50,7 @@ classes:
         range: File
       id: 
         annotations: 
+          percent_encoded: true
           rank: 1
         description: An identifier specific for this family.
         range: string
@@ -101,6 +103,7 @@ classes:
         range: File
       id: 
         annotations: 
+          percent_encoded: true
           rank: 1
         description: An identifier specific for this phenopacket.
         range: string

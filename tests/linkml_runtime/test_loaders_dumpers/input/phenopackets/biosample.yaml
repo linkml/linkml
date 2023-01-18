@@ -36,6 +36,7 @@ classes:
         range: OntologyClass
       id: 
         annotations: 
+          percent_encoded: true
           rank: 1
         description: biosamples SAMN08666232 Human Cell Atlas The Biosample id This is unique in the context of the server instance. ARGO mapping specimen::submitter_specimen_id
         exact_mappings: 

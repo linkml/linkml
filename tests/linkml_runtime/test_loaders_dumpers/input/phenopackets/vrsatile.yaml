@@ -110,6 +110,7 @@ classes:
         range: GeneDescriptor
       id: 
         annotations: 
+          percent_encoded: true
           rank: 1
         description: ''
         range: string
@@ -175,6 +176,7 @@ classes:
         range: string
       id: 
         annotations: 
+          percent_encoded: true
           rank: 4
         description: ''
         range: string

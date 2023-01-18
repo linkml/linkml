@@ -48,6 +48,7 @@ classes:
         range: string
       id: 
         annotations: 
+          percent_encoded: true
           rank: 1
         description: "e.g. ISBN, PMID:123456, DOI:..., FHIR mapping: Reference.identifier"
         range: string

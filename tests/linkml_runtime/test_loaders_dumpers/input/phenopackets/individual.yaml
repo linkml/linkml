@@ -21,6 +21,7 @@ classes:
         range: OntologyClass
       id: 
         annotations: 
+          percent_encoded: true
           rank: 1
         description: An identifier for the individual. This must be unique within the record. ARGO mapping donor::submitter_donor_id
         exact_mappings: 

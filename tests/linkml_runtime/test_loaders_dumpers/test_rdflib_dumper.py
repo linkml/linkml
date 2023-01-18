@@ -16,7 +16,8 @@ from linkml_runtime.utils.schemaview import SchemaView
 from tests.test_loaders_dumpers import INPUT_DIR, OUTPUT_DIR
 from tests.test_loaders_dumpers.models.personinfo import Container, Person, Address, Organization, OrganizationType
 from tests.test_loaders_dumpers.models.node_object import NodeObject, Triple
-from tests.test_loaders_dumpers.models.phenopackets import PhenotypicFeature, OntologyClass, Phenopacket, MetaData
+from tests.test_loaders_dumpers.models.phenopackets import PhenotypicFeature, OntologyClass, Phenopacket, MetaData, \
+    Resource
 
 SCHEMA = os.path.join(INPUT_DIR, 'personinfo.yaml')
 DATA = os.path.join(INPUT_DIR, 'example_personinfo_data.yaml')
@@ -351,7 +352,8 @@ class RdfLibDumperTestCase(unittest.TestCase):
             rdflib_dumper.dumps(c, view)
         cases = [
             ("HP:1", "http://purl.obolibrary.org/obo/HP_1", None),
-            ("FOO:1", "http://example.org/FOO_1", {'FOO': 'http://example.org/FOO_'}),
+            ("FOO:1", "http://example.org/FOO_1", {'FOO': 'http://example.org/FOO_',
+                                                   "@base": "http://example.org/base/"}),
         ]
         for id, expected_uri, prefix_map in cases:
 
@@ -364,14 +366,17 @@ class RdfLibDumperTestCase(unittest.TestCase):
                           f'Expected label {test_label} for {expected_uri} in {ttl}')
             pf = PhenotypicFeature(type=c)
             pkt = Phenopacket(id='id with spaces',
-                              metaData=MetaData(),
+                              metaData=MetaData(resources=[Resource(id='id with spaces')]),
                               phenotypicFeatures=[pf])
             ttl = rdflib_dumper.dumps(pkt, view, prefix_map=prefix_map)
-            print(ttl)
             g = Graph()
             g.parse(data=ttl, format='ttl')
             self.assertIn(Literal(test_label), list(g.objects(URIRef(expected_uri))),
                           f'Expected label {test_label} for {expected_uri} in {ttl}')
+            if prefix_map and "@base" in prefix_map:
+                resource_uri = URIRef(prefix_map["@base"] + "id%20with%20spaces")
+                self.assertEqual(1, len(list(g.objects(resource_uri))))
+
 
 
 
