@@ -1,4 +1,5 @@
 import unittest
+import itertools
 
 from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.linkml_model import SlotDefinition
@@ -171,29 +172,36 @@ class RelationalModelTransformerTestCase(unittest.TestCase):
         test translation of a non-inlined multivalued reference to a class into
         a linking table
         """
-        b = SchemaBuilder()
-        slots = ["name", "description", "has_ds"]
-        b.add_class("c", slots).add_class("d", ["name"]).set_slot(
-            "has_ds", singular_name="has_d", range="d", multivalued=True, inlined=False
-        )
-        results = self._translate(b)
-        rel_schema = self._translate(b).schema
-        rsv = SchemaView(rel_schema)
-        # print(yaml_dumper.dumps(rel_schema))
-        c = rsv.get_class("c")
-        d = rsv.get_class("d")
-        c_has_d = rsv.get_class("c_has_d")
-        self.assertCountEqual(["id", "name", "description"], list(c.attributes.keys()))
-        self.assertCountEqual(["id", "name"], list(d.attributes.keys()))
-        self.assertCountEqual(["c_id", "has_d_id"], list(c_has_d.attributes.keys()))
-        self.assertCountEqual(["id"], get_primary_key_attributes(c))
-        self.assertCountEqual(["id"], get_primary_key_attributes(d))
-        self.assertCountEqual(["c_id", "has_d_id"], get_primary_key_attributes(c_has_d))
-        self.assertDictEqual({}, get_foreign_key_map(c))
-        self.assertDictEqual({}, get_foreign_key_map(d))
-        self.assertDictEqual(
-            {"c_id": "c.id", "has_d_id": "d.id"}, get_foreign_key_map(c_has_d)
-        )
+        # It should not matter if we invent the "id" identifier
+        # column on tables lacking an identifier column
+        for add_id_to_c, add_id_to_d in itertools.product((True, False), repeat=2):
+            with self.subTest():
+                slots_c = ["name", "description", "has_ds"]
+                slots_d = ["name"]
+                b = SchemaBuilder()
+                b.add_class("c", slots_c + (["id"] if add_id_to_c else []))
+                b = b.add_class("d", slots_d + (["id"] if add_id_to_d else []))
+                b = b.set_slot("has_ds", singular_name="has_d", range="d", multivalued=True, inlined=False)
+                if add_id_to_c or add_id_to_d:
+                    b = b.set_slot("id", identifier=True)
+                results = self._translate(b)
+                rel_schema = self._translate(b).schema
+                rsv = SchemaView(rel_schema)
+                # print(yaml_dumper.dumps(rel_schema))
+                c = rsv.get_class("c")
+                d = rsv.get_class("d")
+                c_has_d = rsv.get_class("c_has_d")
+                self.assertCountEqual(["id", "name", "description"], list(c.attributes.keys()))
+                self.assertCountEqual(["id", "name"], list(d.attributes.keys()))
+                self.assertCountEqual(["c_id", "has_d_id"], list(c_has_d.attributes.keys()))
+                self.assertCountEqual(["id"], get_primary_key_attributes(c))
+                self.assertCountEqual(["id"], get_primary_key_attributes(d))
+                self.assertCountEqual(["c_id", "has_d_id"], get_primary_key_attributes(c_has_d))
+                self.assertDictEqual({}, get_foreign_key_map(c))
+                self.assertDictEqual({}, get_foreign_key_map(d))
+                self.assertDictEqual(
+                    {"c_id": "c.id", "has_d_id": "d.id"}, get_foreign_key_map(c_has_d)
+                )
 
     def test_inject_many_to_many_with_inheritance(self):
         """
