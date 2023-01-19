@@ -195,6 +195,7 @@ class SchemaLoader:
                 new_slot = SlotDefinition(**attribute.__dict__)
                 new_slot.domain_of.append(cls.name)
                 new_slot.imported_from = cls.imported_from
+                new_slot.from_schema = cls.from_schema
                 if not new_slot.alias:
                     new_slot.alias = attribute.name
                 new_slot.name = mangled_slot_name
