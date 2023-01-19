@@ -1,0 +1,58 @@
+id: https://example.com/root
+name: root
+
+types:
+  root_type: { }
+
+default_prefix: root_prefix
+default_range: string
+
+version: 1.0.0_root
+metamodel_version: 1.0.0_root
+
+see_also:
+  - https://www.google.com/
+  - https://duckduckgo.com/
+
+settings:
+  root1: A1
+  root2: B1
+
+categories:
+  - NCIT:C41202
+  - NCIT:C142502
+
+comments:
+  - root comment 1
+
+imports:
+  - issue_1239_import
+
+aliases:
+  - ROOT_SCHEMA
+  - root_schema_alias
+
+alt_descriptions:
+  SOURCE2_1: root alt desc 1
+  SOURCE2_2: root alt desc 2
+
+
+prefixes:
+  root_prefix: https://example.com/root_prefix/
+  NCIT: http://purl.obolibrary.org/obo/NCIT_
+
+slots:
+  root_slot:
+    title: Root slot
+
+classes:
+  root_class:
+    title: Root class
+
+enums:
+  root_enum:
+    title: Root enum
+
+subsets:
+  root_subset:
+    title: Root subset

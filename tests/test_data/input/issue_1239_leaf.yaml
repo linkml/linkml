@@ -1,0 +1,21 @@
+id: https://example.com/leaf
+name: leaf
+
+prefixes:
+  leaf_prefix: https://example.com/leaf_prefix/
+
+classes:
+  leaf_class:
+    title: Leaf class
+
+enums:
+  leaf_enum:
+    title: Leaf enum
+
+slots:
+  leaf_slot:
+    title: Leaf slot
+
+subsets:
+  leaf_subset:
+    title: Leaf slot

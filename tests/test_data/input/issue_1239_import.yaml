@@ -1,0 +1,56 @@
+id: https://example.com/import
+name: import
+
+types:
+  import_type: { }
+
+default_prefix: import_prefix
+default_range: fake
+
+version: 1.0.0_import
+metamodel_version: 1.0.0_import
+
+imports:
+  - issue_1239_leaf
+
+see_also:
+  - https://www.amazon.com/
+  - https://www.etsy.com/
+
+settings:
+  import1: A2
+  import2: B2
+
+categories:
+  - NCIT:C73363
+  - NCIT:C73392
+
+comments:
+  - import comment 1
+
+aliases:
+  - IMPORT_SCHEMA
+  - import_schema_alias
+
+alt_descriptions:
+  SOURCE1_1: import alt desc 1
+  SOURCE2_2: import alt desc 2
+
+prefixes:
+  import_prefix: https://example.com/import_prefix/
+
+classes:
+  import_class:
+    title: Import class
+
+enums:
+  import_enum:
+    title: Import enum
+
+slots:
+  import_slot:
+    title: Import slot
+
+subsets:
+  import_subset:
+    title: Import slot
