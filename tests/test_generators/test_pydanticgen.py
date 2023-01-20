@@ -185,7 +185,7 @@ classes:
         lines = code.splitlines()
         ix = lines.index("class Test(ConfiguredBaseModel):")
         slot_line = lines[ix + 4].strip()
-        assert slot_line == "attr1: Optional[int] = Field(default=10)"
+        assert slot_line == "attr1: Optional[int] = Field(10)"
 
 if __name__ == "__main__":
     unittest.main()

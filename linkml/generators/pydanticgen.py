@@ -209,6 +209,9 @@ class PydanticGenerator(OOCodeGenerator):
                             + slot_values[camelcase(class_def.name)][slot.name]
                             + "]"
                         )
+                # set default values if specified (https://github.com/linkml/linkml/issues/1234)
+                elif slot.ifabsent is not None:
+                    slot_values[camelcase(class_def.name)][slot.name] = f"{slot.ifabsent}"
                 # Multivalued slots that are either not inlined (just an identifier) or are
                 # inlined as lists should get default_factory list, if they're inlined but
                 # not as a list, that means a dictionary
