@@ -108,7 +108,8 @@ class JsonSchemaTestCase(unittest.TestCase):
             with self.subTest(msg=case['description']):
                 skip_reason = case.get("skip", None)
                 if skip_reason is not None:
-                    self.skipTest(skip_reason)
+                    #self.skipTest(skip_reason)
+                    continue
 
                 dataset = case["dataset"]
                 expected_valid = case.get("valid", False)

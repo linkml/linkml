@@ -187,3 +187,28 @@
     persons:
       - id: P3
         stomach_count: 2
+- description: structured patterns should be used to infer pattern (valid example)
+  valid: true
+  dataset:
+    persons:
+      - id: P4
+        name: "a human"
+        species_formal_name: "Homo sapiens"
+- description: structured patterns should be used to infer pattern (invalid example)
+  valid: false
+  dataset:
+    persons:
+      - id: P4
+        name: "a human"
+        species_formal_name: "Human"
+- description: unique keys
+  skip: jsonschema does not handle unique keys, see https://github.com/linkml/linkml/issues/1213
+  dataset:
+    persons:
+      - id: P1
+        name: "a human"
+        addresses:
+          - street: "1 foo street"
+            city: "foo city"
+          - street: "1 foo street"
+            city: "foo city"

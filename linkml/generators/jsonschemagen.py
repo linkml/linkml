@@ -151,7 +151,6 @@ class JsonSchemaGenerator(Generator):
         if self.topClass:
             logging.warning(f"topClass is deprecated - use top_class")
             self.top_class = self.topClass
-
         super().__post_init__()
 
     def start_schema(self, inline: bool = False) -> JsonSchema:
@@ -423,6 +422,7 @@ class JsonSchemaGenerator(Generator):
 
     def serialize(self, **kwargs) -> str:
         self.start_schema()
+        self.schemaview.materialize_patterns()
         for enum_definition in self.schemaview.all_enums().values():
             self.handle_enum(enum_definition)
 

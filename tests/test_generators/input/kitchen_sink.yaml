@@ -40,6 +40,9 @@ prefixes:
 default_prefix: ks
 see_also:
   - https://example.org/
+settings:
+  genus: "[A-Z][a-z]+"
+  species: "[a-z]+"
 
 subsets:
 
@@ -92,6 +95,7 @@ classes:
       - addresses
       - has birth event
       - species name
+      - species formal name
       - stomach count
     attributes:
       is_living:
@@ -145,6 +149,11 @@ classes:
     slots:
       - street
       - city
+    unique_keys:
+      street_city:
+        unique_key_slots:
+          - street
+          - city
 
   Concept:
     slots:
@@ -356,6 +365,12 @@ slots:
     range: AnyObject
     description: Example of a slot that has an unconstrained range
   species name:
+  species formal name:
+    structured_pattern:
+      syntax: "{genus} {species}"
+      interpolated: true
+      partial_match: false
+
   stomach count:
     range: integer
   # slots added for inheritance tree purposes
