@@ -180,17 +180,17 @@ classes:
         ifabsent: 10
       attr2:
         range: string
-        ifabsent: hello    
+        ifabsent: hello 
         """
 
         gen = PydanticGenerator(schema_str)
         code = gen.serialize()
         lines = code.splitlines()
-        ix = lines.index("class Test(ConfiguredBaseModel):")
+        ix = lines.index('class Test(ConfiguredBaseModel):')
         integer_slot_line = lines[ix + 4].strip()
-        assert integer_slot_line == "attr1: Optional[int] = Field(10)"
+        assert integer_slot_line == 'attr1: Optional[int] = Field(10)'
         string_slot_line = lines[ix + 5].strip()
-        assert string_slot_line == "attr2: Optional[str] = Field('hello')"
+        assert string_slot_line == 'attr2: Optional[str] = Field("hello")'
 
 if __name__ == "__main__":
     unittest.main()
