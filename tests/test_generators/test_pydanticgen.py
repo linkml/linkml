@@ -158,7 +158,34 @@ enums:
                 raise ValueError(f"unexpected default factory for {expected}")
             self.assertIn(expected_default_factories[expected], slot_line)
 
+    def test_ifabsent(self):
+        schema_str = """
+id: id
+name: test_info
+description: just testing
 
+prefixes:
+  linkml: https://w3id.org/linkml/
+  schema: http://schema.org/
+
+imports:
+  - https://w3id.org/linkml/types
+
+classes:
+  Test:
+    description: just a test
+    attributes:
+      attr1:
+        range: integer
+        ifabsent: 10
+        """
+
+        gen = PydanticGenerator(schema_str)
+        code = gen.serialize()
+        lines = code.splitlines()
+        ix = lines.index("class Test(ConfiguredBaseModel):")
+        slot_line = lines[ix + 4].strip()
+        assert slot_line == "attr1: Optional[int] = Field(default=10)"
 
 if __name__ == "__main__":
     unittest.main()
