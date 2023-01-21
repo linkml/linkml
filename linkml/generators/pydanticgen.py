@@ -14,6 +14,7 @@ from linkml_runtime.linkml_model.meta import (Annotation, ClassDefinition,
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.schemaview import SchemaView
 
+from linkml.generators.common.type_designators import get_type_designator_value
 from linkml._version import __version__
 from linkml.generators.oocodegen import OOCodeGenerator
 from linkml.utils.generator import shared_arguments
@@ -26,7 +27,7 @@ default_template = """
 from __future__ import annotations
 from datetime import datetime, date
 from enum import Enum
-from typing import List, Dict, Optional, Any
+from typing import List, Dict, Optional, Any, Union
 from pydantic import BaseModel as BaseModel, Field
 from linkml_runtime.linkml_model import Decimal
 
@@ -200,15 +201,17 @@ class PydanticGenerator(OOCodeGenerator):
             for slot_name in sv.class_slots(class_def.name):
                 slot = sv.induced_slot(slot_name, class_def.name)
                 if slot.designates_type:
+                    target_value = get_type_designator_value(sv, slot, class_def)
                     slot_values[camelcase(class_def.name)][
                         slot.name
-                    ] = f'"{default_prefix}:{camelcase(class_def.name)}"'
+                    ] = f'"{target_value}"'
                     if slot.multivalued:
                         slot_values[camelcase(class_def.name)][slot.name] = (
                             "["
                             + slot_values[camelcase(class_def.name)][slot.name]
                             + "]"
                         )
+                    slot_values[camelcase(class_def.name)][slot.name] = slot_values[camelcase(class_def.name)][slot.name] + ", const=True"
                 # Multivalued slots that are either not inlined (just an identifier) or are
                 # inlined as lists should get default_factory list, if they're inlined but
                 # not as a list, that means a dictionary
@@ -268,11 +271,14 @@ class PydanticGenerator(OOCodeGenerator):
 
         # Inline the class itself only if the class is defined as inline, or if the class has no
         # identifier slot and also isn't a mixin.
-        if slot.inlined or (
+        if slot.inlined or slot.inlined_as_list or (
             sv.get_identifier_slot(range_cls.name) is None
             and not sv.is_mixin(range_cls.name)
         ):
-            return f"{camelcase(slot.range)}"
+            if len([x for x in sv.class_induced_slots(slot.range) if x.designates_type]) > 0:
+                return f"Union[" + ",".join([camelcase(c) for c in sv.class_descendants(slot.range)]) + "]"
+            else:
+                return f"{camelcase(slot.range)}"
 
         # For the more difficult cases, set string as the default and attempt to improve it
         range_cls_identifier_slot_range = "str"
