@@ -60,11 +60,47 @@ class RelationalModelTransformerTestCase(unittest.TestCase):
         """
         test conflict with injected primary key
         """
-        b = SchemaBuilder()
-        slots = ["id", "description"]
-        b.add_class(DUMMY_CLASS, slots)
-        with self.assertRaises(ValueError):
-            results = self._translate(b)
+        for c_has_pk, d_has_pk in itertools.product((True, False), repeat=2):
+            with self.subTest():
+                name_slot = SlotDefinition("name")
+                b = SchemaBuilder(name=f"test_conflicting_primary_key_name_{c_has_pk}_{d_has_pk}")
+                b.add_class("c",
+                            use_attributes=True,
+                            slots=[
+                                SlotDefinition("id", identifier=c_has_pk),
+                                name_slot,
+                                SlotDefinition("has_ds",
+                                                singular_name="has_d",
+                                                range="d",
+                                                multivalued=True,
+                                                inlined=False)])
+                b = b.add_class("d",
+                                use_attributes=True,
+                                slots=[
+                                    SlotDefinition("id", identifier=d_has_pk),
+                                    name_slot
+                                    ])
+                rel_schema = self._translate(b).schema
+                rsv = SchemaView(rel_schema)
+                c = rsv.get_class("c")
+                d = rsv.get_class("d")
+                c_has_d = rsv.get_class("c_has_d")
+                if c_has_pk:
+                    self.assertCountEqual(["id", "name"], list(c.attributes.keys()))
+                    self.assertCountEqual(["id"], get_primary_key_attributes(c))
+                else:
+                    self.assertCountEqual(["id", "uid", "name"], list(c.attributes.keys()))
+                    self.assertCountEqual(["uid"], get_primary_key_attributes(c))
+                if d_has_pk:
+                    self.assertCountEqual(["id", "name"], list(d.attributes.keys()))
+                    self.assertCountEqual(["id"], get_primary_key_attributes(d))
+                else:
+                    self.assertCountEqual(["id", "uid", "name"], list(d.attributes.keys()))
+                    self.assertCountEqual(["uid"], get_primary_key_attributes(d))
+                c_id_col = "id" if c_has_pk else "uid"
+                d_id_col = "id" if d_has_pk else "uid"
+                self.assertCountEqual([f"c_{c_id_col}", f"has_d_{d_id_col}"], list(c_has_d.attributes.keys()))
+                self.assertCountEqual([f"c_{c_id_col}", f"has_d_{d_id_col}"], get_primary_key_attributes(c_has_d))
 
     def test_no_inject_primary_key(self):
         """
@@ -202,51 +238,6 @@ class RelationalModelTransformerTestCase(unittest.TestCase):
                 self.assertDictEqual(
                     {"c_id": "c.id", "has_d_id": "d.id"}, get_foreign_key_map(c_has_d)
                 )
-
-    def test_conflicting_primary_key_name(self):
-        for c_has_pk, d_has_pk in itertools.product((True, False), repeat=2):
-            with self.subTest():
-                name_slot = SlotDefinition("name")
-                b = SchemaBuilder(name=f"test_conflicting_primary_key_name_{c_has_pk}_{d_has_pk}")
-                b.add_class("c",
-                            use_attributes=True,
-                            slots=[
-                                SlotDefinition("id", identifier=c_has_pk),
-                                name_slot,
-                                SlotDefinition("has_ds",
-                                                singular_name="has_d",
-                                                range="d",
-                                                multivalued=True,
-                                                inlined=False)])
-                b = b.add_class("d",
-                                use_attributes=True,
-                                slots=[
-                                    SlotDefinition("id", identifier=d_has_pk),
-                                    name_slot
-                                    ])
-                rel_schema = self._translate(b).schema
-                rsv = SchemaView(rel_schema)
-                c = rsv.get_class("c")
-                d = rsv.get_class("d")
-                c_has_d = rsv.get_class("c_has_d")
-                if c_has_pk:
-                    self.assertCountEqual(["id", "name"], list(c.attributes.keys()))
-                    self.assertCountEqual(["id"], get_primary_key_attributes(c))
-                else:
-                    self.assertCountEqual(["id", "uid", "name"], list(c.attributes.keys()))
-                    self.assertCountEqual(["uid"], get_primary_key_attributes(c))
-                if d_has_pk:
-                    self.assertCountEqual(["id", "name"], list(d.attributes.keys()))
-                    self.assertCountEqual(["id"], get_primary_key_attributes(d))
-                else:
-                    self.assertCountEqual(["id", "uid", "name"], list(d.attributes.keys()))
-                    self.assertCountEqual(["uid"], get_primary_key_attributes(d))
-                c_id_col = "id" if c_has_pk else "uid"
-                d_id_col = "id" if d_has_pk else "uid"
-                self.assertCountEqual([f"c_{c_id_col}", f"has_d_{d_id_col}"], list(c_has_d.attributes.keys()))
-                self.assertCountEqual([f"c_{c_id_col}", f"has_d_{d_id_col}"], get_primary_key_attributes(c_has_d))
-
-
 
     def test_inject_many_to_many_with_inheritance(self):
         """
