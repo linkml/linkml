@@ -1,16 +1,6 @@
 import unittest
-from collections import namedtuple
-
-import yaml
-from linkml_runtime import SchemaView
-from linkml_runtime.dumpers import yaml_dumper
-from linkml_runtime.linkml_model import SlotDefinition
-from linkml_runtime.utils.compile_python import compile_python
-from pydantic import ValidationError
 
 from linkml.generators.erdiagramgen import ERDiagramGenerator
-from linkml.generators.pydanticgen import PydanticGenerator
-from linkml.utils.schema_builder import SchemaBuilder
 from tests.test_generators.environment import env
 
 SCHEMA = env.input_path("kitchen_sink.yaml")
@@ -26,6 +16,7 @@ Person {
     string name
     integer age_in_years
     string species_name
+    string species_formal_name
     integer stomach_count
     LifeStatusEnum is_living
     stringList aliases
