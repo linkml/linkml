@@ -269,7 +269,7 @@ class PydanticGenerator(OOCodeGenerator):
 
         # Inline the class itself only if the class is defined as inline, or if the class has no
         # identifier slot and also isn't a mixin.
-        if slot.inlined or (
+        if slot.inlined or slot.inlined_as_list or (
             sv.get_identifier_slot(range_cls.name) is None
             and not sv.is_mixin(range_cls.name)
         ):
