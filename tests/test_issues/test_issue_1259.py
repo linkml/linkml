@@ -4,6 +4,7 @@ from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.loaders import yaml_loader
 
 from linkml.generators.pythongen import PythonGenerator
+from linkml.validators import JsonSchemaDataValidator
 
 SCHEMA = """
 id: https://example.cam/MinRules
@@ -75,5 +76,9 @@ class MinRulesTestCase(unittest.TestCase):
         pygen = PythonGenerator(SCHEMA)
         mod = pygen.compile_module()
         dynamic_class = getattr(mod, "Person")
+
+        validator = JsonSchemaDataValidator(schema=SCHEMA)
+        obj = yaml_loader.load(source=DATA_INVALID, target_class=dynamic_class)
+
         with self.assertRaises(Exception) as context:
-            person_instance = yaml_loader.load(source=DATA_INVALID, target_class=dynamic_class)
+            validator.validate_object(obj)
