@@ -37,6 +37,22 @@ classes:
     slots:
       - children_count
       - daughters_count
+      
+  Biosample:
+    rules:
+      - description: samples in tubes can't have a plate position
+        preconditions:
+          slot_conditions:
+            container_type:
+              equals_string: "TUBE"
+        postconditions:
+          slot_conditions:
+            plate_position:
+              value_presence: false
+    slots:
+      - id
+      - container_type
+      - plate_position
 
 slots:
     id: {}
@@ -44,7 +60,23 @@ slots:
     children_count:
       range: integer
     daughters_count:
-        range: integer
+      range: integer
+    container_type:
+      range: ContainerTypeEnum
+      required: true
+    plate_position:
+      range: string
+            
+enums:
+  ContainerTypeEnum:
+    permissible_values:
+      TUBE: {}
+      PLATE: {}
+"""
+
+TUBE_VALID = """
+id: biosample1
+container_type: TUBE
 """
 
 DATA_INVALID = """
@@ -70,9 +102,9 @@ class MinRulesTestCase(unittest.TestCase):
         dynamic_class = getattr(mod, "Person")
         person_instance = yaml_loader.load(source=DATA_VALID, target_class=dynamic_class)
         # print(yaml_dumper.dumps(person_instance))
-        assert self.assertIsNotNone(person_instance)
+        self.assertIsNotNone(person_instance)
 
-    def test_instantiate_invalid(self):
+    def test_violation_exception_expected(self):
         pygen = PythonGenerator(SCHEMA)
         mod = pygen.compile_module()
         dynamic_class = getattr(mod, "Person")
@@ -82,3 +114,13 @@ class MinRulesTestCase(unittest.TestCase):
 
         with self.assertRaises(Exception) as context:
             validator.validate_object(obj)
+
+    def test_tube_valid(self):
+        pygen = PythonGenerator(SCHEMA)
+        mod = pygen.compile_module()
+        dynamic_class = getattr(mod, "Biosample")
+
+        validator = JsonSchemaDataValidator(schema=SCHEMA)
+        obj = yaml_loader.load(source=TUBE_VALID, target_class=dynamic_class)
+
+        validator.validate_object(obj)
