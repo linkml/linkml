@@ -59,7 +59,10 @@ class ShaclGenerator(Generator):
             class_uri = URIRef(sv.get_uri(c, expand=True))
             shape_pv(RDF.type, SH.NodeShape)
             shape_pv(SH.targetClass, class_uri)  ## TODO
-            shape_pv(SH.closed, Literal(True))
+            if c.mixin or not c.is_a:
+                shape_pv(SH.closed, Literal(False))
+            else:
+                shape_pv(SH.closed, Literal(True))
             if c.title is not None:
                 shape_pv(SH.name, Literal(c.title))
             if c.description is not None:
