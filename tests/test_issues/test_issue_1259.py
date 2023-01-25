@@ -7,86 +7,104 @@ from linkml.generators.pythongen import PythonGenerator
 from linkml.validators import JsonSchemaDataValidator
 
 SCHEMA = """
-id: https://example.cam/MinRules
-name: MinRules
+name: well_plate
+id: http://example.com/well_plate
 
 prefixes:
+  well_plate: http://example.com/well_plate/
   linkml: https://w3id.org/linkml/
 
 imports:
   - linkml:types
 
 classes:
-      
   Biosample:
     rules:
-      - description: Samples in tubes can't have a plate position. 
-            But plate_position currently does have to be asserted as an empty string. 
-            Can't be null, None, un-asserted,etc.
-            Had wanted to use value_present, but that may not be implemented in the linkml-runtime yet.
-        preconditions:
-          slot_conditions:
-            container_type:
-              equals_string: "TUBE"
-        postconditions:
-          slot_conditions:
-            plate_position:
-                none_of:
-                  pattern: ".+"
       - description: Samples in plates must have a plate position that matches the regex
         preconditions:
           slot_conditions:
-            container_type:
-              equals_string: "PLATE"
+            dna_cont_type:
+              equals_string: plate
         postconditions:
           slot_conditions:
-            plate_position:
-              pattern: ^(?!A1|A12|H1|H12)(([A-H][1-9])|([A-H]1[0-2]))$      
-
+            dna_cont_well:
+              pattern: ^(?!A1|A12|H1|H12)(([A-H][1-9])|([A-H]1[0-2]))$
+      - description: Samples in tubes can't have a plate position.
+          But plate_position currently does have to be asserted as an empty string.
+          Can't be null, None, un-asserted,etc.
+          Had wanted to use value_present, but that may not be implemented in the linkml-runtime yet.
+        preconditions:
+          slot_conditions:
+            dna_cont_type:
+              equals_string: tube
+        postconditions:
+          slot_conditions:
+            dna_cont_well:
+              none_of:
+                pattern: ".+"
     slots:
       - id
-      - container_type
-      - plate_position
+      - name
+      - dna_cont_type
+      - dna_cont_well
+  Database:
+    slots:
+      - biosample_set
 
 slots:
-    id: {}
-    container_type:
-      range: ContainerTypeEnum
-      required: true
-    plate_position:
-      range: string
-    plate_height_mm:
-      range: float
-            
+  id: { }
+  name: { }
+  dna_cont_type:
+    examples:
+      - value: plate
+    range: dna_cont_type_enum
+    required: true
+  dna_cont_well:
+    examples:
+      - value: B2
+#    pattern: ^(?!A1|A12|H1|H12)(([A-H][1-9])|([A-H]1[0-2]))$
+  biosample_set:
+    range: Biosample
+    multivalued: true
+    inlined_as_list: true
+
 enums:
-  ContainerTypeEnum:
+  dna_cont_type_enum:
     permissible_values:
-      TUBE: {}
-      PLATE: {}
+      plate:
+        text: plate
+      tube:
+        text: tube
 """
 
 TUBE_VALID = """
 id: biosample1
-container_type: TUBE
-plate_position: ""
+dna_cont_type: tube
+dna_cont_well: ""
 """
 
 TUBE_INVALID = """
 id: biosample1
-container_type: TUBE
-plate_position: C3
+dna_cont_type: tube
+dna_cont_well: C3
 """
 
 PLATE_VALID = """
 id: biosample1
-container_type: PLATE
-plate_position: C3
+dna_cont_type: plate
+dna_cont_well: C3
 """
 
 PLATE_INVALID = """
 id: biosample1
-container_type: PLATE
-plate_position: ""
+dna_cont_type: plate
+dna_cont_well: ""
+"""
+
+DATABASED_PLATE_INVALID = """
+- id: biosample1
+  dna_cont_type: plate
+  dna_cont_well: ""
 """
 
 
@@ -122,3 +140,6 @@ class MinRulesTestCase(unittest.TestCase):
 
     def test_plate_invalid(self):
         self.run_felxible_test(class_name="Biosample", source=PLATE_INVALID, expected_pass=False)
+
+    def test_databased_plate_invalid(self):
+        self.run_felxible_test(class_name="Biosample", source=DATABASED_PLATE_INVALID, expected_pass=False)
