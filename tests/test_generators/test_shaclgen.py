@@ -18,7 +18,7 @@ EXPECTED = [
      rdflib.term.URIRef('http://www.w3.org/ns/shacl#NodeShape')),
     (rdflib.term.URIRef('https://w3id.org/linkml/tests/kitchen_sink/Person'),
      rdflib.term.URIRef('http://www.w3.org/ns/shacl#closed'),
-     rdflib.term.Literal('true', datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#boolean')))
+     rdflib.term.Literal('false', datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#boolean')))
 ]
 
 class ShaclTestCase(unittest.TestCase):
