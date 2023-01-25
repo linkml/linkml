@@ -649,6 +649,16 @@ class DocGenerator(Generator):
         for e in elts:
             yield e
 
+    def all_class_names(self) -> List[ClassDefinitionName]:
+        """Gets names of all ClassDefinition objects in the schema.
+
+        :return: Class names
+        """
+        cls_names = []
+        for c in self.all_class_objects():
+            cls_names.append(c.name)
+        return cls_names
+
     def all_class_objects(self) -> Iterator[ClassDefinition]:
         """
         all class objects in schema

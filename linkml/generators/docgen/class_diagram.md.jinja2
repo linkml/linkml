@@ -29,27 +29,47 @@
         {{ gen.name(schemaview.get_element(s)) }} <|-- {{ gen.name(element) }}
       {% endfor %}
       {% for s in schemaview.class_induced_slots(element.name)|sort(attribute='name') -%}
-        {{ gen.name(element) }} : {{gen.name(s)}}
+        {{ gen.name(element) }} : {{ s.range }} {{ gen.name(s) }}
       {% endfor %}
 ```
 {% elif schemaview.class_children(element.name)  %}
 ```{{ gen.mermaid_directive() }}
  classDiagram
+    direction RL
     class {{ gen.name(element) }}
       {% for s in schemaview.class_children(element.name)|sort(attribute='name') -%}
         {{ gen.name(element) }} <|-- {{ gen.name(schemaview.get_element(s)) }}
       {% endfor %}
       {% for s in schemaview.class_induced_slots(element.name)|sort(attribute='name') -%}
-        {{ gen.name(element) }} : {{gen.name(s)}}
+        {{ gen.name(element) }} : {{ s.range }} {{gen.name(s)}}
       {% endfor %}
+      {% for s in schemaview.class_induced_slots(element.name)|sort(attribute='name') -%}
+        {% if s.range in gen.all_class_names() -%}
+          {{ s.range }} --o {{ gen.name(element) }} : {{gen.name(s)}}
+      {%  endif %}
+    {% endfor %}
 ```
 {% else %}
 ```{{ gen.mermaid_directive() }}
  classDiagram
-    class {{ gen.name(element) }}
+    direction RL
+    class {{ gen.name(element) }} {
+        {% for s in schemaview.class_induced_slots(element.name)|sort(attribute='name') -%}
+          {{ gen.name(s) }} : {{ s.range }}{% if s.multivalued %}[]{% endif %}
+        {% endfor %}
+      }
       {% for s in schemaview.class_induced_slots(element.name)|sort(attribute='name') -%}
-        {{ gen.name(element) }} : {{gen.name(s)}}
+        {% if s.range in gen.all_class_names() -%}
+          {{ s.range }} --o {{ gen.name(element) }} : {{ gen.name(s) }}
+        {% endif %}
       {% endfor %}
+      {% if schemaview.usage_index().get(element.name) %}
+        {% for usage in schemaview.usage_index().get(element.name) -%}
+          {% if usage.used_by != gen.name(element) -%}
+            {{ gen.name(element) }} --o {{ usage.used_by }} : {{ usage.slot }}
+          {% endif %}
+        {% endfor %}
+      {% endif %}
 ```
 {% endif %}
 {% endif %}
