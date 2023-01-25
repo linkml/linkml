@@ -275,7 +275,7 @@ class PydanticGenerator(OOCodeGenerator):
             sv.get_identifier_slot(range_cls.name) is None
             and not sv.is_mixin(range_cls.name)
         ):
-            if len([x for x in sv.class_induced_slots(slot.range) if x.designates_type]) > 0:
+            if len([x for x in sv.class_induced_slots(slot.range) if x.designates_type]) > 0 and len(sv.class_descendants(slot.range)) > 1:
                 return f"Union[" + ",".join([camelcase(c) for c in sv.class_descendants(slot.range)]) + "]"
             else:
                 return f"{camelcase(slot.range)}"

@@ -34,6 +34,9 @@ classes:
     tree_root: true
     slots:
       - things
+  ContainerWithOneSibling:
+    slots:
+      - persons
 slots:
   id:
     identifier: true
@@ -50,6 +53,10 @@ slots:
     range: integer
   things:
     range: NamedThing
+    multivalued: true
+    inlined_as_list: true
+  persons:
+    range: Person
     multivalued: true
     inlined_as_list: true
 """
@@ -80,6 +87,9 @@ class PydanticPolymorphismTestCase(TestEnvironmentTestCase):
     def test_pydantic_obey_range(self):
         gen = PydanticGenerator(schema_str)
         output = gen.serialize()
+        
+        self.assertNotRegexpMatches(output, "Union\[[a-zA-Z0-9]*\]", "a python Union should always have more than one option")
+
         output_subset = [line for line in output.splitlines() if "thingtype" in line]
         self.assertGreater(len(output_subset), 0)
         
