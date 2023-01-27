@@ -3,6 +3,7 @@ from collections import defaultdict
 from copy import deepcopy
 from dataclasses import field, dataclass
 from typing import Dict, List, TextIO, Union
+from linkml.utils.ifabsent_functions import ifabsent_value_declaration
 
 import click
 from jinja2 import Template
@@ -210,15 +211,17 @@ class PydanticGenerator(OOCodeGenerator):
                             + "]"
                         )
                 # set default values if specified (https://github.com/linkml/linkml/issues/1234)
+
                 elif slot.ifabsent is not None:
-                    if slot.range in ["integer", "float", "boolean"]:
-                        value = f"{slot.ifabsent}"
-                    elif slot.range == "date":
-                        value = f'date.fromisoformat("{slot.ifabsent}")'
-                    elif slot.range == "datetime":
-                        value = f'datetime.fromisoformat("{slot.ifabsent}")'
-                    else:
-                        value = f'"{slot.ifabsent}"'
+                    value = ifabsent_value_declaration(slot.ifabsent, sv, class_def, slot)
+                    # if slot.range in ["integer", "float", "boolean"]:
+                    #     value = f"{slot.ifabsent}"
+                    # elif slot.range == "date":
+                    #     value = f'date.fromisoformat("{slot.ifabsent}")'
+                    # elif slot.range == "datetime":
+                    #     value = f'datetime.fromisoformat("{slot.ifabsent}")'
+                    # else:
+                    #     value = f'"{slot.ifabsent}"'
                     slot_values[camelcase(class_def.name)][slot.name] = value
                 # Multivalued slots that are either not inlined (just an identifier) or are
                 # inlined as lists should get default_factory list, if they're inlined but
