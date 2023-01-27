@@ -188,16 +188,16 @@ classes:
       attr4:
         range: float
         ifabsent: float(1.0)
+      attr5:
+        range: date
+        ifabsent: date(2020-01-01)
+      attr6:
+        range: datetime
+        ifabsent: datetime(2020-01-01T00:00:00Z)
         """
-#       attr5:
-#         range: date
-#         ifabsent: 2020-01-01
-#       attr6:
-#         range: datetime
-#         ifabsent: 2020-01-01T00:00:00Z
+
         gen = PydanticGenerator(schema_str)
         code = gen.serialize()
-        print(code)
         lines = code.splitlines()
         ix = lines.index('class Test(ConfiguredBaseModel):')
         integer_slot_line = lines[ix + 4].strip()
@@ -208,10 +208,10 @@ classes:
         assert boolean_slot_line == 'attr3: Optional[bool] = Field(True)'
         float_slot_line = lines[ix + 7].strip()
         assert float_slot_line == 'attr4: Optional[float] = Field(1.0)'
-        # date_slot_line = lines[ix + 8].strip()
-        # assert date_slot_line == 'attr5: Optional[date] = Field(date.fromisoformat("2020-01-01"))'
-        # datetime_slot_line = lines[ix + 9].strip()
-        # assert datetime_slot_line == 'attr6: Optional[datetime ] = Field(datetime.fromisoformat("2020-01-01 00:00:00+00:00"))'
+        date_slot_line = lines[ix + 8].strip()
+        assert date_slot_line == 'attr5: Optional[date] = Field(datetime.date(2020, 01, 01))'
+        datetime_slot_line = lines[ix + 9].strip()
+        assert datetime_slot_line == 'attr6: Optional[datetime ] = Field(datetime.datetime(2020, 01, 01, 00, 00, 00))'
 
 if __name__ == "__main__":
     unittest.main()
