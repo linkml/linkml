@@ -1419,7 +1419,20 @@ class SchemaView(object):
         return enum_slots
 
     def get_classes_modifying_slot(self, slot_name: SLOT_NAME = None) -> List[ClassDefinition]:
-        pass
+        """Get all ClassDefinitions that modify a given slot.
+
+        :param slot_name: slot in consideration
+        :return: list of ClassDefinitions modifying the slot of interest
+        """
+        # slot_classes = [c for c in self.all_classes().values() if c.slot_usage == slot_name]
+        # slot_classes = [c for c in self.all_classes().values()]
+        slot_classes = []
+        for class_definition in self.all_classes().values():
+            if class_definition.slot_usage:
+                for slot_definition in class_definition.slot_usage.values():
+                    if slot_definition.name == slot_name:
+                        slot_classes.append(class_definition)
+        return slot_classes
 
     def is_slot_percent_encoded(self, slot: SlotDefinitionName) -> bool:
         """
