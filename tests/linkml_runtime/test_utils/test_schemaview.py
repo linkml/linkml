@@ -706,6 +706,26 @@ class SchemaViewTestCase(unittest.TestCase):
                 prefixes_list
         )
 
+    def test_is_inlined(self):
+        schema_path = os.path.join(INPUT_DIR, "schemaview_is_inlined.yaml")
+        sv = SchemaView(schema_path)
+        cases = [
+            # slot name, expected is_inline
+            ("a_thing_with_id", False),
+            ("inlined_thing_with_id", True),
+            ("inlined_as_list_thing_with_id", True),
+            ("a_thing_without_id", True),
+            ("inlined_thing_without_id", True),
+            ("inlined_as_list_thing_without_id", True),
+            ("an_integer", False),
+            ("inlined_integer", False),
+            ("inlined_as_list_integer", False)
+        ]
+        for slot_name, expected_result in cases:
+            with self.subTest(slot_name=slot_name):
+                slot = sv.get_slot(slot_name)
+                actual_result = sv.is_inlined(slot)
+                self.assertEqual(actual_result, expected_result)
 
 if __name__ == '__main__':
     unittest.main()

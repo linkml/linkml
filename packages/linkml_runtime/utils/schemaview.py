@@ -1317,22 +1317,22 @@ class SchemaView(object):
         :param imports:
         :return:
         """
-        if slot.inlined:
-            return True
-        elif slot.inlined_as_list:
-            return True
-        else:
-            range = slot.range
-            if range in self.all_classes():
-                id_slot = self.get_identifier_slot(range, imports=imports)
-                if id_slot is None:
-                    # must be inlined as has no identifier
-                    return True
-                else:
-                    # not explicitly declared inline and has an identifier: assume is ref, not inlined
-                    return False
+        range = slot.range
+        if range in self.all_classes():
+            if slot.inlined:
+                return True
+            elif slot.inlined_as_list:
+                return True
+            
+            id_slot = self.get_identifier_slot(range, imports=imports)
+            if id_slot is None:
+                # must be inlined as has no identifier
+                return True
             else:
+                # not explicitly declared inline and has an identifier: assume is ref, not inlined
                 return False
+        else:
+            return False
 
     def slot_applicable_range_elements(self, slot: SlotDefinition) -> List[ClassDefinitionName]:
         """
