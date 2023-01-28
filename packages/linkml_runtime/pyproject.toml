@@ -37,6 +37,7 @@ packages = [
 
 [tool.poetry.scripts]
 comparefiles = "linkml_runtime.utils.comparefiles:cli"
+linkml-normalize = "linkml_runtime.processing.referencevalidator:cli"
 
 [tool.poetry.dependencies]
 python = "^3.7.6"

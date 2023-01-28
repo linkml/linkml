@@ -1,0 +1,335 @@
+# TODO: fold this back into linkml-model
+id: https://w3id.org/linkml/validation_results
+title: Validation Results Datamodel
+name: validaton-results
+description: |-
+  A datamodel for data validation results.
+license: https://creativecommons.org/publicdomain/zero/1.0/
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+  vm: https://w3id.org/linkml/validation-model/
+  skos: http://www.w3.org/2004/02/skos/core#
+  pav: http://purl.org/pav/
+  schema: http://schema.org/
+  sh: http://www.w3.org/ns/shacl#
+
+default_prefix: vm
+default_range: string
+
+default_curi_maps:
+  - semweb_context
+
+emit_prefixes:
+  - linkml
+  - rdf
+  - rdfs
+  - xsd
+  - owl
+
+imports:
+  - linkml:types
+
+#==================================
+# Classes                         #
+#==================================
+classes:
+
+
+  ConstraintCheck:
+    attributes:
+      id:
+        range: uriorcurie
+        identifier: true
+
+  Node:
+    attributes:
+      id:
+        range: uriorcurie
+        identifier: true
+
+  ValidationConfiguration:
+    description: Configuration parameters for execution of a validation report
+    attributes:
+      max_number_results_per_type:
+        range: integer
+        description: if set then truncate results such that no more than this number of results are reported per type
+      type_severity_map:
+        description: Allows overriding of severity of a particular type
+        range: TypeSeverityKeyValue
+        inlined: true
+        multivalued: true
+
+  RepairConfiguration:
+    description: Configuration parameters for execution of validation repairs
+    attributes:
+      validation_configuration:
+        description: repair configurations include validation configurations
+        range: ValidationConfiguration
+      dry_run:
+        range: boolean
+
+
+  TypeSeverityKeyValue:
+    description: key-value pair that maps a validation result type to a severity setting, for overriding default severity
+    conforms_to: wikidata:Q4818718
+    attributes:
+      type:
+        key: true
+        range: uriorcurie
+      severity:
+        range: SeverityType
+
+  Report:
+    abstract: true
+    description: A report object that is a holder to multiple report results
+    slots:
+      - results
+
+  ValidationReport:
+    is_a: Report
+    class_uri: sh:ValidationReport
+    description: A report that consists of validation results
+    slot_usage:
+      results:
+        range: ValidationResult
+    todos:
+      - add prov object
+
+  RepairReport:
+    is_a: Report
+    description: A report that consists of repair operation results
+    slot_usage:
+      results:
+        range: RepairOperation
+
+  Result:
+    abstract: true
+    description: Abstract base class for any individual report result
+
+  ValidationResult:
+    is_a: Result
+    class_uri: sh:ValidationResult
+    description: An individual result arising from validation of a data instance using a particular rule
+    slots:
+      - type
+      - severity
+      - subject
+      - instantiates
+      - predicate
+      - object
+      - object_str
+      - source
+      - info
+      - normalized
+      - repaired
+      - source_line_number
+      - source_column_number
+      - source_location
+
+  RepairOperation:
+    is_a: Result
+    description: The result of performing an individual repair
+    todos:
+      - integrate with kgcl data model, to be able to describe changes
+    attributes:
+      repairs:
+        range: ValidationResult
+      modified:
+        range: boolean
+      successful:
+        range: boolean
+      info:
+        range: string
+
+
+#==================================
+# Slots                           #
+#==================================
+slots:
+  type:
+    range: ConstraintType
+    slot_uri: sh:sourceConstraintComponent
+    description: >-
+      The type of validation result. SHACL validation vocabulary is recommended for checks against a datamodel.
+      For principle checks use the corresponding rule or principle, e.g. GO RULE ID, OBO Principle ID
+    required: true
+  subject:
+    description: The instance which the result is about
+    #range: Node
+    slot_uri: sh:focusNode
+    #required: true
+  instantiates:
+    description: The type of the subject
+    range: Node
+    exact_mappings:
+      - sh:sourceShape
+  predicate:
+    description: The predicate or property of the subject which the result is about
+    range: Node
+    related_mappings:
+      - sh:resultPath
+  object:
+    range: Node
+    slot_uri: sh:value
+  object_str:
+    range: string
+  source:
+    range: string
+  severity:
+    description: the severity of the issue
+    range: SeverityType
+    slot_uri: sh:resultSeverity
+  info:
+    description: additional information about the issue
+    range: string
+    slot_uri: sh:resultMessage
+  results:
+    description: collection of results
+    slot_uri: sh:result
+    range: Result
+    multivalued: true
+    inlined: true
+    inlined_as_list: true
+  normalized:
+    range: boolean
+  repaired:
+    range: boolean
+  source_line_number:
+    range: integer
+  source_column_number:
+    range: integer
+  source_location:
+
+#==================================
+# Enumerations                    #
+#==================================
+enums:
+  SeverityType:
+    exact_mappings:
+      - sh:Severity
+    permissible_values:
+      FATAL:
+      ERROR:
+        meaning: sh:Violation
+      WARNING:
+        meaning: sh:Warning
+      INFO:
+        meaning: sh:Info
+
+  ConstraintType:
+    # sh:sourceConstraintComponent
+    permissible_values:
+      TypeConstraint:
+        meaning: sh:DatatypeConstraintComponent
+        description: constraint in which the range is a type, and the slot value must conform to the type
+        annotations:
+          element: linkml:range
+      MinCountConstraint:
+        meaning: sh:MinCountConstraintComponent
+        description: cardinality constraint where the number of values of the slot must be greater or equal to a specified minimum
+        annotations:
+          element: linkml:minimum_value
+      RequiredConstraint:
+        is_a: MinCountConstraint
+        meaning: sh:MinCountConstraintComponent
+        description: cardinality constraint where there MUST be at least one value of the slot
+        annotations:
+          element: linkml:required
+      RecommendedConstraint:
+        is_a: MinCountConstraint
+        meaning: sh:MinCountConstraintComponent
+        description: cardinality constraint where there SHOULD be at least one value of the slot
+        annotations:
+          element: linkml:recommended
+          severity: WARNING
+      MaxCountConstraint:
+        meaning: sh:MaxCountConstraintComponent
+        description: cardinality constraint where the number of values of the slot must be less than or equal to a specified maximum
+        annotations:
+          element: linkml:maximum_value
+      SingleValuedConstraint:
+        is_a: MaxCountConstraint
+        description: the value of the slot must be atomic and not a collection
+      MultiValuedConstraint:
+        description: the value of the slot must be a collection and not atomic
+      DeprecatedProperty:
+        meaning: vm:DeprecatedProperty
+        description: constraint where the instance slot should not be deprecated
+        annotations:
+          element: linkml:deprecated
+      MaxLengthConstraint:
+        meaning: sh:MaxLengthConstraintComponent
+        description: constraint where the slot value must have a length equal to or less than a specified maximum
+      MinLengthConstraint:
+        meaning: sh:MinLengthConstraintComponent
+        description: constraint where the slot value must have a length equal to or less than a specified maximum
+      PatternConstraint:
+        meaning: sh:PatternConstraintComponent
+        description: constraint where the slot value must match a given regular expression pattern
+        annotations:
+          element: linkml:pattern
+      ClosedClassConstraint:
+        meaning: sh:ClosedConstraintComponent
+        description: constraint where the slot value must be allowable for the instantiated class
+        annotations:
+          element: linkml:attributes
+      DesignatesTypeConstraint:
+      InstanceConstraint:
+        meaning: sh:NodeConstraintComponent
+      SlotConstraint:
+        meaning: sh:PropertyConstraintComponent
+      PermissibleValueConstraint:
+        meaning: sh:InConstraintComponent
+        description: constraint where the slot value must be one of a set of permissible values
+        annotations:
+          element: linkml:permissible_values
+      UndeclaredSlotConstraint:
+        is_a: ClosedClassConstraint
+      RuleConstraint:
+        description: constraint where the structure of an object must conform to a specified rule
+      ExpressionConstraint:
+      EqualsExpressionConstraint:
+        is_a: ExpressionConstraint
+        meaning: sh:EqualsConstraintComponent
+        annotations:
+          element: linkml:equals_expression
+      LessThanExpressionConstraint:
+        is_a: ExpressionConstraint
+        meaning: sh:LessThanConstraintComponent
+      LessThanOrEqualsExpressionConstraint:
+        is_a: ExpressionConstraint
+        meaning: sh:LessThanOrEqualsComponent
+      DisjointConstraint:
+        is_a: ExpressionConstraint
+        meaning: sh:DisjointConstraintComponent
+      MinimumValueConstraint:
+        meaning: sh:MinInclusiveConstraintComponent
+        annotations:
+          element: linkml:minimum_value
+      MaximumValueConstraint:
+        meaning: sh:MaxInclusiveConstraintComponent
+        annotations:
+          element: linkml:maximum_exclusive_value
+      MinimumExclusiveValueConstraint:
+        meaning: sh:MinExclusiveInclusiveConstraintComponent
+        annotations:
+          element: linkml:minimum_value
+      MaximumExclusiveValueConstraint:
+        meaning: sh:MaxExclusiveInclusiveConstraintComponent
+        annotations:
+          element: linkml:maximum_exclusive_value
+      CollectionFormConstraint:
+      ListCollectionFormConstraint:
+        is_a: CollectionFormConstraint
+      DictCollectionFormConstraint:
+        is_a: CollectionFormConstraint
+      SimpleDictCollectionFormConstraint:
+        is_a: DictCollectionFormConstraint
+      CompactDictCollectionFormConstraint:
+        is_a: DictCollectionFormConstraint
+      ExpandedDictCollectionFormConstraint:
+        is_a: DictCollectionFormConstraint
+      
+
+
