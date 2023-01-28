@@ -1,3 +1,10 @@
+"""Reference implementation for validations and normalization.
+
+See:
+
+- `Part 5<https://w3id.org/linkml/specification/05validation>`_ of LinkML specification
+- `Part 6<https://w3id.org/linkml/specification/06mapping>`_ of LinkML specification
+"""
 import decimal
 import re
 import sys
@@ -30,7 +37,7 @@ from linkml_runtime.linkml_model.meta import (
 )
 from linkml_runtime.processing.validation_datamodel import (
     ConstraintType,
-    ValidationResult,
+    ValidationResult, ValidationConfiguration,
 )
 from linkml_runtime.utils import yamlutils
 from linkml_runtime.utils.eval_utils import eval_expr
@@ -91,6 +98,7 @@ class Normalization:
 
 @dataclass
 class CollectionFormNormalization(Normalization):
+    """A normalization that maps from one collection form to another"""
     input_form: CollectionForm = None
     output_form: CollectionForm = None
 
@@ -105,19 +113,33 @@ class TypeNormalization(Normalization):
 class Report:
     """A report of validation results"""
 
+    configuration: ValidationConfiguration = None
+    """Customization of reporting."""
+
     results: List[ValidationResult] = field(default_factory=lambda: [])
+    """All results, including normalized"""
+
     normalizations: List[Normalization] = field(default_factory=lambda: [])
+    """All normalizations and repairs applied"""
 
     def combine(self, other: "Report") -> "Report":
         self.results.extend(other.results)
         return self
 
-    def add_normalization(
+    def add_collection_form_normalization(
         self,
         problem_type: ConstraintType,
         before: CollectionForm,
         after: CollectionForm,
     ):
+        """
+        Add a collection form normalization to the report.
+
+        :param problem_type:
+        :param before:
+        :param after:
+        :return:
+        """
         result = ValidationResult(type=ConstraintType.SlotConstraint)
         norm = CollectionFormNormalization(input_form=before, output_form=after)
         # result.repairs.append(norm)
@@ -161,13 +183,30 @@ class Report:
             result.source_location = locator.yaml_loc()
         self.results.append(result)
 
-    def unrepaired(self) -> List[ValidationResult]:
+    def _is_error(self, result: ValidationResult) -> bool:
+        return result.type != ConstraintType(ConstraintType.RecommendedConstraint)
+
+    def errors(self) -> List[ValidationResult]:
+        """
+        Return a list of all results that are not normalized and do not have ERROR severity
+        """
+        # TODO: use severity
+        return [r for r in self.results_excluding_normalized() if self._is_error(r)]
+
+    def warnings(self) -> List[ValidationResult]:
+        """
+        Return a list of all results that are not normalized and do not have ERROR severity
+        """
+        # TODO: use severity
+        return [r for r in self.results_excluding_normalized() if not self._is_error(r)]
+
+    def results_excluding_normalized(self) -> List[ValidationResult]:
         return [r for r in self.results if not r.normalized]
 
     def unrepaired_problem_types(self) -> List[ConstraintType]:
-        return [r.type for r in self.unrepaired()]
+        return [r.type for r in self.results_excluding_normalized()]
 
-    def repaired(self) -> List[ValidationResult]:
+    def normalized_results(self) -> List[ValidationResult]:
         return [r for r in self.results if r.normalized]
 
     def collection_form_normalizations(
@@ -204,7 +243,21 @@ def _simple_to_dict(obj: Union[dict, Any], simple_value_slot_name: str) -> dict:
 @dataclass
 class ReferenceValidator:
     """
-    An engine that performs combined normalization and validation of instances according to a schema
+    An engine that performs combined normalization and validation of instances according to a schema.
+
+    See:
+
+    - `Part 5<https://w3id.org/linkml/specification/05validation>`_ of LinkML specification
+    - `Part 6<https://w3id.org/linkml/specification/06mapping>`_ of LinkML specification
+
+    The ReferenceValidator works by first retrieving the *derived* schema given an input asserted
+    schema, using :ref:`SchemaView`.
+
+    The input data object is in dictionary form, isomorphic to a JSON document. The ReferenceValidator will
+    descendant into the input object, first applying *normalization* rules (part 6), then applying *validation* rules
+    (part 5).
+
+    The output is (1) a new *normalized* object, and (2) a :ref:`Report` of validation results.
     """
 
     schemaview: SchemaView
@@ -404,7 +457,7 @@ class ReferenceValidator:
     ) -> Any:
         if isinstance(input_object, list):
             # List -> Atom
-            report.add_normalization(
+            report.add_collection_form_normalization(
                 ConstraintType.SingleValuedConstraint,
                 CollectionForm.List,
                 CollectionForm.NonCollection,
@@ -414,7 +467,7 @@ class ReferenceValidator:
             return input_object[0]
         if self._is_dict_collection(input_object, parent_slot):
             # Dict -> Atom
-            report.add_normalization(
+            report.add_collection_form_normalization(
                 ConstraintType.SingleValuedConstraint,
                 CollectionForm.ExpandedDict,
                 CollectionForm.NonCollection,
@@ -431,7 +484,7 @@ class ReferenceValidator:
     ) -> Any:
         if not isinstance(input_object, (list, dict)):
             # Atom -> List
-            report.add_normalization(
+            report.add_collection_form_normalization(
                 ConstraintType.MultiValuedConstraint,
                 CollectionForm.NonCollection,
                 CollectionForm.List,
@@ -444,7 +497,7 @@ class ReferenceValidator:
                     v = copy(v)
                     if pk_slot_name in input_object and input_object[pk_slot_name] != k:
                         # TODO: account for this differently
-                        report.add_normalization(
+                        report.add_collection_form_normalization(
                             ConstraintType.ListCollectionFormConstraint,
                             CollectionForm.ExpandedDict,
                             CollectionForm.ExpandedDict,
@@ -452,7 +505,7 @@ class ReferenceValidator:
                     v[str(pk_slot_name)] = k
                 return v
 
-            report.add_normalization(
+            report.add_collection_form_normalization(
                 ConstraintType.ListCollectionFormConstraint,
                 CollectionForm.ExpandedDict,
                 CollectionForm.List,
@@ -469,7 +522,7 @@ class ReferenceValidator:
     ) -> Any:
         if isinstance(input_object, list):
             # List -> Dict
-            report.add_normalization(
+            report.add_collection_form_normalization(
                 ConstraintType.DictCollectionFormConstraint,
                 CollectionForm.List,
                 CollectionForm.ExpandedDict,
@@ -483,7 +536,7 @@ class ReferenceValidator:
                 if v is not None and not isinstance(v, dict)
             ):
                 # SimpleDict -> ExpandedDict
-                report.add_normalization(
+                report.add_collection_form_normalization(
                     ConstraintType.DictCollectionFormConstraint,
                     CollectionForm.SimpleDict,
                     CollectionForm.ExpandedDict,
@@ -507,7 +560,7 @@ class ReferenceValidator:
     ) -> Any:
         if isinstance(input_object, list):
             # List -> Dict
-            report.add_normalization(
+            report.add_collection_form_normalization(
                 ConstraintType.DictCollectionFormConstraint,
                 CollectionForm.List,
                 CollectionForm.CompactDict,
@@ -521,7 +574,7 @@ class ReferenceValidator:
                 for k, v in input_object.items()
                 if isinstance(v, dict) and v.get(pk_slot_name, None) is not None
             ):
-                report.add_normalization(
+                report.add_collection_form_normalization(
                     ConstraintType.DictCollectionFormConstraint,
                     CollectionForm.ExpandedDict,
                     CollectionForm.CompactDict,
@@ -530,7 +583,7 @@ class ReferenceValidator:
             else:
                 return input_object
         else:
-            report.add_normalization(
+            report.add_collection_form_normalization(
                 ConstraintType.DictCollectionFormConstraint,
                 CollectionForm.List,
                 CollectionForm.CompactDict,
@@ -566,14 +619,14 @@ class ReferenceValidator:
                 new_normalized_object[k] = v_as_simple
                 simplified = True
         if simplified:
-            report.add_normalization(
+            report.add_collection_form_normalization(
                 ConstraintType.SimpleDictCollectionFormConstraint,
                 original_form,
                 CollectionForm.SimpleDict,
             )
             normalized_object = new_normalized_object
         elif original_form == CollectionForm.List:
-            report.add_normalization(
+            report.add_collection_form_normalization(
                 ConstraintType.SimpleDictCollectionFormConstraint,
                 original_form,
                 CollectionForm.SimpleDict,
@@ -949,9 +1002,10 @@ class ReferenceValidator:
 @click.command
 @click.option("--schema", "-s", required=True)
 @click.option("--target", "-C")
+@click.option("--report-file", "-R", type=click.File("w"), default=sys.stderr)
 @click.option("--output", "-o", type=click.File("w"), default=sys.stdout)
 @click.argument("input")
-def cli(schema: str, target: str, input: str, output: TextIO) -> None:
+def cli(schema: str, target: str, input: str, report_file: TextIO, output: TextIO) -> None:
     """
     Normalizes and validates a YAML document against a schema.
 
@@ -977,14 +1031,18 @@ def cli(schema: str, target: str, input: str, output: TextIO) -> None:
         input_object = yaml.safe_load(f)
     report = Report()
     output_object = normalizer.normalize(input_object, target=target, report=report)
-    if report.repaired():
-        sys.stderr.write("# Repaired:\n")
-        for r in report.repaired():
-            sys.stderr.write(yaml_dumper.dumps(r))
-    if report.unrepaired():
-        sys.stderr.write("# Unrepaired:\n")
-        for r in report.unrepaired():
-            sys.stderr.write(yaml_dumper.dumps(r))
+    if report.normalized_results():
+        report_file.write("# Repaired:\n")
+        for r in report.normalized_results():
+            report_file.write(yaml_dumper.dumps(r))
+    if report.warnings():
+        report_file.write("# Warnings:\n")
+        for r in report.warnings():
+            report_file.write(yaml_dumper.dumps(r))
+    if report.errors():
+        report_file.write("# Errors:\n")
+        for r in report.errors():
+            report_file.write(yaml_dumper.dumps(r))
         sys.exit(1)
     # TODO: https://stackoverflow.com/questions/45004464/yaml-dump-adding-unwanted-newlines-in-multiline-strings
     output_str = yaml.dump(output_object, sort_keys=False)

@@ -1,6 +1,7 @@
 import json
 import unittest
 import datetime
+from datetime import datetime as datetime2
 from collections import namedtuple
 from dataclasses import dataclass, field
 from decimal import Decimal
@@ -120,6 +121,15 @@ def _normalizations(report: Report) -> str:
         ]
     )
 
+def _errors(report: Report) -> str:
+    return ", ".join(
+        [
+            f"{r.type}"
+            for r in report.errors()
+        ]
+    )
+
+
 
 class ReferenceValidatorTestCase(unittest.TestCase):
     """
@@ -148,6 +158,10 @@ class ReferenceValidatorTestCase(unittest.TestCase):
         sb = SchemaBuilder()
         _add_core_schema_elements(sb)
         doc.object(yaml_dumper.dumps(sb.schema))
+        doc.text("The 3 classes used here are to define different kinds of *references*:")
+        doc.li("Identified: has an `identifier` slot (*referenced* rather than inlined)")
+        doc.li("NonIdentified: does not have an `identifier` slot (*necessarily* inlined)")
+        doc.li("Simple: has a single non-identifier slot which is atomic (default *CompactDict* form)")
         cls.doc = doc
 
     def setUp(self) -> None:
@@ -156,7 +170,9 @@ class ReferenceValidatorTestCase(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         """Write out the document object to a markdown file."""
-        cls.doc.text("End of report")
+        cls.doc.h2("Additional metadata")
+        cls.doc.li(f"Generated using {__file__} in the linkml-runtime repo.")
+        cls.doc.li(f"Generated on: {datetime2.today().strftime('%Y-%m-%d')}")
         with open(str(OUTPUT_DIRECTORY / "results.md"), "w", encoding="UTF-8") as f:
             f.write(str(cls.doc))
 
@@ -526,19 +542,20 @@ class ReferenceValidatorTestCase(unittest.TestCase):
                 self.assertEqual(expected_output, output)
                 self.assertEqual(
                     len(expected_unrepaired),
-                    len(report.unrepaired()),
-                    f"case: {case} {report.unrepaired()}",
+                    len(report.results_excluding_normalized()),
+                    f"case: {case} {report.results_excluding_normalized()}",
                 )
                 self.assertEqual(
                     len(expected_repairs),
-                    len(report.repaired()),
-                    f"case: {case} {report.repaired()}",
+                    len(report.normalized_results()),
+                    f"case: {case} {report.normalized_results()}",
                 )
 
     def test_03_slot_values(self):
         doc = self.doc
         doc.h2("Slot Value Tests")
         doc.text("Validation and normalization of collection forms.")
+        doc.text("These tests use the core schema above, with different combinations of slots.")
         Inst_nt = namedtuple(
             "Inst",
             [
@@ -758,7 +775,7 @@ class ReferenceValidatorTestCase(unittest.TestCase):
                         {"s": ["x"]},
                     ),
                     Inst_nt(
-                        "...",
+                        "non-allowed slot",
                         {"t": "x"},
                         [],
                         [ConstraintType.ClosedClassConstraint],
@@ -775,17 +792,17 @@ class ReferenceValidatorTestCase(unittest.TestCase):
                     description="Single inlined object",
                 ),
                 [
-                    Inst_nt("...", {}, [], [], {}),
-                    Inst_nt("...", {"s": ref1}, [], [], {"s": ref1}),
+                    Inst_nt("empty object", {}, [], [], {}),
+                    Inst_nt("inlined singleton object", {"s": ref1}, [], [], {"s": ref1}),
                     Inst_nt(
-                        "...",
+                        "inlined list of objects",
                         {"s": [ref1]},
                         [(CollectionForm.List, CollectionForm.NonCollection)],
                         [],
                         {"s": ref1},
                     ),
                     Inst_nt(
-                        "...",
+                        "non-allowed slot",
                         {"t": "x"},
                         [],
                         [ConstraintType.ClosedClassConstraint],
@@ -811,6 +828,7 @@ class ReferenceValidatorTestCase(unittest.TestCase):
                 OUTPUT_DIRECTORY / f"SchemaDefinition-{base_name}-derived.yaml",
             )
             tc = normalizer.derived_schema.classes["TestClass"]
+            doc.th(["Description", "Input", "Output", "Normalizations", "Errors"])
             for example in examples:
                 (
                     inst_description,
@@ -834,32 +852,31 @@ class ReferenceValidatorTestCase(unittest.TestCase):
                 )
                 self.assertEqual(
                     len(expected_repairs),
-                    len(report.repaired()),
-                    f"Mismatch for {slot.description} =>  => {inst_description} . {report.repaired()}",
+                    len(report.normalized_results()),
+                    f"Mismatch for {slot.description} =>  => {inst_description} . {report.normalized_results()}",
                 )
                 self._assert_unrepaired_types_the_same(
                     report, expected_unrepaired, inst, output_object
                 )
-                doc.h4("Example")
-                if not expected_repairs and not expected_unrepaired:
-                    valid = "Valid"
-                elif not expected_unrepaired:
-                    valid = "Repairable"
-                else:
-                    valid = "Invalid"
-                doc.text(f"{valid} Input:")
-                doc.object(inst)
-                doc.italics(inst_description)
-                if report.repaired():
-                    doc.text("Normalized Output:")
-                    doc.object(output_object)
-                    doc.text("Normalizations Applied:")
-                    for r in report.repaired():
-                        doc.li(str(r))
-                if report.unrepaired():
-                    doc.text("Validation Errors (Post-Normalization)")
-                    for r in report.unrepaired():
-                        doc.object(r)
+                #doc.h4("Example")
+
+                if False:
+                    if report.normalized_results():
+                        doc.text("Normalized Output:")
+                        doc.object(output_object)
+                        doc.text("Normalizations Applied:")
+                        for r in report.normalized_results():
+                            doc.li(str(r))
+                    if report.results_excluding_normalized():
+                        doc.text("Validation Errors (Post-Normalization)")
+                        for r in report.results_excluding_normalized():
+                            doc.object(r)
+                doc.tr([inst_description,
+                       _serialize(inst),
+                       _serialize(output_object),
+                       _normalizations(report),
+                       _errors(report),
+                        ])
 
     def test_05_type_ranges(self):
         cases = [
@@ -949,7 +966,7 @@ class ReferenceValidatorTestCase(unittest.TestCase):
                 input_object, derived_schema.enums["TestEnum"], report
             )
             self.assertEqual(expected_output, output)
-            self.assertCountEqual(expected_repairs, report.repaired())
+            self.assertCountEqual(expected_repairs, report.normalized_results())
             self._assert_unrepaired_types_the_same(
                 report, expected_unrepaired, input_object, output
             )
@@ -1068,9 +1085,9 @@ class ReferenceValidatorTestCase(unittest.TestCase):
                     expected_value, normalized_value, f"Failed to normalize {v} to {t}"
                 )
                 self.assertEqual(
-                    len(report.repaired()),
+                    len(report.normalized_results()),
                     len(expected_repairs),
-                    f"{v} -> {expected_value} type {t}: Expected {expected_repairs} repairs, got {report.repaired()}",
+                    f"{v} -> {expected_value} type {t}: Expected {expected_repairs} repairs, got {report.normalized_results()}",
                 )
                 self._assert_unrepaired_types_the_same(
                     report, expected_unrepaired, v, expected_value
@@ -1081,7 +1098,7 @@ class ReferenceValidatorTestCase(unittest.TestCase):
                     v, derived_schema.types[t], report
                 )
                 self.assertEqual(expected_value, normalized_value)
-                self.assertEqual(len(report.repaired()), len(expected_repairs))
+                self.assertEqual(len(report.normalized_results()), len(expected_repairs))
                 self._assert_unrepaired_types_the_same(
                     report, expected_unrepaired, v, expected_value
                 )
@@ -1102,13 +1119,14 @@ class ReferenceValidatorTestCase(unittest.TestCase):
         id: s1
         name: schema1
         invented_field: foo
+        description: test
         """
         obj = yaml.load(s, DupCheckYamlLoader)
         report = validator.validate(obj)
-        # for r in report.unrepaired():
-        #    print(r)
-        self.assertEqual(1, len(report.unrepaired()))
-        r = report.unrepaired()[0]
+        for r in report.results_excluding_normalized():
+            print(yaml_dumper.dumps(r))
+        self.assertEqual(1, len(report.results_excluding_normalized()))
+        r = report.results_excluding_normalized()[0]
         self.assertEqual(3, r.source_line_number)
         self.assertEqual(8, r.source_column_number)
 
@@ -1138,17 +1156,16 @@ class ReferenceValidatorTestCase(unittest.TestCase):
         # print(schema_dict)
         report = Report()
         schema_norm = validator.normalize(schema_dict, target=sdc.name, report=report)
-        # print("Normalized:")
-        # print(yaml.dump(schema_norm, sort_keys=False))
         self.assertEqual(dict, type(schema_norm["prefixes"]))
-        # for r in report.unrepaired():
-        #    print(r)
-        self.assertEqual(len(report.unrepaired()), 0)
+        for r in report.results_excluding_normalized():
+            print(yaml_dumper.dumps(r))
+        self.assertEqual(len(report.errors()), 0)
         # for r in report.repaired():
         #    print(r)
-        self.assertEqual(len(report.repaired()), 3)
+        self.assertEqual(len(report.normalized_results()), 3)
         report = validator.validate(schema_norm, target=sdc.name)
-        self.assertEqual(0, len(report.results))
+        self.assertEqual(0, len(report.errors()))
+        self.assertEqual(0, len(report.normalized_results()))
 
     def test_metamodel(self):
         view = package_schemaview("linkml_runtime.linkml_model.meta")
@@ -1158,10 +1175,15 @@ class ReferenceValidatorTestCase(unittest.TestCase):
         self.assertIn("name", sdc.attributes)
         schema_string = yaml_dumper.dumps(view.schema)
         report = Report()
-        # print(schema_string)
         schema_dict = yaml.load(schema_string, DupCheckYamlLoader)
         schema_norm = validator.normalize(schema_dict, target=sdc.name, report=report)
-        self.assertEqual([], report.unrepaired())
+        self.assertEqual([], report.errors())
+        num_warnings = len(report.warnings())
+        report = validator.validate(schema_norm, target=sdc.name)
+        self.assertEqual(0, len(report.errors()))
+        self.assertEqual(0, len(report.normalized_results()))
+        # normalization should not change the number of warnings
+        self.assertEqual(num_warnings, len(report.warnings()))
 
 
 if __name__ == "__main__":
