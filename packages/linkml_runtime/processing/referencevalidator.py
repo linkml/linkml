@@ -278,6 +278,9 @@ class ReferenceValidator:
     skip_normalization: bool = None
     """If True, then only perform validation, not normalization"""
 
+    expand_all: bool = None
+    """If True, then expand all SimpleDict and CompactDict objects to ExpandedDicts"""
+
     def __post_init__(self):
         self.derived_schema = self.schemaview.materialize_derived_schema()
 
@@ -416,6 +419,8 @@ class ReferenceValidator:
             return CollectionForm.List
         if parent_slot.inlined_as_list:
             return CollectionForm.List
+        if self.expand_all:
+            return CollectionForm.ExpandedDict
         simple_dict_value_slot = self._slot_as_simple_dict_value_slot(parent_slot)
         if simple_dict_value_slot:
             return CollectionForm.SimpleDict
@@ -1000,12 +1005,18 @@ class ReferenceValidator:
 
 
 @click.command
-@click.option("--schema", "-s", required=True)
-@click.option("--target", "-C")
-@click.option("--report-file", "-R", type=click.File("w"), default=sys.stderr)
+@click.option("--schema", "-s", required=True,
+              help="Path to LinkML schema")
+@click.option("--target", "-C",
+              help="name of target class or element to normalize/validate against")
+@click.option("--report-file", "-R", type=click.File("w"), default=sys.stderr,
+              show_default=True,
+              help="path to file for reports")
 @click.option("--output", "-o", type=click.File("w"), default=sys.stdout)
+@click.option("--expand-all/--no-expand-all",
+              help="If True, expand all Dicts to ExpandedDicts")
 @click.argument("input")
-def cli(schema: str, target: str, input: str, report_file: TextIO, output: TextIO) -> None:
+def cli(schema: str, target: str, input: str, report_file: TextIO, output: TextIO, **kwargs) -> None:
     """
     Normalizes and validates a YAML document against a schema.
 
@@ -1026,7 +1037,7 @@ def cli(schema: str, target: str, input: str, report_file: TextIO, output: TextI
     :return:
     """
     sv = SchemaView(schema)
-    normalizer = ReferenceValidator(sv)
+    normalizer = ReferenceValidator(sv, **kwargs)
     with open(input) as f:
         input_object = yaml.safe_load(f)
     report = Report()
