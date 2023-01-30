@@ -78,6 +78,8 @@ class ExampleRunner:
 
     _validator: Optional[DataValidator] = None
 
+    use_type_designators: bool = True
+
     @property
     def python_module(self) -> ModuleType:
         """
@@ -210,6 +212,8 @@ class ExampleRunner:
         :param target_class:
         :return:
         """
+        if not self.use_type_designators:
+            return dict_obj
         sv = self.schemaview
         if target_class is None:
             target_class_names = [c.name for c in sv.all_classes().values() if c.tree_root]
@@ -280,6 +284,10 @@ class ExampleRunner:
               default=sys.stdout,
               type=click.File("w", encoding="utf-8"),
               help="Output file for markdown summary")
+@click.option("--use-type-designators/--no-use-type-designators",
+              default=True,
+              show_default=True,
+              help="If true use type_designators to deepen ranges")
 def cli(schema, prefixes, output: TextIO, **kwargs):
     """Process a folder of examples and a folder of counter examples.
 
