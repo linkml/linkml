@@ -52,6 +52,9 @@ class RDFLibDumper(Dumper):
         # to set the underlying "@base"
         if "_base" in schemaview.namespaces():
             schemaview.namespaces()._base = schemaview.namespaces()["_base"]
+            g.base = schemaview.namespaces()._base
+        if schemaview.namespaces()._base:
+            g.base = schemaview.namespaces()._base
         self.inject_triples(element, schemaview, g)
         return g
 
