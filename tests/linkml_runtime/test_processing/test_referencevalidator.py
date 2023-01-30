@@ -291,6 +291,12 @@ class ReferenceValidatorTestCase(unittest.TestCase):
                 f"{slot} -> {expected}",
             )
             doc.tr(_slot_metaslot_values(slot) + [expected])
+            normalizer.expand_all = True
+            inferred_form = normalizer.infer_slot_collection_form(slot)
+            if expected in [CollectionForm.SimpleDict, CollectionForm.CompactDict]:
+                expected = CollectionForm.ExpandedDict
+            self.assertEqual(expected, inferred_form, f"expand_all={normalizer.expand_all}")
+
 
     def test_02_ensure_collection_forms(self):
         """Test normalization into a collection form."""

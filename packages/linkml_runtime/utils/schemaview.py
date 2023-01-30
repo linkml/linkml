@@ -1142,7 +1142,7 @@ class SchemaView(object):
         else:
             slot = self.get_slot(slot_name, imports, attributes=True)
         if slot is None:
-            raise ValueError(f"Slot {slot_name} as an attribute of {class_name} ancestors"
+            raise ValueError(f"No such slot {slot_name} as an attribute of {class_name} ancestors "
                              "or as a slot definition in the schema")
         # copy the slot, as it will be modified
         induced_slot = deepcopy(slot)
