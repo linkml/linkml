@@ -302,7 +302,7 @@
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">UserDict</span>
 <span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">click</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model.meta</span> <span class="kn">import</span> <span class="p">(</span><span class="n">AnonymousClassExpression</span><span class="p">,</span>
@@ -385,19 +385,37 @@
             
             <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;required&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">canonical_name</span><span class="p">)</span></div>
 
+<div class="viewcode-block" id="JsonSchema.add_keyword"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.jsonschemagen.JsonSchema.add_keyword">[docs]</a>    <span class="k">def</span> <span class="nf">add_keyword</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">keyword</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">applies_to_all_array_elements</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+        
+        <span class="k">if</span> <span class="n">applies_to_all_array_elements</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_array</span><span class="p">:</span>
+            <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;items&#39;</span><span class="p">][</span><span class="n">keyword</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="p">[</span><span class="n">keyword</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">is_array</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;type&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;array&#39;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">is_object</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;type&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;object&#39;</span>
+
 <div class="viewcode-block" id="JsonSchema.to_json"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.jsonschemagen.JsonSchema.to_json">[docs]</a>    <span class="k">def</span> <span class="nf">to_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="k">lambda</span> <span class="n">d</span><span class="p">:</span> <span class="n">d</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="JsonSchema.ref_for"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.jsonschemagen.JsonSchema.ref_for">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">ref_for</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">class_name</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span> <span class="n">identifier_optional</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
         <span class="k">def</span> <span class="nf">_ref</span><span class="p">(</span><span class="n">class_name</span><span class="p">):</span>
-            <span class="k">return</span> <span class="p">{</span> 
+            <span class="k">return</span> <span class="n">JsonSchema</span><span class="p">({</span> 
                 <span class="s2">&quot;$ref&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;#/$defs/</span><span class="si">{</span><span class="n">camelcase</span><span class="p">(</span><span class="n">class_name</span><span class="p">)</span><span class="si">}{</span><span class="bp">cls</span><span class="o">.</span><span class="n">OPTIONAL_IDENTIFIER_SUFFIX</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">identifier_optional</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="si">}</span><span class="s2">&quot;</span>
-            <span class="p">}</span>
+            <span class="p">})</span>
+        
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">class_name</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-            <span class="k">return</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="n">JsonSchema</span><span class="p">({</span>
                 <span class="s2">&quot;oneOf&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">_ref</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">class_name</span><span class="p">]</span>
-            <span class="p">}</span>
+            <span class="p">})</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">_ref</span><span class="p">(</span><span class="n">class_name</span><span class="p">)</span></div>
 
@@ -657,36 +675,21 @@
                         <span class="k">else</span><span class="p">:</span>
                             <span class="n">prop</span> <span class="o">=</span> <span class="n">JsonSchema</span><span class="p">({</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">typ</span><span class="p">,</span> <span class="s2">&quot;format&quot;</span><span class="p">:</span> <span class="n">fmt</span><span class="p">})</span>
 
-        <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">description</span><span class="p">:</span>
-            <span class="n">prop</span><span class="p">[</span><span class="s1">&#39;description&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">slot</span><span class="o">.</span><span class="n">description</span>
+        <span class="n">prop</span><span class="o">.</span><span class="n">add_keyword</span><span class="p">(</span><span class="s1">&#39;description&#39;</span><span class="p">,</span> <span class="n">slot</span><span class="o">.</span><span class="n">description</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">pattern</span><span class="p">:</span>
-            <span class="c1"># See https://github.com/linkml/linkml/issues/193</span>
-            <span class="n">prop</span><span class="p">[</span><span class="s1">&#39;pattern&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">slot</span><span class="o">.</span><span class="n">pattern</span>
+        <span class="n">prop</span><span class="o">.</span><span class="n">add_keyword</span><span class="p">(</span><span class="s1">&#39;pattern&#39;</span><span class="p">,</span> <span class="n">slot</span><span class="o">.</span><span class="n">pattern</span><span class="p">,</span> <span class="n">applies_to_all_array_elements</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">prop</span><span class="o">.</span><span class="n">add_keyword</span><span class="p">(</span><span class="s1">&#39;minimum&#39;</span><span class="p">,</span> <span class="n">slot</span><span class="o">.</span><span class="n">minimum_value</span><span class="p">,</span> <span class="n">applies_to_all_array_elements</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">prop</span><span class="o">.</span><span class="n">add_keyword</span><span class="p">(</span><span class="s1">&#39;maximum&#39;</span><span class="p">,</span> <span class="n">slot</span><span class="o">.</span><span class="n">maximum_value</span><span class="p">,</span> <span class="n">applies_to_all_array_elements</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">prop</span><span class="o">.</span><span class="n">add_keyword</span><span class="p">(</span><span class="s1">&#39;const&#39;</span><span class="p">,</span> <span class="n">slot</span><span class="o">.</span><span class="n">equals_string</span><span class="p">,</span> <span class="n">applies_to_all_array_elements</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">prop</span><span class="o">.</span><span class="n">add_keyword</span><span class="p">(</span><span class="s1">&#39;const&#39;</span><span class="p">,</span> <span class="n">slot</span><span class="o">.</span><span class="n">equals_number</span><span class="p">,</span> <span class="n">applies_to_all_array_elements</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">minimum_value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">prop</span><span class="p">[</span><span class="s1">&#39;minimum&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">slot</span><span class="o">.</span><span class="n">minimum_value</span>
+        <span class="k">if</span> <span class="n">prop</span><span class="o">.</span><span class="n">is_array</span><span class="p">:</span>
+            <span class="n">prop</span><span class="o">.</span><span class="n">add_keyword</span><span class="p">(</span><span class="s1">&#39;minItems&#39;</span><span class="p">,</span> <span class="n">slot</span><span class="o">.</span><span class="n">minimum_cardinality</span><span class="p">)</span>
+            <span class="n">prop</span><span class="o">.</span><span class="n">add_keyword</span><span class="p">(</span><span class="s1">&#39;maxItems&#39;</span><span class="p">,</span> <span class="n">slot</span><span class="o">.</span><span class="n">maximum_cardinality</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">maximum_value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">prop</span><span class="p">[</span><span class="s1">&#39;maximum&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">slot</span><span class="o">.</span><span class="n">maximum_value</span>
-
-        <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">equals_string</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">prop</span><span class="p">[</span><span class="s1">&#39;const&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">slot</span><span class="o">.</span><span class="n">equals_string</span>
-
-        <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">equals_number</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">prop</span><span class="p">[</span><span class="s1">&#39;const&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">slot</span><span class="o">.</span><span class="n">equals_number</span>
-
-        <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">minimum_cardinality</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">prop</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;array&#39;</span><span class="p">:</span>
-                <span class="n">prop</span><span class="p">[</span><span class="s1">&#39;minItems&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">slot</span><span class="o">.</span><span class="n">minimum_cardinality</span>
-            <span class="k">elif</span> <span class="n">prop</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;object&#39;</span><span class="p">:</span>
-                <span class="n">prop</span><span class="p">[</span><span class="s1">&#39;minProperties&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">slot</span><span class="o">.</span><span class="n">minimum_cardinality</span>
-
-        <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">maximum_cardinality</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">prop</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;array&#39;</span><span class="p">:</span>
-                <span class="n">prop</span><span class="p">[</span><span class="s1">&#39;maxItems&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">slot</span><span class="o">.</span><span class="n">maximum_cardinality</span>
-            <span class="k">elif</span> <span class="n">prop</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;object&#39;</span><span class="p">:</span>
-                <span class="n">prop</span><span class="p">[</span><span class="s1">&#39;maxProperties&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">slot</span><span class="o">.</span><span class="n">maximum_cardinality</span>
+        <span class="k">if</span> <span class="n">prop</span><span class="o">.</span><span class="n">is_object</span><span class="p">:</span>
+            <span class="n">prop</span><span class="o">.</span><span class="n">add_keyword</span><span class="p">(</span><span class="s1">&#39;minProperties&#39;</span><span class="p">,</span> <span class="n">slot</span><span class="o">.</span><span class="n">minimum_cardinality</span><span class="p">)</span>
+            <span class="n">prop</span><span class="o">.</span><span class="n">add_keyword</span><span class="p">(</span><span class="s1">&#39;maxProperties&#39;</span><span class="p">,</span> <span class="n">slot</span><span class="o">.</span><span class="n">maximum_cardinality</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">any_of</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">any_of</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">slot_has_range_union</span><span class="p">:</span>

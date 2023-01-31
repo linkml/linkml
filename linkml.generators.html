@@ -1228,6 +1228,11 @@ for any class that is inherited (class itself, is_a, mixin, apply_to).  Otherwis
 <dd></dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="linkml.generators.jsonschemagen.JsonSchema.add_keyword">
+<span class="sig-name descname"><span class="pre">add_keyword</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keyword</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">applies_to_all_array_elements</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/linkml/generators/jsonschemagen.html#JsonSchema.add_keyword"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.jsonschemagen.JsonSchema.add_keyword" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="linkml.generators.jsonschemagen.JsonSchema.add_lax_def">
 <span class="sig-name descname"><span class="pre">add_lax_def</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">identifier_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/linkml/generators/jsonschemagen.html#JsonSchema.add_lax_def"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.jsonschemagen.JsonSchema.add_lax_def" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
@@ -1240,6 +1245,16 @@ for any class that is inherited (class itself, is_a, mixin, apply_to).  Otherwis
 <dl class="py method">
 <dt class="sig sig-object py" id="linkml.generators.jsonschemagen.JsonSchema.array_of">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">array_of</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subschema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#linkml.generators.jsonschemagen.JsonSchema" title="linkml.generators.jsonschemagen.JsonSchema"><span class="pre">JsonSchema</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#linkml.generators.jsonschemagen.JsonSchema" title="linkml.generators.jsonschemagen.JsonSchema"><span class="pre">JsonSchema</span></a></span></span><a class="reference internal" href="_modules/linkml/generators/jsonschemagen.html#JsonSchema.array_of"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.jsonschemagen.JsonSchema.array_of" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="linkml.generators.jsonschemagen.JsonSchema.is_array">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_array</span></span><a class="headerlink" href="#linkml.generators.jsonschemagen.JsonSchema.is_array" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="linkml.generators.jsonschemagen.JsonSchema.is_object">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_object</span></span><a class="headerlink" href="#linkml.generators.jsonschemagen.JsonSchema.is_object" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -4120,9 +4135,12 @@ representation such as JsonSchema</p>
 <li><a class="reference internal" href="#linkml.generators.jsonschemagen.JsonSchema"><code class="docutils literal notranslate"><span class="pre">JsonSchema</span></code></a><ul>
 <li><a class="reference internal" href="#linkml.generators.jsonschemagen.JsonSchema.OPTIONAL_IDENTIFIER_SUFFIX"><code class="docutils literal notranslate"><span class="pre">JsonSchema.OPTIONAL_IDENTIFIER_SUFFIX</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.jsonschemagen.JsonSchema.add_def"><code class="docutils literal notranslate"><span class="pre">JsonSchema.add_def()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.jsonschemagen.JsonSchema.add_keyword"><code class="docutils literal notranslate"><span class="pre">JsonSchema.add_keyword()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.jsonschemagen.JsonSchema.add_lax_def"><code class="docutils literal notranslate"><span class="pre">JsonSchema.add_lax_def()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.jsonschemagen.JsonSchema.add_property"><code class="docutils literal notranslate"><span class="pre">JsonSchema.add_property()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.jsonschemagen.JsonSchema.array_of"><code class="docutils literal notranslate"><span class="pre">JsonSchema.array_of()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.jsonschemagen.JsonSchema.is_array"><code class="docutils literal notranslate"><span class="pre">JsonSchema.is_array</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.jsonschemagen.JsonSchema.is_object"><code class="docutils literal notranslate"><span class="pre">JsonSchema.is_object</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.jsonschemagen.JsonSchema.ref_for"><code class="docutils literal notranslate"><span class="pre">JsonSchema.ref_for()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.jsonschemagen.JsonSchema.to_json"><code class="docutils literal notranslate"><span class="pre">JsonSchema.to_json()</span></code></a></li>
 </ul>
