@@ -24,6 +24,7 @@ classes:
       - thingtype
   Person:
     is_a: NamedThing
+    class_uri: "http://testbreaker/not-the-uri-you-expect"
     slots:
       - height
   Organisation:
@@ -88,19 +89,17 @@ class PydanticPolymorphismTestCase(TestEnvironmentTestCase):
         gen = PydanticGenerator(schema_str)
         output = gen.serialize()
         
-        self.assertNotRegexpMatches(output, "Union\[[a-zA-Z0-9]*\]", "a python Union should always have more than one option")
+        self.assertNotRegex(output, "Union\[[a-zA-Z0-9]*\]", "a python Union should always have more than one option")
 
         output_subset = [line for line in output.splitlines() if "thingtype" in line]
         self.assertGreater(len(output_subset), 0)
         
-        self.assertTrue("const=True" in output_subset[0])
         self.assertEqual(len([x for x in output_subset if 'x:Person' in x]),1)
 
         gen = PydanticGenerator(schema_str.replace("uriorcurie","uri"))
         output = gen.serialize()
         output_subset = [line for line in output.splitlines() if "thingtype" in line]
         self.assertGreater(len(output_subset), 0)
-        self.assertTrue("const=True" in output_subset[0])
         self.assertEqual(len([x for x in output_subset if 'http://example.org/Person' in x]) ,1)
 
     def test_pydantic_load_poly_data(self):

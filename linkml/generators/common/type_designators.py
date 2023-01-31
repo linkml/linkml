@@ -1,6 +1,7 @@
 from linkml_runtime.linkml_model.meta import SlotDefinition, ClassDefinition
 from linkml_runtime.utils.schemaview import SchemaView
 from linkml_runtime.utils.formatutils import camelcase
+from typing import List
 
 def get_type_designator_value(sv: SchemaView, type_designator_slot: SlotDefinition, class_def: ClassDefinition) -> str:
     """
@@ -9,9 +10,24 @@ def get_type_designator_value(sv: SchemaView, type_designator_slot: SlotDefiniti
     """
     target_value = None
     if type_designator_slot.range == 'uri':
-        target_value = sv.get_uri(class_def,expand=True,native=True)
+        target_value = sv.get_uri(class_def,expand=True,native=False)
     elif type_designator_slot.range == 'string':
         target_value = camelcase(class_def.name)
     else:
-        target_value = sv.get_uri(class_def,expand=False)
+        target_value = sv.get_uri(class_def,expand=False, native=False)
     return target_value
+
+
+def get_accepted_type_designator_values(sv: SchemaView, type_designator_slot: SlotDefinition, class_def: ClassDefinition) -> List[str]:
+    accepted_uri_values = [
+            sv.get_uri(class_def, expand=True, native=True),
+            sv.get_uri(class_def, expand=True, native=False),
+            sv.get_uri(class_def, expand=False, native=True),
+            sv.get_uri(class_def, expand=False, native=False),
+        ]
+    if type_designator_slot.range == 'uri':
+        return accepted_uri_values
+    elif type_designator_slot.range == 'string':
+        return [camelcase(class_def.name)]
+    else:
+        return accepted_uri_values
