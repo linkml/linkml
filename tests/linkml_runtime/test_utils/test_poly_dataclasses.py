@@ -4,7 +4,7 @@ from linkml_runtime.linkml_model.meta import Element, LINKML
 class PolyDataclassTestCase(unittest.TestCase):
     def test_class_for_uri(self):
         """ Test various class lookup options """
-        e = Element(name="Test")
+        e = Element
 
         # Test class URI
         cls = e._class_for_uri(LINKML.ClassDefinition)

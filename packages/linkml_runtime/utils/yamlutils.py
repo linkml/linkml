@@ -254,14 +254,16 @@ class YAMLRoot(JsonObj):
                 return match
         return None
 
-    def _class_for_uri(self, uri: str, use_model_uri: bool = False) -> Optional["YAMLRoot"]:
+    @classmethod
+    def _class_for_uri(cls: Type["YAMLRoot"], uri: str, use_model_uri: bool = False) -> Optional[Type["YAMLRoot"]]:
         """
         Return the self or descendant of self having with a matching class uri
         """
-        return self.__class__._class_for('class_model_uri' if use_model_uri else 'class_class_uri', URIRef(uri))
+        return cls._class_for('class_model_uri' if use_model_uri else 'class_class_uri', URIRef(uri))
 
-    def _class_for_curie(self, curie: str) -> Optional["YAMLRoot"]:
-        return self.__class__._class_for('class_class_curie', curie)
+    @classmethod
+    def _class_for_curie(cls: Type["YAMLRoot"], curie: str) -> Optional[Type["YAMLRoot"]]:
+        return cls._class_for('class_class_curie', curie)
 
     # ==================
     # Error intercepts
