@@ -6,7 +6,7 @@ import yaml
 from deprecated.classic import deprecated
 from jsonasobj2 import JsonObj, as_json, as_dict, JsonObjTypes, items
 import jsonasobj2
-from rdflib import Graph
+from rdflib import Graph, URIRef
 from yaml.constructor import ConstructorError
 
 from linkml_runtime.utils.context_utils import CONTEXTS_PARAM_TYPE, merge_contexts
@@ -242,6 +242,28 @@ class YAMLRoot(JsonObj):
                 if len(dict_slot) == 1 and not isinstance(dict_slot[0], (list, dict)):
                     self[slot_name] = dict_slot[0]
             self._normalize_inlined_as_dict(slot_name, slot_type, key_name, keyed)
+
+    @classmethod
+    def _class_for(cls, attribute: str, uri_or_curie: Union[str, URIRef]) -> Optional[Type["YAMLRoot"]]:
+        """ Locate self or descendant class that has attribute == uri_or_curie """
+        if getattr(cls, attribute, None) == uri_or_curie:
+            return cls
+        for subclass in cls.__subclasses__():
+            match = subclass._class_for(attribute, uri_or_curie)
+            if match:
+                return match
+        return None
+
+    @classmethod
+    def _class_for_uri(cls: Type["YAMLRoot"], uri: str, use_model_uri: bool = False) -> Optional[Type["YAMLRoot"]]:
+        """
+        Return the self or descendant of self having with a matching class uri
+        """
+        return cls._class_for('class_model_uri' if use_model_uri else 'class_class_uri', URIRef(uri))
+
+    @classmethod
+    def _class_for_curie(cls: Type["YAMLRoot"], curie: str) -> Optional[Type["YAMLRoot"]]:
+        return cls._class_for('class_class_curie', curie)
 
     # ==================
     # Error intercepts
