@@ -39,8 +39,8 @@ URI: {{ gen.uri_link(element) }}
 
 | Name | Cardinality and Range | Description | Inheritance |
 | ---  | --- | --- | --- |
-{% for c in schemaview.get_classes_by_slot(element, include_induced=True) -%}
-{{ gen.link(c) }} | {{ schemaview.get_class(c).description }}
+{% for c in schemaview.get_classes_by_slot(element) -%}
+{{ gen.link(c) }} | {{ schemaview.get_class(c).description|enshorten }}
 {% endfor %}
 
 {% if schemaview.is_mixin(element.name) %}
