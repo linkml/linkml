@@ -1,15 +1,38 @@
 import logging
 import re
-from copy import deepcopy
+from copy import deepcopy, copy
 from dataclasses import dataclass
-from typing import Callable, List
+from typing import Callable, List, Dict, Any, Union
 
+import click
+import yaml
 from linkml_runtime import SchemaView
 from linkml_runtime.dumpers import json_dumper, yaml_dumper
 from linkml_runtime.linkml_model import (ClassDefinition, ClassDefinitionName,
-                                         SchemaDefinition, SlotDefinition)
+                                         SchemaDefinition, SlotDefinition, EnumDefinition, TypeDefinition)
+from linkml_runtime.utils.formatutils import camelcase, underscore
+from linkml_runtime.utils.yamlutils import YAMLRoot
+
+logger = logging.getLogger(__name__)
 
 pattern = re.compile(r"(?<!^)(?=[A-Z])")
+
+
+def yaml_rewrite(obj: Any, replacements: Dict[str, Any], include_keys=True) -> Any:
+    if isinstance(obj, YAMLRoot):
+        obj2 = copy(obj)
+        for k, v in vars(obj).items():
+            setattr(obj2, k, yaml_rewrite(v, replacements, include_keys))
+        return obj2
+    if isinstance(obj, dict):
+        if include_keys and set(obj.keys()).intersection(replacements):
+            obj = {replacements.get(k, k): v for k, v in obj.items()}
+        return {k: yaml_rewrite(v, replacements, include_keys) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [yaml_rewrite(v, replacements, include_keys) for v in obj]
+    if isinstance(obj, str) and obj in replacements:
+        return replacements.get(obj)
+    return obj
 
 
 def uncamel(n: str) -> str:
@@ -266,3 +289,71 @@ class SchemaFixer:
         if self.history is None:
             self.history = []
         self.history.append(txt)
+
+    def fix_element_names(self, schema: SchemaDefinition, schema_dict: Dict[str, Any] = None, rules: Dict[str, Callable] = None, imports=False) -> Union[YAMLRoot, Dict]:
+        """
+        Changes element names to conform to naming conventions.
+
+
+        :param schema: input schema
+        :param schema_dict: if specified, the transformation will happen on this dictionary object
+        :param rules: mappings between index slots and functions that normalize names
+        :param imports: if True, all that imported modules are also fixed
+        :return:
+        """
+        if rules is None:
+            rules = {
+                ClassDefinition.__name__: camelcase,
+                TypeDefinition.__name__: camelcase,
+                SlotDefinition.__name__: underscore,
+                EnumDefinition.__name__: camelcase,
+            }
+        fixes = {}
+        sv = SchemaView(schema)
+        for n, e in sv.all_elements(imports=imports).items():
+            if e.from_schema == "https://w3id.org/linkml/types":
+                continue
+            typ = type(e).__name__
+            if typ in rules:
+                func = rules[typ]
+                normalized = func(n)
+                if normalized != n:
+                    fixes[n] = normalized
+        if schema_dict is not None:
+            schema = schema_dict
+        return yaml_rewrite(schema, fixes)
+
+
+@click.group()
+@click.option("-v", "--verbose", count=True)
+@click.option("-q", "--quiet")
+def main(verbose: int, quiet: bool):
+    """Apply schema-fixer commands."""
+    if verbose >= 2:
+        logger.setLevel(level=logging.DEBUG)
+    elif verbose == 1:
+        logger.setLevel(level=logging.INFO)
+    else:
+        logger.setLevel(level=logging.WARNING)
+    if quiet:
+        logger.setLevel(level=logging.ERROR)
+
+
+@main.command()
+@click.argument("input_schema")
+@click.option("--imports/--no-imports",
+              default=False,
+              show_default=True,
+              help="Apply fix to referenced elements from modules")
+def fix_name(input_schema, **kwargs):
+    """Fix element names to conform to naming conventions"""
+    with open(input_schema) as f:
+        schema_dict = yaml.safe_load(f)
+    sv = SchemaView(input_schema)
+    fixer = SchemaFixer()
+    schema = fixer.fix_element_names(sv.schema, schema_dict, **kwargs)
+    print(yaml.dump(schema, sort_keys=False))
+
+
+if __name__ == "__main__":
+    main()

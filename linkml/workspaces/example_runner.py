@@ -78,6 +78,9 @@ class ExampleRunner:
 
     _validator: Optional[DataValidator] = None
 
+    expand_dicts: bool = None
+    """If true, then expand all dicts prior to validation."""
+
     @property
     def python_module(self) -> ModuleType:
         """
