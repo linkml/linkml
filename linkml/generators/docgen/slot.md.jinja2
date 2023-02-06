@@ -38,7 +38,7 @@ URI: {{ gen.uri_link(element) }}
 ## Slot Modifying Classes
 
 | Name | Description |
-| ---  | --- | --- | --- |
+| ---  | --- |
 {% for c in schemaview.get_classes_by_slot(element) -%}
 {{ gen.link(c) }} | {{ schemaview.get_class(c).description|enshorten }}
 {% endfor %}
