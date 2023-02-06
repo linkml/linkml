@@ -223,6 +223,12 @@ class JsonSchemaTestCase(unittest.TestCase):
         self.externalFileTest("jsonschema_multivalued_slot_cardinality.yaml")
 
 
+    def test_multivalued_element_constraints(self):
+        """Tests that atomic checks on instances are applied to elements of multivalued slots."""
+
+        self.externalFileTest("jsonschema_multivalued_element_constraints.yaml")
+
+
     # **********************************************************
     #
     #    Utility methods
