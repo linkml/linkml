@@ -1636,12 +1636,7 @@ class SchemaView(object):
 
     def materialize_derived_schema(self) -> SchemaDefinition:
         """ Materialize a schema view into a schema definition """
-        # TODO: move this to schemaview
-        derived_schema = SchemaDefinition(id=self.schema.id,
-                                          name=self.schema.name,
-                                          imports=self.schema.imports,
-                                          prefixes=self.schema.prefixes,
-                                          )
+        derived_schema = copy(self.schema)
         derived_schemaview = SchemaView(derived_schema)
         derived_schemaview.merge_imports()
         for typ in [deepcopy(t) for t in self.all_types().values()]:
