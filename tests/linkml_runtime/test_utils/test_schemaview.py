@@ -702,7 +702,8 @@ class SchemaViewTestCase(unittest.TestCase):
                 "core", 
                 "prov", 
                 "xsd", 
-                "shex"], 
+                "shex",
+                "schema"],
                 prefixes_list
         )
 
