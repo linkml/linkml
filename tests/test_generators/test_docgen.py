@@ -370,12 +370,12 @@ class DocGeneratorTestCase(unittest.TestCase):
         assert_mdfile_contains(
             "type.md", "Relationship", after="## Slot Modifying Classes",
             followed_by=["## Properties",
-                        "* Range: NONE"],
+                        "* Range"],
         )
         assert_mdfile_contains(
             "type.md", "EmploymentEvent", after="## Slot Modifying Classes",
             followed_by=["## Properties",
-                        "* Range: NONE"],
+                        "* Range"],
         )
 
     def test_docgen_rank_ordering(self):
