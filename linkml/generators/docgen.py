@@ -142,7 +142,6 @@ class DocGenerator(Generator):
 
 
     def __post_init__(self):
-        self.schemaview = SchemaView(self.schema)
         dialect = self.dialect
         if dialect is not None:
             # TODO: simplify this
@@ -159,6 +158,7 @@ class DocGenerator(Generator):
         if self.example_directory:
             self.example_runner = ExampleRunner(input_directory=Path(self.example_directory))
         super().__post_init__()
+        self.schemaview = SchemaView(self.schema, merge_imports=self.mergeimports)
 
     def serialize(self, directory: str = None) -> None:
         """
@@ -656,7 +656,7 @@ class DocGenerator(Generator):
         Ensures rank is non-null
         :return: iterator
         """
-        elts = self.schemaview.all_classes().values()
+        elts = self.schemaview.all_classes(imports=self.mergeimports).values()
         _ensure_ranked(elts)
         for e in elts:
             yield e
@@ -668,7 +668,7 @@ class DocGenerator(Generator):
         Ensures rank is non-null
         :return: iterator
         """
-        elts = self.schemaview.all_slots().values()
+        elts = self.schemaview.all_slots(imports=self.mergeimports).values()
         _ensure_ranked(elts)
         for e in elts:
             yield e
@@ -680,7 +680,7 @@ class DocGenerator(Generator):
         Ensures rank is non-null
         :return: iterator
         """
-        elts = self.schemaview.all_types().values()
+        elts = self.schemaview.all_types(imports=self.mergeimports).values()
         _ensure_ranked(elts)
         for e in elts:
             yield e
@@ -692,7 +692,7 @@ class DocGenerator(Generator):
         Ensures rank is non-null
         :return: iterator
         """
-        elts = self.schemaview.all_enums().values()
+        elts = self.schemaview.all_enums(imports=self.mergeimports).values()
         _ensure_ranked(elts)
         for e in elts:
             yield e
@@ -704,7 +704,7 @@ class DocGenerator(Generator):
         Ensures rank is non-null
         :return: iterator
         """
-        elts = self.schemaview.all_subsets().values()
+        elts = self.schemaview.all_subsets(imports=self.mergeimports).values()
         _ensure_ranked(elts)
         for e in elts:
             yield e
