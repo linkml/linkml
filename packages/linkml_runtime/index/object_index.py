@@ -9,6 +9,7 @@ This package provides:
    a proxy for a domain object that "knows" its place in the index
 """
 import logging
+import inspect
 from typing import Mapping, Any, Optional, Tuple, List, Iterator, Union
 
 from linkml_runtime import SchemaView
@@ -253,8 +254,13 @@ class ProxyObject:
                 source_obj = cache[k]
                 return self._db.bless(source_obj)
             else:
-                logging.error(f"Making stub for {k}")
-                return obj
+                module = inspect.getmodule(self._shadowed)
+                cls_dict = dict(inspect.getmembers(module, inspect.isclass))
+                if in_range not in cls_dict:
+                    logging.warning(f"Class {in_range} not found in {module}, classes: {cls_dict}")
+                    return obj
+                cls = cls_dict[in_range]
+                return cls(obj)
         return obj
 
     def _attributes(self) -> List[str]:
