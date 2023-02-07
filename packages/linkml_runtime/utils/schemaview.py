@@ -1142,7 +1142,7 @@ class SchemaView(object):
         else:
             slot = self.get_slot(slot_name, imports, attributes=True)
         if slot is None:
-            raise ValueError(f"Slot {slot_name} as an attribute of {class_name} ancestors"
+            raise ValueError(f"No such slot {slot_name} as an attribute of {class_name} ancestors "
                              "or as a slot definition in the schema")
         # copy the slot, as it will be modified
         induced_slot = deepcopy(slot)
@@ -1317,22 +1317,22 @@ class SchemaView(object):
         :param imports:
         :return:
         """
-        if slot.inlined:
-            return True
-        elif slot.inlined_as_list:
-            return True
-        else:
-            range = slot.range
-            if range in self.all_classes():
-                id_slot = self.get_identifier_slot(range, imports=imports)
-                if id_slot is None:
-                    # must be inlined as has no identifier
-                    return True
-                else:
-                    # not explicitly declared inline and has an identifier: assume is ref, not inlined
-                    return False
+        range = slot.range
+        if range in self.all_classes():
+            if slot.inlined:
+                return True
+            elif slot.inlined_as_list:
+                return True
+            
+            id_slot = self.get_identifier_slot(range, imports=imports)
+            if id_slot is None:
+                # must be inlined as has no identifier
+                return True
             else:
+                # not explicitly declared inline and has an identifier: assume is ref, not inlined
                 return False
+        else:
+            return False
 
     def slot_applicable_range_elements(self, slot: SlotDefinition) -> List[ClassDefinitionName]:
         """
@@ -1649,3 +1649,44 @@ class SchemaView(object):
             if class_definition.attributes:
                 for slot_definition in class_definition.attributes.values():
                     materialize_pattern_into_slot_definition(slot_definition)
+
+    def materialize_derived_schema(self) -> SchemaDefinition:
+        """ Materialize a schema view into a schema definition """
+        derived_schema = copy(self.schema)
+        derived_schemaview = SchemaView(derived_schema)
+        derived_schemaview.merge_imports()
+        for typ in [deepcopy(t) for t in self.all_types().values()]:
+            for typ_anc_name in self.type_ancestors(typ.name, reflexive=False):
+                a = derived_schema.types[typ_anc_name]
+                if not typ.uri:
+                    typ.uri = a.uri
+                if not typ.base:
+                    typ.base = a.base
+                if not typ.pattern:
+                    typ.pattern = a.pattern
+            derived_schema.types[typ.name] = typ
+        for cls in [deepcopy(c) for c in self.all_classes().values()]:
+            for slot in self.class_induced_slots(cls.name):
+                slot_range_element = self.get_element(slot.range)
+                if isinstance(slot_range_element, TypeDefinition):
+                    for metaslot in ["pattern", "maximum_value", "minimum_value"]:
+                        metaslot_val = getattr(slot_range_element, metaslot, None)
+                        if metaslot_val is not None:
+                            setattr(slot, metaslot, metaslot_val)
+                slot_range_pk_slot_name = None
+                if isinstance(slot_range_element, ClassDefinition):
+                    slot_range_pk_slot_name = self.get_identifier_slot(slot_range_element.name, use_key=True)
+                if not slot_range_pk_slot_name:
+                    slot.inlined = True
+                    slot.inlined_as_list = True
+                if slot.inlined_as_list:
+                    slot.inlined = True
+                if slot.identifier or slot.key:
+                    slot.required = True
+                cls.attributes[slot.name] = slot
+            derived_schema.classes[cls.name] = cls
+        for subset in [deepcopy(s) for s in self.all_subsets().values()]:
+            derived_schema.subsets[subset.name] = subset
+        for enum in [deepcopy(e) for e in self.all_enums().values()]:
+            derived_schema.enums[enum.name] = enum
+        return derived_schema
