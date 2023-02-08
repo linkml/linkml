@@ -42,7 +42,8 @@ class ConfiguredBaseModel(WeakRefShimBaseModel,
                 validate_all = True, 
                 underscore_attrs_are_private = True, 
                 extra = {% if allow_extra %}'allow'{% else %}'forbid'{% endif %}, 
-                arbitrary_types_allowed = True):
+                arbitrary_types_allowed = True
+                use_enum_values = True):
     pass                    
 
 {% for e in enums.values() %}
