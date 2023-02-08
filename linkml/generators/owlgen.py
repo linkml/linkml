@@ -225,6 +225,10 @@ class OwlSchemaGenerator(Generator):
         # representation, consult https://www.w3.org/TR/owl2-mapping-to-rdf/
         cls_uri = self._class_uri(cls.name)
         self.add_mappings(cls)
+        for mapping in cls.mappings:
+            if cls_uri == self.namespaces.uri_for(mapping):
+                logging.info(f"not adding class {cls.name} since it's only 'importing' an external term")
+                return
         self.add_metadata(cls, cls_uri)
         # add declaration
         self.graph.add((cls_uri, RDF.type, OWL.Class))
@@ -380,6 +384,10 @@ class OwlSchemaGenerator(Generator):
             return
 
         slot_uri = self._prop_uri(slot.name)
+        for mapping in slot.mappings:
+            if slot_uri == self.namespaces.uri_for(mapping):
+                logging.info(f"not adding slot {slot.name} since it's only 'importing' an external term")
+                return
         # logging.error(f'SLOT_URI={slot_uri}')
 
         # Slots may be modeled as Object or Datatype Properties
