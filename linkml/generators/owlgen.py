@@ -933,8 +933,12 @@ class OwlSchemaGenerator(Generator):
         return URIRef(ClassDefinition.class_class_uri + "#Mixin")
 
     def _class_uri(self, cn: Union[str, ClassDefinitionName]) -> URIRef:
-        c = self.schemaview.get_class(cn)
-        return URIRef(self.schemaview.get_uri(c, expand=True, native=self.use_native_uris))
+        c = self.schema.get_class(cn)
+        if c is not None and c.class_uri is not None:
+            return URIRef(self.schemaview.get_uri(c, expand=True, native=self.use_native_uris))
+        else:
+            logging.error(self.schema.classes)
+            raise Exception(f"No class_uri for {cn} // {c}")
 
     def _enum_uri(self, en: Union[str, EnumDefinitionName]) -> URIRef:
         sv = self.schemaview
