@@ -92,6 +92,7 @@ linkml-run-examples = "linkml.workspaces.example_runner:cli"
 gen-excel = "linkml.generators.excelgen:cli"
 gen-sssom = "linkml.generators.sssomgen:cli"
 gen-linkml = "linkml.generators.linkmlgen:cli"
+linkml-schema-fixer = "linkml.utils.schema_fixer:main"
 
 [tool.poetry.dependencies]
 python = "^3.7.6"

@@ -1,5 +1,6 @@
 ## Contribution Guidelines
 
+For general info about how to contribute to LinkML, please see [FAQ: Contributing](https://linkml.io/linkml/faq/contributing.html).
 
 ### LinkML Testing Framework
 
@@ -124,3 +125,5 @@ insight into your work and allows them to provide feedback early on.
 #### Example of a Bad Issue:
 
 ![](a_bad_issue.png)
+
+#### For general info about how to contribute to LinkML, please see [FAQ: Contributing](https://linkml.io/linkml/faq/contributing.html).

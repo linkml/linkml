@@ -1,0 +1,55 @@
+schema:
+  id: http://example.org/jsonschema_multivalued_element_constraints
+  name: jsonschema_multivalued_element_constraints
+
+  imports:
+    - https://w3id.org/linkml/types
+
+  slots:
+    int_list:
+      range: integer
+      multivalued: true
+      minimum_value: 2
+      maximum_value: 5
+    
+    string_list:
+      range: string
+      multivalued: true
+      pattern: e.*
+
+    # TODO: this should also contain test cases for has_member and all_members
+    # See: https://github.com/linkml/linkml/issues/1107
+
+  classes:
+    Test:
+      tree_root: true
+      slots:
+        - int_list
+        - string_list
+json_schema:
+  properties:
+    int_list:
+      items:
+        minimum: 2
+        maximum: 5
+    string_list:
+      items:
+        pattern: e.*
+data_cases:
+  - data: 
+      int_list: [2, 3, 4, 5]
+  - data:
+      int_list: [1, 2, 3]
+    error_message: Failed validating 'minimum'
+  - data:
+      int_list: [4, 5, 6]
+    error_message: Failed validating 'maximum'
+  - data:
+      string_list: 
+        - echo
+        - elephant
+  - data:
+      string_list: 
+        - echo
+        - foxtrot
+    error_message: Failed validating 'pattern'
