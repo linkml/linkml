@@ -181,7 +181,7 @@ classes:
         ifabsent: int(10)
       attr2:
         range: string
-        ifabsent: string(hello) 
+        ifabsent: string(hello world) 
       attr3:
         range: boolean
         ifabsent: True
@@ -203,7 +203,7 @@ classes:
         integer_slot_line = lines[ix + 4].strip()
         assert integer_slot_line == 'attr1: Optional[int] = Field(10)'
         string_slot_line = lines[ix + 5].strip()
-        assert string_slot_line == 'attr2: Optional[str] = Field("hello")'
+        assert string_slot_line == 'attr2: Optional[str] = Field("hello world")'
         boolean_slot_line = lines[ix + 6].strip()
         assert boolean_slot_line == 'attr3: Optional[bool] = Field(True)'
         float_slot_line = lines[ix + 7].strip()
