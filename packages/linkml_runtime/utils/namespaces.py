@@ -5,11 +5,38 @@ from prefixcommons import curie_util
 from rdflib import Namespace, URIRef, Graph, BNode
 from rdflib.namespace import is_ncname
 from requests.structures import CaseInsensitiveDict
+from prefixmaps.io.parser import load_context
 
 from linkml_runtime.utils.yamlutils import TypedNode
 
 META_NS = "meta"
 META_URI = "https://w3id.org/linkml/meta"
+BIOCONTEXT_CONTEXTS = [
+    "biocaddie-context",
+    "commons_context",
+    "globi_context",
+    "go_context",
+    "go_obo_context",
+    "idot_context",
+    "idot_nr_context",
+    "minerva_context",
+    "monarch_context",
+    "obo_context",
+    "ro_vocab_context",
+    "semweb_context",
+    "semweb_vocab_context"
+]
+PREFIXMAPS_CONTEXTS = [
+    "bioportal",
+    "bioregistry",
+    "bioregistry.upper",
+    "go",
+    "linked_data",
+    "merged",
+    "merged.oak",
+    "obo",
+    "prefixcc"
+]
 
 
 class Namespaces(CaseInsensitiveDict):
@@ -230,13 +257,24 @@ class Namespaces(CaseInsensitiveDict):
 
     def add_prefixmap(self, map_name: str, include_defaults: bool = True) -> None:
         """
-        Add a prefixcommons map.  Only prefixes that have not been previously defined are added.
+        Add a prefixcommons map or the merged map from prefixmaps repo.
+
+        Only prefixes that have not been previously defined are added.
 
         :param map_name: prefixcommons map name
         :param include_defaults: if True, take defaults from the map.
         :return:
         """
-        for k, v in curie_util.read_biocontext(map_name).items():
+
+        if map_name in BIOCONTEXT_CONTEXTS:
+            prefix_map = curie_util.read_biocontext(map_name)
+        elif map_name in PREFIXMAPS_CONTEXTS:
+            context = load_context(map_name)
+            prefix_map = context.as_dict()
+        else:
+            raise ValueError(f"Unknown prefix map: {map_name}")
+
+        for k, v in prefix_map.items():
             if not k:
                 if include_defaults and not self._default:
                     self._default = v

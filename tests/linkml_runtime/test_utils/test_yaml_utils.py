@@ -25,6 +25,27 @@ class YamlUtilTestCase(TestEnvironmentTestCase):
             s1 = yaml.load(f, DupCheckYamlLoader)
             self.assertEqual('schema1', s1['name'])
 
+    def test_line_numbers(self):
+        s = """
+        name: schema1
+        info: foo
+        x:
+           a: 1
+           b: 2
+        l: [1, 2, 3]
+        """
+        obj = yaml.load(s, DupCheckYamlLoader)
+        cases = [
+            ('name', 1),
+            ('info', 2),
+            ('x', 3),
+            ('l', 6),
+        ]
+        key_to_lines = [(k, k._s.line) for k in obj.keys()]
+        self.assertCountEqual(cases, key_to_lines)
+
+
+
 
 if __name__ == '__main__':
     unittest.main()

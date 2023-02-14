@@ -77,6 +77,20 @@ class NamespacesTestCase(unittest.TestCase):
         with self.assertRaises(ValueError):
             ns.uri_for("1abc:junk")
 
+    def test_prefixmaps_integration(self):
+
+        prefixmap_merged = Namespaces()
+        prefixmap_merged.add_prefixmap('merged')
+        self.assertGreater(len(prefixmap_merged), 3780)
+
+        prefixmap_merged.add_prefixmap('monarch_context')
+        self.assertGreater(len(prefixmap_merged), 3850)
+
+        self.assertRaises(ValueError, prefixmap_merged.add_prefixmap, 'nonexistent_context')
+
+        prefixmap_merged.add_prefixmap('bioregistry')
+        self.assertGreater(len(prefixmap_merged), 3860)
+
 
 if __name__ == '__main__':
     unittest.main()

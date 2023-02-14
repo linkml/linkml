@@ -11,3 +11,7 @@ update_model:
 
 test:
 	poetry run python -m unittest discover
+
+# temporary measure until linkml-model is synced
+linkml_runtime/processing/validation_datamodel.py: linkml_runtime/processing/validation_datamodel.yaml
+	gen-python $< > $@.tmp && mv $@.tmp $@

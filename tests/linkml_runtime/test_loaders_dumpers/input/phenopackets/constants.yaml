@@ -1,0 +1,392 @@
+name: constants
+id: https://w3id.org/linkml/phenopackets/constants
+imports:
+- linkml:types
+prefixes:
+  linkml: https://w3id.org/linkml/
+  constants: https://w3id.org/linkml/phenopackets/constants/
+  UCUM: http://unitsofmeasure.org/
+  OBI: http://purl.obolibrary.org/obo/OBI_
+  HP: http://purl.obolibrary.org/obo/HP_
+  MP: http://purl.obolibrary.org/obo/MP_
+  GO: http://purl.obolibrary.org/obo/GO_
+  CHEBI: http://purl.obolibrary.org/obo/CHEBI_
+  NCIT: http://purl.obolibrary.org/obo/NCIT_
+  UO: http://purl.obolibrary.org/obo/UO_
+  PATO: http://purl.obolibrary.org/obo/PATO_
+  EFO: http://purl.obolibrary.org/obo/EFO_
+  GENO: http://purl.obolibrary.org/obo/GENO_
+  LOINC: https://loinc.org/
+  UBERON: http://purl.obolibrary.org/obo/UBERON_
+default_prefix: constants
+default_range: string
+enums:
+  AllelicStateTerms:
+    permissible_values:
+      HETEROZYGOUS:
+        description: heterozygous
+        meaning: GENO:0000135
+      HOMOZYGOUS:
+        description: homozygous
+        meaning: GENO:0000136
+      HEMIZYGOUS:
+        description: hemizygous
+        meaning: GENO:0000134
+  AssaysTerms:
+    permissible_values:
+      CREATINE_KINASE:
+        description: Creatine kinase [Enzymatic activity/volume] in Serum or Plasma
+        meaning: LOINC:2157-6
+  GenderTerms:
+    permissible_values:
+      IDENTIFIES_AS_MALE:
+        description: Identifies as male
+        meaning: LOINC:LA22878-5
+      IDENTIFIES_AS_FEMALE:
+        description: Identifies as female
+        meaning: LOINC:LA22879-3
+      FEMALE_TO_MALE_TRANSSEXUAL:
+        description: Female-to-male transsexual
+        meaning: LOINC:LA22880-1
+      MALE_TO_FEMALE_TRANSSEXUAL:
+        description: Male-to-female transsexual
+        meaning: LOINC:LA22881-9
+      IDENTIFIES_AS_NON_CONFORMING:
+        description: Identifies as non-conforming
+        meaning: LOINC:LA22882-7
+      OTHER_GENDER:
+        description: other
+        meaning: LOINC:LA46-8
+      ASKED_BUT_UNKNOWN:
+        description: Asked but unknown
+        meaning: LOINC:LA20384-6
+  LateralityTerms:
+    permissible_values:
+      RIGHT:
+        description: Right
+        meaning: HP:0012834
+      LEFT:
+        description: Left
+        meaning: HP:0012835
+      UNILATERAL:
+        description: Unilateral
+        meaning: HP:0012833
+      BILATERAL:
+        description: Bilateral
+        meaning: HP:0012832
+  MedicalActionsTerms:
+    permissible_values:
+      ADVERSE_EVENT:
+        description: Adverse Event
+        meaning: NCIT:C41331
+      FOUR_TIMES_DAILY:
+        description: Four Times Daily
+        meaning: NCIT:C64530
+      INTRA_ARTERIAL:
+        description: Intraarterial Route of Administration
+        meaning: NCIT:C38222
+      IV_ADMINISTRATION:
+        description: Intravenous Route of Administration
+        meaning: NCIT:C38276
+      ORAL_ADMINISTRATION:
+        description: Oral Route of Administration
+        meaning: NCIT:C38288
+      ONCE:
+        description: Once
+        meaning: NCIT:C64576
+      ONCE_DAILY:
+        description: Once Daily
+        meaning: NCIT:C125004
+      THREE_TIMES_DAILY:
+        description: Three Times Daily
+        meaning: NCIT:C64527
+      TWICE_DAILY:
+        description: Twice Daily
+        meaning: NCIT:C64496
+  OnsetTerms:
+    permissible_values:
+      ANTENATAL_ONSET:
+        description: Antenatal onset
+        meaning: HP:0030674
+      EMBRYONAL_ONSET:
+        description: Embryonal onset
+        meaning: HP:0011460
+      FETAL_ONSET:
+        description: Fetal onset
+        meaning: HP:0011461
+      LATE_FIRST_TRIMESTER_ONSET:
+        description: Late first trimester onset
+        meaning: HP:0034199
+      SECOND_TRIMESTER_ONSET:
+        description: Second trimester onset
+        meaning: HP:0034198
+      THIRD_TRIMESTER_ONSET:
+        description: Third trimester onset
+        meaning: HP:0034197
+      CONGENITAL_ONSET:
+        description: Congenital onset
+        meaning: HP:0003577
+      NEONATAL_ONSET:
+        description: Neonatal onset
+        meaning: HP:0003623
+      INFANTILE_ONSET:
+        description: Infantile onset
+        meaning: HP:0003593
+      CHILDHOOD_ONSET:
+        description: Childhood onset
+        meaning: HP:0011463
+      JUVENILE_ONSET:
+        description: Juvenile onset
+        meaning: HP:0003621
+      ADULT_ONSET:
+        description: Adult onset
+        meaning: HP:0003581
+      YOUNG_ADULT_ONSET:
+        description: Young adult onset
+        meaning: HP:0011462
+      EARLY_YOUNG_ADULT_ONSET:
+        description: Early young adult onset
+        meaning: HP:0025708
+      INTERMEDIATE_YOUNG_ADULT_ONSET:
+        description: Intermediate young adult onset
+        meaning: HP:0025709
+      LATE_YOUNG_ADULT_ONSET:
+        description: Late young adult onset
+        meaning: HP:0025710
+      MIDDLE_AGE_ONSET:
+        description: Middle age onset
+        meaning: HP:0003596
+      LATE_ONSET:
+        description: Late onset
+        meaning: HP:0003584
+  OrganTerms:
+    permissible_values:
+      BRAIN:
+        description: brain
+        meaning: UBERON:0000955
+      CEREBELLUM:
+        description: cerebellum
+        meaning: UBERON:0002037
+      EAR:
+        description: ear
+        meaning: UBERON:0001690
+      EYE:
+        description: eye
+        meaning: UBERON:0000970
+      HEART:
+        description: heart
+        meaning: UBERON:0002107
+      KIDNEY:
+        description: kidney
+        meaning: UBERON:0002113
+      LARGE_INTESTINE:
+        description: large intestine
+        meaning: UBERON:0000059
+      LIVER:
+        description: liver
+        meaning: UBERON:0002107
+      LUNG:
+        description: lung
+        meaning: UBERON:0002048
+      NOSE:
+        description: nose
+        meaning: UBERON:0000004
+      SMALL_INTESTINE:
+        description: small intestine
+        meaning: UBERON:0002108
+      SPINAL_CORD:
+        description: spinal cord
+        meaning: UBERON:0002240
+      SPLEEN:
+        description: spleen
+        meaning: UBERON:0002106
+      TONGUE:
+        description: tongue
+        meaning: UBERON:0001723
+      THYMUS:
+        description: thymus
+        meaning: UBERON:0002370
+  ResponseTerms:
+    permissible_values:
+      FAVORABLE:
+        description: Favorable
+        meaning: NCIT:C102560
+      UNFAVORABLE:
+        description: Unfavorable
+        meaning: NCIT:C102561
+  SpatialPatternTerms:
+    permissible_values:
+      PREDOMINANT_SMALL_JOINT_LOCALIZATION:
+        description: Predominant small joint localization
+        meaning: HP:0032544
+      POLYCYCLIC:
+        description: Polycyclic
+        meaning: HP:0031450
+      AXIAL:
+        description: Axial
+        meaning: HP:0025287
+      PERILOBULAR:
+        description: Perilobular
+        meaning: HP:0033813
+      PARASEPTAL:
+        description: Paraseptal
+        meaning: HP:0033814
+      BRONCHOCENTRIC:
+        description: Bronchocentric
+        meaning: HP:0033815
+      CENTRILOBULAR:
+        description: Centrilobular
+        meaning: HP:0033816
+      MILIARY:
+        description: Miliary
+        meaning: HP:0033817
+      GENERALIZED:
+        description: Generalized
+        meaning: HP:0012837
+      PERILYMPHATIC:
+        description: Perilymphatic
+        meaning: HP:0033819
+      LOCALIZED:
+        description: Localized
+        meaning: HP:0012838
+      RETICULAR:
+        description: Reticular
+        meaning: HP:0033818
+      DISTAL:
+        description: Distal
+        meaning: HP:0012839
+      CENTRAL:
+        description: Central
+        meaning: HP:0030645
+      UPPER_BODY_PREDOMINANCE:
+        description: Upper-body predominance
+        meaning: HP:0025290
+      JOINT_EXTENSOR_SURFACE_LOCALIZATION:
+        description: Joint extensor surface localization
+        meaning: HP:0032539
+      HERPETIFORM:
+        description: Herpetiform
+        meaning: HP:0025295
+      MORBILLIFORM:
+        description: Morbilliform
+        meaning: HP:0025296
+      PERICENTRAL:
+        description: Pericentral
+        meaning: HP:0030649
+      DERMATOMAL:
+        description: Dermatomal
+        meaning: HP:0025294
+      MIDPERIPHERAL:
+        description: Midperipheral
+        meaning: HP:0030648
+      DISTRIBUTED_ALONG_BLASCHKO_LINES:
+        description: Distributed along Blaschko lines
+        meaning: HP:0025293
+      ACRAL:
+        description: Acral
+        meaning: HP:0025292
+      PARACENTRAL:
+        description: Paracentral
+        meaning: HP:0030647
+      LATERAL:
+        description: Lateral
+        meaning: HP:0025275
+      PERIPHERAL:
+        description: Peripheral
+        meaning: HP:0030646
+      LOWER_BODY_PREDOMINANCE:
+        description: Lower-body predominance
+        meaning: HP:0025291
+      DIFFUSE:
+        description: Diffuse
+        meaning: HP:0020034
+      PROXIMAL:
+        description: Proximal
+        meaning: HP:0012840
+      APICAL:
+        description: Apical
+        meaning: HP:0033820
+      FOCAL:
+        description: Focal
+        meaning: HP:0030650
+      MULTIFOCAL:
+        description: Multifocal
+        meaning: HP:0030651
+      JOINT_FLEXOR_SURFACE_LOCALIZATION:
+        description: Jointflexorsurfacelocalization
+        meaning: HP:0032540
+  UnitTerms:
+    permissible_values:
+      DEGREE:
+        description: degree (plane angle)
+        meaning: UCUM:degree
+      DIOPTER:
+        description: diopter
+        meaning: UCUM:[diop]
+      GRAM:
+        description: gram
+        meaning: UCUM:g
+      GRAM_PER_KG:
+        description: gram per kilogram
+        meaning: UCUM:g/kg
+      KILIGRAM:
+        description: kiligram
+        meaning: UCUM:kg
+      LITER:
+        description: liter
+        meaning: UCUM:L
+      METER:
+        description: meter
+        meaning: UCUM:m
+      MICROGRAM:
+        description: microgram
+        meaning: UCUM:ug
+      MICROGRAM_PER_DECILITER:
+        description: microgram per deciliter
+        meaning: UCUM:ug/dL
+      MICROGRAM_PER_LITER:
+        description: microgram per liter
+        meaning: UCUM:ug/L
+      MICROLITER:
+        description: microliter
+        meaning: UCUM:uL
+      MICROMETER:
+        description: micrometer
+        meaning: UCUM:um
+      MILLIGRAM:
+        description: milligram
+        meaning: UCUM:mg
+      MILLIGRAM_PER_DAY:
+        description: milligram per day
+        meaning: UCUM:mg/dL
+      MILLIGRAM_PER_DL:
+        description: milligram per deciliter
+        meaning: UCUM:mg/dL
+      MILLIGRAM_PER_KG:
+        description: milligram per kilogram
+        meaning: UCUM:mg.kg-1
+      MILLILITER:
+        description: milliliter
+        meaning: UCUM:mL
+      MILLIMETER:
+        description: millimeter
+        meaning: UCUM:mm
+      MILLIMETRES_OF_MERCURY:
+        description: millimetres of mercury
+        meaning: UCUM:mm[Hg]
+      MILLIMOLE:
+        description: millimole
+        meaning: UCUM:mmol
+      MOLE:
+        description: mole
+        meaning: UCUM:mol
+      MOLE_PER_LITER:
+        description: mole per liter
+        meaning: UCUM:mol/L
+      MOLE_PER_MILLILITER:
+        description: mole per milliliter
+        meaning: UCUM:mol/mL
+      ENZYME_UNIT_PER_LITER:
+        description: enzyme unit per liter
+        meaning: UCUM:U/L
+

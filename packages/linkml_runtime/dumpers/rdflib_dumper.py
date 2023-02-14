@@ -48,6 +48,12 @@ class RDFLibDumper(Dumper):
         else:
             for prefix in schemaview.namespaces():
                 g.bind(prefix, URIRef(schemaview.namespaces()[prefix]))
+        # user can pass in base in prefixmap using '_base'. This gets set
+        # in namespaces as a plain dict assignment - explicitly call the setter
+        # to set the underlying "@base"
+        if "_base" in schemaview.namespaces():
+            schemaview.namespaces()._base = schemaview.namespaces()["_base"]
+            g.base = schemaview.namespaces()._base
         if schemaview.namespaces()._base:
             g.base = schemaview.namespaces()._base
         self.inject_triples(element, schemaview, g)
@@ -161,8 +167,8 @@ class RDFLibDumper(Dumper):
         return self.as_rdf_graph(element, schemaview, prefix_map=prefix_map).\
             serialize(format=fmt)
 
-    def _as_uri(self, element_id: str, id_slot: SlotDefinition, schemaview: SchemaView) -> URIRef:
-        if schemaview.is_slot_percent_encoded(id_slot):
+    def _as_uri(self, element_id: str, id_slot: Optional[SlotDefinition], schemaview: SchemaView) -> URIRef:
+        if id_slot and schemaview.is_slot_percent_encoded(id_slot):
             return URIRef(urllib.parse.quote(element_id))
         else:
             return schemaview.namespaces().uri_for(element_id)

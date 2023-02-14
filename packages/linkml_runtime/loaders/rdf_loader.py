@@ -53,7 +53,6 @@ class RDFLoader(Loader):
                     g.parse(data=data, format=fmt)
                     jsonld_str = g.serialize(format='json-ld', indent=4)
                     data = json.loads(jsonld_str)
-                    #data = pyld_jsonld_from_rdflib_graph(g)
 
             if not isinstance(data, dict):
                 # TODO: Add a context processor to the source w/ CONTEXTS_PARAM_TYPE

@@ -1,0 +1,25 @@
+ 
+classes: {}
+
+default_prefix: genome
+description: "Automatic translation of phenopackets protobuf to LinkML. Status: EXPERIMENTAL."
+enums: {}
+
+id: https://w3id.org/linkml/phenopackets/genome
+imports: 
+  - linkml:types
+name: genome
+prefixes: 
+  GENO: http://purl.obolibrary.org/obo/GENO_
+  HP: http://purl.obolibrary.org/obo/HP_
+  LOINC: https://loinc.org/
+  MONDO: http://purl.obolibrary.org/obo/MONDO_
+  NCIT: http://purl.obolibrary.org/obo/NCIT_
+  UBERON: http://purl.obolibrary.org/obo/UBERON_
+  UCUM: http://unitsofmeasure.org/
+  UO: http://purl.obolibrary.org/obo/UO_
+  argo: https://docs.icgc-argo.org/dictionary/
+  genome: https://w3id.org/linkml/phenopackets/genome/
+  linkml: https://w3id.org/linkml/
+slots: {}
+

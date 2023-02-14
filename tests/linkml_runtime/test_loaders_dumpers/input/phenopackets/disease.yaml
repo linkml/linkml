@@ -1,0 +1,85 @@
+ 
+classes: 
+  Disease: 
+    attributes: 
+      clinicalTnmFinding: 
+        annotations: 
+          rank: 6
+        description: Cancer findings in the TNM system that is relevant to the diagnosis of cancer. See https://www.cancer.gov/about-cancer/diagnosis-staging/staging Valid values include child terms of NCIT:C48232 (Cancer TNM Finding) ARGO mapping primary_diagnosis::clinical_t_category ARGO mapping primary_diagnosis::clinical_n_category ARGO mapping primary_diagnosis::clinical_m_category
+        exact_mappings: 
+          - ARGO:primary_diagnosis.clinical_t_category
+        inlined: true
+        multivalued: true
+        range: OntologyClass
+      diseaseStage: 
+        annotations: 
+          rank: 5
+        description: Disease staging, the extent to which a disease has developed. For cancers, see https://www.cancer.gov/about-cancer/diagnosis-staging/staging Valid values include child terms of NCIT:C28108 (Disease Stage Qualifier) ARGO mapping primary_diagnosis::clinical_tumour_staging_system ARGO mapping primary_diagnosis::clinical_stage_group
+        exact_mappings: 
+          - ARGO:primary_diagnosis.clinical_tumour_staging_system
+        inlined: true
+        multivalued: true
+        range: OntologyClass
+      excluded: 
+        annotations: 
+          rank: 2
+        description: Flag to indicate whether the disease was observed or not. Default is 'false', in other words the disease was observed. Therefore it is only required in cases to indicate that the disease was looked for, but found to be absent. More formally, this modifier indicates the logical negation of the OntologyClass used in the 'term' field. *CAUTION* It is imperative to check this field for correct interpretation of the disease!
+        range: boolean
+      laterality: 
+        annotations: 
+          rank: 8
+        description: "The term used to indicate laterality of diagnosis, if applicable. (Codelist reference: NCI CDE: 4122391)"
+        inlined: true
+        range: OntologyClass
+      onset: 
+        annotations: 
+          rank: 3
+        description: "The onset of the disease. The values of this will come from the HPO onset hierarchy i.e. subclasses of HP:0003674 FHIR mapping: Condition.onset ARGO mapping primary_diagnosis::age_at_diagnosis"
+        exact_mappings: 
+          - ARGO:primary_diagnosis.age_at_diagnosis
+        inlined: true
+        range: TimeElement
+      primarySite: 
+        annotations: 
+          rank: 7
+        description: The text term used to describe the primary site of disease, as categorized by the World Health Organization's (WHO) International Classification of Diseases for Oncology (ICD-O). This categorization groups cases into general
+        inlined: true
+        range: OntologyClass
+      resolution: 
+        annotations: 
+          rank: 4
+        description: ''
+        inlined: true
+        range: TimeElement
+      term: 
+        annotations: 
+          rank: 1
+        description: The identifier of this disease e.g. MONDO:0007043, OMIM:101600, Orphanet:710, DOID:14705 (note these are all equivalent) ARGO mapping primary_diagnosis::submitter_primary_diagnosis_id
+        exact_mappings: 
+          - ARGO:primary_diagnosis.submitter_primary_diagnosis_id
+        inlined: true
+        range: OntologyClass
+    description: Message to indicate a disease (diagnosis) and its recorded onset.
+default_prefix: disease
+description: "Automatic translation of phenopackets protobuf to LinkML. Status: EXPERIMENTAL."
+enums: {}
+
+id: https://w3id.org/linkml/phenopackets/disease
+imports: 
+  - linkml:types
+  - base
+name: disease
+prefixes: 
+  GENO: http://purl.obolibrary.org/obo/GENO_
+  HP: http://purl.obolibrary.org/obo/HP_
+  LOINC: https://loinc.org/
+  MONDO: http://purl.obolibrary.org/obo/MONDO_
+  NCIT: http://purl.obolibrary.org/obo/NCIT_
+  UBERON: http://purl.obolibrary.org/obo/UBERON_
+  UCUM: http://unitsofmeasure.org/
+  UO: http://purl.obolibrary.org/obo/UO_
+  argo: https://docs.icgc-argo.org/dictionary/
+  disease: https://w3id.org/linkml/phenopackets/disease/
+  linkml: https://w3id.org/linkml/
+slots: {}
+
