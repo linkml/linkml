@@ -1,16 +1,11 @@
-import os
 import unittest
-from typing import Union, TextIO, Type, Optional
 
-from hbreader import FileInfo
-
-from linkml_runtime.loaders import yaml_loader, json_loader
+from linkml_runtime.loaders import yaml_loader, json_loader, rdf_loader
 from tests.test_loaders_dumpers.environment import env
 from tests.test_loaders_dumpers.loaderdumpertestcase import LoaderDumperTestCase
 from tests.test_loaders_dumpers.models.books_normalized_pydantic import BookSeries
-from typing import List
 
-class LoadersUnitTest(LoaderDumperTestCase):
+class PydanticLoadersUnitTest(LoaderDumperTestCase):
     env = env
 
     def test_yaml_loader_single(self):
@@ -20,7 +15,6 @@ class LoadersUnitTest(LoaderDumperTestCase):
     def test_json_loader(self):
         """ Load obo_sample.json, emit obo_sample_json.yaml and check the results """
         self.loader_test('book_series_lotr.json', BookSeries, json_loader)
-
 
 
 if __name__ == '__main__':
