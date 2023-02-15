@@ -2,7 +2,7 @@ import os
 from collections import defaultdict
 from copy import deepcopy
 from dataclasses import field, dataclass
-from typing import Dict, List, TextIO, Union
+from typing import Dict, List, TextIO, Union, Optional
 
 import click
 from jinja2 import Template
@@ -302,6 +302,16 @@ class PydanticGenerator(OOCodeGenerator):
 
         return range_cls_identifier_slot_range
 
+    def generate_collection_key(self, slot_range: str) -> Optional[str]:
+        if slot_range not in self.schemaview.all_classes():
+            return None
+
+        identifier_slot = self.schemaview.get_identifier_slot(slot_range)
+        if identifier_slot is not None and identifier_slot.range is not None:
+            return _get_pyrange(self.schemaview.get_type(identifier_slot.range), self.schemaview)
+        else:
+            return None
+
     def serialize(self) -> str:
         sv = self.schemaview
 
@@ -350,25 +360,24 @@ class PydanticGenerator(OOCodeGenerator):
                 if s.description:
                     s.description = s.description.replace('"', '\\"')
                 class_def.attributes[s.name] = s
-                collection_key = None
-                if s.range in sv.all_classes():
+
+                slot_range = s.range
+                if slot_range in sv.all_classes():
                     pyrange = self.get_class_slot_range(s)
-                    identifier_slot = sv.get_identifier_slot(s.range)
-                    if identifier_slot is not None and identifier_slot.range is not None:
-                        collection_key = _get_pyrange(sv.get_type(identifier_slot.range), sv)
-                elif s.range in sv.all_enums():
-                    pyrange = f"{camelcase(s.range)}"
-                elif s.range in sv.all_types():
-                    t = sv.get_type(s.range)
+                elif slot_range in sv.all_enums():
+                    pyrange = f"{camelcase(slot_range)}"
+                elif slot_range in sv.all_types():
+                    t = sv.get_type(slot_range)
                     pyrange = _get_pyrange(t, sv)
-                elif s.range is None:
+                elif slot_range is None:
                     pyrange = "str"
                 else:
                     # TODO: default ranges in schemagen
                     # pyrange = 'str'
                     # logging.error(f'range: {s.range} is unknown')
-                    raise Exception(f"range: {s.range}")
+                    raise Exception(f"range: {slot_range}")
                 if s.multivalued:
+                    collection_key = self.generate_collection_key(slot_range)
                     if not s.inlined or collection_key is None or s.inlined_as_list:
                         pyrange = f"List[{pyrange}]"
                     else:

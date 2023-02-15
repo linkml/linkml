@@ -1,7 +1,7 @@
 from __future__ import annotations
 from datetime import datetime, date
 from enum import Enum
-from typing import List, Dict, Optional, Any
+from typing import List, Dict, Optional, Any, Union
 from pydantic import BaseModel as BaseModel, Field
 from linkml_runtime.linkml_model import Decimal
 
