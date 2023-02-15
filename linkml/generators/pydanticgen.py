@@ -261,9 +261,9 @@ class PydanticGenerator(OOCodeGenerator):
         else:
             return f"Union[{'.'.join(id_ranges)}]"
 
-    def get_class_slot_range(self, slot):
+    def get_class_slot_range(self, slot_range: str, inlined: bool, inlined_as_list: bool) -> str:
         sv = self.schemaview
-        range_cls = sv.get_class(slot.range)
+        range_cls = sv.get_class(slot_range)
 
         # Hardcoded handling for Any
         if range_cls.class_uri == "linkml:Any":
@@ -271,14 +271,14 @@ class PydanticGenerator(OOCodeGenerator):
 
         # Inline the class itself only if the class is defined as inline, or if the class has no
         # identifier slot and also isn't a mixin.
-        if slot.inlined or slot.inlined_as_list or (
+        if inlined or inlined_as_list or (
             sv.get_identifier_slot(range_cls.name) is None
             and not sv.is_mixin(range_cls.name)
         ):
-            if len([x for x in sv.class_induced_slots(slot.range) if x.designates_type]) > 0 and len(sv.class_descendants(slot.range)) > 1:
-                return f"Union[" + ",".join([camelcase(c) for c in sv.class_descendants(slot.range)]) + "]"
+            if len([x for x in sv.class_induced_slots(slot_range) if x.designates_type]) > 0 and len(sv.class_descendants(slot_range)) > 1:
+                return f"Union[" + ",".join([camelcase(c) for c in sv.class_descendants(slot_range)]) + "]"
             else:
-                return f"{camelcase(slot.range)}"
+                return f"{camelcase(slot_range)}"
 
         # For the more difficult cases, set string as the default and attempt to improve it
         range_cls_identifier_slot_range = "str"
@@ -301,6 +301,27 @@ class PydanticGenerator(OOCodeGenerator):
             )
 
         return range_cls_identifier_slot_range
+
+    def generate_python_range(self, slot_range, inlined: bool, inlined_as_list: bool) -> str:
+        """
+        Generate the python range for a slot range value
+        """
+        sv = self.schemaview
+        if slot_range in sv.all_classes():
+            pyrange = self.get_class_slot_range(slot_range, inlined=inlined, inlined_as_list=inlined_as_list)
+        elif slot_range in sv.all_enums():
+            pyrange = f"{camelcase(slot_range)}"
+        elif slot_range in sv.all_types():
+            t = sv.get_type(slot_range)
+            pyrange = _get_pyrange(t, sv)
+        elif slot_range is None:
+            pyrange = "str"
+        else:
+            # TODO: default ranges in schemagen
+            # pyrange = 'str'
+            # logging.error(f'range: {s.range} is unknown')
+            raise Exception(f"range: {slot_range}")
+        return pyrange
 
     def generate_collection_key(self, slot_range: str) -> Optional[str]:
         if slot_range not in self.schemaview.all_classes():
@@ -362,20 +383,8 @@ class PydanticGenerator(OOCodeGenerator):
                 class_def.attributes[s.name] = s
 
                 slot_range = s.range
-                if slot_range in sv.all_classes():
-                    pyrange = self.get_class_slot_range(s)
-                elif slot_range in sv.all_enums():
-                    pyrange = f"{camelcase(slot_range)}"
-                elif slot_range in sv.all_types():
-                    t = sv.get_type(slot_range)
-                    pyrange = _get_pyrange(t, sv)
-                elif slot_range is None:
-                    pyrange = "str"
-                else:
-                    # TODO: default ranges in schemagen
-                    # pyrange = 'str'
-                    # logging.error(f'range: {s.range} is unknown')
-                    raise Exception(f"range: {slot_range}")
+                pyrange = self.generate_python_range(slot_range, inlined=s.inlined, inlined_as_list=s.inlined_as_list)
+
                 if s.multivalued:
                     collection_key = self.generate_collection_key(slot_range)
                     if not s.inlined or collection_key is None or s.inlined_as_list:
