@@ -1,4 +1,4 @@
-from linkml_runtime.dumpers import yaml_dumper
+from linkml_runtime.dumpers import yaml_dumper, json_dumper
 from tests.test_loaders_dumpers.loaderdumpertestcase import LoaderDumperTestCase
 from tests.test_loaders_dumpers.models.books_normalized_pydantic import Book, BookSeries, Author
 
@@ -20,3 +20,8 @@ class PydanticDumpersTestCase(LoaderDumperTestCase):
         """ Test the yaml emitter """
         self.dump_test('book_series_lotr.yaml', lambda out_fname: yaml_dumper.dump(self.books, out_fname))
         self.dumps_test('book_series_lotr.yaml', lambda: yaml_dumper.dumps(self.books))
+
+    def test_json_dumper(self):
+        """ Test the json emitter """
+        self.dump_test('book_series_lotr.json', lambda out_fname: json_dumper.dump(self.books, out_fname))
+        self.dumps_test('book_series_lotr.json', lambda: json_dumper.dumps(self.books))
