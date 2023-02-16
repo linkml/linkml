@@ -375,10 +375,10 @@ class PydanticGenerator(OOCodeGenerator):
                 continue # ignore non-class ranges
 
             identifier_slot = self.schemaview.get_identifier_slot(pyrange)
-            # TODO: if the slot exists and the range is none, use the default range
-            if identifier_slot is not None and identifier_slot.range is not None:
-                collection_keys.add(_get_pyrange(self.schemaview.get_type(identifier_slot.range), self.schemaview))
-
+            if identifier_slot is not None:
+                collection_keys.add(self.generate_python_range(identifier_slot.range,
+                                                               inlined=identifier_slot.inlined,
+                                                               inlined_as_list=identifier_slot.inlined_as_list))
         if len(collection_keys) > 1:
             raise Exception(f"Slot with any_of range has multiple identifier slot range types: {collection_keys}")
         if len(collection_keys) == 1:
@@ -441,7 +441,12 @@ class PydanticGenerator(OOCodeGenerator):
                 else:
                     slot_ranges.append(s.range)
 
-                pyranges = list(set([self.generate_python_range(slot_range, inlined=s.inlined, inlined_as_list=s.inlined_as_list) for slot_range in slot_ranges]))
+                pyranges = [self.generate_python_range(slot_range, inlined=s.inlined, inlined_as_list=s.inlined_as_list)
+                            for slot_range in slot_ranges]
+
+                pyranges = list(set(pyranges)) # remove duplicates
+                pyranges.sort()
+
                 if len(pyranges) == 1:
                     pyrange = pyranges[0]
                 else:

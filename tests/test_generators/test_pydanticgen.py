@@ -130,7 +130,6 @@ classes:
       - not_inlined_things
 slots:
   id:
-    range: string
     identifier: true
   inlined_things:
     inlined: true
