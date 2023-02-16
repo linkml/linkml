@@ -2,7 +2,7 @@ import os
 from collections import defaultdict
 from copy import deepcopy
 from dataclasses import field, dataclass
-from typing import Dict, List, TextIO, Union, Optional
+from typing import Dict, List, TextIO, Union, Optional, Set
 
 import click
 from jinja2 import Template
@@ -353,15 +353,37 @@ class PydanticGenerator(OOCodeGenerator):
             raise Exception(f"range: {slot_range}")
         return pyrange
 
-    def generate_collection_key(self, slot_range: str) -> Optional[str]:
-        if slot_range not in self.schemaview.all_classes():
+    def generate_collection_key(self, pyranges: List[str]) -> Optional[str]:
+        """
+        Find the python range value (str, int, etc) for the identifier slot
+        of a class used as a slot range.
+
+        If a pyrange value matches a class name, the range of the identifier slot
+        will be returned. If more than one match is found and they don't match,
+        an exception will be raised.
+
+        :param pyranges: list of python range values
+        """
+
+        collection_keys:Set[str] = set()
+
+        if pyranges is None:
             return None
 
-        identifier_slot = self.schemaview.get_identifier_slot(slot_range)
-        if identifier_slot is not None and identifier_slot.range is not None:
-            return _get_pyrange(self.schemaview.get_type(identifier_slot.range), self.schemaview)
-        else:
-            return None
+        for pyrange in pyranges:
+            if pyrange is None or pyrange not in self.schemaview.all_classes():
+                continue # ignore non-class ranges
+
+            identifier_slot = self.schemaview.get_identifier_slot(pyrange)
+            # TODO: if the slot exists and the range is none, use the default range
+            if identifier_slot is not None and identifier_slot.range is not None:
+                collection_keys.add(_get_pyrange(self.schemaview.get_type(identifier_slot.range), self.schemaview))
+
+        if len(collection_keys) > 1:
+            raise Exception(f"Slot with any_of range has multiple identifier slot range types: {collection_keys}")
+        if len(collection_keys) == 1:
+            return list(collection_keys)[0]
+        return None
 
     def serialize(self) -> str:
         sv = self.schemaview
@@ -419,15 +441,19 @@ class PydanticGenerator(OOCodeGenerator):
                 else:
                     slot_ranges.append(s.range)
 
-                pyranges = [self.generate_python_range(slot_range, inlined=s.inlined, inlined_as_list=s.inlined_as_list) for slot_range in slot_ranges]
+                pyranges = list(set([self.generate_python_range(slot_range, inlined=s.inlined, inlined_as_list=s.inlined_as_list) for slot_range in slot_ranges]))
                 if len(pyranges) == 1:
                     pyrange = pyranges[0]
                 else:
                     pyrange = f"Union[{', '.join(pyranges)}]"
 
                 if s.multivalued:
-                    collection_key = self.generate_collection_key(s.range)
-                    if not s.inlined or collection_key is None or s.inlined_as_list:
+                    print(f"\n-------------\n{s.name} is multivalued" )
+                    collection_key = self.generate_collection_key(pyranges)
+                    print(f"s.range: {s.range}")
+                    print(f"collection_key: {collection_key}")
+                    if s.inlined == False or collection_key is None or s.inlined_as_list == True:
+                        print("\ns.inlined:", s.inlined, "\ncollection_key:", collection_key, "\ns.inlined_as_list:", s.inlined_as_list, "\n")
                         pyrange = f"List[{pyrange}]"
                     else:
                         pyrange = f"Dict[{collection_key}, {pyrange}]"

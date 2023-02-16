@@ -130,6 +130,7 @@ classes:
       - not_inlined_things
 slots:
   id:
+    range: string
     identifier: true
   inlined_things:
     inlined: true
@@ -151,12 +152,12 @@ slots:
         """
         gen = PydanticGenerator(schema_str, package=PACKAGE)
         code = gen.serialize()
-        # print(code)
+        print(code)
         lines = code.splitlines()
         ix = lines.index("class C(ConfiguredBaseModel):")
-        assert lines[ix + 1] == "    inlined_things: Optional[[Dict[str,Union[A, B]]] = Field(default_factory=list)"
-        assert lines[ix + 2] == "    inlined_as_list_things: Optional[List[Union[A, B]]] = Field(default_factory=list)"
-        assert lines[ix + 3] == "    not_inlined_things: Optional[List[str] = Field(default_factory=list)"
+        assert lines[ix + 3] == "    inlined_things: Optional[Dict[str, Union[A, B]]] = Field(default_factory=dict)"
+        assert lines[ix + 4] == "    inlined_as_list_things: Optional[List[Union[A, B]]] = Field(default_factory=list)"
+        assert lines[ix + 5] == "    not_inlined_things: Optional[List[str]] = Field(default_factory=list)"
 
     def test_pydantic_inlining(self):
         #Case = namedtuple("multivalued", "inlined", "inlined_as_list", "B_has_identities")
