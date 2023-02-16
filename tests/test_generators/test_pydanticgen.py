@@ -154,7 +154,7 @@ slots:
         # print(code)
         lines = code.splitlines()
         ix = lines.index("class C(ConfiguredBaseModel):")
-        assert lines[ix + 1] == "    inlined_things: Optional[Union[Dict[str,A],Dict[str,B]]] = Field(default_factory=list)"
+        assert lines[ix + 1] == "    inlined_things: Optional[[Dict[str,Union[A, B]]] = Field(default_factory=list)"
         assert lines[ix + 2] == "    inlined_as_list_things: Optional[List[Union[A, B]]] = Field(default_factory=list)"
         assert lines[ix + 3] == "    not_inlined_things: Optional[List[str] = Field(default_factory=list)"
 
