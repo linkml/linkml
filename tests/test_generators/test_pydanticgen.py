@@ -151,7 +151,6 @@ slots:
         """
         gen = PydanticGenerator(schema_str, package=PACKAGE)
         code = gen.serialize()
-        print(code)
         lines = code.splitlines()
         ix = lines.index("class C(ConfiguredBaseModel):")
         assert lines[ix + 3] == "    inlined_things: Optional[Dict[str, Union[A, B]]] = Field(default_factory=dict)"

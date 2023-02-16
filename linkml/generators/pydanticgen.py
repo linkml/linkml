@@ -453,12 +453,8 @@ class PydanticGenerator(OOCodeGenerator):
                     pyrange = f"Union[{', '.join(pyranges)}]"
 
                 if s.multivalued:
-                    print(f"\n-------------\n{s.name} is multivalued" )
                     collection_key = self.generate_collection_key(pyranges)
-                    print(f"s.range: {s.range}")
-                    print(f"collection_key: {collection_key}")
                     if s.inlined == False or collection_key is None or s.inlined_as_list == True:
-                        print("\ns.inlined:", s.inlined, "\ncollection_key:", collection_key, "\ns.inlined_as_list:", s.inlined_as_list, "\n")
                         pyrange = f"List[{pyrange}]"
                     else:
                         pyrange = f"Dict[{collection_key}, {pyrange}]"
