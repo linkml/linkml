@@ -259,7 +259,7 @@ def cli(
         foreign_key_policy = ForeignKeyPolicy.NO_FOREIGN_KEYS
     print(gen.generate_sqla(template=t, foreign_key_policy=foreign_key_policy))
     if generate_classes:
-        raise NotImplementedError(f"generate classes not implemented")
+        raise NotImplementedError("generate classes not implemented")
 
 
 if __name__ == "__main__":
