@@ -449,8 +449,10 @@ class PydanticGenerator(OOCodeGenerator):
 
                 if len(pyranges) == 1:
                     pyrange = pyranges[0]
-                else:
+                elif len(pyranges) > 1:
                     pyrange = f"Union[{', '.join(pyranges)}]"
+                else:
+                    raise Exception(f"Could not generate python range for {class_name}.{s.name}")
 
                 if s.multivalued:
                     collection_key = self.generate_collection_key(pyranges)

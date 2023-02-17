@@ -59,13 +59,13 @@ class LifeStatusEnum(str, Enum):
 
 class HasAliases(ConfiguredBaseModel):
     
-    aliases: Optional[List[Union[]]] = Field(default_factory=list)
+    aliases: Optional[List[str]] = Field(default_factory=list)
     
 
 
 class Friend(ConfiguredBaseModel):
     
-    name: Optional[Union[]] = Field(None)
+    name: Optional[str] = Field(None)
     
 
 
@@ -73,18 +73,18 @@ class Person(HasAliases):
     """
     A person, living or dead
     """
-    id: Optional[Union[]] = Field(None)
-    name: Optional[Union[]] = Field(None)
+    id: Optional[str] = Field(None)
+    name: Optional[str] = Field(None)
     has_employment_history: Optional[List[EmploymentEvent]] = Field(None)
     has_familial_relationships: Optional[List[FamilialRelationship]] = Field(None)
     has_medical_history: Optional[List[MedicalEvent]] = Field(None)
     age_in_years: Optional[int] = Field(None, description="""number of years since birth""", ge=0, le=999)
     addresses: Optional[List[Address]] = Field(default_factory=list)
     has_birth_event: Optional[BirthEvent] = Field(None)
-    species_name: Optional[Union[]] = Field(None)
+    species_name: Optional[str] = Field(None)
     stomach_count: Optional[int] = Field(None)
     is_living: Optional[LifeStatusEnum] = Field(None)
-    aliases: Optional[List[Union[]]] = Field(default_factory=list)
+    aliases: Optional[List[str]] = Field(default_factory=list)
     
 
 
@@ -101,47 +101,47 @@ includes newlines
  * a
  * list
     """
-    id: Optional[Union[]] = Field(None)
-    name: Optional[Union[]] = Field(None)
-    aliases: Optional[List[Union[]]] = Field(default_factory=list)
+    id: Optional[str] = Field(None)
+    name: Optional[str] = Field(None)
+    aliases: Optional[List[str]] = Field(default_factory=list)
     
 
 
 class Place(HasAliases):
     
-    id: Optional[Union[]] = Field(None)
-    name: Optional[Union[]] = Field(None)
-    aliases: Optional[List[Union[]]] = Field(default_factory=list)
+    id: Optional[str] = Field(None)
+    name: Optional[str] = Field(None)
+    aliases: Optional[List[str]] = Field(default_factory=list)
     
 
 
 class Address(ConfiguredBaseModel):
     
-    street: Optional[Union[]] = Field(None)
-    city: Optional[Union[]] = Field(None)
+    street: Optional[str] = Field(None)
+    city: Optional[str] = Field(None)
     
 
 
 class Concept(ConfiguredBaseModel):
     
-    id: Optional[Union[]] = Field(None)
-    name: Optional[Union[]] = Field(None)
+    id: Optional[str] = Field(None)
+    name: Optional[str] = Field(None)
     in_code_system: Optional[str] = Field(None)
     
 
 
 class DiagnosisConcept(Concept):
     
-    id: Optional[Union[]] = Field(None)
-    name: Optional[Union[]] = Field(None)
+    id: Optional[str] = Field(None)
+    name: Optional[str] = Field(None)
     in_code_system: Optional[str] = Field(None)
     
 
 
 class ProcedureConcept(Concept):
     
-    id: Optional[Union[]] = Field(None)
-    name: Optional[Union[]] = Field(None)
+    id: Optional[str] = Field(None)
+    name: Optional[str] = Field(None)
     in_code_system: Optional[str] = Field(None)
     
 
@@ -159,8 +159,8 @@ class Relationship(ConfiguredBaseModel):
     
     started_at_time: Optional[date] = Field(None)
     ended_at_time: Optional[date] = Field(None)
-    related_to: Optional[Union[]] = Field(None)
-    type: Optional[Union[]] = Field(None)
+    related_to: Optional[str] = Field(None)
+    type: Optional[str] = Field(None)
     
 
 
@@ -226,16 +226,16 @@ class MarriageEvent(WithLocation, Event):
 class Company(Organization):
     
     ceo: Optional[str] = Field(None)
-    id: Optional[Union[]] = Field(None)
-    name: Optional[Union[]] = Field(None)
-    aliases: Optional[List[Union[]]] = Field(default_factory=list)
+    id: Optional[str] = Field(None)
+    name: Optional[str] = Field(None)
+    aliases: Optional[List[str]] = Field(default_factory=list)
     
 
 
 class CodeSystem(ConfiguredBaseModel):
     
-    id: Optional[Union[]] = Field(None)
-    name: Optional[Union[]] = Field(None)
+    id: Optional[str] = Field(None)
+    name: Optional[str] = Field(None)
     
 
 
@@ -245,33 +245,33 @@ class Dataset(ConfiguredBaseModel):
     persons: Optional[List[Person]] = Field(default_factory=list)
     companies: Optional[List[Company]] = Field(default_factory=list)
     activities: Optional[List[Activity]] = Field(default_factory=list)
-    code_systems: Optional[List[CodeSystem]] = Field(None)
+    code_systems: Optional[Dict[str, CodeSystem]] = Field(None)
     
 
 
 class FakeClass(ConfiguredBaseModel):
     
-    test_attribute: Optional[Union[]] = Field(None)
+    test_attribute: Optional[str] = Field(None)
     
 
 
 class ClassWithSpaces(ConfiguredBaseModel):
     
-    slot_with_space_1: Optional[Union[]] = Field(None)
+    slot_with_space_1: Optional[str] = Field(None)
     
 
 
 class SubclassTest(ClassWithSpaces):
     
     slot_with_space_2: Optional[ClassWithSpaces] = Field(None)
-    slot_with_space_1: Optional[Union[]] = Field(None)
+    slot_with_space_1: Optional[str] = Field(None)
     
 
 
 class SubSubClass2(SubclassTest):
     
     slot_with_space_2: Optional[ClassWithSpaces] = Field(None)
-    slot_with_space_1: Optional[Union[]] = Field(None)
+    slot_with_space_1: Optional[str] = Field(None)
     
 
 
@@ -280,7 +280,7 @@ class TubSubClass1(SubclassTest):
     Same depth as Sub sub class 1
     """
     slot_with_space_2: Optional[ClassWithSpaces] = Field(None)
-    slot_with_space_1: Optional[Union[]] = Field(None)
+    slot_with_space_1: Optional[str] = Field(None)
     
 
 
@@ -288,13 +288,13 @@ class Activity(ConfiguredBaseModel):
     """
     a provence-generating activity
     """
-    id: Optional[Union[]] = Field(None)
+    id: Optional[str] = Field(None)
     started_at_time: Optional[date] = Field(None)
     ended_at_time: Optional[date] = Field(None)
     was_informed_by: Optional[str] = Field(None)
     was_associated_with: Optional[str] = Field(None)
-    used: Optional[Union[]] = Field(None)
-    description: Optional[Union[]] = Field(None)
+    used: Optional[str] = Field(None)
+    description: Optional[str] = Field(None)
     
 
 
@@ -302,7 +302,7 @@ class Agent(ConfiguredBaseModel):
     """
     a provence-generating agent
     """
-    id: Optional[Union[]] = Field(None)
+    id: Optional[str] = Field(None)
     acted_on_behalf_of: Optional[str] = Field(None)
     was_informed_by: Optional[str] = Field(None)
     

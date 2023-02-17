@@ -27,6 +27,7 @@ class PydanticGeneratorTestCase(unittest.TestCase):
         """Generate pydantic classes"""
         gen = PydanticGenerator(SCHEMA, package=PACKAGE)
         code = gen.serialize()
+        print(code)
         with open(PYDANTIC_OUT, "w") as stream:
             stream.write(code)
         with open(DATA) as stream:
