@@ -71,9 +71,10 @@ class SQLAlchemyGenerator(Generator):
         tgen = SQLTableGenerator(self.schemaview.schema)
         tr_result = sqltr.transform(**kwargs)
         tr_schema = tr_result.schema
+        tr_schema_view = SchemaView(tr_schema)
         for c in tr_schema.classes.values():
             for a in c.attributes.values():
-                sql_range = tgen.get_sql_range(a, tr_schema)
+                sql_range = tgen.get_sql_range(a, tr_schema, tr_schema_view)
                 sql_type = sql_range.__repr__()
                 ann = Annotation("sql_type", sql_type)
                 a.annotations[ann.tag] = ann

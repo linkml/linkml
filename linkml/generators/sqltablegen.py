@@ -207,7 +207,7 @@ class SQLTableGenerator(Generator):
         return ddl_str
 
     # TODO: merge with code from sqlddlgen
-    def get_sql_range(self, slot: SlotDefinition, schema: SchemaDefinition = None):
+    def get_sql_range(self, slot: SlotDefinition, schema: SchemaDefinition = None, sv: SchemaView = None):
         """
         returns a SQL Alchemy column type
         """
@@ -219,8 +219,21 @@ class SQLTableGenerator(Generator):
             schema = SchemaLoader(data=self.schema).resolve()
 
         if range in schema.classes:
-            # FKs treated as Text
-            return Text()
+            # A class has an identifier and that id column will have a type
+            # -> this FK column needs to have the same type
+            # We need a schemaview to resolve this id column
+            if sv is None:
+                # Fallback: FKs treated as Text
+                return Text()
+            # For a class with a single identifier, we use that type
+            referenced_attribute = sv.get_identifier_slot(range)
+            if referenced_attribute:
+                # Use that range to resolve the real type
+                range = referenced_attribute.range
+            else:
+                # Fallback: FKs treated as Text
+                return Text()
+
         if range in schema.enums:
             e = schema.enums[range]
             if e.permissible_values is not None:
