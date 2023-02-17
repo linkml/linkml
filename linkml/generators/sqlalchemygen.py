@@ -64,7 +64,8 @@ class SQLAlchemyGenerator(Generator):
     ) -> str:
         # src_sv = SchemaView(self.schema)
         # self.schema = src_sv.schema
-        sqltr = RelationalModelTransformer(self.schemaview)
+        # use two underscores to distinguish it from the snake case underscore
+        sqltr = RelationalModelTransformer(self.schemaview, join_table_separator="__")
         if foreign_key_policy:
             sqltr.foreign_key_policy = foreign_key_policy
         tgen = SQLTableGenerator(self.schemaview.schema)
