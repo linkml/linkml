@@ -10,6 +10,7 @@ from linkml_runtime.linkml_model.meta import SchemaDefinition, ClassDefinition, 
     ClassDefinitionName
 from linkml_runtime.loaders.yaml_loader import YAMLLoader
 from linkml_runtime.utils.introspection import package_schemaview, object_class_definition
+from linkml_runtime.utils.schema_builder import SchemaBuilder
 from linkml_runtime.utils.schemaview import SchemaView, SchemaUsage, OrderedBy
 from linkml_runtime.utils.schemaops import roll_up, roll_down
 from tests.test_utils import INPUT_DIR
@@ -470,6 +471,35 @@ class SchemaViewTestCase(unittest.TestCase):
         self.assertCountEqual(all_c, all_c2)
         all_c2_noi = copy(view.all_classes(imports=False))
         self.assertEqual(len(all_c2_noi), len(all_c2))
+
+    def test_metamodel_imports(self):
+        """
+        Tests imports of the metamodel.
+
+        Note: this test and others should be able to run without network connectivity.
+        SchemaView should make use of the version of the metamodel distributed with the package
+        over the network available version.
+
+        TODO: use mock testing framework to emulate no access to network.
+
+        - `<https://github.com/linkml/linkml/issues/502>`_
+        :return:
+        """
+        sb = SchemaBuilder()
+        sb.add_imports("linkml:meta")
+        schema = sb.schema
+        sv = SchemaView(schema)
+        all_classes = sv.all_classes()
+        self.assertGreater(len(all_classes), 20)
+        schema_str = yaml_dumper.dumps(schema)
+        sv = SchemaView(schema_str)
+        self.assertGreater(len(sv.all_classes()), 20)
+        self.assertCountEqual(all_classes, sv.all_classes())
+
+
+
+
+
 
     def test_traversal(self):
         schema = SchemaDefinition(id='test', name='traversal-test')
