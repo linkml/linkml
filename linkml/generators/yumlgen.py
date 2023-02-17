@@ -104,11 +104,6 @@ class YumlGenerator(Generator):
             else:
                 yumlclassdef.append(self.class_box(ClassDefinitionName(cn)))
 
-        yuml_url = (
-            str(YUML)
-            + ",".join(yumlclassdef)
-            + (("." + self.format) if self.format not in ("yuml", "svg") else "")
-        )
         file_suffix = ".svg" if self.format == "yuml" else "." + self.format
         if directory:
             self.output_file_name = os.path.join(
@@ -117,13 +112,18 @@ class YumlGenerator(Generator):
                 + file_suffix,
             )
             if load_image:
-                resp = requests.get(yuml_url, stream=True)
+                payload = "dsl_text=" + (",".join(yumlclassdef))
+                payload = payload.replace("%3F", "?").replace("%2B", "+")
+                url = f"https://yuml.me/diagram/plain/class/"
+                resp = requests.post(url, data=payload)
                 if resp.ok:
+                    filename = resp.text.strip().replace(".svg", file_suffix)
+                    resp = requests.get(f"https://yuml.me/{filename}", stream=True)
                     with open(self.output_file_name, "wb") as f:
                         for chunk in resp.iter_content(chunk_size=2048):
                             f.write(chunk)
                 else:
-                    self.logger.error(f"{resp.reason} accessing {yuml_url}")
+                    self.logger.error(f"{resp.reason} accessing {url}: {resp!r}")
         else:
             print(str(YUML) + ",".join(yumlclassdef), end="")
 
