@@ -9,8 +9,7 @@ from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.linkml_model.meta import SchemaDefinition, ClassDefinition, SlotDefinitionName, SlotDefinition, \
     ClassDefinitionName
 from linkml_runtime.loaders.yaml_loader import YAMLLoader
-from linkml_runtime.utils.introspection import package_schemaview, object_class_definition
-from linkml_runtime.utils.schema_builder import SchemaBuilder
+from linkml_runtime.utils.introspection import package_schemaview
 from linkml_runtime.utils.schemaview import SchemaView, SchemaUsage, OrderedBy
 from linkml_runtime.utils.schemaops import roll_up, roll_down
 from tests.test_utils import INPUT_DIR
@@ -485,9 +484,8 @@ class SchemaViewTestCase(unittest.TestCase):
         - `<https://github.com/linkml/linkml/issues/502>`_
         :return:
         """
-        sb = SchemaBuilder()
-        sb.add_imports("linkml:meta")
-        schema = sb.schema
+        schema = SchemaDefinition(id='test', name='metamodel-imports-test',
+                                  imports=["linkml:meta"])
         sv = SchemaView(schema)
         all_classes = sv.all_classes()
         self.assertGreater(len(all_classes), 20)
