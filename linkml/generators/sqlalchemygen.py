@@ -126,6 +126,9 @@ class SQLAlchemyGenerator(Generator):
             mappings=tr_result.mappings,
             backrefs=backrefs,
             classname=camelcase,
+            schemaname=underscore,
+            tablename=underscore,
+            columnname=underscore,
             no_model_import=no_model_import,
             is_join_table=lambda c: any(
                 tag for tag in c.annotations.keys() if tag == "linkml:derived_from"
