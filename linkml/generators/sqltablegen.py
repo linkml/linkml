@@ -10,8 +10,8 @@ from linkml_runtime.linkml_model import (ClassDefinition, SchemaDefinition,
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.schemaview import SchemaView
 from sqlalchemy import Column, ForeignKey, MetaData, Table, create_mock_engine
-from sqlalchemy.types import (Boolean, Date, DateTime, Enum, Float, Integer,
-                              Text, Time)
+from sqlalchemy.types import (BigInteger, Boolean, Date, DateTime, Enum, Float,
+                              Integer, Text, Time)
 
 from linkml._version import __version__
 from linkml.generators.yamlgen import YAMLGenerator
@@ -51,6 +51,7 @@ RANGEMAP = {
     "NCName": Text(),
     "URIorCURIE": Text(),
     "int": Integer(),
+    "bigint": BigInteger(),
     "Decimal": Integer(),
     "double": Float(),
     "float": Float(),
