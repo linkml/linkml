@@ -225,7 +225,9 @@ class SQLTableGenerator(Generator):
             e = schema.enums[range]
             if e.permissible_values is not None:
                 vs = [str(v) for v in e.permissible_values]
-                return Enum(name=e.name, *vs)
+                enum = Enum(name=e.name, *vs)
+                enum.inherit_schema = True
+                return enum
         if range in METAMODEL_TYPE_TO_BASE:
             range_base = METAMODEL_TYPE_TO_BASE[range]
         elif range in schema.types:
