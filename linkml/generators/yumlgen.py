@@ -65,6 +65,7 @@ class YumlGenerator(Generator):
 
     classes: Set[ClassDefinitionName] = None
     directory: Optional[str] = None
+    diagram_name: Optional[str] = None
     load_image: bool = field(default_factory=lambda: True)
 
 
@@ -72,6 +73,7 @@ class YumlGenerator(Generator):
         self,
         classes: Set[ClassDefinitionName] = None,
         directory: Optional[str] = None,
+        diagram_name: Optional[str] = None,
         load_image: bool = True,
         **_,
     ) -> None:
@@ -105,11 +107,13 @@ class YumlGenerator(Generator):
                 yumlclassdef.append(self.class_box(ClassDefinitionName(cn)))
 
         file_suffix = ".svg" if self.format == "yuml" else "." + self.format
+        file_name = diagram_name or camelcase(
+            sorted(classes)[0] if classes else self.schema.name
+        )
         if directory:
             self.output_file_name = os.path.join(
                 directory,
-                camelcase(sorted(classes)[0] if classes else self.schema.name)
-                + file_suffix,
+                file_name + file_suffix,
             )
             if load_image:
                 payload = "dsl_text=" + (",".join(yumlclassdef))
@@ -334,7 +338,10 @@ class YumlGenerator(Generator):
     "-d",
     help="Output directory - if supplied, YUML rendering will be saved in file",
 )
-@click.version_option(__version__, "-V", "--version")
+@click.option(
+    "--diagram-name",
+    help="Name of the diagram in the output directory (without suffix!)",
+)
 def cli(yamlfile, **args):
     """Generate a UML representation of a LinkML model"""
     print(YumlGenerator(yamlfile, **args).serialize(**args), end="")
