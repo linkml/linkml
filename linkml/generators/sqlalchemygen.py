@@ -13,7 +13,7 @@ from linkml_runtime.linkml_model import (Annotation, ClassDefinition,
 from linkml_runtime.utils.compile_python import compile_python
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.schemaview import SchemaView
-from sqlalchemy import *
+from sqlalchemy import Enum
 
 from linkml._version import __version__
 from linkml.generators.pydanticgen import PydanticGenerator
@@ -75,6 +75,11 @@ class SQLAlchemyGenerator(Generator):
         for c in tr_schema.classes.values():
             for a in c.attributes.values():
                 sql_range = tgen.get_sql_range(a, tr_schema, tr_schema_view)
+                if isinstance(sql_range, Enum):
+                    # enums can be use multiple times, but sqlalchemy alembic migrations are really bad detecting this
+                    # and so will fail. As a workaround, we make the questionable decision to add the table name to
+                    # the enum name here to not run into that problem
+                    sql_range.name = underscore(f"enum_{c.name}_{sql_range.name}")
                 sql_type = sql_range.__repr__()
                 ann = Annotation("sql_type", sql_type)
                 a.annotations[ann.tag] = ann
