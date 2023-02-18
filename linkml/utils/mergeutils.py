@@ -1,4 +1,5 @@
 import dataclasses
+import logging
 from copy import deepcopy
 from typing import Dict, List, Optional, Union, cast
 
@@ -73,6 +74,37 @@ def merge_namespaces(
     :return:
     """
     for prefix in mergee.prefixes.values():
+
+        # Handle local prefixes special: we assume that these happen because we are in different (levels of) folders,
+        # and we assume that they reference the same linkml file
+        if "://" not in prefix.prefix_reference:
+            # We cannot resolve this to an absolute path, so we have to assume that
+            # this prefix is already defined correctly in the target
+            if prefix.prefix_prefix not in namespaces:
+                logging.info(
+                    "Adding an unadjusted relative prefix for %s from %s, "
+                    + "as the prefix is not yet defined, even as we cannot adjust it relative to the final file. "
+                    + "If it cannot be resolved, add the prefix definition to the input schema!",
+                    prefix.prefix_prefix,
+                    mergee.name,
+                )
+                namespaces[prefix.prefix_prefix] = prefix.prefix_reference
+            else:
+                if (
+                    prefix.prefix_prefix in target.prefixes
+                    and target.prefixes[prefix.prefix_prefix].prefix_reference
+                    != prefix.prefix_reference
+                ):
+                    logging.info(
+                        "Ignoring different relative prefix for %s from %s, "
+                        + "as we cannot adjust it relative to the final file. "
+                        + "Assuming the first found location is correct: %s!",
+                        prefix.prefix_prefix,
+                        mergee.name,
+                        namespaces[prefix.prefix_prefix],
+                    )
+            continue
+
         namespaces[prefix.prefix_prefix] = prefix.prefix_reference
         # if prefix.prefix_prefix not in target.prefixes:
         #     target.prefixes[prefix.prefix_prefix] = prefix
