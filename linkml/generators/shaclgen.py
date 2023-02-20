@@ -109,10 +109,11 @@ class ShaclGenerator(Generator):
                         prop_pv(SH.nodeKind, SH.IRI)
                     else:
                         prop_pv(SH.nodeKind, SH.BlankNode)
-                elif r in sv.all_types().values():
+                elif r in sv.all_types():
+                    prop_pv(SH.nodeKind, SH.Literal)
                     rt = sv.get_type(r)
                     if rt.uri:
-                        prop_pv(SH.datatype, rt.uri)
+                        prop_pv(SH.datatype, Literal(rt.uri))
                     else:
                         logging.error(f"No URI for type {rt.name}")
                 elif r in sv.all_enums():
