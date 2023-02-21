@@ -479,7 +479,7 @@ disable pretty-printing and return the most compact JSON representation
 """
 )
 @click.option(
-    "--sort_keys",
+    "--sort-keys",
     default=False,
     show_default=True,
     help="""
