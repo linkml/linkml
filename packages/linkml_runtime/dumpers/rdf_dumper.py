@@ -78,6 +78,8 @@ class RDFDumper(Dumper):
             * A list containing elements of any type named above
         :param fmt: RDF format
         """
+        if isinstance(element, BaseModel):
+            element = element.dict()
         super().dump(element, to_file, contexts=contexts, fmt=fmt)
 
     def dumps(self, element: Union[BaseModel, YAMLRoot], contexts: CONTEXTS_PARAM_TYPE = None, fmt: Optional[str] = 'turtle') -> str:
@@ -88,5 +90,7 @@ class RDFDumper(Dumper):
         :param fmt: rdf format
         :return: rdflib Graph containing element
         """
+        if isinstance(element, BaseModel):
+            element = element.dict()
         return self.as_rdf_graph(remove_empty_items(element, hide_protected_keys=True), contexts).\
             serialize(format=fmt)
