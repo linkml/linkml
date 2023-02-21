@@ -404,6 +404,15 @@ be used for <a class="reference internal" href="inlining.html"><span class="doc 
 <p>If you need to mark additional fields as unique, or a collection of slots that when considered as a tuple are unique, use
 <code class="docutils literal notranslate"><span class="pre">unique_keys</span></code> (see the <a class="reference internal" href="constraints.html"><span class="doc std std-doc">constraits</span></a> section of the docs).</p>
 </section>
+<section id="type-designator">
+<h2>Type designator<a class="headerlink" href="#type-designator" title="Permalink to this heading">#</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">designates_type</span></code> slot can be used to indicate the type or category of instances of a class.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">slots</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">category</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">designates_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</pre></div>
+</div>
+</section>
 <section id="slot-cardinality">
 <h2>Slot cardinality<a class="headerlink" href="#slot-cardinality" title="Permalink to this heading">#</a></h2>
 <section id="multivalued">
@@ -418,6 +427,32 @@ be used for <a class="reference internal" href="inlining.html"><span class="doc 
 </pre></div>
 </div>
 </section>
+</section>
+<section id="default-values">
+<h2>default values<a class="headerlink" href="#default-values" title="Permalink to this heading">#</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">ifabsent</span></code> slot can be used to specify a default value for a slot using the syntax shown in the examples below.</p>
+<p>Examples:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">slots</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">my_string_slot</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="w">    </span><span class="nt">ifabsent</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string(default value)</span>
+<span class="w">  </span><span class="nt">my_int_slot</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">integer</span>
+<span class="w">    </span><span class="nt">ifabsent</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">int(42)</span>
+<span class="w">  </span><span class="nt">my_float_slot</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">float</span>
+<span class="w">    </span><span class="nt">ifabsent</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">float(0.5)</span>
+<span class="w">  </span><span class="nt">my_bool_slot</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">boolean</span>
+<span class="w">    </span><span class="nt">ifabsent</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True</span>
+<span class="w">  </span><span class="nt">my_date_slot</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">date</span>
+<span class="w">    </span><span class="nt">ifabsent</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">date(&quot;2020-01-31&quot;)</span>
+<span class="w">  </span><span class="nt">my_datetime_slot</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">datetime</span>
+<span class="w">    </span><span class="nt">ifabsent</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">datetime(&quot;2020-01-31T12:00:00Z&quot;)</span>
+</pre></div>
+</div>
 <section id="required">
 <h3>required<a class="headerlink" href="#required" title="Permalink to this heading">#</a></h3>
 <p>The <a class="reference external" href="https://w3id.org/linkml/required">required</a> slot can be used to define whether a slot is required.</p>
@@ -510,8 +545,12 @@ be used for <a class="reference internal" href="inlining.html"><span class="doc 
 <li><a class="reference internal" href="#ranges">ranges</a></li>
 <li><a class="reference internal" href="#slot-usage">slot_usage</a></li>
 <li><a class="reference internal" href="#identifiers">Identifiers</a></li>
+<li><a class="reference internal" href="#type-designator">Type designator</a></li>
 <li><a class="reference internal" href="#slot-cardinality">Slot cardinality</a><ul>
 <li><a class="reference internal" href="#multivalued">multivalued</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#default-values">default values</a><ul>
 <li><a class="reference internal" href="#required">required</a></li>
 <li><a class="reference internal" href="#recommended">recommended</a></li>
 </ul>

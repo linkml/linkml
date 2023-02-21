@@ -301,6 +301,7 @@
 <span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">field</span><span class="p">,</span> <span class="n">dataclass</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">linkml.utils.ifabsent_functions</span> <span class="kn">import</span> <span class="n">ifabsent_value_declaration</span>
 
 <span class="kn">import</span> <span class="nn">click</span>
 <span class="kn">from</span> <span class="nn">jinja2</span> <span class="kn">import</span> <span class="n">Template</span>
@@ -510,6 +511,9 @@
                             <span class="o">+</span> <span class="s2">&quot;]&quot;</span>
                         <span class="p">)</span>
                     <span class="n">slot_values</span><span class="p">[</span><span class="n">camelcase</span><span class="p">(</span><span class="n">class_def</span><span class="o">.</span><span class="n">name</span><span class="p">)][</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">slot_values</span><span class="p">[</span><span class="n">camelcase</span><span class="p">(</span><span class="n">class_def</span><span class="o">.</span><span class="n">name</span><span class="p">)][</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;, const=True&quot;</span>
+                <span class="k">elif</span> <span class="n">slot</span><span class="o">.</span><span class="n">ifabsent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">value</span> <span class="o">=</span> <span class="n">ifabsent_value_declaration</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">ifabsent</span><span class="p">,</span> <span class="n">sv</span><span class="p">,</span> <span class="n">class_def</span><span class="p">,</span> <span class="n">slot</span><span class="p">)</span>
+                    <span class="n">slot_values</span><span class="p">[</span><span class="n">camelcase</span><span class="p">(</span><span class="n">class_def</span><span class="o">.</span><span class="n">name</span><span class="p">)][</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
                 <span class="c1"># Multivalued slots that are either not inlined (just an identifier) or are</span>
                 <span class="c1"># inlined as lists should get default_factory list, if they&#39;re inlined but</span>
                 <span class="c1"># not as a list, that means a dictionary</span>
