@@ -3,6 +3,7 @@ from collections import defaultdict
 from copy import deepcopy
 from dataclasses import field, dataclass
 from typing import Dict, List, TextIO, Union
+from linkml.utils.ifabsent_functions import ifabsent_value_declaration
 
 import click
 from jinja2 import Template
@@ -212,6 +213,9 @@ class PydanticGenerator(OOCodeGenerator):
                             + "]"
                         )
                     slot_values[camelcase(class_def.name)][slot.name] = slot_values[camelcase(class_def.name)][slot.name] + ", const=True"
+                elif slot.ifabsent is not None:
+                    value = ifabsent_value_declaration(slot.ifabsent, sv, class_def, slot)
+                    slot_values[camelcase(class_def.name)][slot.name] = value
                 # Multivalued slots that are either not inlined (just an identifier) or are
                 # inlined as lists should get default_factory list, if they're inlined but
                 # not as a list, that means a dictionary

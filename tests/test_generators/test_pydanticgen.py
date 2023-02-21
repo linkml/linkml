@@ -159,6 +159,59 @@ enums:
             self.assertIn(expected_default_factories[expected], slot_line)
 
 
+    def test_ifabsent(self):
+        schema_str = """
+id: id
+name: test_info
+description: just testing
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+  schema: http://schema.org/
+
+imports:
+  - https://w3id.org/linkml/types
+
+classes:
+  Test:
+    description: just a test
+    attributes:
+      attr1:
+        range: integer
+        ifabsent: int(10)
+      attr2:
+        range: string
+        ifabsent: string(hello world) 
+      attr3:
+        range: boolean
+        ifabsent: True
+      attr4:
+        range: float
+        ifabsent: float(1.0)
+      attr5:
+        range: date
+        ifabsent: date(2020-01-01)
+      attr6:
+        range: datetime
+        ifabsent: datetime(2020-01-01T00:00:00Z)
+        """
+
+        gen = PydanticGenerator(schema_str)
+        code = gen.serialize()
+        lines = code.splitlines()
+        ix = lines.index('class Test(ConfiguredBaseModel):')
+        integer_slot_line = lines[ix + 4].strip()
+        assert integer_slot_line == 'attr1: Optional[int] = Field(10)'
+        string_slot_line = lines[ix + 5].strip()
+        assert string_slot_line == 'attr2: Optional[str] = Field("hello world")'
+        boolean_slot_line = lines[ix + 6].strip()
+        assert boolean_slot_line == 'attr3: Optional[bool] = Field(True)'
+        float_slot_line = lines[ix + 7].strip()
+        assert float_slot_line == 'attr4: Optional[float] = Field(1.0)'
+        date_slot_line = lines[ix + 8].strip()
+        assert date_slot_line == 'attr5: Optional[date] = Field(datetime.date(2020, 01, 01))'
+        datetime_slot_line = lines[ix + 9].strip()
+        assert datetime_slot_line == 'attr6: Optional[datetime ] = Field(datetime.datetime(2020, 01, 01, 00, 00, 00))'
 
 if __name__ == "__main__":
     unittest.main()
