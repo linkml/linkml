@@ -25,7 +25,13 @@ def get_accepted_type_designator_values(sv: SchemaView, type_designator_slot: Sl
             sv.get_uri(class_def, expand=False, native=True),
             sv.get_uri(class_def, expand=False, native=False),
         ]
-    if type_designator_slot.range == 'uri':
+    # unique, but with order preserved (https://stackoverflow.com/a/17016257)
+    accepted_uri_values = list(dict.fromkeys(accepted_uri_values))
+
+    slot_types = set(sv.type_ancestors(type_designator_slot.range))
+    uri_types = ['uri', 'uriorcurie']
+
+    if slot_types.intersection(uri_types):
         return accepted_uri_values
     elif type_designator_slot.range == 'string':
         return [camelcase(class_def.name)]
