@@ -371,10 +371,10 @@ class PydanticGenerator(OOCodeGenerator):
             return None
 
         for pyrange in pyranges:
-            if pyrange is None or pyrange not in self.schemaview.all_classes():
+            if pyrange is None or pyrange.lower() not in self.schemaview.all_classes():
                 continue # ignore non-class ranges
 
-            identifier_slot = self.schemaview.get_identifier_slot(pyrange)
+            identifier_slot = self.schemaview.get_identifier_slot(pyrange.lower())
             if identifier_slot is not None:
                 collection_keys.add(self.generate_python_range(identifier_slot.range,
                                                                inlined=identifier_slot.inlined,
