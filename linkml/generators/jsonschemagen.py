@@ -478,6 +478,14 @@ If this is a positive number the resulting JSON will be pretty-printed with that
 disable pretty-printing and return the most compact JSON representation
 """
 )
+@click.option(
+    "--sort_keys",
+    default=False,
+    show_default=True,
+    help="""
+If this is set, the resulting JSONSchema will be sorted such that diffs in the output are minimized
+"""
+)
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, **kwargs):
     """Generate JSON Schema representation of a LinkML model"""
