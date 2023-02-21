@@ -23,7 +23,7 @@ classes:
 ```
 
 This means that if the `type` slot is present in data for an instance of a class
-Organization, then the value of the `type` slot MUST either "Organization" or any
+Organization, then the value of the `type` slot MUST be either "Organization" or any
 of the transitive subclasses (by following `is_a` or `mixins`).
 
 Additionally, if the instance instantiates a more specific class of Organization,
