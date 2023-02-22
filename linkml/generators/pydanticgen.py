@@ -334,21 +334,14 @@ class PydanticGenerator(OOCodeGenerator):
         """
         sv = self.schemaview
 
-        # if the slot_range is an AnonymousSlotExpression, the actual range needs
-        # to be extracted, otherwise keep it as is
-        if isinstance(slot_range, AnonymousSlotExpression):
-            range = slot_range.range
-        else:
-            range = slot_range
-
-        if range in sv.all_classes():
-            pyrange = self.get_class_slot_range(range, inlined=inlined, inlined_as_list=inlined_as_list)
-        elif range in sv.all_enums():
+        if slot_range in sv.all_classes():
+            pyrange = self.get_class_slot_range(slot_range, inlined=inlined, inlined_as_list=inlined_as_list)
+        elif slot_range in sv.all_enums():
             pyrange = f"{camelcase(slot_range)}"
-        elif range in sv.all_types():
-            t = sv.get_type(range)
+        elif slot_range in sv.all_types():
+            t = sv.get_type(slot_range)
             pyrange = _get_pyrange(t, sv)
-        elif range is None:
+        elif slot_range is None:
             pyrange = "str"
         else:
             # TODO: default ranges in schemagen
@@ -357,7 +350,7 @@ class PydanticGenerator(OOCodeGenerator):
             raise Exception(f"range: {slot_range}")
         return pyrange
 
-    def generate_collection_key(self, pyranges: List[str]) -> Optional[str]:
+    def generate_collection_key(self, slot_ranges: List[str]) -> Optional[str]:
         """
         Find the python range value (str, int, etc) for the identifier slot
         of a class used as a slot range.
@@ -366,19 +359,19 @@ class PydanticGenerator(OOCodeGenerator):
         will be returned. If more than one match is found and they don't match,
         an exception will be raised.
 
-        :param pyranges: list of python range values
+        :param slot_ranges: list of python range values
         """
 
         collection_keys:Set[str] = set()
 
-        if pyranges is None:
+        if slot_ranges is None:
             return None
 
-        for pyrange in pyranges:
-            if pyrange is None or pyrange.lower() not in self.schemaview.all_classes():
+        for slot_range in slot_ranges:
+            if slot_range is None or slot_range not in self.schemaview.all_classes():
                 continue # ignore non-class ranges
 
-            identifier_slot = self.schemaview.get_identifier_slot(pyrange.lower())
+            identifier_slot = self.schemaview.get_identifier_slot(slot_range)
             if identifier_slot is not None:
                 collection_keys.add(self.generate_python_range(identifier_slot.range,
                                                                inlined=identifier_slot.inlined,
@@ -440,8 +433,12 @@ class PydanticGenerator(OOCodeGenerator):
 
                 slot_ranges:List[str] = []
 
+                if len(s.any_of) > 0 and s.range is not None:
+                    raise ValueError("Slot cannot have both range and any_of defined")
+
                 if s.any_of is not None and len(s.any_of) > 0:
-                    slot_ranges.extend(s.any_of)
+                    # list comprehension here is pulling ranges from within AnonymousSlotExpression
+                    slot_ranges.extend([r.range for r in s.any_of])
                 else:
                     slot_ranges.append(s.range)
 
@@ -459,7 +456,17 @@ class PydanticGenerator(OOCodeGenerator):
                     raise Exception(f"Could not generate python range for {class_name}.{s.name}")
 
                 if s.multivalued:
-                    collection_key = self.generate_collection_key(pyranges)
+                    if s.inlined or s.inlined_as_list:
+                        collection_key = self.generate_collection_key(slot_ranges)
+                    else:
+                        collection_key = None
+                    print(f"\nclass_name: {class_name}")
+                    print(f"slot_name: {s.name}")
+                    print(f"slot_ranges: {slot_ranges}")
+                    print(f"pyranges: {pyranges}")
+                    print(f"collection_key: {collection_key}")
+                    print(f"s.list: {s.inlined}")
+                    print(f"s.inlined_as_list: {s.inlined_as_list}")
                     if s.inlined == False or collection_key is None or s.inlined_as_list == True:
                         pyrange = f"List[{pyrange}]"
                     else:
