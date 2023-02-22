@@ -15,7 +15,7 @@ from linkml_runtime.linkml_model.meta import (Annotation, ClassDefinition,
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.schemaview import SchemaView
 
-from linkml.generators.common.type_designators import get_type_designator_value
+from linkml.generators.common.type_designators import get_type_designator_value, get_accepted_type_designator_values
 from linkml._version import __version__
 from linkml.generators.oocodegen import OOCodeGenerator
 from linkml.utils.generator import shared_arguments
@@ -28,7 +28,7 @@ default_template = """
 from __future__ import annotations
 from datetime import datetime, date
 from enum import Enum
-from typing import List, Dict, Optional, Any, Union
+from typing import List, Dict, Optional, Any, Union, Literal
 from pydantic import BaseModel as BaseModel, Field
 from linkml_runtime.linkml_model import Decimal
 
@@ -212,7 +212,7 @@ class PydanticGenerator(OOCodeGenerator):
                             + slot_values[camelcase(class_def.name)][slot.name]
                             + "]"
                         )
-                    slot_values[camelcase(class_def.name)][slot.name] = slot_values[camelcase(class_def.name)][slot.name] + ", const=True"
+                    slot_values[camelcase(class_def.name)][slot.name] = slot_values[camelcase(class_def.name)][slot.name] 
                 elif slot.ifabsent is not None:
                     value = ifabsent_value_declaration(slot.ifabsent, sv, class_def, slot)
                     slot_values[camelcase(class_def.name)][slot.name] = value
@@ -355,7 +355,9 @@ class PydanticGenerator(OOCodeGenerator):
                     s.description = s.description.replace('"', '\\"')
                 class_def.attributes[s.name] = s
                 collection_key = None
-                if s.range in sv.all_classes():
+                if s.designates_type:
+                    pyrange = "Literal[" + ",".join(["\"" + x + "\"" for x in get_accepted_type_designator_values(sv, s, class_def)]) + "]"
+                elif s.range in sv.all_classes():
                     pyrange = self.get_class_slot_range(s)
                     identifier_slot = sv.get_identifier_slot(s.range)
                     if identifier_slot is not None and identifier_slot.range is not None:
@@ -377,7 +379,7 @@ class PydanticGenerator(OOCodeGenerator):
                         pyrange = f"List[{pyrange}]"
                     else:
                         pyrange = f"Dict[{collection_key}, {pyrange}]"
-                if not s.required:
+                if not s.required and not s.designates_type:
                     pyrange = f"Optional[{pyrange}]"
                 ann = Annotation("python_range", pyrange)
                 s.annotations[ann.tag] = ann
