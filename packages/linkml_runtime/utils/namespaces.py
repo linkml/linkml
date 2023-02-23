@@ -197,6 +197,8 @@ class Namespaces(CaseInsensitiveDict):
         uri_or_curie_str = str(uri_or_curie)
         if '://' in uri_or_curie_str:
             return URIRef(uri_or_curie_str)
+        if ':\\' in uri_or_curie_str:  # Windows drive letters
+            return URIRef(uri_or_curie_str)
         if ':' in uri_or_curie_str:
             prefix, local = str(uri_or_curie_str).split(':', 1)
             if not prefix:
