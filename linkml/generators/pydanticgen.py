@@ -11,11 +11,11 @@ from jinja2 import Template
 from linkml_runtime.linkml_model.meta import (Annotation, ClassDefinition,
                                               EnumDefinition,
                                               EnumDefinitionName,
-                                              SchemaDefinition, TypeDefinition, AnonymousSlotExpression)
+                                              SchemaDefinition, TypeDefinition, AnonymousSlotExpression, SlotDefinition)
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.schemaview import SchemaView
 
-from linkml.generators.common.type_designators import get_type_designator_value
+from linkml.generators.common.type_designators import get_type_designator_value, get_accepted_type_designator_values
 from linkml._version import __version__
 from linkml.generators.oocodegen import OOCodeGenerator
 from linkml.utils.generator import shared_arguments
@@ -28,7 +28,7 @@ default_template = """
 from __future__ import annotations
 from datetime import datetime, date
 from enum import Enum
-from typing import List, Dict, Optional, Any, Union
+from typing import List, Dict, Optional, Any, Union, Literal
 from pydantic import BaseModel as BaseModel, Field
 from linkml_runtime.linkml_model import Decimal
 
@@ -212,7 +212,7 @@ class PydanticGenerator(OOCodeGenerator):
                             + slot_values[camelcase(class_def.name)][slot.name]
                             + "]"
                         )
-                    slot_values[camelcase(class_def.name)][slot.name] = slot_values[camelcase(class_def.name)][slot.name] + ", const=True"
+                    slot_values[camelcase(class_def.name)][slot.name] = slot_values[camelcase(class_def.name)][slot.name]
                 elif slot.ifabsent is not None:
                     value = ifabsent_value_declaration(slot.ifabsent, sv, class_def, slot)
                     slot_values[camelcase(class_def.name)][slot.name] = value
@@ -328,14 +328,17 @@ class PydanticGenerator(OOCodeGenerator):
 
         return range_cls_identifier_slot_range
 
-    def generate_python_range(self, slot_range, inlined: bool, inlined_as_list: bool) -> str:
+    def generate_python_range(self, slot_range, slot_def:SlotDefinition, class_def:ClassDefinition) -> str:
         """
         Generate the python range for a slot range value
         """
         sv = self.schemaview
 
-        if slot_range in sv.all_classes():
-            pyrange = self.get_class_slot_range(slot_range, inlined=inlined, inlined_as_list=inlined_as_list)
+        if slot_def.designates_type:
+            pyrange = "Literal[" + ",".join(
+                ["\"" + x + "\"" for x in get_accepted_type_designator_values(sv, slot_def, class_def)]) + "]"
+        elif slot_range in sv.all_classes():
+            pyrange = self.get_class_slot_range(slot_range, inlined=slot_def.inlined, inlined_as_list=slot_def.inlined_as_list)
         elif slot_range in sv.all_enums():
             pyrange = f"{camelcase(slot_range)}"
         elif slot_range in sv.all_types():
@@ -350,7 +353,7 @@ class PydanticGenerator(OOCodeGenerator):
             raise Exception(f"range: {slot_range}")
         return pyrange
 
-    def generate_collection_key(self, slot_ranges: List[str]) -> Optional[str]:
+    def generate_collection_key(self, slot_ranges: List[str], slot_def: SlotDefinition, class_def: ClassDefinition) -> Optional[str]:
         """
         Find the python range value (str, int, etc) for the identifier slot
         of a class used as a slot range.
@@ -373,9 +376,7 @@ class PydanticGenerator(OOCodeGenerator):
 
             identifier_slot = self.schemaview.get_identifier_slot(slot_range)
             if identifier_slot is not None:
-                collection_keys.add(self.generate_python_range(identifier_slot.range,
-                                                               inlined=identifier_slot.inlined,
-                                                               inlined_as_list=identifier_slot.inlined_as_list))
+                collection_keys.add(self.generate_python_range(identifier_slot.range, slot_def, class_def))
         if len(collection_keys) > 1:
             raise Exception(f"Slot with any_of range has multiple identifier slot range types: {collection_keys}")
         if len(collection_keys) == 1:
@@ -394,7 +395,6 @@ class PydanticGenerator(OOCodeGenerator):
         sv: SchemaView
         sv = self.schemaview
         schema = sv.schema
-        # print(f'# SV c={sv.all_classes().keys()}')
         pyschema = SchemaDefinition(
             id=schema.id,
             name=schema.name,
@@ -442,7 +442,7 @@ class PydanticGenerator(OOCodeGenerator):
                 else:
                     slot_ranges.append(s.range)
 
-                pyranges = [self.generate_python_range(slot_range, inlined=s.inlined, inlined_as_list=s.inlined_as_list)
+                pyranges = [self.generate_python_range(slot_range, s, class_def)
                             for slot_range in slot_ranges]
 
                 pyranges = list(set(pyranges)) # remove duplicates
@@ -457,21 +457,14 @@ class PydanticGenerator(OOCodeGenerator):
 
                 if s.multivalued:
                     if s.inlined or s.inlined_as_list:
-                        collection_key = self.generate_collection_key(slot_ranges)
+                        collection_key = self.generate_collection_key(slot_ranges, s, class_def)
                     else:
                         collection_key = None
-                    print(f"\nclass_name: {class_name}")
-                    print(f"slot_name: {s.name}")
-                    print(f"slot_ranges: {slot_ranges}")
-                    print(f"pyranges: {pyranges}")
-                    print(f"collection_key: {collection_key}")
-                    print(f"s.list: {s.inlined}")
-                    print(f"s.inlined_as_list: {s.inlined_as_list}")
                     if s.inlined == False or collection_key is None or s.inlined_as_list == True:
                         pyrange = f"List[{pyrange}]"
                     else:
                         pyrange = f"Dict[{collection_key}, {pyrange}]"
-                if not s.required:
+                if not s.required and not s.designates_type:
                     pyrange = f"Optional[{pyrange}]"
                 ann = Annotation("python_range", pyrange)
                 s.annotations[ann.tag] = ann
