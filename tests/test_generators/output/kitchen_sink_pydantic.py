@@ -245,7 +245,7 @@ class Dataset(ConfiguredBaseModel):
     persons: Optional[List[Person]] = Field(default_factory=list)
     companies: Optional[List[Company]] = Field(default_factory=list)
     activities: Optional[List[Activity]] = Field(default_factory=list)
-    code_systems: Optional[List[CodeSystem]] = Field(None)
+    code_systems: Optional[Dict[str, CodeSystem]] = Field(None)
     
 
 
