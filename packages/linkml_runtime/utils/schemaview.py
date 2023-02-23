@@ -68,7 +68,12 @@ def load_schema_wrap(path: str, **kwargs):
     yaml_loader = YAMLLoader()
     schema: SchemaDefinition
     schema = yaml_loader.load(path, target_class=SchemaDefinition, **kwargs)
-    schema.source_file = path
+    if "\n" not in path:
+        # only set path if the input is not a yaml string.
+        # Setting the source path is necessary for relative imports;
+        # while initializing a schema with a yaml string is possible, there
+        # should be no expectation of relative imports working.
+        schema.source_file = path
     return schema
 
 
@@ -144,13 +149,40 @@ class SchemaView(object):
         return namespaces
 
     def load_import(self, imp: str, from_schema: SchemaDefinition = None):
+        """
+        Handles import directives.
+
+        The value of the import can be:
+
+        - a URL (specified as either a full URL or a CURIE)
+        - a local file path
+
+        The import should leave off the .yaml suffix.
+
+        If the import is a URL then the import is fetched over the network UNLESS this is a metamodel
+        import, in which case it is fetched from within the linkml_runtime package, where the yaml
+        is distributed. This ensures that the version of the metamodel imported matches the version
+        of the linkml_runtime package.
+
+        In future, this mechanism may be extended to arbitrary modules, such that we avoid
+        network dependence at runtime in general.
+
+        :param imp:
+        :param from_schema:
+        :return:
+        """
         if from_schema is None:
             from_schema = self.schema
-        sname = map_import(self.importmap, self.namespaces, imp)
-        logging.info(f'Loading schema {sname} from {from_schema.source_file}')
+        from linkml_runtime import SCHEMA_DIRECTORY
+        default_import_map = {
+            "linkml:": str(SCHEMA_DIRECTORY)
+        }
+        importmap = {**default_import_map, **self.importmap}
+        sname = map_import(importmap, self.namespaces, imp)
+        logging.info(f'Importing {imp} as {sname} from source {from_schema.source_file}')
         schema = load_schema_wrap(sname + '.yaml',
                                   base_dir=os.path.dirname(
-                                      from_schema.source_file) if from_schema.source_file else None)
+                                  from_schema.source_file) if from_schema.source_file else None)
         return schema
 
     @lru_cache()
