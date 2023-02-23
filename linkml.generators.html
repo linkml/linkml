@@ -2467,9 +2467,30 @@ for any class that is inherited (class itself, is_a, mixin, apply_to).  Otherwis
 <dd></dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="linkml.generators.pydanticgen.PydanticGenerator.generate_collection_key">
+<span class="sig-name descname"><span class="pre">generate_collection_key</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slot_ranges</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slot_def</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.SlotDefinition" title="linkml_runtime.linkml_model.meta.SlotDefinition"><span class="pre">SlotDefinition</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">class_def</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.ClassDefinition" title="linkml_runtime.linkml_model.meta.ClassDefinition"><span class="pre">ClassDefinition</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/linkml/generators/pydanticgen.html#PydanticGenerator.generate_collection_key"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.pydanticgen.PydanticGenerator.generate_collection_key" title="Permalink to this definition">#</a></dt>
+<dd><p>Find the python range value (str, int, etc) for the identifier slot
+of a class used as a slot range.</p>
+<p>If a pyrange value matches a class name, the range of the identifier slot
+will be returned. If more than one match is found and they don’t match,
+an exception will be raised.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>slot_ranges</strong> – list of python range values</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="linkml.generators.pydanticgen.PydanticGenerator.generate_enums">
 <span class="sig-name descname"><span class="pre">generate_enums</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">all_enums</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">EnumDefinitionName</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">EnumDefinition</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/linkml/generators/pydanticgen.html#PydanticGenerator.generate_enums"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.pydanticgen.PydanticGenerator.generate_enums" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml.generators.pydanticgen.PydanticGenerator.generate_python_range">
+<span class="sig-name descname"><span class="pre">generate_python_range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slot_range</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slot_def</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.SlotDefinition" title="linkml_runtime.linkml_model.meta.SlotDefinition"><span class="pre">SlotDefinition</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">class_def</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.ClassDefinition" title="linkml_runtime.linkml_model.meta.ClassDefinition"><span class="pre">ClassDefinition</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/linkml/generators/pydanticgen.html#PydanticGenerator.generate_python_range"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.pydanticgen.PydanticGenerator.generate_python_range" title="Permalink to this definition">#</a></dt>
+<dd><p>Generate the python range for a slot range value</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="linkml.generators.pydanticgen.PydanticGenerator.generatorname">
@@ -2497,7 +2518,7 @@ for any class that is inherited (class itself, is_a, mixin, apply_to).  Otherwis
 
 <dl class="py method">
 <dt class="sig sig-object py" id="linkml.generators.pydanticgen.PydanticGenerator.get_class_slot_range">
-<span class="sig-name descname"><span class="pre">get_class_slot_range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slot</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/linkml/generators/pydanticgen.html#PydanticGenerator.get_class_slot_range"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.pydanticgen.PydanticGenerator.get_class_slot_range" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">get_class_slot_range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slot_range</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inlined</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inlined_as_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/linkml/generators/pydanticgen.html#PydanticGenerator.get_class_slot_range"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.pydanticgen.PydanticGenerator.get_class_slot_range" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -2511,6 +2532,22 @@ for any class that is inherited (class itself, is_a, mixin, apply_to).  Otherwis
 <dd><dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Dictionary of dictionaries with predefined slot values for each class</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml.generators.pydanticgen.PydanticGenerator.range_class_has_identifier_slot">
+<span class="sig-name descname"><span class="pre">range_class_has_identifier_slot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slot</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/linkml/generators/pydanticgen.html#PydanticGenerator.range_class_has_identifier_slot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.pydanticgen.PydanticGenerator.range_class_has_identifier_slot" title="Permalink to this definition">#</a></dt>
+<dd><p>Check if the range class of a slot has an identifier slot, via both slot.any_of and slot.range
+Should return False if the range is not a class, and also if the range is a class but has no
+identifier slot</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>slot</strong> – SlotDefinition</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool</p>
 </dd>
 </dl>
 </dd></dl>
@@ -4396,7 +4433,9 @@ representation such as JsonSchema</p>
 <li><a class="reference internal" href="#linkml.generators.pydanticgen.PydanticGenerator.gen_classvars"><code class="docutils literal notranslate"><span class="pre">PydanticGenerator.gen_classvars</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.pydanticgen.PydanticGenerator.gen_mixin_inheritance"><code class="docutils literal notranslate"><span class="pre">PydanticGenerator.gen_mixin_inheritance</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.pydanticgen.PydanticGenerator.gen_slots"><code class="docutils literal notranslate"><span class="pre">PydanticGenerator.gen_slots</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.pydanticgen.PydanticGenerator.generate_collection_key"><code class="docutils literal notranslate"><span class="pre">PydanticGenerator.generate_collection_key()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.pydanticgen.PydanticGenerator.generate_enums"><code class="docutils literal notranslate"><span class="pre">PydanticGenerator.generate_enums()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.pydanticgen.PydanticGenerator.generate_python_range"><code class="docutils literal notranslate"><span class="pre">PydanticGenerator.generate_python_range()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.pydanticgen.PydanticGenerator.generatorname"><code class="docutils literal notranslate"><span class="pre">PydanticGenerator.generatorname</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.pydanticgen.PydanticGenerator.generatorversion"><code class="docutils literal notranslate"><span class="pre">PydanticGenerator.generatorversion</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.pydanticgen.PydanticGenerator.genmeta"><code class="docutils literal notranslate"><span class="pre">PydanticGenerator.genmeta</span></code></a></li>
@@ -4404,6 +4443,7 @@ representation such as JsonSchema</p>
 <li><a class="reference internal" href="#linkml.generators.pydanticgen.PydanticGenerator.get_class_slot_range"><code class="docutils literal notranslate"><span class="pre">PydanticGenerator.get_class_slot_range()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.pydanticgen.PydanticGenerator.get_mixin_identifier_range"><code class="docutils literal notranslate"><span class="pre">PydanticGenerator.get_mixin_identifier_range()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.pydanticgen.PydanticGenerator.get_predefined_slot_values"><code class="docutils literal notranslate"><span class="pre">PydanticGenerator.get_predefined_slot_values()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.pydanticgen.PydanticGenerator.range_class_has_identifier_slot"><code class="docutils literal notranslate"><span class="pre">PydanticGenerator.range_class_has_identifier_slot()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.pydanticgen.PydanticGenerator.serialize"><code class="docutils literal notranslate"><span class="pre">PydanticGenerator.serialize()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.pydanticgen.PydanticGenerator.sort_classes"><code class="docutils literal notranslate"><span class="pre">PydanticGenerator.sort_classes()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.pydanticgen.PydanticGenerator.template_file"><code class="docutils literal notranslate"><span class="pre">PydanticGenerator.template_file</span></code></a></li>
