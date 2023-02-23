@@ -28,7 +28,6 @@ class PydanticGeneratorTestCase(unittest.TestCase):
         """Generate pydantic classes"""
         gen = PydanticGenerator(SCHEMA, package=PACKAGE)
         code = gen.serialize()
-        print(code)
         with open(PYDANTIC_OUT, "w") as stream:
             stream.write(code)
         # TODO: lowering the bar for the pydantic test until list to dict normalization is supported
@@ -207,7 +206,6 @@ slots:
             schema_str = yaml_dumper.dumps(schema)
             gen = PydanticGenerator(schema_str, package=PACKAGE)
             code = gen.serialize()
-            # print(code)
             lines = code.splitlines()
             ix = lines.index("class A(ConfiguredBaseModel):")
             self.assertGreater(ix, 0)
