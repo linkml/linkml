@@ -142,7 +142,6 @@ class DocGenerator(Generator):
 
 
     def __post_init__(self):
-        self.schemaview = SchemaView(self.schema)
         dialect = self.dialect
         if dialect is not None:
             # TODO: simplify this
@@ -159,6 +158,7 @@ class DocGenerator(Generator):
         if self.example_directory:
             self.example_runner = ExampleRunner(input_directory=Path(self.example_directory))
         super().__post_init__()
+        self.schemaview = SchemaView(self.schema, merge_imports=self.mergeimports)
 
     def serialize(self, directory: str = None) -> None:
         """
@@ -840,7 +840,8 @@ class DocGenerator(Generator):
         objs = []
         for input in inputs:
             stem = Path(input).stem
-            objs.append((stem, open(input, encoding="utf-8").read()))
+            with open(input, encoding="utf-8") as f:
+                objs.append((stem, f.read()))
         return objs
 
 
