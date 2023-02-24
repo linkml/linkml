@@ -8,7 +8,7 @@ from typing import (Callable, Dict, Iterable, Iterator, List, Optional, Set,
                     TextIO, Tuple, TypeVar, Union)
 
 import click
-import pkg_resources
+import importlib.util
 from jinja2 import Environment, FileSystemLoader, Template
 from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.linkml_model.meta import (Annotation, ClassDefinition,
@@ -297,7 +297,8 @@ class DocGenerator(Generator):
                         f"Could not find {base_file_name} in {self.template_directory} - falling back to default"
                     )
             if not folder:
-                folder = pkg_resources.resource_filename(__name__, "docgen")
+                package_dir = os.path.dirname(importlib.util.find_spec(__name__).origin)
+                folder = os.path.join(package_dir, "docgen", "")
             loader = FileSystemLoader(folder)
             env = Environment(loader=loader)
             customize_environment(env)

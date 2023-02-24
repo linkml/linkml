@@ -7,7 +7,6 @@ from typing import (Callable, Dict, Iterator, List, Optional, Set, TextIO,
                     Tuple, Union)
 
 import click
-import pkg_resources
 from jinja2 import Environment, FileSystemLoader, Template
 from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.linkml_model.meta import (Annotation, ClassDefinition,
