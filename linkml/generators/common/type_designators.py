@@ -14,7 +14,7 @@ def get_type_designator_value(sv: SchemaView, type_designator_slot: SlotDefiniti
     elif 'uriorcurie' in slot_types:
         return sv.get_uri(class_def,expand=False, native=False)
     elif 'string' in slot_types:
-        return camelcase(class_def.name)
+        return class_def.name
     else:
         return sv.get_uri(class_def,expand=False, native=False)
 
@@ -39,6 +39,6 @@ def get_accepted_type_designator_values(sv: SchemaView, type_designator_slot: Sl
     if slot_types.intersection(uri_types):
         return accepted_uri_values
     elif type_designator_slot.range == 'string':
-        return [camelcase(class_def.name)]
+        return [class_def.name]
     else:
         return accepted_uri_values
