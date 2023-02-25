@@ -142,7 +142,6 @@ class DocGenerator(Generator):
 
 
     def __post_init__(self):
-        self.schemaview = SchemaView(self.schema)
         dialect = self.dialect
         if dialect is not None:
             # TODO: simplify this
@@ -159,6 +158,7 @@ class DocGenerator(Generator):
         if self.example_directory:
             self.example_runner = ExampleRunner(input_directory=Path(self.example_directory))
         super().__post_init__()
+        self.schemaview = SchemaView(self.schema, merge_imports=self.mergeimports)
 
     def serialize(self, directory: str = None) -> None:
         """
@@ -186,14 +186,14 @@ class DocGenerator(Generator):
             )
             return
         template = self._get_template("schema")
-        for schema_name in sv.imports_closure():
+        for schema_name in sv.imports_closure(imports=self.mergeimports):
             imported_schema = sv.schema_map.get(schema_name)
             out_str = template.render(
                 gen=self, schema=imported_schema, schemaview=sv, **template_vars
             )
             self._write(out_str, directory, imported_schema.name)
         template = self._get_template("class")
-        for cn, c in sv.all_classes().items():
+        for cn, c in sv.all_classes(imports=self.mergeimports).items():
             if self._is_external(c):
                 continue
             n = self.name(c)
@@ -202,7 +202,7 @@ class DocGenerator(Generator):
             )
             self._write(out_str, directory, n)
         template = self._get_template("slot")
-        for sn, s in sv.all_slots().items():
+        for sn, s in sv.all_slots(imports=self.mergeimports).items():
             if self._is_external(s):
                 continue
             n = self.name(s)
@@ -212,7 +212,7 @@ class DocGenerator(Generator):
             )
             self._write(out_str, directory, n)
         template = self._get_template("enum")
-        for en, e in sv.all_enums().items():
+        for en, e in sv.all_enums(imports=self.mergeimports).items():
             if self._is_external(e):
                 continue
             n = self.name(e)
@@ -221,7 +221,7 @@ class DocGenerator(Generator):
             )
             self._write(out_str, directory, n)
         template = self._get_template("type")
-        for tn, t in sv.all_types().items():
+        for tn, t in sv.all_types(imports=self.mergeimports).items():
             if self._exclude_type(t):
                 continue
             n = self.name(t)
@@ -231,7 +231,7 @@ class DocGenerator(Generator):
             )
             self._write(out_str, directory, n)
         template = self._get_template("subset")
-        for _, s in sv.all_subsets().items():
+        for _, s in sv.all_subsets(imports=self.mergeimports).items():
             if self._is_external(c):
                 continue
             n = self.name(s)
@@ -840,7 +840,8 @@ class DocGenerator(Generator):
         objs = []
         for input in inputs:
             stem = Path(input).stem
-            objs.append((stem, open(input, encoding="utf-8").read()))
+            with open(input, encoding="utf-8") as f:
+                objs.append((stem, f.read()))
         return objs
 
 
