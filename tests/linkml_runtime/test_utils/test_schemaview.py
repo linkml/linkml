@@ -2,6 +2,7 @@ import os
 import unittest
 import logging
 from copy import copy
+from pathlib import Path
 from typing import List
 from unittest import TestCase
 
@@ -14,9 +15,9 @@ from linkml_runtime.utils.schemaview import SchemaView, SchemaUsage, OrderedBy
 from linkml_runtime.utils.schemaops import roll_up, roll_down
 from tests.test_utils import INPUT_DIR
 
-SCHEMA_NO_IMPORTS = os.path.join(INPUT_DIR, 'kitchen_sink_noimports.yaml')
-SCHEMA_WITH_IMPORTS = os.path.join(INPUT_DIR, 'kitchen_sink.yaml')
-SCHEMA_WITH_STRUCTURED_PATTERNS = os.path.join(INPUT_DIR, "pattern-example.yaml")
+SCHEMA_NO_IMPORTS = Path(INPUT_DIR) / 'kitchen_sink_noimports.yaml'
+SCHEMA_WITH_IMPORTS = Path(INPUT_DIR) / 'kitchen_sink.yaml'
+SCHEMA_WITH_STRUCTURED_PATTERNS = Path(INPUT_DIR) / "pattern-example.yaml"
 
 yaml_loader = YAMLLoader()
 IS_CURRENT = 'is current'
@@ -754,6 +755,7 @@ class SchemaViewTestCase(unittest.TestCase):
                 slot = sv.get_slot(slot_name)
                 actual_result = sv.is_inlined(slot)
                 self.assertEqual(actual_result, expected_result)
+
 
 if __name__ == '__main__':
     unittest.main()

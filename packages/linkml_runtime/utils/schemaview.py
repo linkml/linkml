@@ -4,10 +4,10 @@ import logging
 import collections
 from functools import lru_cache
 from copy import copy, deepcopy
-from collections import defaultdict, OrderedDict
-from typing import Mapping, Tuple, Type, Union, Optional, List, Any
+from collections import defaultdict
+from pathlib import Path
+from typing import Mapping, Tuple
 
-from linkml_runtime.linkml_model import PermissibleValue, PermissibleValueText
 from linkml_runtime.utils.namespaces import Namespaces
 from deprecated.classic import deprecated
 from linkml_runtime.utils.context_utils import parse_import_map, map_import
@@ -116,8 +116,10 @@ class SchemaView(object):
     modifications: int = 0
     uuid: str = None
 
-    def __init__(self, schema: Union[str, SchemaDefinition],
+    def __init__(self, schema: Union[str, Path, SchemaDefinition],
                  importmap: Optional[Mapping[str, str]] = None, merge_imports: bool = False):
+        if isinstance(schema, Path):
+            schema = str(schema)
         if isinstance(schema, str):
             schema = load_schema_wrap(schema)
         self.schema = schema
