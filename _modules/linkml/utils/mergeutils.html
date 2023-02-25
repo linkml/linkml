@@ -297,6 +297,7 @@
         <article role="main">
           <h1>Source code for linkml.utils.mergeutils</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">dataclasses</span>
+<span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
 
@@ -371,6 +372,37 @@
 <span class="sd">    :return:</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">for</span> <span class="n">prefix</span> <span class="ow">in</span> <span class="n">mergee</span><span class="o">.</span><span class="n">prefixes</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+
+        <span class="c1"># Handle local prefixes special: we assume that these happen because we are in different (levels of) folders,</span>
+        <span class="c1"># and we assume that they reference the same linkml file</span>
+        <span class="k">if</span> <span class="s2">&quot;://&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">prefix</span><span class="o">.</span><span class="n">prefix_reference</span><span class="p">:</span>
+            <span class="c1"># We cannot resolve this to an absolute path, so we have to assume that</span>
+            <span class="c1"># this prefix is already defined correctly in the target</span>
+            <span class="k">if</span> <span class="n">prefix</span><span class="o">.</span><span class="n">prefix_prefix</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">namespaces</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                    <span class="s2">&quot;Adding an unadjusted relative prefix for </span><span class="si">%s</span><span class="s2"> from </span><span class="si">%s</span><span class="s2">, &quot;</span>
+                    <span class="o">+</span> <span class="s2">&quot;as the prefix is not yet defined, even as we cannot adjust it relative to the final file. &quot;</span>
+                    <span class="o">+</span> <span class="s2">&quot;If it cannot be resolved, add the prefix definition to the input schema!&quot;</span><span class="p">,</span>
+                    <span class="n">prefix</span><span class="o">.</span><span class="n">prefix_prefix</span><span class="p">,</span>
+                    <span class="n">mergee</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="n">namespaces</span><span class="p">[</span><span class="n">prefix</span><span class="o">.</span><span class="n">prefix_prefix</span><span class="p">]</span> <span class="o">=</span> <span class="n">prefix</span><span class="o">.</span><span class="n">prefix_reference</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="n">prefix</span><span class="o">.</span><span class="n">prefix_prefix</span> <span class="ow">in</span> <span class="n">target</span><span class="o">.</span><span class="n">prefixes</span>
+                    <span class="ow">and</span> <span class="n">target</span><span class="o">.</span><span class="n">prefixes</span><span class="p">[</span><span class="n">prefix</span><span class="o">.</span><span class="n">prefix_prefix</span><span class="p">]</span><span class="o">.</span><span class="n">prefix_reference</span>
+                    <span class="o">!=</span> <span class="n">prefix</span><span class="o">.</span><span class="n">prefix_reference</span>
+                <span class="p">):</span>
+                    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                        <span class="s2">&quot;Ignoring different relative prefix for </span><span class="si">%s</span><span class="s2"> from </span><span class="si">%s</span><span class="s2">, &quot;</span>
+                        <span class="o">+</span> <span class="s2">&quot;as we cannot adjust it relative to the final file. &quot;</span>
+                        <span class="o">+</span> <span class="s2">&quot;Assuming the first found location is correct: </span><span class="si">%s</span><span class="s2">!&quot;</span><span class="p">,</span>
+                        <span class="n">prefix</span><span class="o">.</span><span class="n">prefix_prefix</span><span class="p">,</span>
+                        <span class="n">mergee</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                        <span class="n">namespaces</span><span class="p">[</span><span class="n">prefix</span><span class="o">.</span><span class="n">prefix_prefix</span><span class="p">],</span>
+                    <span class="p">)</span>
+            <span class="k">continue</span>
+
         <span class="n">namespaces</span><span class="p">[</span><span class="n">prefix</span><span class="o">.</span><span class="n">prefix_prefix</span><span class="p">]</span> <span class="o">=</span> <span class="n">prefix</span><span class="o">.</span><span class="n">prefix_reference</span>
         <span class="c1"># if prefix.prefix_prefix not in target.prefixes:</span>
         <span class="c1">#     target.prefixes[prefix.prefix_prefix] = prefix</span>
