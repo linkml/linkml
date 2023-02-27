@@ -64,7 +64,7 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 #html_theme = 'sphinx_rtd_theme'
 html_theme = 'furo'
 html_logo = 'https://linkml.io/uploads/linkml-logo_color.png'
-
+html_favicon = 'https://linkml.io/uploads/linkml-logo_color-no-words.png'
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
