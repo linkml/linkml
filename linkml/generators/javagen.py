@@ -2,7 +2,7 @@ import os
 from dataclasses import field, dataclass
 from typing import Optional
 import click
-import pkg_resources
+import importlib.util
 from jinja2 import Environment, FileSystemLoader, Template
 from linkml_runtime.linkml_model.meta import TypeDefinition
 
@@ -106,7 +106,8 @@ class JavaGenerator(OOCodeGenerator):
 
     def serialize(self, directory: str, **kwargs) -> None:
         if self.generate_records:
-            javagen_folder = pkg_resources.resource_filename(__name__, "javagen")
+            package_dir = os.path.dirname(importlib.util.find_spec(__name__).origin)
+            javagen_folder = os.path.join(package_dir, "javagen", "")
             loader = FileSystemLoader(javagen_folder)
             env = Environment(loader=loader)
             template_obj = env.get_template("java_record_template.jinja2")

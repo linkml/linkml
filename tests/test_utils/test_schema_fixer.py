@@ -1,6 +1,7 @@
 import unittest
 from copy import deepcopy
 
+from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.linkml_model import SlotDefinitionName, SlotDefinition
 
 from linkml.utils.schema_builder import SchemaBuilder
@@ -170,6 +171,35 @@ class SchemaFixerTestCase(unittest.TestCase):
         self.assertEqual({}, c.attributes)
         self.assertEqual(s.slots[FULL_NAME].name, FULL_NAME)
         self.assertEqual(s.slots[DESC].name, DESC)
+
+    def test_fix_element_names(self):
+        b = SchemaBuilder()
+        slots = {
+            "a b": "a_b",
+            "xyz": "xyz",
+            "CamelSlot": "CamelSlot",
+        }
+        classes = {
+            "foo_bar": "FooBar",
+            "class with space": "ClassWithSpace",
+        }
+        for k in slots.keys():
+            b.add_slot(k)
+        for k in classes.keys():
+            b.add_class(k)
+        b.add_slot("foo bar ref", range="foo_bar")
+        b.add_defaults()
+        fixer = SchemaFixer()
+        schema = b.schema
+        print(yaml_dumper.dumps(schema))
+        fixed_schema = fixer.fix_element_names(schema)
+        for v in slots.values():
+            self.assertIn(v, fixed_schema.slots)
+        for v in classes.values():
+            self.assertIn(v, fixed_schema.classes)
+        self.assertEqual("FooBar", fixed_schema.slots["foo_bar_ref"].range)
+
+
 
 
 if __name__ == "__main__":

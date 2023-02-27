@@ -274,9 +274,9 @@ class DocGeneratorTestCase(unittest.TestCase):
         # test slot usage overrides. See https://github.com/linkml/linkml/issues/1208
         assert_mdfile_contains(
             "FamilialRelationship.md",
-            ("| [started_at_time](started_at_time.md) | "
-             "0..1 <br/> [xsd:date](http://www.w3.org/2001/XMLSchema#date) |  | "
-             "[Relationship](Relationship.md) |"),
+            ("| [started_at_time](started_at_time.md) "
+             "| 0..1 <br/> [Date](Date.md) |  "
+             "| [Relationship](Relationship.md) |"),
             after="## Slots",
         )
         assert_mdfile_contains(
@@ -288,13 +288,12 @@ class DocGeneratorTestCase(unittest.TestCase):
         # test inheritance column
         assert_mdfile_contains(
             "Person.md",
-            "| [id](id.md) | 1..1 <br/> [xsd:string](http://www.w3.org/2001/XMLSchema#string) |  | direct |",
+            "| [id](id.md) | 1..1 <br/> [String](String.md) |  | direct |",
             after="## Slots",
         )
         assert_mdfile_contains(
             "Person.md",
-            ("| [aliases](aliases.md) | 0..* <br/> [xsd:string](http://www.w3.org/2001/XMLSchema#string) "
-             "|  | [HasAliases](HasAliases.md) |"),
+            ("| [aliases](aliases.md) | 0..* <br/> [String](String.md) |  | [HasAliases](HasAliases.md) |"),
             after="## Slots",
         )
         # Examples

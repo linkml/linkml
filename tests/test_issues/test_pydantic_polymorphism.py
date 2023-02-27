@@ -4,6 +4,47 @@ from linkml.generators.pydanticgen import PydanticGenerator
 from tests.test_issues.environment import env
 from tests.utils.test_environment import TestEnvironmentTestCase
 from linkml_runtime.utils.compile_python import compile_python
+from pydantic import ValidationError
+type_hierarchy_schema_str = """
+id: http://example.org
+name: inline-dict-test
+imports:
+  - https://w3id.org/linkml/types
+prefixes:
+  x: http://example.org/
+default_prefix: x
+default_range: string
+description: test
+
+classes:
+  NamedThing:
+    slots:
+      - id
+      - category
+  Person:
+    is_a: NamedThing
+
+types:
+  category type:
+    typeof: uriorcurie
+    description: >-
+      see biolink model
+
+slots:
+  id:
+    identifier: true
+    range: string
+    required: true
+  type:
+    slot_uri: rdf:type
+    multivalued: true
+  category:
+    is_a: type
+    range: category type
+    designates_type: true
+    is_class_field: true
+    multivalued: true
+"""
 
 schema_str = """
 id: http://example.org
@@ -24,6 +65,7 @@ classes:
       - thingtype
   Person:
     is_a: NamedThing
+    class_uri: "http://testbreaker/not-the-uri-you-expect"
     slots:
       - height
   Organisation:
@@ -88,20 +130,28 @@ class PydanticPolymorphismTestCase(TestEnvironmentTestCase):
         gen = PydanticGenerator(schema_str)
         output = gen.serialize()
         
-        self.assertNotRegexpMatches(output, "Union\[[a-zA-Z0-9]*\]", "a python Union should always have more than one option")
+        self.assertNotRegex(output, "Union\[[a-zA-Z0-9]*\]", "a python Union should always have more than one option")
 
         output_subset = [line for line in output.splitlines() if "thingtype" in line]
         self.assertGreater(len(output_subset), 0)
         
-        self.assertTrue("const=True" in output_subset[0])
         self.assertEqual(len([x for x in output_subset if 'x:Person' in x]),1)
 
         gen = PydanticGenerator(schema_str.replace("uriorcurie","uri"))
         output = gen.serialize()
         output_subset = [line for line in output.splitlines() if "thingtype" in line]
         self.assertGreater(len(output_subset), 0)
-        self.assertTrue("const=True" in output_subset[0])
         self.assertEqual(len([x for x in output_subset if 'http://example.org/Person' in x]) ,1)
+
+    def test_type_hierarchy(self):
+        gen_range_not_specified = PydanticGenerator(type_hierarchy_schema_str)
+        output = gen_range_not_specified.serialize()
+        mod = compile_python(output, "testschema")
+        _ = mod.Person()
+        _ = mod.Person(category=['http://example.org/Person'])
+        _ = mod.Person(category=['x:Person'])
+        self.assertRaises(ValidationError, lambda: mod.Person(category=['x:NamedThing']))
+
 
     def test_pydantic_load_poly_data(self):
         gen = PydanticGenerator(schema_str)

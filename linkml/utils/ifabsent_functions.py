@@ -69,6 +69,9 @@ default_library: List[
     (r"[Tt]rue", False, lambda _, __, ___, ____: "True"),
     (r"[Ff]alse", False, lambda _, __, ___, ____: "False"),
     (r"int\(([-+]?[0-9]+)\)", False, lambda m, __, ___, ____: int(m[1])),
+    (r"float\(([-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?)\)", False, lambda m, __, ___, ____: float(m[1])),
+    (r"date\((\d{4})-(\d{2})-(\d{2})\)", False, lambda m, __, ___, ____: f"datetime.date({m[1]}, {m[2]}, {m[3]})"),
+    (r"datetime\((\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})Z\)", False, lambda m, __, ___, ____: f"datetime.datetime({m[1]}, {m[2]}, {m[3]}, {m[4]}, {m[5]}, {m[6]})"),
     ("class_uri", False, lambda _, __, class_definition, ____: 'class_class_uri'),
     ("class_curie", False, lambda _, __, class_definition, ____: 'class_class_curie'),
     ("slot_uri", True, lambda _, loader, ___, slot_definition: f'slots.{slot_definition.name}.uri'),
@@ -95,6 +98,7 @@ def isabsent_match(
         m = re.match(pattern + "$", txt)
         if m:
             return m, postinit, f
+    raise ValueError(f"Incompatible default value: {txt}")
 
 
 def ifabsent_value_declaration(txt: Text, loader, cls, slot) -> Optional[str]:

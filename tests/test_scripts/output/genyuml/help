@@ -6,6 +6,8 @@ Options:
   -c, --classes TEXT              Class(es) to emit
   -d, --directory TEXT            Output directory - if supplied, YUML
                                   rendering will be saved in file
+  --diagram-name TEXT             Name of the diagram in the output directory
+                                  (without suffix!)
   -f, --format [yuml|png|pdf|jpg|json|svg]
                                   Output format  [default: yuml]
   --metadata / --no-metadata      Include metadata in output  [default:

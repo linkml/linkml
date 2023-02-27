@@ -40,6 +40,9 @@ class GenYUMLTestCase(ClickTestCase):
                     is_directory=True,
                 )
 
+    def test_specified_diagram_name(self):
+        self.temp_file_path("specified_name.svg")
+        self.do_test(["--diagram-name", "specified_name"], "specified_name_dir", is_directory=True)
 
 if __name__ == "__main__":
     unittest.main()
