@@ -514,6 +514,7 @@ class DocGeneratorTestCase(unittest.TestCase):
         actual_result = list(actual_result)
 
         self.assertNotIn(actual_result, (0, 'activity'))
+        self.assertNotIn(actual_result, (0, 'agent'))
         
     def test_fetch_slots_of_class(self):
         tdir = env.input_path('docgen_html_templates')
