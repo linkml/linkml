@@ -1230,7 +1230,8 @@ class SchemaView(object):
             induced_slot.alias = underscore(slot_name)
         for c in self.all_classes().values():
             if induced_slot.name in c.slots or induced_slot.name in c.attributes:
-                induced_slot.domain_of.append(c.name)
+                if c.name not in induced_slot.domain_of:
+                    induced_slot.domain_of.append(c.name)
         return deepcopy(induced_slot)
 
     @lru_cache()
@@ -1592,7 +1593,7 @@ class SchemaView(object):
         :param type_name: type to be deleted
         :return:
         """
-        del self.schema.typees[type_name]
+        del self.schema.types[type_name]
         self.set_modified()
 
     def delete_subset(self, subset_name: SubsetDefinitionName) -> None:
