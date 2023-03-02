@@ -39,7 +39,6 @@ class SchemaViewTestCase(unittest.TestCase):
     def test_all_aliases(self):
         view = SchemaView(SCHEMA_NO_IMPORTS)
         aliases = view.all_aliases()
-        print(aliases)
         self.assertIn("identifier", aliases["id"])
         self.assertIn("A", aliases["subset A"])
         self.assertIn("B", aliases["subset B"])
@@ -52,7 +51,6 @@ class SchemaViewTestCase(unittest.TestCase):
             if e.name == "Animals":
                 for pv, v in e.permissible_values.items():
                     if pv == "CAT":
-                        print(view.permissible_value_parent(pv, e.name))
                         self.assertEqual(view.permissible_value_parent(pv, e.name), None)
                         self.assertEqual(view.permissible_value_ancestors(pv, e.name), ['CAT'])
                     if pv == "ANGRY_LION":
@@ -115,7 +113,6 @@ class SchemaViewTestCase(unittest.TestCase):
 
         for tn, t in view.all_types().items():
             logging.info(f'TN = {tn}')
-            print(f'{tn} {t.from_schema}')
             self.assertEqual('https://w3id.org/linkml/tests/kitchen_sink', t.from_schema)
         for sn, s in view.all_slots().items():
             logging.info(f'SN = {sn} RANGE={s.range}')
@@ -225,7 +222,6 @@ class SchemaViewTestCase(unittest.TestCase):
 
         u = view.usage_index()
         for k, v in u.items():
-            #print(f' {k} = {v}')
             logging.debug(f' {k} = {v}')
         self.assertIn(SchemaUsage(used_by='FamilialRelationship', slot=RELATED_TO,
                            metaslot='range', used='Person', inferred=False), u['Person'])
@@ -286,7 +282,6 @@ class SchemaViewTestCase(unittest.TestCase):
         ordered_s = []
         for s in slots.values():
             ordered_s.append(s.name)
-        print(ordered_s)
         self.assertEqual(ordered_s, sorted(ordered_s))
 
     def test_all_slots_ordered_rank(self):
@@ -295,7 +290,6 @@ class SchemaViewTestCase(unittest.TestCase):
         ordered_s = []
         for s in slots.values():
             ordered_s.append(s.name)
-        print(ordered_s)
         first_in_line = []
         second_in_line = []
         for name, definition in slots.items():
@@ -458,6 +452,21 @@ class SchemaViewTestCase(unittest.TestCase):
         self.assertCountEqual(view.all_classes(), view2.all_classes())
         self.assertCountEqual(view.all_classes(imports=False), view2.all_classes(imports=False))
 
+    def test_direct_remote_imports(self):
+        """
+        Tests that building a SchemaView directly from a remote URL works.
+        """
+        view = SchemaView("https://w3id.org/linkml/meta.yaml")
+        main_classes = ["class_definition", "prefix"]
+        imported_classes = ["annotation"]
+        for c in main_classes:
+            self.assertIn(c, view.all_classes(imports=True))
+            self.assertIn(c, view.all_classes(imports=False))
+        for c in imported_classes:
+            self.assertIn(c, view.all_classes(imports=True))
+            self.assertNotIn(c, view.all_classes(imports=False))
+
+
     def test_merge_imports(self):
         """
         ensure merging and merging imports closure works
@@ -494,10 +503,6 @@ class SchemaViewTestCase(unittest.TestCase):
         sv = SchemaView(schema_str)
         self.assertGreater(len(sv.all_classes()), 20)
         self.assertCountEqual(all_classes, sv.all_classes())
-
-
-
-
 
 
     def test_traversal(self):
@@ -637,7 +642,6 @@ class SchemaViewTestCase(unittest.TestCase):
             self.assertNotIn(tn, view.all_types(imports=False))
         for cn, c in view.all_classes().items():
             uri = view.get_uri(cn, expand=True)
-            #print(f'{cn}: {c.class_uri} // {uri}')
             self.assertIsNotNone(uri)
             if cn != 'structured_alias' and cn != 'UnitOfMeasure' and cn != 'ValidationReport' and \
                 cn != 'ValidationResult':
@@ -645,7 +649,6 @@ class SchemaViewTestCase(unittest.TestCase):
             induced_slots = view.class_induced_slots(cn)
             for s in induced_slots:
                 exp_slot_uri = view.get_uri(s, expand=True)
-                #print(f'  {cn}: {s.name} {s.alias} {s.slot_uri} // {exp_slot_uri}')
                 self.assertIsNotNone(exp_slot_uri)
 
     def test_get_classes_by_slot(self):
