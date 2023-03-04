@@ -61,6 +61,8 @@ classes:
     slot_usage:
       primary_email:
         pattern: "^\\S+@[\\S+\\.]+\\S+"
+      age_in_years:
+        recommended: true
     in_subset:
       - basic_subset
   

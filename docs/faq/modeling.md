@@ -1,5 +1,11 @@
 # FAQ: Modeling
 
+## How do I get started defining a data model?
+
+The [tutorial](https://linkml.io/linkml/intro/tutorial) walks you through some basic data models.
+
+After that the section on [schemas](https://linkml.io/linkml/schemas/) guides you through some of the core features of the modeling framework.
+
 ## What is the difference between is_a and mixins?
 
 LinkML allows any class to have:
