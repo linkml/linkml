@@ -535,8 +535,8 @@ exchange format.</p>
 able to take any LinkML objects, <a class="reference external" href="https://linkml.io/linkml/data/index.html">serialize as JSON</a>,
 and store in the database, as well as the reverse.</p>
 </section>
-<section id="can-i-use-linkml-is-conjunction-with-triplestores">
-<h2>Can I use LinkML is conjunction with Triplestores?<a class="headerlink" href="#can-i-use-linkml-is-conjunction-with-triplestores" title="Permalink to this heading">#</a></h2>
+<section id="can-i-use-linkml-in-conjunction-with-triplestores">
+<h2>Can I use LinkML in conjunction with Triplestores?<a class="headerlink" href="#can-i-use-linkml-in-conjunction-with-triplestores" title="Permalink to this heading">#</a></h2>
 <p>RDF is a natural way of serializing and working with data in LinkML, see
 <a class="reference external" href="https://linkml.io/linkml/data/rdf.html">working with RDF</a>.</p>
 <p>There are some additional helper packages for working with RDF stored in triplestores:</p>
@@ -544,6 +544,20 @@ and store in the database, as well as the reverse.</p>
 <li><p><a class="reference external" href="https://github.com/linkml/sparqlfun">sparqlfun</a> allows you to define SPARQL templates in LinkML</p></li>
 <li><p><a class="reference external" href="https://github.com/linkml/linkml-sparql">linkml-sparql</a> is an experimental ORM for SPARQL</p></li>
 </ul>
+</section>
+<section id="can-i-use-linkml-in-conjunction-with-neo4j-or-graph-databases">
+<h2>Can I use LinkML in conjunction with Neo4J or graph databases?<a class="headerlink" href="#can-i-use-linkml-in-conjunction-with-neo4j-or-graph-databases" title="Permalink to this heading">#</a></h2>
+<p>You definitely can, although we don’t yet have any bindings for Neo4J or other graph databases.</p>
+<p>Note however, that most of the examples and documentation on this site
+is geared towards either JSON tree-oriented data shapes, or RDF
+triples. Graph databases typically follow a property-graph (PG).</p>
+<p>If you are using PGs, we recommend following the design patterns in
+the <a class="reference external" href="https://biolink.github.io/biolink-model/">BioLink Model</a>, which
+itself follows commonly established Entity-Relationship (ER)
+patterns. Here you would have one set of classes corresponding to
+nodes, and another set of classes corresponding to edges. The slots on
+edge classes can be decorated with
+<a class="reference external" href="https://w3id.org/relational_role">relational_role</a> descriptors.</p>
 </section>
 <section id="can-i-use-my-schema-to-do-reasoning-over-my-data">
 <h2>Can I use my schema to do reasoning over my data?<a class="headerlink" href="#can-i-use-my-schema-to-do-reasoning-over-my-data" title="Permalink to this heading">#</a></h2>
@@ -656,7 +670,8 @@ but there may be scenarios where you have a CSV with large data values, e.g</p>
 <li><a class="reference internal" href="#can-i-customize-the-markdown-generation-for-my-schema-site">Can I customize the Markdown generation for my schema site?</a></li>
 <li><a class="reference internal" href="#can-i-use-linkml-in-conjunction-with-sql-databases">Can I use LinkML in conjunction with SQL Databases?</a></li>
 <li><a class="reference internal" href="#can-i-use-linkml-in-conjunction-with-mongodb">Can I use LinkML in conjunction with MongoDB?</a></li>
-<li><a class="reference internal" href="#can-i-use-linkml-is-conjunction-with-triplestores">Can I use LinkML is conjunction with Triplestores?</a></li>
+<li><a class="reference internal" href="#can-i-use-linkml-in-conjunction-with-triplestores">Can I use LinkML in conjunction with Triplestores?</a></li>
+<li><a class="reference internal" href="#can-i-use-linkml-in-conjunction-with-neo4j-or-graph-databases">Can I use LinkML in conjunction with Neo4J or graph databases?</a></li>
 <li><a class="reference internal" href="#can-i-use-my-schema-to-do-reasoning-over-my-data">Can I use my schema to do reasoning over my data?</a></li>
 <li><a class="reference internal" href="#what-does-if-missing-mean-in-my-json-output">What does _if_missing mean in my JSON output?</a></li>
 <li><a class="reference internal" href="#what-does-csv-error-field-larger-than-field-limit-131072-mean">What does _csv.Error: field larger than field limit (131072) mean?</a></li>
