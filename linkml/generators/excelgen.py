@@ -1,12 +1,11 @@
 import os
 
 from dataclasses import dataclass, field
-from typing import List, Dict, Union
+from typing import List
 
 import click
 
 from linkml_runtime.utils.schemaview import SchemaView
-from linkml_runtime.linkml_model import SchemaDefinition
 from linkml.utils.generator import Generator, shared_arguments
 from linkml._version import __version__
 from linkml.utils.helpers import convert_to_snake_case
@@ -54,7 +53,7 @@ class ExcelGenerator(Generator):
         worksheet = workbook[worksheet_name]
         workbook.remove(worksheet)
 
-    def create_worksheet(self, workbook: Workbook, worksheet_name: str) -> None:
+    def create_worksheet(self, workbook: Workbook, worksheet_name: str) -> Worksheet:
         """
         Creates an Excel worksheet with the given name in the given workbook.
 
@@ -64,6 +63,8 @@ class ExcelGenerator(Generator):
         worksheet = workbook.create_sheet(worksheet_name)
         workbook_name = self.get_workbook_name(workbook)
         workbook.save(workbook_name)
+
+        return worksheet
 
     def create_schema_worksheets(self, workbook: str):
         """
@@ -76,8 +77,26 @@ class ExcelGenerator(Generator):
         for c in sv.all_classes(imports=self.mergeimports).values():
             self.create_worksheet(workbook, c.name)
 
-    def populate_worksheet_columns(self):
-        pass
+    def add_columns_to_worksheet(
+        self, workbook: Workbook, worksheet_name: str, sheet_headings: List[str]
+    ):
+        """
+        Get a worksheet by name and add a column to it in an existing workbook.
+
+        :param workbook: The workbook to which the worksheet should be added.
+        :param worksheet_name: Name of the worksheet to add the column to.
+        :param column_data: List of data to populate the column with.
+        """
+        # Get the worksheet by name
+        worksheet = workbook[worksheet_name]
+
+        # Add the headings to the worksheet
+        for i, heading in enumerate(sheet_headings):
+            worksheet.cell(row=1, column=i + 1, value=heading)
+
+        # Save the changes to the workbook
+        workbook_name = self.get_workbook_name(workbook)
+        workbook.save(workbook_name)
 
     def column_enum_validation(self):
         pass
@@ -92,6 +111,10 @@ class ExcelGenerator(Generator):
         workbook = self.create_workbook(output)
         self.remove_worksheet_by_name(workbook, "Sheet")
         self.create_schema_worksheets(workbook)
+
+        for cls_name, _ in self.schemaview.all_classes().items():
+            slots = [s.name for s in self.schemaview.class_induced_slots(cls_name)]
+            self.add_columns_to_worksheet(workbook, cls_name, slots)
 
 
 @shared_arguments(ExcelGenerator)
