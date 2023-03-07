@@ -186,14 +186,14 @@ class DocGenerator(Generator):
             )
             return
         template = self._get_template("schema")
-        for schema_name in sv.imports_closure(imports=self.mergeimports):
+        for schema_name in sv.imports_closure():
             imported_schema = sv.schema_map.get(schema_name)
             out_str = template.render(
                 gen=self, schema=imported_schema, schemaview=sv, **template_vars
             )
             self._write(out_str, directory, imported_schema.name)
         template = self._get_template("class")
-        for cn, c in sv.all_classes(imports=self.mergeimports).items():
+        for cn, c in sv.all_classes().items():
             if self._is_external(c):
                 continue
             n = self.name(c)
@@ -202,7 +202,7 @@ class DocGenerator(Generator):
             )
             self._write(out_str, directory, n)
         template = self._get_template("slot")
-        for sn, s in sv.all_slots(imports=self.mergeimports).items():
+        for sn, s in sv.all_slots().items():
             if self._is_external(s):
                 continue
             n = self.name(s)
@@ -212,7 +212,7 @@ class DocGenerator(Generator):
             )
             self._write(out_str, directory, n)
         template = self._get_template("enum")
-        for en, e in sv.all_enums(imports=self.mergeimports).items():
+        for en, e in sv.all_enums().items():
             if self._is_external(e):
                 continue
             n = self.name(e)
@@ -221,7 +221,7 @@ class DocGenerator(Generator):
             )
             self._write(out_str, directory, n)
         template = self._get_template("type")
-        for tn, t in sv.all_types(imports=self.mergeimports).items():
+        for tn, t in sv.all_types().items():
             if self._exclude_type(t):
                 continue
             n = self.name(t)
@@ -231,7 +231,7 @@ class DocGenerator(Generator):
             )
             self._write(out_str, directory, n)
         template = self._get_template("subset")
-        for _, s in sv.all_subsets(imports=self.mergeimports).items():
+        for _, s in sv.all_subsets().items():
             if self._is_external(c):
                 continue
             n = self.name(s)
@@ -657,7 +657,7 @@ class DocGenerator(Generator):
         Ensures rank is non-null
         :return: iterator
         """
-        elts = self.schemaview.all_classes().values()
+        elts = self.schemaview.all_classes(imports=self.mergeimports).values()
         _ensure_ranked(elts)
         for e in elts:
             yield e
@@ -669,7 +669,7 @@ class DocGenerator(Generator):
         Ensures rank is non-null
         :return: iterator
         """
-        elts = self.schemaview.all_slots().values()
+        elts = self.schemaview.all_slots(imports=self.mergeimports).values()
         _ensure_ranked(elts)
         for e in elts:
             yield e
@@ -681,7 +681,7 @@ class DocGenerator(Generator):
         Ensures rank is non-null
         :return: iterator
         """
-        elts = self.schemaview.all_types().values()
+        elts = self.schemaview.all_types(imports=self.mergeimports).values()
         _ensure_ranked(elts)
         for e in elts:
             yield e
@@ -693,7 +693,7 @@ class DocGenerator(Generator):
         Ensures rank is non-null
         :return: iterator
         """
-        elts = self.schemaview.all_enums().values()
+        elts = self.schemaview.all_enums(imports=self.mergeimports).values()
         _ensure_ranked(elts)
         for e in elts:
             yield e
@@ -705,7 +705,7 @@ class DocGenerator(Generator):
         Ensures rank is non-null
         :return: iterator
         """
-        elts = self.schemaview.all_subsets().values()
+        elts = self.schemaview.all_subsets(imports=self.mergeimports).values()
         _ensure_ranked(elts)
         for e in elts:
             yield e
@@ -729,7 +729,7 @@ class DocGenerator(Generator):
         :return: tuples (depth: int, cls: ClassDefinitionName)
         """
         sv = self.schemaview
-        roots = sv.class_roots(mixins=False)
+        roots = sv.class_roots(mixins=False, imports=self.mergeimports)
 
         # by default the classes are sorted alphabetically
         roots = sorted(roots, key=str.casefold, reverse=True)
@@ -743,7 +743,7 @@ class DocGenerator(Generator):
             depth, class_name = stack.pop()
             yield depth, class_name
             children = sorted(
-                sv.class_children(class_name=class_name, mixins=False),
+                sv.class_children(class_name=class_name, mixins=False, imports=self.mergeimports),
                 key=str.casefold,
                 reverse=True,
             )

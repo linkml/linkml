@@ -269,7 +269,7 @@ We don't yet have any helper code for working with MongoDB, but you should be
 able to take any LinkML objects, [serialize as JSON](https://linkml.io/linkml/data/index.html),
 and store in the database, as well as the reverse.
 
-## Can I use LinkML is conjunction with Triplestores?
+## Can I use LinkML in conjunction with Triplestores?
 
 RDF is a natural way of serializing and working with data in LinkML, see
 [working with RDF](https://linkml.io/linkml/data/rdf.html).
@@ -278,6 +278,23 @@ There are some additional helper packages for working with RDF stored in triples
 
 - [sparqlfun](https://github.com/linkml/sparqlfun) allows you to define SPARQL templates in LinkML
 - [linkml-sparql](https://github.com/linkml/linkml-sparql) is an experimental ORM for SPARQL
+
+## Can I use LinkML in conjunction with Neo4J or graph databases?
+
+You definitely can, although we don't yet have any bindings for Neo4J or other graph databases.
+
+Note however, that most of the examples and documentation on this site
+is geared towards either JSON tree-oriented data shapes, or RDF
+triples. Graph databases typically follow a property-graph (PG).
+
+If you are using PGs, we recommend following the design patterns in
+the [BioLink Model](https://biolink.github.io/biolink-model/), which
+itself follows commonly established Entity-Relationship (ER)
+patterns. Here you would have one set of classes corresponding to
+nodes, and another set of classes corresponding to edges. The slots on
+edge classes can be decorated with
+[relational_role](https://w3id.org/relational_role) descriptors.
+
 
 ## Can I use my schema to do reasoning over my data?
 
