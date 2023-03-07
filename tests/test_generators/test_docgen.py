@@ -7,7 +7,6 @@ import yaml
 from copy import copy
 from typing import List
 
-import pytest
 from linkml_runtime.utils.introspection import package_schemaview
 from linkml_runtime.utils.schemaview import SchemaView
 
@@ -368,14 +367,12 @@ class DocGeneratorTestCase(unittest.TestCase):
 
 
         # test that slots modifying classes are being rendered
-        pytest.skip(reason="TODO: why isn't this showing up?")
         assert_mdfile_contains(
             "type.md", "FamilialRelationship", after="## Slot Modifying Classes",
             followed_by=["## Properties",
                         "* Range"],
         )
 
-        pytest.skip(reason="TODO: why isn't this showing up?")
         assert_mdfile_contains(
             "type.md", "EmploymentEvent", after="## Slot Modifying Classes",
             followed_by=["## Properties",
