@@ -304,7 +304,7 @@ dynamically introspecting and manipulating schemas.</p>
 <p>See <a class="reference external" href="https://github.com/linkml/linkml-runtime/tree/main/notebooks">SchemaView notebooks</a></p>
 <dl class="py class">
 <dt class="sig sig-object py" id="linkml_runtime.utils.schemaview.SchemaView">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linkml_runtime.utils.schemaview.</span></span><span class="sig-name descname"><span class="pre">SchemaView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../code.html#linkml_runtime.linkml_model.meta.SchemaDefinition" title="linkml_runtime.linkml_model.meta.SchemaDefinition"><span class="pre">SchemaDefinition</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">importmap</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">merge_imports</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linkml_runtime.utils.schemaview.</span></span><span class="sig-name descname"><span class="pre">SchemaView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Path</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../code.html#linkml_runtime.linkml_model.meta.SchemaDefinition" title="linkml_runtime.linkml_model.meta.SchemaDefinition"><span class="pre">SchemaDefinition</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">importmap</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">merge_imports</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView" title="Permalink to this definition">#</a></dt>
 <dd><p>A SchemaView provides a virtual schema layered on top of a schema plus its import closure</p>
 <p>Most operations are parameterized by <cite>imports</cite>. If this is set to True (default), then the full
 import closure is considered when answering</p>
@@ -888,6 +888,20 @@ into the schema rather than providing dynamic methods.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="linkml_runtime.utils.schemaview.SchemaView.get_classes_modifying_slot">
+<span class="sig-name descname"><span class="pre">get_classes_modifying_slot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slot_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">SlotDefinitionName</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../code.html#linkml_runtime.linkml_model.meta.ClassDefinition" title="linkml_runtime.linkml_model.meta.ClassDefinition"><span class="pre">ClassDefinition</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView.get_classes_modifying_slot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView.get_classes_modifying_slot" title="Permalink to this definition">#</a></dt>
+<dd><p>Get all ClassDefinitions that modify a given slot.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>slot_name</strong> – slot in consideration</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>list of ClassDefinitions modifying the slot of interest</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="linkml_runtime.utils.schemaview.SchemaView.get_element">
 <span class="sig-name descname"><span class="pre">get_element</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">ElementName</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Element</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imports</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Element</span></span></span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView.get_element"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView.get_element" title="Permalink to this definition">#</a></dt>
 <dd><p>Fetch an element by name</p>
@@ -1303,6 +1317,41 @@ where the identifier is not guaranteed to be a valid URI or CURIE</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="linkml_runtime.utils.schemaview.SchemaView.load_import">
+<span class="sig-name descname"><span class="pre">load_import</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">imp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">from_schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../code.html#linkml_runtime.linkml_model.meta.SchemaDefinition" title="linkml_runtime.linkml_model.meta.SchemaDefinition"><span class="pre">SchemaDefinition</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView.load_import"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView.load_import" title="Permalink to this definition">#</a></dt>
+<dd><p>Handles import directives.</p>
+<p>The value of the import can be:</p>
+<ul class="simple">
+<li><p>a URL (specified as either a full URL or a CURIE)</p></li>
+<li><p>a local file path</p></li>
+</ul>
+<p>The import should leave off the .yaml suffix.</p>
+<p>If the import is a URL then the import is fetched over the network UNLESS this is a metamodel
+import, in which case it is fetched from within the linkml_runtime package, where the yaml
+is distributed. This ensures that the version of the metamodel imported matches the version
+of the linkml_runtime package.</p>
+<p>In future, this mechanism may be extended to arbitrary modules, such that we avoid
+network dependence at runtime in general.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>imp</strong> – </p></li>
+<li><p><strong>from_schema</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml_runtime.utils.schemaview.SchemaView.materialize_derived_schema">
+<span class="sig-name descname"><span class="pre">materialize_derived_schema</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../code.html#linkml_runtime.linkml_model.meta.SchemaDefinition" title="linkml_runtime.linkml_model.meta.SchemaDefinition"><span class="pre">SchemaDefinition</span></a></span></span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView.materialize_derived_schema"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView.materialize_derived_schema" title="Permalink to this definition">#</a></dt>
+<dd><p>Materialize a schema view into a schema definition</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="linkml_runtime.utils.schemaview.SchemaView.materialize_patterns">
 <span class="sig-name descname"><span class="pre">materialize_patterns</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView.materialize_patterns"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView.materialize_patterns" title="Permalink to this definition">#</a></dt>
 <dd><p>Materialize schema by expanding structured patterns 
@@ -1665,6 +1714,7 @@ but a proposed feature in LinkML 1.2 is range expressions, where ranges can be d
 <li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.get_children"><code class="docutils literal notranslate"><span class="pre">SchemaView.get_children()</span></code></a></li>
 <li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.get_class"><code class="docutils literal notranslate"><span class="pre">SchemaView.get_class()</span></code></a></li>
 <li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.get_classes_by_slot"><code class="docutils literal notranslate"><span class="pre">SchemaView.get_classes_by_slot()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.get_classes_modifying_slot"><code class="docutils literal notranslate"><span class="pre">SchemaView.get_classes_modifying_slot()</span></code></a></li>
 <li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.get_element"><code class="docutils literal notranslate"><span class="pre">SchemaView.get_element()</span></code></a></li>
 <li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.get_elements_applicable_by_identifier"><code class="docutils literal notranslate"><span class="pre">SchemaView.get_elements_applicable_by_identifier()</span></code></a></li>
 <li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.get_elements_applicable_by_prefix"><code class="docutils literal notranslate"><span class="pre">SchemaView.get_elements_applicable_by_prefix()</span></code></a></li>
@@ -1692,6 +1742,8 @@ but a proposed feature in LinkML 1.2 is range expressions, where ranges can be d
 <li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.is_multivalued"><code class="docutils literal notranslate"><span class="pre">SchemaView.is_multivalued()</span></code></a></li>
 <li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.is_relationship"><code class="docutils literal notranslate"><span class="pre">SchemaView.is_relationship()</span></code></a></li>
 <li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.is_slot_percent_encoded"><code class="docutils literal notranslate"><span class="pre">SchemaView.is_slot_percent_encoded()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.load_import"><code class="docutils literal notranslate"><span class="pre">SchemaView.load_import()</span></code></a></li>
+<li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.materialize_derived_schema"><code class="docutils literal notranslate"><span class="pre">SchemaView.materialize_derived_schema()</span></code></a></li>
 <li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.materialize_patterns"><code class="docutils literal notranslate"><span class="pre">SchemaView.materialize_patterns()</span></code></a></li>
 <li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.merge_imports"><code class="docutils literal notranslate"><span class="pre">SchemaView.merge_imports()</span></code></a></li>
 <li><a class="reference internal" href="#linkml_runtime.utils.schemaview.SchemaView.merge_schema"><code class="docutils literal notranslate"><span class="pre">SchemaView.merge_schema()</span></code></a></li>

@@ -302,10 +302,10 @@
 <span class="kn">import</span> <span class="nn">collections</span>
 <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">lru_cache</span>
 <span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">copy</span><span class="p">,</span> <span class="n">deepcopy</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span><span class="p">,</span> <span class="n">OrderedDict</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Any</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Tuple</span>
 
-<span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model</span> <span class="kn">import</span> <span class="n">PermissibleValue</span><span class="p">,</span> <span class="n">PermissibleValueText</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime.utils.namespaces</span> <span class="kn">import</span> <span class="n">Namespaces</span>
 <span class="kn">from</span> <span class="nn">deprecated.classic</span> <span class="kn">import</span> <span class="n">deprecated</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime.utils.context_utils</span> <span class="kn">import</span> <span class="n">parse_import_map</span><span class="p">,</span> <span class="n">map_import</span>
@@ -366,7 +366,12 @@
     <span class="n">yaml_loader</span> <span class="o">=</span> <span class="n">YAMLLoader</span><span class="p">()</span>
     <span class="n">schema</span><span class="p">:</span> <span class="n">SchemaDefinition</span>
     <span class="n">schema</span> <span class="o">=</span> <span class="n">yaml_loader</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">target_class</span><span class="o">=</span><span class="n">SchemaDefinition</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-    <span class="n">schema</span><span class="o">.</span><span class="n">source_file</span> <span class="o">=</span> <span class="n">path</span>
+    <span class="k">if</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">path</span> <span class="ow">and</span> <span class="s2">&quot;://&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">path</span><span class="p">:</span>
+        <span class="c1"># only set path if the input is not a yaml string or URL.</span>
+        <span class="c1"># Setting the source path is necessary for relative imports;</span>
+        <span class="c1"># while initializing a schema with a yaml string is possible, there</span>
+        <span class="c1"># should be no expectation of relative imports working.</span>
+        <span class="n">schema</span><span class="o">.</span><span class="n">source_file</span> <span class="o">=</span> <span class="n">path</span>
     <span class="k">return</span> <span class="n">schema</span>
 
 
@@ -409,8 +414,10 @@
     <span class="n">modifications</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">uuid</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">SchemaDefinition</span><span class="p">],</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">,</span> <span class="n">SchemaDefinition</span><span class="p">],</span>
                  <span class="n">importmap</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">merge_imports</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="n">Path</span><span class="p">):</span>
+            <span class="n">schema</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="n">schema</span> <span class="o">=</span> <span class="n">load_schema_wrap</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">schema</span> <span class="o">=</span> <span class="n">schema</span>
@@ -441,15 +448,42 @@
                 <span class="n">namespaces</span><span class="o">.</span><span class="n">add_prefixmap</span><span class="p">(</span><span class="n">cmap</span><span class="p">,</span> <span class="n">include_defaults</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">namespaces</span>
 
-    <span class="k">def</span> <span class="nf">load_import</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">imp</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">from_schema</span><span class="p">:</span> <span class="n">SchemaDefinition</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="SchemaView.load_import"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.load_import">[docs]</a>    <span class="k">def</span> <span class="nf">load_import</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">imp</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">from_schema</span><span class="p">:</span> <span class="n">SchemaDefinition</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Handles import directives.</span>
+
+<span class="sd">        The value of the import can be:</span>
+
+<span class="sd">        - a URL (specified as either a full URL or a CURIE)</span>
+<span class="sd">        - a local file path</span>
+
+<span class="sd">        The import should leave off the .yaml suffix.</span>
+
+<span class="sd">        If the import is a URL then the import is fetched over the network UNLESS this is a metamodel</span>
+<span class="sd">        import, in which case it is fetched from within the linkml_runtime package, where the yaml</span>
+<span class="sd">        is distributed. This ensures that the version of the metamodel imported matches the version</span>
+<span class="sd">        of the linkml_runtime package.</span>
+
+<span class="sd">        In future, this mechanism may be extended to arbitrary modules, such that we avoid</span>
+<span class="sd">        network dependence at runtime in general.</span>
+
+<span class="sd">        :param imp:</span>
+<span class="sd">        :param from_schema:</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">from_schema</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">from_schema</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span>
-        <span class="n">sname</span> <span class="o">=</span> <span class="n">map_import</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">importmap</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="p">,</span> <span class="n">imp</span><span class="p">)</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Loading schema </span><span class="si">{</span><span class="n">sname</span><span class="si">}</span><span class="s1"> from </span><span class="si">{</span><span class="n">from_schema</span><span class="o">.</span><span class="n">source_file</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="kn">from</span> <span class="nn">linkml_runtime</span> <span class="kn">import</span> <span class="n">SCHEMA_DIRECTORY</span>
+        <span class="n">default_import_map</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;linkml:&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">SCHEMA_DIRECTORY</span><span class="p">)</span>
+        <span class="p">}</span>
+        <span class="n">importmap</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">default_import_map</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">importmap</span><span class="p">}</span>
+        <span class="n">sname</span> <span class="o">=</span> <span class="n">map_import</span><span class="p">(</span><span class="n">importmap</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="p">,</span> <span class="n">imp</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Importing </span><span class="si">{</span><span class="n">imp</span><span class="si">}</span><span class="s1"> as </span><span class="si">{</span><span class="n">sname</span><span class="si">}</span><span class="s1"> from source </span><span class="si">{</span><span class="n">from_schema</span><span class="o">.</span><span class="n">source_file</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="n">schema</span> <span class="o">=</span> <span class="n">load_schema_wrap</span><span class="p">(</span><span class="n">sname</span> <span class="o">+</span> <span class="s1">&#39;.yaml&#39;</span><span class="p">,</span>
                                   <span class="n">base_dir</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span>
-                                      <span class="n">from_schema</span><span class="o">.</span><span class="n">source_file</span><span class="p">)</span> <span class="k">if</span> <span class="n">from_schema</span><span class="o">.</span><span class="n">source_file</span> <span class="k">else</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">schema</span>
+                                  <span class="n">from_schema</span><span class="o">.</span><span class="n">source_file</span><span class="p">)</span> <span class="k">if</span> <span class="n">from_schema</span><span class="o">.</span><span class="n">source_file</span> <span class="k">else</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">schema</span></div>
 
 <div class="viewcode-block" id="SchemaView.imports_closure"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.imports_closure">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">()</span>
     <span class="k">def</span> <span class="nf">imports_closure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">imports</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">traverse</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">inject_metadata</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">SchemaDefinitionName</span><span class="p">]:</span>
@@ -1440,7 +1474,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">slot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_slot</span><span class="p">(</span><span class="n">slot_name</span><span class="p">,</span> <span class="n">imports</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">slot</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Slot </span><span class="si">{</span><span class="n">slot_name</span><span class="si">}</span><span class="s2"> as an attribute of </span><span class="si">{</span><span class="n">class_name</span><span class="si">}</span><span class="s2"> ancestors&quot;</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No such slot </span><span class="si">{</span><span class="n">slot_name</span><span class="si">}</span><span class="s2"> as an attribute of </span><span class="si">{</span><span class="n">class_name</span><span class="si">}</span><span class="s2"> ancestors &quot;</span>
                              <span class="s2">&quot;or as a slot definition in the schema&quot;</span><span class="p">)</span>
         <span class="c1"># copy the slot, as it will be modified</span>
         <span class="n">induced_slot</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">slot</span><span class="p">)</span>
@@ -1494,7 +1528,8 @@
             <span class="n">induced_slot</span><span class="o">.</span><span class="n">alias</span> <span class="o">=</span> <span class="n">underscore</span><span class="p">(</span><span class="n">slot_name</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_classes</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">induced_slot</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">slots</span> <span class="ow">or</span> <span class="n">induced_slot</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">attributes</span><span class="p">:</span>
-                <span class="n">induced_slot</span><span class="o">.</span><span class="n">domain_of</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">induced_slot</span><span class="o">.</span><span class="n">domain_of</span><span class="p">:</span>
+                    <span class="n">induced_slot</span><span class="o">.</span><span class="n">domain_of</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">induced_slot</span><span class="p">)</span></div>
 
     <span class="nd">@lru_cache</span><span class="p">()</span>
@@ -1615,22 +1650,22 @@
 <span class="sd">        :param imports:</span>
 <span class="sd">        :return:</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">inlined</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">True</span>
-        <span class="k">elif</span> <span class="n">slot</span><span class="o">.</span><span class="n">inlined_as_list</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">True</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="nb">range</span> <span class="o">=</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span>
-            <span class="k">if</span> <span class="nb">range</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_classes</span><span class="p">():</span>
-                <span class="n">id_slot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_identifier_slot</span><span class="p">(</span><span class="nb">range</span><span class="p">,</span> <span class="n">imports</span><span class="o">=</span><span class="n">imports</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">id_slot</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="c1"># must be inlined as has no identifier</span>
-                    <span class="k">return</span> <span class="kc">True</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="c1"># not explicitly declared inline and has an identifier: assume is ref, not inlined</span>
-                    <span class="k">return</span> <span class="kc">False</span>
+        <span class="nb">range</span> <span class="o">=</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span>
+        <span class="k">if</span> <span class="nb">range</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_classes</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">inlined</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+            <span class="k">elif</span> <span class="n">slot</span><span class="o">.</span><span class="n">inlined_as_list</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+            
+            <span class="n">id_slot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_identifier_slot</span><span class="p">(</span><span class="nb">range</span><span class="p">,</span> <span class="n">imports</span><span class="o">=</span><span class="n">imports</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">id_slot</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># must be inlined as has no identifier</span>
+                <span class="k">return</span> <span class="kc">True</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">return</span> <span class="kc">False</span></div>
+                <span class="c1"># not explicitly declared inline and has an identifier: assume is ref, not inlined</span>
+                <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
 
 <div class="viewcode-block" id="SchemaView.slot_applicable_range_elements"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.slot_applicable_range_elements">[docs]</a>    <span class="k">def</span> <span class="nf">slot_applicable_range_elements</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">ClassDefinitionName</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1715,6 +1750,22 @@
                     <span class="k">if</span> <span class="n">slot_definition</span><span class="o">.</span><span class="n">range</span> <span class="o">==</span> <span class="n">enum_name</span><span class="p">:</span>
                         <span class="n">enum_slots</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">slot_definition</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">enum_slots</span></div>
+
+<div class="viewcode-block" id="SchemaView.get_classes_modifying_slot"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.get_classes_modifying_slot">[docs]</a>    <span class="k">def</span> <span class="nf">get_classes_modifying_slot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slot_name</span><span class="p">:</span> <span class="n">SLOT_NAME</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">ClassDefinition</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get all ClassDefinitions that modify a given slot.</span>
+
+<span class="sd">        :param slot_name: slot in consideration</span>
+<span class="sd">        :return: list of ClassDefinitions modifying the slot of interest</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># slot_classes = [c for c in self.all_classes().values() if c.slot_usage == slot_name]</span>
+        <span class="c1"># slot_classes = [c for c in self.all_classes().values()]</span>
+        <span class="n">slot_classes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">class_definition</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_classes</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">class_definition</span><span class="o">.</span><span class="n">slot_usage</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">slot_definition</span> <span class="ow">in</span> <span class="n">class_definition</span><span class="o">.</span><span class="n">slot_usage</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="n">slot_definition</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">slot_name</span><span class="p">:</span>
+                        <span class="n">slot_classes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">class_definition</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">slot_classes</span></div>
 
 <div class="viewcode-block" id="SchemaView.is_slot_percent_encoded"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.is_slot_percent_encoded">[docs]</a>    <span class="k">def</span> <span class="nf">is_slot_percent_encoded</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinitionName</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1840,7 +1891,7 @@
 <span class="sd">        :param type_name: type to be deleted</span>
 <span class="sd">        :return:</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">typees</span><span class="p">[</span><span class="n">type_name</span><span class="p">]</span>
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">types</span><span class="p">[</span><span class="n">type_name</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_modified</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="SchemaView.delete_subset"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.delete_subset">[docs]</a>    <span class="k">def</span> <span class="nf">delete_subset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subset_name</span><span class="p">:</span> <span class="n">SubsetDefinitionName</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -1930,7 +1981,48 @@
 
             <span class="k">if</span> <span class="n">class_definition</span><span class="o">.</span><span class="n">attributes</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">slot_definition</span> <span class="ow">in</span> <span class="n">class_definition</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-                    <span class="n">materialize_pattern_into_slot_definition</span><span class="p">(</span><span class="n">slot_definition</span><span class="p">)</span></div></div>
+                    <span class="n">materialize_pattern_into_slot_definition</span><span class="p">(</span><span class="n">slot_definition</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SchemaView.materialize_derived_schema"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.materialize_derived_schema">[docs]</a>    <span class="k">def</span> <span class="nf">materialize_derived_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SchemaDefinition</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Materialize a schema view into a schema definition &quot;&quot;&quot;</span>
+        <span class="n">derived_schema</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="p">)</span>
+        <span class="n">derived_schemaview</span> <span class="o">=</span> <span class="n">SchemaView</span><span class="p">(</span><span class="n">derived_schema</span><span class="p">)</span>
+        <span class="n">derived_schemaview</span><span class="o">.</span><span class="n">merge_imports</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">typ</span> <span class="ow">in</span> <span class="p">[</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_types</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">()]:</span>
+            <span class="k">for</span> <span class="n">typ_anc_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">type_ancestors</span><span class="p">(</span><span class="n">typ</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">reflexive</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+                <span class="n">a</span> <span class="o">=</span> <span class="n">derived_schema</span><span class="o">.</span><span class="n">types</span><span class="p">[</span><span class="n">typ_anc_name</span><span class="p">]</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">typ</span><span class="o">.</span><span class="n">uri</span><span class="p">:</span>
+                    <span class="n">typ</span><span class="o">.</span><span class="n">uri</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">uri</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">typ</span><span class="o">.</span><span class="n">base</span><span class="p">:</span>
+                    <span class="n">typ</span><span class="o">.</span><span class="n">base</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">base</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">typ</span><span class="o">.</span><span class="n">pattern</span><span class="p">:</span>
+                    <span class="n">typ</span><span class="o">.</span><span class="n">pattern</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">pattern</span>
+            <span class="n">derived_schema</span><span class="o">.</span><span class="n">types</span><span class="p">[</span><span class="n">typ</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">typ</span>
+        <span class="k">for</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="p">[</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_classes</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">()]:</span>
+            <span class="k">for</span> <span class="n">slot</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">class_induced_slots</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">):</span>
+                <span class="n">slot_range_element</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_element</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">slot_range_element</span><span class="p">,</span> <span class="n">TypeDefinition</span><span class="p">):</span>
+                    <span class="k">for</span> <span class="n">metaslot</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;pattern&quot;</span><span class="p">,</span> <span class="s2">&quot;maximum_value&quot;</span><span class="p">,</span> <span class="s2">&quot;minimum_value&quot;</span><span class="p">]:</span>
+                        <span class="n">metaslot_val</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">slot_range_element</span><span class="p">,</span> <span class="n">metaslot</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">metaslot_val</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                            <span class="nb">setattr</span><span class="p">(</span><span class="n">slot</span><span class="p">,</span> <span class="n">metaslot</span><span class="p">,</span> <span class="n">metaslot_val</span><span class="p">)</span>
+                <span class="n">slot_range_pk_slot_name</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">slot_range_element</span><span class="p">,</span> <span class="n">ClassDefinition</span><span class="p">):</span>
+                    <span class="n">slot_range_pk_slot_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_identifier_slot</span><span class="p">(</span><span class="n">slot_range_element</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">use_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">slot_range_pk_slot_name</span><span class="p">:</span>
+                    <span class="n">slot</span><span class="o">.</span><span class="n">inlined</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="n">slot</span><span class="o">.</span><span class="n">inlined_as_list</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">inlined_as_list</span><span class="p">:</span>
+                    <span class="n">slot</span><span class="o">.</span><span class="n">inlined</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">identifier</span> <span class="ow">or</span> <span class="n">slot</span><span class="o">.</span><span class="n">key</span><span class="p">:</span>
+                    <span class="n">slot</span><span class="o">.</span><span class="n">required</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="bp">cls</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">slot</span>
+            <span class="n">derived_schema</span><span class="o">.</span><span class="n">classes</span><span class="p">[</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">cls</span>
+        <span class="k">for</span> <span class="n">subset</span> <span class="ow">in</span> <span class="p">[</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_subsets</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">()]:</span>
+            <span class="n">derived_schema</span><span class="o">.</span><span class="n">subsets</span><span class="p">[</span><span class="n">subset</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">subset</span>
+        <span class="k">for</span> <span class="n">enum</span> <span class="ow">in</span> <span class="p">[</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_enums</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">()]:</span>
+            <span class="n">derived_schema</span><span class="o">.</span><span class="n">enums</span><span class="p">[</span><span class="n">enum</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">enum</span>
+        <span class="k">return</span> <span class="n">derived_schema</span></div></div>
 </pre></div>
         </article>
       </div>
