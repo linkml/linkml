@@ -54,6 +54,7 @@ class TestActivityAgent(unittest.TestCase):
         endpoint.db_exists(force=True)
         endpoint.compile()
         database: Database = yaml_loader.load(DATA, target_class=Database)
+        endpoint.engine.dispose()
 
     def test_do_dump_sqlite(self):
         endpoint = SQLStore(SCHEMA, database_path=DB, include_schema_in_database=False)
@@ -62,3 +63,4 @@ class TestActivityAgent(unittest.TestCase):
         endpoint.compile()
         database: Database = yaml_loader.load(DATA, target_class=Database)
         endpoint.dump(database)
+        endpoint.engine.dispose()

@@ -298,17 +298,18 @@ class JsonSchemaGenerator(Generator):
         })
         self.top_level_schema.add_def(enum.name, enum_schema)
 
-    def get_type_info_for_slot_subschema(self, slot: AnonymousSlotExpression, slot_is_inlined: bool) -> Tuple[str, str, Union[str, List[str]]]:
+    def get_type_info_for_slot_subschema(self, slot: AnonymousSlotExpression, parent_slot_is_inlined: bool) -> Tuple[str, str, Union[str, List[str]]]:
         typ = None  # JSON Schema type (https://json-schema.org/understanding-json-schema/reference/type.html)
         reference = None  # Reference to a JSON schema entity (https://json-schema.org/understanding-json-schema/structuring.html#ref)
         fmt = None  # JSON Schema format (https://json-schema.org/understanding-json-schema/reference/string.html#format)
 
+        slot_is_inlined = self.schemaview.is_inlined(slot)
         if slot.range in self.schemaview.all_types().keys():
             schema_type = self.schemaview.induced_type(slot.range)
             (typ, fmt) = json_schema_types.get(schema_type.base.lower(), ("string", None))
         elif slot.range in self.schemaview.all_enums().keys():
             reference = slot.range
-        elif slot_is_inlined and slot.range in self.schemaview.all_classes().keys():
+        elif (slot_is_inlined or parent_slot_is_inlined) and slot.range in self.schemaview.all_classes().keys():
             descendants = [desc for desc in self.schemaview.class_descendants(slot.range) 
                 if not self.schemaview.get_class(desc).abstract]
             if descendants and self.include_range_class_descendants:
