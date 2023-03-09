@@ -71,16 +71,6 @@ class SQLStore:
         db_exists = os.path.exists(self.database_path)
         if force or (create and not db_exists):
             if force:
-                for proc in psutil.process_iter():
-                    try:
-                        flist = proc.open_files()
-                        if flist:
-                            for file in flist:
-                                if 'issue_1104_data' in file.path:
-                                    print('!!!',proc.pid, proc.name, file.path)
-                    except:
-                        print(f'Could not read open files for: {proc.pid}')
-
                 Path(self.database_path).unlink(missing_ok=True)
             self.engine = create_engine(f"sqlite:///{self.database_path}")
             with self.engine.connect() as con:
