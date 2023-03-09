@@ -74,7 +74,7 @@ jobs:
       #----------------------------------------------
       - name: Generate coverage results
         run: |
-          poetry run coverage run -m unittest tests/test_issues/test_linkml_issue_1104.py 
+          poetry run coverage run -m unittest discover
           poetry run coverage xml
           poetry run coverage report -m
         shell: bash
