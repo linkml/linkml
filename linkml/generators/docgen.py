@@ -17,7 +17,7 @@ from linkml_runtime.linkml_model.meta import (Annotation, ClassDefinition,
                                               EnumDefinition, SchemaDefinition,
                                               SlotDefinition,
                                               SlotDefinitionName,
-                                              SubsetDefinition, TypeDefinition)
+                                              SubsetDefinition, TypeDefinition, TypeDefinitionName)
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.schemaview import SchemaView
 
@@ -685,6 +685,9 @@ class DocGenerator(Generator):
         _ensure_ranked(elts)
         for e in elts:
             yield e
+
+    def all_type_object_names(self) -> List[TypeDefinitionName]:
+        return [t.name for t in list(self.all_type_objects())]
 
     def all_enum_objects(self) -> Iterator[EnumDefinition]:
         """

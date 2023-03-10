@@ -10,17 +10,16 @@
       {% for s in schemaview.class_parents(element.name)|sort(attribute='name') -%}
         {{ gen.name(schemaview.get_element(s)) }} <|-- {{ gen.name(element) }}
       {% endfor %}
-      {% for s in schemaview.class_induced_slots(element.name)|sort(attribute='name') -%}
-        {{ gen.name(element) }} : {{gen.name(s)}}
-        {{ gen.name(element) }} <.. {{ s.range }} : {{ gen.name(s) }}
-      {% endfor %}
 
       {% for s in schemaview.class_children(element.name)|sort(attribute='name') -%}
         {{ gen.name(element) }} <|-- {{ gen.name(schemaview.get_element(s)) }}
       {% endfor %}
+      
       {% for s in schemaview.class_induced_slots(element.name)|sort(attribute='name') -%}
         {{ gen.name(element) }} : {{gen.name(s)}}
-        {{ gen.name(element) }} <.. {{ s.range }} : {{ gen.name(s )}}
+        {% if s.range not in gen.all_type_object_names() %}
+          {{ gen.name(element) }} ..> {{ s.range }} : {{ gen.name(s) }}
+        {% endif %}
       {% endfor %}
 ```
 {% elif schemaview.class_parents(element.name) %}
@@ -32,7 +31,9 @@
       {% endfor %}
       {% for s in schemaview.class_induced_slots(element.name)|sort(attribute='name') -%}
         {{ gen.name(element) }} : {{gen.name(s)}}
-        {{ gen.name(element) }} <.. {{ s.range }} : {{ gen.name(s )}}
+        {% if s.range not in gen.all_type_object_names() %}
+          {{ gen.name(element) }} ..> {{ s.range }} : {{ gen.name(s) }}
+        {% endif %}
       {% endfor %}
 ```
 {% elif schemaview.class_children(element.name)  %}
@@ -44,7 +45,9 @@
       {% endfor %}
       {% for s in schemaview.class_induced_slots(element.name)|sort(attribute='name') -%}
         {{ gen.name(element) }} : {{gen.name(s)}}
-        {{ gen.name(element) }} <.. {{ s.range }} : {{ gen.name(s )}}
+        {% if s.range not in gen.all_type_object_names() %}
+          {{ gen.name(element) }} ..> {{ s.range }} : {{ gen.name(s) }}
+        {% endif %}
       {% endfor %}
 ```
 {% else %}
@@ -53,7 +56,9 @@
     class {{ gen.name(element) }}
       {% for s in schemaview.class_induced_slots(element.name)|sort(attribute='name') -%}
         {{ gen.name(element) }} : {{gen.name(s)}}
-        {{ gen.name(element) }} <.. {{ s.range }} : {{ gen.name(s )}}
+        {% if s.range not in gen.all_type_object_names() %}
+          {{ gen.name(element) }} ..> {{ s.range }} : {{ gen.name(s) }}
+        {% endif %}
       {% endfor %}
 ```
 {% endif %}
