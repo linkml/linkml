@@ -1,6 +1,6 @@
 import os
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import List
 
 import click
@@ -11,6 +11,8 @@ from linkml._version import __version__
 from linkml.utils.helpers import convert_to_snake_case
 from openpyxl import Workbook
 from openpyxl.worksheet.worksheet import Worksheet
+from openpyxl.worksheet.datavalidation import DataValidation
+from openpyxl.utils import get_column_letter
 
 
 @dataclass
@@ -79,7 +81,7 @@ class ExcelGenerator(Generator):
 
     def add_columns_to_worksheet(
         self, workbook: Workbook, worksheet_name: str, sheet_headings: List[str]
-    ):
+    ) -> None:
         """
         Get a worksheet by name and add a column to it in an existing workbook.
 
@@ -98,8 +100,39 @@ class ExcelGenerator(Generator):
         workbook_name = self.get_workbook_name(workbook)
         workbook.save(workbook_name)
 
-    def column_enum_validation(self):
-        pass
+    def column_enum_validation(
+        self,
+        workbook: Workbook,
+        worksheet_name: str,
+        column_name: str,
+        dropdown_values: List[str],
+    ) -> None:
+        """
+        Get worksheet by name and add a dropdown to a specific column in it
+        based on a list of values.
+
+        :param workbook: The workbook to which the worksheet should be added.
+        :param worksheet_name: Name of the worksheet to add the column dropdown to.
+        :param column_name: Name of the worksheet column to add the dropdown to.
+        :param dropdown_values: List of dropdown values to add to a column in a worksheet.
+        """
+        worksheet = workbook[worksheet_name]
+
+        column_list = [cell.value for cell in worksheet[1]]
+        column_number = column_list.index(column_name) + 1
+        column_letter = get_column_letter(column_number)
+
+        # Create the data validation object and set the dropdown values
+        dv = DataValidation(
+            type="list", formula1=f'"{",".join(dropdown_values)}"', allow_blank=True
+        )
+
+        worksheet.add_data_validation(dv)
+
+        dv.add(f"{column_letter}2:{column_letter}1048576")
+
+        workbook_name = self.get_workbook_name(workbook)
+        workbook.save(workbook_name)
 
     def serialize(self, **kwargs) -> str:
         output = (
@@ -112,9 +145,21 @@ class ExcelGenerator(Generator):
         self.remove_worksheet_by_name(workbook, "Sheet")
         self.create_schema_worksheets(workbook)
 
-        for cls_name, _ in self.schemaview.all_classes().items():
-            slots = [s.name for s in self.schemaview.class_induced_slots(cls_name)]
+        sv = self.schemaview
+        for cls_name, _ in sv.all_classes().items():
+            slots = [s.name for s in sv.class_induced_slots(cls_name)]
             self.add_columns_to_worksheet(workbook, cls_name, slots)
+
+        enum_list = [
+            e_name for e_name, _ in sv.all_enums(imports=self.mergeimports).items()
+        ]
+        for cls_name, _ in sv.all_classes().items():
+            for s in sv.class_induced_slots(cls_name):
+                if s.range in enum_list:
+                    pv_list = []
+                    for pv_name, _ in sv.get_enum(s.range).permissible_values.items():
+                        pv_list.append(pv_name)
+                    self.column_enum_validation(workbook, cls_name, s.name, pv_list)
 
 
 @shared_arguments(ExcelGenerator)
