@@ -76,8 +76,9 @@ class ExcelGenerator(Generator):
         :param workbook: The workbook to which the worksheet should be added.
         """
         sv = self.schemaview
-        for c in sv.all_classes(imports=self.mergeimports).values():
-            self.create_worksheet(workbook, c.name)
+        for cls_name, cls in sv.all_classes(imports=self.mergeimports).items():
+            if not cls.mixin and not cls.abstract:
+                self.create_worksheet(workbook, cls_name)
 
     def add_columns_to_worksheet(
         self, workbook: Workbook, worksheet_name: str, sheet_headings: List[str]
@@ -146,20 +147,27 @@ class ExcelGenerator(Generator):
         self.create_schema_worksheets(workbook)
 
         sv = self.schemaview
-        for cls_name, _ in sv.all_classes(imports=self.mergeimports).items():
-            slots = [s.name for s in sv.class_induced_slots(cls_name, imports=self.mergeimports)]
-            self.add_columns_to_worksheet(workbook, cls_name, slots)
+        for cls_name, cls in sv.all_classes(imports=self.mergeimports).items():
+            if not cls.mixin and not cls.abstract:
+                slots = [
+                    s.name
+                    for s in sv.class_induced_slots(cls_name, imports=self.mergeimports)
+                ]
+                self.add_columns_to_worksheet(workbook, cls_name, slots)
 
         enum_list = [
             e_name for e_name, _ in sv.all_enums(imports=self.mergeimports).items()
         ]
-        for cls_name, _ in sv.all_classes(imports=self.mergeimports).items():
-            for s in sv.class_induced_slots(cls_name, imports=self.mergeimports):
-                if s.range in enum_list:
-                    pv_list = []
-                    for pv_name, _ in sv.get_enum(s.range).permissible_values.items():
-                        pv_list.append(pv_name)
-                    self.column_enum_validation(workbook, cls_name, s.name, pv_list)
+        for cls_name, cls in sv.all_classes(imports=self.mergeimports).items():
+            if not cls.mixin and not cls.abstract:
+                for s in sv.class_induced_slots(cls_name, imports=self.mergeimports):
+                    if s.range in enum_list:
+                        pv_list = []
+                        for pv_name, _ in sv.get_enum(
+                            s.range
+                        ).permissible_values.items():
+                            pv_list.append(pv_name)
+                        self.column_enum_validation(workbook, cls_name, s.name, pv_list)
 
 
 @shared_arguments(ExcelGenerator)
