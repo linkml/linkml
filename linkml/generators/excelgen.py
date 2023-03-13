@@ -68,7 +68,7 @@ class ExcelGenerator(Generator):
 
         return worksheet
 
-    def create_schema_worksheets(self, workbook: str):
+    def create_schema_worksheets(self, workbook: str) -> None:
         """
         Creates worksheets in a given Excel workbook based on the classes in the
         schema.
@@ -146,15 +146,15 @@ class ExcelGenerator(Generator):
         self.create_schema_worksheets(workbook)
 
         sv = self.schemaview
-        for cls_name, _ in sv.all_classes().items():
-            slots = [s.name for s in sv.class_induced_slots(cls_name)]
+        for cls_name, _ in sv.all_classes(imports=self.mergeimports).items():
+            slots = [s.name for s in sv.class_induced_slots(cls_name, imports=self.mergeimports)]
             self.add_columns_to_worksheet(workbook, cls_name, slots)
 
         enum_list = [
             e_name for e_name, _ in sv.all_enums(imports=self.mergeimports).items()
         ]
-        for cls_name, _ in sv.all_classes().items():
-            for s in sv.class_induced_slots(cls_name):
+        for cls_name, _ in sv.all_classes(imports=self.mergeimports).items():
+            for s in sv.class_induced_slots(cls_name, imports=self.mergeimports):
                 if s.range in enum_list:
                     pv_list = []
                     for pv_name, _ in sv.get_enum(s.range).permissible_values.items():
