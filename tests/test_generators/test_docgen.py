@@ -3,6 +3,7 @@ import os
 import shutil
 import tempfile
 import unittest
+import yaml
 from copy import copy
 from typing import List
 
@@ -303,6 +304,16 @@ class DocGeneratorTestCase(unittest.TestCase):
             "Example: Person",
             after="## Examples",)
         
+        # checks correctness of the YAML representation of source schema
+        person_source = gen.yaml(gen.schemaview.get_class("Person"))
+        person_dict = yaml.load(person_source, Loader=yaml.Loader)
+        # consider the species name slot
+        # species name has the Person class repeated multiple times in domain_of
+        domain_of_species_name = person_dict["slot_usage"]["species name"]["domain_of"]
+        self.assertTrue(
+            len(set(domain_of_species_name)) == len(domain_of_species_name)
+        )
+
     def test_docgen_no_mergeimports(self):
         """Tests when imported schemas are not folded into main schema"""
         gen = DocGenerator(SCHEMA, mergeimports=False, no_types_dir=True)
