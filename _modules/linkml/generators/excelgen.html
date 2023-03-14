@@ -297,146 +297,175 @@
         <article role="main">
           <h1>Source code for linkml.generators.excelgen</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
 
 <span class="kn">import</span> <span class="nn">click</span>
-<span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model.meta</span> <span class="kn">import</span> <span class="p">(</span><span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">EnumDefinition</span><span class="p">,</span>
-                                              <span class="n">PermissibleValue</span><span class="p">,</span>
-                                              <span class="n">PermissibleValueText</span><span class="p">,</span>
-                                              <span class="n">SchemaDefinition</span><span class="p">,</span> <span class="n">SlotDefinition</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">linkml_runtime.utils.formatutils</span> <span class="kn">import</span> <span class="n">camelcase</span>
-<span class="kn">from</span> <span class="nn">openpyxl</span> <span class="kn">import</span> <span class="n">Workbook</span><span class="p">,</span> <span class="n">load_workbook</span>
-<span class="kn">from</span> <span class="nn">openpyxl.utils</span> <span class="kn">import</span> <span class="n">get_column_letter</span>
-<span class="kn">from</span> <span class="nn">openpyxl.worksheet.datavalidation</span> <span class="kn">import</span> <span class="n">DataValidation</span>
 
-<span class="kn">from</span> <span class="nn">linkml._version</span> <span class="kn">import</span> <span class="n">__version__</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime.utils.schemaview</span> <span class="kn">import</span> <span class="n">SchemaView</span>
 <span class="kn">from</span> <span class="nn">linkml.utils.generator</span> <span class="kn">import</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">shared_arguments</span>
+<span class="kn">from</span> <span class="nn">linkml._version</span> <span class="kn">import</span> <span class="n">__version__</span>
+<span class="kn">from</span> <span class="nn">linkml.utils.helpers</span> <span class="kn">import</span> <span class="n">convert_to_snake_case</span>
+<span class="kn">from</span> <span class="nn">openpyxl</span> <span class="kn">import</span> <span class="n">Workbook</span>
+<span class="kn">from</span> <span class="nn">openpyxl.worksheet.worksheet</span> <span class="kn">import</span> <span class="n">Worksheet</span>
+<span class="kn">from</span> <span class="nn">openpyxl.worksheet.datavalidation</span> <span class="kn">import</span> <span class="n">DataValidation</span>
+<span class="kn">from</span> <span class="nn">openpyxl.utils</span> <span class="kn">import</span> <span class="n">get_column_letter</span>
 
 
 <div class="viewcode-block" id="ExcelGenerator"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.excelgen.ExcelGenerator">[docs]</a><span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">ExcelGenerator</span><span class="p">(</span><span class="n">Generator</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;This class is a blueprint for the generator module that is responsible</span>
-<span class="sd">    for automatically creating Excel spreadsheets from the LinkML schema.</span>
-
-<span class="sd">    :param schema: LinkML schema object</span>
-<span class="sd">    :type schema: class:`SchemaDefinition`</span>
-<span class="sd">    :param output: LinkML schema specification in YAML format</span>
-<span class="sd">    :type output: str</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
     <span class="c1"># ClassVars</span>
-    <span class="n">generator_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">generator_version</span> <span class="o">=</span> <span class="s2">&quot;0.0.1&quot;</span>
+    <span class="n">generatorname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
+    <span class="n">generatorversion</span> <span class="o">=</span> <span class="s2">&quot;0.1.1&quot;</span>
     <span class="n">valid_formats</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;xlsx&quot;</span><span class="p">]</span>
-    <span class="n">uses_schemaloader</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">uses_schemaloader</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">requires_metamodel</span> <span class="o">=</span> <span class="kc">False</span>
 
-    <span class="c1"># ObjectVars</span>
-    <span class="n">sheet_name_cols</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="p">[])</span>
-    <span class="n">output</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">workbook</span><span class="p">:</span> <span class="n">Workbook</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">Workbook</span><span class="p">())</span>
-    <span class="n">wb_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">enum_dict</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="nb">dict</span><span class="p">())</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;dictionary with slot types and possibles values for those types&quot;&quot;&quot;</span>
-
-    <span class="k">def</span> <span class="nf">_workbook_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">yaml_filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">wb_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Internal method that computes the path where the Excel workbook</span>
-<span class="sd">        should be stored.</span>
-
-<span class="sd">        :param yaml_filename: Name of provided LinkML schema</span>
-<span class="sd">        :type yaml_filename: str</span>
-<span class="sd">        :param wb_name: Prefix for the generated Excel spreadsheet name</span>
-<span class="sd">        :type wb_name: str</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># handle the case when an output filename is not provided</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">wb_name</span><span class="p">:</span>
-            <span class="n">prefix</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">yaml_filename</span><span class="p">))</span>
-            <span class="n">prefix_root</span><span class="p">,</span> <span class="n">prefix_ext</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span>
-
-            <span class="k">if</span> <span class="n">prefix_ext</span> <span class="o">==</span> <span class="s2">&quot;.yaml&quot;</span><span class="p">:</span>
-                <span class="n">prefix</span> <span class="o">=</span> <span class="n">prefix_root</span>
-
-            <span class="n">output_xlsx</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">generator_name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">generator_version</span><span class="si">}</span><span class="s2">.xlsx&quot;</span>
-            <span class="p">)</span>
-
-            <span class="k">return</span> <span class="n">output_xlsx</span>
-
-        <span class="k">return</span> <span class="n">wb_name</span>
-
-    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">wb_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_workbook_path</span><span class="p">(</span><span class="n">yaml_filename</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="p">,</span> <span class="n">wb_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">workbook</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">workbook</span><span class="p">[</span><span class="s2">&quot;Sheet&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span> <span class="o">=</span> <span class="n">SchemaView</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_create_spreadsheet</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ws_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">columns</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Method to add worksheets to the Excel workbook.</span>
+<div class="viewcode-block" id="ExcelGenerator.create_workbook"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.excelgen.ExcelGenerator.create_workbook">[docs]</a>    <span class="k">def</span> <span class="nf">create_workbook</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">workbook_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Workbook</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates an Excel workbook using the openpyxl library and returns it.</span>
 
-<span class="sd">        :param ws_name: Name of each of the worksheets</span>
-<span class="sd">        :type ws_name: str</span>
-<span class="sd">        :param columns: Columns that are relevant to each of the worksheets</span>
-<span class="sd">        :type columns: List[str]</span>
+<span class="sd">        :param workbook_name: Name of the workbook to be created.</span>
+<span class="sd">        :return: An openpyxl Workbook object representing the newly created workbook.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">ws</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">workbook</span><span class="o">.</span><span class="n">create_sheet</span><span class="p">(</span><span class="n">ws_name</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">workbook</span><span class="o">.</span><span class="n">active</span> <span class="o">=</span> <span class="n">ws</span>
-        <span class="n">ws</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">columns</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">workbook</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wb_name</span><span class="p">)</span>
+        <span class="n">workbook</span> <span class="o">=</span> <span class="n">Workbook</span><span class="p">()</span>
+        <span class="n">workbook</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="n">workbook_name</span>
+        <span class="k">return</span> <span class="n">workbook</span></div>
 
-<div class="viewcode-block" id="ExcelGenerator.visit_class"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.excelgen.ExcelGenerator.visit_class">[docs]</a>    <span class="k">def</span> <span class="nf">visit_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Overridden method to intercept classes from generator framework.&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_create_spreadsheet</span><span class="p">(</span><span class="n">ws_name</span><span class="o">=</span><span class="n">camelcase</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">),</span> <span class="n">columns</span><span class="o">=</span><span class="bp">cls</span><span class="o">.</span><span class="n">slots</span><span class="p">)</span>
+<div class="viewcode-block" id="ExcelGenerator.get_workbook_name"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.excelgen.ExcelGenerator.get_workbook_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_workbook_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">workbook</span><span class="p">:</span> <span class="n">Workbook</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the name of the given workbook.</span>
 
-        <span class="k">return</span> <span class="kc">True</span></div>
+<span class="sd">        :param workbook: The workbook whose name should be returned.</span>
+<span class="sd">        :return: Name of the workbook.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">workbook</span><span class="o">.</span><span class="n">title</span></div>
 
-<div class="viewcode-block" id="ExcelGenerator.visit_enum"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.excelgen.ExcelGenerator.visit_enum">[docs]</a>    <span class="k">def</span> <span class="nf">visit_enum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">enum</span><span class="p">:</span> <span class="n">EnumDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Overridden method to intercept enums from generator framework.&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="ExcelGenerator.remove_worksheet_by_name"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.excelgen.ExcelGenerator.remove_worksheet_by_name">[docs]</a>    <span class="k">def</span> <span class="nf">remove_worksheet_by_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">workbook</span><span class="p">:</span> <span class="n">Workbook</span><span class="p">,</span> <span class="n">worksheet_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Remove worksheet from workbook by name.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">worksheet</span> <span class="o">=</span> <span class="n">workbook</span><span class="p">[</span><span class="n">worksheet_name</span><span class="p">]</span>
+        <span class="n">workbook</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">worksheet</span><span class="p">)</span></div>
 
-        <span class="k">def</span> <span class="nf">extract_permissible_text</span><span class="p">(</span><span class="n">pv</span><span class="p">):</span>
-            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">pv</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">pv</span>
-            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">pv</span><span class="p">)</span> <span class="ow">is</span> <span class="n">PermissibleValue</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">pv</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">code</span>
-            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">pv</span><span class="p">)</span> <span class="ow">is</span> <span class="n">PermissibleValueText</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">pv</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid permissible value in enum </span><span class="si">{</span><span class="n">enum</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">pv</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="ExcelGenerator.create_worksheet"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.excelgen.ExcelGenerator.create_worksheet">[docs]</a>    <span class="k">def</span> <span class="nf">create_worksheet</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">workbook</span><span class="p">:</span> <span class="n">Workbook</span><span class="p">,</span> <span class="n">worksheet_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Worksheet</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates an Excel worksheet with the given name in the given workbook.</span>
 
-        <span class="n">permissible_values_texts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
-            <span class="nb">map</span><span class="p">(</span><span class="n">extract_permissible_text</span><span class="p">,</span> <span class="n">enum</span><span class="o">.</span><span class="n">permissible_values</span> <span class="ow">or</span> <span class="p">[])</span>
+<span class="sd">        :param workbook: The workbook to which the worksheet should be added.</span>
+<span class="sd">        :param worksheet_name: Name of the worksheet to be created.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">worksheet</span> <span class="o">=</span> <span class="n">workbook</span><span class="o">.</span><span class="n">create_sheet</span><span class="p">(</span><span class="n">worksheet_name</span><span class="p">)</span>
+        <span class="n">workbook_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_workbook_name</span><span class="p">(</span><span class="n">workbook</span><span class="p">)</span>
+        <span class="n">workbook</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">workbook_name</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">worksheet</span></div>
+
+<div class="viewcode-block" id="ExcelGenerator.create_schema_worksheets"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.excelgen.ExcelGenerator.create_schema_worksheets">[docs]</a>    <span class="k">def</span> <span class="nf">create_schema_worksheets</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">workbook</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates worksheets in a given Excel workbook based on the classes in the</span>
+<span class="sd">        schema.</span>
+
+<span class="sd">        :param workbook: The workbook to which the worksheet should be added.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">sv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span>
+        <span class="k">for</span> <span class="n">cls_name</span><span class="p">,</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">all_classes</span><span class="p">(</span><span class="n">imports</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mergeimports</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">cls</span><span class="o">.</span><span class="n">mixin</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">cls</span><span class="o">.</span><span class="n">abstract</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">create_worksheet</span><span class="p">(</span><span class="n">workbook</span><span class="p">,</span> <span class="n">cls_name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ExcelGenerator.add_columns_to_worksheet"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.excelgen.ExcelGenerator.add_columns_to_worksheet">[docs]</a>    <span class="k">def</span> <span class="nf">add_columns_to_worksheet</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">workbook</span><span class="p">:</span> <span class="n">Workbook</span><span class="p">,</span> <span class="n">worksheet_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">sheet_headings</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a worksheet by name and add a column to it in an existing workbook.</span>
+
+<span class="sd">        :param workbook: The workbook to which the worksheet should be added.</span>
+<span class="sd">        :param worksheet_name: Name of the worksheet to add the column to.</span>
+<span class="sd">        :param column_data: List of data to populate the column with.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Get the worksheet by name</span>
+        <span class="n">worksheet</span> <span class="o">=</span> <span class="n">workbook</span><span class="p">[</span><span class="n">worksheet_name</span><span class="p">]</span>
+
+        <span class="c1"># Add the headings to the worksheet</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">heading</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">sheet_headings</span><span class="p">):</span>
+            <span class="n">worksheet</span><span class="o">.</span><span class="n">cell</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">heading</span><span class="p">)</span>
+
+        <span class="c1"># Save the changes to the workbook</span>
+        <span class="n">workbook_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_workbook_name</span><span class="p">(</span><span class="n">workbook</span><span class="p">)</span>
+        <span class="n">workbook</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">workbook_name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ExcelGenerator.column_enum_validation"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.excelgen.ExcelGenerator.column_enum_validation">[docs]</a>    <span class="k">def</span> <span class="nf">column_enum_validation</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">workbook</span><span class="p">:</span> <span class="n">Workbook</span><span class="p">,</span>
+        <span class="n">worksheet_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">column_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">dropdown_values</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get worksheet by name and add a dropdown to a specific column in it</span>
+<span class="sd">        based on a list of values.</span>
+
+<span class="sd">        :param workbook: The workbook to which the worksheet should be added.</span>
+<span class="sd">        :param worksheet_name: Name of the worksheet to add the column dropdown to.</span>
+<span class="sd">        :param column_name: Name of the worksheet column to add the dropdown to.</span>
+<span class="sd">        :param dropdown_values: List of dropdown values to add to a column in a worksheet.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">worksheet</span> <span class="o">=</span> <span class="n">workbook</span><span class="p">[</span><span class="n">worksheet_name</span><span class="p">]</span>
+
+        <span class="n">column_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">cell</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">cell</span> <span class="ow">in</span> <span class="n">worksheet</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+        <span class="n">column_number</span> <span class="o">=</span> <span class="n">column_list</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">column_name</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">column_letter</span> <span class="o">=</span> <span class="n">get_column_letter</span><span class="p">(</span><span class="n">column_number</span><span class="p">)</span>
+
+        <span class="c1"># Create the data validation object and set the dropdown values</span>
+        <span class="n">dv</span> <span class="o">=</span> <span class="n">DataValidation</span><span class="p">(</span>
+            <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;list&quot;</span><span class="p">,</span> <span class="n">formula1</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dropdown_values</span><span class="p">)</span><span class="si">}</span><span class="s1">&quot;&#39;</span><span class="p">,</span> <span class="n">allow_blank</span><span class="o">=</span><span class="kc">True</span>
         <span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">enum_dict</span><span class="p">[</span><span class="n">enum</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">permissible_values_texts</span></div>
+        <span class="n">worksheet</span><span class="o">.</span><span class="n">add_data_validation</span><span class="p">(</span><span class="n">dv</span><span class="p">)</span>
 
-<div class="viewcode-block" id="ExcelGenerator.visit_class_slot"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.excelgen.ExcelGenerator.visit_class_slot">[docs]</a>    <span class="k">def</span> <span class="nf">visit_class_slot</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">aliased_slot_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Overridden method to intercept classes and associated slots from generator</span>
-<span class="sd">        framework.&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">workbook</span> <span class="o">=</span> <span class="n">load_workbook</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wb_name</span><span class="p">)</span>
+        <span class="n">dv</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">column_letter</span><span class="si">}</span><span class="s2">2:</span><span class="si">{</span><span class="n">column_letter</span><span class="si">}</span><span class="s2">1048576&quot;</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">workbook</span><span class="o">.</span><span class="n">sheetnames</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">enum_dict</span><span class="p">:</span>
+        <span class="n">workbook_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_workbook_name</span><span class="p">(</span><span class="n">workbook</span><span class="p">)</span>
+        <span class="n">workbook</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">workbook_name</span><span class="p">)</span></div>
 
-                <span class="n">valid</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">enum_dict</span><span class="p">[</span><span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="p">])</span>
-                <span class="n">valid</span> <span class="o">=</span> <span class="s1">&#39;&quot;&#39;</span> <span class="o">+</span> <span class="n">valid</span> <span class="o">+</span> <span class="s1">&#39;&quot;&#39;</span>
+<div class="viewcode-block" id="ExcelGenerator.serialize"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.excelgen.ExcelGenerator.serialize">[docs]</a>    <span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">convert_to_snake_case</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.xlsx&quot;</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">output</span>
+            <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">output</span>
+        <span class="p">)</span>
 
-                <span class="n">ws</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">workbook</span><span class="p">[</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
+        <span class="n">workbook</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_workbook</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">remove_worksheet_by_name</span><span class="p">(</span><span class="n">workbook</span><span class="p">,</span> <span class="s2">&quot;Sheet&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">create_schema_worksheets</span><span class="p">(</span><span class="n">workbook</span><span class="p">)</span>
 
-                <span class="n">rows</span> <span class="o">=</span> <span class="n">ws</span><span class="o">.</span><span class="n">iter_rows</span><span class="p">(</span><span class="n">min_row</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">max_row</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># returns a generator of rows</span>
-                <span class="n">first_row</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span>  <span class="c1"># get the first row</span>
-                <span class="n">headings</span> <span class="o">=</span> <span class="p">[</span>
-                    <span class="n">c</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">first_row</span>
-                <span class="p">]</span>  <span class="c1"># extract the values from the cells</span>
+        <span class="n">sv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span>
+        <span class="k">for</span> <span class="n">cls_name</span><span class="p">,</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">all_classes</span><span class="p">(</span><span class="n">imports</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mergeimports</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">cls</span><span class="o">.</span><span class="n">mixin</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">cls</span><span class="o">.</span><span class="n">abstract</span><span class="p">:</span>
+                <span class="n">slots</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">s</span><span class="o">.</span><span class="n">name</span>
+                    <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">class_induced_slots</span><span class="p">(</span><span class="n">cls_name</span><span class="p">,</span> <span class="n">imports</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mergeimports</span><span class="p">)</span>
+                <span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">add_columns_to_worksheet</span><span class="p">(</span><span class="n">workbook</span><span class="p">,</span> <span class="n">cls_name</span><span class="p">,</span> <span class="n">slots</span><span class="p">)</span>
 
-                <span class="n">idx</span> <span class="o">=</span> <span class="n">headings</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-                <span class="n">col_letter</span> <span class="o">=</span> <span class="n">get_column_letter</span><span class="p">(</span><span class="n">idx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
-
-                <span class="n">dv</span> <span class="o">=</span> <span class="n">DataValidation</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;list&quot;</span><span class="p">,</span> <span class="n">formula1</span><span class="o">=</span><span class="n">valid</span><span class="p">,</span> <span class="n">allow_blank</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-                <span class="n">ws</span><span class="o">.</span><span class="n">add_data_validation</span><span class="p">(</span><span class="n">dv</span><span class="p">)</span>
-
-                <span class="n">dv</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">col_letter</span><span class="si">}</span><span class="s2">2:</span><span class="si">{</span><span class="n">col_letter</span><span class="si">}</span><span class="s2">1048576&quot;</span><span class="p">)</span>
-
-                <span class="bp">self</span><span class="o">.</span><span class="n">workbook</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wb_name</span><span class="p">)</span></div></div>
+        <span class="n">enum_list</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">e_name</span> <span class="k">for</span> <span class="n">e_name</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">all_enums</span><span class="p">(</span><span class="n">imports</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mergeimports</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="p">]</span>
+        <span class="k">for</span> <span class="n">cls_name</span><span class="p">,</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">all_classes</span><span class="p">(</span><span class="n">imports</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mergeimports</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">cls</span><span class="o">.</span><span class="n">mixin</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">cls</span><span class="o">.</span><span class="n">abstract</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">class_induced_slots</span><span class="p">(</span><span class="n">cls_name</span><span class="p">,</span> <span class="n">imports</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mergeimports</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">range</span> <span class="ow">in</span> <span class="n">enum_list</span><span class="p">:</span>
+                        <span class="n">pv_list</span> <span class="o">=</span> <span class="p">[]</span>
+                        <span class="k">for</span> <span class="n">pv_name</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">get_enum</span><span class="p">(</span>
+                            <span class="n">s</span><span class="o">.</span><span class="n">range</span>
+                        <span class="p">)</span><span class="o">.</span><span class="n">permissible_values</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                            <span class="n">pv_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pv_name</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">column_enum_validation</span><span class="p">(</span><span class="n">workbook</span><span class="p">,</span> <span class="n">cls_name</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">pv_list</span><span class="p">)</span></div></div>
 
 
 <span class="nd">@shared_arguments</span><span class="p">(</span><span class="n">ExcelGenerator</span><span class="p">)</span>

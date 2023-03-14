@@ -1799,6 +1799,8 @@
         </ul></li>
         <li><a href="linkml.generators.html#linkml.generators.sqlddlgen.SQLTable.add_column">add_column() (linkml.generators.sqlddlgen.SQLTable method)</a>
 </li>
+        <li><a href="linkml.generators.html#linkml.generators.excelgen.ExcelGenerator.add_columns_to_worksheet">add_columns_to_worksheet() (linkml.generators.excelgen.ExcelGenerator method)</a>
+</li>
         <li><a href="linkml.generators.html#linkml.generators.jsonschemagen.JsonSchema.add_def">add_def() (linkml.generators.jsonschemagen.JsonSchema method)</a>
 </li>
         <li><a href="developers/schemabuilder.html#linkml.utils.schema_builder.SchemaBuilder.add_defaults">add_defaults() (linkml.utils.schema_builder.SchemaBuilder method)</a>
@@ -1857,10 +1859,10 @@
 </li>
         <li><a href="developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.all_aliases">all_aliases() (linkml_runtime.utils.schemaview.SchemaView method)</a>
 </li>
-        <li><a href="developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.all_class">all_class() (linkml_runtime.utils.schemaview.SchemaView method)</a>
-</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.all_class">all_class() (linkml_runtime.utils.schemaview.SchemaView method)</a>
+</li>
         <li><a href="developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.all_classes">all_classes() (linkml_runtime.utils.schemaview.SchemaView method)</a>
 </li>
         <li><a href="linkml.generators.html#linkml.generators.sqlddlgen.SQLSchema.all_columns">all_columns() (linkml.generators.sqlddlgen.SQLSchema method)</a>
@@ -2061,10 +2063,10 @@
           <li><a href="linkml.reporting.html#linkml.reporting.model.Report.class_name">(linkml.reporting.model.Report attribute)</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.class_name_mappings">class_name_mappings() (linkml_runtime.utils.schemaview.SchemaView method)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="linkml.generators.html#linkml.generators.golrgen.GolrSchemaGenerator.class_obj">class_obj (linkml.generators.golrgen.GolrSchemaGenerator attribute)</a>
 </li>
         <li><a href="linkml.utils.html#linkml.utils.generator.Generator.class_or_type_for">class_or_type_for() (linkml.utils.generator.Generator method)</a>
@@ -2113,6 +2115,8 @@
 </li>
         <li><a href="linkml.utils.html#linkml.utils.schemasynopsis.SchemaSynopsis.codesets">codesets (linkml.utils.schemasynopsis.SchemaSynopsis attribute)</a>
 </li>
+        <li><a href="linkml.generators.html#linkml.generators.excelgen.ExcelGenerator.column_enum_validation">column_enum_validation() (linkml.generators.excelgen.ExcelGenerator method)</a>
+</li>
         <li><a href="linkml.generators.html#linkml.generators.sqlddlgen.SQLTable.columns">columns (linkml.generators.sqlddlgen.SQLTable attribute)</a>
 </li>
         <li><a href="developers/sqlstore.html#linkml.utils.sqlutils.SQLStore.compile">compile() (linkml.utils.sqlutils.SQLStore method)</a>
@@ -2139,7 +2143,15 @@
         </ul></li>
         <li><a href="generators/jsonld-context.html#linkml.generators.jsonldcontextgen.ContextGenerator">ContextGenerator (class in linkml.generators.jsonldcontextgen)</a>, <a href="linkml.generators.html#linkml.generators.jsonldcontextgen.ContextGenerator">[1]</a>
 </li>
+        <li><a href="linkml.utils.html#linkml.utils.helpers.convert_to_snake_case">convert_to_snake_case() (in module linkml.utils.helpers)</a>
+</li>
         <li><a href="linkml.generators.html#linkml.generators.oocodegen.OOCodeGenerator.create_documents">create_documents() (linkml.generators.oocodegen.OOCodeGenerator method)</a>
+</li>
+        <li><a href="linkml.generators.html#linkml.generators.excelgen.ExcelGenerator.create_schema_worksheets">create_schema_worksheets() (linkml.generators.excelgen.ExcelGenerator method)</a>
+</li>
+        <li><a href="linkml.generators.html#linkml.generators.excelgen.ExcelGenerator.create_workbook">create_workbook() (linkml.generators.excelgen.ExcelGenerator method)</a>
+</li>
+        <li><a href="linkml.generators.html#linkml.generators.excelgen.ExcelGenerator.create_worksheet">create_worksheet() (linkml.generators.excelgen.ExcelGenerator method)</a>
 </li>
         <li><a href="developers/loaders-and-dumpers.html#linkml_runtime.dumpers.CSVDumper">CSVDumper (class in linkml_runtime.dumpers)</a>
 </li>
@@ -2313,9 +2325,11 @@
           <li><a href="linkml.generators.html#linkml.generators.rdfgen.RDFGenerator.emit_metadata">(linkml.generators.rdfgen.RDFGenerator attribute)</a>
 </li>
         </ul></li>
-        <li><a href="linkml.generators.html#linkml.generators.graphqlgen.GraphqlGenerator.emit_prefixes">emit_prefixes (linkml.generators.graphqlgen.GraphqlGenerator attribute)</a>
+        <li><a href="linkml.generators.html#linkml.generators.excelgen.ExcelGenerator.emit_prefixes">emit_prefixes (linkml.generators.excelgen.ExcelGenerator attribute)</a>
 
         <ul>
+          <li><a href="linkml.generators.html#linkml.generators.graphqlgen.GraphqlGenerator.emit_prefixes">(linkml.generators.graphqlgen.GraphqlGenerator attribute)</a>
+</li>
           <li><a href="linkml.generators.html#linkml.generators.jsonldcontextgen.ContextGenerator.emit_prefixes">(linkml.generators.jsonldcontextgen.ContextGenerator attribute)</a>
 </li>
           <li><a href="linkml.generators.html#linkml.generators.prefixmapgen.PrefixGenerator.emit_prefixes">(linkml.generators.prefixmapgen.PrefixGenerator attribute)</a>
@@ -2370,8 +2384,6 @@
         <li><a href="glossary.html#term-enum"><strong>enum</strong></a>
 </li>
         <li><a href="developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.enum_ancestors">enum_ancestors() (linkml_runtime.utils.schemaview.SchemaView method)</a>
-</li>
-        <li><a href="linkml.generators.html#linkml.generators.excelgen.ExcelGenerator.enum_dict">enum_dict (linkml.generators.excelgen.ExcelGenerator attribute)</a>
 </li>
         <li><a href="linkml.generators.html#linkml.generators.markdowngen.MarkdownGenerator.enum_hier">enum_hier() (linkml.generators.markdowngen.MarkdownGenerator method)</a>
 </li>
@@ -3538,14 +3550,12 @@
 </li>
         <li><a href="linkml.generators.html#linkml.generators.projectgen.ProjectConfiguration.generator_args">generator_args (linkml.generators.projectgen.ProjectConfiguration attribute)</a>
 </li>
-        <li><a href="linkml.generators.html#linkml.generators.excelgen.ExcelGenerator.generator_name">generator_name (linkml.generators.excelgen.ExcelGenerator attribute)</a>
-</li>
-        <li><a href="linkml.generators.html#linkml.generators.excelgen.ExcelGenerator.generator_version">generator_version (linkml.generators.excelgen.ExcelGenerator attribute)</a>
-</li>
         <li><a href="linkml.generators.html#linkml.generators.csvgen.CsvGenerator.generatorname">generatorname (linkml.generators.csvgen.CsvGenerator attribute)</a>
 
         <ul>
           <li><a href="linkml.generators.html#linkml.generators.dotgen.DotGenerator.generatorname">(linkml.generators.dotgen.DotGenerator attribute)</a>
+</li>
+          <li><a href="linkml.generators.html#linkml.generators.excelgen.ExcelGenerator.generatorname">(linkml.generators.excelgen.ExcelGenerator attribute)</a>
 </li>
           <li><a href="linkml.generators.html#linkml.generators.golrgen.GolrSchemaGenerator.generatorname">(linkml.generators.golrgen.GolrSchemaGenerator attribute)</a>
 </li>
@@ -3596,6 +3606,8 @@
 
         <ul>
           <li><a href="linkml.generators.html#linkml.generators.dotgen.DotGenerator.generatorversion">(linkml.generators.dotgen.DotGenerator attribute)</a>
+</li>
+          <li><a href="linkml.generators.html#linkml.generators.excelgen.ExcelGenerator.generatorversion">(linkml.generators.excelgen.ExcelGenerator attribute)</a>
 </li>
           <li><a href="linkml.generators.html#linkml.generators.golrgen.GolrSchemaGenerator.generatorversion">(linkml.generators.golrgen.GolrSchemaGenerator attribute)</a>
 </li>
@@ -3717,6 +3729,8 @@
         <li><a href="linkml.generators.html#linkml.generators.jsonschemagen.JsonSchemaGenerator.get_type_info_for_slot_subschema">get_type_info_for_slot_subschema() (linkml.generators.jsonschemagen.JsonSchemaGenerator method)</a>
 </li>
         <li><a href="developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.get_uri">get_uri() (linkml_runtime.utils.schemaview.SchemaView method)</a>
+</li>
+        <li><a href="linkml.generators.html#linkml.generators.excelgen.ExcelGenerator.get_workbook_name">get_workbook_name() (linkml.generators.excelgen.ExcelGenerator method)</a>
 </li>
         <li><a href="linkml.generators.html#linkml.generators.golrgen.GOLRClass">GOLRClass (class in linkml.generators.golrgen)</a>
 </li>
@@ -4435,9 +4449,11 @@
 </li>
         <li><a href="linkml.utils.html#linkml.utils.schemaloader.SchemaLoader.merge_type">merge_type() (linkml.utils.schemaloader.SchemaLoader method)</a>
 </li>
-        <li><a href="linkml.generators.html#linkml.generators.graphqlgen.GraphqlGenerator.mergeimports">mergeimports (linkml.generators.graphqlgen.GraphqlGenerator attribute)</a>
+        <li><a href="linkml.generators.html#linkml.generators.excelgen.ExcelGenerator.mergeimports">mergeimports (linkml.generators.excelgen.ExcelGenerator attribute)</a>
 
         <ul>
+          <li><a href="linkml.generators.html#linkml.generators.graphqlgen.GraphqlGenerator.mergeimports">(linkml.generators.graphqlgen.GraphqlGenerator attribute)</a>
+</li>
           <li><a href="linkml.generators.html#linkml.generators.projectgen.ProjectConfiguration.mergeimports">(linkml.generators.projectgen.ProjectConfiguration attribute)</a>
 </li>
           <li><a href="linkml.generators.html#linkml.generators.shaclgen.ShaclGenerator.mergeimports">(linkml.generators.shaclgen.ShaclGenerator attribute)</a>
@@ -4447,9 +4463,11 @@
         </ul></li>
         <li><a href="linkml.generators.html#linkml.generators.owlgen.OwlSchemaGenerator.metaclasses">metaclasses (linkml.generators.owlgen.OwlSchemaGenerator attribute)</a>
 </li>
-        <li><a href="linkml.generators.html#linkml.generators.graphqlgen.GraphqlGenerator.metadata">metadata (linkml.generators.graphqlgen.GraphqlGenerator attribute)</a>
+        <li><a href="linkml.generators.html#linkml.generators.excelgen.ExcelGenerator.metadata">metadata (linkml.generators.excelgen.ExcelGenerator attribute)</a>
 
         <ul>
+          <li><a href="linkml.generators.html#linkml.generators.graphqlgen.GraphqlGenerator.metadata">(linkml.generators.graphqlgen.GraphqlGenerator attribute)</a>
+</li>
           <li><a href="linkml.generators.html#linkml.generators.shaclgen.ShaclGenerator.metadata">(linkml.generators.shaclgen.ShaclGenerator attribute)</a>
 </li>
           <li><a href="linkml.utils.html#linkml.utils.generator.Generator.metadata">(linkml.utils.generator.Generator attribute)</a>
@@ -4652,19 +4670,17 @@
 </li>
         <li><a href="linkml.generators.html#linkml.generators.jsonschemagen.JsonSchema.OPTIONAL_IDENTIFIER_SUFFIX">OPTIONAL_IDENTIFIER_SUFFIX (linkml.generators.jsonschemagen.JsonSchema attribute)</a>
 </li>
-        <li><a href="linkml.generators.html#linkml.generators.sqlddlgen.Backref.order_by">order_by (linkml.generators.sqlddlgen.Backref attribute)</a>
-</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="linkml.generators.html#linkml.generators.sqlddlgen.Backref.order_by">order_by (linkml.generators.sqlddlgen.Backref attribute)</a>
+</li>
         <li><a href="linkml.generators.html#linkml.generators.sqlddlgen.Backref.original_column">original_column (linkml.generators.sqlddlgen.Backref attribute)</a>
 </li>
         <li><a href="linkml.generators.html#linkml.generators.jsonldgen.JSONLDGenerator.original_schema">original_schema (linkml.generators.jsonldgen.JSONLDGenerator attribute)</a>
 </li>
-        <li><a href="linkml.generators.html#linkml.generators.excelgen.ExcelGenerator.output">output (linkml.generators.excelgen.ExcelGenerator attribute)</a>
+        <li><a href="linkml.generators.html#linkml.generators.jsonldcontextgen.ContextGenerator.output">output (linkml.generators.jsonldcontextgen.ContextGenerator attribute)</a>
 
         <ul>
-          <li><a href="linkml.generators.html#linkml.generators.jsonldcontextgen.ContextGenerator.output">(linkml.generators.jsonldcontextgen.ContextGenerator attribute)</a>
-</li>
           <li><a href="linkml.utils.html#linkml.utils.execute_tutorial.Block.output">(linkml.utils.execute_tutorial.Block attribute)</a>
 </li>
           <li><a href="linkml.utils.html#linkml.utils.generator.Generator.output">(linkml.utils.generator.Generator attribute)</a>
@@ -4804,13 +4820,15 @@
 </li>
         <li><a href="linkml.utils.html#linkml.utils.typereferences.RefType">RefType (class in linkml.utils.typereferences)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="linkml.generators.html#linkml.generators.protogen.ProtoGenerator.relative_slot_num">relative_slot_num (linkml.generators.protogen.ProtoGenerator attribute)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="linkml.generators.html#linkml.generators.sqlddlgen.SQLTable.remove_column">remove_column() (linkml.generators.sqlddlgen.SQLTable method)</a>
 </li>
         <li><a href="linkml.utils.html#linkml.utils.helpers.remove_duplicates">remove_duplicates() (in module linkml.utils.helpers)</a>
+</li>
+        <li><a href="linkml.generators.html#linkml.generators.excelgen.ExcelGenerator.remove_worksheet_by_name">remove_worksheet_by_name() (linkml.generators.excelgen.ExcelGenerator method)</a>
 </li>
         <li><a href="linkml.generators.html#linkml.generators.oocodegen.OOCodeGenerator.replace_invalid_identifier_character">replace_invalid_identifier_character() (linkml.generators.oocodegen.OOCodeGenerator method)</a>
 </li>
@@ -4852,9 +4870,11 @@
   <h2>S</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="linkml.generators.html#linkml.generators.graphqlgen.GraphqlGenerator.schema">schema (linkml.generators.graphqlgen.GraphqlGenerator attribute)</a>
+        <li><a href="linkml.generators.html#linkml.generators.excelgen.ExcelGenerator.schema">schema (linkml.generators.excelgen.ExcelGenerator attribute)</a>
 
         <ul>
+          <li><a href="linkml.generators.html#linkml.generators.graphqlgen.GraphqlGenerator.schema">(linkml.generators.graphqlgen.GraphqlGenerator attribute)</a>
+</li>
           <li><a href="linkml.generators.html#linkml.generators.owlgen.OwlSchemaGenerator.schema">(linkml.generators.owlgen.OwlSchemaGenerator attribute)</a>
 </li>
           <li><a href="linkml.generators.html#linkml.generators.shaclgen.ShaclGenerator.schema">(linkml.generators.shaclgen.ShaclGenerator attribute)</a>
@@ -4889,6 +4909,8 @@
         <li><a href="generators/erdiagram.html#linkml.generators.erdiagramgen.ERDiagramGenerator.serialize">serialize() (linkml.generators.erdiagramgen.ERDiagramGenerator method)</a>
 
         <ul>
+          <li><a href="linkml.generators.html#linkml.generators.excelgen.ExcelGenerator.serialize">(linkml.generators.excelgen.ExcelGenerator method)</a>
+</li>
           <li><a href="generators/java.html#linkml.generators.javagen.JavaGenerator.serialize">(linkml.generators.javagen.JavaGenerator method)</a>, <a href="linkml.generators.html#linkml.generators.javagen.JavaGenerator.serialize">[1]</a>
 </li>
           <li><a href="generators/jsonld-context.html#linkml.generators.jsonldcontextgen.ContextGenerator.serialize">(linkml.generators.jsonldcontextgen.ContextGenerator method)</a>
@@ -4934,8 +4956,6 @@
 </li>
         <li><a href="linkml.utils.html#linkml.utils.generator.shared_arguments">shared_arguments() (in module linkml.utils.generator)</a>
 </li>
-        <li><a href="linkml.generators.html#linkml.generators.excelgen.ExcelGenerator.sheet_name_cols">sheet_name_cols (linkml.generators.excelgen.ExcelGenerator attribute)</a>
-</li>
         <li><a href="linkml.generators.html#linkml.generators.shexgen.ShExGenerator.shex">shex (linkml.generators.shexgen.ShExGenerator attribute)</a>
 </li>
         <li><a href="linkml.generators.html#linkml.generators.shexgen.ShExGenerator">ShExGenerator (class in linkml.generators.shexgen)</a>
@@ -4964,10 +4984,10 @@
 </li>
         <li><a href="developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.slot_is_true_for_metadata_property">slot_is_true_for_metadata_property() (linkml_runtime.utils.schemaview.SchemaView method)</a>
 </li>
-        <li><a href="developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.slot_leaves">slot_leaves() (linkml_runtime.utils.schemaview.SchemaView method)</a>
-</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.slot_leaves">slot_leaves() (linkml_runtime.utils.schemaview.SchemaView method)</a>
+</li>
         <li><a href="linkml.generators.html#linkml.generators.markdowngen.MarkdownGenerator.slot_link">slot_link() (linkml.generators.markdowngen.MarkdownGenerator method)</a>
 </li>
         <li><a href="linkml.utils.html#linkml.utils.generator.Generator.slot_name">slot_name() (linkml.utils.generator.Generator method)</a>
@@ -5321,8 +5341,6 @@
         <ul>
           <li><a href="linkml.generators.html#linkml.generators.dotgen.DotGenerator.visit_class">(linkml.generators.dotgen.DotGenerator method)</a>
 </li>
-          <li><a href="linkml.generators.html#linkml.generators.excelgen.ExcelGenerator.visit_class">(linkml.generators.excelgen.ExcelGenerator method)</a>
-</li>
           <li><a href="linkml.generators.html#linkml.generators.golrgen.GolrSchemaGenerator.visit_class">(linkml.generators.golrgen.GolrSchemaGenerator method)</a>
 </li>
           <li><a href="linkml.generators.html#linkml.generators.graphqlgen.GraphqlGenerator.visit_class">(linkml.generators.graphqlgen.GraphqlGenerator method)</a>
@@ -5355,8 +5373,6 @@
         <li><a href="linkml.generators.html#linkml.generators.dotgen.DotGenerator.visit_class_slot">visit_class_slot() (linkml.generators.dotgen.DotGenerator method)</a>
 
         <ul>
-          <li><a href="linkml.generators.html#linkml.generators.excelgen.ExcelGenerator.visit_class_slot">(linkml.generators.excelgen.ExcelGenerator method)</a>
-</li>
           <li><a href="linkml.generators.html#linkml.generators.golrgen.GolrSchemaGenerator.visit_class_slot">(linkml.generators.golrgen.GolrSchemaGenerator method)</a>
 </li>
           <li><a href="linkml.generators.html#linkml.generators.graphqlgen.GraphqlGenerator.visit_class_slot">(linkml.generators.graphqlgen.GraphqlGenerator method)</a>
@@ -5372,11 +5388,9 @@
           <li><a href="linkml.utils.html#linkml.utils.generator.Generator.visit_class_slot">(linkml.utils.generator.Generator method)</a>
 </li>
         </ul></li>
-        <li><a href="linkml.generators.html#linkml.generators.excelgen.ExcelGenerator.visit_enum">visit_enum() (linkml.generators.excelgen.ExcelGenerator method)</a>
+        <li><a href="linkml.generators.html#linkml.generators.markdowngen.MarkdownGenerator.visit_enum">visit_enum() (linkml.generators.markdowngen.MarkdownGenerator method)</a>
 
         <ul>
-          <li><a href="linkml.generators.html#linkml.generators.markdowngen.MarkdownGenerator.visit_enum">(linkml.generators.markdowngen.MarkdownGenerator method)</a>
-</li>
           <li><a href="linkml.generators.html#linkml.generators.owlgen.OwlSchemaGenerator.visit_enum">(linkml.generators.owlgen.OwlSchemaGenerator method)</a>
 </li>
           <li><a href="linkml.utils.html#linkml.utils.generator.Generator.visit_enum">(linkml.utils.generator.Generator method)</a>
@@ -5462,14 +5476,10 @@
 </li>
         <li><a href="linkml.reporting.html#linkml.reporting.model.SeverityOptions.WARNING">WARNING (linkml.reporting.model.SeverityOptions attribute)</a>
 </li>
-        <li><a href="linkml.generators.html#linkml.generators.excelgen.ExcelGenerator.wb_name">wb_name (linkml.generators.excelgen.ExcelGenerator attribute)</a>
-</li>
         <li><a href="linkml.generators.html#linkml.generators.golrgen.GOLRClass.weight">weight (linkml.generators.golrgen.GOLRClass attribute)</a>
 </li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="linkml.generators.html#linkml.generators.excelgen.ExcelGenerator.workbook">workbook (linkml.generators.excelgen.ExcelGenerator attribute)</a>
-</li>
         <li><a href="linkml.utils.html#linkml.utils.execute_tutorial.write_lines">write_lines() (in module linkml.utils.execute_tutorial)</a>
 </li>
         <li><a href="linkml.generators.html#linkml.generators.sqlddlgen.SQLDDLGenerator.write_sqla_python_imperative">write_sqla_python_imperative() (linkml.generators.sqlddlgen.SQLDDLGenerator method)</a>
