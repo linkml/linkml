@@ -1,144 +1,173 @@
 import os
-from dataclasses import dataclass, field
-from typing import List, Optional, TextIO, Union
+
+from dataclasses import dataclass
+from typing import List
 
 import click
-from linkml_runtime.linkml_model.meta import (ClassDefinition, EnumDefinition,
-                                              PermissibleValue,
-                                              PermissibleValueText,
-                                              SchemaDefinition, SlotDefinition)
-from linkml_runtime.utils.formatutils import camelcase
-from openpyxl import Workbook, load_workbook
-from openpyxl.utils import get_column_letter
-from openpyxl.worksheet.datavalidation import DataValidation
 
-from linkml._version import __version__
+from linkml_runtime.utils.schemaview import SchemaView
 from linkml.utils.generator import Generator, shared_arguments
+from linkml._version import __version__
+from linkml.utils.helpers import convert_to_snake_case
+from openpyxl import Workbook
+from openpyxl.worksheet.worksheet import Worksheet
+from openpyxl.worksheet.datavalidation import DataValidation
+from openpyxl.utils import get_column_letter
 
 
 @dataclass
 class ExcelGenerator(Generator):
-    """This class is a blueprint for the generator module that is responsible
-    for automatically creating Excel spreadsheets from the LinkML schema.
-
-    :param schema: LinkML schema object
-    :type schema: class:`SchemaDefinition`
-    :param output: LinkML schema specification in YAML format
-    :type output: str
-    """
-
     # ClassVars
-    generator_name = os.path.splitext(os.path.basename(__file__))[0]
-    generator_version = "0.0.1"
+    generatorname = os.path.basename(__file__)
+    generatorversion = "0.1.1"
     valid_formats = ["xlsx"]
-    uses_schemaloader = True
+    uses_schemaloader = False
     requires_metamodel = False
 
-    # ObjectVars
-    sheet_name_cols: List[str] = field(default_factory=lambda: [])
-    output: str = None
-    workbook: Workbook = field(default_factory=lambda: Workbook())
-    wb_name: str = None
-    enum_dict: dict = field(default_factory=lambda: dict())
-    """dictionary with slot types and possibles values for those types"""
-
-    def _workbook_path(self, yaml_filename: str, wb_name: str = None):
-        """Internal method that computes the path where the Excel workbook
-        should be stored.
-
-        :param yaml_filename: Name of provided LinkML schema
-        :type yaml_filename: str
-        :param wb_name: Prefix for the generated Excel spreadsheet name
-        :type wb_name: str
-        """
-        # handle the case when an output filename is not provided
-        if not wb_name:
-            prefix, _ = os.path.splitext(os.path.basename(yaml_filename))
-            prefix_root, prefix_ext = os.path.splitext(prefix)
-
-            if prefix_ext == ".yaml":
-                prefix = prefix_root
-
-            output_xlsx = (
-                f"{prefix}_{self.generator_name}_{self.generator_version}.xlsx"
-            )
-
-            return output_xlsx
-
-        return wb_name
-
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         super().__post_init__()
-        self.wb_name = self._workbook_path(yaml_filename=self.schema, wb_name=self.output)
-        self.workbook.remove(self.workbook["Sheet"])
+        self.schemaview = SchemaView(self.schema)
 
-    def _create_spreadsheet(self, ws_name: str, columns: List[str]) -> None:
-        """Method to add worksheets to the Excel workbook.
-
-        :param ws_name: Name of each of the worksheets
-        :type ws_name: str
-        :param columns: Columns that are relevant to each of the worksheets
-        :type columns: List[str]
+    def create_workbook(self, workbook_name: str) -> Workbook:
         """
-        ws = self.workbook.create_sheet(ws_name)
-        self.workbook.active = ws
-        ws.append(columns)
-        self.workbook.save(self.wb_name)
+        Creates an Excel workbook using the openpyxl library and returns it.
 
-    def visit_class(self, cls: ClassDefinition) -> bool:
-        """Overridden method to intercept classes from generator framework."""
-        self._create_spreadsheet(ws_name=camelcase(cls.name), columns=cls.slots)
+        :param workbook_name: Name of the workbook to be created.
+        :return: An openpyxl Workbook object representing the newly created workbook.
+        """
+        workbook = Workbook()
+        workbook.title = workbook_name
+        return workbook
 
-        return True
+    def get_workbook_name(self, workbook: Workbook) -> str:
+        """
+        Returns the name of the given workbook.
 
-    def visit_enum(self, enum: EnumDefinition) -> bool:
-        """Overridden method to intercept enums from generator framework."""
+        :param workbook: The workbook whose name should be returned.
+        :return: Name of the workbook.
+        """
+        return workbook.title
 
-        def extract_permissible_text(pv):
-            if type(pv) is str:
-                return pv
-            if type(pv) is PermissibleValue:
-                return pv.text.code
-            if type(pv) is PermissibleValueText:
-                return pv
-            raise ValueError(f"Invalid permissible value in enum {enum}: {pv}")
+    def remove_worksheet_by_name(self, workbook: Workbook, worksheet_name: str) -> None:
+        """
+        Remove worksheet from workbook by name.
+        """
+        worksheet = workbook[worksheet_name]
+        workbook.remove(worksheet)
 
-        permissible_values_texts = list(
-            map(extract_permissible_text, enum.permissible_values or [])
+    def create_worksheet(self, workbook: Workbook, worksheet_name: str) -> Worksheet:
+        """
+        Creates an Excel worksheet with the given name in the given workbook.
+
+        :param workbook: The workbook to which the worksheet should be added.
+        :param worksheet_name: Name of the worksheet to be created.
+        """
+        worksheet = workbook.create_sheet(worksheet_name)
+        workbook_name = self.get_workbook_name(workbook)
+        workbook.save(workbook_name)
+
+        return worksheet
+
+    def create_schema_worksheets(self, workbook: str) -> None:
+        """
+        Creates worksheets in a given Excel workbook based on the classes in the
+        schema.
+
+        :param workbook: The workbook to which the worksheet should be added.
+        """
+        sv = self.schemaview
+        for cls_name, cls in sv.all_classes(imports=self.mergeimports).items():
+            if not cls.mixin and not cls.abstract:
+                self.create_worksheet(workbook, cls_name)
+
+    def add_columns_to_worksheet(
+        self, workbook: Workbook, worksheet_name: str, sheet_headings: List[str]
+    ) -> None:
+        """
+        Get a worksheet by name and add a column to it in an existing workbook.
+
+        :param workbook: The workbook to which the worksheet should be added.
+        :param worksheet_name: Name of the worksheet to add the column to.
+        :param column_data: List of data to populate the column with.
+        """
+        # Get the worksheet by name
+        worksheet = workbook[worksheet_name]
+
+        # Add the headings to the worksheet
+        for i, heading in enumerate(sheet_headings):
+            worksheet.cell(row=1, column=i + 1, value=heading)
+
+        # Save the changes to the workbook
+        workbook_name = self.get_workbook_name(workbook)
+        workbook.save(workbook_name)
+
+    def column_enum_validation(
+        self,
+        workbook: Workbook,
+        worksheet_name: str,
+        column_name: str,
+        dropdown_values: List[str],
+    ) -> None:
+        """
+        Get worksheet by name and add a dropdown to a specific column in it
+        based on a list of values.
+
+        :param workbook: The workbook to which the worksheet should be added.
+        :param worksheet_name: Name of the worksheet to add the column dropdown to.
+        :param column_name: Name of the worksheet column to add the dropdown to.
+        :param dropdown_values: List of dropdown values to add to a column in a worksheet.
+        """
+        worksheet = workbook[worksheet_name]
+
+        column_list = [cell.value for cell in worksheet[1]]
+        column_number = column_list.index(column_name) + 1
+        column_letter = get_column_letter(column_number)
+
+        # Create the data validation object and set the dropdown values
+        dv = DataValidation(
+            type="list", formula1=f'"{",".join(dropdown_values)}"', allow_blank=True
         )
 
-        self.enum_dict[enum.name] = permissible_values_texts
+        worksheet.add_data_validation(dv)
 
-    def visit_class_slot(
-        self, cls: ClassDefinition, aliased_slot_name: str, slot: SlotDefinition
-    ) -> None:
-        """Overridden method to intercept classes and associated slots from generator
-        framework."""
-        self.workbook = load_workbook(self.wb_name)
+        dv.add(f"{column_letter}2:{column_letter}1048576")
 
-        if cls.name in self.workbook.sheetnames:
-            if slot.range in self.enum_dict:
+        workbook_name = self.get_workbook_name(workbook)
+        workbook.save(workbook_name)
 
-                valid = ",".join(self.enum_dict[slot.range])
-                valid = '"' + valid + '"'
+    def serialize(self, **kwargs) -> str:
+        output = (
+            convert_to_snake_case(self.schema.name) + ".xlsx"
+            if not self.output
+            else self.output
+        )
 
-                ws = self.workbook[cls.name]
+        workbook = self.create_workbook(output)
+        self.remove_worksheet_by_name(workbook, "Sheet")
+        self.create_schema_worksheets(workbook)
 
-                rows = ws.iter_rows(min_row=1, max_row=1)  # returns a generator of rows
-                first_row = next(rows)  # get the first row
-                headings = [
-                    c.value for c in first_row
-                ]  # extract the values from the cells
+        sv = self.schemaview
+        for cls_name, cls in sv.all_classes(imports=self.mergeimports).items():
+            if not cls.mixin and not cls.abstract:
+                slots = [
+                    s.name
+                    for s in sv.class_induced_slots(cls_name, imports=self.mergeimports)
+                ]
+                self.add_columns_to_worksheet(workbook, cls_name, slots)
 
-                idx = headings.index(slot.name)
-                col_letter = get_column_letter(idx + 1)
-
-                dv = DataValidation(type="list", formula1=valid, allow_blank=True)
-                ws.add_data_validation(dv)
-
-                dv.add(f"{col_letter}2:{col_letter}1048576")
-
-                self.workbook.save(self.wb_name)
+        enum_list = [
+            e_name for e_name, _ in sv.all_enums(imports=self.mergeimports).items()
+        ]
+        for cls_name, cls in sv.all_classes(imports=self.mergeimports).items():
+            if not cls.mixin and not cls.abstract:
+                for s in sv.class_induced_slots(cls_name, imports=self.mergeimports):
+                    if s.range in enum_list:
+                        pv_list = []
+                        for pv_name, _ in sv.get_enum(
+                            s.range
+                        ).permissible_values.items():
+                            pv_list.append(pv_name)
+                        self.column_enum_validation(workbook, cls_name, s.name, pv_list)
 
 
 @shared_arguments(ExcelGenerator)
