@@ -468,7 +468,7 @@ Currently the assumption of existing LinkML tools is that all element
 names are unique, both within an individual schema *and across imports*.
 
 This means if you want to import a schema `personinfo`, and
-`personinfo` includes a class `Person`, and your own schema has a
+`personinfo` includes a class `Person`, or another imported schema or your own schema has a
 class `Person`, there will be an element clash, and you will need to
 either remove the import, change the imported schema, or change your
 own schema.
