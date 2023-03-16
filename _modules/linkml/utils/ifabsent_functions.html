@@ -352,6 +352,17 @@
     <span class="k">return</span> <span class="n">loader</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">curie_for</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span> <span class="ow">or</span> <span class="n">strval</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="default_ns_for"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.ifabsent_functions.default_ns_for">[docs]</a><span class="k">def</span> <span class="nf">default_ns_for</span><span class="p">(</span><span class="n">loader</span><span class="p">:</span> <span class="n">SchemaLoader</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return code to produce the default namespace for the supplied class&quot;&quot;&quot;</span>
+    <span class="c1"># TODO: figure out how to mark a slot as a namespace</span>
+    <span class="k">return</span> <span class="s2">&quot;sfx(str(self.id))&quot;</span> <span class="k">if</span> <span class="s2">&quot;id&quot;</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">slots</span> <span class="k">else</span> <span class="s2">&quot;None&quot;</span></div>
+    <span class="c1"># cls_id = None</span>
+    <span class="c1"># for slotname in cls.slots:</span>
+    <span class="c1">#     slot = loader.schema.slots[slotname]</span>
+    <span class="c1">#     if slot.identifier:</span>
+    <span class="c1">#         cls_id = slotname</span>
+    <span class="c1"># return f&quot;sfx(str(self.{cls_id}))&quot; if cls_id else &quot;None&quot;</span>
+
 <span class="c1"># Library of named default values -- this is here to prevent code injection</span>
 <span class="c1"># Contents: Match text (as re),</span>
 <span class="c1">#           flag that indicates whether we&#39;re generating a default value expression or postinig code</span>
@@ -389,7 +400,8 @@
     <span class="p">(</span><span class="s2">&quot;bnode&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">_</span><span class="p">,</span> <span class="n">__</span><span class="p">,</span> <span class="n">___</span><span class="p">,</span> <span class="n">____</span><span class="p">:</span> <span class="s2">&quot;bnode()&quot;</span><span class="p">),</span>
     <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;string\((.*)\)&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">m</span><span class="p">,</span> <span class="n">__</span><span class="p">,</span> <span class="n">___</span><span class="p">,</span> <span class="n">____</span><span class="p">:</span> <span class="n">strval</span><span class="p">(</span><span class="n">m</span><span class="p">[</span><span class="mi">1</span><span class="p">])),</span>
     <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;uri\((.*)\)&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">m</span><span class="p">,</span> <span class="n">loader</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">__</span><span class="p">:</span> <span class="n">uri_for</span><span class="p">(</span><span class="n">m</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">loader</span><span class="p">)),</span>
-    <span class="p">(</span><span class="s2">&quot;default_ns&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">_</span><span class="p">,</span> <span class="n">loader</span><span class="p">,</span> <span class="n">__</span><span class="p">,</span> <span class="n">____</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">strval</span><span class="p">(</span><span class="n">loader</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">default_prefix</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;default_ns&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">_</span><span class="p">,</span> <span class="n">loader</span><span class="p">,</span> <span class="bp">cls</span><span class="p">,</span> <span class="n">____</span><span class="p">:</span> <span class="n">default_ns_for</span><span class="p">(</span><span class="n">loader</span><span class="p">,</span> <span class="bp">cls</span><span class="p">)),</span>
+    <span class="c1"># (&quot;default_ns&quot;, False, lambda _, loader, __, ____: f&quot;{strval(loader.schema.default_prefix)}&quot;),</span>
 <span class="p">]</span>
 
 
