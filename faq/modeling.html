@@ -704,6 +704,27 @@ your classes represent <em>entities</em> and one represents a <em>relationship</
 property graph representations, ER-style visualizations of the schema,
 auto-inferring convenient shortcut slots.</p>
 </section>
+<section id="how-do-i-avoid-name-clashes-when-importing-a-schema">
+<h2>How do I avoid name clashes when importing a schema?<a class="headerlink" href="#how-do-i-avoid-name-clashes-when-importing-a-schema" title="Permalink to this heading">#</a></h2>
+<p>Currently the assumption of existing LinkML tools is that all element
+names are unique, both within an individual schema <em>and across imports</em>.</p>
+<p>This means if you want to import a schema <code class="docutils literal notranslate"><span class="pre">personinfo</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">personinfo</span></code> includes a class <code class="docutils literal notranslate"><span class="pre">Person</span></code>, or another imported schema or your own schema has a
+class <code class="docutils literal notranslate"><span class="pre">Person</span></code>, there will be an element clash, and you will need to
+either remove the import, change the imported schema, or change your
+own schema.</p>
+<p>Historically this has not been a major issue, as imports are typically
+used sparingly, and the assumption is that the imported schema is
+orthogonal to the importing one. In many cases the apparent issue is
+resolved simply by not using an import and instead reusing <code class="docutils literal notranslate"><span class="pre">class_uri</span></code>s.</p>
+<p>However, we recognize the unique element restriction can be limiting, and we are currently
+exploring mechanisms that provide more flexibility in reuse, including:</p>
+<ul class="simple">
+<li><p>the use of <a class="reference external" href="https://w3id.org/linkml/structured_imports">structured_imports</a> to <em>selectively</em> import elements from a schema</p></li>
+<li><p>alternatives to imports and inheritance, such as using <a class="reference external" href="https://w3id.org/linkml/implements">implements</a></p></li>
+<li><p>using <a class="reference external" href="https://github.com/linkml/linkml-transformer">linkml-transformer</a> to <em>transform</em> upstream schemas rather than import them</p></li>
+</ul>
+</section>
 <section id="what-are-id-prefixes-used-for-and-why-do-we-want-them">
 <h2>What are id_prefixes used for and why do we want them?<a class="headerlink" href="#what-are-id-prefixes-used-for-and-why-do-we-want-them" title="Permalink to this heading">#</a></h2>
 <p>The LinkML meta modeling element, <a class="reference external" href="https://w3id.org/linkml/id_prefixes">id_prefixes</a> can be applied to any Class. This is used to specify which prefixes should be used on the identifiers for that class.</p>
@@ -827,6 +848,7 @@ will need to answer:</p>
 <li><a class="reference internal" href="#how-do-i-do-the-equivalent-of-json-schema-composition">How do I do the equivalent of JSON-Schema composition?</a></li>
 <li><a class="reference internal" href="#why-are-my-class-names-translated-to-camelcase">Why are my class names translated to CamelCase?</a></li>
 <li><a class="reference internal" href="#when-two-data-classes-are-linked-by-a-slot-in-one-class-definition-how-is-the-reciprocal-association-expressed-in-linkml">When two data classes are linked by a slot in one class definition, how is the reciprocal association expressed in LinkML?</a></li>
+<li><a class="reference internal" href="#how-do-i-avoid-name-clashes-when-importing-a-schema">How do I avoid name clashes when importing a schema?</a></li>
 <li><a class="reference internal" href="#what-are-id-prefixes-used-for-and-why-do-we-want-them">What are id_prefixes used for and why do we want them?</a></li>
 <li><a class="reference internal" href="#when-is-it-important-to-have-mappings">When is it important to have mappings?</a></li>
 <li><a class="reference internal" href="#how-do-i-represent-relationships-in-linkml">How do I represent relationships in LinkML?</a></li>
