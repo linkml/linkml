@@ -54,6 +54,17 @@ def uri_for(s: str, loader: SchemaLoader) -> str:
     return loader.namespaces.curie_for(uri, True, True) or strval(uri)
 
 
+def default_ns_for(loader: SchemaLoader, cls: ClassDefinition) -> str:
+    """Return code to produce the default namespace for the supplied class"""
+    # TODO: figure out how to mark a slot as a namespace
+    return "sfx(str(self.id))" if "id" in cls.slots else "None"
+    # cls_id = None
+    # for slotname in cls.slots:
+    #     slot = loader.schema.slots[slotname]
+    #     if slot.identifier:
+    #         cls_id = slotname
+    # return f"sfx(str(self.{cls_id}))" if cls_id else "None"
+
 # Library of named default values -- this is here to prevent code injection
 # Contents: Match text (as re),
 #           flag that indicates whether we're generating a default value expression or postinig code
@@ -91,7 +102,8 @@ default_library: List[
     ("bnode", False, lambda _, __, ___, ____: "bnode()"),
     (r"string\((.*)\)", False, lambda m, __, ___, ____: strval(m[1])),
     (r"uri\((.*)\)", False, lambda m, loader, _, __: uri_for(m[1], loader)),
-    ("default_ns", False, lambda _, loader, __, ____: f"{strval(loader.schema.default_prefix)}"),
+    ("default_ns", True, lambda _, loader, cls, ____: default_ns_for(loader, cls)),
+    # ("default_ns", False, lambda _, loader, __, ____: f"{strval(loader.schema.default_prefix)}"),
 ]
 
 
