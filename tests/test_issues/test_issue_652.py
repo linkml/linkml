@@ -42,11 +42,11 @@ class Issue652TestCase(TestEnvironmentTestCase):
         with open(os.path.join(env.outdir, "issue_652_scenario2.schema.json")) as f:
             issue_jsonschema = json.load(f)
         prop4_def = issue_jsonschema["$defs"]["NamedThing"]["properties"]["prop4"]
-        self.assertIn("oneOf", prop4_def)
-        self.assertEqual(len(prop4_def["oneOf"]), 3)
-        self.assertIn({"$ref": "#/$defs/C1"}, prop4_def["oneOf"])
-        self.assertIn({"$ref": "#/$defs/C2"}, prop4_def["oneOf"])
-        self.assertIn({"$ref": "#/$defs/C3"}, prop4_def["oneOf"])
+        self.assertIn("anyOf", prop4_def)
+        self.assertEqual(len(prop4_def["anyOf"]), 3)
+        self.assertIn({"$ref": "#/$defs/C1"}, prop4_def["anyOf"])
+        self.assertIn({"$ref": "#/$defs/C2"}, prop4_def["anyOf"])
+        self.assertIn({"$ref": "#/$defs/C3"}, prop4_def["anyOf"])
 
 
 if __name__ == "__main__":
