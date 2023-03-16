@@ -116,7 +116,7 @@ class JsonSchema(UserDict):
         
         if isinstance(class_name, list):
             return JsonSchema({
-                "oneOf": [_ref(name) for name in class_name]
+                "anyOf": [_ref(name) for name in class_name]
             })
         else:
             return _ref(class_name)
