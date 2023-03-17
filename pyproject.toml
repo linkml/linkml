@@ -105,7 +105,7 @@ jinja2 = ">= 3.1.0"
 jsonasobj2 = "==1.*,>=1.0.0,>=1.0.3"
 jsonschema = {extras = ["format"], version = ">=4.0.0"}
 linkml-dataops = "*"
-linkml-runtime = "^1"
+linkml-runtime = "1.5.0rc2"
 myst-parser = "*"
 openpyxl = "*"
 parse = "*"
