@@ -1,4 +1,5 @@
 import os
+import logging
 
 from dataclasses import dataclass
 from typing import List
@@ -26,6 +27,7 @@ class ExcelGenerator(Generator):
 
     def __post_init__(self) -> None:
         super().__post_init__()
+        self.logger = logging.getLogger(__name__)
         self.schemaview = SchemaView(self.schema)
 
     def create_workbook(self, workbook_name: str) -> Workbook:
@@ -136,13 +138,13 @@ class ExcelGenerator(Generator):
         workbook.save(workbook_name)
 
     def serialize(self, **kwargs) -> str:
-        output = (
-            convert_to_snake_case(self.schema.name) + ".xlsx"
+        self.output = (
+            os.path.abspath(convert_to_snake_case(self.schema.name) + ".xlsx")
             if not self.output
             else self.output
         )
 
-        workbook = self.create_workbook(output)
+        workbook = self.create_workbook(self.output)
         self.remove_worksheet_by_name(workbook, "Sheet")
         self.create_schema_worksheets(workbook)
 
@@ -168,6 +170,7 @@ class ExcelGenerator(Generator):
                         ).permissible_values.items():
                             pv_list.append(pv_name)
                         self.column_enum_validation(workbook, cls_name, s.name, pv_list)
+        self.logger.info(f"The Excel workbook has been written to {self.output}")
 
 
 @shared_arguments(ExcelGenerator)
@@ -181,7 +184,7 @@ class ExcelGenerator(Generator):
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, **kwargs):
     """Generate Excel representation of a LinkML model"""
-    print(ExcelGenerator(yamlfile, **kwargs).serialize(**kwargs))
+    ExcelGenerator(yamlfile, **kwargs).serialize(**kwargs)
 
 
 if __name__ == "__main__":
