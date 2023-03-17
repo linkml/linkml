@@ -27,7 +27,8 @@ jobs:
       #          install poetry
       #----------------------------------------------
       - name: Install Poetry
-        run: pipx install poetry
+        # Pin to 1.3.2 to workaround https://github.com/python-poetry/poetry/issues/7611
+        run: pipx install poetry==1.3.2
         
       #----------------------------------------------
       #       check-out repo and set-up python
