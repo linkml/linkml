@@ -1181,14 +1181,14 @@ linkml-runtime = ">=1.1.6"
 
 [[package]]
 name = "linkml-runtime"
-version = "1.4.9"
+version = "1.5.0rc2"
 description = "Runtime environment for LinkML, the Linked open data modeling language"
 category = "main"
 optional = false
 python-versions = ">=3.7.6,<4.0.0"
 files = [
-    {file = "linkml_runtime-1.4.9-py3-none-any.whl", hash = "sha256:62bf8618ddf362be0f173f2fa1821c3e29309c897b8f1e2f83fb41dc599e72a6"},
-    {file = "linkml_runtime-1.4.9.tar.gz", hash = "sha256:64c383ce05351b0dce18fcbbdb38884f180466968dcf09c90689e1bfa72d4aa4"},
+    {file = "linkml_runtime-1.5.0rc2-py3-none-any.whl", hash = "sha256:d5632096173b2f72845db55ce602333551023b17020215c5145c28b135f415e9"},
+    {file = "linkml_runtime-1.5.0rc2.tar.gz", hash = "sha256:c112289902e4620bee37f2725d7f94eaff90238ff1929a087be368c2531870b2"},
 ]
 
 [package.dependencies]
@@ -2307,6 +2307,8 @@ files = [
     {file = "ruamel.yaml.clib-0.2.7-cp311-cp311-macosx_10_9_universal2.whl", hash = "sha256:045e0626baf1c52e5527bd5db361bc83180faaba2ff586e763d3d5982a876a9e"},
     {file = "ruamel.yaml.clib-0.2.7-cp311-cp311-macosx_12_6_arm64.whl", hash = "sha256:721bc4ba4525f53f6a611ec0967bdcee61b31df5a56801281027a3a6d1c2daf5"},
     {file = "ruamel.yaml.clib-0.2.7-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.manylinux_2_24_x86_64.whl", hash = "sha256:41d0f1fa4c6830176eef5b276af04c89320ea616655d01327d5ce65e50575c94"},
+    {file = "ruamel.yaml.clib-0.2.7-cp311-cp311-win32.whl", hash = "sha256:f6d3d39611ac2e4f62c3128a9eed45f19a6608670c5a2f4f07f24e8de3441d38"},
+    {file = "ruamel.yaml.clib-0.2.7-cp311-cp311-win_amd64.whl", hash = "sha256:da538167284de58a52109a9b89b8f6a53ff8437dd6dc26d33b57bf6699153122"},
     {file = "ruamel.yaml.clib-0.2.7-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:4b3a93bb9bc662fc1f99c5c3ea8e623d8b23ad22f861eb6fce9377ac07ad6072"},
     {file = "ruamel.yaml.clib-0.2.7-cp36-cp36m-macosx_12_0_arm64.whl", hash = "sha256:a234a20ae07e8469da311e182e70ef6b199d0fbeb6c6cc2901204dd87fb867e8"},
     {file = "ruamel.yaml.clib-0.2.7-cp36-cp36m-manylinux2014_aarch64.whl", hash = "sha256:15910ef4f3e537eea7fe45f8a5d19997479940d9196f357152a09031c5be59f3"},
@@ -3072,4 +3074,4 @@ docs = ["furo", "sphinx", "sphinxcontrib-mermaid"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.7.6"
-content-hash = "49fc00633e6a30a52da2c96ddcde9c51d6f3a58308d106b82d5ab233b0bea451"
+content-hash = "cef248d6db018a2c0b7ecb8d94cfd8a94b50cb74c05f449c90d3ef2b5bd9ffa9"
