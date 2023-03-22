@@ -55,6 +55,11 @@
       },
       {
          "type": "NodeConstraint",
+         "id": "https://w3id.org/linkml/DateOrDatetime",
+         "datatype": "https://w3id.org/linkml/DateOrDatetime"
+      },
+      {
+         "type": "NodeConstraint",
          "id": "https://w3id.org/linkml/Uriorcurie",
          "nodeKind": "iri"
       },
@@ -169,7 +174,7 @@
                      },
                      {
                         "type": "TripleConstraint",
-                        "predicate": "https://w3id.org/linkml/reportsource",
+                        "predicate": "https://w3id.org/linkml/reportnode_source",
                         "valueExpr": "https://w3id.org/linkml/Nodeidentifier",
                         "min": 0,
                         "max": 1

@@ -22,6 +22,8 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 <Datetime> xsd:dateTime
 
+<DateOrDatetime> <DateOrDatetime>
+
 <Uriorcurie> IRI
 
 <Uri> IRI

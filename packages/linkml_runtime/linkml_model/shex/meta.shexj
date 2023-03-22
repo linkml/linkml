@@ -56,6 +56,11 @@
       },
       {
          "type": "NodeConstraint",
+         "id": "https://w3id.org/linkml/DateOrDatetime",
+         "datatype": "https://w3id.org/linkml/DateOrDatetime"
+      },
+      {
+         "type": "NodeConstraint",
          "id": "https://w3id.org/linkml/Uriorcurie",
          "nodeKind": "iri"
       },
@@ -286,6 +291,122 @@
                      "type": "NodeConstraint",
                      "values": [
                         "https://w3id.org/linkml/AnonymousClassExpression"
+                     ]
+                  },
+                  "min": 0
+               }
+            ]
+         }
+      },
+      {
+         "type": "Shape",
+         "id": "https://w3id.org/linkml/AnonymousEnumExpression",
+         "closed": true,
+         "expression": {
+            "type": "EachOf",
+            "expressions": [
+               {
+                  "type": "EachOf",
+                  "id": "https://w3id.org/linkml/AnonymousEnumExpression_tes",
+                  "expressions": [
+                     "https://w3id.org/linkml/EnumExpression_tes",
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/linkml/EnumExpression"
+                           ]
+                        },
+                        "min": 0
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/code_set",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/code_set_tag",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/code_set_version",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/pv_formula",
+                        "valueExpr": "https://w3id.org/linkml/PvFormulaOptions",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/permissible_values",
+                        "valueExpr": "https://w3id.org/linkml/PermissibleValue",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/include",
+                        "valueExpr": "https://w3id.org/linkml/AnonymousEnumExpression",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/minus",
+                        "valueExpr": "https://w3id.org/linkml/AnonymousEnumExpression",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/inherits",
+                        "valueExpr": "https://w3id.org/linkml/EnumDefinition",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/reachable_from",
+                        "valueExpr": "https://w3id.org/linkml/ReachabilityQuery",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/matches",
+                        "valueExpr": "https://w3id.org/linkml/MatchQuery",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/concepts",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     }
+                  ]
+               },
+               {
+                  "type": "TripleConstraint",
+                  "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                  "valueExpr": {
+                     "type": "NodeConstraint",
+                     "values": [
+                        "https://w3id.org/linkml/AnonymousEnumExpression"
                      ]
                   },
                   "min": 0
@@ -616,6 +737,13 @@
                      },
                      {
                         "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/enum_range",
+                        "valueExpr": "https://w3id.org/linkml/EnumExpression",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
                         "predicate": "https://w3id.org/linkml/required",
                         "valueExpr": "https://w3id.org/linkml/Boolean",
                         "min": 0,
@@ -667,6 +795,13 @@
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/linkml/structured_pattern",
                         "valueExpr": "https://w3id.org/linkml/PatternExpression",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://qudt.org/schema/qudt/unit",
+                        "valueExpr": "https://w3id.org/linkml/UnitOfMeasure",
                         "min": 0,
                         "max": 1
                      },
@@ -811,6 +946,20 @@
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/linkml/structured_pattern",
                         "valueExpr": "https://w3id.org/linkml/PatternExpression",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://qudt.org/schema/qudt/unit",
+                        "valueExpr": "https://w3id.org/linkml/UnitOfMeasure",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/implicit_prefix",
+                        "valueExpr": "https://w3id.org/linkml/String",
                         "min": 0,
                         "max": 1
                      },
@@ -1707,6 +1856,7 @@
          "id": "https://w3id.org/linkml/Definition",
          "shapeExprs": [
             "https://w3id.org/linkml/ClassDefinition",
+            "https://w3id.org/linkml/EnumDefinition",
             "https://w3id.org/linkml/SlotDefinition"
          ]
       },
@@ -1831,7 +1981,6 @@
          "id": "https://w3id.org/linkml/Element",
          "shapeExprs": [
             "https://w3id.org/linkml/Definition",
-            "https://w3id.org/linkml/EnumDefinition",
             "https://w3id.org/linkml/SchemaDefinition",
             "https://w3id.org/linkml/SubsetDefinition",
             "https://w3id.org/linkml/TypeDefinition"
@@ -2128,14 +2277,149 @@
                   "type": "EachOf",
                   "id": "https://w3id.org/linkml/EnumDefinition_tes",
                   "expressions": [
-                     "https://w3id.org/linkml/Element_tes",
+                     "https://w3id.org/linkml/Definition_tes",
                      {
                         "type": "TripleConstraint",
                         "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
                         "valueExpr": {
                            "type": "NodeConstraint",
                            "values": [
-                              "https://w3id.org/linkml/Element"
+                              "https://w3id.org/linkml/Definition"
+                           ]
+                        },
+                        "min": 0
+                     },
+                     "https://w3id.org/linkml/EnumExpression_tes",
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/linkml/EnumExpression"
+                           ]
+                        },
+                        "min": 0
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/enum_uri",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/code_set",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/code_set_tag",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/code_set_version",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/pv_formula",
+                        "valueExpr": "https://w3id.org/linkml/PvFormulaOptions",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/permissible_values",
+                        "valueExpr": "https://w3id.org/linkml/PermissibleValue",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/include",
+                        "valueExpr": "https://w3id.org/linkml/AnonymousEnumExpression",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/minus",
+                        "valueExpr": "https://w3id.org/linkml/AnonymousEnumExpression",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/inherits",
+                        "valueExpr": "https://w3id.org/linkml/EnumDefinition",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/reachable_from",
+                        "valueExpr": "https://w3id.org/linkml/ReachabilityQuery",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/matches",
+                        "valueExpr": "https://w3id.org/linkml/MatchQuery",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/concepts",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     }
+                  ]
+               },
+               {
+                  "type": "TripleConstraint",
+                  "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                  "valueExpr": {
+                     "type": "NodeConstraint",
+                     "values": [
+                        "https://w3id.org/linkml/EnumDefinition"
+                     ]
+                  },
+                  "min": 1
+               }
+            ]
+         }
+      },
+      {
+         "type": "Shape",
+         "id": "https://w3id.org/linkml/EnumExpression",
+         "closed": true,
+         "expression": {
+            "type": "EachOf",
+            "expressions": [
+               {
+                  "type": "EachOf",
+                  "id": "https://w3id.org/linkml/EnumExpression_tes",
+                  "expressions": [
+                     "https://w3id.org/linkml/Expression_tes",
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/linkml/Expression"
                            ]
                         },
                         "min": 0
@@ -2174,6 +2458,48 @@
                         "valueExpr": "https://w3id.org/linkml/PermissibleValue",
                         "min": 0,
                         "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/include",
+                        "valueExpr": "https://w3id.org/linkml/AnonymousEnumExpression",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/minus",
+                        "valueExpr": "https://w3id.org/linkml/AnonymousEnumExpression",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/inherits",
+                        "valueExpr": "https://w3id.org/linkml/EnumDefinition",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/reachable_from",
+                        "valueExpr": "https://w3id.org/linkml/ReachabilityQuery",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/matches",
+                        "valueExpr": "https://w3id.org/linkml/MatchQuery",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/concepts",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
                      }
                   ]
                },
@@ -2183,10 +2509,10 @@
                   "valueExpr": {
                      "type": "NodeConstraint",
                      "values": [
-                        "https://w3id.org/linkml/EnumDefinition"
+                        "https://w3id.org/linkml/EnumExpression"
                      ]
                   },
-                  "min": 1
+                  "min": 0
                }
             ]
          }
@@ -2236,6 +2562,7 @@
          "type": "ShapeOr",
          "id": "https://w3id.org/linkml/Expression",
          "shapeExprs": [
+            "https://w3id.org/linkml/EnumExpression",
             "https://w3id.org/linkml/SlotExpression",
             "https://w3id.org/linkml/TypeExpression"
          ]
@@ -2661,6 +2988,47 @@
                      ]
                   },
                   "min": 1
+               }
+            ]
+         }
+      },
+      {
+         "type": "Shape",
+         "id": "https://w3id.org/linkml/MatchQuery",
+         "closed": true,
+         "expression": {
+            "type": "EachOf",
+            "expressions": [
+               {
+                  "type": "EachOf",
+                  "id": "https://w3id.org/linkml/MatchQuery_tes",
+                  "expressions": [
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/identifier_pattern",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/source_ontology",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": 1
+                     }
+                  ]
+               },
+               {
+                  "type": "TripleConstraint",
+                  "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                  "valueExpr": {
+                     "type": "NodeConstraint",
+                     "values": [
+                        "https://w3id.org/linkml/MatchQuery"
+                     ]
+                  },
+                  "min": 0
                }
             ]
          }
@@ -3321,6 +3689,13 @@
                      },
                      {
                         "type": "TripleConstraint",
+                        "predicate": "http://qudt.org/schema/qudt/unit",
+                        "valueExpr": "https://w3id.org/linkml/UnitOfMeasure",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
                         "predicate": "https://w3id.org/linkml/mixins",
                         "valueExpr": "https://w3id.org/linkml/PermissibleValue",
                         "min": 0,
@@ -3561,6 +3936,75 @@
                      ]
                   },
                   "min": 1
+               }
+            ]
+         }
+      },
+      {
+         "type": "Shape",
+         "id": "https://w3id.org/linkml/ReachabilityQuery",
+         "closed": true,
+         "expression": {
+            "type": "EachOf",
+            "expressions": [
+               {
+                  "type": "EachOf",
+                  "id": "https://w3id.org/linkml/ReachabilityQuery_tes",
+                  "expressions": [
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/source_ontology",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/source_nodes",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/relationship_types",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/is_direct",
+                        "valueExpr": "https://w3id.org/linkml/Boolean",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/include_self",
+                        "valueExpr": "https://w3id.org/linkml/Boolean",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/traverse_up",
+                        "valueExpr": "https://w3id.org/linkml/Boolean",
+                        "min": 0,
+                        "max": 1
+                     }
+                  ]
+               },
+               {
+                  "type": "TripleConstraint",
+                  "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                  "valueExpr": {
+                     "type": "NodeConstraint",
+                     "values": [
+                        "https://w3id.org/linkml/ReachabilityQuery"
+                     ]
+                  },
+                  "min": 0
                }
             ]
          }
@@ -4095,6 +4539,13 @@
                      },
                      {
                         "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/union_of",
+                        "valueExpr": "https://w3id.org/linkml/TypeDefinition",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
                         "predicate": "https://w3id.org/linkml/mixins",
                         "valueExpr": "https://w3id.org/linkml/SlotDefinition",
                         "min": 0,
@@ -4118,6 +4569,13 @@
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/linkml/range_expression",
                         "valueExpr": "https://w3id.org/linkml/AnonymousClassExpression",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/enum_range",
+                        "valueExpr": "https://w3id.org/linkml/EnumExpression",
                         "min": 0,
                         "max": 1
                      },
@@ -4174,6 +4632,13 @@
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/linkml/structured_pattern",
                         "valueExpr": "https://w3id.org/linkml/PatternExpression",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://qudt.org/schema/qudt/unit",
+                        "valueExpr": "https://w3id.org/linkml/UnitOfMeasure",
                         "min": 0,
                         "max": 1
                      },
@@ -4323,6 +4788,13 @@
                      },
                      {
                         "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/enum_range",
+                        "valueExpr": "https://w3id.org/linkml/EnumExpression",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
                         "predicate": "https://w3id.org/linkml/required",
                         "valueExpr": "https://w3id.org/linkml/Boolean",
                         "min": 0,
@@ -4374,6 +4846,13 @@
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/linkml/structured_pattern",
                         "valueExpr": "https://w3id.org/linkml/PatternExpression",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://qudt.org/schema/qudt/unit",
+                        "valueExpr": "https://w3id.org/linkml/UnitOfMeasure",
                         "min": 0,
                         "max": 1
                      },
@@ -4873,6 +5352,13 @@
                      },
                      {
                         "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/union_of",
+                        "valueExpr": "https://w3id.org/linkml/TypeDefinition",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
                         "predicate": "https://w3id.org/linkml/pattern",
                         "valueExpr": "https://w3id.org/linkml/String",
                         "min": 0,
@@ -4882,6 +5368,20 @@
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/linkml/structured_pattern",
                         "valueExpr": "https://w3id.org/linkml/PatternExpression",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://qudt.org/schema/qudt/unit",
+                        "valueExpr": "https://w3id.org/linkml/UnitOfMeasure",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/implicit_prefix",
+                        "valueExpr": "https://w3id.org/linkml/String",
                         "min": 0,
                         "max": 1
                      },
@@ -4998,6 +5498,20 @@
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/linkml/structured_pattern",
                         "valueExpr": "https://w3id.org/linkml/PatternExpression",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://qudt.org/schema/qudt/unit",
+                        "valueExpr": "https://w3id.org/linkml/UnitOfMeasure",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/implicit_prefix",
+                        "valueExpr": "https://w3id.org/linkml/String",
                         "min": 0,
                         "max": 1
                      },
@@ -5342,6 +5856,75 @@
                      ]
                   },
                   "min": 1
+               }
+            ]
+         }
+      },
+      {
+         "type": "Shape",
+         "id": "https://w3id.org/linkml/UnitOfMeasure",
+         "closed": true,
+         "expression": {
+            "type": "EachOf",
+            "expressions": [
+               {
+                  "type": "EachOf",
+                  "id": "https://w3id.org/linkml/UnitOfMeasure_tes",
+                  "expressions": [
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://qudt.org/schema/qudt/symbol",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#exactMatch",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://qudt.org/schema/qudt/ucumCode",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/derivation",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://qudt.org/schema/qudt/hasQuantityKind",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://qudt.org/schema/qudt/iec61360Code",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": 1
+                     }
+                  ]
+               },
+               {
+                  "type": "TripleConstraint",
+                  "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                  "valueExpr": {
+                     "type": "NodeConstraint",
+                     "values": [
+                        "http://qudt.org/schema/qudt/Unit"
+                     ]
+                  },
+                  "min": 0
                }
             ]
          }
