@@ -34,6 +34,8 @@ slots:
         - value: >-
                 test: foo
           description: "an example"
+          object:
+            foo: key value
         - value: 17
 
     in_subset:
