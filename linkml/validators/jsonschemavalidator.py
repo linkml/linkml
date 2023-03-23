@@ -25,7 +25,7 @@ class JsonSchemaDataValidator(DataValidator):
         return self.validate_object(obj)
 
     def validate_object(
-        self, data: YAMLRoot, target_class: Type[YAMLRoot] = None, closed: bool = True
+        self, data: YAMLRoot, target_class: Type[YAMLRoot] = None, closed: bool = True, include_range_class_descendants = False
     ) -> None:
         """
         validates instance data against a schema
@@ -43,6 +43,7 @@ class JsonSchemaDataValidator(DataValidator):
             raise ValueError(f"schema object must be set")
         jsonschemastr = JsonSchemaGenerator(
             self.schema,
+            include_range_class_descendants=include_range_class_descendants,
             mergeimports=True,
             top_class=target_class.class_name,
             not_closed=not_closed,
@@ -51,7 +52,7 @@ class JsonSchemaDataValidator(DataValidator):
         return jsonschema.validate(inst_dict, schema=jsonschema_obj, format_checker=jsonschema.Draft7Validator.FORMAT_CHECKER)
 
     def validate_dict(
-        self, data: dict, target_class: ClassDefinitionName = None, closed: bool = True
+        self, data: dict, target_class: ClassDefinitionName = None, closed: bool = True, include_range_class_descendants = False
     ) -> None:
         """
         validates instance data against a schema
@@ -71,6 +72,7 @@ class JsonSchemaDataValidator(DataValidator):
             target_class = roots[0]
         jsonschemastr = JsonSchemaGenerator(
             self.schema,
+            include_range_class_descendants=include_range_class_descendants,
             mergeimports=True,
             top_class=target_class,
             not_closed=not_closed,
@@ -97,6 +99,13 @@ class JsonSchemaDataValidator(DataValidator):
     "--index-slot", "-S", help="top level slot. Required for CSV dumping/loading"
 )
 @click.option("--schema", "-s", help="Path to schema specified as LinkML yaml")
+@click.option(
+    "--include-range-class-descendants/--no-range-class-descendants",
+    default=False,
+    show_default=False,
+    help="""
+When handling range constraints, include all descendants of the range class instead of just the range class
+""")
 @click.argument("input")
 @click.version_option(__version__, "-V", "--version")
 def cli(
@@ -105,6 +114,7 @@ def cli(
     target_class,
     output=None,
     input_format=None,
+    include_range_class_descendants=False,
     schema=None,
     index_slot=None,
 ) -> None:
@@ -147,7 +157,7 @@ def cli(
             "--schema must be passed in order to validate. Suppress with --no-validate"
         )
     validator = JsonSchemaDataValidator(schema)
-    results = validator.validate_object(obj, target_class=py_target_class)
+    results = validator.validate_object(obj, target_class=py_target_class, include_range_class_descendants=include_range_class_descendants)
     print(results)
 
 
