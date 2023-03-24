@@ -35,7 +35,7 @@ class ResolverTestCase(unittest.TestCase):
         )
 
     def test_element_slots(self):
-        """Test all element slots and their inheritence"""
+        """Test all element slots and their inheritance"""
         schema = SchemaLoader(env.input_path("resolver3.yaml")).resolve()
         x = {
             k: v
@@ -49,7 +49,7 @@ class ResolverTestCase(unittest.TestCase):
         with open(outfile) as f:
             expected = as_dict(load(f))
         expected = {k: v for k, v in expected.items() if v != {}}
-
+        self.assertDictEqual(expected, x)
         self.assertEqual(expected, x)
 
 
