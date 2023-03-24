@@ -9,8 +9,7 @@
     "linkml:mappings",
     "linkml:extensions",
     "linkml:annotations",
-    "linkml:validation",
-    "units"
+    "linkml:units"
   ],
   "license": "https://creativecommons.org/publicdomain/zero/1.0/",
   "prefixes": [
@@ -399,64 +398,6 @@
         {
           "text": "NARROW_SYNONYM",
           "meaning": "skos:narrowerMatch"
-        }
-      ]
-    },
-    {
-      "name": "problem_type",
-      "definition_uri": "https://w3id.org/linkml/reportProblemType",
-      "from_schema": "https://w3id.org/linkml/reporting",
-      "imported_from": "linkml:validation",
-      "permissible_values": [
-        {
-          "text": "undeclared_slot",
-          "description": "Applies when a slot is used in data but the slot is undeclared in the datamodel"
-        },
-        {
-          "text": "inapplicable_slot",
-          "description": "Applies when a slot is used in an instance of a class where the slot is not applicable for that class"
-        },
-        {
-          "text": "missing_slot_value",
-          "description": "Applies when an instance of a class has a required slot which is not filled in"
-        },
-        {
-          "text": "slot_range_violation",
-          "description": "Applies when the value of a slot is inconsistent with the declared range"
-        },
-        {
-          "text": "max_count_violation",
-          "meaning": "sh:MaxCountConstraintComponent"
-        },
-        {
-          "text": "parsing_error",
-          "description": "The data could not be parsed"
-        }
-      ]
-    },
-    {
-      "name": "severity_options",
-      "definition_uri": "https://w3id.org/linkml/reportSeverityOptions",
-      "from_schema": "https://w3id.org/linkml/reporting",
-      "imported_from": "linkml:validation",
-      "exact_mappings": [
-        "sh:Severity"
-      ],
-      "permissible_values": [
-        {
-          "text": "FATAL"
-        },
-        {
-          "text": "ERROR",
-          "meaning": "sh:Violation"
-        },
-        {
-          "text": "WARNING",
-          "meaning": "sh:Warning"
-        },
-        {
-          "text": "INFO",
-          "meaning": "sh:Info"
         }
       ]
     }
@@ -4393,143 +4334,11 @@
       "@type": "SlotDefinition"
     },
     {
-      "name": "type",
-      "definition_uri": "https://w3id.org/linkml/reporttype",
-      "from_schema": "https://w3id.org/linkml/reporting",
-      "imported_from": "linkml:validation",
-      "mappings": [
-        "https://w3id.org/shacl/sourceConstraintComponent"
-      ],
-      "slot_uri": "https://w3id.org/shacl/sourceConstraintComponent",
-      "owner": "ValidationResult",
-      "domain_of": [
-        "ValidationResult"
-      ],
-      "range": "nodeidentifier",
-      "@type": "SlotDefinition"
-    },
-    {
-      "name": "subject",
-      "definition_uri": "https://w3id.org/linkml/reportsubject",
-      "from_schema": "https://w3id.org/linkml/reporting",
-      "imported_from": "linkml:validation",
-      "mappings": [
-        "https://w3id.org/shacl/focusNode"
-      ],
-      "slot_uri": "https://w3id.org/shacl/focusNode",
-      "owner": "ValidationResult",
-      "domain_of": [
-        "ValidationResult"
-      ],
-      "range": "nodeidentifier",
-      "@type": "SlotDefinition"
-    },
-    {
-      "name": "instantiates",
-      "definition_uri": "https://w3id.org/linkml/reportinstantiates",
-      "from_schema": "https://w3id.org/linkml/reporting",
-      "imported_from": "linkml:validation",
-      "exact_mappings": [
-        "https://w3id.org/shacl/sourceShape"
-      ],
-      "slot_uri": "https://w3id.org/linkml/reportinstantiates",
-      "owner": "ValidationResult",
-      "domain_of": [
-        "ValidationResult"
-      ],
-      "range": "nodeidentifier",
-      "@type": "SlotDefinition"
-    },
-    {
-      "name": "predicate",
-      "definition_uri": "https://w3id.org/linkml/reportpredicate",
-      "from_schema": "https://w3id.org/linkml/reporting",
-      "imported_from": "linkml:validation",
-      "related_mappings": [
-        "https://w3id.org/shacl/resultPath"
-      ],
-      "slot_uri": "https://w3id.org/linkml/reportpredicate",
-      "owner": "ValidationResult",
-      "domain_of": [
-        "ValidationResult"
-      ],
-      "range": "nodeidentifier",
-      "@type": "SlotDefinition"
-    },
-    {
-      "name": "object",
-      "definition_uri": "https://w3id.org/linkml/reportobject",
-      "from_schema": "https://w3id.org/linkml/reporting",
-      "imported_from": "linkml:validation",
-      "mappings": [
-        "https://w3id.org/shacl/value"
-      ],
-      "slot_uri": "https://w3id.org/shacl/value",
-      "owner": "ValidationResult",
-      "domain_of": [
-        "ValidationResult"
-      ],
-      "range": "nodeidentifier",
-      "@type": "SlotDefinition"
-    },
-    {
-      "name": "object_str",
-      "definition_uri": "https://w3id.org/linkml/reportobject_str",
-      "from_schema": "https://w3id.org/linkml/reporting",
-      "imported_from": "linkml:validation",
-      "slot_uri": "https://w3id.org/linkml/reportobject_str",
-      "owner": "ValidationResult",
-      "domain_of": [
-        "ValidationResult"
-      ],
-      "range": "string",
-      "@type": "SlotDefinition"
-    },
-    {
-      "name": "node_source",
-      "definition_uri": "https://w3id.org/linkml/reportnode_source",
-      "from_schema": "https://w3id.org/linkml/reporting",
-      "imported_from": "linkml:validation",
-      "slot_uri": "https://w3id.org/linkml/reportnode_source",
-      "owner": "ValidationResult",
-      "domain_of": [
-        "ValidationResult"
-      ],
-      "range": "nodeidentifier",
-      "@type": "SlotDefinition"
-    },
-    {
-      "name": "severity",
-      "definition_uri": "https://w3id.org/linkml/reportseverity",
-      "from_schema": "https://w3id.org/linkml/reporting",
-      "imported_from": "linkml:validation",
-      "slot_uri": "https://w3id.org/linkml/reportseverity",
-      "owner": "ValidationResult",
-      "domain_of": [
-        "ValidationResult"
-      ],
-      "range": "severity_options",
-      "@type": "SlotDefinition"
-    },
-    {
-      "name": "info",
-      "definition_uri": "https://w3id.org/linkml/reportinfo",
-      "from_schema": "https://w3id.org/linkml/reporting",
-      "imported_from": "linkml:validation",
-      "slot_uri": "https://w3id.org/linkml/reportinfo",
-      "owner": "ValidationResult",
-      "domain_of": [
-        "ValidationResult"
-      ],
-      "range": "string",
-      "@type": "SlotDefinition"
-    },
-    {
       "name": "unit",
       "definition_uri": "https://w3id.org/linkml/unit",
       "description": "an encoding of a unit",
       "from_schema": "https://w3id.org/linkml/units",
-      "imported_from": "units",
+      "imported_from": "linkml:units",
       "mappings": [
         "http://qudt.org/schema/qudt/unit"
       ],
@@ -4549,7 +4358,7 @@
       "definition_uri": "https://w3id.org/linkml/ucum_code",
       "description": "associates a QUDT unit with its UCUM code (case-sensitive).",
       "from_schema": "https://w3id.org/linkml/units",
-      "imported_from": "units",
+      "imported_from": "linkml:units",
       "mappings": [
         "http://qudt.org/schema/qudt/ucumCode"
       ],
@@ -4568,7 +4377,7 @@
       "definition_uri": "https://w3id.org/linkml/derivation",
       "description": "Expression for deriving this unit from other units",
       "from_schema": "https://w3id.org/linkml/units",
-      "imported_from": "units",
+      "imported_from": "linkml:units",
       "slot_uri": "https://w3id.org/linkml/derivation",
       "owner": "UnitOfMeasure",
       "domain_of": [
@@ -4585,7 +4394,7 @@
         "Potential ontologies include but are not limited to PATO, NCIT, OBOE, qudt.quantityKind"
       ],
       "from_schema": "https://w3id.org/linkml/units",
-      "imported_from": "units",
+      "imported_from": "linkml:units",
       "mappings": [
         "http://qudt.org/schema/qudt/hasQuantityKind"
       ],
@@ -4601,7 +4410,7 @@
       "name": "iec61360code",
       "definition_uri": "https://w3id.org/linkml/iec61360code",
       "from_schema": "https://w3id.org/linkml/units",
-      "imported_from": "units",
+      "imported_from": "linkml:units",
       "mappings": [
         "http://qudt.org/schema/qudt/iec61360Code"
       ],
@@ -4618,7 +4427,7 @@
       "definition_uri": "https://w3id.org/linkml/symbol",
       "description": "name of the unit encoded as a symbol",
       "from_schema": "https://w3id.org/linkml/units",
-      "imported_from": "units",
+      "imported_from": "linkml:units",
       "mappings": [
         "http://qudt.org/schema/qudt/symbol"
       ],
@@ -4628,21 +4437,6 @@
         "UnitOfMeasure"
       ],
       "range": "string",
-      "@type": "SlotDefinition"
-    },
-    {
-      "name": "validationReport__results",
-      "from_schema": "https://w3id.org/linkml/meta",
-      "imported_from": "linkml:validation",
-      "slot_uri": "https://w3id.org/linkml/results",
-      "multivalued": true,
-      "alias": "results",
-      "owner": "ValidationReport",
-      "domain_of": [
-        "ValidationReport"
-      ],
-      "range": "ValidationResult",
-      "inlined": true,
       "@type": "SlotDefinition"
     },
     {
@@ -5443,7 +5237,7 @@
         "Do not use this to encode mappings to systems for which a dedicated field exists"
       ],
       "from_schema": "https://w3id.org/linkml/mappings",
-      "imported_from": "units",
+      "imported_from": "linkml:units",
       "mappings": [
         "http://www.w3.org/2004/02/skos/core#exactMatch"
       ],
@@ -7002,62 +6796,11 @@
       "@type": "ClassDefinition"
     },
     {
-      "name": "ValidationReport",
-      "definition_uri": "https://w3id.org/linkml/reportValidationReport",
-      "description": "A report object",
-      "todos": [
-        "add prov object"
-      ],
-      "from_schema": "https://w3id.org/linkml/reporting",
-      "imported_from": "linkml:validation",
-      "mappings": [
-        "sh:ValidationReport"
-      ],
-      "slots": [
-        "validationReport__results"
-      ],
-      "slot_usage": {},
-      "attributes": [
-        {
-          "name": "results",
-          "multivalued": true,
-          "range": "ValidationResult",
-          "@type": "SlotDefinition"
-        }
-      ],
-      "class_uri": "https://w3id.org/shacl/ValidationReport",
-      "@type": "ClassDefinition"
-    },
-    {
-      "name": "ValidationResult",
-      "definition_uri": "https://w3id.org/linkml/reportValidationResult",
-      "description": "An individual result arising from validation of a data instance using a particular rule",
-      "from_schema": "https://w3id.org/linkml/reporting",
-      "imported_from": "linkml:validation",
-      "mappings": [
-        "sh:ValidationResult"
-      ],
-      "slots": [
-        "type",
-        "severity",
-        "subject",
-        "instantiates",
-        "predicate",
-        "object",
-        "object_str",
-        "node_source",
-        "info"
-      ],
-      "slot_usage": {},
-      "class_uri": "https://w3id.org/shacl/ValidationResult",
-      "@type": "ClassDefinition"
-    },
-    {
       "name": "UnitOfMeasure",
       "definition_uri": "https://w3id.org/linkml/UnitOfMeasure",
       "description": "A unit of measure, or unit, is a particular quantity value that has been chosen as a scale for measuring other quantities the same kind (more generally of equivalent dimension).",
       "from_schema": "https://w3id.org/linkml/units",
-      "imported_from": "units",
+      "imported_from": "linkml:units",
       "mappings": [
         "qudt:Unit"
       ],
@@ -7118,17 +6861,16 @@
   ],
   "metamodel_version": "1.7.0",
   "source_file": "meta.yaml",
-  "source_file_date": "2022-07-13T02:58:15",
-  "source_file_size": 71456,
-  "generation_date": "2022-07-13T02:59:25",
+  "source_file_date": "2022-07-13T17:52:28",
+  "source_file_size": 71464,
+  "generation_date": "2022-07-13T17:56:42",
   "@type": "SchemaDefinition",
   "@context": [
     "https://w3id.org/linkml/types.context.jsonld",
     "https://w3id.org/linkml/mappings.context.jsonld",
     "https://w3id.org/linkml/extensions.context.jsonld",
     "https://w3id.org/linkml/annotations.context.jsonld",
-    "https://w3id.org/linkml/validation.context.jsonld",
-    "units.context.jsonld",
+    "https://w3id.org/linkml/units.context.jsonld",
     {
       "@base": "https://w3id.org/linkml/"
     }
