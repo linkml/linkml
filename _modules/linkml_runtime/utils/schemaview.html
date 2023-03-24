@@ -1751,21 +1751,20 @@
                         <span class="n">enum_slots</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">slot_definition</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">enum_slots</span></div>
 
-<div class="viewcode-block" id="SchemaView.get_classes_modifying_slot"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.get_classes_modifying_slot">[docs]</a>    <span class="k">def</span> <span class="nf">get_classes_modifying_slot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slot_name</span><span class="p">:</span> <span class="n">SLOT_NAME</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">ClassDefinition</span><span class="p">]:</span>
+<div class="viewcode-block" id="SchemaView.get_classes_modifying_slot"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.get_classes_modifying_slot">[docs]</a>    <span class="k">def</span> <span class="nf">get_classes_modifying_slot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">ClassDefinition</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get all ClassDefinitions that modify a given slot.</span>
 
 <span class="sd">        :param slot_name: slot in consideration</span>
 <span class="sd">        :return: list of ClassDefinitions modifying the slot of interest</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># slot_classes = [c for c in self.all_classes().values() if c.slot_usage == slot_name]</span>
-        <span class="c1"># slot_classes = [c for c in self.all_classes().values()]</span>
-        <span class="n">slot_classes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">modifying_classes</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">class_definition</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_classes</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">class_definition</span><span class="o">.</span><span class="n">slot_usage</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">slot_definition</span> <span class="ow">in</span> <span class="n">class_definition</span><span class="o">.</span><span class="n">slot_usage</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-                    <span class="k">if</span> <span class="n">slot_definition</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">slot_name</span><span class="p">:</span>
-                        <span class="n">slot_classes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">class_definition</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">slot_classes</span></div>
+                    <span class="k">if</span> <span class="n">slot_definition</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
+                        <span class="n">modifying_classes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">class_definition</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">modifying_classes</span></div>
 
 <div class="viewcode-block" id="SchemaView.is_slot_percent_encoded"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.is_slot_percent_encoded">[docs]</a>    <span class="k">def</span> <span class="nf">is_slot_percent_encoded</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinitionName</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
