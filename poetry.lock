@@ -1181,14 +1181,14 @@ linkml-runtime = ">=1.1.6"
 
 [[package]]
 name = "linkml-runtime"
-version = "1.5.0rc2"
+version = "1.5.0"
 description = "Runtime environment for LinkML, the Linked open data modeling language"
 category = "main"
 optional = false
 python-versions = ">=3.7.6,<4.0.0"
 files = [
-    {file = "linkml_runtime-1.5.0rc2-py3-none-any.whl", hash = "sha256:d5632096173b2f72845db55ce602333551023b17020215c5145c28b135f415e9"},
-    {file = "linkml_runtime-1.5.0rc2.tar.gz", hash = "sha256:c112289902e4620bee37f2725d7f94eaff90238ff1929a087be368c2531870b2"},
+    {file = "linkml_runtime-1.5.0-py3-none-any.whl", hash = "sha256:ddc3d224d9db39be2df33a02718cd75462942009454aca7f828b726129357a37"},
+    {file = "linkml_runtime-1.5.0.tar.gz", hash = "sha256:dd80aec72f6d3226b39415cf4aa8cdda482dc73fcc227f938c6fff72afd80b20"},
 ]
 
 [package.dependencies]
@@ -3070,4 +3070,4 @@ docs = ["furo", "sphinx", "sphinxcontrib-mermaid"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.7.6"
-content-hash = "cef248d6db018a2c0b7ecb8d94cfd8a94b50cb74c05f449c90d3ef2b5bd9ffa9"
+content-hash = "4de44eba48ba4fad0134cc4c4ebea26923acca62c550d236419fa8a1b02d8ad2"
