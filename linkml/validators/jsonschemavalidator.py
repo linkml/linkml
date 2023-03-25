@@ -51,7 +51,8 @@ class JsonSchemaDataValidator(DataValidator):
             raise ValueError(f"schema object must be set")
         if self.jsonschema_objs is None:
             self.jsonschema_objs = {}
-        if self.schema.id not in self.jsonschema_objs:
+        schema_id = self.schema.id if isinstance(self.schema, SchemaDefinition) else self.schema
+        if schema_id not in self.jsonschema_objs:
             jsonschemastr = JsonSchemaGenerator(
                 self.schema,
                 mergeimports=True,
@@ -59,10 +60,10 @@ class JsonSchemaDataValidator(DataValidator):
                 not_closed=not_closed,
             ).serialize(not_closed=not_closed)
             jsonschema_obj = json.loads(jsonschemastr)
-            self.jsonschema_objs[self.schema.id] = jsonschema_obj
+            self.jsonschema_objs[schema_id] = jsonschema_obj
         else:
-            logging.info(f"Using cached jsonschema for {self.schema.id}")
-            jsonschema_obj = self.jsonschema_objs[self.schema.id]
+            logging.info(f"Using cached jsonschema for {schema_id}")
+            jsonschema_obj = self.jsonschema_objs[schema_id]
         return jsonschema.validate(inst_dict, schema=jsonschema_obj, format_checker=jsonschema.Draft7Validator.FORMAT_CHECKER)
 
     def validate_dict(
