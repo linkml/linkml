@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Union
 
 from linkml_runtime.linkml_model import SchemaDefinition, ClassDefinitionName
 
@@ -9,7 +10,10 @@ class DataValidator:
     Base class for all validators
     """
 
-    schema: SchemaDefinition = None
+    schema: Union[str, SchemaDefinition] = None
+    """
+    LinkML Schema to validate against
+    """
 
     def validate_dict(
             self, data: dict, target_class: ClassDefinitionName = None, closed: bool = True
