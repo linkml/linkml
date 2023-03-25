@@ -166,6 +166,27 @@
     activities:
       - id: A1
         started_at_time: "not a real date"
+- description: date format incomplete date
+  dataset:
+    activities:
+      - id: A1
+        started_at_time: "2022"
+- description: date format datetime used instead
+  dataset:
+    activities:
+      - id: A1
+        started_at_time: "2010-08-03T03:00:00.000000"
+- description: correct date format
+  valid: true
+  dataset:
+    activities:
+      - id: A1
+        started_at_time: "2022-01-01"
+- description: unquoted dates are not allowed for json compatibility
+  dataset:
+    activities:
+      - id: A1
+        started_at_time: 2022-01-01
 - description: instance of linkml:Any class can have additional properties
   valid: true
   dataset:

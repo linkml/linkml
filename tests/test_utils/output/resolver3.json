@@ -13,7 +13,9 @@
       {
          "value": "test: foo",
          "description": "an example",
-         "object": null
+         "object": {
+            "foo": "key value"
+         }
       },
       {
          "value": "17",
