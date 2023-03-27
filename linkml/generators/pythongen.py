@@ -362,21 +362,34 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
     def gen_typedefs(self) -> str:
         """Generate python type declarations for all defined types"""
         rval = []
-        for typ in self.schema.types.values():
-            if not typ.imported_from:
+        defs_to_generate = [x for x in self.schema.types.values() if not x.imported_from]
+        emitted_types = []
+        ## all imported_from types are already considered generated
+        emitted_types.extend([x.name for x in self.schema.types.values() if x.imported_from])
+        for typ in [x for x in defs_to_generate if not x.typeof]:
+            typname = camelcase(typ.name)
+            desc = f'\n\t""" {typ.description} """' if typ.description else ""
+            base_base = typ.base.rsplit(".")[-1]
+            rval.append(
+                f"class {typname}({base_base}):{desc}\n\t{self.gen_type_meta(typ)}\n\n"
+            )
+            emitted_types.append(typ.name)
+
+        while True:
+            defs_to_generate_typeof = [x for x in defs_to_generate if x.typeof and not x.name in emitted_types]
+            if len(defs_to_generate_typeof) == 0:
+                break
+            defs_can_generate = [x for x in defs_to_generate_typeof if x.typeof in emitted_types ]
+            if len(defs_can_generate) == 0:
+                raise ValueError(f"Can not generate type definition for {[f'{x.name} of {x.typeof}' for x in defs_to_generate_typeof]}. Forgot a link in the type hierarchy chain ?")
+            for typ in defs_can_generate:
                 typname = camelcase(typ.name)
                 desc = f'\n\t""" {typ.description} """' if typ.description else ""
-
-                if typ.typeof:
-                    parent_typename = camelcase(typ.typeof)
-                    rval.append(
-                        f"class {typname}({parent_typename}):{desc}\n\t{self.gen_type_meta(typ)}\n\n"
-                    )
-                else:
-                    base_base = typ.base.rsplit(".")[-1]
-                    rval.append(
-                        f"class {typname}({base_base}):{desc}\n\t{self.gen_type_meta(typ)}\n\n"
-                    )
+                parent_typename = camelcase(typ.typeof)
+                rval.append(
+                    f"class {typname}({parent_typename}):{desc}\n\t{self.gen_type_meta(typ)}\n\n"
+                )
+                emitted_types.append(typ.name)
         return "\n".join(rval)
 
     def gen_classdefs(self) -> str:
