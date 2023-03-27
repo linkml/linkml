@@ -297,6 +297,7 @@
         <article role="main">
           <h1>Source code for linkml.generators.excelgen</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">logging</span>
 
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
@@ -324,6 +325,7 @@
 
     <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span> <span class="o">=</span> <span class="n">SchemaView</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="p">)</span>
 
 <div class="viewcode-block" id="ExcelGenerator.create_workbook"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.excelgen.ExcelGenerator.create_workbook">[docs]</a>    <span class="k">def</span> <span class="nf">create_workbook</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">workbook_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Workbook</span><span class="p">:</span>
@@ -434,13 +436,13 @@
         <span class="n">workbook</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">workbook_name</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ExcelGenerator.serialize"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.excelgen.ExcelGenerator.serialize">[docs]</a>    <span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="n">output</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">convert_to_snake_case</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.xlsx&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">convert_to_snake_case</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.xlsx&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">output</span>
             <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">output</span>
         <span class="p">)</span>
 
-        <span class="n">workbook</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_workbook</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+        <span class="n">workbook</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_workbook</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">remove_worksheet_by_name</span><span class="p">(</span><span class="n">workbook</span><span class="p">,</span> <span class="s2">&quot;Sheet&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">create_schema_worksheets</span><span class="p">(</span><span class="n">workbook</span><span class="p">)</span>
 
@@ -465,7 +467,8 @@
                             <span class="n">s</span><span class="o">.</span><span class="n">range</span>
                         <span class="p">)</span><span class="o">.</span><span class="n">permissible_values</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                             <span class="n">pv_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pv_name</span><span class="p">)</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">column_enum_validation</span><span class="p">(</span><span class="n">workbook</span><span class="p">,</span> <span class="n">cls_name</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">pv_list</span><span class="p">)</span></div></div>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">column_enum_validation</span><span class="p">(</span><span class="n">workbook</span><span class="p">,</span> <span class="n">cls_name</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">pv_list</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The Excel workbook has been written to </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div></div>
 
 
 <span class="nd">@shared_arguments</span><span class="p">(</span><span class="n">ExcelGenerator</span><span class="p">)</span>
@@ -479,7 +482,7 @@
 <span class="nd">@click</span><span class="o">.</span><span class="n">version_option</span><span class="p">(</span><span class="n">__version__</span><span class="p">,</span> <span class="s2">&quot;-V&quot;</span><span class="p">,</span> <span class="s2">&quot;--version&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">cli</span><span class="p">(</span><span class="n">yamlfile</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate Excel representation of a LinkML model&quot;&quot;&quot;</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">ExcelGenerator</span><span class="p">(</span><span class="n">yamlfile</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
+    <span class="n">ExcelGenerator</span><span class="p">(</span><span class="n">yamlfile</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
