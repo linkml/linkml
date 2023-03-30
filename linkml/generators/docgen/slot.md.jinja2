@@ -48,23 +48,26 @@ URI: {{ gen.uri_link(element) }}
 ## Properties
 
 * Range: {{gen.link(element.range)}}
-{%- if element.multivalued %}
+{% if element.multivalued %}
 * Multivalued: {{ element.multivalued }}
-{% endif %}
-{%- if element.required %}
+{% endif -%}
+{% if element.required %}
 * Required: {{ element.required }}
 {% elif element.recommended %}
 * Recommended: {{ element.recommended }}
-{% endif %}
-{%- if element.minimum_value %}
-* Minimum Value: {{ element.minimum_value }}
-{% endif %}
-{%- if element.maximum_value %}
-* Maximum Value: {{ element.maximum_value }}
-{% endif %}
-{%- if schemaview.is_mixin(element.name) %}
+{% endif -%}
+{% if element.minimum_value or element.minimum_value == 0 %}
+* Minimum Value: {{ element.minimum_value|int }}
+{% endif -%}
+{% if element.maximum_value or element.maximum_value == 0 %}
+* Maximum Value: {{ element.maximum_value|int }}
+{% endif -%}
+{% if element.pattern %}
+* Regex pattern: {{ '`' }}{{  element.pattern }}{{ '`' }}
+{% endif -%}
+{% if schemaview.is_mixin(element.name) %}
 * Mixin: {{ element.mixin }}
-{% endif %}
+{% endif -%}
 
 
 {% if schemaview.usage_index().get(element.name) %}
