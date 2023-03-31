@@ -68,7 +68,8 @@ def load_schema_wrap(path: str, **kwargs):
     yaml_loader = YAMLLoader()
     schema: SchemaDefinition
     schema = yaml_loader.load(path, target_class=SchemaDefinition, **kwargs)
-    if "\n" not in path and "://" not in path:
+    if "\n" not in path:
+    # if "\n" not in path and "://" not in path:
         # only set path if the input is not a yaml string or URL.
         # Setting the source path is necessary for relative imports;
         # while initializing a schema with a yaml string is possible, there
@@ -169,6 +170,9 @@ class SchemaView(object):
         In future, this mechanism may be extended to arbitrary modules, such that we avoid
         network dependence at runtime in general.
 
+        For local paths, the import is resolved relative to the directory containing the source file,
+        or the URL of the source file, if it is a URL.
+
         :param imp:
         :param from_schema:
         :return:
@@ -181,10 +185,12 @@ class SchemaView(object):
         }
         importmap = {**default_import_map, **self.importmap}
         sname = map_import(importmap, self.namespaces, imp)
-        logging.info(f'Importing {imp} as {sname} from source {from_schema.source_file}')
-        schema = load_schema_wrap(sname + '.yaml',
-                                  base_dir=os.path.dirname(
-                                  from_schema.source_file) if from_schema.source_file else None)
+        if from_schema.source_file and not sname.startswith("/"):
+            base_dir = os.path.dirname(from_schema.source_file)
+        else:
+            base_dir = None
+        print(f'Importing {imp} as {sname} from source {from_schema.source_file}; base_dir={base_dir}')
+        schema = load_schema_wrap(sname + '.yaml', base_dir=base_dir)
         return schema
 
     @lru_cache()

@@ -54,6 +54,8 @@ def map_import(importmap: Dict[str, str], namespaces: Callable[[None], "Namespac
     """
     lookup an import in an importmap.
 
+    An importmap is a dictionary that maps CURIEs or URIs to file paths.
+
     :param importmap:
     :param namespaces:
     :param imp:

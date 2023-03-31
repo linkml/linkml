@@ -455,6 +455,9 @@ class SchemaViewTestCase(unittest.TestCase):
     def test_direct_remote_imports(self):
         """
         Tests that building a SchemaView directly from a remote URL works.
+
+        Note: this should be the only test in this suite that fails if there is
+        no network
         """
         view = SchemaView("https://w3id.org/linkml/meta.yaml")
         main_classes = ["class_definition", "prefix"]
