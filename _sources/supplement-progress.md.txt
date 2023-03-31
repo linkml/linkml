@@ -2,7 +2,7 @@
 #### Supplement RM1HG010860 - 03S1
 #### PI: Christopher J. Mungall, LBNL
 
-## Progress for 2022-06-01 - 2023-05-31
+## Progress for 2022-06-01 - 2023-05-31 (as of 2023-03-31)
 
 ### Aim 1. Enhance LinkML software engineering
 We have made many improvements to features and functionality of the core framework, and made it easier for external developers to contribute.
