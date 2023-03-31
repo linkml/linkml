@@ -38,6 +38,7 @@ prefixes:
   bizcodes: https://example.org/bizcodes/
   schema: http://schema.org/
 default_prefix: ks
+default_range: string
 see_also:
   - https://example.org/
 
@@ -356,6 +357,7 @@ slots:
     range: AnyObject
     description: Example of a slot that has an unconstrained range
   species name:
+    pattern: ^[A-Z]+[a-z]+(-[A-Z]+[a-z]+)?\\.[A-Z]+(-[0-9]{4})?$
   stomach count:
     range: integer
   # slots added for inheritance tree purposes
