@@ -235,7 +235,7 @@ class SchemaViewTestCase(unittest.TestCase):
         self.assertIn('Dataset', roots)
         ds_slots = view.class_slots('Dataset')
         logging.debug(ds_slots)
-        self.assertEquals(len(ds_slots), 3)
+        self.assertEqual(len(ds_slots), 3)
         self.assertCountEqual(['persons', 'companies', 'activities'], ds_slots)
         for sn in ds_slots:
             s = view.induced_slot(sn, 'Dataset')
@@ -248,7 +248,7 @@ class SchemaViewTestCase(unittest.TestCase):
         ordered_c = []
         for c in classes.values():
             ordered_c.append(c.name)
-        self.assertEquals(ordered_c, sorted(ordered_c))
+        self.assertEqual(ordered_c, sorted(ordered_c))
 
     def test_all_classes_ordered_rank(self):
         view = SchemaView(SCHEMA_NO_IMPORTS)
@@ -363,11 +363,11 @@ class SchemaViewTestCase(unittest.TestCase):
         self.assertCountEqual(['kitchen_sink', 'core', 'linkml:types'], view.imports_closure())
         for t in view.all_types().keys():
             logging.debug(f'T={t} in={view.in_schema(t)}')
-        self.assertEquals(view.in_schema(ClassDefinitionName('Person')), 'kitchen_sink')
-        self.assertEquals(view.in_schema(SlotDefinitionName('id')), 'core')
-        self.assertEquals(view.in_schema(SlotDefinitionName('name')), 'core')
-        self.assertEquals(view.in_schema(SlotDefinitionName(ACTIVITY)), 'core')
-        self.assertEquals(view.in_schema(SlotDefinitionName('string')), 'types')
+        self.assertEqual(view.in_schema(ClassDefinitionName('Person')), 'kitchen_sink')
+        self.assertEqual(view.in_schema(SlotDefinitionName('id')), 'core')
+        self.assertEqual(view.in_schema(SlotDefinitionName('name')), 'core')
+        self.assertEqual(view.in_schema(SlotDefinitionName(ACTIVITY)), 'core')
+        self.assertEqual(view.in_schema(SlotDefinitionName('string')), 'types')
         self.assertIn(ACTIVITY, view.all_classes())
         self.assertNotIn(ACTIVITY, view.all_classes(imports=False))
         self.assertIn('string', view.all_types())
@@ -413,25 +413,25 @@ class SchemaViewTestCase(unittest.TestCase):
             self.assertTrue(view.induced_slot('id', c).identifier)
             self.assertFalse(view.induced_slot('name', c).identifier)
             self.assertFalse(view.induced_slot('name', c).required)
-            self.assertEquals(view.induced_slot('name', c).range, 'string')
+            self.assertEqual(view.induced_slot('name', c).range, 'string')
         for c in ['Event', 'EmploymentEvent', 'MedicalEvent']:
             s = view.induced_slot('started at time', c)
-            self.assertEquals(s.range, 'date')
-            self.assertEquals(s.slot_uri, 'prov:startedAtTime')
-        self.assertEquals(view.induced_slot(AGE_IN_YEARS, 'Person').minimum_value, 0)
-        self.assertEquals(view.induced_slot(AGE_IN_YEARS, 'Adult').minimum_value, 16)
+            self.assertEqual(s.range, 'date')
+            self.assertEqual(s.slot_uri, 'prov:startedAtTime')
+        self.assertEqual(view.induced_slot(AGE_IN_YEARS, 'Person').minimum_value, 0)
+        self.assertEqual(view.induced_slot(AGE_IN_YEARS, 'Adult').minimum_value, 16)
 
-        self.assertEquals(view.get_class('agent').class_uri, 'prov:Agent')
-        self.assertEquals(view.get_uri(AGENT), 'prov:Agent')
+        self.assertEqual(view.get_class('agent').class_uri, 'prov:Agent')
+        self.assertEqual(view.get_uri(AGENT), 'prov:Agent')
         logging.debug(view.get_class('Company').class_uri)
 
-        self.assertEquals(view.get_uri(COMPANY), 'ks:Company')
-        self.assertEquals(view.get_uri(COMPANY, expand=True), 'https://w3id.org/linkml/tests/kitchen_sink/Company')
+        self.assertEqual(view.get_uri(COMPANY), 'ks:Company')
+        self.assertEqual(view.get_uri(COMPANY, expand=True), 'https://w3id.org/linkml/tests/kitchen_sink/Company')
         logging.debug(view.get_uri('TestClass'))
-        self.assertEquals(view.get_uri('TestClass'), 'core:TestClass')
-        self.assertEquals(view.get_uri('TestClass', expand=True), 'https://w3id.org/linkml/tests/core/TestClass')
+        self.assertEqual(view.get_uri('TestClass'), 'core:TestClass')
+        self.assertEqual(view.get_uri('TestClass', expand=True), 'https://w3id.org/linkml/tests/core/TestClass')
 
-        self.assertEquals(view.get_uri('string'), 'xsd:string')
+        self.assertEqual(view.get_uri('string'), 'xsd:string')
 
         # dynamic enums
         e = view.get_enum('HCAExample')
@@ -553,7 +553,7 @@ class SchemaViewTestCase(unittest.TestCase):
         view.add_slot(SlotDefinition('s4', is_a='s2', mixins=['m1'], range='W'))
         view.add_slot(SlotDefinition('m1', mixin=True, multivalued=False, range='Z'))
         slot1 = view.induced_slot('s1', 'C')
-        self.assertEquals(slot1.is_a, None)
+        self.assertEqual(slot1.is_a, None)
         self.assertEqual('D', slot1.range)
         self.assertIsNotNone(slot1.multivalued)
         slot2 = view.induced_slot('s2', 'C')

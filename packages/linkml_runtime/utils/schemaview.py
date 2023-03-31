@@ -189,7 +189,7 @@ class SchemaView(object):
             base_dir = os.path.dirname(from_schema.source_file)
         else:
             base_dir = None
-        print(f'Importing {imp} as {sname} from source {from_schema.source_file}; base_dir={base_dir}')
+        logging.info(f'Importing {imp} as {sname} from source {from_schema.source_file}; base_dir={base_dir}')
         schema = load_schema_wrap(sname + '.yaml', base_dir=base_dir)
         return schema
 
