@@ -56,10 +56,10 @@ URI: {{ gen.uri_link(element) }}
 {% elif element.recommended %}
 * Recommended: {{ element.recommended }}
 {% endif -%}
-{% if element.minimum_value or element.minimum_value == 0 %}
+{% if element.minimum_value is not none %}
 * Minimum Value: {{ element.minimum_value|int }}
 {% endif -%}
-{% if element.maximum_value or element.maximum_value == 0 %}
+{% if element.maximum_value is not none %}
 * Maximum Value: {{ element.maximum_value|int }}
 {% endif -%}
 {% if element.pattern %}
