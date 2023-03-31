@@ -11,7 +11,7 @@ languages lack first class support for arrays.
 
 Consider for example measurements taken from x and y coordinates, with an additional time axis:
 
-![img](https://user-images.githubusercontent.com/50745/183748794-70d13098-6eff-4873-b0d9-5576c6610eb3.png)
+![img](https://user-images.githubusercontent.com/50745/183749279-806a3ae9-e279-40eb-8a41-27f83ccc24eb.png)
 
 __FIGURE__: example 4 x 4 x 3 array (taken from NetCDF documentation)
 
