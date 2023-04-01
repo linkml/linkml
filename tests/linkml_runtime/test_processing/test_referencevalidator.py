@@ -11,9 +11,8 @@ from typing import Optional, Any, List, Union
 
 import yaml
 
-from examples import PermissibleValue
 from linkml_runtime.dumpers import yaml_dumper, json_dumper
-from linkml_runtime.linkml_model import SlotDefinition, SlotDefinitionName
+from linkml_runtime.linkml_model import SlotDefinition, SlotDefinitionName, PermissibleValue
 from linkml_runtime.utils.introspection import package_schemaview
 from linkml_runtime.utils.schemaview import SchemaView
 
