@@ -78,6 +78,19 @@ def load_schema_wrap(path: str, **kwargs):
     return schema
 
 
+def is_absolute_path(path: str) -> bool:
+    if path.startswith("/"):
+        return True
+    # windows
+    if not os.path.isabs(path):
+        return False
+    norm_path = os.path.normpath(path)
+    if norm_path.startswith("\\\\") or ":" not in norm_path:
+        return False
+    drive, tail = os.path.splitdrive(norm_path)
+    return bool(drive and tail)
+
+
 @dataclass
 class SchemaUsage():
     """
@@ -185,7 +198,7 @@ class SchemaView(object):
         }
         importmap = {**default_import_map, **self.importmap}
         sname = map_import(importmap, self.namespaces, imp)
-        if from_schema.source_file and not sname.startswith("/"):
+        if from_schema.source_file and not is_absolute_path(sname):
             base_dir = os.path.dirname(from_schema.source_file)
         else:
             base_dir = None
