@@ -4,10 +4,10 @@ import logging
 import collections
 from functools import lru_cache
 from copy import copy, deepcopy
-from collections import defaultdict, OrderedDict
-from typing import Mapping, Tuple, Type, Union, Optional, List, Any
+from collections import defaultdict
+from pathlib import Path
+from typing import Mapping, Tuple
 
-from linkml_runtime.linkml_model import PermissibleValue, PermissibleValueText
 from linkml_runtime.utils.namespaces import Namespaces
 from deprecated.classic import deprecated
 from linkml_runtime.utils.context_utils import parse_import_map, map_import
@@ -68,8 +68,27 @@ def load_schema_wrap(path: str, **kwargs):
     yaml_loader = YAMLLoader()
     schema: SchemaDefinition
     schema = yaml_loader.load(path, target_class=SchemaDefinition, **kwargs)
-    schema.source_file = path
+    if "\n" not in path:
+    # if "\n" not in path and "://" not in path:
+        # only set path if the input is not a yaml string or URL.
+        # Setting the source path is necessary for relative imports;
+        # while initializing a schema with a yaml string is possible, there
+        # should be no expectation of relative imports working.
+        schema.source_file = path
     return schema
+
+
+def is_absolute_path(path: str) -> bool:
+    if path.startswith("/"):
+        return True
+    # windows
+    if not os.path.isabs(path):
+        return False
+    norm_path = os.path.normpath(path)
+    if norm_path.startswith("\\\\") or ":" not in norm_path:
+        return False
+    drive, tail = os.path.splitdrive(norm_path)
+    return bool(drive and tail)
 
 
 @dataclass
@@ -111,8 +130,10 @@ class SchemaView(object):
     modifications: int = 0
     uuid: str = None
 
-    def __init__(self, schema: Union[str, SchemaDefinition],
+    def __init__(self, schema: Union[str, Path, SchemaDefinition],
                  importmap: Optional[Mapping[str, str]] = None, merge_imports: bool = False):
+        if isinstance(schema, Path):
+            schema = str(schema)
         if isinstance(schema, str):
             schema = load_schema_wrap(schema)
         self.schema = schema
@@ -144,13 +165,45 @@ class SchemaView(object):
         return namespaces
 
     def load_import(self, imp: str, from_schema: SchemaDefinition = None):
+        """
+        Handles import directives.
+
+        The value of the import can be:
+
+        - a URL (specified as either a full URL or a CURIE)
+        - a local file path
+
+        The import should leave off the .yaml suffix.
+
+        If the import is a URL then the import is fetched over the network UNLESS this is a metamodel
+        import, in which case it is fetched from within the linkml_runtime package, where the yaml
+        is distributed. This ensures that the version of the metamodel imported matches the version
+        of the linkml_runtime package.
+
+        In future, this mechanism may be extended to arbitrary modules, such that we avoid
+        network dependence at runtime in general.
+
+        For local paths, the import is resolved relative to the directory containing the source file,
+        or the URL of the source file, if it is a URL.
+
+        :param imp:
+        :param from_schema:
+        :return:
+        """
         if from_schema is None:
             from_schema = self.schema
-        sname = map_import(self.importmap, self.namespaces, imp)
-        logging.info(f'Loading schema {sname} from {from_schema.source_file}')
-        schema = load_schema_wrap(sname + '.yaml',
-                                  base_dir=os.path.dirname(
-                                      from_schema.source_file) if from_schema.source_file else None)
+        from linkml_runtime import SCHEMA_DIRECTORY
+        default_import_map = {
+            "linkml:": str(SCHEMA_DIRECTORY)
+        }
+        importmap = {**default_import_map, **self.importmap}
+        sname = map_import(importmap, self.namespaces, imp)
+        if from_schema.source_file and not is_absolute_path(sname):
+            base_dir = os.path.dirname(from_schema.source_file)
+        else:
+            base_dir = None
+        logging.info(f'Importing {imp} as {sname} from source {from_schema.source_file}; base_dir={base_dir}')
+        schema = load_schema_wrap(sname + '.yaml', base_dir=base_dir)
         return schema
 
     @lru_cache()
@@ -1196,7 +1249,8 @@ class SchemaView(object):
             induced_slot.alias = underscore(slot_name)
         for c in self.all_classes().values():
             if induced_slot.name in c.slots or induced_slot.name in c.attributes:
-                induced_slot.domain_of.append(c.name)
+                if c.name not in induced_slot.domain_of:
+                    induced_slot.domain_of.append(c.name)
         return deepcopy(induced_slot)
 
     @lru_cache()
@@ -1418,6 +1472,21 @@ class SchemaView(object):
                         enum_slots.append(slot_definition)
         return enum_slots
 
+    def get_classes_modifying_slot(self, slot: SlotDefinition) -> List[ClassDefinition]:
+        """Get all ClassDefinitions that modify a given slot.
+
+        :param slot_name: slot in consideration
+        :return: list of ClassDefinitions modifying the slot of interest
+        """
+        modifying_classes = []
+        for class_definition in self.all_classes().values():
+            if class_definition.slot_usage:
+                for slot_definition in class_definition.slot_usage.values():
+                    if slot_definition.name == slot.name:
+                        modifying_classes.append(class_definition.name)
+
+        return modifying_classes
+
     def is_slot_percent_encoded(self, slot: SlotDefinitionName) -> bool:
         """
         True if slot or its range is has a percent_encoded annotation.
@@ -1542,7 +1611,7 @@ class SchemaView(object):
         :param type_name: type to be deleted
         :return:
         """
-        del self.schema.typees[type_name]
+        del self.schema.types[type_name]
         self.set_modified()
 
     def delete_subset(self, subset_name: SubsetDefinitionName) -> None:

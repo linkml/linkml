@@ -133,7 +133,7 @@ class URI(URIorCURIE):
     """
     def __init__(self, v: str) -> None:
         if is_strict() and not URI.is_valid(v):
-            raise ValueError(f"{v}: is not a valid URI")
+            raise ValueError(f"'{v}': is not a valid URI")
         super().__init__(v)
 
     # this is more inclusive than the W3C specification
