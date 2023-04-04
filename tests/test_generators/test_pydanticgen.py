@@ -32,7 +32,7 @@ class PydanticGeneratorTestCase(unittest.TestCase):
             stream.write(code)
         # TODO: lowering the bar for the pydantic test until list to dict normalization is supported
         #  https://github.com/linkml/linkml/issues/1304
-        with open(DATA_NORMALIZED) as stream:
+        with open(DATA) as stream:
             dataset_dict = yaml.safe_load(stream)
         # NOTE: compile_python and dynamic compilation in general does not seem to work
         # for pydantic code. As an alternative, we import the generated model within a function
