@@ -127,6 +127,14 @@ slots:
 
 ## Slot cardinality
 
+The cardinality of a slot is indicative of two properties on a slot. It tells us about whether a slot is *required* or not, and also about how many values it is allowed to have, i.e., whether it is *single-valued* or *multi-valued*.
+
+The following list summarizes the expansions of the various possible combinations of cardinalities that can be asserted on a slot:
+* `1..*` - slot is *required* and *multivalued*
+* `1..1` - slot is *required* but *not multivalued*
+* `0..*` - slot is *not required* but if provided it must be *mulitvalued*
+* `0..1` - slot is *not required* and *not multivalued*
+
 ### multivalued
 
 The [multivalued](https://w3id.org/linkml/multivalued) indicates that the range of the slot is a list
