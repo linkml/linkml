@@ -27,21 +27,14 @@ URI: {{ gen.uri_link(element) }}
 
 ## Applicable Classes
 
-| Name | Description |
-| --- | --- |
+| Name | Description | Modifies Slot |
+| --- | --- | --- |
 {% for c in schemaview.get_classes_by_slot(element, include_induced=True) -%}
-{{ gen.link(c) }} | {{ schemaview.get_class(c).description|enshorten }}
+{{ gen.link(c) }} | {{ schemaview.get_class(c).description|enshorten }} | {% if c in schemaview.get_classes_modifying_slot(element) %} yes {% else %} no {% endif %} |
 {% endfor %}
 
 {% endif %}
 
-## Slot Modifying Classes
-
-| Name | Description |
-| ---  | --- |
-{% for c in schemaview.get_classes_modifying_slot(element) -%}
-{{ gen.link(c) }} | {{ schemaview.get_class(c).description|enshorten }}
-{% endfor %}
 
 {% if schemaview.is_mixin(element.name) %}
 ## Mixin Usage
