@@ -368,13 +368,13 @@ class DocGeneratorTestCase(unittest.TestCase):
 
         # test that slots modifying classes are being rendered
         assert_mdfile_contains(
-            "type.md", "FamilialRelationship", after="## Slot Modifying Classes",
+            "type.md", "[FamilialRelationship](FamilialRelationship.md) |  |  yes  |", after="## Applicable Classes",
             followed_by=["## Properties",
                         "* Range"],
         )
 
         assert_mdfile_contains(
-            "type.md", "EmploymentEvent", after="## Slot Modifying Classes",
+            "type.md", "[EmploymentEvent](EmploymentEvent.md) |  |  yes  |", after="## Applicable Classes",
             followed_by=["## Properties",
                         "* Range"],
         )
