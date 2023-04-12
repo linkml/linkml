@@ -11,21 +11,14 @@ URI: [ks:type](https://w3id.org/linkml/tests/kitchen_sink/type)
 
 ## Applicable Classes
 
-| Name | Description |
-| --- | --- |
-[Relationship](Relationship.md) | 
-[EmploymentEvent](EmploymentEvent.md) | 
-[FamilialRelationship](FamilialRelationship.md) | 
+| Name | Description | Modifies Slot |
+| --- | --- | --- |
+[Relationship](Relationship.md) |  |  no  |
+[EmploymentEvent](EmploymentEvent.md) |  |  yes  |
+[FamilialRelationship](FamilialRelationship.md) |  |  yes  |
 
 
 
-
-## Slot Modifying Classes
-
-| Name | Description |
-| ---  | --- |
-[FamilialRelationship](FamilialRelationship.md) | 
-[EmploymentEvent](EmploymentEvent.md) | 
 
 
 
@@ -33,8 +26,6 @@ URI: [ks:type](https://w3id.org/linkml/tests/kitchen_sink/type)
 ## Properties
 
 * Range: [String](String.md)
-
-
 
 
 
