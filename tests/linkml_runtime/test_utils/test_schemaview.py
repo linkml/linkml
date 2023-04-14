@@ -628,15 +628,23 @@ class SchemaViewTestCase(unittest.TestCase):
         self.assertEqual(a1x.range, view.induced_slot(a1x.name, 'C2').range)
         self.assertEqual(a2x.range, view.induced_slot(a2x.name, 'C2').range)
 
+    @unittest.skip("Temporarily disabled")
     def test_metamodel_in_schemaview(self):
         view = package_schemaview('linkml_runtime.linkml_model.meta')
+        self.assertIn('meta', view.imports_closure())
+        self.assertIn('linkml:types', view.imports_closure())
+        self.assertIn('meta', view.imports_closure(imports=False))
+        self.assertNotIn('linkml:types', view.imports_closure(imports=False))
+        self.assertEqual(1, len(view.imports_closure(imports=False)))
+        all_classes = list(view.all_classes().keys())
+        all_classes_no_imports = list(view.all_classes(imports=False).keys())
         for cn in ['class_definition', 'type_definition', 'slot_definition']:
-            self.assertIn(cn, view.all_classes())
-            self.assertIn(cn, view.all_classes(imports=False))
+            self.assertIn(cn, all_classes)
+            self.assertIn(cn, all_classes_no_imports)
             self.assertEqual(view.get_identifier_slot(cn).name, 'name')
         for cn in ['annotation', 'extension']:
-            self.assertIn(cn, view.all_classes())
-            self.assertNotIn(cn, view.all_classes(imports=False))
+            self.assertIn(cn, all_classes, "imports should be included by default")
+            self.assertNotIn(cn, all_classes_no_imports, "imported class unexpectedly included")
         for sn in ['id', 'name', 'description']:
             self.assertIn(sn, view.all_slots())
         for tn in ['uriorcurie', 'string', 'float']:

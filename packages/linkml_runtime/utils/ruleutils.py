@@ -63,7 +63,7 @@ def get_range_as_disjunction(slot: SlotExpression) ->  Set[ClassDefinitionName]:
         if slot.range:
             conjs.append({slot.range})
         else:
-            logging.warning(f'No range for {slot}')
+            logging.warning(f'No range for {slot.name}')
     if len(conjs) > 1:
         raise Exception(f'Cannot determine range disjunction for {slot}, got conjunctions: {conjs}')
     if len(conjs) == 0:

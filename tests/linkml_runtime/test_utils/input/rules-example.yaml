@@ -37,6 +37,8 @@ imports:
 #==================================
 slots:
   id:
+  name:
+  employer_name:
   primary_address:
     range: Address
   street_address:
@@ -60,7 +62,7 @@ slots:
     any_of:
       - range: MissingValueEnum
       - range: VitalStatusEnum
-  familial_relationship:
+  familial_relationships:
     abstract: true
   parents:
     is_a: familial_relationships
