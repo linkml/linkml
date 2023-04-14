@@ -628,7 +628,6 @@ class SchemaViewTestCase(unittest.TestCase):
         self.assertEqual(a1x.range, view.induced_slot(a1x.name, 'C2').range)
         self.assertEqual(a2x.range, view.induced_slot(a2x.name, 'C2').range)
 
-    @unittest.skip("Temporarily disabled")
     def test_metamodel_in_schemaview(self):
         view = package_schemaview('linkml_runtime.linkml_model.meta')
         self.assertIn('meta', view.imports_closure())
