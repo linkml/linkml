@@ -4,7 +4,12 @@ from linkml_runtime import SchemaView
 mixs_root_url = "https://raw.githubusercontent.com/GenomicsStandardsConsortium/mixs/main/model/schema/mixs.yaml"
 
 
+@unittest.skip("potentially fragile test: mixs schema changing may break this")
 class TestRemoteModularSchemaView(unittest.TestCase):
+    """
+    Tests imports from a URL.
+
+    """
     def test_view_created(self):
         """test_remote_modular_schema_view"""
         sv = SchemaView(mixs_root_url)
