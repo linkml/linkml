@@ -19,10 +19,10 @@ class PydanticLoadersUnitTest(LoaderDumperTestCase):
         self.loader_test('book_series_lotr.json', BookSeries, json_loader)
 
     def test_yaml_loader_kitchen_sink(self):
-        self.loader_test('kitchen_sink_inst_01.yaml', Dataset, yaml_loader)
+        self.loader_test('kitchen_sink_normalized_inst_01.yaml', Dataset, yaml_loader)
 
     def test_json_loader_kitchen_sink(self):
-        self.loader_test('kitchen_sink_inst_01.json', Dataset, json_loader)
+        self.loader_test('kitchen_sink_normalized_inst_01.json', Dataset, json_loader)
 
 if __name__ == '__main__':
     unittest.main()
