@@ -627,6 +627,11 @@ class SchemaViewTestCase(unittest.TestCase):
 
     def test_metamodel_in_schemaview(self):
         view = package_schemaview('linkml_runtime.linkml_model.meta')
+        self.assertIn('meta', view.imports_closure())
+        self.assertIn('linkml:types', view.imports_closure())
+        self.assertIn('meta', view.imports_closure(imports=False))
+        self.assertNotIn('linkml:types', view.imports_closure(imports=False))
+        self.assertEqual(1, len(view.imports_closure(imports=False)))
         all_classes = list(view.all_classes().keys())
         all_classes_no_imports = list(view.all_classes(imports=False).keys())
         for cn in ['class_definition', 'type_definition', 'slot_definition']:
