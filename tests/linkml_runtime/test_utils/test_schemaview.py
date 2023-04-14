@@ -457,7 +457,7 @@ class SchemaViewTestCase(unittest.TestCase):
         Tests that building a SchemaView directly from a remote URL works.
 
         Note: this should be the only test in this suite that fails if there is
-        no network
+        no network connection.
         """
         view = SchemaView("https://w3id.org/linkml/meta.yaml")
         main_classes = ["class_definition", "prefix"]
@@ -468,6 +468,17 @@ class SchemaViewTestCase(unittest.TestCase):
         for c in imported_classes:
             self.assertIn(c, view.all_classes(imports=True))
             self.assertNotIn(c, view.all_classes(imports=False))
+
+    @unittest.skip("Skipped as fragile: will break if the remote schema changes")
+    def test_direct_remote_imports_additional(self):
+        """
+        Alternative test to: https://github.com/linkml/linkml/pull/1379
+        """
+        url = "https://raw.githubusercontent.com/GenomicsStandardsConsortium/mixs/main/model/schema/mixs.yaml"
+        view = SchemaView(url)
+        self.assertEqual(view.schema.name, "MIxS")
+        class_count = len(view.all_classes())
+        self.assertGreater(class_count, 0)
 
 
     def test_merge_imports(self):
