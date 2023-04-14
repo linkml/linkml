@@ -448,7 +448,7 @@ class ReferenceValidator:
                     for k, v in normalized_object.items()
                 }
         elif _is_list_of_lists(normalized_object):
-            raise NotImplementedError(f"LoL: {normalized_object}")
+            raise NotImplementedError(f"List of Lists: {normalized_object}")
         elif isinstance(normalized_object, list):
             output_object = [
                 self.normalize_instance(v, parent_slot, new_report)
@@ -756,7 +756,7 @@ class ReferenceValidator:
         if pk_slot is None:
             raise AssertionError(f"Cannot normalize: no primary key for {target.name}")
         return self.normalize_type(
-            input_object, self.derived_schema.types[pk_slot.range], report
+            input_object, self.derived_schema.types.get(pk_slot.range, None), report
         )
 
     def normalize_object(
@@ -853,12 +853,14 @@ class ReferenceValidator:
     def normalize_type(
         self,
         input_object: Any,
-        target: TypeDefinition,
+        target: Optional[TypeDefinition],
         report: Report,
         parent_slot: SlotDefinition = None,
     ) -> Any:
         if input_object is None:
             return None
+        if target is None:
+           return input_object
         output_value = input_object
         if target.base in XSD_OR_BASE_TO_PYTHON:
             expected_python_type = XSD_OR_BASE_TO_PYTHON[target.base]
