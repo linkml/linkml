@@ -633,7 +633,7 @@ class SchemaViewTestCase(unittest.TestCase):
             self.assertEqual(view.get_identifier_slot(cn).name, 'name')
         for cn in ['annotation', 'extension']:
             self.assertIn(cn, view.all_classes())
-            self.assertNotIn(cn, view.all_classes(imports=False))
+            self.assertNotIn(cn, view.all_classes(imports=False).keys())
         for sn in ['id', 'name', 'description']:
             self.assertIn(sn, view.all_slots())
         for tn in ['uriorcurie', 'string', 'float']:
