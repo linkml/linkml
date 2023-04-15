@@ -37,14 +37,14 @@ version = "{{version if version else None}}"
 
 class WeakRefShimBaseModel(BaseModel):
    __slots__ = '__weakref__'
-    
+
 class ConfiguredBaseModel(WeakRefShimBaseModel,
-                validate_assignment = True, 
-                validate_all = True, 
-                underscore_attrs_are_private = True, 
-                extra = {% if allow_extra %}'allow'{% else %}'forbid'{% endif %}, 
+                validate_assignment = True,
+                validate_all = True,
+                underscore_attrs_are_private = True,
+                extra = {% if allow_extra %}'allow'{% else %}'forbid'{% endif %},
                 arbitrary_types_allowed = True):
-    pass                    
+    pass
 
 {% for e in enums.values() %}
 class {{ e.name }}(str, Enum):
@@ -62,25 +62,25 @@ class {{ e.name }}(str, Enum):
 {% endfor %}
 
 {%- for c in schema.classes.values() %}
-class {{ c.name }} 
+class {{ c.name }}
     {%- if class_isa_plus_mixins[c.name] -%}
         ({{class_isa_plus_mixins[c.name]|join(', ')}})
     {%- else -%}
         (ConfiguredBaseModel)
-    {%- endif -%}                   
+    {%- endif -%}
                   :
-    {% if c.description -%}    
+    {% if c.description -%}
     \"\"\"
     {{ c.description }}
     \"\"\"
     {%- endif %}
     {% for attr in c.attributes.values() if c.attributes -%}
     {{attr.name}}: {{ attr.annotations['python_range'].value }} = Field(
-    {%- if predefined_slot_values[c.name][attr.name] -%} 
+    {%- if predefined_slot_values[c.name][attr.name] -%}
         {{ predefined_slot_values[c.name][attr.name] }}
     {%- else -%}
         None
-    {%- endif -%}    
+    {%- endif -%}
     {%- if attr.title != None %}, title="{{attr.title}}"{% endif -%}
     {%- if attr.description %}, description=\"\"\"{{attr.description}}\"\"\"{% endif -%}
     {%- if attr.minimum_value != None %}, ge={{attr.minimum_value}}{% endif -%}
@@ -94,7 +94,7 @@ class {{ c.name }}
 
 # Update forward refs
 # see https://pydantic-docs.helpmanual.io/usage/postponed_annotations/
-{% for c in schema.classes.values() -%} 
+{% for c in schema.classes.values() -%}
 {{ c.name }}.update_forward_refs()
 {% endfor %}
 """
@@ -294,6 +294,19 @@ class PydanticGenerator(OOCodeGenerator):
         # Hardcoded handling for Any
         if range_cls.class_uri == "linkml:Any":
             return "Any"
+
+        if "linkml:OneDimensionalSeries" in range_cls.implements:
+            return "np.ndarray"  # TODO add dtype
+
+        if "linkml:TwoDimensionalArray" in range_cls.implements:
+            return "np.ndarray"  # TODO add dtype
+
+        if "linkml:ThreeDimensionalArray" in range_cls.implements:
+            return "np.ndarray"  # TODO add dtype
+
+        # check slot implements
+
+        # TODO replace entire generated class with an xarray
 
         # Inline the class itself only if the class is defined as inline, or if the class has no
         # identifier slot and also isn't a mixin.

@@ -150,7 +150,7 @@ slots:
     multivalued: true
     any_of:
       - range: A
-      - range: B        
+      - range: B
         """
         gen = PydanticGenerator(schema_str, package=PACKAGE)
         code = gen.serialize()
@@ -239,7 +239,7 @@ classes:
         ifabsent: int(10)
       attr2:
         range: string
-        ifabsent: string(hello world) 
+        ifabsent: string(hello world)
       attr3:
         range: boolean
         ifabsent: True
@@ -270,6 +270,105 @@ classes:
         assert date_slot_line == 'attr5: Optional[date] = Field(datetime.date(2020, 01, 01))'
         datetime_slot_line = lines[ix + 9].strip()
         assert datetime_slot_line == 'attr6: Optional[datetime ] = Field(datetime.datetime(2020, 01, 01, 00, 00, 00))'
+
+    def test_pydantic_arrays(self):
+
+        unit_test_schema = """
+id: https://example.org/arrays
+name: arrays-example
+prefixes:
+  linkml: https://w3id.org/linkml/
+  wgs84: http://www.w3.org/2003/01/geo/wgs84_pos#
+  example: https://example.org/
+default_prefix: example
+imports:
+  - linkml:types
+
+classes:
+  TemperatureMatrix:
+    tree_root: true
+    implements:
+      - linkml:ThreeDimensionalArray
+      - linkml:ColumnOrderedArray
+    attributes:
+      x:
+        implements:
+          - linkml:axis0
+        range: LatitudeSeries
+      y:
+        implements:
+          - linkml:axis1
+        range: LongitudeSeries
+      time:
+        implements:
+          - linkml:axis2
+        range: DaySeries
+      temperatures:
+        implements:
+          - linkml:elements
+        multivalued: true
+        range: float
+        required: true
+        unit:
+          ucum_code: K
+
+  LatitudeSeries:
+    description: A series whose values represent latitude
+    implements:
+      - linkml:OneDimensionalSeries
+    attributes:
+      values:
+        range: float
+        multivalued: true
+        implements:
+          - linkml:elements
+        unit:
+          ucum_code: deg
+
+  LongitudeSeries:
+    description: A series whose values represent longitude
+    implements:
+      - linkml:OneDimensionalSeries
+    attributes:
+      values:
+        range: float
+        multivalued: true
+        implements:
+          - linkml:elements
+        unit:
+          ucum_code: deg
+
+  DaySeries:
+    description: A series whose values represent the days since the start of the measurement period
+    implements:
+      - linkml:OneDimensionalSeries
+    attributes:
+      values:
+        range: float
+        multivalued: true
+        implements:
+          - linkml:elements
+        unit:
+          ucum_code: a
+"""
+
+        sv = SchemaView(unit_test_schema)
+        gen = PydanticGenerator(schema=unit_test_schema)
+
+        # TODO write test
+        print(gen.serialize())
+        # enums = gen.generate_enums(sv.all_enums())
+        # assert enums
+        # enum = enums["TestEnum"]
+        # assert enum
+        # assert enum["values"]["number_123"] == "123"
+        # assert enum["values"]["PLUS_SIGN"] == "+"
+        # assert (
+        #     enum["values"]["This_AMPERSAND_that_plus_maybe_a_TOP_HAT"]
+        #     == "This & that, plus maybe a 🎩"
+        # )
+        # assert enum["values"]["Ohio"] == "Ohio"
+
 
 if __name__ == "__main__":
     unittest.main()
