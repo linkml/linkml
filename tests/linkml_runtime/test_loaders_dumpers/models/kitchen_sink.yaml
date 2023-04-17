@@ -256,7 +256,6 @@ classes:
         multivalued: true
       code systems:
         range: CodeSystem
-        inlined_as_list: true
         inlined: true
         multivalued: true
     slots:
