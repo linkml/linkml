@@ -176,16 +176,24 @@ classes:
       - ended at time
       - related to
       - type
+      - cordialness
+    slot_usage:
+      cordialness:
+        range: CordialnessEnum
 
   FamilialRelationship:
     rank: 5
     is_a: Relationship
+    slots:
+      - cordialness
     slot_usage:
       type:
         range: FamilialRelationshipType
         required: true
       related to:
         range: Person
+        required: true
+      cordialness:
         required: true
 
   BirthEvent:
@@ -374,6 +382,7 @@ slots:
     mixin: true
   life_status:
     range: LifeStatusEnum
+  cordialness:
     
 
 enums:
@@ -412,3 +421,11 @@ enums:
       LIVING:
       DEAD:
       UNKNOWN:
+  CordialnessEnum:
+    permissible_values:
+      HEARTFELT:
+        description: warm and hearty friendliness
+      HATEFUL:
+        description: spiteful
+      INDIFFERENT:
+        description: not overly friendly nor obnoxiously spiteful
