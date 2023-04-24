@@ -38,13 +38,6 @@ import (
 )
 
 {%- for c in view.all_classes().values() -%}
-{%- set cref = gen.classref(c) -%}
-{% if cref -%}
-export type {{cref}} = string
-{% endif -%}
-{%- endfor -%}
-
-{% for c in view.all_classes().values() -%}
 {%- if c.description -%}
 /*
  * {{c.description}}
@@ -52,22 +45,23 @@ export type {{cref}} = string
 {%- endif -%}
 {% set parents = gen.parents(c) %}
 type {{gen.name(c)}} struct {
-    {% if parents %}
-    // parent types
-    {% for p in parents %}
-    {{p}}
-    {% endfor %}
-    {% endif %}
+    {%- if parents %}
+	// parent types
+    {%- for p in parents %}
+	{{p}}
+    {%- endfor %}
+    {%- endif -%}
     {%- for sn in view.class_slots(c.name, direct=False) %}
-    {% set s = view.induced_slot(sn, c.name) %}
-    {%- if s.description -%}
-    /*
-     * {{s.description}}
-     */
-     {%- endif -%}
-    {{gen.name(s)}} {{gen.range(s)}}
+    {%- set s = view.induced_slot(sn, c.name) -%}
+    {%- if s.description %}
+	/*
+	 * {{s.description}}
+	 */
+    {%- endif %}
+	{{gen.name(s)}} {{gen.range(s)}} `json:"{{gen.name(s)}}"`
     {%- endfor %}
 }
+
 {% endfor %}
 """
 
@@ -147,9 +141,9 @@ class GolangGenerator(Generator):
             if slot.multivalued:
                 if not id_slot or slot.inlined:
                     if slot.inlined_as_list or not id_slot:
-                        return f"{rc_name}[]"
+                        return f"[]{rc_name}"
                     else:
-                        return f"{{[index: {rc_ref}]: {rc_name} }}"
+                        return f"[]{rc_name}"
                 else:
                     return f"{rc_ref}[]"
             else:
@@ -180,7 +174,8 @@ class GolangGenerator(Generator):
 def cli(yamlfile, **args):
     """Generate Golang types
 
-    See https://linkml.io/linkml-runtime.js
+    This very simple generator produces a Golang package named after the given
+    schema with structs that implement the classes in that schema.
     """
     gen = GolangGenerator(yamlfile, **args)
     print(gen.serialize())
