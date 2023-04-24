@@ -21,7 +21,7 @@ class GolangGeneratorTestCase(unittest.TestCase):
         assert "package kitchen_sink" in tss
         assert_in("type Person struct {")
         assert_in("HasFamilialRelationships []FamilialRelationship")
-        #assert_in("code_systems?: {[index: CodeSystemId]: CodeSystem }")
+        assert_in("CodeSystems []CodeSystem")
 
 
 if __name__ == "__main__":
