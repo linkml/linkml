@@ -366,6 +366,19 @@ class DocGeneratorTestCase(unittest.TestCase):
         )
 
 
+        # test that slots modifying classes are being rendered
+        assert_mdfile_contains(
+            "type.md", "[FamilialRelationship](FamilialRelationship.md) |  |  yes  |", after="## Applicable Classes",
+            followed_by=["## Properties",
+                        "* Range"],
+        )
+
+        assert_mdfile_contains(
+            "type.md", "[EmploymentEvent](EmploymentEvent.md) |  |  yes  |", after="## Applicable Classes",
+            followed_by=["## Properties",
+                        "* Range"],
+        )
+
     def test_docgen_rank_ordering(self):
         """Tests overriding default order"""
         gen = DocGenerator(SCHEMA, mergeimports=True, no_types_dir=True, sort_by="rank")
