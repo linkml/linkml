@@ -30,14 +30,25 @@ type_map = {
     "XSDDate": "time.Date",
 }
 
-default_template = """
-package {{view.schema.name}}
+default_template = """package {{view.schema.name}}
 
+{% for c in view.all_classes().values() -%}
+    {%- for sn in view.class_slots(c.name, direct=False) %}
+        {%- set s = view.induced_slot(sn, c.name) -%}
+        {%- if "time." in gen.range(s) -%}
+            {%- set usesTime = True %}
+        {%- else -%}
+            {%- set usesTime = False %}
+        {%- endif -%}
+    {%- endfor -%}
+{%- endfor -%}
+{%- if usesTime -%}
 import (
     "time" // for time.Date
 )
+{%- endif -%}
 
-{%- for c in view.all_classes().values() -%}
+{% for c in view.all_classes().values() -%}
 {%- if c.description -%}
 /*
  * {{c.description}}
@@ -46,7 +57,9 @@ import (
 {% set parents = gen.parents(c) %}
 type {{gen.name(c)}} struct {
     {%- if parents %}
-	// parent types
+	/*
+	 * parent types
+	 */
     {%- for p in parents %}
 	{{p}}
     {%- endfor %}
