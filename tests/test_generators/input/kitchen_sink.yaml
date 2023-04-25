@@ -423,9 +423,9 @@ enums:
       UNKNOWN:
   CordialnessEnum:
     permissible_values:
-      HEARTFELT:
+      heartfelt:
         description: warm and hearty friendliness
-      HATEFUL:
+      hateful:
         description: spiteful
-      INDIFFERENT:
+      indifferent:
         description: not overly friendly nor obnoxiously spiteful
