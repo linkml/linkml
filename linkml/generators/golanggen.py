@@ -16,7 +16,7 @@ from linkml_runtime.linkml_model.meta import (Annotation, ClassDefinition,
                                               SlotDefinition,
                                               SlotDefinitionName,
                                               TypeDefinition)
-from linkml_runtime.utils.formatutils import camelcase
+from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.schemaview import SchemaView
 
 from linkml._version import __version__
@@ -77,7 +77,7 @@ type {{gen.name(c)}} struct {
 	 * {{s.description}}
 	 */
     {%- endif %}
-	{{gen.name(s)}} {{gen.range(s)}} `json:"{{gen.name(s)}}"`
+	{{gen.name(s)}} {{gen.range(s)}} `json:"{{gen.json_name(s)}}"`
     {%- endfor %}
 }
 
@@ -119,6 +119,18 @@ class GolangGenerator(Generator):
         if isinstance(element, SlotDefinition) and element.alias:
             alias = element.alias
         return camelcase(alias)
+
+    def json_name(self, element: Element) -> str:
+        """
+        Returns the name of the element in its JSON (snake-case) form
+
+        :param element:
+        :return:
+        """
+        alias = element.name
+        if isinstance(element, SlotDefinition) and element.alias:
+            alias = element.alias
+        return underscore(alias)
 
     def classref(self, cls: ClassDefinition) -> Optional[str]:
         """
