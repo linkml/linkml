@@ -11,6 +11,7 @@ persons:
     has_familial_relationships:
       - related_to: P:001
         type: SIBLING_OF
+        cordialness: heartfelt
     has_medical_history:
       - started_at_time: 2019-01-01
         in_location: GEO:1234

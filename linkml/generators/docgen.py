@@ -791,7 +791,7 @@ class DocGenerator(Generator):
         :param cls: class for which we want to determine the attributes
         :return: list of all own attributes of a class
         """
-        return [self.inject_slot_info(self.schemaview.induced_slot(sn)) for sn in self.get_direct_slot_names(cls)]
+        return [self.inject_slot_info(self.schemaview.induced_slot(sn, cls.name)) for sn in self.get_direct_slot_names(cls)]
 
     def get_indirect_slots(self, cls: ClassDefinition) -> List[SlotDefinition]:
         """Fetch list of all inherited attributes of a class, i.e., 
