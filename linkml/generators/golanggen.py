@@ -30,7 +30,13 @@ type_map = {
     "XSDDate": "time.Date",
 }
 
-default_template = """package {{view.schema.name}}
+default_template = """
+{%- if '_' in view.schema.name -%}
+    {%- set package_name = view.schema.name[:view.schema.name.find('_')] -%}
+{%- else -%}
+    {%- set package_name = view.schema.name -%}
+{%- endif -%}
+package {{package_name}}
 
 {% for c in view.all_classes().values() -%}
     {%- for sn in view.class_slots(c.name, direct=False) %}
