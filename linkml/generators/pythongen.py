@@ -4,21 +4,30 @@ import os
 import re
 from dataclasses import dataclass, field
 from types import ModuleType
-from typing import (Callable, Dict, Iterator, List, Optional, Set, TextIO,
-                    Tuple, Union)
+from typing import Callable, Dict, Iterator, List, Optional, Set, Tuple, Union
 
 import click
 from linkml_runtime.linkml_model import linkml_files
-from linkml_runtime.linkml_model.meta import (ClassDefinition,
-                                              ClassDefinitionName, Definition,
-                                              DefinitionName, Element,
-                                              EnumDefinition, PermissibleValue,
-                                              SchemaDefinition, SlotDefinition,
-                                              SlotDefinitionName,
-                                              TypeDefinition)
+from linkml_runtime.linkml_model.meta import (
+    ClassDefinition,
+    ClassDefinitionName,
+    DefinitionName,
+    Element,
+    EnumDefinition,
+    PermissibleValue,
+    SlotDefinition,
+    SlotDefinitionName,
+    TypeDefinition,
+)
 from linkml_runtime.utils.compile_python import compile_python
-from linkml_runtime.utils.formatutils import (be, camelcase, sfx, split_line,
-                                              underscore, wrapped_annotation)
+from linkml_runtime.utils.formatutils import (
+    be,
+    camelcase,
+    sfx,
+    underscore,
+    wrapped_annotation,
+    split_col,
+)
 from linkml_runtime.utils.metamodelcore import builtinnames
 from rdflib import URIRef
 
@@ -26,9 +35,11 @@ import linkml
 from linkml._version import __version__
 from linkml.generators import PYTHON_GEN_VERSION
 from linkml.utils.generator import Generator, shared_arguments
-from linkml.utils.ifabsent_functions import (default_curie_or_uri,
-                                             ifabsent_postinit_declaration,
-                                             ifabsent_value_declaration)
+from linkml.utils.ifabsent_functions import (
+    default_curie_or_uri,
+    ifabsent_postinit_declaration,
+    ifabsent_value_declaration,
+)
 
 
 @dataclass
@@ -59,7 +70,7 @@ class PythonGenerator(Generator):
             self.format = self.valid_formats[0]
         if self.schema.default_prefix == "linkml" and not self.genmeta:
             logging.error(
-                f"Generating metamodel without --genmeta is highly inadvised!"
+                f"Generating metamodel without --genmeta is highly inadvisable!"
             )
         if (
             not self.schema.source_file
@@ -127,9 +138,11 @@ class PythonGenerator(Generator):
         handlerimport = (
             "from linkml_runtime.utils.enumerations import EnumDefinitionImpl"
         )
-        split_descripton = "\n#              ".join(
-            split_line(be(self.schema.description), split_len=100)
-        )
+        split_description = ""
+        if self.schema.description:
+            split_description = "\n#   ".join(
+                d for d in self.schema.description.split("\n") if d is not None
+            )
         head = (
             f"""# Auto generated from {self.schema.source_file} by {self.generatorname} version: {self.generatorversion}
 # Generation date: {self.schema.generation_date}
@@ -141,11 +154,10 @@ class PythonGenerator(Generator):
 
         return f"""{head}
 # id: {self.schema.id}
-# description: {split_descripton}
+# description: {split_description}
 # license: {be(self.schema.license)}
 
 import dataclasses
-import sys
 import re
 from jsonasobj2 import JsonObj, as_dict
 from typing import Optional, List, Union, Dict, ClassVar, Any
@@ -362,10 +374,14 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
     def gen_typedefs(self) -> str:
         """Generate python type declarations for all defined types"""
         rval = []
-        defs_to_generate = [x for x in self.schema.types.values() if not x.imported_from]
+        defs_to_generate = [
+            x for x in self.schema.types.values() if not x.imported_from
+        ]
         emitted_types = []
         ## all imported_from types are already considered generated
-        emitted_types.extend([x.name for x in self.schema.types.values() if x.imported_from])
+        emitted_types.extend(
+            [x.name for x in self.schema.types.values() if x.imported_from]
+        )
         for typ in [x for x in defs_to_generate if not x.typeof]:
             typname = camelcase(typ.name)
             desc = f'\n\t""" {typ.description} """' if typ.description else ""
@@ -376,12 +392,18 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
             emitted_types.append(typ.name)
 
         while True:
-            defs_to_generate_typeof = [x for x in defs_to_generate if x.typeof and not x.name in emitted_types]
+            defs_to_generate_typeof = [
+                x for x in defs_to_generate if x.typeof and not x.name in emitted_types
+            ]
             if len(defs_to_generate_typeof) == 0:
                 break
-            defs_can_generate = [x for x in defs_to_generate_typeof if x.typeof in emitted_types ]
+            defs_can_generate = [
+                x for x in defs_to_generate_typeof if x.typeof in emitted_types
+            ]
             if len(defs_can_generate) == 0:
-                raise ValueError(f"Can not generate type definition for {[f'{x.name} of {x.typeof}' for x in defs_to_generate_typeof]}. Forgot a link in the type hierarchy chain ?")
+                raise ValueError(
+                    f"Cannot generate type definition for {[f'{x.name} of {x.typeof}' for x in defs_to_generate_typeof]}. Forgot a link in the type hierarchy chain?"
+                )
             for typ in defs_can_generate:
                 typname = camelcase(typ.name)
                 desc = f'\n\t""" {typ.description} """' if typ.description else ""
@@ -939,7 +961,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
 
     def forward_reference(self, slot_range: str, owning_class: str) -> bool:
         """Determine whether slot_range is a forward reference"""
-        #logging.info(f"CHECKING: {slot_range} {owning_class}")
+        # logging.info(f"CHECKING: {slot_range} {owning_class}")
         if (
             slot_range in self.schema.classes
             and self.schema.classes[slot_range].imported_from
@@ -947,16 +969,22 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
             slot_range in self.schema.enums
             and self.schema.enums[slot_range].imported_from
         ):
-            logging.info(f"FALSE: FORWARD: {slot_range} {owning_class} // IMP={self.schema.classes[slot_range].imported_from}")
+            logging.info(
+                f"FALSE: FORWARD: {slot_range} {owning_class} // IMP={self.schema.classes[slot_range].imported_from}"
+            )
             return False
         if slot_range in self.schema.enums:
             return True
         for cname in self.schema.classes:
             if cname == owning_class:
-                logging.info(f"TRUE: OCCURS SAME: {cname} == {slot_range} owning: {owning_class}")
+                logging.info(
+                    f"TRUE: OCCURS SAME: {cname} == {slot_range} owning: {owning_class}"
+                )
                 return True  # Occurs on or after
             elif cname == slot_range:
-                logging.info(f"FALSE: OCCURS BEFORE: {cname} == {slot_range} owning: {owning_class}")
+                logging.info(
+                    f"FALSE: OCCURS BEFORE: {cname} == {slot_range} owning: {owning_class}"
+                )
                 return False  # Occurs before
         return True
 
@@ -1060,31 +1088,16 @@ class {enum_name}(EnumDefinitionImpl):
     {self.gen_pvs(enum)}
 
     {self.gen_enum_definition(enum, enum_name)}
-    {self.gen_pvs2(enum)}
+    {self.gen_pvs_as_setattrs(enum)}
 """.strip()
-
-    def gen_pvs(self, enum: EnumDefinition) -> str:
-        """
-        Generate the python compliant permissible value initializers as a set of class variables
-        @param enum:
-        @return:
-        """
-        init_list = []
-        for pv in enum.permissible_values.values():
-            if str.isidentifier(pv.text) and not keyword.iskeyword(pv.text):
-                l1 = f"{pv.text} = "
-                l1len = len(l1)
-                l2ton = "\n" + l1len * " "
-                init_list.append(l1 + (l2ton.join(self.gen_pv_constructor(pv, l1len))))
-        return "\n\t".join(init_list).strip()
 
     def gen_enum_definition(self, enum: EnumDefinition, enum_name: str) -> str:
         enum_desc = (
-            enum.description.replace('"', '\\"').replace(r"\n", r"\\n")
+            self.process_multiline_string(enum.description, "\t\tdescription=")
             if enum.description
             else None
         )
-        desc = f'\t\tdescription="{enum_desc}",\n' if enum.description else ""
+        desc = f"{enum_desc},\n" if enum.description else ""
         cs = (
             f"\t\tcode_set={self.namespaces.curie_for(self.namespaces.uri_for(enum.code_set), default_ok=False, pythonform=True)},\n"
             if enum.code_set
@@ -1104,7 +1117,20 @@ class {enum_name}(EnumDefinitionImpl):
 
         return f"""_defn = EnumDefinition(\n\t\tname="{enum_name}",\n{desc}{cs}{tag}{ver}{vf}\t)"""
 
-    def gen_pvs2(self, enum: EnumDefinition) -> str:
+    def gen_pvs(self, enum: EnumDefinition) -> str:
+        """
+        Generate the python compliant permissible value initializers as a set of class variables
+        @param enum:
+        @return:
+        """
+        init_list = []
+        for pv in enum.permissible_values.values():
+            if str.isidentifier(pv.text) and not keyword.iskeyword(pv.text):
+                init_list.append(f"{pv.text} = " + self.gen_pv_constructor(pv, 4))
+
+        return "\n\t".join(init_list).strip()
+
+    def gen_pvs_as_setattrs(self, enum: EnumDefinition) -> str:
         """
         Generate the non-python compliant permissible value initializers as a set of setattr instructions
         @param enum:
@@ -1114,25 +1140,29 @@ class {enum_name}(EnumDefinitionImpl):
             not str.isidentifier(pv.text) or keyword.iskeyword(pv.text)
             for pv in enum.permissible_values.values()
         ):
+            init_list = []
+            for pv in enum.permissible_values.values():
+                if not str.isidentifier(pv.text) or keyword.iskeyword(pv.text):
+                    # first line is "        setattr("
+                    indent = 12
+                    indent_str = indent * " "
+                    pv_text = pv.text.replace('"', '\\"').replace(r"\n", r"\\n")
+                    pv_parts = self.gen_pv_constructor(pv, indent)
+                    init_list.append(
+                        f'        setattr(cls, "{pv_text}",\n{indent_str}{pv_parts})'
+                    )
+
+            add_vals_text = "\n".join(init_list).rstrip()
+
             return f"""
     @classmethod
     def _addvals(cls):
-        {self.gen_pvs2_initializers(enum)}"""
-        else:
-            return ""
+{add_vals_text}
+"""
 
-    def gen_pvs2_initializers(self, enum: EnumDefinition) -> str:
-        init_list = []
-        for pv in enum.permissible_values.values():
-            if not str.isidentifier(pv.text) or keyword.iskeyword(pv.text):
-                l1 = "        setattr("
-                l2ton = len(l1) * " "
-                pv_cons = "\n".join(self.gen_pv_constructor(pv, len(l1)))
-                pv_text = pv.text.replace('"', '\\"').replace(r"\n", r"\\n")
-                init_list.append(f'{l1}cls, "{pv_text}",\n{l2ton}{pv_cons} )')
-        return "\n".join(init_list).strip()
+        return ""
 
-    def gen_pv_constructor(self, pv: PermissibleValue, indent: int) -> List[str]:
+    def gen_pv_constructor(self, pv: PermissibleValue, indent: int) -> str:
         """
         Generate a permissible value constructor
         @param pv: Value to be constructed
@@ -1142,19 +1172,39 @@ class {enum_name}(EnumDefinitionImpl):
         # PermissibleValue(text="CODE",
         #                  description="...",
         #                  meaning="...")
-        constructor = "PermissibleValue("
-        indent = (len(constructor) + indent) * " "
-        c1 = "," if pv.description or pv.meaning else ")"
-        rval = [f'{constructor}text="{pv.text}"{c1}']
+        constructor = "PermissibleValue"
+        pv_text = pv.text.replace('"', '\\"')
+
+        if not pv.description and not pv.meaning:
+            return f'{constructor}(text="{pv_text}")'
+
+        indent_str = (4 + indent) * " "
+        pv_attrs = [f'{indent_str}text="{pv_text}"']
         if pv.description:
-            c2 = "," if pv.meaning else ")"
-            rval.append(f'{indent}description="{pv.description}"{c2}')
+            pv_attrs.append(
+                f'{self.process_multiline_string(pv.description, f"{indent_str}description=")}'
+            )
         if pv.meaning:
             pv_meaning = self.namespaces.curie_for(
                 self.namespaces.uri_for(pv.meaning), default_ok=False, pythonform=True
             )
-            rval.append(f"{indent}meaning={pv_meaning})")
-        return rval
+            pv_attrs.append(f"{indent_str}meaning={pv_meaning}")
+
+        return "PermissibleValue(\n" + ",\n".join(pv_attrs) + ")"
+
+    def process_multiline_string(self, input: str, prefix_string: str) -> str:
+        """
+        Process a (potentially multi-line) string, preserving existing formatting
+
+        @param input: input string to be formatted
+        @param prefix_string: the text to prefix the first line of the output
+        @return: formatted string
+        """
+        string = input.rstrip().replace('"', '\\"')
+        if len(prefix_string + string) < split_col and input.find("\n") == -1:
+            return f'{prefix_string}"{string}"'
+
+        return f'{prefix_string}"""{string}"""'
 
 
 @shared_arguments(PythonGenerator)
@@ -1187,22 +1237,28 @@ class {enum_name}(EnumDefinitionImpl):
     help="Validate generated code by compiling it",
 )
 @click.version_option(__version__, "-V", "--version")
-def cli(yamlfile, head=True, genmeta=False, classvars=True, slots=True, validate=False, **args):
+def cli(
+    yamlfile,
+    head=True,
+    genmeta=False,
+    classvars=True,
+    slots=True,
+    validate=False,
+    **args,
+):
     """Generate python classes to represent a LinkML model"""
     gen = PythonGenerator(
-            yamlfile,
-            emit_metadata=head,
-            genmeta=genmeta,
-            gen_classvars=classvars,
-            gen_slots=slots,
-            **args,
-        )
+        yamlfile,
+        emit_metadata=head,
+        genmeta=genmeta,
+        gen_classvars=classvars,
+        gen_slots=slots,
+        **args,
+    )
     if validate:
         mod = gen.compile_module()
         logging.info(f"Module {mod} compiled successfully")
-    print(
-        gen.serialize(emit_metadata=head, **args)
-    )
+    print(gen.serialize(emit_metadata=head, **args))
 
 
 if __name__ == "__main__":
