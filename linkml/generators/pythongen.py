@@ -371,17 +371,6 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
         for typ in [x for x in defs_to_generate if not x.typeof]:
             self._gen_typedef(typ, typ.base.rsplit(".")[-1], rval, emitted_types)
 
-            # typname = camelcase(typ.name)
-            # desc = ""
-            # if typ.description:
-            #     description = typ.description.replace('"""', '---')
-            #     desc = f'\n\t""" {description} """'
-            # base_base = typ.base.rsplit(".")[-1]
-            # rval.append(
-            #     f"class {typname}({base_base}):{desc}\n\t{self.gen_type_meta(typ)}\n\n"
-            # )
-            # emitted_types.append(typ.name)
-
         while True:
             defs_to_generate_typeof = [
                 x for x in defs_to_generate if x.typeof and not x.name in emitted_types
@@ -397,12 +386,6 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
                 )
             for typ in defs_can_generate:
                 self._gen_typedef(typ, camelcase(typ.typeof), rval, emitted_types)
-                # typname = camelcase(typ.name)
-                # desc = f'\n\t""" {typ.description} """' if typ.description else ""
-                # rval.append(
-                #     f"class {typname}({parent_typename}):{desc}\n\t{self.gen_type_meta(typ)}\n\n"
-                # )
-                # emitted_types.append(typ.name)
 
         return "\n".join(rval)
 
@@ -1140,6 +1123,15 @@ class {enum_name}(EnumDefinitionImpl):
     def gen_pvs_as_setattrs(self, enum: EnumDefinition) -> str:
         """
         Generate the non-python compliant permissible value initializers as a set of setattr instructions
+        in the form
+
+        @classmethod
+        def _addvals(cls):
+            setattr(cls, "NAME",
+                PermissibleValue(
+                    text="NAME",
+                    description="description here"))
+
         @param enum: EnumDefinition object to be converted into code
         @return: string containing the enum declaration
         """
@@ -1171,16 +1163,18 @@ class {enum_name}(EnumDefinitionImpl):
 
     def gen_pv_constructor(self, pv: PermissibleValue, indent: int) -> str:
         """
-        Generate a permissible value constructor
+        Generate a permissible value constructor in the form
+
+        PermissibleValue(text="NAME_ONLY")
+        PermissibleValue(
+            text="CODE",
+            description="...",
+            meaning="...")
+
         @param pv: Value to be constructed
         @param indent: number of additional spaces to add on successive lines
         @return: Permissible value constructor
         """
-        # PermissibleValue(text="NAME_ONLY")
-        # PermissibleValue(
-        #     text="CODE",
-        #     description="...",
-        #     meaning="...")
         constructor = "PermissibleValue"
         pv_text = pv.text.replace('"', '\\"')
 
