@@ -80,7 +80,10 @@ class PythonGenTestCase(unittest.TestCase):
     def test_multiline_stuff(self):
         multi_line_module = make_python(MLM_SCHEMA, MLM_PYTHON, True)
 
-        assert multi_line_module.EmploymentEventType.PROMOTION.description == 'This refers to some sort of promotion event.")\n\n\nimport os\nprint(\'DELETING ALL YOUR STUFF. HA HA HA.\')'
+        assert (
+            multi_line_module.EmploymentEventType.PROMOTION.description
+            == "This refers to some sort of promotion event.\")\n\n\nimport os\nprint('DELETING ALL YOUR STUFF. HA HA HA.')"
+        )
 
 
 if __name__ == "__main__":

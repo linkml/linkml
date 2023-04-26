@@ -8,26 +8,16 @@ from typing import Callable, Dict, Iterator, List, Optional, Set, Tuple, Union
 
 import click
 from linkml_runtime.linkml_model import linkml_files
-from linkml_runtime.linkml_model.meta import (
-    ClassDefinition,
-    ClassDefinitionName,
-    DefinitionName,
-    Element,
-    EnumDefinition,
-    PermissibleValue,
-    SlotDefinition,
-    SlotDefinitionName,
-    TypeDefinition,
-)
+from linkml_runtime.linkml_model.meta import (ClassDefinition,
+                                              ClassDefinitionName,
+                                              DefinitionName, Element,
+                                              EnumDefinition, PermissibleValue,
+                                              SlotDefinition,
+                                              SlotDefinitionName,
+                                              TypeDefinition)
 from linkml_runtime.utils.compile_python import compile_python
-from linkml_runtime.utils.formatutils import (
-    be,
-    camelcase,
-    sfx,
-    underscore,
-    wrapped_annotation,
-    split_col,
-)
+from linkml_runtime.utils.formatutils import (be, camelcase, sfx, split_col,
+                                              underscore, wrapped_annotation)
 from linkml_runtime.utils.metamodelcore import builtinnames
 from rdflib import URIRef
 
@@ -35,11 +25,9 @@ import linkml
 from linkml._version import __version__
 from linkml.generators import PYTHON_GEN_VERSION
 from linkml.utils.generator import Generator, shared_arguments
-from linkml.utils.ifabsent_functions import (
-    default_curie_or_uri,
-    ifabsent_postinit_declaration,
-    ifabsent_value_declaration,
-)
+from linkml.utils.ifabsent_functions import (default_curie_or_uri,
+                                             ifabsent_postinit_declaration,
+                                             ifabsent_value_declaration)
 
 
 @dataclass
@@ -422,7 +410,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
         typname = camelcase(typ.name)
         desc = ""
         if typ.description:
-            description = typ.description.replace('"""', '---')
+            description = typ.description.replace('"""', "---")
             desc = f'\n\t""" {description} """'
         rval.append(
             f"class {typname}({superclass}):{desc}\n\t{self.gen_type_meta(typ)}\n\n"

@@ -11,6 +11,7 @@ from tests.test_generators.environment import env
 from tests.test_generators.test_pythongen import make_python
 
 SCHEMA = env.input_path("kitchen_sink.yaml")
+PYTHON = env.expected_path("kitchen_sink.py")
 DATA = env.input_path("kitchen_sink_inst_01.yaml")
 SHEXLOG = env.expected_path("shexgen_log.txt")
 
@@ -22,11 +23,13 @@ class ShExTestCase(unittest.TestCase):
 
     def test_shex(self):
         """tests generation of shex and subsequent evaluation"""
-        kitchen_module = make_python(False)
+        kitchen_module = make_python(SCHEMA, PYTHON, False)
         inst = yaml_loader.load(DATA, target_class=kitchen_module.Dataset)
         shexstr = ShExGenerator(SCHEMA, mergeimports=True).serialize(collections=False)
         self.assertIn("<Person> CLOSED {", shexstr)
-        self.assertIn("<has_familial_relationships> @<FamilialRelationship> * ;", shexstr)
+        self.assertIn(
+            "<has_familial_relationships> @<FamilialRelationship> * ;", shexstr
+        )
         # validation
         # TODO: provide starting shape
         ctxt = ContextGenerator(SCHEMA, mergeimports=True).serialize()
@@ -44,7 +47,7 @@ class ShExTestCase(unittest.TestCase):
                 raise e
             # print(g)
             nodes = set()
-            for (s, p, o) in g.triples((None, None, None)):
+            for s, p, o in g.triples((None, None, None)):
                 # print(f'{s} {p} {o}')
                 nodes.add(s)
             for node in nodes:
