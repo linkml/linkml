@@ -1,20 +1,12 @@
-id: https://w3id.org/linkml/tests/kitchen_sink
-name: kitchen_sink
-title: Kitchen Sink Schema
+id: https://w3id.org/linkml/tests/kitchen_sink_mlm
+name: kitchen_sink_mlm
+title: Kitchen Sink MLM Schema
 description: |-
-  Kitchen Sink Schema
+  Kitchen Sink MLM Schema
 
-  This schema does not do anything useful. It exists to test all features of linkml.
-
-  This particular text field exists to demonstrate markdown within a text field:
-
-  Lists:
-
-     * a
-     * b
-     * c
-
-  And links, e.g to [Person](Person.md)
+  This schema does not do anything useful. It contains multi-line markup
+  that could potentially allow the execution of code embedded in linkml
+  schemas.
 
 default_curi_maps:
   - semweb_context
@@ -23,7 +15,7 @@ imports:
 prefixes:
   linkml: https://w3id.org/linkml/
   bizcodes: https://example.org/bizcodes/
-  ks: https://w3id.org/linkml/tests/kitchen_sink/
+  ks: https://w3id.org/linkml/tests/kitchen_sink_mlm/
 default_prefix: ks
 default_range: string
 see_also:
