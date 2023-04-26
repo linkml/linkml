@@ -18,6 +18,9 @@ DATA_NORMALIZED = env.input_path("kitchen_sink_normalized_inst_01.yaml")
 PYDANTIC_OUT = env.expected_path("kitchen_sink_pydantic.py")
 PACKAGE = "kitchen_sink"
 
+MLM_SCHEMA = env.input_path("kitchen_sink_mlm.yaml")
+MLM_PYDANTIC = env.expected_path("kitchen_sink_mlm.pydantic.py")
+
 
 class PydanticGeneratorTestCase(unittest.TestCase):
     """
@@ -150,7 +153,7 @@ slots:
     multivalued: true
     any_of:
       - range: A
-      - range: B        
+      - range: B
         """
         gen = PydanticGenerator(schema_str, package=PACKAGE)
         code = gen.serialize()
@@ -239,7 +242,7 @@ classes:
         ifabsent: int(10)
       attr2:
         range: string
-        ifabsent: string(hello world) 
+        ifabsent: string(hello world)
       attr3:
         range: boolean
         ifabsent: True
@@ -270,6 +273,21 @@ classes:
         assert date_slot_line == 'attr5: Optional[date] = Field(datetime.date(2020, 01, 01))'
         datetime_slot_line = lines[ix + 9].strip()
         assert datetime_slot_line == 'attr6: Optional[datetime ] = Field(datetime.datetime(2020, 01, 01, 00, 00, 00))'
+
+
+    def test_multiline_module(self):
+        """
+        Ensure that multi-line enum descriptions and enums containing
+        reserved characters are handled correctly
+        """
+        gen = PydanticGenerator(MLM_SCHEMA, package=PACKAGE)
+        mlm = gen.serialize()
+        with open(MLM_PYDANTIC, "w") as stream:
+            stream.write(mlm)
+
+        assert gen.schema.enums['EmploymentEventType'].description == 'codes for different kinds of employment\nor HR related events\n"""\nprint(\'Deleting your stuff!!\')\n"""\nHR is pretty dull\nbut they get "annoyed if [they]\nare not included"\n'
+
+        assert 'INTERNAL "REORGANIZATION"' in gen.schema.enums['EmploymentEventType'].permissible_values
 
 if __name__ == "__main__":
     unittest.main()

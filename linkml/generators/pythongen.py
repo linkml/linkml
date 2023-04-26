@@ -313,8 +313,6 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
                             )
                 for slotname in cls.slots:
                     add_slot_range(self.schema.slots[slotname])
-                # for slotname in cls.slot_usage:
-                #     add_slot_range(self.schema.slots[slotname])
 
         return rval.values()
 
@@ -383,13 +381,18 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
             [x.name for x in self.schema.types.values() if x.imported_from]
         )
         for typ in [x for x in defs_to_generate if not x.typeof]:
-            typname = camelcase(typ.name)
-            desc = f'\n\t""" {typ.description} """' if typ.description else ""
-            base_base = typ.base.rsplit(".")[-1]
-            rval.append(
-                f"class {typname}({base_base}):{desc}\n\t{self.gen_type_meta(typ)}\n\n"
-            )
-            emitted_types.append(typ.name)
+            self._gen_typedef(typ, typ.base.rsplit(".")[-1], rval, emitted_types)
+
+            # typname = camelcase(typ.name)
+            # desc = ""
+            # if typ.description:
+            #     description = typ.description.replace('"""', '---')
+            #     desc = f'\n\t""" {description} """'
+            # base_base = typ.base.rsplit(".")[-1]
+            # rval.append(
+            #     f"class {typname}({base_base}):{desc}\n\t{self.gen_type_meta(typ)}\n\n"
+            # )
+            # emitted_types.append(typ.name)
 
         while True:
             defs_to_generate_typeof = [
@@ -405,14 +408,26 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
                     f"Cannot generate type definition for {[f'{x.name} of {x.typeof}' for x in defs_to_generate_typeof]}. Forgot a link in the type hierarchy chain?"
                 )
             for typ in defs_can_generate:
-                typname = camelcase(typ.name)
-                desc = f'\n\t""" {typ.description} """' if typ.description else ""
-                parent_typename = camelcase(typ.typeof)
-                rval.append(
-                    f"class {typname}({parent_typename}):{desc}\n\t{self.gen_type_meta(typ)}\n\n"
-                )
-                emitted_types.append(typ.name)
+                self._gen_typedef(typ, camelcase(typ.typeof), rval, emitted_types)
+                # typname = camelcase(typ.name)
+                # desc = f'\n\t""" {typ.description} """' if typ.description else ""
+                # rval.append(
+                #     f"class {typname}({parent_typename}):{desc}\n\t{self.gen_type_meta(typ)}\n\n"
+                # )
+                # emitted_types.append(typ.name)
+
         return "\n".join(rval)
+
+    def _gen_typedef(self, typ, superclass, rval, emitted_types):
+        typname = camelcase(typ.name)
+        desc = ""
+        if typ.description:
+            description = typ.description.replace('"""', '---')
+            desc = f'\n\t""" {description} """'
+        rval.append(
+            f"class {typname}({superclass}):{desc}\n\t{self.gen_type_meta(typ)}\n\n"
+        )
+        emitted_types.append(typ.name)
 
     def gen_classdefs(self) -> str:
         """Create class definitions for all non-mixin classes in the model
@@ -519,13 +534,13 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
             ns, ln = type_model_uri.split(":", 1)
             ln_suffix = f".{ln}" if ln.isidentifier() else f'["{ln}"]'
             type_model_uri = f"{ns.upper()}{ln_suffix}"
-        vars = [
+        type_meta = [
             f"type_class_uri = {type_class_uri}",
             f"type_class_curie = {type_class_curie}",
             f'type_name = "{typ.name}"',
             f"type_model_uri = {type_model_uri}",
         ]
-        return "\n\t".join(vars)
+        return "\n\t".join(type_meta)
 
     def gen_class_variables(self, cls: ClassDefinition) -> str:
         """
@@ -1069,6 +1084,11 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
         )
 
     def gen_enum(self, enum: EnumDefinition) -> str:
+        """
+        Generate an enum class
+        @param enum: EnumDefinition object to be converted into code
+        @return: python code string
+        """
         enum_name = camelcase(enum.name)
         return f"""
 class {enum_name}(EnumDefinitionImpl):
@@ -1077,11 +1097,10 @@ class {enum_name}(EnumDefinitionImpl):
 """.strip()
 
     def gen_enum_comment(self, enum: EnumDefinition) -> str:
-        return (
-            f'"""\n\t{wrapped_annotation(be(enum.description))}\n\t"""'
-            if be(enum.description)
-            else ""
-        )
+        if not be(enum.description):
+            return ""
+        desc_text = enum.description.replace('"""', "---")
+        return f'"""\n\t{wrapped_annotation(be(desc_text))}\n\t"""'
 
     def gen_enum_description(self, enum: EnumDefinition, enum_name: str) -> str:
         return f"""
@@ -1120,8 +1139,8 @@ class {enum_name}(EnumDefinitionImpl):
     def gen_pvs(self, enum: EnumDefinition) -> str:
         """
         Generate the python compliant permissible value initializers as a set of class variables
-        @param enum:
-        @return:
+        @param enum: EnumDefinition object to be converted into class variables
+        @return: string containing the enum declaration
         """
         init_list = []
         for pv in enum.permissible_values.values():
@@ -1133,8 +1152,8 @@ class {enum_name}(EnumDefinitionImpl):
     def gen_pvs_as_setattrs(self, enum: EnumDefinition) -> str:
         """
         Generate the non-python compliant permissible value initializers as a set of setattr instructions
-        @param enum:
-        @return:
+        @param enum: EnumDefinition object to be converted into code
+        @return: string containing the enum declaration
         """
         if any(
             not str.isidentifier(pv.text) or keyword.iskeyword(pv.text)
@@ -1169,9 +1188,11 @@ class {enum_name}(EnumDefinitionImpl):
         @param indent: number of additional spaces to add on successive lines
         @return: Permissible value constructor
         """
-        # PermissibleValue(text="CODE",
-        #                  description="...",
-        #                  meaning="...")
+        # PermissibleValue(text="NAME_ONLY")
+        # PermissibleValue(
+        #     text="CODE",
+        #     description="...",
+        #     meaning="...")
         constructor = "PermissibleValue"
         pv_text = pv.text.replace('"', '\\"')
 
