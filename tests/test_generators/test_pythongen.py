@@ -10,18 +10,20 @@ from tests.test_generators.environment import env
 
 SCHEMA = env.input_path("kitchen_sink.yaml")
 PYTHON = env.expected_path("kitchen_sink.py")
+MLM_SCHEMA = env.input_path("kitchen_sink_mlm.yaml")
+MLM_PYTHON = env.expected_path("kitchen_sink_mlm.py")
 DATA = env.input_path("kitchen_sink_inst_01.yaml")
 
 
-def make_python(save: Optional[bool] = False) -> ModuleType:
+def make_python(infile, outfile, save: Optional[bool] = False) -> ModuleType:
     """
     Note: if you change the yaml schema and associated test instance objects,
     you may need to run this test twice
     """
-    pstr = str(PythonGenerator(SCHEMA, mergeimports=True).serialize())
+    pstr = str(PythonGenerator(infile, mergeimports=True).serialize())
     kitchen_module = compile_python(pstr)
     if save:
-        with open(PYTHON, "w") as io:
+        with open(outfile, "w") as io:
             io.write(pstr)
     return kitchen_module
 
@@ -29,7 +31,7 @@ def make_python(save: Optional[bool] = False) -> ModuleType:
 class PythonGenTestCase(unittest.TestCase):
     def test_pythongen(self):
         """python"""
-        kitchen_module = make_python(True)
+        kitchen_module = make_python(SCHEMA, PYTHON, True)
         c = kitchen_module.Company("ROR:1")
         self.assertEqual("Company(id='ROR:1', name=None, aliases=[], ceo=None)", str(c))
         h = kitchen_module.EmploymentEvent(employed_at=c.id)
@@ -73,6 +75,14 @@ class PythonGenTestCase(unittest.TestCase):
         self.assertEqual(
             "MedicalEvent(started_at_time=None, ended_at_time=None, is_current=None, metadata=None, in_location='GEO:1234', diagnosis=DiagnosisConcept(id='CODE:D0001', name='headache', in_code_system=None), procedure=None)",
             str(event),
+        )
+
+    def test_multiline_stuff(self):
+        multi_line_module = make_python(MLM_SCHEMA, MLM_PYTHON, True)
+
+        assert (
+            multi_line_module.EmploymentEventType.PROMOTION.description
+            == "This refers to some sort of promotion event.\")\n\n\nimport os\nprint('DELETING ALL YOUR STUFF. HA HA HA.')"
         )
 
 
