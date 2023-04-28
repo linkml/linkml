@@ -344,8 +344,8 @@
 <span class="s2">                validate_all = True,</span>
 <span class="s2">                underscore_attrs_are_private = True,</span>
 <span class="s2">                extra = {</span><span class="si">% i</span><span class="s2">f allow_extra %}&#39;allow&#39;{</span><span class="si">% e</span><span class="s2">lse %}&#39;forbid&#39;{</span><span class="si">% e</span><span class="s2">ndif %},</span>
-<span class="s2">                arbitrary_types_allowed = True):</span>
-<span class="s2">    pass</span>
+<span class="s2">                arbitrary_types_allowed = True,</span>
+<span class="s2">                use_enum_values = True):</span>
 
 <span class="s2">{</span><span class="si">% f</span><span class="s2">or e in enums.values() %}</span>
 <span class="s2">class {{ e.name }}(str, Enum):</span>
