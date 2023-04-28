@@ -201,6 +201,11 @@ class JsonSchemaTestCase(unittest.TestCase):
                     schema, case["json_schema"], case.get("data_cases", [])
                 )
 
+    def test_rules_in_non_root_class(self):
+        """Tests that rules are applied to slots in non-root classes. """
+
+        self.externalFileTest("jsonschema_rules_in_non_root_class.yaml")
+
     def test_range_unions(self):
         """Tests various permutations of range unions.
 

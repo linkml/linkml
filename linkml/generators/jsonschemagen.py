@@ -241,12 +241,23 @@ class JsonSchemaGenerator(Generator):
                 rule_subschemas.append(inverse_subschema)
 
         if len(rule_subschemas) == 1:
-            self.top_level_schema.update(rule_subschemas[0])
+            class_subschema.update(rule_subschemas[0])
         elif len(rule_subschemas) > 1:
-            self.top_level_schema["allOf"] = rule_subschemas
+            if "allOf" not in class_subschema:
+                class_subschema["allOf"] = []
+            class_subschema["allOf"].extend(rule_subschemas)
 
         self.top_level_schema.add_def(cls.name, class_subschema)
 
+        if (
+            self.top_class is not None and camelcase(self.top_class) == camelcase(cls.name)
+        ) or (self.top_class is None and cls.tree_root):
+            for key, value in class_subschema.items():
+                # check this first to ensure we don't overwrite things like additionalProperties
+                # or description on the root. But we do want to copy over properties, required, 
+                # if, then, etc.
+                if key not in self.top_level_schema:
+                    self.top_level_schema[key] = value
 
     def get_subschema_for_anonymous_class(self, cls: AnonymousClassExpression, properties_required: bool = False) -> Union[None, JsonSchema]:
         if not cls:
@@ -419,11 +430,6 @@ class JsonSchemaGenerator(Generator):
         aliased_slot_name = self.aliased_slot_name(slot)
         prop = self.get_subschema_for_slot(slot)
         subschema.add_property(aliased_slot_name, prop, slot_is_required)
-
-        if (
-            self.top_class is not None and camelcase(self.top_class) == camelcase(cls.name)
-        ) or (self.top_class is None and cls.tree_root):
-            self.top_level_schema.add_property(aliased_slot_name, prop, slot_is_required)
 
     def serialize(self, **kwargs) -> str:
         self.start_schema()
