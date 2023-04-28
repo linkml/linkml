@@ -8,7 +8,7 @@ from typing import (Callable, Dict, Iterable, Iterator, List, Optional, Set,
                     TextIO, Tuple, TypeVar, Union)
 
 import click
-import pkg_resources
+import importlib.util
 from jinja2 import Environment, FileSystemLoader, Template
 from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.linkml_model.meta import (Annotation, ClassDefinition,
@@ -17,7 +17,7 @@ from linkml_runtime.linkml_model.meta import (Annotation, ClassDefinition,
                                               EnumDefinition, SchemaDefinition,
                                               SlotDefinition,
                                               SlotDefinitionName,
-                                              SubsetDefinition, TypeDefinition)
+                                              SubsetDefinition, TypeDefinition, TypeDefinitionName)
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.schemaview import SchemaView
 
@@ -142,7 +142,6 @@ class DocGenerator(Generator):
 
 
     def __post_init__(self):
-        self.schemaview = SchemaView(self.schema)
         dialect = self.dialect
         if dialect is not None:
             # TODO: simplify this
@@ -159,6 +158,7 @@ class DocGenerator(Generator):
         if self.example_directory:
             self.example_runner = ExampleRunner(input_directory=Path(self.example_directory))
         super().__post_init__()
+        self.schemaview = SchemaView(self.schema, merge_imports=self.mergeimports)
 
     def serialize(self, directory: str = None) -> None:
         """
@@ -297,7 +297,8 @@ class DocGenerator(Generator):
                         f"Could not find {base_file_name} in {self.template_directory} - falling back to default"
                     )
             if not folder:
-                folder = pkg_resources.resource_filename(__name__, "docgen")
+                package_dir = os.path.dirname(importlib.util.find_spec(__name__).origin)
+                folder = os.path.join(package_dir, "docgen", "")
             loader = FileSystemLoader(folder)
             env = Environment(loader=loader)
             customize_environment(env)
@@ -656,7 +657,7 @@ class DocGenerator(Generator):
         Ensures rank is non-null
         :return: iterator
         """
-        elts = self.schemaview.all_classes().values()
+        elts = self.schemaview.all_classes(imports=self.mergeimports).values()
         _ensure_ranked(elts)
         for e in elts:
             yield e
@@ -668,7 +669,7 @@ class DocGenerator(Generator):
         Ensures rank is non-null
         :return: iterator
         """
-        elts = self.schemaview.all_slots().values()
+        elts = self.schemaview.all_slots(imports=self.mergeimports).values()
         _ensure_ranked(elts)
         for e in elts:
             yield e
@@ -680,10 +681,13 @@ class DocGenerator(Generator):
         Ensures rank is non-null
         :return: iterator
         """
-        elts = self.schemaview.all_types().values()
+        elts = self.schemaview.all_types(imports=self.mergeimports).values()
         _ensure_ranked(elts)
         for e in elts:
             yield e
+
+    def all_type_object_names(self) -> List[TypeDefinitionName]:
+        return [t.name for t in list(self.all_type_objects())]
 
     def all_enum_objects(self) -> Iterator[EnumDefinition]:
         """
@@ -692,7 +696,7 @@ class DocGenerator(Generator):
         Ensures rank is non-null
         :return: iterator
         """
-        elts = self.schemaview.all_enums().values()
+        elts = self.schemaview.all_enums(imports=self.mergeimports).values()
         _ensure_ranked(elts)
         for e in elts:
             yield e
@@ -704,7 +708,7 @@ class DocGenerator(Generator):
         Ensures rank is non-null
         :return: iterator
         """
-        elts = self.schemaview.all_subsets().values()
+        elts = self.schemaview.all_subsets(imports=self.mergeimports).values()
         _ensure_ranked(elts)
         for e in elts:
             yield e
@@ -728,7 +732,7 @@ class DocGenerator(Generator):
         :return: tuples (depth: int, cls: ClassDefinitionName)
         """
         sv = self.schemaview
-        roots = sv.class_roots(mixins=False)
+        roots = sv.class_roots(mixins=False, imports=self.mergeimports)
 
         # by default the classes are sorted alphabetically
         roots = sorted(roots, key=str.casefold, reverse=True)
@@ -742,7 +746,7 @@ class DocGenerator(Generator):
             depth, class_name = stack.pop()
             yield depth, class_name
             children = sorted(
-                sv.class_children(class_name=class_name, mixins=False),
+                sv.class_children(class_name=class_name, mixins=False, imports=self.mergeimports),
                 key=str.casefold,
                 reverse=True,
             )
@@ -787,7 +791,7 @@ class DocGenerator(Generator):
         :param cls: class for which we want to determine the attributes
         :return: list of all own attributes of a class
         """
-        return [self.inject_slot_info(self.schemaview.induced_slot(sn)) for sn in self.get_direct_slot_names(cls)]
+        return [self.inject_slot_info(self.schemaview.induced_slot(sn, cls.name)) for sn in self.get_direct_slot_names(cls)]
 
     def get_indirect_slots(self, cls: ClassDefinition) -> List[SlotDefinition]:
         """Fetch list of all inherited attributes of a class, i.e., 
@@ -839,7 +843,8 @@ class DocGenerator(Generator):
         objs = []
         for input in inputs:
             stem = Path(input).stem
-            objs.append((stem, open(input, encoding="utf-8").read()))
+            with open(input, encoding="utf-8") as f:
+                objs.append((stem, f.read()))
         return objs
 
 

@@ -11,7 +11,6 @@ persons:
     has_familial_relationships:
       - related_to: P:001
         type: SIBLING_OF
-        cordialness: heartfelt
     has_medical_history:
       - started_at_time: 2019-01-01
         in_location: GEO:1234
@@ -39,7 +38,9 @@ activities:
     started_at_time: 2019-01-01
     was_associated_with: Agent:987
 code_systems:
-  - id: DiseaseCodes
+  DiseaseCodes:
+    id: DiseaseCodes
     name: disease codes
-  - id: ProcedureCodes
+  ProcedureCodes:
+    id: ProcedureCodes
     name: disease codes

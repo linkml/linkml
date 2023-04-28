@@ -1,7 +1,8 @@
 import json
+import logging
 import sys
 from dataclasses import dataclass
-from typing import TextIO, Type, Union
+from typing import TextIO, Type, Union, Dict, Optional
 
 import click
 import jsonschema
@@ -21,6 +22,13 @@ from linkml.utils.datavalidator import DataValidator
 
 @dataclass
 class JsonSchemaDataValidator(DataValidator):
+    """
+    Implementation of DataValidator that wraps jsonschema validation
+    """
+
+    jsonschema_objs: Optional[Dict[str, Dict]] = None
+    """Cached outputs of jsonschema generation"""
+
     def validate_file(self, input: str, format: str = "json", **kwargs):
         return self.validate_object(obj)
 
@@ -41,13 +49,21 @@ class JsonSchemaDataValidator(DataValidator):
         not_closed = not closed
         if self.schema is None:
             raise ValueError(f"schema object must be set")
-        jsonschemastr = JsonSchemaGenerator(
-            self.schema,
-            mergeimports=True,
-            top_class=target_class.class_name,
-            not_closed=not_closed,
-        ).serialize(not_closed=not_closed)
-        jsonschema_obj = json.loads(jsonschemastr)
+        if self.jsonschema_objs is None:
+            self.jsonschema_objs = {}
+        schema_id = self.schema.id if isinstance(self.schema, SchemaDefinition) else self.schema
+        if schema_id not in self.jsonschema_objs:
+            jsonschemastr = JsonSchemaGenerator(
+                self.schema,
+                mergeimports=True,
+                top_class=target_class.class_name,
+                not_closed=not_closed,
+            ).serialize(not_closed=not_closed)
+            jsonschema_obj = json.loads(jsonschemastr)
+            self.jsonschema_objs[schema_id] = jsonschema_obj
+        else:
+            logging.info(f"Using cached jsonschema for {schema_id}")
+            jsonschema_obj = self.jsonschema_objs[schema_id]
         return jsonschema.validate(inst_dict, schema=jsonschema_obj, format_checker=jsonschema.Draft7Validator.FORMAT_CHECKER)
 
     def validate_dict(

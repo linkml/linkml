@@ -1,5 +1,11 @@
 # FAQ: Modeling
 
+## How do I get started defining a data model?
+
+The [tutorial](https://linkml.io/linkml/intro/tutorial) walks you through some basic data models.
+
+After that the section on [schemas](https://linkml.io/linkml/schemas/) guides you through some of the core features of the modeling framework.
+
 ## What is the difference between is_a and mixins?
 
 LinkML allows any class to have:
@@ -455,6 +461,29 @@ enums:
 Applications can make use of this metadata - e.g for compact
 property graph representations, ER-style visualizations of the schema,
 auto-inferring convenient shortcut slots.
+
+## How do I avoid name clashes when importing a schema?
+
+Currently the assumption of existing LinkML tools is that all element
+names are unique, both within an individual schema *and across imports*.
+
+This means if you want to import a schema `personinfo`, and
+`personinfo` includes a class `Person`, or another imported schema or your own schema has a
+class `Person`, there will be an element clash, and you will need to
+either remove the import, change the imported schema, or change your
+own schema.
+
+Historically this has not been a major issue, as imports are typically
+used sparingly, and the assumption is that the imported schema is
+orthogonal to the importing one. In many cases the apparent issue is
+resolved simply by not using an import and instead reusing `class_uri`s.
+
+However, we recognize the unique element restriction can be limiting, and we are currently
+exploring mechanisms that provide more flexibility in reuse, including:
+
+- the use of [structured_imports](https://w3id.org/linkml/structured_imports) to *selectively* import elements from a schema
+- alternatives to imports and inheritance, such as using [implements](https://w3id.org/linkml/implements)
+- using [linkml-transformer](https://github.com/linkml/linkml-transformer) to *transform* upstream schemas rather than import them
 
 ## What are id_prefixes used for and why do we want them?
 

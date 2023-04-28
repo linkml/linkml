@@ -15,7 +15,7 @@ class IssueSQLGenTestCase(TestEnvironmentTestCase):
             "mssql+pyodbc",
             "sqlite+pysqlite",
             "mysql+pymysql",
-            "postgresql+pygresql",
+            "postgresql+psycopg2",
         ]
         for dialect in dialects:
             gen = SQLDDLGenerator(PATH, dialect=dialect)

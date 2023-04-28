@@ -115,7 +115,25 @@ A class must not have more than one identifier (asserted or derived). `identifie
 If you need to mark additional fields as unique, or a collection of slots that when considered as a tuple are unique, use
 `unique_keys` (see the [constraits](constraints.md) section of the docs).
 
+## Type designator
+
+The `designates_type` slot can be used to indicate the type or category of instances of a class.
+
+```yaml
+slots:
+  category:
+    designates_type: true
+```
+
 ## Slot cardinality
+
+The cardinality of a slot is indicative of two properties on a slot. It tells us about whether a slot is *required* or not, and also about how many values it is allowed to have, i.e., whether it is *single-valued* or *multi-valued*.
+
+The following list summarizes the expansions of the various possible combinations of cardinalities that can be asserted on a slot:
+* `1..*` - slot is *required* and *multivalued*
+* `1..1` - slot is *required* but *not multivalued*
+* `0..*` - slot is *not required* but if provided it must be *mulitvalued*
+* `0..1` - slot is *not required* and *not multivalued*
 
 ### multivalued
 
@@ -131,6 +149,33 @@ slots:
     inlined_as_list: true
 ```
 
+## default values
+
+The `ifabsent` slot can be used to specify a default value for a slot using the syntax shown in the examples below.
+
+Examples: 
+
+```yaml
+slots:
+  my_string_slot:
+    range: string
+    ifabsent: string(default value)
+  my_int_slot:
+    range: integer
+    ifabsent: int(42)
+  my_float_slot:
+    range: float
+    ifabsent: float(0.5)
+  my_bool_slot:
+    range: boolean
+    ifabsent: True
+  my_date_slot:
+    range: date
+    ifabsent: date("2020-01-31")
+  my_datetime_slot:
+    range: datetime
+    ifabsent: datetime("2020-01-31T12:00:00Z")
+```
 
 ### required
 

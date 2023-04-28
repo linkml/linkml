@@ -1,0 +1,108 @@
+id: https://w3id.org/linkml/tests/kitchen_sink_mlm
+name: kitchen_sink_mlm
+title: Kitchen Sink MLM Schema
+description: |-
+  Kitchen Sink MLM Schema
+
+  This schema does not do anything useful. It contains multi-line markup
+  that could potentially allow the execution of code embedded in linkml
+  schemas.
+
+default_curi_maps:
+  - semweb_context
+imports:
+  - linkml:types
+prefixes:
+  linkml: https://w3id.org/linkml/
+  bizcodes: https://example.org/bizcodes/
+  ks: https://w3id.org/linkml/tests/kitchen_sink_mlm/
+default_prefix: ks
+default_range: string
+see_also:
+  - https://example.org/
+
+classes:
+  EmploymentEvent:
+    slots:
+      - employed at
+      - type
+    slot_usage:
+      type:
+        range: EmploymentEventType
+        required: false
+
+  Dataset:
+    description: |-
+      All the data that we have
+      in one place
+    tree_root: true
+    rank: 1
+    attributes:
+      employment event:
+        range: EmploymentEvent
+        inlined: true
+        inlined_as_list: true
+        multivalued: true
+
+slots:
+  type:
+  employed at:
+    description: |-
+      This is a pretty awesome term.
+
+      You can use it to describe where someone was employed at.
+
+      However, you can't use it to describe a body part.
+
+      """
+      print("Ooops! Should have escaped this.")
+      ## for example
+
+       * bone saw
+       * employed at
+       * lower humerus
+
+    range: string
+
+enums:
+  EmploymentEventType:
+    description: |
+      codes for different kinds of employment
+      or HR related events
+      """
+      print('Deleting your stuff!!')
+      """
+      HR is pretty dull
+      but they get "annoyed if [they]
+      are not included"
+    aliases:
+      - HR code
+    permissible_values:
+      HIRE:
+        meaning: bizcodes:001
+        description: event for a new employee
+      FIRE:
+        meaning: bizcodes:002
+        description: the chop
+
+      PROMOTION:
+        meaning: bizcodes:003
+        description: |
+          This refers to some sort of promotion event.")
+
+
+          import os
+          print('DELETING ALL YOUR STUFF. HA HA HA.')
+
+      TRANSFER:
+        meaning: bizcodes:004
+        description: transfer internally
+
+      INTERNAL "REORGANIZATION":
+        meaning: bizcodes:005
+        description: |
+          A nice way for the company to say
+          "We need to sack a load of people"
+
+      class:
+        description: not a python class

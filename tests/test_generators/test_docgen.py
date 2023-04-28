@@ -3,6 +3,7 @@ import os
 import shutil
 import tempfile
 import unittest
+import yaml
 from copy import copy
 from typing import List
 
@@ -17,6 +18,7 @@ LATEX_DIR = env.expected_path("kitchen_sink_tex")
 MD_DIR = env.expected_path("kitchen_sink_md")
 META_MD_DIR = env.expected_path("meta_md")
 MD_DIR2 = env.expected_path("kitchen_sink_md2")
+MD_DIR3 = env.expected_path("kitchen_sink_md3")
 HTML_DIR = env.expected_path("kitchen_sink_html")
 EXAMPLE_DIR = env.input_path("examples")
 
@@ -274,9 +276,9 @@ class DocGeneratorTestCase(unittest.TestCase):
         # test slot usage overrides. See https://github.com/linkml/linkml/issues/1208
         assert_mdfile_contains(
             "FamilialRelationship.md",
-            ("| [started_at_time](started_at_time.md) | "
-             "0..1 <br/> [xsd:date](http://www.w3.org/2001/XMLSchema#date) |  | "
-             "[Relationship](Relationship.md) |"),
+            ("| [started_at_time](started_at_time.md) "
+             "| 0..1 <br/> [Date](Date.md) |  "
+             "| [Relationship](Relationship.md) |"),
             after="## Slots",
         )
         assert_mdfile_contains(
@@ -288,13 +290,12 @@ class DocGeneratorTestCase(unittest.TestCase):
         # test inheritance column
         assert_mdfile_contains(
             "Person.md",
-            "| [id](id.md) | 1..1 <br/> [xsd:string](http://www.w3.org/2001/XMLSchema#string) |  | direct |",
+            "| [id](id.md) | 1..1 <br/> [String](String.md) |  | direct |",
             after="## Slots",
         )
         assert_mdfile_contains(
             "Person.md",
-            ("| [aliases](aliases.md) | 0..* <br/> [xsd:string](http://www.w3.org/2001/XMLSchema#string) "
-             "|  | [HasAliases](HasAliases.md) |"),
+            ("| [aliases](aliases.md) | 0..* <br/> [String](String.md) |  | [HasAliases](HasAliases.md) |"),
             after="## Slots",
         )
         # Examples
@@ -302,6 +303,81 @@ class DocGeneratorTestCase(unittest.TestCase):
             "Person.md",
             "Example: Person",
             after="## Examples",)
+        # Minimum Value showing up even if value is 0
+        assert_mdfile_contains(
+            "age_in_years.md",
+            "Minimum Value: 0",
+            after="## Properties"
+        )
+        # Maximum Value
+        assert_mdfile_contains(
+            "age_in_years.md",
+            "Maximum Value: 999",
+            after="## Properties"
+        )
+        # 
+        assert_mdfile_contains(
+            "species_name.md",
+            "Regex pattern: `^[A-Z]+[a-z]+(-[A-Z]+[a-z]+)?\\\.[A-Z]+(-[0-9]{4})?$`",
+            after="## Properties"
+        )
+        
+        # checks correctness of the YAML representation of source schema
+        person_source = gen.yaml(gen.schemaview.get_class("Person"))
+        person_dict = yaml.load(person_source, Loader=yaml.Loader)
+        # consider the species name slot
+        # species name has the Person class repeated multiple times in domain_of
+        domain_of_species_name = person_dict["slot_usage"]["species name"]["domain_of"]
+        self.assertTrue(
+            len(set(domain_of_species_name)) == len(domain_of_species_name)
+        )
+
+    def test_docgen_no_mergeimports(self):
+        """Tests when imported schemas are not folded into main schema"""
+        gen = DocGenerator(SCHEMA, mergeimports=False, no_types_dir=True)
+        md = gen.serialize(directory=MD_DIR3)
+
+        assert_mdfile_contains(
+            "index.md", 
+            "| [Address](Address.md) |  |", 
+            after="## Classes", 
+            outdir=MD_DIR3
+        )
+        
+        assert_mdfile_does_not_contain(
+            "index.md", 
+            "| [Activity](Activity.md) | a provence-generating activity |", 
+            after="## Classes", 
+            outdir=MD_DIR3
+        )
+
+        assert_mdfile_does_not_contain(
+            "index.md", 
+            "| [acted_on_behalf_of](acted_on_behalf_of.md) |  |", 
+            after="## Slots", 
+            outdir=MD_DIR3
+        )
+
+        assert_mdfile_does_not_contain(
+            "index.md", 
+            "| [AgeInYearsType](AgeInYearsType.md) |  |", 
+            after="## Types", 
+            outdir=MD_DIR3
+        )
+
+
+        # test that slots modifying classes are being rendered
+        assert_mdfile_contains(
+            "type.md", "[FamilialRelationship](FamilialRelationship.md) |  |  yes  |", after="## Applicable Classes",
+            followed_by=["## Properties",
+                        "* Range"],
+        )
+
+        assert_mdfile_contains(
+            "type.md", "[EmploymentEvent](EmploymentEvent.md) |  |  yes  |", after="## Applicable Classes",
+            followed_by=["## Properties",
+                        "* Range"],
+        )
 
     def test_docgen_rank_ordering(self):
         """Tests overriding default order"""
@@ -462,6 +538,25 @@ class DocGeneratorTestCase(unittest.TestCase):
                            (1, 'FamilialRelationship'), (0, 'WithLocation')]
                            
         self.assertCountEqual(actual_result, expected_result)
+
+    def test_class_hierarchy_as_tuples_no_mergeimports(self):
+        """Test to ensure that imported schema classes are not generated
+        even in the method that hierarchically lists classes on index page
+        when mergeimports=False.
+        """
+        tdir = env.input_path("docgen_html_templates")
+        gen = DocGenerator(
+            SCHEMA,
+            mergeimports=False,
+            no_types_dir=True,
+            template_directory=tdir,
+            format="html",
+        )
+        actual_result = gen.class_hierarchy_as_tuples()
+        actual_result = list(actual_result)
+
+        self.assertNotIn(actual_result, (0, 'activity'))
+        self.assertNotIn(actual_result, (0, 'agent'))
         
     def test_fetch_slots_of_class(self):
         tdir = env.input_path('docgen_html_templates')

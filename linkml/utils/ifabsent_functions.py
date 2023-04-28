@@ -54,6 +54,17 @@ def uri_for(s: str, loader: SchemaLoader) -> str:
     return loader.namespaces.curie_for(uri, True, True) or strval(uri)
 
 
+def default_ns_for(loader: SchemaLoader, cls: ClassDefinition) -> str:
+    """Return code to produce the default namespace for the supplied class"""
+    # TODO: figure out how to mark a slot as a namespace
+    return "sfx(str(self.id))" if "id" in cls.slots else "None"
+    # cls_id = None
+    # for slotname in cls.slots:
+    #     slot = loader.schema.slots[slotname]
+    #     if slot.identifier:
+    #         cls_id = slotname
+    # return f"sfx(str(self.{cls_id}))" if cls_id else "None"
+
 # Library of named default values -- this is here to prevent code injection
 # Contents: Match text (as re),
 #           flag that indicates whether we're generating a default value expression or postinig code
@@ -69,15 +80,30 @@ default_library: List[
     (r"[Tt]rue", False, lambda _, __, ___, ____: "True"),
     (r"[Ff]alse", False, lambda _, __, ___, ____: "False"),
     (r"int\(([-+]?[0-9]+)\)", False, lambda m, __, ___, ____: int(m[1])),
-    ("class_uri", False, lambda _, __, class_definition, ____: 'class_class_uri'),
-    ("class_curie", False, lambda _, __, class_definition, ____: 'class_class_curie'),
-    ("slot_uri", True, lambda _, loader, ___, slot_definition: f'slots.{slot_definition.name}.uri'),
-    ("slot_curie", True, lambda _, loader, ___, slot_definition: f'slots.{slot_definition.name}.curie'),
-    ("default_range", False, lambda _, loader, __, ____: f"{strval(loader.schema.default_range)}"),
+    (r"float\(([-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?)\)", False, lambda m, __, ___, ____: float(m[1])),
+    (r"date\((\d{4})-(\d{2})-(\d{2})\)", False, lambda m, __, ___, ____: f"datetime.date({m[1]}, {m[2]}, {m[3]})"),
+    (r"datetime\((\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})Z\)", False, lambda m, __, ___, ____: f"datetime.datetime({m[1]}, {m[2]}, {m[3]}, {m[4]}, {m[5]}, {m[6]})"),
+    # TODO: We have to make the real URI available before any of these can work
+    # ("class_uri", True, lambda _, loader, ___, ____: f'"{default_uri_for(loader)}" + camelcase(self.name)'),
+    # ("slot_uri", True, lambda _, loader, ___, ____: f'"{default_uri_for(loader)}" + underscore(self.alias if self.alias else self.name)'),
+    # ("class_curie", True, lambda _, loader, ___, ____: curie_for(loader, True)),
+    # ("slot_curie", True, lambda _, loader, ___, ____: curie_for(loader, False)),
+    ("class_uri", True, lambda _, loader, ___, ____: "None"),
+    ("slot_uri", True, lambda _, loader, ___, ____: "None"),
+    ("class_curie", True, lambda _, loader, ___, ____: "None"),
+    ("slot_curie", True, lambda _, loader, ___, ____: "None"),
+    # See: https://github.com/linkml/linkml/issues/1333
+    # ("class_uri", False, lambda _, __, class_definition, ____: 'class_class_uri'),
+    # ("class_curie", False, lambda _, __, class_definition, ____: 'class_class_curie'),
+    # ("slot_uri", True, lambda _, loader, ___, slot_definition: f'slots.{slot_definition.name}.uri'),
+    # ("slot_curie", True, lambda _, loader, ___, slot_definition: f'slots.{slot_definition.name}.curie'),
+    # ("default_range", False, lambda _, loader, __, ____: f"{strval(loader.schema.default_range)}"),
+    ("default_range", False, lambda _, __, ___, ____: "None"),
     ("bnode", False, lambda _, __, ___, ____: "bnode()"),
     (r"string\((.*)\)", False, lambda m, __, ___, ____: strval(m[1])),
     (r"uri\((.*)\)", False, lambda m, loader, _, __: uri_for(m[1], loader)),
-    ("default_ns", False, lambda _, loader, __, ____: f"{strval(loader.schema.default_prefix)}"),
+    ("default_ns", True, lambda _, loader, cls, ____: default_ns_for(loader, cls)),
+    # ("default_ns", False, lambda _, loader, __, ____: f"{strval(loader.schema.default_prefix)}"),
 ]
 
 
@@ -95,6 +121,7 @@ def isabsent_match(
         m = re.match(pattern + "$", txt)
         if m:
             return m, postinit, f
+    raise ValueError(f"Incompatible default value: {txt}")
 
 
 def ifabsent_value_declaration(txt: Text, loader, cls, slot) -> Optional[str]:

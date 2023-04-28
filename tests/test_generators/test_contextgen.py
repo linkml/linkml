@@ -1,18 +1,9 @@
-import json
 import unittest
-from typing import Type
 
-import jsonasobj2
-import jsonschema
-import yaml
 from linkml_runtime.dumpers import json_dumper, rdf_dumper
-from linkml_runtime.linkml_model import SchemaDefinition
 from linkml_runtime.loaders import yaml_loader
-from linkml_runtime.utils.yamlutils import YAMLRoot, as_dict
 
 from linkml.generators.jsonldcontextgen import ContextGenerator
-from linkml.generators.jsonschemagen import JsonSchemaGenerator
-from linkml.utils.validation import validate_object
 from tests.test_generators.environment import env
 from tests.test_generators.test_pythongen import make_python
 
@@ -29,7 +20,7 @@ FAILLOG = env.expected_path("kitchen_sink_failtest_log.txt")
 class ContextTestCase(unittest.TestCase):
     def test_context(self):
         """json schema"""
-        kitchen_module = make_python(False)
+        kitchen_module = make_python(SCHEMA, PYTHON, False)
         inst: Dataset
         inst = yaml_loader.load(DATA, target_class=kitchen_module.Dataset)
         json_dumper.dump(element=inst, to_file=DATA_JSON)

@@ -14,6 +14,7 @@ from tests.test_generators.environment import env
 from tests.test_generators.test_pythongen import make_python
 
 SCHEMA = env.input_path("kitchen_sink.yaml")
+PYTHON = env.expected_path("kitchen_sink.py")
 DB = env.expected_path("kitchen_sink.db")
 SQLA_CODE = env.expected_path("kitchen_sink_db_mapping.py")
 DDL_PATH = env.expected_path("kitchen_sink.ddl.sql")
@@ -34,7 +35,6 @@ def create_and_compile_sqla_bindings(gen: SQLDDLGenerator, path: str = SQLA_CODE
 
 
 class SQLDDLTestCase(unittest.TestCase):
-
     @unittest.skip("Deprecated")
     def test_sqlddl_serialize(self):
         """Test case to validate output of serialize method."""
@@ -86,7 +86,7 @@ class SQLDDLTestCase(unittest.TestCase):
     @unittest.skip("Deprecated")
     def test_sqlddl(self):
         """DDL"""
-        kitchen_module = make_python(False)
+        kitchen_module = make_python(SCHEMA, PYTHON, False)
         gen = SQLDDLGenerator(SCHEMA, mergeimports=True, rename_foreign_keys=True)
         ddl = gen.serialize()
         with open(SQLDDLLOG, "w") as log:

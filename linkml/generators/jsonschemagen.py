@@ -4,7 +4,7 @@ import os
 from collections import UserDict
 from copy import deepcopy
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 import click
 from linkml_runtime.linkml_model.meta import (AnonymousClassExpression,
@@ -87,19 +87,37 @@ class JsonSchema(UserDict):
             
             self['required'].append(canonical_name)
 
+    def add_keyword(self, keyword: str, value: Any, applies_to_all_array_elements: bool = False):
+        if value is None:
+            return
+        
+        if applies_to_all_array_elements and self.is_array:
+            self['items'][keyword] = value
+        else:
+            self[keyword] = value
+
+    @property
+    def is_array(self):
+        return self.get('type') == 'array'
+
+    @property
+    def is_object(self):
+        return self.get('type') == 'object'
+
     def to_json(self, **kwargs) -> str:
         return json.dumps(self.data, default=lambda d: d.data, **kwargs)
 
     @classmethod
     def ref_for(cls, class_name: Union[str, List[str]], identifier_optional: bool = False):
         def _ref(class_name):
-            return { 
+            return JsonSchema({ 
                 "$ref": f"#/$defs/{camelcase(class_name)}{cls.OPTIONAL_IDENTIFIER_SUFFIX if identifier_optional else ''}"
-            }
+            })
+        
         if isinstance(class_name, list):
-            return {
-                "oneOf": [_ref(name) for name in class_name]
-            }
+            return JsonSchema({
+                "anyOf": [_ref(name) for name in class_name]
+            })
         else:
             return _ref(class_name)
 
@@ -280,17 +298,18 @@ class JsonSchemaGenerator(Generator):
         })
         self.top_level_schema.add_def(enum.name, enum_schema)
 
-    def get_type_info_for_slot_subschema(self, slot: AnonymousSlotExpression, slot_is_inlined: bool) -> Tuple[str, str, Union[str, List[str]]]:
+    def get_type_info_for_slot_subschema(self, slot: AnonymousSlotExpression, parent_slot_is_inlined: bool) -> Tuple[str, str, Union[str, List[str]]]:
         typ = None  # JSON Schema type (https://json-schema.org/understanding-json-schema/reference/type.html)
         reference = None  # Reference to a JSON schema entity (https://json-schema.org/understanding-json-schema/structuring.html#ref)
         fmt = None  # JSON Schema format (https://json-schema.org/understanding-json-schema/reference/string.html#format)
 
+        slot_is_inlined = self.schemaview.is_inlined(slot)
         if slot.range in self.schemaview.all_types().keys():
             schema_type = self.schemaview.induced_type(slot.range)
             (typ, fmt) = json_schema_types.get(schema_type.base.lower(), ("string", None))
         elif slot.range in self.schemaview.all_enums().keys():
             reference = slot.range
-        elif slot_is_inlined and slot.range in self.schemaview.all_classes().keys():
+        elif (slot_is_inlined or parent_slot_is_inlined) and slot.range in self.schemaview.all_classes().keys():
             descendants = [desc for desc in self.schemaview.class_descendants(slot.range) 
                 if not self.schemaview.get_class(desc).abstract]
             if descendants and self.include_range_class_descendants:
@@ -359,36 +378,21 @@ class JsonSchemaGenerator(Generator):
                         else:
                             prop = JsonSchema({"type": typ, "format": fmt})
 
-        if slot.description:
-            prop['description'] = slot.description
+        prop.add_keyword('description', slot.description)
 
-        if slot.pattern:
-            # See https://github.com/linkml/linkml/issues/193
-            prop['pattern'] = slot.pattern
+        prop.add_keyword('pattern', slot.pattern, applies_to_all_array_elements=True)
+        prop.add_keyword('minimum', slot.minimum_value, applies_to_all_array_elements=True)
+        prop.add_keyword('maximum', slot.maximum_value, applies_to_all_array_elements=True)
+        prop.add_keyword('const', slot.equals_string, applies_to_all_array_elements=True)
+        prop.add_keyword('const', slot.equals_number, applies_to_all_array_elements=True)
 
-        if slot.minimum_value is not None:
-            prop['minimum'] = slot.minimum_value
+        if prop.is_array:
+            prop.add_keyword('minItems', slot.minimum_cardinality)
+            prop.add_keyword('maxItems', slot.maximum_cardinality)
 
-        if slot.maximum_value is not None:
-            prop['maximum'] = slot.maximum_value
-
-        if slot.equals_string is not None:
-            prop['const'] = slot.equals_string
-
-        if slot.equals_number is not None:
-            prop['const'] = slot.equals_number
-
-        if slot.minimum_cardinality is not None:
-            if prop['type'] == 'array':
-                prop['minItems'] = slot.minimum_cardinality
-            elif prop['type'] == 'object':
-                prop['minProperties'] = slot.minimum_cardinality
-
-        if slot.maximum_cardinality is not None:
-            if prop['type'] == 'array':
-                prop['maxItems'] = slot.maximum_cardinality
-            elif prop['type'] == 'object':
-                prop['maxProperties'] = slot.maximum_cardinality
+        if prop.is_object:
+            prop.add_keyword('minProperties', slot.minimum_cardinality)
+            prop.add_keyword('maxProperties', slot.maximum_cardinality)
 
         if slot.any_of is not None and len(slot.any_of) > 0:
             if not slot_has_range_union:

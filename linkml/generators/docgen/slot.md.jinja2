@@ -5,7 +5,10 @@
 {%- endif -%}
 
 {% if element.description %}
-_{{ element.description }}_
+{% set element_description_lines = element.description.split('\n') %}
+{% for element_description_line in element_description_lines %}
+_{{ element_description_line }}_
+{% endfor %}
 {% endif %}
 
 URI: {{ gen.uri_link(element) }}
@@ -24,13 +27,14 @@ URI: {{ gen.uri_link(element) }}
 
 ## Applicable Classes
 
-| Name | Description |
-| --- | --- |
+| Name | Description | Modifies Slot |
+| --- | --- | --- |
 {% for c in schemaview.get_classes_by_slot(element, include_induced=True) -%}
-{{ gen.link(c) }} | {{ schemaview.get_class(c).description|enshorten }}
+{{ gen.link(c) }} | {{ schemaview.get_class(c).description|enshorten }} | {% if c in schemaview.get_classes_modifying_slot(element) %} yes {% else %} no {% endif %} |
 {% endfor %}
 
 {% endif %}
+
 
 {% if schemaview.is_mixin(element.name) %}
 ## Mixin Usage
@@ -45,23 +49,26 @@ URI: {{ gen.uri_link(element) }}
 ## Properties
 
 * Range: {{gen.link(element.range)}}
-{%- if element.multivalued %}
+{% if element.multivalued %}
 * Multivalued: {{ element.multivalued }}
-{% endif %}
-{%- if element.required %}
+{% endif -%}
+{% if element.required %}
 * Required: {{ element.required }}
 {% elif element.recommended %}
 * Recommended: {{ element.recommended }}
-{% endif %}
-{%- if element.minimum_value %}
-* Minimum Value: {{ element.minimum_value }}
-{% endif %}
-{%- if element.maximum_value %}
-* Maximum Value: {{ element.maximum_value }}
-{% endif %}
-{%- if schemaview.is_mixin(element.name) %}
+{% endif -%}
+{% if element.minimum_value is not none %}
+* Minimum Value: {{ element.minimum_value|int }}
+{% endif -%}
+{% if element.maximum_value is not none %}
+* Maximum Value: {{ element.maximum_value|int }}
+{% endif -%}
+{% if element.pattern %}
+* Regex pattern: {{ '`' }}{{  element.pattern }}{{ '`' }}
+{% endif -%}
+{% if schemaview.is_mixin(element.name) %}
 * Mixin: {{ element.mixin }}
-{% endif %}
+{% endif -%}
 
 
 {% if schemaview.usage_index().get(element.name) %}
