@@ -299,24 +299,27 @@
 <span></span><span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
 <span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
-<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">field</span><span class="p">,</span> <span class="n">dataclass</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Set</span>
-<span class="kn">from</span> <span class="nn">linkml.utils.ifabsent_functions</span> <span class="kn">import</span> <span class="n">ifabsent_value_declaration</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">click</span>
 <span class="kn">from</span> <span class="nn">jinja2</span> <span class="kn">import</span> <span class="n">Template</span>
 <span class="c1"># from linkml.generators import pydantic_GEN_VERSION</span>
-<span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model.meta</span> <span class="kn">import</span> <span class="p">(</span><span class="n">Annotation</span><span class="p">,</span> <span class="n">ClassDefinition</span><span class="p">,</span>
-                                              <span class="n">EnumDefinition</span><span class="p">,</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model.meta</span> <span class="kn">import</span> <span class="p">(</span><span class="n">Annotation</span><span class="p">,</span>
+                                              <span class="n">AnonymousSlotExpression</span><span class="p">,</span>
+                                              <span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">EnumDefinition</span><span class="p">,</span>
                                               <span class="n">EnumDefinitionName</span><span class="p">,</span>
-                                              <span class="n">SchemaDefinition</span><span class="p">,</span> <span class="n">TypeDefinition</span><span class="p">,</span> <span class="n">AnonymousSlotExpression</span><span class="p">,</span> <span class="n">SlotDefinition</span><span class="p">)</span>
+                                              <span class="n">SchemaDefinition</span><span class="p">,</span> <span class="n">SlotDefinition</span><span class="p">,</span>
+                                              <span class="n">TypeDefinition</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime.utils.formatutils</span> <span class="kn">import</span> <span class="n">camelcase</span><span class="p">,</span> <span class="n">underscore</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime.utils.schemaview</span> <span class="kn">import</span> <span class="n">SchemaView</span>
 
-<span class="kn">from</span> <span class="nn">linkml.generators.common.type_designators</span> <span class="kn">import</span> <span class="n">get_type_designator_value</span><span class="p">,</span> <span class="n">get_accepted_type_designator_values</span>
 <span class="kn">from</span> <span class="nn">linkml._version</span> <span class="kn">import</span> <span class="n">__version__</span>
+<span class="kn">from</span> <span class="nn">linkml.generators.common.type_designators</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">get_accepted_type_designator_values</span><span class="p">,</span> <span class="n">get_type_designator_value</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">linkml.generators.oocodegen</span> <span class="kn">import</span> <span class="n">OOCodeGenerator</span>
 <span class="kn">from</span> <span class="nn">linkml.utils.generator</span> <span class="kn">import</span> <span class="n">shared_arguments</span>
+<span class="kn">from</span> <span class="nn">linkml.utils.ifabsent_functions</span> <span class="kn">import</span> <span class="n">ifabsent_value_declaration</span>
 
 <span class="n">default_template</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">{#-</span>
@@ -335,14 +338,14 @@
 
 <span class="s2">class WeakRefShimBaseModel(BaseModel):</span>
 <span class="s2">   __slots__ = &#39;__weakref__&#39;</span>
-<span class="s2">    </span>
+
 <span class="s2">class ConfiguredBaseModel(WeakRefShimBaseModel,</span>
-<span class="s2">                validate_assignment = True, </span>
-<span class="s2">                validate_all = True, </span>
-<span class="s2">                underscore_attrs_are_private = True, </span>
-<span class="s2">                extra = {</span><span class="si">% i</span><span class="s2">f allow_extra %}&#39;allow&#39;{</span><span class="si">% e</span><span class="s2">lse %}&#39;forbid&#39;{</span><span class="si">% e</span><span class="s2">ndif %}, </span>
+<span class="s2">                validate_assignment = True,</span>
+<span class="s2">                validate_all = True,</span>
+<span class="s2">                underscore_attrs_are_private = True,</span>
+<span class="s2">                extra = {</span><span class="si">% i</span><span class="s2">f allow_extra %}&#39;allow&#39;{</span><span class="si">% e</span><span class="s2">lse %}&#39;forbid&#39;{</span><span class="si">% e</span><span class="s2">ndif %},</span>
 <span class="s2">                arbitrary_types_allowed = True):</span>
-<span class="s2">    pass                    </span>
+<span class="s2">    pass</span>
 
 <span class="s2">{</span><span class="si">% f</span><span class="s2">or e in enums.values() %}</span>
 <span class="s2">class {{ e.name }}(str, Enum):</span>
@@ -360,25 +363,25 @@
 <span class="s2">{</span><span class="si">% e</span><span class="s2">ndfor %}</span>
 
 <span class="s2">{</span><span class="si">%- f</span><span class="s2">or c in schema.classes.values() %}</span>
-<span class="s2">class {{ c.name }} </span>
+<span class="s2">class {{ c.name }}</span>
 <span class="s2">    {</span><span class="si">%- i</span><span class="s2">f class_isa_plus_mixins[c.name] -%}</span>
 <span class="s2">        ({{class_isa_plus_mixins[c.name]|join(&#39;, &#39;)}})</span>
 <span class="s2">    {</span><span class="si">%- e</span><span class="s2">lse -%}</span>
 <span class="s2">        (ConfiguredBaseModel)</span>
-<span class="s2">    {</span><span class="si">%- e</span><span class="s2">ndif -%}                   </span>
+<span class="s2">    {</span><span class="si">%- e</span><span class="s2">ndif -%}</span>
 <span class="s2">                  :</span>
-<span class="s2">    {</span><span class="si">% i</span><span class="s2">f c.description -%}    </span>
+<span class="s2">    {</span><span class="si">% i</span><span class="s2">f c.description -%}</span>
 <span class="s2">    </span><span class="se">\&quot;\&quot;\&quot;</span>
 <span class="s2">    {{ c.description }}</span>
 <span class="s2">    </span><span class="se">\&quot;\&quot;\&quot;</span>
 <span class="s2">    {</span><span class="si">%- e</span><span class="s2">ndif %}</span>
 <span class="s2">    {</span><span class="si">% f</span><span class="s2">or attr in c.attributes.values() if c.attributes -%}</span>
 <span class="s2">    {{attr.name}}: {{ attr.annotations[&#39;python_range&#39;].value }} = Field(</span>
-<span class="s2">    {</span><span class="si">%- i</span><span class="s2">f predefined_slot_values[c.name][attr.name] -%} </span>
+<span class="s2">    {</span><span class="si">%- i</span><span class="s2">f predefined_slot_values[c.name][attr.name] -%}</span>
 <span class="s2">        {{ predefined_slot_values[c.name][attr.name] }}</span>
 <span class="s2">    {</span><span class="si">%- e</span><span class="s2">lse -%}</span>
 <span class="s2">        None</span>
-<span class="s2">    {</span><span class="si">%- e</span><span class="s2">ndif -%}    </span>
+<span class="s2">    {</span><span class="si">%- e</span><span class="s2">ndif -%}</span>
 <span class="s2">    {</span><span class="si">%- i</span><span class="s2">f attr.title != None %}, title=&quot;{{attr.title}}&quot;{</span><span class="si">% e</span><span class="s2">ndif -%}</span>
 <span class="s2">    {</span><span class="si">%- i</span><span class="s2">f attr.description %}, description=</span><span class="se">\&quot;\&quot;\&quot;</span><span class="s2">{{attr.description}}</span><span class="se">\&quot;\&quot;\&quot;</span><span class="s2">{</span><span class="si">% e</span><span class="s2">ndif -%}</span>
 <span class="s2">    {</span><span class="si">%- i</span><span class="s2">f attr.minimum_value != None %}, ge={{attr.minimum_value}}{</span><span class="si">% e</span><span class="s2">ndif -%}</span>
@@ -392,7 +395,7 @@
 
 <span class="s2"># Update forward refs</span>
 <span class="s2"># see https://pydantic-docs.helpmanual.io/usage/postponed_annotations/</span>
-<span class="s2">{</span><span class="si">% f</span><span class="s2">or c in schema.classes.values() -%} </span>
+<span class="s2">{</span><span class="si">% f</span><span class="s2">or c in schema.classes.values() -%}</span>
 <span class="s2">{{ c.name }}.update_forward_refs()</span>
 <span class="s2">{</span><span class="si">% e</span><span class="s2">ndfor %}</span>
 <span class="s2">&quot;&quot;&quot;</span>
@@ -437,7 +440,6 @@
     <span class="n">genmeta</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="kc">False</span><span class="p">)</span>
     <span class="n">emit_metadata</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="kc">True</span><span class="p">)</span>
 
-
 <div class="viewcode-block" id="PydanticGenerator.generate_enums"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.pydanticgen.PydanticGenerator.generate_enums">[docs]</a>    <span class="k">def</span> <span class="nf">generate_enums</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">all_enums</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">EnumDefinitionName</span><span class="p">,</span> <span class="n">EnumDefinition</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]:</span>
@@ -448,7 +450,7 @@
 
             <span class="k">for</span> <span class="n">pv</span> <span class="ow">in</span> <span class="n">enum_orignal</span><span class="o">.</span><span class="n">permissible_values</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
                 <span class="n">label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_enum_label</span><span class="p">(</span><span class="n">pv</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
-                <span class="n">enum</span><span class="p">[</span><span class="s2">&quot;values&quot;</span><span class="p">][</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="n">pv</span><span class="o">.</span><span class="n">text</span>
+                <span class="n">enum</span><span class="p">[</span><span class="s2">&quot;values&quot;</span><span class="p">][</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="n">pv</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&quot;&#39;</span><span class="p">)</span>
 
             <span class="n">enums</span><span class="p">[</span><span class="n">enum_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">enum</span>
 
@@ -496,7 +498,6 @@
         <span class="n">default_prefix</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">default_prefix</span>
         <span class="n">slot_values</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">dict</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">class_def</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">all_classes</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-
             <span class="k">for</span> <span class="n">slot_name</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">class_slots</span><span class="p">(</span><span class="n">class_def</span><span class="o">.</span><span class="n">name</span><span class="p">):</span>
                 <span class="n">slot</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">induced_slot</span><span class="p">(</span><span class="n">slot_name</span><span class="p">,</span> <span class="n">class_def</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">designates_type</span><span class="p">:</span>
@@ -510,9 +511,13 @@
                             <span class="o">+</span> <span class="n">slot_values</span><span class="p">[</span><span class="n">camelcase</span><span class="p">(</span><span class="n">class_def</span><span class="o">.</span><span class="n">name</span><span class="p">)][</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
                             <span class="o">+</span> <span class="s2">&quot;]&quot;</span>
                         <span class="p">)</span>
-                    <span class="n">slot_values</span><span class="p">[</span><span class="n">camelcase</span><span class="p">(</span><span class="n">class_def</span><span class="o">.</span><span class="n">name</span><span class="p">)][</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">slot_values</span><span class="p">[</span><span class="n">camelcase</span><span class="p">(</span><span class="n">class_def</span><span class="o">.</span><span class="n">name</span><span class="p">)][</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
+                    <span class="n">slot_values</span><span class="p">[</span><span class="n">camelcase</span><span class="p">(</span><span class="n">class_def</span><span class="o">.</span><span class="n">name</span><span class="p">)][</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">slot_values</span><span class="p">[</span>
+                        <span class="n">camelcase</span><span class="p">(</span><span class="n">class_def</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+                    <span class="p">][</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
                 <span class="k">elif</span> <span class="n">slot</span><span class="o">.</span><span class="n">ifabsent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">value</span> <span class="o">=</span> <span class="n">ifabsent_value_declaration</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">ifabsent</span><span class="p">,</span> <span class="n">sv</span><span class="p">,</span> <span class="n">class_def</span><span class="p">,</span> <span class="n">slot</span><span class="p">)</span>
+                    <span class="n">value</span> <span class="o">=</span> <span class="n">ifabsent_value_declaration</span><span class="p">(</span>
+                        <span class="n">slot</span><span class="o">.</span><span class="n">ifabsent</span><span class="p">,</span> <span class="n">sv</span><span class="p">,</span> <span class="n">class_def</span><span class="p">,</span> <span class="n">slot</span>
+                    <span class="p">)</span>
                     <span class="n">slot_values</span><span class="p">[</span><span class="n">camelcase</span><span class="p">(</span><span class="n">class_def</span><span class="o">.</span><span class="n">name</span><span class="p">)][</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
                 <span class="c1"># Multivalued slots that are either not inlined (just an identifier) or are</span>
                 <span class="c1"># inlined as lists should get default_factory list, if they&#39;re inlined but</span>
@@ -520,12 +525,18 @@
                 <span class="k">elif</span> <span class="n">slot</span><span class="o">.</span><span class="n">multivalued</span><span class="p">:</span>
                     <span class="n">has_identifier_slot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">range_class_has_identifier_slot</span><span class="p">(</span><span class="n">slot</span><span class="p">)</span>
 
-                    <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">inlined</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">slot</span><span class="o">.</span><span class="n">inlined_as_list</span> <span class="ow">and</span> <span class="n">has_identifier_slot</span><span class="p">:</span>
-                        <span class="n">slot_values</span><span class="p">[</span><span class="n">camelcase</span><span class="p">(</span><span class="n">class_def</span><span class="o">.</span><span class="n">name</span><span class="p">)][</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;default_factory=dict&quot;</span>
+                    <span class="k">if</span> <span class="p">(</span>
+                        <span class="n">slot</span><span class="o">.</span><span class="n">inlined</span>
+                        <span class="ow">and</span> <span class="ow">not</span> <span class="n">slot</span><span class="o">.</span><span class="n">inlined_as_list</span>
+                        <span class="ow">and</span> <span class="n">has_identifier_slot</span>
+                    <span class="p">):</span>
+                        <span class="n">slot_values</span><span class="p">[</span><span class="n">camelcase</span><span class="p">(</span><span class="n">class_def</span><span class="o">.</span><span class="n">name</span><span class="p">)][</span>
+                            <span class="n">slot</span><span class="o">.</span><span class="n">name</span>
+                        <span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;default_factory=dict&quot;</span>
                     <span class="k">else</span><span class="p">:</span>
-                        <span class="n">slot_values</span><span class="p">[</span><span class="n">camelcase</span><span class="p">(</span><span class="n">class_def</span><span class="o">.</span><span class="n">name</span><span class="p">)][</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;default_factory=list&quot;</span>
-
-
+                        <span class="n">slot_values</span><span class="p">[</span><span class="n">camelcase</span><span class="p">(</span><span class="n">class_def</span><span class="o">.</span><span class="n">name</span><span class="p">)][</span>
+                            <span class="n">slot</span><span class="o">.</span><span class="n">name</span>
+                        <span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;default_factory=list&quot;</span>
 
         <span class="k">return</span> <span class="n">slot_values</span></div>
 
@@ -543,9 +554,15 @@
         <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">any_of</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">slot_range</span> <span class="ow">in</span> <span class="n">slot</span><span class="o">.</span><span class="n">any_of</span><span class="p">:</span>
                 <span class="n">any_of_range</span> <span class="o">=</span> <span class="n">slot_range</span><span class="o">.</span><span class="n">range</span>
-                <span class="k">if</span> <span class="n">any_of_range</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">all_classes</span><span class="p">()</span> <span class="ow">and</span> <span class="n">sv</span><span class="o">.</span><span class="n">get_identifier_slot</span><span class="p">(</span><span class="n">any_of_range</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="n">any_of_range</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">all_classes</span><span class="p">()</span>
+                    <span class="ow">and</span> <span class="n">sv</span><span class="o">.</span><span class="n">get_identifier_slot</span><span class="p">(</span><span class="n">any_of_range</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                <span class="p">):</span>
                     <span class="n">has_identifier_slot</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">all_classes</span><span class="p">()</span> <span class="ow">and</span> <span class="n">sv</span><span class="o">.</span><span class="n">get_identifier_slot</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">slot</span><span class="o">.</span><span class="n">range</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">all_classes</span><span class="p">()</span>
+            <span class="ow">and</span> <span class="n">sv</span><span class="o">.</span><span class="n">get_identifier_slot</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="p">):</span>
             <span class="n">has_identifier_slot</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">return</span> <span class="n">has_identifier_slot</span></div>
 
@@ -585,7 +602,9 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Union[</span><span class="si">{</span><span class="s1">&#39;.&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">id_ranges</span><span class="p">)</span><span class="si">}</span><span class="s2">]&quot;</span></div>
 
-<div class="viewcode-block" id="PydanticGenerator.get_class_slot_range"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.pydanticgen.PydanticGenerator.get_class_slot_range">[docs]</a>    <span class="k">def</span> <span class="nf">get_class_slot_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slot_range</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">inlined</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">inlined_as_list</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="viewcode-block" id="PydanticGenerator.get_class_slot_range"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.pydanticgen.PydanticGenerator.get_class_slot_range">[docs]</a>    <span class="k">def</span> <span class="nf">get_class_slot_range</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">slot_range</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">inlined</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">inlined_as_list</span><span class="p">:</span> <span class="nb">bool</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="n">sv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span>
         <span class="n">range_cls</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">get_class</span><span class="p">(</span><span class="n">slot_range</span><span class="p">)</span>
 
@@ -595,12 +614,26 @@
 
         <span class="c1"># Inline the class itself only if the class is defined as inline, or if the class has no</span>
         <span class="c1"># identifier slot and also isn&#39;t a mixin.</span>
-        <span class="k">if</span> <span class="n">inlined</span> <span class="ow">or</span> <span class="n">inlined_as_list</span> <span class="ow">or</span> <span class="p">(</span>
-            <span class="n">sv</span><span class="o">.</span><span class="n">get_identifier_slot</span><span class="p">(</span><span class="n">range_cls</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span>
-            <span class="ow">and</span> <span class="ow">not</span> <span class="n">sv</span><span class="o">.</span><span class="n">is_mixin</span><span class="p">(</span><span class="n">range_cls</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">inlined</span>
+            <span class="ow">or</span> <span class="n">inlined_as_list</span>
+            <span class="ow">or</span> <span class="p">(</span>
+                <span class="n">sv</span><span class="o">.</span><span class="n">get_identifier_slot</span><span class="p">(</span><span class="n">range_cls</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span>
+                <span class="ow">and</span> <span class="ow">not</span> <span class="n">sv</span><span class="o">.</span><span class="n">is_mixin</span><span class="p">(</span><span class="n">range_cls</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="p">)</span>
         <span class="p">):</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">([</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">class_induced_slots</span><span class="p">(</span><span class="n">slot_range</span><span class="p">)</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">designates_type</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">sv</span><span class="o">.</span><span class="n">class_descendants</span><span class="p">(</span><span class="n">slot_range</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-                <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Union[&quot;</span> <span class="o">+</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">camelcase</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">class_descendants</span><span class="p">(</span><span class="n">slot_range</span><span class="p">)])</span> <span class="o">+</span> <span class="s2">&quot;]&quot;</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="nb">len</span><span class="p">(</span>
+                    <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">class_induced_slots</span><span class="p">(</span><span class="n">slot_range</span><span class="p">)</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">designates_type</span><span class="p">]</span>
+                <span class="p">)</span>
+                <span class="o">&gt;</span> <span class="mi">0</span>
+                <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">sv</span><span class="o">.</span><span class="n">class_descendants</span><span class="p">(</span><span class="n">slot_range</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mi">1</span>
+            <span class="p">):</span>
+                <span class="k">return</span> <span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Union[&quot;</span>
+                    <span class="o">+</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">camelcase</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">class_descendants</span><span class="p">(</span><span class="n">slot_range</span><span class="p">)])</span>
+                    <span class="o">+</span> <span class="s2">&quot;]&quot;</span>
+                <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">camelcase</span><span class="p">(</span><span class="n">slot_range</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
 
@@ -626,17 +659,33 @@
 
         <span class="k">return</span> <span class="n">range_cls_identifier_slot_range</span></div>
 
-<div class="viewcode-block" id="PydanticGenerator.generate_python_range"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.pydanticgen.PydanticGenerator.generate_python_range">[docs]</a>    <span class="k">def</span> <span class="nf">generate_python_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slot_range</span><span class="p">,</span> <span class="n">slot_def</span><span class="p">:</span><span class="n">SlotDefinition</span><span class="p">,</span> <span class="n">class_def</span><span class="p">:</span><span class="n">ClassDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="viewcode-block" id="PydanticGenerator.generate_python_range"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.pydanticgen.PydanticGenerator.generate_python_range">[docs]</a>    <span class="k">def</span> <span class="nf">generate_python_range</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">slot_range</span><span class="p">,</span> <span class="n">slot_def</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">,</span> <span class="n">class_def</span><span class="p">:</span> <span class="n">ClassDefinition</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate the python range for a slot range value</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">sv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span>
 
         <span class="k">if</span> <span class="n">slot_def</span><span class="o">.</span><span class="n">designates_type</span><span class="p">:</span>
-            <span class="n">pyrange</span> <span class="o">=</span> <span class="s2">&quot;Literal[&quot;</span> <span class="o">+</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-                <span class="p">[</span><span class="s2">&quot;</span><span class="se">\&quot;</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">x</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\&quot;</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">get_accepted_type_designator_values</span><span class="p">(</span><span class="n">sv</span><span class="p">,</span> <span class="n">slot_def</span><span class="p">,</span> <span class="n">class_def</span><span class="p">)])</span> <span class="o">+</span> <span class="s2">&quot;]&quot;</span>
+            <span class="n">pyrange</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s2">&quot;Literal[&quot;</span>
+                <span class="o">+</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                    <span class="p">[</span>
+                        <span class="s1">&#39;&quot;&#39;</span> <span class="o">+</span> <span class="n">x</span> <span class="o">+</span> <span class="s1">&#39;&quot;&#39;</span>
+                        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">get_accepted_type_designator_values</span><span class="p">(</span>
+                            <span class="n">sv</span><span class="p">,</span> <span class="n">slot_def</span><span class="p">,</span> <span class="n">class_def</span>
+                        <span class="p">)</span>
+                    <span class="p">]</span>
+                <span class="p">)</span>
+                <span class="o">+</span> <span class="s2">&quot;]&quot;</span>
+            <span class="p">)</span>
         <span class="k">elif</span> <span class="n">slot_range</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">all_classes</span><span class="p">():</span>
-            <span class="n">pyrange</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_class_slot_range</span><span class="p">(</span><span class="n">slot_range</span><span class="p">,</span> <span class="n">inlined</span><span class="o">=</span><span class="n">slot_def</span><span class="o">.</span><span class="n">inlined</span><span class="p">,</span> <span class="n">inlined_as_list</span><span class="o">=</span><span class="n">slot_def</span><span class="o">.</span><span class="n">inlined_as_list</span><span class="p">)</span>
+            <span class="n">pyrange</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_class_slot_range</span><span class="p">(</span>
+                <span class="n">slot_range</span><span class="p">,</span>
+                <span class="n">inlined</span><span class="o">=</span><span class="n">slot_def</span><span class="o">.</span><span class="n">inlined</span><span class="p">,</span>
+                <span class="n">inlined_as_list</span><span class="o">=</span><span class="n">slot_def</span><span class="o">.</span><span class="n">inlined_as_list</span><span class="p">,</span>
+            <span class="p">)</span>
         <span class="k">elif</span> <span class="n">slot_range</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">all_enums</span><span class="p">():</span>
             <span class="n">pyrange</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">camelcase</span><span class="p">(</span><span class="n">slot_range</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="k">elif</span> <span class="n">slot_range</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">all_types</span><span class="p">():</span>
@@ -651,7 +700,12 @@
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;range: </span><span class="si">{</span><span class="n">slot_range</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">pyrange</span></div>
 
-<div class="viewcode-block" id="PydanticGenerator.generate_collection_key"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.pydanticgen.PydanticGenerator.generate_collection_key">[docs]</a>    <span class="k">def</span> <span class="nf">generate_collection_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slot_ranges</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">slot_def</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">,</span> <span class="n">class_def</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<div class="viewcode-block" id="PydanticGenerator.generate_collection_key"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.pydanticgen.PydanticGenerator.generate_collection_key">[docs]</a>    <span class="k">def</span> <span class="nf">generate_collection_key</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">slot_ranges</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">slot_def</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">,</span>
+        <span class="n">class_def</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Find the python range value (str, int, etc) for the identifier slot</span>
 <span class="sd">        of a class used as a slot range.</span>
@@ -663,20 +717,26 @@
 <span class="sd">        :param slot_ranges: list of python range values</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="n">collection_keys</span><span class="p">:</span><span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="n">collection_keys</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="n">slot_ranges</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
 
         <span class="k">for</span> <span class="n">slot_range</span> <span class="ow">in</span> <span class="n">slot_ranges</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">slot_range</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">slot_range</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">all_classes</span><span class="p">():</span>
-                <span class="k">continue</span> <span class="c1"># ignore non-class ranges</span>
+                <span class="k">continue</span>  <span class="c1"># ignore non-class ranges</span>
 
             <span class="n">identifier_slot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">get_identifier_slot</span><span class="p">(</span><span class="n">slot_range</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">identifier_slot</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">collection_keys</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">generate_python_range</span><span class="p">(</span><span class="n">identifier_slot</span><span class="o">.</span><span class="n">range</span><span class="p">,</span> <span class="n">slot_def</span><span class="p">,</span> <span class="n">class_def</span><span class="p">))</span>
+                <span class="n">collection_keys</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">generate_python_range</span><span class="p">(</span>
+                        <span class="n">identifier_slot</span><span class="o">.</span><span class="n">range</span><span class="p">,</span> <span class="n">slot_def</span><span class="p">,</span> <span class="n">class_def</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">collection_keys</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Slot with any_of range has multiple identifier slot range types: </span><span class="si">{</span><span class="n">collection_keys</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Slot with any_of range has multiple identifier slot range types: </span><span class="si">{</span><span class="n">collection_keys</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">collection_keys</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">collection_keys</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">return</span> <span class="kc">None</span></div>
@@ -696,7 +756,9 @@
         <span class="n">pyschema</span> <span class="o">=</span> <span class="n">SchemaDefinition</span><span class="p">(</span>
             <span class="nb">id</span><span class="o">=</span><span class="n">schema</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
             <span class="n">name</span><span class="o">=</span><span class="n">schema</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-            <span class="n">description</span><span class="o">=</span><span class="n">schema</span><span class="o">.</span><span class="n">description</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&quot;&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">schema</span><span class="o">.</span><span class="n">description</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="n">schema</span><span class="o">.</span><span class="n">description</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&quot;&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">schema</span><span class="o">.</span><span class="n">description</span>
+            <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">enums</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_enums</span><span class="p">(</span><span class="n">sv</span><span class="o">.</span><span class="n">all_enums</span><span class="p">())</span>
 
@@ -729,7 +791,7 @@
                     <span class="n">s</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">description</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&quot;&#39;</span><span class="p">)</span>
                 <span class="n">class_def</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">s</span>
 
-                <span class="n">slot_ranges</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="n">slot_ranges</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
 
                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">any_of</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">s</span><span class="o">.</span><span class="n">range</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Slot cannot have both range and any_of defined&quot;</span><span class="p">)</span>
@@ -740,10 +802,12 @@
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">slot_ranges</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">range</span><span class="p">)</span>
 
-                <span class="n">pyranges</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">generate_python_range</span><span class="p">(</span><span class="n">slot_range</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">class_def</span><span class="p">)</span>
-                            <span class="k">for</span> <span class="n">slot_range</span> <span class="ow">in</span> <span class="n">slot_ranges</span><span class="p">]</span>
+                <span class="n">pyranges</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">generate_python_range</span><span class="p">(</span><span class="n">slot_range</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">class_def</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">slot_range</span> <span class="ow">in</span> <span class="n">slot_ranges</span>
+                <span class="p">]</span>
 
-                <span class="n">pyranges</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">pyranges</span><span class="p">))</span> <span class="c1"># remove duplicates</span>
+                <span class="n">pyranges</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">pyranges</span><span class="p">))</span>  <span class="c1"># remove duplicates</span>
                 <span class="n">pyranges</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
 
                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">pyranges</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
@@ -751,14 +815,22 @@
                 <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">pyranges</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
                     <span class="n">pyrange</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Union[</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">pyranges</span><span class="p">)</span><span class="si">}</span><span class="s2">]&quot;</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not generate python range for </span><span class="si">{</span><span class="n">class_name</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">s</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Could not generate python range for </span><span class="si">{</span><span class="n">class_name</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">s</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="p">)</span>
 
                 <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">multivalued</span><span class="p">:</span>
                     <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">inlined</span> <span class="ow">or</span> <span class="n">s</span><span class="o">.</span><span class="n">inlined_as_list</span><span class="p">:</span>
-                        <span class="n">collection_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_collection_key</span><span class="p">(</span><span class="n">slot_ranges</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">class_def</span><span class="p">)</span>
+                        <span class="n">collection_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_collection_key</span><span class="p">(</span>
+                            <span class="n">slot_ranges</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">class_def</span>
+                        <span class="p">)</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="n">collection_key</span> <span class="o">=</span> <span class="kc">None</span>
-                    <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">inlined</span> <span class="o">==</span> <span class="kc">False</span> <span class="ow">or</span> <span class="n">collection_key</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">s</span><span class="o">.</span><span class="n">inlined_as_list</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="p">(</span>
+                        <span class="n">s</span><span class="o">.</span><span class="n">inlined</span> <span class="o">==</span> <span class="kc">False</span>
+                        <span class="ow">or</span> <span class="n">collection_key</span> <span class="ow">is</span> <span class="kc">None</span>
+                        <span class="ow">or</span> <span class="n">s</span><span class="o">.</span><span class="n">inlined_as_list</span> <span class="o">==</span> <span class="kc">True</span>
+                    <span class="p">):</span>
                         <span class="n">pyrange</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;List[</span><span class="si">{</span><span class="n">pyrange</span><span class="si">}</span><span class="s2">]&quot;</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="n">pyrange</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Dict[</span><span class="si">{</span><span class="n">collection_key</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">pyrange</span><span class="si">}</span><span class="s2">]&quot;</span>
@@ -779,7 +851,7 @@
         <span class="k">return</span> <span class="n">code</span></div>
 
 <div class="viewcode-block" id="PydanticGenerator.default_value_for_type"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.pydanticgen.PydanticGenerator.default_value_for_type">[docs]</a>    <span class="k">def</span> <span class="nf">default_value_for_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">typ</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s1">&#39;None&#39;</span></div></div>
+        <span class="k">return</span> <span class="s2">&quot;None&quot;</span></div></div>
 
 
 <span class="nd">@shared_arguments</span><span class="p">(</span><span class="n">PydanticGenerator</span><span class="p">)</span>

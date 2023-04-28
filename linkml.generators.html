@@ -2791,7 +2791,10 @@ Note that apply_to classes are transformed to mixins</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="linkml.generators.pythongen.PythonGenerator.gen_enum">
 <span class="sig-name descname"><span class="pre">gen_enum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">enum</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">EnumDefinition</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/linkml/generators/pythongen.html#PythonGenerator.gen_enum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.pythongen.PythonGenerator.gen_enum" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>Generate an enum class
+&#64;param enum: EnumDefinition object to be converted into code
+&#64;return: python code string</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="linkml.generators.pythongen.PythonGenerator.gen_enum_comment">
@@ -2853,9 +2856,16 @@ Note that apply_to classes are transformed to mixins</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="linkml.generators.pythongen.PythonGenerator.gen_pv_constructor">
-<span class="sig-name descname"><span class="pre">gen_pv_constructor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pv</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PermissibleValue</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/linkml/generators/pythongen.html#PythonGenerator.gen_pv_constructor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.pythongen.PythonGenerator.gen_pv_constructor" title="Permalink to this definition">#</a></dt>
-<dd><p>Generate a permissible value constructor
-&#64;param pv: Value to be constructed
+<span class="sig-name descname"><span class="pre">gen_pv_constructor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pv</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PermissibleValue</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/linkml/generators/pythongen.html#PythonGenerator.gen_pv_constructor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.pythongen.PythonGenerator.gen_pv_constructor" title="Permalink to this definition">#</a></dt>
+<dd><p>Generate a permissible value constructor in the form</p>
+<p>PermissibleValue(text=”NAME_ONLY”)
+PermissibleValue(</p>
+<blockquote>
+<div><p>text=”CODE”,
+description=”…”,
+meaning=”…”)</p>
+</div></blockquote>
+<p>&#64;param pv: Value to be constructed
 &#64;param indent: number of additional spaces to add on successive lines
 &#64;return: Permissible value constructor</p>
 </dd></dl>
@@ -2864,22 +2874,30 @@ Note that apply_to classes are transformed to mixins</p>
 <dt class="sig sig-object py" id="linkml.generators.pythongen.PythonGenerator.gen_pvs">
 <span class="sig-name descname"><span class="pre">gen_pvs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">enum</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">EnumDefinition</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/linkml/generators/pythongen.html#PythonGenerator.gen_pvs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.pythongen.PythonGenerator.gen_pvs" title="Permalink to this definition">#</a></dt>
 <dd><p>Generate the python compliant permissible value initializers as a set of class variables
-&#64;param enum:
-&#64;return:</p>
+&#64;param enum: EnumDefinition object to be converted into class variables
+&#64;return: string containing the enum declaration</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="linkml.generators.pythongen.PythonGenerator.gen_pvs2">
-<span class="sig-name descname"><span class="pre">gen_pvs2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">enum</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">EnumDefinition</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/linkml/generators/pythongen.html#PythonGenerator.gen_pvs2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.pythongen.PythonGenerator.gen_pvs2" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="linkml.generators.pythongen.PythonGenerator.gen_pvs_as_setattrs">
+<span class="sig-name descname"><span class="pre">gen_pvs_as_setattrs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">enum</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">EnumDefinition</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/linkml/generators/pythongen.html#PythonGenerator.gen_pvs_as_setattrs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.pythongen.PythonGenerator.gen_pvs_as_setattrs" title="Permalink to this definition">#</a></dt>
 <dd><p>Generate the non-python compliant permissible value initializers as a set of setattr instructions
-&#64;param enum:
-&#64;return:</p>
+in the form</p>
+<p>&#64;classmethod
+def _addvals(cls):</p>
+<blockquote>
+<div><dl class="simple">
+<dt>setattr(cls, “NAME”,</dt><dd><dl class="simple">
+<dt>PermissibleValue(</dt><dd><p>text=”NAME”,
+description=”description here”))</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</div></blockquote>
+<p>&#64;param enum: EnumDefinition object to be converted into code
+&#64;return: string containing the enum declaration</p>
 </dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="linkml.generators.pythongen.PythonGenerator.gen_pvs2_initializers">
-<span class="sig-name descname"><span class="pre">gen_pvs2_initializers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">enum</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">EnumDefinition</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/linkml/generators/pythongen.html#PythonGenerator.gen_pvs2_initializers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.pythongen.PythonGenerator.gen_pvs2_initializers" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="linkml.generators.pythongen.PythonGenerator.gen_references">
@@ -2964,6 +2982,15 @@ Note that apply_to classes are transformed to mixins</p>
 </dl>
 <p>&#64;param cls: class to get keys for
 &#64;return: List of primary keys or identifiers</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml.generators.pythongen.PythonGenerator.process_multiline_string">
+<span class="sig-name descname"><span class="pre">process_multiline_string</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix_string</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/linkml/generators/pythongen.html#PythonGenerator.process_multiline_string"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.pythongen.PythonGenerator.process_multiline_string" title="Permalink to this definition">#</a></dt>
+<dd><p>Process a (potentially multi-line) string, preserving existing formatting</p>
+<p>&#64;param input: input string to be formatted
+&#64;param prefix_string: the text to prefix the first line of the output
+&#64;return: formatted string</p>
 </dd></dl>
 
 <dl class="py method">
@@ -4560,8 +4587,7 @@ representation such as JsonSchema</p>
 <li><a class="reference internal" href="#linkml.generators.pythongen.PythonGenerator.gen_postinits"><code class="docutils literal notranslate"><span class="pre">PythonGenerator.gen_postinits()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.pythongen.PythonGenerator.gen_pv_constructor"><code class="docutils literal notranslate"><span class="pre">PythonGenerator.gen_pv_constructor()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.pythongen.PythonGenerator.gen_pvs"><code class="docutils literal notranslate"><span class="pre">PythonGenerator.gen_pvs()</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.pythongen.PythonGenerator.gen_pvs2"><code class="docutils literal notranslate"><span class="pre">PythonGenerator.gen_pvs2()</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.pythongen.PythonGenerator.gen_pvs2_initializers"><code class="docutils literal notranslate"><span class="pre">PythonGenerator.gen_pvs2_initializers()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.pythongen.PythonGenerator.gen_pvs_as_setattrs"><code class="docutils literal notranslate"><span class="pre">PythonGenerator.gen_pvs_as_setattrs()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.pythongen.PythonGenerator.gen_references"><code class="docutils literal notranslate"><span class="pre">PythonGenerator.gen_references()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.pythongen.PythonGenerator.gen_schema"><code class="docutils literal notranslate"><span class="pre">PythonGenerator.gen_schema()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.pythongen.PythonGenerator.gen_slot"><code class="docutils literal notranslate"><span class="pre">PythonGenerator.gen_slot()</span></code></a></li>
@@ -4575,6 +4601,7 @@ representation such as JsonSchema</p>
 <li><a class="reference internal" href="#linkml.generators.pythongen.PythonGenerator.is_key_value_class"><code class="docutils literal notranslate"><span class="pre">PythonGenerator.is_key_value_class()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.pythongen.PythonGenerator.key_name_for"><code class="docutils literal notranslate"><span class="pre">PythonGenerator.key_name_for()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.pythongen.PythonGenerator.primary_keys_for"><code class="docutils literal notranslate"><span class="pre">PythonGenerator.primary_keys_for()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.pythongen.PythonGenerator.process_multiline_string"><code class="docutils literal notranslate"><span class="pre">PythonGenerator.process_multiline_string()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.pythongen.PythonGenerator.python_uri_for"><code class="docutils literal notranslate"><span class="pre">PythonGenerator.python_uri_for()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.pythongen.PythonGenerator.range_cardinality"><code class="docutils literal notranslate"><span class="pre">PythonGenerator.range_cardinality()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.pythongen.PythonGenerator.range_type_name"><code class="docutils literal notranslate"><span class="pre">PythonGenerator.range_type_name()</span></code></a></li>
