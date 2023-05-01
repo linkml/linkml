@@ -48,6 +48,7 @@ class ConfiguredBaseModel(WeakRefShimBaseModel,
                 extra = {% if allow_extra %}'allow'{% else %}'forbid'{% endif %},
                 arbitrary_types_allowed = True,
                 use_enum_values = True):
+    pass
 
 {% for e in enums.values() %}
 class {{ e.name }}(str, Enum):
