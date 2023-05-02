@@ -17,8 +17,31 @@ schema:
       multivalued: true
       pattern: e.*
 
-    # TODO: this should also contain test cases for has_member and all_members
-    # See: https://github.com/linkml/linkml/issues/1107
+    int_list_with_all_members:
+      range: integer
+      multivalued: true
+      all_members:
+        minimum_value: 2
+        maximum_value: 5
+
+    int_list_with_has_member:
+      range: integer
+      multivalued: true
+      has_member:
+        minimum_value: 2
+        maximum_value: 5
+
+    string_list_with_all_members:
+      range: string
+      multivalued: true
+      all_members:
+        pattern: e.*
+
+    string_list_with_has_member:
+      range: string
+      multivalued: true
+      has_member:
+        pattern: e.*
 
   classes:
     Test:
@@ -26,6 +49,10 @@ schema:
       slots:
         - int_list
         - string_list
+        - int_list_with_all_members
+        - int_list_with_has_member
+        - string_list_with_all_members
+        - string_list_with_has_member
 json_schema:
   properties:
     int_list:
@@ -34,6 +61,20 @@ json_schema:
         maximum: 5
     string_list:
       items:
+        pattern: e.*
+    int_list_with_all_members:
+      items:
+        minimum: 2
+        maximum: 5
+    int_list_with_has_member:
+      contains:
+        minimum: 2
+        maximum: 5
+    string_list_with_all_members:
+      items:
+        pattern: e.*
+    string_list_with_has_member:
+      contains:
         pattern: e.*
 data_cases:
   - data: 
@@ -53,3 +94,37 @@ data_cases:
         - echo
         - foxtrot
     error_message: Failed validating 'pattern'
+  - data: 
+      int_list_with_all_members: [2, 3, 4, 5]
+  - data:
+      int_list_with_all_members: [1, 2, 3]
+    error_message: Failed validating 'minimum'
+  - data: 
+      int_list_with_has_member: [2, 3, 4, 5]
+  - data:
+      int_list_with_has_member: [0, 1, 2]
+  - data:
+      int_list_with_has_member: [6, 7, 8]
+    error_message: Failed validating 'contains'
+  - data:
+      string_list_with_all_members: 
+        - echo
+        - elephant
+  - data:
+      string_list_with_all_members: 
+        - echo
+        - foxtrot
+    error_message: Failed validating 'pattern'
+  - data:
+      string_list_with_has_member: 
+        - echo
+        - elephant
+  - data:
+      string_list_with_has_member: 
+        - echo
+        - foxtrot
+  - data:
+      string_list_with_has_member: 
+        - foxtrot
+        - golf
+    error_message: Failed validating 'contains'

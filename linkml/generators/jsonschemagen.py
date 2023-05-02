@@ -87,14 +87,11 @@ class JsonSchema(UserDict):
             
             self['required'].append(canonical_name)
 
-    def add_keyword(self, keyword: str, value: Any, applies_to_all_array_elements: bool = False):
+    def add_keyword(self, keyword: str, value: Any):
         if value is None:
             return
         
-        if applies_to_all_array_elements and self.is_array:
-            self['items'][keyword] = value
-        else:
-            self[keyword] = value
+        self[keyword] = value
 
     @property
     def is_array(self):
@@ -241,12 +238,23 @@ class JsonSchemaGenerator(Generator):
                 rule_subschemas.append(inverse_subschema)
 
         if len(rule_subschemas) == 1:
-            self.top_level_schema.update(rule_subschemas[0])
+            class_subschema.update(rule_subschemas[0])
         elif len(rule_subschemas) > 1:
-            self.top_level_schema["allOf"] = rule_subschemas
+            if "allOf" not in class_subschema:
+                class_subschema["allOf"] = []
+            class_subschema["allOf"].extend(rule_subschemas)
 
         self.top_level_schema.add_def(cls.name, class_subschema)
 
+        if (
+            self.top_class is not None and camelcase(self.top_class) == camelcase(cls.name)
+        ) or (self.top_class is None and cls.tree_root):
+            for key, value in class_subschema.items():
+                # check this first to ensure we don't overwrite things like additionalProperties
+                # or description on the root. But we do want to copy over properties, required, 
+                # if, then, etc.
+                if key not in self.top_level_schema:
+                    self.top_level_schema[key] = value
 
     def get_subschema_for_anonymous_class(self, cls: AnonymousClassExpression, properties_required: bool = False) -> Union[None, JsonSchema]:
         if not cls:
@@ -320,6 +328,18 @@ class JsonSchemaGenerator(Generator):
             typ = "string"
 
         return (typ, fmt, reference)
+    
+    def get_value_constraints_for_slot(self, slot: Union[AnonymousSlotExpression, None]) -> JsonSchema:
+        if slot is None:
+            return JsonSchema()
+        
+        constraints = JsonSchema()
+        constraints.add_keyword('pattern', slot.pattern)
+        constraints.add_keyword('minimum', slot.minimum_value)
+        constraints.add_keyword('maximum', slot.maximum_value)
+        constraints.add_keyword('const', slot.equals_string)
+        constraints.add_keyword('const', slot.equals_number)
+        return constraints
 
     def get_subschema_for_slot(self, slot: SlotDefinition, omit_type: bool = False) -> JsonSchema:
         slot_has_range_union = slot.any_of is not None and len(slot.any_of) > 0 and all(s.range is not None for s in slot.any_of)
@@ -403,15 +423,19 @@ class JsonSchemaGenerator(Generator):
 
         prop.add_keyword('description', slot.description)
 
-        prop.add_keyword('pattern', slot.pattern, applies_to_all_array_elements=True)
-        prop.add_keyword('minimum', slot.minimum_value, applies_to_all_array_elements=True)
-        prop.add_keyword('maximum', slot.maximum_value, applies_to_all_array_elements=True)
-        prop.add_keyword('const', slot.equals_string, applies_to_all_array_elements=True)
-        prop.add_keyword('const', slot.equals_number, applies_to_all_array_elements=True)
+        own_constraints = self.get_value_constraints_for_slot(slot)
 
         if prop.is_array:
+            all_element_constraints = self.get_value_constraints_for_slot(slot.all_members)
+            any_element_constraints = self.get_value_constraints_for_slot(slot.has_member)
             prop.add_keyword('minItems', slot.minimum_cardinality)
             prop.add_keyword('maxItems', slot.maximum_cardinality)
+            prop["items"].update(own_constraints)
+            prop["items"].update(all_element_constraints)
+            if any_element_constraints:
+                prop["contains"] = any_element_constraints
+        else:
+            prop.update(own_constraints)
 
         if prop.is_object:
             prop.add_keyword('minProperties', slot.minimum_cardinality)
@@ -442,11 +466,6 @@ class JsonSchemaGenerator(Generator):
         aliased_slot_name = self.aliased_slot_name(slot)
         prop = self.get_subschema_for_slot(slot)
         subschema.add_property(aliased_slot_name, prop, slot_is_required)
-
-        if (
-            self.top_class is not None and camelcase(self.top_class) == camelcase(cls.name)
-        ) or (self.top_class is None and cls.tree_root):
-            self.top_level_schema.add_property(aliased_slot_name, prop, slot_is_required)
 
     def serialize(self, **kwargs) -> str:
         self.start_schema()
