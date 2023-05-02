@@ -1,0 +1,79 @@
+schema:
+  id: http://example.org/test_collection_forms
+  name: test_collection_forms
+  imports:
+    - https://w3id.org/linkml/types
+  default_range: string
+
+  slots:
+    key:
+      key: true
+    value:
+    value2:
+    key_value_pairs:
+      range: KeyValuePair
+      multivalued: true
+      inlined: true
+    more_than_one_non_key_slots:
+      range: MoreThanOneNonKeySlot
+      multivalued: true
+      inlined: true
+
+  classes:
+    Test:
+      tree_root: true
+      slots:
+        - key_value_pairs
+        - more_than_one_non_key_slots
+    KeyValuePair:
+      slots:
+        - key
+        - value
+    MoreThanOneNonKeySlot:
+      slots:
+        - key
+        - value
+        - value2
+
+data_cases:
+  - data:
+      key_value_pairs:
+        k1:
+          key: k1
+          value: v1
+        k2:
+          key: k2
+          value: v2
+  - data:
+      key_value_pairs:
+        k1:
+          value: v1
+        k2:
+          value: v2
+  - data:
+      key_value_pairs:
+        k1: v1
+        k2: v2
+  - data:
+      more_than_one_non_key_slots:
+        k1:
+          key: k1
+          value: v1
+          value2: v12
+        k2:
+          key: k2
+          value: v2
+          value2: v22
+  - data:
+      more_than_one_non_key_slots:
+        k1:
+          value: v1
+          value2: v12
+        k2:
+          value: v2
+          value2: v22
+  - data:
+      more_than_one_non_key_slots:
+        k1: v1
+        k2: v2  
+    error_message: "not valid under any of the given schemas"

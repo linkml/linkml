@@ -229,6 +229,17 @@ class JsonSchemaTestCase(unittest.TestCase):
 
         self.externalFileTest("jsonschema_multivalued_element_constraints.yaml")
 
+    def test_collection_forms(self):
+        """Tests that expanded, compact, and simple dicts can be validated"""
+
+        self.externalFileTest("jsonschema_collection_forms.yaml")
+
+    def test_empty_inlined_as_dict_objects(self):
+        """Tests that inlined objects with no non-key required slots can be null/empty"""
+
+        self.externalFileTest("jsonschema_empty_inlined_as_dict_objects.yaml")
+
+
     # **********************************************************
     #
     #    Utility methods

@@ -371,11 +371,34 @@ class JsonSchemaGenerator(Generator):
                 if slot_is_inlined:
                     # If inline we have to include redefined slots
                     if slot.multivalued:
-                        range_id_slot = self.schemaview.get_identifier_slot(slot.range, use_key=True)
+                        range_id_slot, range_simple_dict_value_slot, range_required_slots = self._get_range_associated_slots(slot)
+                        # if the range class has an ID and the slot is not inlined as a list, then we need to consider
+                        # various inlined as dict formats
                         if range_id_slot is not None and not slot.inlined_as_list:
+                            # At a minimum, the inlined dict can have keys (additionalProps) that are IDs
+                            # and the values are the range class but possibly omitting the ID.
+                            additionalProps = [JsonSchema.ref_for(reference, identifier_optional=True)]
+
+                            # If the range can be collected as a simple dict, then we can also accept the value
+                            # of that simple dict directly.
+                            if range_simple_dict_value_slot is not None:
+                                additionalProps.append(self.get_subschema_for_slot(range_simple_dict_value_slot))
+
+                            # If the range has no required slots, then null is acceptable
+                            if len(range_required_slots) == 0:
+                                additionalProps.append(JsonSchema({"type": "null"}))
+
+                            # If through the above logic we identified multiple acceptable forms, then wrap them
+                            # in an "anyOf", otherwise just take the only acceptable form
+                            if len(additionalProps) == 1:
+                                additionalProps = additionalProps[0]
+                            else:
+                                additionalProps = JsonSchema({
+                                    "anyOf": additionalProps
+                                })
                             prop = JsonSchema({
                                 "type": "object",
-                                "additionalProperties": JsonSchema.ref_for(reference, identifier_optional=True)
+                                "additionalProperties": additionalProps
                             })
                             self.top_level_schema.add_lax_def(reference, self.aliased_slot_name(range_id_slot))
                         else:
@@ -453,6 +476,26 @@ class JsonSchemaGenerator(Generator):
             self.handle_class(class_definition)
 
         return self.top_level_schema.to_json(sort_keys=True, indent=self.indent if self.indent > 0 else None)
+    
+    def _get_range_associated_slots(self, slot: SlotDefinition) -> Tuple[Union[SlotDefinition, None], Union[SlotDefinition, None], Union[List[SlotDefinition], None]]:
+        range_class = self.schemaview.get_class(slot.range)
+        if range_class is None:
+            return None, None, None
+        
+        range_class_id_slot = self.schemaview.get_identifier_slot(range_class.name, use_key=True)
+        if range_class_id_slot is None:
+            return None, None, None
+        
+        non_id_slots = [
+            s for s in self.schemaview.class_induced_slots(range_class.name) if s.name != range_class_id_slot.name
+        ]
+        non_id_required_slots = [s for s in non_id_slots if s.required]
+
+        range_simple_dict_value_slot = None
+        if len(non_id_slots) == 1:
+            range_simple_dict_value_slot = non_id_slots[0]
+        
+        return range_class_id_slot, range_simple_dict_value_slot, non_id_required_slots
 
 
 @shared_arguments(JsonSchemaGenerator)
