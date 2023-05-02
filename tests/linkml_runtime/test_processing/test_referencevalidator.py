@@ -455,6 +455,12 @@ class ReferenceValidatorTestCase(unittest.TestCase):
                         [],
                         {"id1": obj_identified_minimal},
                     ),
+                    (
+                        {"id1": {}},
+                        [],
+                        [],
+                        {"id1": obj_identified_minimal},
+                    ),
                 ],
             ),
             (
@@ -462,6 +468,7 @@ class ReferenceValidatorTestCase(unittest.TestCase):
                 SlotDefinition("s", range="Simple", multivalued=True, inlined=True),
                 [
                     ({"id1": {}}, [], [], {"id1": obj_identified_minimal}),
+                    ({"id1": None}, [], [], {"id1": obj_identified_minimal}),
                     (
                         {"id1": "name1"},
                         [(CollectionForm.SimpleDict, CollectionForm.ExpandedDict)],
@@ -476,6 +483,8 @@ class ReferenceValidatorTestCase(unittest.TestCase):
                 [
                     ({}, [], [], {}),
                     ({"id1": {"name": "name1"}}, [], [], {"id1": {"name": "name1"}}),
+                    ({"id1": {}}, [], [], {"id1": {}}),
+                    ({"id1": None}, [], [], {"id1": None}),
                     (
                         {"id1": {"id": "id1", "name": "name1"}},
                         [(CollectionForm.ExpandedDict, CollectionForm.CompactDict)],
@@ -490,6 +499,7 @@ class ReferenceValidatorTestCase(unittest.TestCase):
                 [
                     ({}, [], [], {}),
                     ({"id1": "name1"}, [], [], {"id1": "name1"}),
+                    ({"id1": None}, [], [], {"id1": None}),
                     # ([{"id1": "name1"}], [(CollectionForm.List, CollectionForm.SimpleDict)], [], {"id1": "name1"}),
                     (
                         {"id1": obj_simple},

@@ -291,6 +291,8 @@ def _remove_pk(obj: dict, pk_slot_name: str) -> dict:
 
 def _add_pk(obj: dict, pk_slot_name: str, pk_val: Any) -> dict:
     """Make a new ExpandedDict ready copy of a dict, adding the pk_slot_name"""
+    if obj is None:
+        return {pk_slot_name: pk_val}
     if pk_slot_name not in obj:
         obj = copy(obj)
         obj[pk_slot_name] = pk_val
