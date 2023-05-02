@@ -7,7 +7,7 @@
 [![PyPIDownloadsMonth](https://img.shields.io/pypi/dm/linkml-runtime?logo=PyPI&color=blue)](https://pypi.org/project/linkml-runtime)
 [![codecov](https://codecov.io/gh/linkml/linkml-runtime/branch/main/graph/badge.svg?token=FOBHNSK5WG)](https://codecov.io/gh/linkml/linkml-runtime)
 
-Runtime support for linkml generated models
+Runtime support for linkml generated data classes
 
 ## About
 
