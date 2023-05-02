@@ -87,14 +87,11 @@ class JsonSchema(UserDict):
             
             self['required'].append(canonical_name)
 
-    def add_keyword(self, keyword: str, value: Any, applies_to_all_array_elements: bool = False):
+    def add_keyword(self, keyword: str, value: Any):
         if value is None:
             return
         
-        if applies_to_all_array_elements and self.is_array:
-            self['items'][keyword] = value
-        else:
-            self[keyword] = value
+        self[keyword] = value
 
     @property
     def is_array(self):
@@ -331,6 +328,18 @@ class JsonSchemaGenerator(Generator):
             typ = "string"
 
         return (typ, fmt, reference)
+    
+    def get_value_constraints_for_slot(self, slot: Union[AnonymousSlotExpression, None]) -> JsonSchema:
+        if slot is None:
+            return JsonSchema()
+        
+        constraints = JsonSchema()
+        constraints.add_keyword('pattern', slot.pattern)
+        constraints.add_keyword('minimum', slot.minimum_value)
+        constraints.add_keyword('maximum', slot.maximum_value)
+        constraints.add_keyword('const', slot.equals_string)
+        constraints.add_keyword('const', slot.equals_number)
+        return constraints
 
     def get_subschema_for_slot(self, slot: SlotDefinition, omit_type: bool = False) -> JsonSchema:
         slot_has_range_union = slot.any_of is not None and len(slot.any_of) > 0 and all(s.range is not None for s in slot.any_of)
@@ -391,15 +400,19 @@ class JsonSchemaGenerator(Generator):
 
         prop.add_keyword('description', slot.description)
 
-        prop.add_keyword('pattern', slot.pattern, applies_to_all_array_elements=True)
-        prop.add_keyword('minimum', slot.minimum_value, applies_to_all_array_elements=True)
-        prop.add_keyword('maximum', slot.maximum_value, applies_to_all_array_elements=True)
-        prop.add_keyword('const', slot.equals_string, applies_to_all_array_elements=True)
-        prop.add_keyword('const', slot.equals_number, applies_to_all_array_elements=True)
+        own_constraints = self.get_value_constraints_for_slot(slot)
 
         if prop.is_array:
+            all_element_constraints = self.get_value_constraints_for_slot(slot.all_members)
+            any_element_constraints = self.get_value_constraints_for_slot(slot.has_member)
             prop.add_keyword('minItems', slot.minimum_cardinality)
             prop.add_keyword('maxItems', slot.maximum_cardinality)
+            prop["items"].update(own_constraints)
+            prop["items"].update(all_element_constraints)
+            if any_element_constraints:
+                prop["contains"] = any_element_constraints
+        else:
+            prop.update(own_constraints)
 
         if prop.is_object:
             prop.add_keyword('minProperties', slot.minimum_cardinality)
