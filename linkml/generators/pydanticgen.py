@@ -1,4 +1,5 @@
 import os
+import logging
 from collections import defaultdict
 from copy import deepcopy
 from dataclasses import dataclass, field
@@ -148,10 +149,10 @@ class PydanticGenerator(OOCodeGenerator):
     ) -> Dict[str, dict]:
         # TODO: make an explicit class to represent how an enum is passed to the template
         enums = {}
-        for enum_name, enum_orignal in all_enums.items():
+        for enum_name, enum_original in all_enums.items():
             enum = {"name": camelcase(enum_name), "values": {}}
 
-            for pv in enum_orignal.permissible_values.values():
+            for pv in enum_original.permissible_values.values():
                 label = self.generate_enum_label(pv.text)
                 enum["values"][label] = pv.text.replace('"', '\\"')
 
@@ -198,7 +199,6 @@ class PydanticGenerator(OOCodeGenerator):
         :return: Dictionary of dictionaries with predefined slot values for each class
         """
         sv = self.schemaview
-        default_prefix = sv.schema.default_prefix
         slot_values = defaultdict(dict)
         for class_def in sv.all_classes().values():
             for slot_name in sv.class_slots(class_def.name):
@@ -259,12 +259,12 @@ class PydanticGenerator(OOCodeGenerator):
                 any_of_range = slot_range.range
                 if (
                     any_of_range in sv.all_classes()
-                    and sv.get_identifier_slot(any_of_range) is not None
+                    and sv.get_identifier_slot(any_of_range, use_key=True) is not None
                 ):
                     has_identifier_slot = True
         if (
             slot.range in sv.all_classes()
-            and sv.get_identifier_slot(slot.range) is not None
+            and sv.get_identifier_slot(slot.range, use_key=True) is not None
         ):
             has_identifier_slot = True
         return has_identifier_slot
@@ -321,7 +321,7 @@ class PydanticGenerator(OOCodeGenerator):
             inlined
             or inlined_as_list
             or (
-                sv.get_identifier_slot(range_cls.name) is None
+                sv.get_identifier_slot(range_cls.name, use_key=True) is None
                 and not sv.is_mixin(range_cls.name)
             )
         ):
@@ -429,7 +429,7 @@ class PydanticGenerator(OOCodeGenerator):
             if slot_range is None or slot_range not in self.schemaview.all_classes():
                 continue  # ignore non-class ranges
 
-            identifier_slot = self.schemaview.get_identifier_slot(slot_range)
+            identifier_slot = self.schemaview.get_identifier_slot(slot_range, use_key=True)
             if identifier_slot is not None:
                 collection_keys.add(
                     self.generate_python_range(
