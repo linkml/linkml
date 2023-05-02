@@ -297,6 +297,7 @@
         <article role="main">
           <h1>Source code for linkml.generators.pydanticgen</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
 <span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
@@ -446,10 +447,10 @@
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]:</span>
         <span class="c1"># TODO: make an explicit class to represent how an enum is passed to the template</span>
         <span class="n">enums</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">for</span> <span class="n">enum_name</span><span class="p">,</span> <span class="n">enum_orignal</span> <span class="ow">in</span> <span class="n">all_enums</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">enum_name</span><span class="p">,</span> <span class="n">enum_original</span> <span class="ow">in</span> <span class="n">all_enums</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">enum</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">camelcase</span><span class="p">(</span><span class="n">enum_name</span><span class="p">),</span> <span class="s2">&quot;values&quot;</span><span class="p">:</span> <span class="p">{}}</span>
 
-            <span class="k">for</span> <span class="n">pv</span> <span class="ow">in</span> <span class="n">enum_orignal</span><span class="o">.</span><span class="n">permissible_values</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">pv</span> <span class="ow">in</span> <span class="n">enum_original</span><span class="o">.</span><span class="n">permissible_values</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
                 <span class="n">label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_enum_label</span><span class="p">(</span><span class="n">pv</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
                 <span class="n">enum</span><span class="p">[</span><span class="s2">&quot;values&quot;</span><span class="p">][</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="n">pv</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&quot;&#39;</span><span class="p">)</span>
 
@@ -496,7 +497,6 @@
 <span class="sd">        :return: Dictionary of dictionaries with predefined slot values for each class</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">sv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span>
-        <span class="n">default_prefix</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">default_prefix</span>
         <span class="n">slot_values</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">dict</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">class_def</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">all_classes</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="k">for</span> <span class="n">slot_name</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">class_slots</span><span class="p">(</span><span class="n">class_def</span><span class="o">.</span><span class="n">name</span><span class="p">):</span>
@@ -557,12 +557,12 @@
                 <span class="n">any_of_range</span> <span class="o">=</span> <span class="n">slot_range</span><span class="o">.</span><span class="n">range</span>
                 <span class="k">if</span> <span class="p">(</span>
                     <span class="n">any_of_range</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">all_classes</span><span class="p">()</span>
-                    <span class="ow">and</span> <span class="n">sv</span><span class="o">.</span><span class="n">get_identifier_slot</span><span class="p">(</span><span class="n">any_of_range</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                    <span class="ow">and</span> <span class="n">sv</span><span class="o">.</span><span class="n">get_identifier_slot</span><span class="p">(</span><span class="n">any_of_range</span><span class="p">,</span> <span class="n">use_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
                 <span class="p">):</span>
                     <span class="n">has_identifier_slot</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">if</span> <span class="p">(</span>
             <span class="n">slot</span><span class="o">.</span><span class="n">range</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">all_classes</span><span class="p">()</span>
-            <span class="ow">and</span> <span class="n">sv</span><span class="o">.</span><span class="n">get_identifier_slot</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="ow">and</span> <span class="n">sv</span><span class="o">.</span><span class="n">get_identifier_slot</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="p">,</span> <span class="n">use_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
         <span class="p">):</span>
             <span class="n">has_identifier_slot</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">return</span> <span class="n">has_identifier_slot</span></div>
@@ -619,7 +619,7 @@
             <span class="n">inlined</span>
             <span class="ow">or</span> <span class="n">inlined_as_list</span>
             <span class="ow">or</span> <span class="p">(</span>
-                <span class="n">sv</span><span class="o">.</span><span class="n">get_identifier_slot</span><span class="p">(</span><span class="n">range_cls</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span>
+                <span class="n">sv</span><span class="o">.</span><span class="n">get_identifier_slot</span><span class="p">(</span><span class="n">range_cls</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">use_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span>
                 <span class="ow">and</span> <span class="ow">not</span> <span class="n">sv</span><span class="o">.</span><span class="n">is_mixin</span><span class="p">(</span><span class="n">range_cls</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
             <span class="p">)</span>
         <span class="p">):</span>
@@ -727,7 +727,7 @@
             <span class="k">if</span> <span class="n">slot_range</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">slot_range</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">all_classes</span><span class="p">():</span>
                 <span class="k">continue</span>  <span class="c1"># ignore non-class ranges</span>
 
-            <span class="n">identifier_slot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">get_identifier_slot</span><span class="p">(</span><span class="n">slot_range</span><span class="p">)</span>
+            <span class="n">identifier_slot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">get_identifier_slot</span><span class="p">(</span><span class="n">slot_range</span><span class="p">,</span> <span class="n">use_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">identifier_slot</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">collection_keys</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">generate_python_range</span><span class="p">(</span>
