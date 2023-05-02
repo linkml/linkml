@@ -307,6 +307,8 @@ class ReferenceValidatorTestCase(unittest.TestCase):
         obj_identified_minimal = {"id": "id1"}
         obj_non_identified_minimal = {"name": "name1"}
         obj_simple = {"id": "id1", "name": "name1"}
+        # cases = form, slot, examples
+        #   example = input, expected_repairs, expected_unrepaired, expected_output
         cases = [
             (
                 CollectionForm.NonCollection,
@@ -435,6 +437,20 @@ class ReferenceValidatorTestCase(unittest.TestCase):
                 [
                     (
                         {"id1": obj_identified_minimal},
+                        [],
+                        [],
+                        {"id1": obj_identified_minimal},
+                    ),
+                    (
+                        {"id1": obj_identified_minimal,
+                         "id2": obj_identified_minimal},
+                        [],
+                        [],
+                        {"id1": obj_identified_minimal,
+                         "id2": obj_identified_minimal},
+                    ),
+                    (
+                        {"id1": None},
                         [],
                         [],
                         {"id1": obj_identified_minimal},
