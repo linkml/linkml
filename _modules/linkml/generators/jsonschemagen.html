@@ -669,11 +669,34 @@
                 <span class="k">if</span> <span class="n">slot_is_inlined</span><span class="p">:</span>
                     <span class="c1"># If inline we have to include redefined slots</span>
                     <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">multivalued</span><span class="p">:</span>
-                        <span class="n">range_id_slot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">get_identifier_slot</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="p">,</span> <span class="n">use_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                        <span class="n">range_id_slot</span><span class="p">,</span> <span class="n">range_simple_dict_value_slot</span><span class="p">,</span> <span class="n">range_required_slots</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_range_associated_slots</span><span class="p">(</span><span class="n">slot</span><span class="p">)</span>
+                        <span class="c1"># if the range class has an ID and the slot is not inlined as a list, then we need to consider</span>
+                        <span class="c1"># various inlined as dict formats</span>
                         <span class="k">if</span> <span class="n">range_id_slot</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">slot</span><span class="o">.</span><span class="n">inlined_as_list</span><span class="p">:</span>
+                            <span class="c1"># At a minimum, the inlined dict can have keys (additionalProps) that are IDs</span>
+                            <span class="c1"># and the values are the range class but possibly omitting the ID.</span>
+                            <span class="n">additionalProps</span> <span class="o">=</span> <span class="p">[</span><span class="n">JsonSchema</span><span class="o">.</span><span class="n">ref_for</span><span class="p">(</span><span class="n">reference</span><span class="p">,</span> <span class="n">identifier_optional</span><span class="o">=</span><span class="kc">True</span><span class="p">)]</span>
+
+                            <span class="c1"># If the range can be collected as a simple dict, then we can also accept the value</span>
+                            <span class="c1"># of that simple dict directly.</span>
+                            <span class="k">if</span> <span class="n">range_simple_dict_value_slot</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                                <span class="n">additionalProps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_subschema_for_slot</span><span class="p">(</span><span class="n">range_simple_dict_value_slot</span><span class="p">))</span>
+
+                            <span class="c1"># If the range has no required slots, then null is acceptable</span>
+                            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">range_required_slots</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                                <span class="n">additionalProps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">JsonSchema</span><span class="p">({</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;null&quot;</span><span class="p">}))</span>
+
+                            <span class="c1"># If through the above logic we identified multiple acceptable forms, then wrap them</span>
+                            <span class="c1"># in an &quot;anyOf&quot;, otherwise just take the only acceptable form</span>
+                            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">additionalProps</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                                <span class="n">additionalProps</span> <span class="o">=</span> <span class="n">additionalProps</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="n">additionalProps</span> <span class="o">=</span> <span class="n">JsonSchema</span><span class="p">({</span>
+                                    <span class="s2">&quot;anyOf&quot;</span><span class="p">:</span> <span class="n">additionalProps</span>
+                                <span class="p">})</span>
                             <span class="n">prop</span> <span class="o">=</span> <span class="n">JsonSchema</span><span class="p">({</span>
                                 <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;object&quot;</span><span class="p">,</span>
-                                <span class="s2">&quot;additionalProperties&quot;</span><span class="p">:</span> <span class="n">JsonSchema</span><span class="o">.</span><span class="n">ref_for</span><span class="p">(</span><span class="n">reference</span><span class="p">,</span> <span class="n">identifier_optional</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                                <span class="s2">&quot;additionalProperties&quot;</span><span class="p">:</span> <span class="n">additionalProps</span>
                             <span class="p">})</span>
                             <span class="bp">self</span><span class="o">.</span><span class="n">top_level_schema</span><span class="o">.</span><span class="n">add_lax_def</span><span class="p">(</span><span class="n">reference</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">aliased_slot_name</span><span class="p">(</span><span class="n">range_id_slot</span><span class="p">))</span>
                         <span class="k">else</span><span class="p">:</span>
@@ -750,7 +773,27 @@
         <span class="k">for</span> <span class="n">class_definition</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">all_classes</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">handle_class</span><span class="p">(</span><span class="n">class_definition</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">top_level_schema</span><span class="o">.</span><span class="n">to_json</span><span class="p">(</span><span class="n">sort_keys</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">indent</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">indent</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="kc">None</span><span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">top_level_schema</span><span class="o">.</span><span class="n">to_json</span><span class="p">(</span><span class="n">sort_keys</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">indent</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">indent</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="kc">None</span><span class="p">)</span></div>
+    
+    <span class="k">def</span> <span class="nf">_get_range_associated_slots</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">SlotDefinition</span><span class="p">,</span> <span class="kc">None</span><span class="p">],</span> <span class="n">Union</span><span class="p">[</span><span class="n">SlotDefinition</span><span class="p">,</span> <span class="kc">None</span><span class="p">],</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">SlotDefinition</span><span class="p">],</span> <span class="kc">None</span><span class="p">]]:</span>
+        <span class="n">range_class</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">get_class</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">range_class</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+        
+        <span class="n">range_class_id_slot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">get_identifier_slot</span><span class="p">(</span><span class="n">range_class</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">use_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">range_class_id_slot</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+        
+        <span class="n">non_id_slots</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">class_induced_slots</span><span class="p">(</span><span class="n">range_class</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="n">range_class_id_slot</span><span class="o">.</span><span class="n">name</span>
+        <span class="p">]</span>
+        <span class="n">non_id_required_slots</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">non_id_slots</span> <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">required</span><span class="p">]</span>
+
+        <span class="n">range_simple_dict_value_slot</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">non_id_slots</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">range_simple_dict_value_slot</span> <span class="o">=</span> <span class="n">non_id_slots</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        
+        <span class="k">return</span> <span class="n">range_class_id_slot</span><span class="p">,</span> <span class="n">range_simple_dict_value_slot</span><span class="p">,</span> <span class="n">non_id_required_slots</span></div>
 
 
 <span class="nd">@shared_arguments</span><span class="p">(</span><span class="n">JsonSchemaGenerator</span><span class="p">)</span>
