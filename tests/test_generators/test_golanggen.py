@@ -9,16 +9,16 @@ OUT = env.expected_path("kitchen_sink.go")
 
 
 class GolangGeneratorTestCase(unittest.TestCase):
-    def test_tsgen(self):
+    def test_golanggen(self):
         """typescript"""
-        tss = GolangGenerator(SCHEMA, mergeimports=True).serialize()
+        code = GolangGenerator(SCHEMA, mergeimports=True).serialize()
         with open(OUT, "w") as stream:
-            stream.write(tss)
+            stream.write(code)
 
         def assert_in(s: str) -> None:
-            assert s.replace(" ", "") in tss.replace(" ", "")
+            assert s.replace(" ", "") in code.replace(" ", "")
 
-        assert "package kitchen" in tss
+        assert "package kitchen" in code
         assert_in("type Person struct {")
         assert_in("HasFamilialRelationships []FamilialRelationship")
         assert_in("CodeSystems []CodeSystem")
