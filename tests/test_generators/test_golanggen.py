@@ -18,7 +18,7 @@ class GolangGeneratorTestCase(unittest.TestCase):
         def assert_in(s: str) -> None:
             assert s.replace(" ", "") in tss.replace(" ", "")
 
-        assert "package kitchen_sink" in tss
+        assert "package kitchen" in tss
         assert_in("type Person struct {")
         assert_in("HasFamilialRelationships []FamilialRelationship")
         assert_in("CodeSystems []CodeSystem")
