@@ -149,7 +149,7 @@ def cli(
     outargs = {}
     if datautils._is_xsv(input_format):
         if index_slot is None:
-            index_slot = infer_index_slot(sv, target_class)
+            index_slot = datautils.infer_index_slot(sv, target_class)
             if index_slot is None:
                 raise Exception("--index-slot is required for CSV input")
         inargs["index_slot"] = index_slot
