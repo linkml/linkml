@@ -1,0 +1,32 @@
+persons:
+  - id: P:003
+    name: hermoine granger
+    age_in_years: 33
+  - id: P:004
+    name: harry potter
+    has_employment_history:
+      - employed_at: ROR:1
+        started_at_time: 2023-01-01
+        is_current: true
+    has_familial_relationships:
+      - related_to: P:001
+        type: SIBLING_OF
+    has_medical_history:
+      - started_at_time: 2023-01-01
+        in_location: GEO:1234
+        diagnosis:
+          id: CODE:P1789
+          name: hypertension
+        procedure:
+          id: CODE:P1846
+          name: valve repair
+    addresses:
+      - street: 4 privet drive
+        city: surrey
+companies:
+  - id: ROR:1
+    name: hogwarts
+activities:
+  - id: A:1
+    started_at_time: 2023-01-01
+    was_associated_with: Agent:987
