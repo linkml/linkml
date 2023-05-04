@@ -29,6 +29,11 @@ class PydanticDumpersTestCase(LoaderDumperTestCase):
         # test contents of yaml file with cleaned dict made from bookseries instance in setup
         with open(self.env.input_path('book_series_lotr.yaml'), 'r') as f:
             data = yaml.safe_load(f)
+            # explicitly confirm that unset fields aren't written to the file
+            for i in range(3):
+                'genres' not in data['books'][i].keys()
+                'inStock' not in data['books'][i].keys()
+                'creator' not in data['books'][i].keys()
             self.assertEqual(data, remove_empty_items(self.bookseries.dict()))
 
 
@@ -40,4 +45,9 @@ class PydanticDumpersTestCase(LoaderDumperTestCase):
         # test contents of json file with cleaned dict made from bookseries instance in setup
         with open(self.env.input_path('book_series_lotr.json'), 'r') as f:
             data = json.load(f)
+            # explicitly confirm that unset fields aren't written to the file
+            for i in range(3):
+                'genres' not in data['books'][i].keys()
+                'inStock' not in data['books'][i].keys()
+                'creator' not in data['books'][i].keys()
             self.assertEqual(data, remove_empty_items(self.bookseries.dict()))
