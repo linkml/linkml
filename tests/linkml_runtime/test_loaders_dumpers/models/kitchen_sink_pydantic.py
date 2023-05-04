@@ -10,14 +10,15 @@ version = "None"
 
 class WeakRefShimBaseModel(BaseModel):
    __slots__ = '__weakref__'
-    
+
 class ConfiguredBaseModel(WeakRefShimBaseModel,
-                validate_assignment = True, 
-                validate_all = True, 
-                underscore_attrs_are_private = True, 
-                extra = 'forbid', 
-                arbitrary_types_allowed = True):
-    pass                    
+                validate_assignment = True,
+                validate_all = True,
+                underscore_attrs_are_private = True,
+                extra = 'forbid',
+                arbitrary_types_allowed = True,
+                use_enum_values = False):
+    pass
 
 
 class FamilialRelationshipType(str, Enum):
