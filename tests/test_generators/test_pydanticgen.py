@@ -391,14 +391,17 @@ classes:
         implements:
           - linkml:axis0
         range: LatitudeSeries
+        required: true
       y:
         implements:
           - linkml:axis1
         range: LongitudeSeries
+        required: true
       time:
         implements:
           - linkml:axis2
         range: DaySeries
+        required: true
       temperatures:
         implements:
           - linkml:elements
@@ -418,6 +421,7 @@ classes:
         multivalued: true
         implements:
           - linkml:elements
+        required: true
         unit:
           ucum_code: deg
 
@@ -431,6 +435,7 @@ classes:
         multivalued: true
         implements:
           - linkml:elements
+        required: true
         unit:
           ucum_code: deg
 
@@ -444,6 +449,7 @@ classes:
         multivalued: true
         implements:
           - linkml:elements
+        required: true
         unit:
           ucum_code: a
 """

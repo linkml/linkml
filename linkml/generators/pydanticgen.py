@@ -32,6 +32,7 @@ default_template = """
 from __future__ import annotations
 from datetime import datetime, date
 from enum import Enum
+import numpy as np
 from typing import List, Dict, Optional, Any, Union, Literal
 from pydantic import BaseModel as BaseModel, Field
 from linkml_runtime.linkml_model import Decimal
@@ -225,6 +226,8 @@ class PydanticGenerator(OOCodeGenerator):
                 # Multivalued slots that are either not inlined (just an identifier) or are
                 # inlined as lists should get default_factory list, if they're inlined but
                 # not as a list, that means a dictionary
+                elif "linkml:elements" in slot.implements:
+                    slot_values[camelcase(class_def.name)][slot.name] = None
                 elif slot.multivalued:
                     has_identifier_slot = self.range_class_has_identifier_slot(slot)
 
@@ -314,15 +317,6 @@ class PydanticGenerator(OOCodeGenerator):
         # Hardcoded handling for Any
         if range_cls.class_uri == "linkml:Any":
             return "Any"
-
-        if "linkml:OneDimensionalSeries" in range_cls.implements:
-            return "np.ndarray"  # TODO add dtype
-
-        if "linkml:TwoDimensionalArray" in range_cls.implements:
-            return "np.ndarray"  # TODO add dtype
-
-        if "linkml:ThreeDimensionalArray" in range_cls.implements:
-            return "np.ndarray"  # TODO add dtype
 
         # check slot implements
 
@@ -535,7 +529,9 @@ class PydanticGenerator(OOCodeGenerator):
                         f"Could not generate python range for {class_name}.{s.name}"
                     )
 
-                if s.multivalued:
+                if "linkml:elements" in s.implements:
+                    pyrange = "np.ndarray"
+                elif s.multivalued:
                     if s.inlined or s.inlined_as_list:
                         collection_key = self.generate_collection_key(
                             slot_ranges, s, class_def
