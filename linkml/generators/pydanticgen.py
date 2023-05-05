@@ -32,7 +32,9 @@ default_template = """
 from __future__ import annotations
 from datetime import datetime, date
 from enum import Enum
+{% if uses_numpy -%}
 import numpy as np
+{%- endif %}
 from typing import List, Dict, Optional, Any, Union, Literal
 from pydantic import BaseModel as BaseModel, Field
 from linkml_runtime.linkml_model import Decimal
@@ -472,6 +474,8 @@ class PydanticGenerator(OOCodeGenerator):
         )
         enums = self.generate_enums(sv.all_enums())
 
+        uses_numpy = False
+
         sorted_classes = self.sort_classes(list(sv.all_classes().values()))
         self.sorted_class_names = [camelcase(c.name) for c in sorted_classes]
 
@@ -531,6 +535,9 @@ class PydanticGenerator(OOCodeGenerator):
 
                 if "linkml:elements" in s.implements:
                     pyrange = "np.ndarray"
+                    if "linkml:ColumnOrderedArray" in class_def.implements:
+                        raise NotImplementedError("Cannot generate Pydantic code for ColumnOrderedArrays.")
+                    uses_numpy = True
                 elif s.multivalued:
                     if s.inlined or s.inlined_as_list:
                         collection_key = self.generate_collection_key(
@@ -559,6 +566,7 @@ class PydanticGenerator(OOCodeGenerator):
             metamodel_version=self.schema.metamodel_version,
             version=self.schema.version,
             class_isa_plus_mixins=self.get_class_isa_plus_mixins(),
+            uses_numpy=uses_numpy
         )
         return code
 

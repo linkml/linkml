@@ -368,6 +368,7 @@ classes:
 
 
     def test_pydantic_arrays(self):
+        import numpy as np
 
         unit_test_schema = """
 id: https://example.org/arrays
@@ -385,7 +386,7 @@ classes:
     tree_root: true
     implements:
       - linkml:ThreeDimensionalArray
-      - linkml:ColumnOrderedArray
+      - linkml:RowOrderedArray
     attributes:
       x:
         implements:
@@ -454,22 +455,98 @@ classes:
           ucum_code: a
 """
 
-        sv = SchemaView(unit_test_schema)
         gen = PydanticGenerator(schema=unit_test_schema)
 
-        # TODO write test
-        print(gen.serialize())
-        # enums = gen.generate_enums(sv.all_enums())
-        # assert enums
-        # enum = enums["TestEnum"]
-        # assert enum
-        # assert enum["values"]["number_123"] == "123"
-        # assert enum["values"]["PLUS_SIGN"] == "+"
-        # assert (
-        #     enum["values"]["This_AMPERSAND_that_plus_maybe_a_TOP_HAT"]
-        #     == "This & that, plus maybe a 🎩"
-        # )
-        # assert enum["values"]["Ohio"] == "Ohio"
+        code = gen.serialize()
+        self.assertIn("import numpy as np", code)
+        # self.assertEqual(code.count("values: np.ndarray = Field()"), 3)
+        # self.assertEqual(code.count("temperatures: np.ndarray = Field()"), 1)
+
+        mod = compile_python(code, PACKAGE)
+        lat = mod.LatitudeSeries(values=np.array([1, 2, 3]))
+        np.testing.assert_array_equal(lat.values, np.array([1, 2, 3]))
+        lon = mod.LongitudeSeries(values=np.array([4, 5, 6]))
+        np.testing.assert_array_equal(lon.values, np.array([4, 5, 6]))
+        day = mod.DaySeries(values=np.array([7, 8, 9]))
+        np.testing.assert_array_equal(day.values, np.array([7, 8, 9]))
+        temperature = mod.TemperatureMatrix(
+            x=lat,
+            y=lon,
+            time=day,
+            temperatures=np.ones((3, 3, 3)),
+        )
+        self.assertEqual(temperature.x, lat)
+        self.assertEqual(temperature.y, lon)
+        self.assertEqual(temperature.time, day)
+        np.testing.assert_array_equal(temperature.temperatures, np.ones((3, 3, 3)))
+
+
+    def test_column_ordered_array_not_supported(self):
+        unit_test_schema = """
+id: https://example.org/arrays
+name: arrays-example
+prefixes:
+  linkml: https://w3id.org/linkml/
+  example: https://example.org/
+default_prefix: example
+imports:
+  - linkml:types
+
+classes:
+  TemperatureMatrix:
+    tree_root: true
+    implements:
+      - linkml:TwoDimensionalArray
+      - linkml:ColumnOrderedArray
+    attributes:
+      x:
+        implements:
+          - linkml:axis0
+        range: LatitudeSeries
+        required: true
+      y:
+        implements:
+          - linkml:axis1
+        range: LongitudeSeries
+        required: true
+      temperatures:
+        implements:
+          - linkml:elements
+        multivalued: true
+        range: float
+        required: true
+        unit:
+          ucum_code: K
+
+  LatitudeSeries:
+    description: A series whose values represent latitude
+    implements:
+      - linkml:OneDimensionalSeries
+    attributes:
+      values:
+        range: float
+        multivalued: true
+        implements:
+          - linkml:elements
+        required: true
+
+  LongitudeSeries:
+    description: A series whose values represent longitude
+    implements:
+      - linkml:OneDimensionalSeries
+    attributes:
+      values:
+        range: float
+        multivalued: true
+        implements:
+          - linkml:elements
+        required: true
+
+"""
+
+        gen = PydanticGenerator(schema=unit_test_schema)
+        with self.assertRaises(NotImplementedError):
+          gen.serialize()
 
 
 if __name__ == "__main__":
