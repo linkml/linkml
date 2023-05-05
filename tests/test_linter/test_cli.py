@@ -236,3 +236,42 @@ slots:
             self.assertIn("Class has name 'person'", result.stdout)
             self.assertIn(str(schema_b), result.stdout)
             self.assertIn("Slot has name 'a slot'", result.stdout)
+
+    def test_validate_schema(self):
+        with self.runner.isolated_filesystem():
+            with open(SCHEMA_FILE, "w") as f:
+                f.write("""
+id: http://example.org/test
+classes:
+    person:
+        description: a person
+""")
+
+            result = self.runner.invoke(main, ['--validate', SCHEMA_FILE])
+            self.assertEqual(result.exit_code, 2)
+            self.assertIn(
+                "error    In <root>: 'name' is a required property  (valid-schema)",
+                result.stdout,
+            )
+            self.assertIn(
+                "warning  Class has name 'person'  (standard_naming)",
+                result.stdout,
+            )
+
+    def test_validate_schema_only(self):
+        with self.runner.isolated_filesystem():
+            with open(SCHEMA_FILE, "w") as f:
+                f.write("""
+id: http://example.org/test
+classes:
+    person:
+        description: a person
+""")
+
+            result = self.runner.invoke(main, ['--validate-only', SCHEMA_FILE])
+            self.assertEqual(result.exit_code, 2)
+            self.assertIn(
+                "error    In <root>: 'name' is a required property  (valid-schema)",
+                result.stdout,
+            )
+            self.assertNotIn("(standard_naming)", result.stdout)

@@ -39,11 +39,17 @@ class IssueJSONSchemaTypesTestCase(TestEnvironmentTestCase):
         assert props["has_ds"]["items"]["$ref"] == "#/$defs/D"
 
         # multi-valued, inlined (as dict) #411
-        D_id_opt = props["has_ds2"]["additionalProperties"]["$ref"].replace(
+        D_id_any_of = props["has_ds2"]["additionalProperties"]["anyOf"]
+        D_id_with_ref = next(d for d in D_id_any_of if "$ref" in d)
+        assert D_id_with_ref
+        D_id_opt = D_id_with_ref["$ref"].replace(
             "#/$defs/", ""
         )
         assert D_id_opt in defs
         assert defs[D_id_opt]["required"] == []
+        # D has no required slots other than the id, so the inlined value can also be null
+        D_type_null = next(d for d in D_id_any_of if "type" in d and d.type == 'null')
+        assert D_type_null
 
         # single-valued, non-inlined (foreign key)
         assert props["parent"]["type"] == "string"

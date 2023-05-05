@@ -277,7 +277,6 @@ class Issue723ExportCase(TestEnvironmentTestCase):
         p3.roles = [mod.Role.ANALYST, mod.Role.INVESTIGATOR]
         self.assertEqual(p, p3)
         self.assertEqual(p.status, mod.VitalStatus.ALIVE)
-        self.assertEqual(type(p.status), mod.VitalStatus)
         self.assertEqual(p.roles, [mod.Role.ANALYST, mod.Role.INVESTIGATOR])
         # test the "double wrap" code
         p.status = mod.VitalStatus(mod.VitalStatus.ALIVE)
