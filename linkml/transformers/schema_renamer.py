@@ -108,10 +108,17 @@ class SchemaRenamer:
 
 @click.command()
 @click.option("-o", "--output", help="path to output schema")
-@click.option("-C", "--class-names", help="function for class names")
-@click.option("-S", "--slot-names", help="function for slot names")
+@click.option("-C", "--class-names", default="camel", show_default=True, help="function for class names")
+@click.option("-S", "--slot-names", default="snake", show_default=True, help="function for slot names")
 @click.argument("schema")
 def main(schema, output, class_names, slot_names):
+    """
+    Transforms a schema, renaming all elements to follow canonical casing conventions.
+
+    Example:
+
+        schema_renamer.py -C camelcase -S snakecase my_schema.yaml > my_schema_renamed.yaml
+    """
     sv = SchemaView(schema)
 
     def n2f(n: str) -> Callable:
