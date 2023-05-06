@@ -56,6 +56,7 @@ class PydanticGeneratorTestCase(unittest.TestCase):
             p2 = Person(**json)
             print(p2)
             p2 = Person(**dataset_dict["persons"][0])
+            print(dataset_dict)
             ds1 = Dataset(**dataset_dict)
             print(ds1)
             assert len(ds1.persons) == 2

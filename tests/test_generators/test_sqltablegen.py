@@ -89,7 +89,7 @@ class SQLTableGeneratorTestCase(unittest.TestCase):
                 assert "id INTEGER" in ddl
                 # sqlite does not support comments
             if dialect == "mysql":
-                assert "id INTEGER AUTO_INCREMENT" in ddl
+                assert "id INTEGER NOT NULL AUTO_INCREMENT" in ddl
                 assert "COMMENT" in ddl
 
     def test_generate_ddl(self):
