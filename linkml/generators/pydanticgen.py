@@ -320,10 +320,6 @@ class PydanticGenerator(OOCodeGenerator):
         if range_cls.class_uri == "linkml:Any":
             return "Any"
 
-        # check slot implements
-
-        # TODO replace entire generated class with an xarray
-
         # Inline the class itself only if the class is defined as inline, or if the class has no
         # identifier slot and also isn't a mixin.
         if (
@@ -534,6 +530,7 @@ class PydanticGenerator(OOCodeGenerator):
                     )
 
                 if "linkml:elements" in s.implements:
+                    # TODO add support for xarray
                     pyrange = "np.ndarray"
                     if "linkml:ColumnOrderedArray" in class_def.implements:
                         raise NotImplementedError("Cannot generate Pydantic code for ColumnOrderedArrays.")
