@@ -546,7 +546,7 @@ classes:
 
         gen = PydanticGenerator(schema=unit_test_schema)
         with self.assertRaises(NotImplementedError):
-          gen.serialize()
+            gen.serialize()
 
 
 if __name__ == "__main__":
