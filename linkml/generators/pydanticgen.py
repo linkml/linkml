@@ -563,7 +563,7 @@ class PydanticGenerator(OOCodeGenerator):
             metamodel_version=self.schema.metamodel_version,
             version=self.schema.version,
             class_isa_plus_mixins=self.get_class_isa_plus_mixins(),
-            uses_numpy=uses_numpy
+            uses_numpy=uses_numpy,
         )
         return code
 
