@@ -7,7 +7,7 @@
 URI: [ks:Relationship](https://w3id.org/linkml/tests/kitchen_sink/Relationship)
 
 
-[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[Relationship&#124;started_at_time:date%20%3F;ended_at_time:date%20%3F;related_to:string%20%3F;type:string%20%3F]^-[FamilialRelationship],[FamilialRelationship])](https://yuml.me/diagram/nofunky;dir:TB/class/[Relationship&#124;started_at_time:date%20%3F;ended_at_time:date%20%3F;related_to:string%20%3F;type:string%20%3F]^-[FamilialRelationship],[FamilialRelationship])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[Relationship&#124;started_at_time:date%20%3F;ended_at_time:date%20%3F;related_to:string%20%3F;type:string%20%3F;cordialness:CordialnessEnum%20%3F]^-[FamilialRelationship],[FamilialRelationship])](https://yuml.me/diagram/nofunky;dir:TB/class/[Relationship&#124;started_at_time:date%20%3F;ended_at_time:date%20%3F;related_to:string%20%3F;type:string%20%3F;cordialness:CordialnessEnum%20%3F]^-[FamilialRelationship],[FamilialRelationship])
 
 ## Children
 
@@ -29,3 +29,5 @@ URI: [ks:Relationship](https://w3id.org/linkml/tests/kitchen_sink/Relationship)
      * Range: [String](String.md)
  * [type](type.md)  <sub>0..1</sub>
      * Range: [String](String.md)
+ * [Relationship➞cordialness](Relationship_cordialness.md)  <sub>0..1</sub>
+     * Range: [CordialnessEnum](CordialnessEnum.md)
