@@ -381,7 +381,7 @@
 <span class="s2">    {{attr.name}}: {{ attr.annotations[&#39;python_range&#39;].value }} = Field(</span>
 <span class="s2">    {</span><span class="si">%- i</span><span class="s2">f predefined_slot_values[c.name][attr.name] -%}</span>
 <span class="s2">        {{ predefined_slot_values[c.name][attr.name] }}</span>
-<span class="s2">    {</span><span class="si">%- e</span><span class="s2">lse -%}</span>
+<span class="s2">    {</span><span class="si">%- e</span><span class="s2">lif not attr.required -%}</span>
 <span class="s2">        None</span>
 <span class="s2">    {</span><span class="si">%- e</span><span class="s2">ndif -%}</span>
 <span class="s2">    {</span><span class="si">%- i</span><span class="s2">f attr.title != None %}, title=&quot;{{attr.title}}&quot;{</span><span class="si">% e</span><span class="s2">ndif -%}</span>
