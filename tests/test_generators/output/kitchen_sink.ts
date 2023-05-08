@@ -9,17 +9,17 @@ export type CodeSystemId = string
 export type ActivityId = string
 export type AgentId = string
 
-export interface HasAliases  {
+export interface HasAliases {
     aliases?: string,
 };
 
-export interface Friend  {
+export interface Friend {
     name?: string,
 };
 /**
  * A person, living or dead
  */
-export interface Person  extends HasAliases  {
+export interface Person extends HasAliases {
     id: string,
     name?: string,
     has_employment_history?: EmploymentEvent[],
@@ -46,42 +46,42 @@ includes newlines
  * a
  * list
  */
-export interface Organization  extends HasAliases  {
+export interface Organization extends HasAliases {
     id: string,
     name?: string,
     aliases?: string,
 };
 
-export interface Place  extends HasAliases  {
+export interface Place extends HasAliases {
     id: string,
     name?: string,
     aliases?: string,
 };
 
-export interface Address  {
+export interface Address {
     street?: string,
     city?: string,
 };
 
-export interface Concept  {
+export interface Concept {
     id: string,
     name?: string,
     in_code_system?: CodeSystemId,
 };
 
-export interface DiagnosisConcept  extends Concept  {
+export interface DiagnosisConcept extends Concept {
     id: string,
     name?: string,
     in_code_system?: CodeSystemId,
 };
 
-export interface ProcedureConcept  extends Concept  {
+export interface ProcedureConcept extends Concept {
     id: string,
     name?: string,
     in_code_system?: CodeSystemId,
 };
 
-export interface Event  {
+export interface Event {
     started_at_time?: date,
     ended_at_time?: date,
     is_current?: boolean,
@@ -89,7 +89,7 @@ export interface Event  {
     metadata?: AnyObject,
 };
 
-export interface Relationship  {
+export interface Relationship {
     started_at_time?: date,
     ended_at_time?: date,
     related_to?: string,
@@ -97,7 +97,7 @@ export interface Relationship  {
     cordialness?: string,
 };
 
-export interface FamilialRelationship  extends Relationship  {
+export interface FamilialRelationship extends Relationship {
     cordialness?: string,
     started_at_time?: date,
     ended_at_time?: date,
@@ -105,7 +105,7 @@ export interface FamilialRelationship  extends Relationship  {
     type: string,
 };
 
-export interface BirthEvent  extends Event  {
+export interface BirthEvent extends Event {
     in_location?: PlaceId,
     started_at_time?: date,
     ended_at_time?: date,
@@ -114,7 +114,7 @@ export interface BirthEvent  extends Event  {
     metadata?: AnyObject,
 };
 
-export interface EmploymentEvent  extends Event  {
+export interface EmploymentEvent extends Event {
     employed_at?: CompanyId,
     type?: string,
     started_at_time?: date,
@@ -124,7 +124,7 @@ export interface EmploymentEvent  extends Event  {
     metadata?: AnyObject,
 };
 
-export interface MedicalEvent  extends Event  {
+export interface MedicalEvent extends Event {
     in_location?: PlaceId,
     diagnosis?: DiagnosisConcept,
     procedure?: ProcedureConcept,
@@ -135,11 +135,11 @@ export interface MedicalEvent  extends Event  {
     metadata?: AnyObject,
 };
 
-export interface WithLocation  {
+export interface WithLocation {
     in_location?: PlaceId,
 };
 
-export interface MarriageEvent  extends Event, WithLocation  {
+export interface MarriageEvent extends Event, WithLocation {
     married_to?: PersonId,
     in_location?: PlaceId,
     started_at_time?: date,
@@ -149,19 +149,19 @@ export interface MarriageEvent  extends Event, WithLocation  {
     metadata?: AnyObject,
 };
 
-export interface Company  extends Organization  {
+export interface Company extends Organization {
     ceo?: PersonId,
     id: string,
     name?: string,
     aliases?: string,
 };
 
-export interface CodeSystem  {
+export interface CodeSystem {
     id: string,
     name?: string,
 };
 
-export interface Dataset  {
+export interface Dataset {
     /** Example of a slot that has an unconstrained range */
     metadata?: AnyObject,
     persons?: Person[],
@@ -170,39 +170,39 @@ export interface Dataset  {
     code_systems?: {[index: CodeSystemId]: CodeSystem },
 };
 
-export interface FakeClass  {
+export interface FakeClass {
     test_attribute?: string,
 };
 
-export interface ClassWithSpaces  {
+export interface ClassWithSpaces {
     slot_with_space_1?: string,
 };
 
-export interface SubclassTest  extends ClassWithSpaces  {
+export interface SubclassTest extends ClassWithSpaces {
     slot_with_space_2?: ClassWithSpaces,
     slot_with_space_1?: string,
 };
 
-export interface SubSubClass2  extends SubclassTest  {
+export interface SubSubClass2 extends SubclassTest {
     slot_with_space_2?: ClassWithSpaces,
     slot_with_space_1?: string,
 };
 /**
  * Same depth as Sub sub class 1
  */
-export interface TubSubClass1  extends SubclassTest  {
+export interface TubSubClass1 extends SubclassTest {
     slot_with_space_2?: ClassWithSpaces,
     slot_with_space_1?: string,
 };
 /**
  * Example of unconstrained class
  */
-export interface AnyObject  {
+export interface AnyObject {
 };
 /**
  * a provence-generating activity
  */
-export interface Activity  {
+export interface Activity {
     id: string,
     started_at_time?: date,
     ended_at_time?: date,
@@ -214,7 +214,7 @@ export interface Activity  {
 /**
  * a provence-generating agent
  */
-export interface Agent  {
+export interface Agent {
     id: string,
     acted_on_behalf_of?: AgentId,
     was_informed_by?: ActivityId,
