@@ -1,0 +1,18 @@
+id: https://w3id.org/linkml/examples/personinfo
+name: personinfo
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+default_range: string
+
+classes:
+  Person:
+    attributes:
+      id:
+        required: true
+      aliases:
+      full_name:
+        required: true
+      phone:
+      age:
