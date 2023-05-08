@@ -1,7 +1,8 @@
-import sys
 import unittest
 
+from linkml_runtime.linkml_model import SlotDefinition
 from linkml.generators.typescriptgen import TypescriptGenerator
+from linkml.utils.schema_builder import SchemaBuilder
 from tests.test_generators.environment import env
 
 SCHEMA = env.input_path("kitchen_sink.yaml")
@@ -22,6 +23,18 @@ class TypescriptGeneratorTestCase(unittest.TestCase):
         assert_in("export interface Person  extends HasAliases")
         assert_in("has_familial_relationships?: FamilialRelationship[]")
         assert_in("code_systems?: {[index: CodeSystemId]: CodeSystem }")
+
+    def test_required_slots(self):
+        """typescript"""
+        sb = SchemaBuilder("test")
+        sb.add_defaults()
+        id = SlotDefinition(name="id", multivalued=False, range="string", required=True)
+        description = SlotDefinition(name="description", multivalued=False, range="string")
+        sb.add_class("Person", slots=[id, description])
+        schema = sb.schema
+        tss = TypescriptGenerator(schema, mergeimports=True).serialize()
+        assert("id: string" in tss)
+        assert("description?: string" in tss)
 
 
 if __name__ == "__main__":
