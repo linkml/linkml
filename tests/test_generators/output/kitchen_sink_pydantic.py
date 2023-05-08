@@ -16,7 +16,8 @@ class ConfiguredBaseModel(WeakRefShimBaseModel,
                 validate_all = True,
                 underscore_attrs_are_private = True,
                 extra = 'forbid',
-                arbitrary_types_allowed = True):
+                arbitrary_types_allowed = True,
+                use_enum_values = True):
     pass
 
 
@@ -54,6 +55,14 @@ class LifeStatusEnum(str, Enum):
     LIVING = "LIVING"
     DEAD = "DEAD"
     UNKNOWN = "UNKNOWN"
+    
+    
+
+class CordialnessEnum(str, Enum):
+    
+    heartfelt = "heartfelt"
+    hateful = "hateful"
+    indifferent = "indifferent"
     
     
 
@@ -101,7 +110,7 @@ includes newlines
  * a
  * list
     """
-    id: Optional[str] = Field(None)
+    id: str = Field()
     name: Optional[str] = Field(None)
     aliases: Optional[List[str]] = Field(default_factory=list)
     
@@ -109,7 +118,7 @@ includes newlines
 
 class Place(HasAliases):
     
-    id: Optional[str] = Field(None)
+    id: str = Field()
     name: Optional[str] = Field(None)
     aliases: Optional[List[str]] = Field(default_factory=list)
     
@@ -124,7 +133,7 @@ class Address(ConfiguredBaseModel):
 
 class Concept(ConfiguredBaseModel):
     
-    id: Optional[str] = Field(None)
+    id: str = Field()
     name: Optional[str] = Field(None)
     in_code_system: Optional[str] = Field(None)
     
@@ -132,7 +141,7 @@ class Concept(ConfiguredBaseModel):
 
 class DiagnosisConcept(Concept):
     
-    id: Optional[str] = Field(None)
+    id: str = Field()
     name: Optional[str] = Field(None)
     in_code_system: Optional[str] = Field(None)
     
@@ -140,7 +149,7 @@ class DiagnosisConcept(Concept):
 
 class ProcedureConcept(Concept):
     
-    id: Optional[str] = Field(None)
+    id: str = Field()
     name: Optional[str] = Field(None)
     in_code_system: Optional[str] = Field(None)
     
@@ -161,15 +170,17 @@ class Relationship(ConfiguredBaseModel):
     ended_at_time: Optional[date] = Field(None)
     related_to: Optional[str] = Field(None)
     type: Optional[str] = Field(None)
+    cordialness: Optional[CordialnessEnum] = Field(None)
     
 
 
 class FamilialRelationship(Relationship):
     
+    cordialness: Optional[CordialnessEnum] = Field(None)
     started_at_time: Optional[date] = Field(None)
     ended_at_time: Optional[date] = Field(None)
-    related_to: str = Field(None)
-    type: FamilialRelationshipType = Field(None)
+    related_to: str = Field()
+    type: FamilialRelationshipType = Field()
     
 
 
@@ -226,7 +237,7 @@ class MarriageEvent(WithLocation, Event):
 class Company(Organization):
     
     ceo: Optional[str] = Field(None)
-    id: Optional[str] = Field(None)
+    id: str = Field()
     name: Optional[str] = Field(None)
     aliases: Optional[List[str]] = Field(default_factory=list)
     
@@ -234,7 +245,7 @@ class Company(Organization):
 
 class CodeSystem(ConfiguredBaseModel):
     
-    id: Optional[str] = Field(None)
+    id: str = Field()
     name: Optional[str] = Field(None)
     
 
@@ -288,7 +299,7 @@ class Activity(ConfiguredBaseModel):
     """
     a provence-generating activity
     """
-    id: Optional[str] = Field(None)
+    id: str = Field()
     started_at_time: Optional[date] = Field(None)
     ended_at_time: Optional[date] = Field(None)
     was_informed_by: Optional[str] = Field(None)
@@ -302,7 +313,7 @@ class Agent(ConfiguredBaseModel):
     """
     a provence-generating agent
     """
-    id: Optional[str] = Field(None)
+    id: str = Field()
     acted_on_behalf_of: Optional[str] = Field(None)
     was_informed_by: Optional[str] = Field(None)
     

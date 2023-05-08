@@ -1,5 +1,5 @@
 # Auto generated from kitchen_sink.yaml by pythongen.py version: 0.9.0
-# Generation date: 2023-04-25T06:42:46
+# Generation date: 2023-05-08T13:17:40
 # Schema: kitchen_sink
 #
 # id: https://w3id.org/linkml/tests/kitchen_sink
@@ -429,6 +429,7 @@ class Relationship(YAMLRoot):
     ended_at_time: Optional[Union[str, XSDDate]] = None
     related_to: Optional[str] = None
     type: Optional[str] = None
+    cordialness: Optional[Union[str, "CordialnessEnum"]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self.started_at_time is not None and not isinstance(self.started_at_time, XSDDate):
@@ -442,6 +443,9 @@ class Relationship(YAMLRoot):
 
         if self.type is not None and not isinstance(self.type, str):
             self.type = str(self.type)
+
+        if self.cordialness is not None and not isinstance(self.cordialness, CordialnessEnum):
+            self.cordialness = CordialnessEnum(self.cordialness)
 
         super().__post_init__(**kwargs)
 
@@ -457,6 +461,7 @@ class FamilialRelationship(Relationship):
 
     type: Union[str, "FamilialRelationshipType"] = None
     related_to: Union[str, PersonId] = None
+    cordialness: Optional[str] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.type):
@@ -468,6 +473,12 @@ class FamilialRelationship(Relationship):
             self.MissingRequiredField("related_to")
         if not isinstance(self.related_to, PersonId):
             self.related_to = PersonId(self.related_to)
+
+        if self.cordialness is not None and not isinstance(self.cordialness, str):
+            self.cordialness = str(self.cordialness)
+
+        if self.cordialness is not None and not isinstance(self.cordialness, CordialnessEnum):
+            self.cordialness = CordialnessEnum(self.cordialness)
 
         super().__post_init__(**kwargs)
 
@@ -873,6 +884,22 @@ class LifeStatusEnum(EnumDefinitionImpl):
         name="LifeStatusEnum",
     )
 
+class CordialnessEnum(EnumDefinitionImpl):
+
+    heartfelt = PermissibleValue(
+        text="heartfelt",
+        description="warm and hearty friendliness")
+    hateful = PermissibleValue(
+        text="hateful",
+        description="spiteful")
+    indifferent = PermissibleValue(
+        text="indifferent",
+        description="not overly friendly nor obnoxiously spiteful")
+
+    _defn = EnumDefinition(
+        name="CordialnessEnum",
+    )
+
 # Slots
 class slots:
     pass
@@ -956,6 +983,9 @@ slots.mixin_slot_I = Slot(uri=KS.mixin_slot_I, name="mixin_slot_I", curie=KS.cur
 slots.life_status = Slot(uri=KS.life_status, name="life_status", curie=KS.curie('life_status'),
                    model_uri=KS.life_status, domain=None, range=Optional[Union[str, "LifeStatusEnum"]])
 
+slots.cordialness = Slot(uri=KS.cordialness, name="cordialness", curie=KS.curie('cordialness'),
+                   model_uri=KS.cordialness, domain=None, range=Optional[str])
+
 slots.id = Slot(uri=CORE.id, name="id", curie=CORE.curie('id'),
                    model_uri=KS.id, domain=None, range=URIRef)
 
@@ -1033,11 +1063,17 @@ slots.Person_species_name = Slot(uri=KS.species_name, name="Person_species name"
 slots.Person_stomach_count = Slot(uri=KS.stomach_count, name="Person_stomach count", curie=KS.curie('stomach_count'),
                    model_uri=KS.Person_stomach_count, domain=Person, range=Optional[int])
 
+slots.Relationship_cordialness = Slot(uri=KS.cordialness, name="Relationship_cordialness", curie=KS.curie('cordialness'),
+                   model_uri=KS.Relationship_cordialness, domain=Relationship, range=Optional[Union[str, "CordialnessEnum"]])
+
 slots.FamilialRelationship_type = Slot(uri=KS.type, name="FamilialRelationship_type", curie=KS.curie('type'),
                    model_uri=KS.FamilialRelationship_type, domain=FamilialRelationship, range=Union[str, "FamilialRelationshipType"])
 
 slots.FamilialRelationship_related_to = Slot(uri=KS.related_to, name="FamilialRelationship_related to", curie=KS.curie('related_to'),
                    model_uri=KS.FamilialRelationship_related_to, domain=FamilialRelationship, range=Union[str, PersonId])
+
+slots.FamilialRelationship_cordialness = Slot(uri=KS.cordialness, name="FamilialRelationship_cordialness", curie=KS.curie('cordialness'),
+                   model_uri=KS.FamilialRelationship_cordialness, domain=FamilialRelationship, range=Optional[Union[str, "CordialnessEnum"]])
 
 slots.EmploymentEvent_type = Slot(uri=KS.type, name="EmploymentEvent_type", curie=KS.curie('type'),
                    model_uri=KS.EmploymentEvent_type, domain=EmploymentEvent, range=Optional[Union[str, "EmploymentEventType"]])
