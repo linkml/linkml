@@ -18,6 +18,9 @@ DATA_NORMALIZED = env.input_path("kitchen_sink_normalized_inst_01.yaml")
 PYDANTIC_OUT = env.expected_path("kitchen_sink_pydantic.py")
 PACKAGE = "kitchen_sink"
 
+MLM_SCHEMA = env.input_path("kitchen_sink_mlm.yaml")
+MLM_PYDANTIC = env.expected_path("kitchen_sink_mlm.pydantic.py")
+
 
 class PydanticGeneratorTestCase(unittest.TestCase):
     """
@@ -34,6 +37,7 @@ class PydanticGeneratorTestCase(unittest.TestCase):
         #  https://github.com/linkml/linkml/issues/1304
         with open(DATA_NORMALIZED) as stream:
             dataset_dict = yaml.safe_load(stream)
+
         # NOTE: compile_python and dynamic compilation in general does not seem to work
         # for pydantic code. As an alternative, we import the generated model within a function
         # that is called *after* the code is generated.
@@ -52,6 +56,7 @@ class PydanticGeneratorTestCase(unittest.TestCase):
             p2 = Person(**json)
             print(p2)
             p2 = Person(**dataset_dict["persons"][0])
+            print(dataset_dict)
             ds1 = Dataset(**dataset_dict)
             print(ds1)
             assert len(ds1.persons) == 2
@@ -72,7 +77,6 @@ class PydanticGeneratorTestCase(unittest.TestCase):
             mod.Person(age_in_years="x")
 
     def test_pydantic_enums(self):
-
         unit_test_schema = """
 id: unit_test
 name: unit_test
@@ -150,18 +154,27 @@ slots:
     multivalued: true
     any_of:
       - range: A
-      - range: B        
+      - range: B
         """
         gen = PydanticGenerator(schema_str, package=PACKAGE)
         code = gen.serialize()
         lines = code.splitlines()
         ix = lines.index("class C(ConfiguredBaseModel):")
-        assert lines[ix + 3] == "    inlined_things: Optional[Dict[str, Union[A, B]]] = Field(default_factory=dict)"
-        assert lines[ix + 4] == "    inlined_as_list_things: Optional[List[Union[A, B]]] = Field(default_factory=list)"
-        assert lines[ix + 5] == "    not_inlined_things: Optional[List[str]] = Field(default_factory=list)"
+        assert (
+            lines[ix + 3]
+            == "    inlined_things: Optional[Dict[str, Union[A, B]]] = Field(default_factory=dict)"
+        )
+        assert (
+            lines[ix + 4]
+            == "    inlined_as_list_things: Optional[List[Union[A, B]]] = Field(default_factory=list)"
+        )
+        assert (
+            lines[ix + 5]
+            == "    not_inlined_things: Optional[List[str]] = Field(default_factory=list)"
+        )
 
     def test_pydantic_inlining(self):
-        #Case = namedtuple("multivalued", "inlined", "inlined_as_list", "B_has_identities")
+        # Case = namedtuple("multivalued", "inlined", "inlined_as_list", "B_has_identities")
         expected_default_factories = {
             "Optional[List[str]]": "Field(default_factory=list)",
             "Optional[List[B]]": "Field(default_factory=list)",
@@ -169,35 +182,93 @@ slots:
         }
         cases = [
             # block 1: primitives are NEVER inlined
-            ("T", True, False, False, True, "Optional[List[str]]",
-             "primitives are never inlined"),
+            (
+                "T",
+                True,
+                False,
+                False,
+                True,
+                "Optional[List[str]]",
+                "primitives are never inlined",
+            ),
             # attempting to inline a type
             # TBD: does the spec actively forbid this
-            ("T", True, True, True, True, "Optional[List[str]]",
-             "primitives are never inlined, even if requested"),
+            (
+                "T",
+                True,
+                True,
+                True,
+                True,
+                "Optional[List[str]]",
+                "primitives are never inlined, even if requested",
+            ),
             # block 2: referenced element is a class
-            ("B", True, False, False, False, "Optional[List[B]]",
-             "references to classes without identifiers ALWAYS inlined as list"),
-            ("B", True, True, False, False, "Optional[List[B]]",
-             "references to classes without identifiers ALWAYS inlined as list"),
-            ("B", True, True, True, False, "Optional[List[B]]",
-             "references to classes without identifiers ALWAYS inlined as list"),
-            ("B", True, True, False, True, "Optional[Dict[str, B]]",
-             "references to class with identifier inlined ONLY ON REQUEST, with dict as default"),
+            (
+                "B",
+                True,
+                False,
+                False,
+                False,
+                "Optional[List[B]]",
+                "references to classes without identifiers ALWAYS inlined as list",
+            ),
+            (
+                "B",
+                True,
+                True,
+                False,
+                False,
+                "Optional[List[B]]",
+                "references to classes without identifiers ALWAYS inlined as list",
+            ),
+            (
+                "B",
+                True,
+                True,
+                True,
+                False,
+                "Optional[List[B]]",
+                "references to classes without identifiers ALWAYS inlined as list",
+            ),
+            (
+                "B",
+                True,
+                True,
+                False,
+                True,
+                "Optional[Dict[str, B]]",
+                "references to class with identifier inlined ONLY ON REQUEST, with dict as default",
+            ),
             # TODO: fix the next two
-            ("B", True, True, True, True, "Optional[List[B]]",
-             "references to class with identifier inlined as list ONLY ON REQUEST"),
-            ("B", True, False, False, True, "Optional[List[str]]",
-             ""),
+            (
+                "B",
+                True,
+                True,
+                True,
+                True,
+                "Optional[List[B]]",
+                "references to class with identifier inlined as list ONLY ON REQUEST",
+            ),
+            ("B", True, False, False, True, "Optional[List[str]]", ""),
         ]
-        for range, multivalued, inlined, inlined_as_list, B_has_identifier, expected, notes in cases:
+        for (
+            range,
+            multivalued,
+            inlined,
+            inlined_as_list,
+            B_has_identifier,
+            expected,
+            notes,
+        ) in cases:
             sb = SchemaBuilder("test")
             sb.add_type("T", typeof="string")
-            a2b = SlotDefinition("a2b",
-                                 range=range,
-                                 multivalued=multivalued,
-                                 inlined=inlined,
-                                 inlined_as_list=inlined_as_list)
+            a2b = SlotDefinition(
+                "a2b",
+                range=range,
+                multivalued=multivalued,
+                inlined=inlined,
+                inlined_as_list=inlined_as_list,
+            )
             sb.add_class("A", slots=[a2b])
             b_id = SlotDefinition("id", identifier=B_has_identifier)
             sb.add_class("B", slots=[b_id, "name"])
@@ -215,7 +286,6 @@ slots:
             if expected not in expected_default_factories:
                 raise ValueError(f"unexpected default factory for {expected}")
             self.assertIn(expected_default_factories[expected], slot_line)
-
 
     def test_ifabsent(self):
         schema_str = """
@@ -239,7 +309,7 @@ classes:
         ifabsent: int(10)
       attr2:
         range: string
-        ifabsent: string(hello world) 
+        ifabsent: string(hello world)
       attr3:
         range: boolean
         ifabsent: True
@@ -257,19 +327,46 @@ classes:
         gen = PydanticGenerator(schema_str)
         code = gen.serialize()
         lines = code.splitlines()
-        ix = lines.index('class Test(ConfiguredBaseModel):')
+        ix = lines.index("class Test(ConfiguredBaseModel):")
         integer_slot_line = lines[ix + 4].strip()
-        assert integer_slot_line == 'attr1: Optional[int] = Field(10)'
+        assert integer_slot_line == "attr1: Optional[int] = Field(10)"
         string_slot_line = lines[ix + 5].strip()
         assert string_slot_line == 'attr2: Optional[str] = Field("hello world")'
         boolean_slot_line = lines[ix + 6].strip()
-        assert boolean_slot_line == 'attr3: Optional[bool] = Field(True)'
+        assert boolean_slot_line == "attr3: Optional[bool] = Field(True)"
         float_slot_line = lines[ix + 7].strip()
-        assert float_slot_line == 'attr4: Optional[float] = Field(1.0)'
+        assert float_slot_line == "attr4: Optional[float] = Field(1.0)"
         date_slot_line = lines[ix + 8].strip()
-        assert date_slot_line == 'attr5: Optional[date] = Field(datetime.date(2020, 01, 01))'
+        assert (
+            date_slot_line
+            == "attr5: Optional[date] = Field(datetime.date(2020, 01, 01))"
+        )
         datetime_slot_line = lines[ix + 9].strip()
-        assert datetime_slot_line == 'attr6: Optional[datetime ] = Field(datetime.datetime(2020, 01, 01, 00, 00, 00))'
+        assert (
+            datetime_slot_line
+            == "attr6: Optional[datetime ] = Field(datetime.datetime(2020, 01, 01, 00, 00, 00))"
+        )
+
+    def test_multiline_module(self):
+        """
+        Ensure that multi-line enum descriptions and enums containing
+        reserved characters are handled correctly
+        """
+        gen = PydanticGenerator(MLM_SCHEMA, package=PACKAGE)
+        mlm = gen.serialize()
+        with open(MLM_PYDANTIC, "w") as stream:
+            stream.write(mlm)
+
+        assert (
+            gen.schema.enums["EmploymentEventType"].description
+            == 'codes for different kinds of employment\nor HR related events\n"""\nprint(\'Deleting your stuff!!\')\n"""\nHR is pretty dull\nbut they get "annoyed if [they]\nare not included"\n'
+        )
+
+        assert (
+            'INTERNAL "REORGANIZATION"'
+            in gen.schema.enums["EmploymentEventType"].permissible_values
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

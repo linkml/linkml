@@ -38,6 +38,7 @@ prefixes:
   bizcodes: https://example.org/bizcodes/
   schema: http://schema.org/
 default_prefix: ks
+default_range: string
 see_also:
   - https://example.org/
 
@@ -175,10 +176,16 @@ classes:
       - ended at time
       - related to
       - type
+      - cordialness
+    slot_usage:
+      cordialness:
+        range: CordialnessEnum
 
   FamilialRelationship:
     rank: 5
     is_a: Relationship
+    slots:
+      - cordialness
     slot_usage:
       type:
         range: FamilialRelationshipType
@@ -186,6 +193,8 @@ classes:
       related to:
         range: Person
         required: true
+      cordialness:
+        # required: true
 
   BirthEvent:
     is_a: Event
@@ -356,6 +365,7 @@ slots:
     range: AnyObject
     description: Example of a slot that has an unconstrained range
   species name:
+    pattern: ^[A-Z]+[a-z]+(-[A-Z]+[a-z]+)?\\.[A-Z]+(-[0-9]{4})?$
   stomach count:
     range: integer
   # slots added for inheritance tree purposes
@@ -372,6 +382,7 @@ slots:
     mixin: true
   life_status:
     range: LifeStatusEnum
+  cordialness:
     
 
 enums:
@@ -410,3 +421,11 @@ enums:
       LIVING:
       DEAD:
       UNKNOWN:
+  CordialnessEnum:
+    permissible_values:
+      heartfelt:
+        description: warm and hearty friendliness
+      hateful:
+        description: spiteful
+      indifferent:
+        description: not overly friendly nor obnoxiously spiteful

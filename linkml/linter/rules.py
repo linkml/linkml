@@ -18,7 +18,6 @@ from .linter import LinterProblem
 
 
 class LinterRule(ABC):
-
     PATTERNS = {
         "snake": re.compile(r"[a-z][_a-z0-9]+"),
         "uppersnake": re.compile(r"[A-Z][_A-Z0-9]+"),
@@ -52,7 +51,6 @@ class LinterRule(ABC):
 
 
 class NoEmptyTitleRule(LinterRule):
-
     id = "no_empty_title"
 
     def check(
@@ -71,7 +69,6 @@ class NoEmptyTitleRule(LinterRule):
 
 
 class NoXsdIntTypeRule(LinterRule):
-
     id = "no_xsd_int_type"
 
     def check(self, schema_view: SchemaView, fix: bool = False):
@@ -86,7 +83,6 @@ class NoXsdIntTypeRule(LinterRule):
 
 
 class PermissibleValuesFormatRule(LinterRule):
-
     id = "permissible_values_format"
 
     def check(
@@ -114,7 +110,6 @@ def _get_recommended_metamodel_slots() -> List[str]:
 
 
 class RecommendedRule(LinterRule):
-
     id = "recommended"
 
     def __init__(self, config: RecommendedRuleConfig) -> None:
@@ -138,7 +133,6 @@ class RecommendedRule(LinterRule):
 
 
 class TreeRootClassRule(LinterRule):
-
     id = "tree_root_class"
 
     def __init__(self, config: TreeRootClassRuleConfig) -> None:
@@ -224,7 +218,6 @@ class TreeRootClassRule(LinterRule):
 
 
 class NoInvalidSlotUsageRule(LinterRule):
-
     id = "no_invalid_slot_usage"
 
     def check(
@@ -245,7 +238,6 @@ class NoInvalidSlotUsageRule(LinterRule):
 
 
 class StandardNamingRule(LinterRule):
-
     id = "standard_naming"
 
     def __init__(self, config: StandardNamingConfig) -> None:
@@ -283,7 +275,6 @@ class StandardNamingRule(LinterRule):
 
 
 class CanonicalPrefixesRule(LinterRule):
-
     id = "canonical_prefixes"
 
     def __init__(self, config: CanonicalPrefixesConfig) -> None:

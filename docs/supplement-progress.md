@@ -2,7 +2,7 @@
 #### Supplement RM1HG010860 - 03S1
 #### PI: Christopher J. Mungall, LBNL
 
-## Progress for 2022-06-01 - 2023-05-31
+## Progress for 2022-06-01 - 2023-05-31 (as of 2023-03-31)
 
 ### Aim 1. Enhance LinkML software engineering
 We have made many improvements to features and functionality of the core framework, and made it easier for external developers to contribute.
@@ -26,6 +26,8 @@ and Q&A on StackOverflow: https://stackoverflow.com/questions/tagged/linkml.
 
 As of 2023-03-27, the LinkML team has closed over 296 pull requests and 312 tickets in the main LinkML repository (https://github.com/linkml/linkml),
 with 34 active contributors, 22 of which are community members.
+
+A slide deck introducing LinkML is available at https://zenodo.org/record/7778641#.ZCesgezMKkh
 
 ### Aim 3. Demonstrate semantic interoperability
 We started work on a shared data model provisionally called CMDR, and are working on a transformation tool to map to individual data models.
