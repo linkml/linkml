@@ -83,7 +83,9 @@ class {{ c.name }}
     {{attr.name}}: {{ attr.annotations['python_range'].value }} = Field(
     {%- if predefined_slot_values[c.name][attr.name] -%}
         {{ predefined_slot_values[c.name][attr.name] }}
-    {%- elif not attr.required -%}
+    {%- elif attr.required -%}
+        ...
+    {%- else -%}
         None
     {%- endif -%}
     {%- if attr.title != None %}, title="{{attr.title}}"{% endif -%}
