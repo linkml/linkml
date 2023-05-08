@@ -80,7 +80,7 @@ class SQLTableGeneratorTestCase(unittest.TestCase):
         for dialect in ["postgresql", "sqlite", "mysql"]:
             gen = SQLTableGenerator(b.schema, dialect=dialect)
             ddl = gen.generate_ddl()
-            print(f"DIALECT: {dialect}\n SQL:\n{ddl}")
+            # print(f"DIALECT: {dialect}\n SQL:\n{ddl}")
             if dialect == "postgresql":
                 assert "id SERIAL" in ddl
                 assert "COMMENT ON TABLE" in ddl
@@ -89,7 +89,9 @@ class SQLTableGeneratorTestCase(unittest.TestCase):
                 assert "id INTEGER" in ddl
                 # sqlite does not support comments
             if dialect == "mysql":
-                assert "id INTEGER NOT NULL AUTO_INCREMENT" in ddl
+                # TODO: make this test stricter
+                # newer versions of linkml-runtime enforce required for identifier slots
+                assert "id INTEGER NOT NULL AUTO_INCREMENT" in ddl or "id INTEGER AUTO_INCREMENT" in ddl
                 assert "COMMENT" in ddl
 
     def test_generate_ddl(self):
