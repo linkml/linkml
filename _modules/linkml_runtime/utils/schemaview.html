@@ -4,10 +4,10 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
-    <link rel="shortcut icon" href="https://linkml.io/uploads/linkml-logo_color-no-words.png"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
+    <link rel="shortcut icon" href="https://linkml.io/uploads/linkml-logo_color-no-words.png"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
         <title>linkml_runtime.utils.schemaview - linkml documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     
     
@@ -366,13 +366,27 @@
     <span class="n">yaml_loader</span> <span class="o">=</span> <span class="n">YAMLLoader</span><span class="p">()</span>
     <span class="n">schema</span><span class="p">:</span> <span class="n">SchemaDefinition</span>
     <span class="n">schema</span> <span class="o">=</span> <span class="n">yaml_loader</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">target_class</span><span class="o">=</span><span class="n">SchemaDefinition</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-    <span class="k">if</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">path</span> <span class="ow">and</span> <span class="s2">&quot;://&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">path</span><span class="p">:</span>
+    <span class="k">if</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">path</span><span class="p">:</span>
+    <span class="c1"># if &quot;\n&quot; not in path and &quot;://&quot; not in path:</span>
         <span class="c1"># only set path if the input is not a yaml string or URL.</span>
         <span class="c1"># Setting the source path is necessary for relative imports;</span>
         <span class="c1"># while initializing a schema with a yaml string is possible, there</span>
         <span class="c1"># should be no expectation of relative imports working.</span>
         <span class="n">schema</span><span class="o">.</span><span class="n">source_file</span> <span class="o">=</span> <span class="n">path</span>
     <span class="k">return</span> <span class="n">schema</span>
+
+
+<span class="k">def</span> <span class="nf">is_absolute_path</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="c1"># windows</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isabs</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="n">norm_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">norm_path</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\\\\</span><span class="s2">&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;:&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">norm_path</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="n">drive</span><span class="p">,</span> <span class="n">tail</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitdrive</span><span class="p">(</span><span class="n">norm_path</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">drive</span> <span class="ow">and</span> <span class="n">tail</span><span class="p">)</span>
 
 
 <span class="nd">@dataclass</span>
@@ -467,6 +481,9 @@
 <span class="sd">        In future, this mechanism may be extended to arbitrary modules, such that we avoid</span>
 <span class="sd">        network dependence at runtime in general.</span>
 
+<span class="sd">        For local paths, the import is resolved relative to the directory containing the source file,</span>
+<span class="sd">        or the URL of the source file, if it is a URL.</span>
+
 <span class="sd">        :param imp:</span>
 <span class="sd">        :param from_schema:</span>
 <span class="sd">        :return:</span>
@@ -479,10 +496,12 @@
         <span class="p">}</span>
         <span class="n">importmap</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">default_import_map</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">importmap</span><span class="p">}</span>
         <span class="n">sname</span> <span class="o">=</span> <span class="n">map_import</span><span class="p">(</span><span class="n">importmap</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="p">,</span> <span class="n">imp</span><span class="p">)</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Importing </span><span class="si">{</span><span class="n">imp</span><span class="si">}</span><span class="s1"> as </span><span class="si">{</span><span class="n">sname</span><span class="si">}</span><span class="s1"> from source </span><span class="si">{</span><span class="n">from_schema</span><span class="o">.</span><span class="n">source_file</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-        <span class="n">schema</span> <span class="o">=</span> <span class="n">load_schema_wrap</span><span class="p">(</span><span class="n">sname</span> <span class="o">+</span> <span class="s1">&#39;.yaml&#39;</span><span class="p">,</span>
-                                  <span class="n">base_dir</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span>
-                                  <span class="n">from_schema</span><span class="o">.</span><span class="n">source_file</span><span class="p">)</span> <span class="k">if</span> <span class="n">from_schema</span><span class="o">.</span><span class="n">source_file</span> <span class="k">else</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">from_schema</span><span class="o">.</span><span class="n">source_file</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">is_absolute_path</span><span class="p">(</span><span class="n">sname</span><span class="p">):</span>
+            <span class="n">base_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">from_schema</span><span class="o">.</span><span class="n">source_file</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">base_dir</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Importing </span><span class="si">{</span><span class="n">imp</span><span class="si">}</span><span class="s1"> as </span><span class="si">{</span><span class="n">sname</span><span class="si">}</span><span class="s1"> from source </span><span class="si">{</span><span class="n">from_schema</span><span class="o">.</span><span class="n">source_file</span><span class="si">}</span><span class="s1">; base_dir=</span><span class="si">{</span><span class="n">base_dir</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">schema</span> <span class="o">=</span> <span class="n">load_schema_wrap</span><span class="p">(</span><span class="n">sname</span> <span class="o">+</span> <span class="s1">&#39;.yaml&#39;</span><span class="p">,</span> <span class="n">base_dir</span><span class="o">=</span><span class="n">base_dir</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">schema</span></div>
 
 <div class="viewcode-block" id="SchemaView.imports_closure"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.imports_closure">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">()</span>
@@ -1521,6 +1540,8 @@
                 <span class="nb">setattr</span><span class="p">(</span><span class="n">induced_slot</span><span class="p">,</span> <span class="n">metaslot_name</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">inlined_as_list</span><span class="p">:</span>
             <span class="n">slot</span><span class="o">.</span><span class="n">inlined</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">identifier</span> <span class="ow">or</span> <span class="n">slot</span><span class="o">.</span><span class="n">key</span><span class="p">:</span>
+            <span class="n">slot</span><span class="o">.</span><span class="n">required</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">if</span> <span class="n">mangle_name</span><span class="p">:</span>
             <span class="n">mangled_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">camelcase</span><span class="p">(</span><span class="n">class_name</span><span class="p">)</span><span class="si">}</span><span class="s1">__</span><span class="si">{</span><span class="n">underscore</span><span class="p">(</span><span class="n">slot_name</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span>
             <span class="n">induced_slot</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">mangled_name</span>
@@ -1984,7 +2005,7 @@
 
 <div class="viewcode-block" id="SchemaView.materialize_derived_schema"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.materialize_derived_schema">[docs]</a>    <span class="k">def</span> <span class="nf">materialize_derived_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SchemaDefinition</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; Materialize a schema view into a schema definition &quot;&quot;&quot;</span>
-        <span class="n">derived_schema</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="p">)</span>
+        <span class="n">derived_schema</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="p">)</span>
         <span class="n">derived_schemaview</span> <span class="o">=</span> <span class="n">SchemaView</span><span class="p">(</span><span class="n">derived_schema</span><span class="p">)</span>
         <span class="n">derived_schemaview</span><span class="o">.</span><span class="n">merge_imports</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">typ</span> <span class="ow">in</span> <span class="p">[</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_types</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">()]:</span>
