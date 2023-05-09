@@ -69,14 +69,7 @@ class SQLiteStoreTest(unittest.TestCase):
         q = session.query(endpoint.module.Person)
         all_objs = q.all()
         self.assertEqual(2, len(all_objs))
-        for p in all_objs:
-            print(p)
-            for rel in p.has_familial_relationships:
-                print(rel)
-                print(rel.type)
         q = session.query(endpoint.module.FamilialRelationship)
-        for r in q.all():
-            print(r)
         session.close()
         # step 4: test loading from SQLStore
         # 4a: first test load_all, diff to original data should be empty
@@ -120,7 +113,6 @@ class SQLiteStoreTest(unittest.TestCase):
         b.add_class("my_abstract", slots=["my_abstract_slot"], abstract=True)
         b.add_class("my_class1", is_a="my_abstract", mixins=["my_mixin"])
         b.add_class("my_class2", slots=["ref_to_c1"])
-        # print(yaml_dumper.dumps(b.schema))
         endpoint = SQLStore(b.schema, database_path=TMP_DB)
         endpoint.db_exists(force=True)
         mod = endpoint.compile_native()
@@ -128,7 +120,6 @@ class SQLiteStoreTest(unittest.TestCase):
         i2 = mod.MyClass2(ref_to_c1=i1)
         endpoint.dump(i2)
         i2_recap = endpoint.load(target_class=mod.MyClass2)
-        # print(yaml_dumper.dumps(i2_recap))
         diff = compare_objs(i2, i2_recap)
         self.assertEqual(diff, "")
 
