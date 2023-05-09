@@ -14,7 +14,6 @@ class MyTestCase(unittest.TestCase):
     def test_something(self):
         sv = SchemaView(SCHEMA)
         self.assertEqual(sv.schema.name, "test")  # add assertion here
-        # print(sv.all_enums())
         test_ae = yaml_dumper.dumps(sv.all_enums())
         print(test_ae)
 

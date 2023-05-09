@@ -82,7 +82,6 @@ class IfAbsentTestCase(unittest.TestCase):
 
         See: https://github.com/linkml/linkml/issues/1333
         """
-        # print(PythonGenerator(model_txt).serialize())
         m = compile_python(PythonGenerator(model_txt).serialize())
         sample = m.HighClass()
         self.assertEqual(sample.bool_true_slot, True)

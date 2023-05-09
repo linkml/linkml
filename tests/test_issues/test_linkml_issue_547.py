@@ -69,7 +69,6 @@ class IssueDecimalCase(TestEnvironmentTestCase):
             # Python initializers will convert from string to decimal
             try:
                 py_obj = pymod.Person(**obj)
-                # print(f'PY={py_obj} // {type(py_obj.age)}')
                 logging.info(f"PY={py_obj}")
                 logging.info(f"AGE_PLUS_ONE={py_obj.age + 1}")
                 assert (py_obj.age + 1) - 1 == py_obj.age
@@ -77,7 +76,6 @@ class IssueDecimalCase(TestEnvironmentTestCase):
                 assert isinstance(py_obj.age, Decimal)
                 # https://github.com/yaml/pyyaml/issues/255
                 # yaml_str = yaml_dumper.dumps(py_obj)
-                # print(yaml_str)
                 # https://stackoverflow.com/questions/1960516/python-json-serialize-a-decimal-object
                 # https://bugs.python.org/issue16535
                 json_str = json_dumper.dumps(py_obj)
