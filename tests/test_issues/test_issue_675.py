@@ -121,31 +121,29 @@ class IfAbsentTestCase(unittest.TestCase):
 
         See: https://github.com/linkml/linkml/issues/1334
         """
-        print(PydanticGenerator(model_txt).serialize())
         m = compile_python(PydanticGenerator(model_txt).serialize())
         sample = m.HighClass()
         self.assertEqual(sample.bool_true_slot, True)
         self.assertEqual(sample.bool_false_slot, False)
-        print("class_curie_slot fails")
+        # TODO: class_curie_slot fails
         # self.assertEqual(sample.class_curie_slot, m.HighClass.class_class_curie)
         self.assertIsNone(sample.class_curie_slot)
-        print("class_uri_slot fails")
+        # TODO: class_uri_slot fails
         # self.assertEqual(sample.class_uri_slot, m.HighClass.class_class_uri)
         self.assertIsNone(sample.class_uri_slot)
-        print(m.HighClass.class_class_uri)
-        print("default_ns fails")
+        # TODO: default_ns fails
         self.assertEqual(sample.default_ns_slot, 'ex')
-        print("default_range fails")
+        # TODO: default_range fails
         # self.assertEqual(sample.default_range_slot, 'string')
         self.assertIsNone(sample.default_range_slot)
-        print("int(0) fails")
+        # TODO: int(0) fails
         self.assertEqual(sample.int_0_slot, 0)
         self.assertEqual(sample.int_42_slot, 42)
         self.assertEqual(sample.neg_int_slot, -117243)
-        print("slot_curie fails")
+        # TODO: slot_curie fails
         # self.assertEqual(sample.slot_curie_slot, m.slots.slot_curie_slot.curie)
         self.assertIsNone(sample.slot_curie_slot)
-        print("slot_uri fails")
+        # TODO: slot_uri fails
         # self.assertEqual(sample.slot_uri_slot, m.slots.slot_uri_slot.uri)
         self.assertIsNone(sample.slot_uri_slot)
         self.assertIsNone(sample.slot_curie_slot)
