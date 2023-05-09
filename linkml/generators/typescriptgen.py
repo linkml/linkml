@@ -45,17 +45,15 @@ export type {{cref}} = string
  */
 {%- endif -%} 
 {% set parents = gen.parents(c) %}
-export interface {{gen.name(c)}} {% if parents %} extends {{parents|join(', ')}} {% endif %} {
+export interface {{gen.name(c)}} {%- if parents %} extends {{parents|join(', ')}} {%- endif %} {
     {%- for sn in view.class_slots(c.name, direct=False) %}
     {% set s = view.induced_slot(sn, c.name) %}
     {%- if s.description -%}
-    /**
-     * {{s.description}}
-     */
-     {%- endif -%}
-    {{gen.name(s)}}?: {{gen.range(s)}},
+    /** {{s.description}} */
+    {% endif -%}
+    {{gen.name(s)}}{%- if not s.required -%}?{%- endif -%}: {{gen.range(s)}},
     {%- endfor %}
-}
+};
 {% endfor %}
 """
 
