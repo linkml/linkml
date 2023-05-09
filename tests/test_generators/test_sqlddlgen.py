@@ -90,9 +90,6 @@ class SQLDDLTestCase(unittest.TestCase):
         gen = SQLDDLGenerator(SCHEMA, mergeimports=True, rename_foreign_keys=True)
         ddl = gen.serialize()
         with open(SQLDDLLOG, "w") as log:
-            # with open(DDL_PATH, 'w') as stream:
-            #     stream.write(ddl)
-            # print(ddl)
             try:
                 os.remove(DB)
             except OSError:
@@ -116,11 +113,9 @@ class SQLDDLTestCase(unittest.TestCase):
             log.write(f"{cur.fetchall()}\n")
             con.commit()
             con.close()
-            # print(gen.to_sqla_python())
             # output = StringIO()
             # with redirect_stdout(output):
             #    gen.write_sqla_python_imperative('output.kitchen_sink')
-            # print(output.getvalue())
             # with open(SQLA_CODE, 'w') as stream:
             #    stream.write(output.getvalue())
             kitchen_module = create_and_compile_sqla_bindings(gen, SQLA_CODE)
@@ -134,8 +129,6 @@ class SQLDDLTestCase(unittest.TestCase):
                 kitchen_module.Person.name == NAME
             )
             log.write(f"Q={q}\n")
-            # for row in q.all():
-            #    print(f'Row={row}')
             agent = kitchen_module.Agent(id="Agent03")
             log.write(f"Agent={agent}\n")
             activity = kitchen_module.Activity(id="Act01", was_associated_with=agent)
@@ -181,8 +174,6 @@ class SQLDDLTestCase(unittest.TestCase):
                     log.write(f"  Address={a}\n")
                     # if a.city == CITY:
                     #    is_found_address = True
-                # for alias in p.aliases:
-                #    print(f'  AKA={a}')
             # assert is_found_address
             session.commit()
 

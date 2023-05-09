@@ -41,7 +41,6 @@ class SQLTableGeneratorTestCase(unittest.TestCase):
         b.add_defaults()
         gen = SQLTableGenerator(b.schema)
         ddl = gen.generate_ddl()
-        # print(ddl)
         assert "PRIMARY KEY (id)" in ddl
         assert "full_name TEXT" in ddl
         assert 'CREATE TABLE "dummy class"' in ddl
@@ -56,7 +55,6 @@ class SQLTableGeneratorTestCase(unittest.TestCase):
         b.add_defaults()
         gen = SQLTableGenerator(b.schema, use_foreign_keys=False)
         ddl = gen.generate_ddl()
-        # print(ddl)
         assert "PRIMARY KEY (id)" not in ddl
         assert "full_name TEXT" in ddl
         assert 'CREATE TABLE "dummy class"' in ddl
@@ -80,7 +78,7 @@ class SQLTableGeneratorTestCase(unittest.TestCase):
         for dialect in ["postgresql", "sqlite", "mysql"]:
             gen = SQLTableGenerator(b.schema, dialect=dialect)
             ddl = gen.generate_ddl()
-            # print(f"DIALECT: {dialect}\n SQL:\n{ddl}")
+
             if dialect == "postgresql":
                 assert "id SERIAL" in ddl
                 assert "COMMENT ON TABLE" in ddl
@@ -218,7 +216,6 @@ class SQLTableGeneratorTestCase(unittest.TestCase):
         with open(SQLDDLLOG, "w") as log:
             # with open(DDL_PATH, 'w') as stream:
             #     stream.write(ddl)
-            # print(ddl)
             try:
                 os.remove(DB)
             except OSError:

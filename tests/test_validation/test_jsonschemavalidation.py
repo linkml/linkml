@@ -36,6 +36,5 @@ class JsonSchemaValidatorTestCase(unittest.TestCase):
             self.assertEqual(type(j), dict)
             self.assertGreater(len(j.keys()), 0)
 
-
 if __name__ == "__main__":
     unittest.main()

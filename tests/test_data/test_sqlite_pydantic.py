@@ -71,14 +71,7 @@ class SQLiteStoreTest(unittest.TestCase):
         q = session.query(endpoint.module.Person)
         all_objs = q.all()
         self.assertEqual(2, len(all_objs))
-        for p in all_objs:
-            print(p)
-            for rel in p.has_familial_relationships:
-                print(rel)
-                print(rel.type)
         q = session.query(endpoint.module.FamilialRelationship)
-        for r in q.all():
-            print(r)
         # step 4: test loading from SQLStore
         # 4a: first test load_all, diff to original data should be empty
         [returned_container] = endpoint.load_all(target_class=Container)

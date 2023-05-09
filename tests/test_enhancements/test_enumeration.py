@@ -213,7 +213,6 @@ class EnumerationTestCase(TestEnvironmentTestCase):
             "Something",
             [module.UnusualEnumPatterns.M, module.UnusualEnumPatterns["% ! -- whoo"]],
         )
-        print(str(t))
 
     def test_notebook_model_3(self):
         file = "notebook_model_3"
