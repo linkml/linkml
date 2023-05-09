@@ -151,10 +151,14 @@ class TypescriptGenerator(Generator):
         else:
             if r in sv.all_types():
                 t = sv.get_type(r)
+                tsrange = "string"
                 if t.base and t.base in type_map:
-                    return type_map[t.base]
+                    tsrange = type_map[t.base]
                 else:
                     logging.warning(f"Unknown type.base: {t.name}")
+                if slot.multivalued:
+                    tsrange = f"{tsrange}[]"
+                return tsrange
             return "string"
 
     def parents(self, cls: ClassDefinition) -> List[ClassDefinitionName]:
