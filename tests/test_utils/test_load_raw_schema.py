@@ -135,23 +135,19 @@ class RawLoaderTestCase(unittest.TestCase):
         fn = env.input_path("typeerror1.yaml")
         with self.assertRaises(ValueError) as e:
             SchemaLoader(fn)
-        print(str(e.exception))
         # previously, this returned a value error.  The new loader is robust enough that it no longer does
         fn = env.input_path("typeerror2.yaml")
         SchemaLoader(fn)
         # with self.assertRaises(ValueError) as e:
         #     SchemaLoader(fn)
-        # print(str(e.exception))
         fn = env.input_path("typeerror3.yaml")
         SchemaLoader(fn)
         # with self.assertRaises(ValueError) as e:
         #     SchemaLoader(fn)
-        # print(str(e.exception))
         fn = env.input_path("typeerror4.yaml")
         SchemaLoader(fn)
         # with self.assertRaises(ValueError) as e:
         #     SchemaLoader(fn)
-        # print(str(e.exception))
 
 
 if __name__ == "__main__":

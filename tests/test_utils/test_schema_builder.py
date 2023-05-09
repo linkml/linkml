@@ -45,7 +45,6 @@ class SchemaBuilderTestCase(unittest.TestCase):
         b.add_defaults()
         self.assertEqual(["linkml:types"], s.imports)
         d = b.as_dict()
-        print(yaml.dump(d))
 
     def test_slot_overrides(self):
         """

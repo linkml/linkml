@@ -9,7 +9,6 @@ from rdflib import Namespace, URIRef
 
 if __name__ == "__main__":
     sys.path.append(os.path.join(os.path.dirname(__file__), "..", ".."))
-    print(sys.path)
 
 from tests import SKIP_REWRITE_RULES, SKIP_REWRITE_RULES_REASON
 
@@ -105,17 +104,14 @@ class RewriteRuleTestCase(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.tests = TestLists(cls.SERVER)
-        print(f"Server: {cls.SERVER}")
         cls.results = set()  # from, to, format
 
     @classmethod
     def tearDownClass(cls):
-        print()
         for from_url, to_url, hdr in sorted(list(cls.results)):
             fmt = "" if hdr == "text/html" else f" ({hdr})"
             if DEFAULT_SERVER != W3ID_SERVER:
                 from_url = from_url.replace(DEFAULT_SERVER, W3ID_SERVER)
-            print(f"{from_url}{fmt} - {to_url}")
 
     def record_results(self, from_url: str, accept_header, to_url: str) -> None:
         self.results.add((from_url, to_url, accept_header.split(",")[0]))

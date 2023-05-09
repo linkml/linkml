@@ -73,7 +73,6 @@ class GeneratorTest(Generator):
 
     def end_schema(self, **kwargs) -> None:
         self.visited.append(f"end_schema: {self.schema.name}")
-        pprint(self.visited)
 
     def visit_class(self, cls: ClassDefinition) -> bool:
         self.visited.append(f"class: {cls.name}")
