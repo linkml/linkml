@@ -24,55 +24,82 @@ from linkml.utils.generator import Generator, shared_arguments
 
 type_map = {
     "str": "string",
-    "int": "number",
-    "Bool": "boolean",
-    "float": "number",
-    "XSDDate": "date",
+    "int": "int",
+    "Bool": "bool",
+    "float": "float64",
+    "XSDDate": "time.Date",
 }
 
 default_template = """
-{%- for c in view.all_classes().values() -%}
-{%- set cref = gen.classref(c) -%}
-{% if cref -%}
-export type {{cref}} = string
-{% endif -%}
+{%- if '_' in view.schema.name -%}
+    {%- set package_name = view.schema.name[:view.schema.name.find('_')] -%}
+{%- else -%}
+    {%- set package_name = view.schema.name -%}
+{%- endif -%}
+package {{package_name}}
+
+{% for c in view.all_classes().values() -%}
+    {%- for sn in view.class_slots(c.name, direct=False) %}
+        {%- set s = view.induced_slot(sn, c.name) -%}
+        {%- if "time." in gen.range(s) -%}
+            {%- set usesTime = True %}
+        {%- else -%}
+            {%- set usesTime = False %}
+        {%- endif -%}
+    {%- endfor -%}
 {%- endfor -%}
+{%- if usesTime -%}
+import (
+    "time" // for time.Date
+)
+{%- endif -%}
 
 {% for c in view.all_classes().values() -%}
 {%- if c.description -%}
-/**
+/*
  * {{c.description}}
  */
-{%- endif -%} 
+{%- endif -%}
 {% set parents = gen.parents(c) %}
-export interface {{gen.name(c)}} {%- if parents %} extends {{parents|join(', ')}} {%- endif %} {
-    {%- for sn in view.class_slots(c.name, direct=False) %}
-    {% set s = view.induced_slot(sn, c.name) %}
-    {%- if s.description -%}
-    /** {{s.description}} */
-    {% endif -%}
-    {{gen.name(s)}}{%- if not s.required -%}?{%- endif -%}: {{gen.range(s)}},
+type {{gen.name(c)}} struct {
+    {%- if parents %}
+	/*
+	 * parent types
+	 */
+    {%- for p in parents %}
+	{{p}}
     {%- endfor %}
-};
+    {%- endif -%}
+    {%- for sn in view.class_slots(c.name, direct=False) %}
+    {%- set s = view.induced_slot(sn, c.name) -%}
+    {%- if s.description %}
+	/*
+	 * {{s.description}}
+	 */
+    {%- endif %}
+	{{gen.name(s)}} {{gen.range(s)}} `json:"{{gen.json_name(s)}}"`
+    {%- endfor %}
+}
+
 {% endfor %}
 """
 
 
 @dataclass
-class TypescriptGenerator(Generator):
+class GolangGenerator(Generator):
     """
-    Generates typescript from a schema
+    Generates Golang code from a schema
     """
 
     # ClassVars
     generatorname = os.path.basename(__file__)
-    generatorversion = "0.0.1"
+    generatorversion = "0.1.0"
     valid_formats = ["text"]
     uses_schemaloader = False
 
     def serialize(self) -> str:
         """
-        Serialize a schema to typescript string
+        Serialize a schema to Golang string
         :return:
         """
         template_obj = Template(default_template)
@@ -91,10 +118,19 @@ class TypescriptGenerator(Generator):
         alias = element.name
         if isinstance(element, SlotDefinition) and element.alias:
             alias = element.alias
-        if type(element).class_name == "slot_definition":
-            return underscore(alias)
-        else:
-            return camelcase(alias)
+        return camelcase(alias)
+
+    def json_name(self, element: Element) -> str:
+        """
+        Returns the name of the element in its JSON (snake-case) form
+
+        :param element:
+        :return:
+        """
+        alias = element.name
+        if isinstance(element, SlotDefinition) and element.alias:
+            alias = element.alias
+        return underscore(alias)
 
     def classref(self, cls: ClassDefinition) -> Optional[str]:
         """
@@ -136,9 +172,9 @@ class TypescriptGenerator(Generator):
             if slot.multivalued:
                 if not id_slot or slot.inlined:
                     if slot.inlined_as_list or not id_slot:
-                        return f"{rc_name}[]"
+                        return f"[]{rc_name}"
                     else:
-                        return f"{{[index: {rc_ref}]: {rc_name} }}"
+                        return f"[]{rc_name}"
                 else:
                     return f"{rc_ref}[]"
             else:
@@ -149,14 +185,10 @@ class TypescriptGenerator(Generator):
         else:
             if r in sv.all_types():
                 t = sv.get_type(r)
-                tsrange = "string"
                 if t.base and t.base in type_map:
-                    tsrange = type_map[t.base]
+                    return type_map[t.base]
                 else:
                     logging.warning(f"Unknown type.base: {t.name}")
-                if slot.multivalued:
-                    tsrange = f"{tsrange}[]"
-                return tsrange
             return "string"
 
     def parents(self, cls: ClassDefinition) -> List[ClassDefinitionName]:
@@ -167,15 +199,16 @@ class TypescriptGenerator(Generator):
         return [ClassDefinitionName(camelcase(p)) for p in parents + cls.mixins]
 
 
-@shared_arguments(TypescriptGenerator)
+@shared_arguments(GolangGenerator)
 @click.version_option(__version__, "-V", "--version")
 @click.command()
 def cli(yamlfile, **args):
-    """Generate typescript interfaces and types
+    """Generate Golang types
 
-    See https://linkml.io/linkml-runtime.js
+    This very simple generator produces a Golang package named after the given
+    schema with structs that implement the classes in that schema.
     """
-    gen = TypescriptGenerator(yamlfile, **args)
+    gen = GolangGenerator(yamlfile, **args)
     print(gen.serialize())
 
 
