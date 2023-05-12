@@ -27,7 +27,6 @@ class IssuePythonInlinedAsDictCase(TestEnvironmentTestCase):
         """Ensure that inlined lists without identifiers work"""
         gen = PythonGenerator(env.input_path("linkml_issue_463.yaml"))
         pystr = gen.serialize()
-        # print(pystr)
         with open(env.expected_path("linkml_issue_463.py"), "w") as stream:
             stream.write(pystr)
         module = compile_python(pystr)

@@ -14,10 +14,7 @@ class SparqlValidatorTestCase(unittest.TestCase):
     @unittest.skip
     def test_sparql_validation(self):
         """Validate using in-memory sparql"""
-        print(f"TEST: Loading {SCHEMA}")
         sg = SparqlGenerator(SCHEMA)
-        print(sg.queries)
-        print(f"Making validator {SCHEMA}")
         sv = SparqlDataValidator()
         sv.load_schema(SCHEMA)
         results = sv.validate_file(DATA)

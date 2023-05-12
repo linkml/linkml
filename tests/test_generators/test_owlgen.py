@@ -46,7 +46,6 @@ class OwlGeneratorTestCase(unittest.TestCase):
         self.assertGreater(len(owl_classes), 10)
         for c in owl_classes:
             types = list(g.objects(c, RDF.type))
-            # print(f'Class={c} {types}')
             self.assertCountEqual(types, [OWL.Class])
         assert KS.MedicalEvent in owl_classes
         # test that enums are treated as classes
@@ -55,13 +54,11 @@ class OwlGeneratorTestCase(unittest.TestCase):
         assert len(owl_object_properties) > 10
         for p in owl_object_properties:
             types = list(g.objects(p, RDF.type))
-            # print(f'Class={c} {types}')
             self.assertCountEqual(types, [OWL.ObjectProperty])
         owl_datatype_properties = list(g.subjects(RDF.type, OWL.DatatypeProperty))
         assert len(owl_datatype_properties) > 10
         for p in owl_datatype_properties:
             types = list(g.objects(p, RDF.type))
-            # print(f'Class={c} {types}')
             self.assertCountEqual(types, [OWL.DatatypeProperty])
         # check that definitions are present, and use the default profile
         self.assertIn(
@@ -123,8 +120,6 @@ class OwlGeneratorTestCase(unittest.TestCase):
              URIRef('http://www.w3.org/2004/02/skos/core#exactMatch'),
              URIRef('http://schema.org/Person'))
         ]
-        #for t in triples:
-        #    print(t)
         for t in expected:
             self.assertIn(t, triples)
 

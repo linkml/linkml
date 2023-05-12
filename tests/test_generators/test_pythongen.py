@@ -57,7 +57,6 @@ class PythonGenTestCase(unittest.TestCase):
         # however, inline in a non-list context does not
         p2dict = {"id": "P:2", "has_birth_event": {"started_at_time": "1981-01-01"}}
         p2 = json_loader.loads(p2dict, kitchen_module.Person)
-        print(p2)
         self.assertEqual(
             "Person(id='P:1', name=None, has_employment_history=[EmploymentEvent(started_at_time=None, ended_at_time=None, is_current=None, metadata=None, employed_at='ROR:1', type=None)], has_familial_relationships=[], has_medical_history=[], age_in_years=None, addresses=[], has_birth_event=None, species_name=None, stomach_count=None, is_living=None, aliases=[])",
             str(p),
@@ -71,7 +70,6 @@ class PythonGenTestCase(unittest.TestCase):
 
         diagnosis = kitchen_module.DiagnosisConcept(id="CODE:D0001", name="headache")
         event = kitchen_module.MedicalEvent(in_location="GEO:1234", diagnosis=diagnosis)
-        print(str(event))
         self.assertEqual(
             "MedicalEvent(started_at_time=None, ended_at_time=None, is_current=None, metadata=None, in_location='GEO:1234', diagnosis=DiagnosisConcept(id='CODE:D0001', name='headache', in_code_system=None), procedure=None)",
             str(event),

@@ -42,7 +42,6 @@ class RdfGeneratorTestCase(unittest.TestCase):
         graph = Graph()
         graph.parse(data=JSONLD, format="json-ld", prefix=True)
         ttl_str = graph.serialize(format='turtle').decode()
-        print(ttl_str)
         graph.parse(data=ttl_str, format="turtle")
 
 

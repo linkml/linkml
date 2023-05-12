@@ -41,9 +41,7 @@ class IssueOWLNamespaceTestCase(TestEnvironmentTestCase):
             ).serialize(),
             value_is_returned=True,
         )
-        # print(f'Loading: {infile}')
         # rdfstr = RDFGenerator(infile, context=[METAMODEL_CONTEXT_URI]).serialize(context=[METAMODEL_CONTEXT_URI])
-        # print(rdfstr)
         self.env.generate_single_file(
             f"{name}.ttl",
             lambda: RDFGenerator(
