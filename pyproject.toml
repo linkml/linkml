@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "linkml"
-version = "1.5.2.post19.dev0+6c3b6f39"
+version = "0.0.0"
 description = "Linked Open Data Modeling Language"
 authors = [
     "Chris Mungall <cjmungall@lbl.gov>",
