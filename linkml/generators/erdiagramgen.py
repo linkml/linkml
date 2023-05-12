@@ -39,6 +39,9 @@ class IdentifyingType(str, Enum):
     IDENTIFYING = "--"
     NON_IDENTIFYING = ".."
 
+    def __str__(self):
+        return self.value
+
 
 class Cardinality(pydantic.BaseModel):
     """ Cardinality of a slot.

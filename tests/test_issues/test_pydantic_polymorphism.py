@@ -33,9 +33,10 @@ class PydanticPolymorphismTestCase(TestEnvironmentTestCase):
         gen_range_not_specified = PydanticGenerator(gen_type_hierarchy_example_schema())
         output = gen_range_not_specified.serialize()
         mod = compile_python(output, "testschema")
-        _ = mod.Person()
-        _ = mod.Person(category=['http://example.org/Person'])
-        _ = mod.Person(category=['x:Person'])
+        id = "TEST:1"
+        _ = mod.Person(id=id)
+        _ = mod.Person(id=id, category=['http://example.org/Person'])
+        _ = mod.Person(id=id, category=['x:Person'])
         self.assertRaises(ValidationError, lambda: mod.Person(category=['x:NamedThing']))
 
 

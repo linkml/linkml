@@ -52,7 +52,8 @@ class JsonSchemaDataValidator(DataValidator):
         if self.jsonschema_objs is None:
             self.jsonschema_objs = {}
         schema_id = self.schema.id if isinstance(self.schema, SchemaDefinition) else self.schema
-        if schema_id not in self.jsonschema_objs:
+        cache_params = frozenset([schema_id, target_class.class_name])
+        if cache_params not in self.jsonschema_objs:
             jsonschemastr = JsonSchemaGenerator(
                 self.schema,
                 mergeimports=True,
@@ -60,10 +61,10 @@ class JsonSchemaDataValidator(DataValidator):
                 not_closed=not_closed,
             ).serialize(not_closed=not_closed)
             jsonschema_obj = json.loads(jsonschemastr)
-            self.jsonschema_objs[schema_id] = jsonschema_obj
+            self.jsonschema_objs[cache_params] = jsonschema_obj
         else:
             logging.info(f"Using cached jsonschema for {schema_id}")
-            jsonschema_obj = self.jsonschema_objs[schema_id]
+            jsonschema_obj = self.jsonschema_objs[cache_params]
         return jsonschema.validate(inst_dict, schema=jsonschema_obj, format_checker=jsonschema.Draft7Validator.FORMAT_CHECKER)
 
     def validate_dict(
@@ -148,7 +149,7 @@ def cli(
     outargs = {}
     if datautils._is_xsv(input_format):
         if index_slot is None:
-            index_slot = infer_index_slot(sv, target_class)
+            index_slot = datautils.infer_index_slot(sv, target_class)
             if index_slot is None:
                 raise Exception("--index-slot is required for CSV input")
         inargs["index_slot"] = index_slot

@@ -72,13 +72,11 @@ class Issue723ExportCase(TestEnvironmentTestCase):
     def setUp(self) -> None:
         gen = PythonGenerator(schema_str)
         output = gen.serialize()
-        # print(output)
         mod = compile_python(output)
         self.mod = mod
         self.schemaview = SchemaView(schema_str)
         gen = PydanticGenerator(schema_str)
         output = gen.serialize()
-        # print(output)
         self.pydantic_mod = compile_python(output)
 
     def test_plain_dataclasses(self):
@@ -128,13 +126,11 @@ class Issue723ExportCase(TestEnvironmentTestCase):
         )
         # Test behavior of dumpers
         pd = json_dumper.to_dict(p)
-        # print(pd)
         self.assertEqual(pd["status"], "ALIVE")
         self.assertCountEqual(pd["roles"], ["ANALYST", "INVESTIGATOR"])
         p_json = json_dumper.dumps(p)
         p_roundtrip = json_loader.loads(p_json, target_class=mod.Person)
         self.assertEqual(p_roundtrip, p)
-        # print(yaml_dumper.dumps(p))
         # Current behavior: when enums are created at time of initialization,
         # they are created as Enum instances, NOT permissible value instances
         self.assertEqual(p.status, mod.VitalStatus(mod.VitalStatus.ALIVE))
@@ -147,8 +143,6 @@ class Issue723ExportCase(TestEnvironmentTestCase):
         self.assertEqual(type(p.roles[0]), mod.Role)
         g = rdflib_dumper.as_rdf_graph(p, schemaview=self.schemaview)
         [subj] = list(g.subjects(RDF.type, EXAMPLE.Person))
-        # for t in g.triples((None,None,None)):
-        #    print(t)
         self.assertEqual(list(g.objects(subj, EXAMPLE.status)), [EXAMPLE.Alive])
         self.assertCountEqual(
             list(g.objects(subj, EXAMPLE.roles)),
@@ -175,7 +169,6 @@ class Issue723ExportCase(TestEnvironmentTestCase):
         p.status = mod.VitalStatus.ALIVE
         p.roles = [mod.Role.ANALYST, mod.Role.INVESTIGATOR]
         pd = json_dumper.to_dict(p)
-        print(pd)
         # we might expect this
         # self.assertEqual(pd['status'], 'ALIVE')
         self.assertCountEqual(
@@ -185,16 +178,11 @@ class Issue723ExportCase(TestEnvironmentTestCase):
         # this does NOT roundtrip:
         # p_roundtrip = json_loader.loads(p_json, target_class=mod.Person)
         # self.assertEqual(p_roundtrip, p)
-        print(yaml_dumper.dumps(p))
         self.assertEqual(p.status, mod.VitalStatus.ALIVE)
         self.assertCountEqual(p.roles, [mod.Role.INVESTIGATOR, mod.Role.ANALYST])
         self.assertEqual(type(p.status), PermissibleValue)
         self.assertNotEqual(type(p.status), mod.VitalStatus)
         self.assertEqual(type(p.roles[0]), PermissibleValue)
-        # currently fails
-        # g = rdflib_dumper.as_rdf_graph(p, schemaview=self.schemaview)
-        # for t in g.triples((None,None,None)):
-        #    print(t)
 
     def test_assigned_wrapped_enums(self):
         """
@@ -234,7 +222,6 @@ class Issue723ExportCase(TestEnvironmentTestCase):
         self.assertEqual(p3, p)
         # Test behavior of dumpers
         pd = json_dumper.to_dict(p)
-        # print(pd)
         self.assertEqual(pd["status"], "ALIVE")
         self.assertCountEqual(pd["roles"], ["ANALYST", "INVESTIGATOR"])
         p_json = json_dumper.dumps(p)
@@ -250,8 +237,6 @@ class Issue723ExportCase(TestEnvironmentTestCase):
         self.assertEqual(type(p.roles[0]), mod.Role)
         g = rdflib_dumper.as_rdf_graph(p, schemaview=self.schemaview)
         [subj] = list(g.subjects(RDF.type, EXAMPLE.Person))
-        # for t in g.triples((None,None,None)):
-        #    print(t)
         self.assertEqual(list(g.objects(subj, EXAMPLE.status)), [EXAMPLE.Alive])
         self.assertCountEqual(
             list(g.objects(subj, EXAMPLE.roles)),
@@ -261,7 +246,6 @@ class Issue723ExportCase(TestEnvironmentTestCase):
     def test_pydantic(self):
         mod = self.pydantic_mod
         p = mod.Person(status="ALIVE", roles=["ANALYST", "INVESTIGATOR"])
-        print(p)
         with self.assertRaises(ValueError) as e:
             p = mod.Person(status="FAKE")
         # with self.assertRaises(ValueError) as e:
@@ -277,13 +261,11 @@ class Issue723ExportCase(TestEnvironmentTestCase):
         p3.roles = [mod.Role.ANALYST, mod.Role.INVESTIGATOR]
         self.assertEqual(p, p3)
         self.assertEqual(p.status, mod.VitalStatus.ALIVE)
-        self.assertEqual(type(p.status), mod.VitalStatus)
         self.assertEqual(p.roles, [mod.Role.ANALYST, mod.Role.INVESTIGATOR])
         # test the "double wrap" code
         p.status = mod.VitalStatus(mod.VitalStatus.ALIVE)
         self.assertEqual(p.status, mod.VitalStatus.ALIVE)
         # TODO: not implemented?
-        # print(p.dict())
         # not supported yet
         # pd = json_dumper.to_dict(p)
 

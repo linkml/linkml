@@ -55,8 +55,6 @@ class IssueRDFNamespaceTestCase(TestEnvironmentTestCase):
         with open(outpath, "w") as stream:
             stream.write(jsonld_str)
         nsl = gen.namespaces
-        for k, v in nsl.items():
-            print(f'{k}: "{v}"')
         # namespaces directly declared
         assert nsl["RO"] == "http://purl.obolibrary.org/obo/RO_"
         assert nsl["biolink"] == "https://w3id.org/biolink/vocab/"
@@ -72,10 +70,8 @@ class IssueRDFNamespaceTestCase(TestEnvironmentTestCase):
         assert nsl["owl"] == "http://www.w3.org/2002/07/owl#"
 
         im = gen.importmap
-        print(im)
 
         em = gen.emit_metadata
-        print(em)
 
         graph = Graph()
         graph.parse(
@@ -113,8 +109,6 @@ class IssueRDFNamespaceTestCase(TestEnvironmentTestCase):
             ),
             g,
         )
-        # for s,p,o in g.triples((None,None,None)):
-        #    print(f'{s} {p} {o}')
         self.assertIn(
             (SNV, SKOS.exactMatch, URIRef("http://purl.obolibrary.org/obo/SO_0001483")),
             g,

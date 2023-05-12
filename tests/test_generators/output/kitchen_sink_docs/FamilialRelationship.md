@@ -7,7 +7,7 @@
 URI: [ks:FamilialRelationship](https://w3id.org/linkml/tests/kitchen_sink/FamilialRelationship)
 
 
-[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[Relationship],[Person],[Person]<related%20to%201..1-%20[FamilialRelationship&#124;type:FamilialRelationshipType;started_at_time(i):date%20%3F;ended_at_time(i):date%20%3F],[Person]++-%20has%20familial%20relationships%200..*>[FamilialRelationship],[Relationship]^-[FamilialRelationship])](https://yuml.me/diagram/nofunky;dir:TB/class/[Relationship],[Person],[Person]<related%20to%201..1-%20[FamilialRelationship&#124;type:FamilialRelationshipType;started_at_time(i):date%20%3F;ended_at_time(i):date%20%3F],[Person]++-%20has%20familial%20relationships%200..*>[FamilialRelationship],[Relationship]^-[FamilialRelationship])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[Relationship],[Person],[Person]<related%20to%201..1-%20[FamilialRelationship&#124;cordialness:string%20%3F;type:FamilialRelationshipType;started_at_time(i):date%20%3F;ended_at_time(i):date%20%3F],[Person]++-%20has%20familial%20relationships%200..*>[FamilialRelationship],[Relationship]^-[FamilialRelationship])](https://yuml.me/diagram/nofunky;dir:TB/class/[Relationship],[Person],[Person]<related%20to%201..1-%20[FamilialRelationship&#124;cordialness:string%20%3F;type:FamilialRelationshipType;started_at_time(i):date%20%3F;ended_at_time(i):date%20%3F],[Person]++-%20has%20familial%20relationships%200..*>[FamilialRelationship],[Relationship]^-[FamilialRelationship])
 
 ## Parents
 
@@ -22,10 +22,14 @@ URI: [ks:FamilialRelationship](https://w3id.org/linkml/tests/kitchen_sink/Famili
 
 ### Own
 
+ * [cordialness](cordialness.md)  <sub>0..1</sub>
+     * Range: [String](String.md)
  * [FamilialRelationship➞type](FamilialRelationship_type.md)  <sub>1..1</sub>
      * Range: [FamilialRelationshipType](FamilialRelationshipType.md)
  * [FamilialRelationship➞related to](FamilialRelationship_related_to.md)  <sub>1..1</sub>
      * Range: [Person](Person.md)
+ * [FamilialRelationship➞cordialness](FamilialRelationship_cordialness.md)  <sub>0..1</sub>
+     * Range: [CordialnessEnum](CordialnessEnum.md)
 
 ### Inherited from Relationship:
 

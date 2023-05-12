@@ -28,8 +28,6 @@ class IssueInheritMetaslotsTestCase(TestEnvironmentTestCase):
         infile = env.input_path(f"{name}.yaml")
         gen = YAMLGenerator(infile)
         schema = gen.schema
-        for sn, s in schema.slots.items():
-            print(f"{sn} name={s.name} alias={s.alias} {s}")
         s = schema.slots["s1"]
         c2_s1 = schema.slots["C2_s1"]
         self.assertEqual(c2_s1.alias, s.name)
@@ -44,7 +42,6 @@ class IssueInheritMetaslotsTestCase(TestEnvironmentTestCase):
             "slot_uri",
         ]:
             self.assertEqual(getattr(s, k), getattr(c2_s1, k))
-        print(gen.serialize())
 
 
 if __name__ == "__main__":

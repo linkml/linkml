@@ -52,6 +52,7 @@ gen-jsonld-context = "linkml.generators.jsonldcontextgen:cli"
 gen-prefix-map = "linkml.generators.prefixmapgen:cli"
 gen-csv = "linkml.generators.csvgen:cli"
 gen-graphviz = "linkml.generators.dotgen:cli"
+gen-golang = "linkml.generators.golanggen:cli"
 gen-golr-views = "linkml.generators.golrgen:cli"
 gen-graphql = "linkml.generators.graphqlgen:cli"
 gen-java = "linkml.generators.javagen:cli"
@@ -125,7 +126,7 @@ sphinx-rtd-theme = "*"
 sqlalchemy = ">=1.4.31"
 watchdog = ">=0.9.0"
 tox = "^3.25.1"
-furo = {version = "^2022.9.29", extras = ["docs"]}
+furo = {version = "^2023.03.27", extras = ["docs"]}
 sphinxcontrib-mermaid = {version = "^0.7.1", extras = ["docs"]}
 
 [tool.poetry.dev-dependencies]

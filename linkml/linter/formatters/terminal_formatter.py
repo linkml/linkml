@@ -60,3 +60,5 @@ class TerminalFormatter(Formatter):
                 + " "
                 + plural("schema", problem_schemas)
             )
+        else:
+            self.write(click.style("\u2713", fg="green") + " No problems found")
