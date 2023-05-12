@@ -303,6 +303,24 @@ class DocGeneratorTestCase(unittest.TestCase):
             "Person.md",
             "Example: Person",
             after="## Examples",)
+        # Minimum Value showing up even if value is 0
+        assert_mdfile_contains(
+            "age_in_years.md",
+            "Minimum Value: 0",
+            after="## Properties"
+        )
+        # Maximum Value
+        assert_mdfile_contains(
+            "age_in_years.md",
+            "Maximum Value: 999",
+            after="## Properties"
+        )
+        # 
+        assert_mdfile_contains(
+            "species_name.md",
+            "Regex pattern: `^[A-Z]+[a-z]+(-[A-Z]+[a-z]+)?\\\.[A-Z]+(-[0-9]{4})?$`",
+            after="## Properties"
+        )
         
         # checks correctness of the YAML representation of source schema
         person_source = gen.yaml(gen.schemaview.get_class("Person"))
@@ -347,6 +365,19 @@ class DocGeneratorTestCase(unittest.TestCase):
             outdir=MD_DIR3
         )
 
+
+        # test that slots modifying classes are being rendered
+        assert_mdfile_contains(
+            "type.md", "[FamilialRelationship](FamilialRelationship.md) |  |  yes  |", after="## Applicable Classes",
+            followed_by=["## Properties",
+                        "* Range"],
+        )
+
+        assert_mdfile_contains(
+            "type.md", "[EmploymentEvent](EmploymentEvent.md) |  |  yes  |", after="## Applicable Classes",
+            followed_by=["## Properties",
+                        "* Range"],
+        )
 
     def test_docgen_rank_ordering(self):
         """Tests overriding default order"""

@@ -27,17 +27,12 @@ class IssueInlinedWithEnumsTestCase(TestEnvironmentTestCase):
         pygen = PythonGenerator(infile)
         mod = pygen.compile_module()
         p = mod.Person(id="x", name="x", vital_status=mod.VitalStatusEnum("LIVING"))
-        # print(type(p.vital_status))
-        # print(yaml_dumper.dumps(p))
         c = mod.Container()
         c.persons_as_list = [p]
         # c.persons_as_dict = {p.id: p}
         self._roundtrip(c, mod.Container)
-        # print(yaml_dumper.dumps(c))
-        # print(type(p.vital_status))
         c = mod.Container(persons_as_list=[p], persons_as_dict=[p])
         self.assertEqual(c.persons_as_dict[p.id].name, p.name)
-        # print(yaml_dumper.dumps(c))
         c2 = self._roundtrip(c, mod.Container)
         self.assertEqual(c2.persons_as_dict[p.id].name, p.name)
 

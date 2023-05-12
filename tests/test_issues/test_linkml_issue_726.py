@@ -57,7 +57,6 @@ class Issue726ConstCase(TestEnvironmentTestCase):
     def test_jsonschema(self):
         gen = JsonSchemaGenerator(schema_str)
         output = gen.serialize()
-        print(output)
         js = json.loads(output)
         top_props = js["properties"]
         s1C = top_props["s1"]

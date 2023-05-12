@@ -27,6 +27,8 @@ and Q&A on StackOverflow: https://stackoverflow.com/questions/tagged/linkml.
 As of 2023-03-27, the LinkML team has closed over 296 pull requests and 312 tickets in the main LinkML repository (https://github.com/linkml/linkml),
 with 34 active contributors, 22 of which are community members.
 
+A slide deck introducing LinkML is available at https://zenodo.org/record/7778641#.ZCesgezMKkh
+
 ### Aim 3. Demonstrate semantic interoperability
 We started work on a shared data model provisionally called CMDR, and are working on a transformation tool to map to individual data models.
 We are working on a tool that ingests and integrates using language models via the GTP-3 API.

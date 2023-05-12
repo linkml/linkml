@@ -124,34 +124,34 @@
 --     * Slot: alias Description: 
 
 CREATE TABLE "NamedThing" (
-	id TEXT, 
+	id TEXT NOT NULL, 
 	name TEXT, 
 	description TEXT, 
 	image TEXT, 
 	PRIMARY KEY (id)
 );
 CREATE TABLE "HasAliases" (
-	id INTEGER, 
+	id INTEGER NOT NULL, 
 	PRIMARY KEY (id)
 );
 CREATE TABLE "HasNewsEvents" (
-	id INTEGER, 
+	id INTEGER NOT NULL, 
 	PRIMARY KEY (id)
 );
 CREATE TABLE "Place" (
-	id TEXT, 
+	id TEXT NOT NULL, 
 	name TEXT, 
 	PRIMARY KEY (id)
 );
 CREATE TABLE "Address" (
-	id INTEGER, 
+	id INTEGER NOT NULL, 
 	street TEXT, 
 	city TEXT, 
 	postal_code TEXT, 
 	PRIMARY KEY (id)
 );
 CREATE TABLE "Event" (
-	id INTEGER, 
+	id INTEGER NOT NULL, 
 	started_at_time DATE, 
 	ended_at_time DATE, 
 	duration FLOAT, 
@@ -159,28 +159,28 @@ CREATE TABLE "Event" (
 	PRIMARY KEY (id)
 );
 CREATE TABLE "Concept" (
-	id TEXT, 
+	id TEXT NOT NULL, 
 	name TEXT, 
 	description TEXT, 
 	image TEXT, 
 	PRIMARY KEY (id)
 );
 CREATE TABLE "DiagnosisConcept" (
-	id TEXT, 
+	id TEXT NOT NULL, 
 	name TEXT, 
 	description TEXT, 
 	image TEXT, 
 	PRIMARY KEY (id)
 );
 CREATE TABLE "ProcedureConcept" (
-	id TEXT, 
+	id TEXT NOT NULL, 
 	name TEXT, 
 	description TEXT, 
 	image TEXT, 
 	PRIMARY KEY (id)
 );
 CREATE TABLE "Relationship" (
-	id INTEGER, 
+	id INTEGER NOT NULL, 
 	started_at_time DATE, 
 	ended_at_time DATE, 
 	related_to TEXT, 
@@ -188,7 +188,7 @@ CREATE TABLE "Relationship" (
 	PRIMARY KEY (id)
 );
 CREATE TABLE "NewsEvent" (
-	id INTEGER, 
+	id INTEGER NOT NULL, 
 	headline TEXT, 
 	started_at_time DATE, 
 	ended_at_time DATE, 
@@ -197,7 +197,7 @@ CREATE TABLE "NewsEvent" (
 	PRIMARY KEY (id)
 );
 CREATE TABLE "Container" (
-	id INTEGER, 
+	id INTEGER NOT NULL, 
 	name TEXT, 
 	PRIMARY KEY (id)
 );
@@ -206,7 +206,7 @@ CREATE TABLE "Person" (
 	birth_date TEXT, 
 	age_in_years INTEGER, 
 	gender VARCHAR(17), 
-	id TEXT, 
+	id TEXT NOT NULL, 
 	name TEXT, 
 	description TEXT, 
 	image TEXT, 
@@ -220,7 +220,7 @@ CREATE TABLE "Organization" (
 	mission_statement TEXT, 
 	founding_date TEXT, 
 	founding_location TEXT, 
-	id TEXT, 
+	id TEXT NOT NULL, 
 	name TEXT, 
 	description TEXT, 
 	image TEXT, 
@@ -232,7 +232,7 @@ CREATE TABLE "Organization" (
 	FOREIGN KEY(current_address_id) REFERENCES "Address" (id)
 );
 CREATE TABLE "WithLocation" (
-	id INTEGER, 
+	id INTEGER NOT NULL, 
 	in_location TEXT, 
 	PRIMARY KEY (id), 
 	FOREIGN KEY(in_location) REFERENCES "Place" (id)
@@ -257,7 +257,7 @@ CREATE TABLE "Place_alias" (
 	FOREIGN KEY("Place_id") REFERENCES "Place" (id)
 );
 CREATE TABLE "FamilialRelationship" (
-	id INTEGER, 
+	id INTEGER NOT NULL, 
 	started_at_time DATE, 
 	ended_at_time DATE, 
 	related_to TEXT NOT NULL, 
@@ -268,7 +268,7 @@ CREATE TABLE "FamilialRelationship" (
 	FOREIGN KEY("Person_id") REFERENCES "Person" (id)
 );
 CREATE TABLE "EmploymentEvent" (
-	id INTEGER, 
+	id INTEGER NOT NULL, 
 	employed_at TEXT, 
 	started_at_time DATE, 
 	ended_at_time DATE, 
@@ -280,7 +280,7 @@ CREATE TABLE "EmploymentEvent" (
 	FOREIGN KEY("Person_id") REFERENCES "Person" (id)
 );
 CREATE TABLE "MedicalEvent" (
-	id INTEGER, 
+	id INTEGER NOT NULL, 
 	in_location TEXT, 
 	started_at_time DATE, 
 	ended_at_time DATE, 

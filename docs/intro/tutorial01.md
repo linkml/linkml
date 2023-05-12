@@ -35,9 +35,11 @@ id: https://w3id.org/linkml/examples/personinfo
 name: personinfo
 prefixes:
   linkml: https://w3id.org/linkml/
+  personinfo: https://w3id.org/linkml/examples/personinfo
 imports:
   - linkml:types
 default_range: string
+default_prefix: personinfo
   
 classes:
   Person:

@@ -44,7 +44,6 @@ class RelationalModelTransformerTestCase(unittest.TestCase):
         b.add_class(DUMMY_CLASS, slots)
         results = self._translate(b)
         rel_schema = self._translate(b).schema
-        # print(yaml_dumper.dumps(rel_schema))
         self.assertCountEqual(
             slots + ["id"], list(rel_schema.classes[DUMMY_CLASS].attributes.keys())
         )
@@ -111,7 +110,6 @@ class RelationalModelTransformerTestCase(unittest.TestCase):
         b.add_class(DUMMY_CLASS, slots).set_slot("name", identifier=True)
         results = self._translate(b)
         rel_schema = self._translate(b).schema
-        # print(yaml_dumper.dumps(rel_schema))
         self.assertCountEqual(
             slots, list(rel_schema.classes[DUMMY_CLASS].attributes.keys())
         )
@@ -132,7 +130,6 @@ class RelationalModelTransformerTestCase(unittest.TestCase):
         )
         results = self._translate(b)
         rel_schema = self._translate(b).schema
-        # print(yaml_dumper.dumps(rel_schema))
         rsv = SchemaView(rel_schema)
         c = rsv.get_class("c")
         assert c
@@ -157,7 +154,6 @@ class RelationalModelTransformerTestCase(unittest.TestCase):
         results = self._translate(b)
         rel_schema = self._translate(b).schema
         rsv = SchemaView(rel_schema)
-        # print(yaml_dumper.dumps(rel_schema))
         c = rsv.get_class("c")
         d = rsv.get_class("d")
         self.assertCountEqual(
@@ -186,7 +182,6 @@ class RelationalModelTransformerTestCase(unittest.TestCase):
         results = self._translate(b)
         rel_schema = self._translate(b).schema
         rsv = SchemaView(rel_schema)
-        # print(yaml_dumper.dumps(rel_schema))
         c = rsv.get_class("c")
         d = rsv.get_class("d")
         self.assertCountEqual(
@@ -223,7 +218,6 @@ class RelationalModelTransformerTestCase(unittest.TestCase):
                 results = self._translate(b)
                 rel_schema = self._translate(b).schema
                 rsv = SchemaView(rel_schema)
-                # print(yaml_dumper.dumps(rel_schema))
                 c = rsv.get_class("c")
                 d = rsv.get_class("d")
                 c_has_d = rsv.get_class("c_has_d")
@@ -252,11 +246,9 @@ class RelationalModelTransformerTestCase(unittest.TestCase):
             "c1", is_a="c", slot_usage={"has_ds": SlotDefinition("has_ds", range="d1")}
         )
         b.add_class("d1", is_a="d")
-        # print(yaml_dumper.dumps(b.schema))
         results = self._translate(b)
         rel_schema = self._translate(b).schema
         rsv = SchemaView(rel_schema)
-        # print(yaml_dumper.dumps(rel_schema))
         c = rsv.get_class("c")
         d = rsv.get_class("d")
         c1 = rsv.get_class("c1")
@@ -294,7 +286,6 @@ class RelationalModelTransformerTestCase(unittest.TestCase):
         result = sqltr.transform()
         rel_schema = result.schema
         rsv = SchemaView(rel_schema)
-        print(yaml_dumper.dumps(rel_schema))
         assert "c_has_d" not in rsv.all_classes()
         c1 = rsv.get_class("c1")
         self.assertCountEqual(c1.attributes.keys(), ["name", "description", "has_ds"])
@@ -318,7 +309,6 @@ class RelationalModelTransformerTestCase(unittest.TestCase):
         results = self._translate(b)
         rel_schema = self._translate(b).schema
         rsv = SchemaView(rel_schema)
-        # print(yaml_dumper.dumps(rel_schema))
         c = rsv.get_class("c")
         d = rsv.get_class("d")
         c_has_d = rsv.get_class("c_has_d")
@@ -339,7 +329,6 @@ class RelationalModelTransformerTestCase(unittest.TestCase):
         sqltr = RelationalModelTransformer(sv)
         result = sqltr.transform()
         rschema = result.schema
-        # print(rschema.imports)
         with open(META_OUT_PATH, "w") as stream:
             stream.write(yaml_dumper.dumps(rschema))
         # test Annotation is handled correctly. This has a key annotation_tag with alias 'tag'
@@ -393,7 +382,6 @@ class RelationalModelTransformerTestCase(unittest.TestCase):
             "MedicalEvent",
         ]:
             c = sv.get_class(relationship_class)
-            # print(f'RC: {relationship_class} // {c}')
             assert any(
                 a
                 for a in c.attributes.values()
@@ -409,8 +397,6 @@ class RelationalModelTransformerTestCase(unittest.TestCase):
 
         for cn in ["Person", "Organization"]:
             c = sv.get_class(f"{cn}_has_news_event")
-            # print(list(c.attributes.keys()))
-            # print(list(c.attributes.values()))
             a1 = c.attributes["has_news_event_id"]
             self.assertEqual(a1.range, "NewsEvent")
             a2 = c.attributes[f"{cn}_id"]

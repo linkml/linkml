@@ -1,34 +1,40 @@
 # Auto generated from kitchen_sink.yaml by pythongen.py version: 0.9.0
-# Generation date: 2022-05-10T00:32:05
+# Generation date: 2023-05-08T13:17:40
 # Schema: kitchen_sink
 #
 # id: https://w3id.org/linkml/tests/kitchen_sink
-# description: Kitchen Sink Schema This schema does not do anything useful. It exists to test all features of
-#              linkml. This particular text field exists to demonstrate markdown within a text field: Lists: * a *
-#              b * c And links, e.g to [Person](Person.md)
+# description: Kitchen Sink Schema
+#
+#   This schema does not do anything useful. It exists to test all features of linkml.
+#
+#   This particular text field exists to demonstrate markdown within a text field:
+#
+#   Lists:
+#
+#      * a
+#      * b
+#      * c
+#
+#   And links, e.g to [Person](Person.md)
 # license: https://creativecommons.org/publicdomain/zero/1.0/
 
 import dataclasses
 import re
-import sys
-from dataclasses import dataclass
-from typing import Any, ClassVar, Dict, List, Optional, Union
-
 from jsonasobj2 import JsonObj, as_dict
-from linkml_runtime.linkml_model.meta import (EnumDefinition, PermissibleValue,
-                                              PvFormulaOptions)
-from linkml_runtime.linkml_model.types import Boolean, Date, Integer, String
-from linkml_runtime.utils.curienamespace import CurieNamespace
-from linkml_runtime.utils.dataclass_extensions_376 import \
-    dataclasses_init_fn_with_kwargs
-from linkml_runtime.utils.enumerations import EnumDefinitionImpl
-from linkml_runtime.utils.formatutils import camelcase, sfx, underscore
-from linkml_runtime.utils.metamodelcore import (Bool, XSDDate, bnode,
-                                                empty_dict, empty_list)
+from typing import Optional, List, Union, Dict, ClassVar, Any
+from dataclasses import dataclass
+from linkml_runtime.linkml_model.meta import EnumDefinition, PermissibleValue, PvFormulaOptions
+
 from linkml_runtime.utils.slot import Slot
-from linkml_runtime.utils.yamlutils import (YAMLRoot, extended_float,
-                                            extended_int, extended_str)
+from linkml_runtime.utils.metamodelcore import empty_list, empty_dict, bnode
+from linkml_runtime.utils.yamlutils import YAMLRoot, extended_str, extended_float, extended_int
+from linkml_runtime.utils.dataclass_extensions_376 import dataclasses_init_fn_with_kwargs
+from linkml_runtime.utils.formatutils import camelcase, underscore, sfx
+from linkml_runtime.utils.enumerations import EnumDefinitionImpl
 from rdflib import Namespace, URIRef
+from linkml_runtime.utils.curienamespace import CurieNamespace
+from linkml_runtime.linkml_model.types import Boolean, Date, Integer, String
+from linkml_runtime.utils.metamodelcore import Bool, XSDDate
 
 metamodel_version = "1.7.0"
 version = None
@@ -171,6 +177,9 @@ class Person(YAMLRoot):
     age_in_years: Optional[int] = None
     addresses: Optional[Union[Union[dict, "Address"], List[Union[dict, "Address"]]]] = empty_list()
     has_birth_event: Optional[Union[dict, "BirthEvent"]] = None
+    species_name: Optional[str] = None
+    stomach_count: Optional[int] = None
+    is_living: Optional[Union[str, "LifeStatusEnum"]] = None
     aliases: Optional[Union[str, List[str]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
@@ -204,6 +213,15 @@ class Person(YAMLRoot):
         if self.has_birth_event is not None and not isinstance(self.has_birth_event, BirthEvent):
             self.has_birth_event = BirthEvent(**as_dict(self.has_birth_event))
 
+        if self.species_name is not None and not isinstance(self.species_name, str):
+            self.species_name = str(self.species_name)
+
+        if self.stomach_count is not None and not isinstance(self.stomach_count, int):
+            self.stomach_count = int(self.stomach_count)
+
+        if self.is_living is not None and not isinstance(self.is_living, LifeStatusEnum):
+            self.is_living = LifeStatusEnum(self.is_living)
+
         if not isinstance(self.aliases, list):
             self.aliases = [self.aliases] if self.aliases is not None else []
         self.aliases = [v if isinstance(v, str) else str(v) for v in self.aliases]
@@ -213,6 +231,18 @@ class Person(YAMLRoot):
 
 @dataclass
 class Organization(YAMLRoot):
+    """
+    An organization.
+
+    This description
+    includes newlines
+
+    ## Markdown headers
+
+    * and
+    * a
+    * list
+    """
     _inherited_slots: ClassVar[List[str]] = []
 
     class_class_uri: ClassVar[URIRef] = KS.Organization
@@ -399,6 +429,7 @@ class Relationship(YAMLRoot):
     ended_at_time: Optional[Union[str, XSDDate]] = None
     related_to: Optional[str] = None
     type: Optional[str] = None
+    cordialness: Optional[Union[str, "CordialnessEnum"]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self.started_at_time is not None and not isinstance(self.started_at_time, XSDDate):
@@ -412,6 +443,9 @@ class Relationship(YAMLRoot):
 
         if self.type is not None and not isinstance(self.type, str):
             self.type = str(self.type)
+
+        if self.cordialness is not None and not isinstance(self.cordialness, CordialnessEnum):
+            self.cordialness = CordialnessEnum(self.cordialness)
 
         super().__post_init__(**kwargs)
 
@@ -427,6 +461,7 @@ class FamilialRelationship(Relationship):
 
     type: Union[str, "FamilialRelationshipType"] = None
     related_to: Union[str, PersonId] = None
+    cordialness: Optional[str] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.type):
@@ -438,6 +473,12 @@ class FamilialRelationship(Relationship):
             self.MissingRequiredField("related_to")
         if not isinstance(self.related_to, PersonId):
             self.related_to = PersonId(self.related_to)
+
+        if self.cordialness is not None and not isinstance(self.cordialness, str):
+            self.cordialness = str(self.cordialness)
+
+        if self.cordialness is not None and not isinstance(self.cordialness, CordialnessEnum):
+            self.cordialness = CordialnessEnum(self.cordialness)
 
         super().__post_init__(**kwargs)
 
@@ -605,6 +646,7 @@ class Dataset(YAMLRoot):
     class_name: ClassVar[str] = "Dataset"
     class_model_uri: ClassVar[URIRef] = KS.Dataset
 
+    metadata: Optional[Union[dict, "AnyObject"]] = None
     persons: Optional[Union[Dict[Union[str, PersonId], Union[dict, Person]], List[Union[dict, Person]]]] = empty_dict()
     companies: Optional[Union[Dict[Union[str, CompanyId], Union[dict, Company]], List[Union[dict, Company]]]] = empty_dict()
     activities: Optional[Union[Dict[Union[str, ActivityId], Union[dict, "Activity"]], List[Union[dict, "Activity"]]]] = empty_dict()
@@ -674,6 +716,27 @@ class SubclassTest(ClassWithSpaces):
             self.slot_with_space_2 = ClassWithSpaces(**as_dict(self.slot_with_space_2))
 
         super().__post_init__(**kwargs)
+
+
+class SubSubClass2(SubclassTest):
+    _inherited_slots: ClassVar[List[str]] = []
+
+    class_class_uri: ClassVar[URIRef] = KS.SubSubClass2
+    class_class_curie: ClassVar[str] = "ks:SubSubClass2"
+    class_name: ClassVar[str] = "Sub sub class 2"
+    class_model_uri: ClassVar[URIRef] = KS.SubSubClass2
+
+
+class TubSubClass1(SubclassTest):
+    """
+    Same depth as Sub sub class 1
+    """
+    _inherited_slots: ClassVar[List[str]] = []
+
+    class_class_uri: ClassVar[URIRef] = KS.TubSubClass1
+    class_class_curie: ClassVar[str] = "ks:TubSubClass1"
+    class_name: ClassVar[str] = "tub sub class 1"
+    class_model_uri: ClassVar[URIRef] = KS.TubSubClass1
 
 
 AnyObject = Any
@@ -779,17 +842,21 @@ class EmploymentEventType(EnumDefinitionImpl):
     """
     codes for different kinds of employment/HR related events
     """
-    HIRE = PermissibleValue(text="HIRE",
-                               description="event for a new employee",
-                               meaning=BIZCODES["001"])
-    FIRE = PermissibleValue(text="FIRE",
-                               meaning=BIZCODES["002"])
-    PROMOTION = PermissibleValue(text="PROMOTION",
-                                         description="promotion event",
-                                         meaning=BIZCODES["003"])
-    TRANSFER = PermissibleValue(text="TRANSFER",
-                                       description="transfer internally",
-                                       meaning=BIZCODES["004"])
+    HIRE = PermissibleValue(
+        text="HIRE",
+        description="event for a new employee",
+        meaning=BIZCODES["001"])
+    FIRE = PermissibleValue(
+        text="FIRE",
+        meaning=BIZCODES["002"])
+    PROMOTION = PermissibleValue(
+        text="PROMOTION",
+        description="promotion event",
+        meaning=BIZCODES["003"])
+    TRANSFER = PermissibleValue(
+        text="TRANSFER",
+        description="transfer internally",
+        meaning=BIZCODES["004"])
 
     _defn = EnumDefinition(
         name="EmploymentEventType",
@@ -805,7 +872,33 @@ class OtherCodes(EnumDefinitionImpl):
     @classmethod
     def _addvals(cls):
         setattr(cls, "a b",
-                PermissibleValue(text="a b") )
+            PermissibleValue(text="a b"))
+
+class LifeStatusEnum(EnumDefinitionImpl):
+
+    LIVING = PermissibleValue(text="LIVING")
+    DEAD = PermissibleValue(text="DEAD")
+    UNKNOWN = PermissibleValue(text="UNKNOWN")
+
+    _defn = EnumDefinition(
+        name="LifeStatusEnum",
+    )
+
+class CordialnessEnum(EnumDefinitionImpl):
+
+    heartfelt = PermissibleValue(
+        text="heartfelt",
+        description="warm and hearty friendliness")
+    hateful = PermissibleValue(
+        text="hateful",
+        description="spiteful")
+    indifferent = PermissibleValue(
+        text="indifferent",
+        description="not overly friendly nor obnoxiously spiteful")
+
+    _defn = EnumDefinition(
+        name="CordialnessEnum",
+    )
 
 # Slots
 class slots:
@@ -868,6 +961,31 @@ slots.in_code_system = Slot(uri=KS.in_code_system, name="in code system", curie=
 slots.metadata = Slot(uri=KS.metadata, name="metadata", curie=KS.curie('metadata'),
                    model_uri=KS.metadata, domain=None, range=Optional[Union[dict, AnyObject]])
 
+slots.species_name = Slot(uri=KS.species_name, name="species name", curie=KS.curie('species_name'),
+                   model_uri=KS.species_name, domain=None, range=Optional[str],
+                   pattern=re.compile(r'^[A-Z]+[a-z]+(-[A-Z]+[a-z]+)?\\.[A-Z]+(-[0-9]{4})?$'))
+
+slots.stomach_count = Slot(uri=KS.stomach_count, name="stomach count", curie=KS.curie('stomach_count'),
+                   model_uri=KS.stomach_count, domain=None, range=Optional[int])
+
+slots.tree_slot_A = Slot(uri=KS.A, name="tree_slot_A", curie=KS.curie('A'),
+                   model_uri=KS.tree_slot_A, domain=None, range=Optional[str])
+
+slots.tree_slot_B = Slot(uri=KS.B, name="tree_slot_B", curie=KS.curie('B'),
+                   model_uri=KS.tree_slot_B, domain=None, range=Optional[str])
+
+slots.tree_slot_C = Slot(uri=KS.C, name="tree_slot_C", curie=KS.curie('C'),
+                   model_uri=KS.tree_slot_C, domain=None, range=Optional[str])
+
+slots.mixin_slot_I = Slot(uri=KS.mixin_slot_I, name="mixin_slot_I", curie=KS.curie('mixin_slot_I'),
+                   model_uri=KS.mixin_slot_I, domain=None, range=Optional[str])
+
+slots.life_status = Slot(uri=KS.life_status, name="life_status", curie=KS.curie('life_status'),
+                   model_uri=KS.life_status, domain=None, range=Optional[Union[str, "LifeStatusEnum"]])
+
+slots.cordialness = Slot(uri=KS.cordialness, name="cordialness", curie=KS.curie('cordialness'),
+                   model_uri=KS.cordialness, domain=None, range=Optional[str])
+
 slots.id = Slot(uri=CORE.id, name="id", curie=CORE.curie('id'),
                    model_uri=KS.id, domain=None, range=URIRef)
 
@@ -907,6 +1025,9 @@ slots.agent_set = Slot(uri=CORE.agent_set, name="agent set", curie=CORE.curie('a
 slots.hasAliases__aliases = Slot(uri=SKOS.altLabel, name="hasAliases__aliases", curie=SKOS.curie('altLabel'),
                    model_uri=KS.hasAliases__aliases, domain=None, range=Optional[Union[str, List[str]]])
 
+slots.person__is_living = Slot(uri=KS.is_living, name="person__is_living", curie=KS.curie('is_living'),
+                   model_uri=KS.person__is_living, domain=None, range=Optional[Union[str, "LifeStatusEnum"]])
+
 slots.company__ceo = Slot(uri=SCHEMA.ceo, name="company__ceo", curie=SCHEMA.curie('ceo'),
                    model_uri=KS.company__ceo, domain=None, range=Optional[Union[str, PersonId]])
 
@@ -933,13 +1054,26 @@ slots.subclassTest__slot_with_space_2 = Slot(uri=KS.slot_with_space_2, name="sub
 
 slots.Person_name = Slot(uri=CORE.name, name="Person_name", curie=CORE.curie('name'),
                    model_uri=KS.Person_name, domain=Person, range=Optional[str],
-                   pattern=re.compile(r'^\S+ \S+'))
+                   pattern=re.compile(r'^\S+ \S+$'))
+
+slots.Person_species_name = Slot(uri=KS.species_name, name="Person_species name", curie=KS.curie('species_name'),
+                   model_uri=KS.Person_species_name, domain=Person, range=Optional[str],
+                   pattern=re.compile(r'^[A-Z]+[a-z]+(-[A-Z]+[a-z]+)?\\.[A-Z]+(-[0-9]{4})?$'))
+
+slots.Person_stomach_count = Slot(uri=KS.stomach_count, name="Person_stomach count", curie=KS.curie('stomach_count'),
+                   model_uri=KS.Person_stomach_count, domain=Person, range=Optional[int])
+
+slots.Relationship_cordialness = Slot(uri=KS.cordialness, name="Relationship_cordialness", curie=KS.curie('cordialness'),
+                   model_uri=KS.Relationship_cordialness, domain=Relationship, range=Optional[Union[str, "CordialnessEnum"]])
 
 slots.FamilialRelationship_type = Slot(uri=KS.type, name="FamilialRelationship_type", curie=KS.curie('type'),
                    model_uri=KS.FamilialRelationship_type, domain=FamilialRelationship, range=Union[str, "FamilialRelationshipType"])
 
 slots.FamilialRelationship_related_to = Slot(uri=KS.related_to, name="FamilialRelationship_related to", curie=KS.curie('related_to'),
                    model_uri=KS.FamilialRelationship_related_to, domain=FamilialRelationship, range=Union[str, PersonId])
+
+slots.FamilialRelationship_cordialness = Slot(uri=KS.cordialness, name="FamilialRelationship_cordialness", curie=KS.curie('cordialness'),
+                   model_uri=KS.FamilialRelationship_cordialness, domain=FamilialRelationship, range=Optional[Union[str, "CordialnessEnum"]])
 
 slots.EmploymentEvent_type = Slot(uri=KS.type, name="EmploymentEvent_type", curie=KS.curie('type'),
                    model_uri=KS.EmploymentEvent_type, domain=EmploymentEvent, range=Optional[Union[str, "EmploymentEventType"]])

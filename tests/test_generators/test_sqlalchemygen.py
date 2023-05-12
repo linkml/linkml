@@ -139,7 +139,6 @@ class SQLAlchemyGeneratorTestCase(unittest.TestCase):
         """
         sv = package_schemaview("linkml_runtime.linkml_model.meta")
         gen = SQLAlchemyGenerator(sv.schema)
-        print(f"SQLAGEN: ****")
         code = gen.generate_sqla(template=TemplateEnum.DECLARATIVE)
         assert "class ClassDefinition(" in code
         assert "class Annotation(" in code
@@ -211,8 +210,6 @@ class SQLAlchemyGeneratorTestCase(unittest.TestCase):
         session.add(p1)
         q = session.query(mod.Person).where(mod.Person.name == p1.name)
         persons = q.all()
-        # for person in persons:
-        #    print(f'Person={person}')
         assert len(persons) == 1
         assert p1 in persons
         p1 = persons[0]
@@ -235,8 +232,6 @@ class SQLAlchemyGeneratorTestCase(unittest.TestCase):
         session.commit()
         q = session.query(mod.Person).where(mod.Person.id == p2.id)
         persons = q.all()
-        # for person in persons:
-        #    print(f'Person={person}')
         assert len(persons) == 1
         p2_recap = persons[0]
         p2mh = p2_recap.has_medical_history
@@ -285,8 +280,6 @@ class SQLAlchemyGeneratorTestCase(unittest.TestCase):
         q = session.query(mod.Person).where(mod.Person.name == p1.name)
         # q = session.query(mod.Person)
         persons = q.all()
-        for person in persons:
-            print(f"Person={person}")
         self.assertEqual(1, len(persons))
         assert p1 in persons
         p1 = persons[0]
@@ -302,8 +295,6 @@ class SQLAlchemyGeneratorTestCase(unittest.TestCase):
         q = session.query(mod.Person).where(mod.Person.id == p2.id)
         persons = q.all()
         assert len(persons) == 1
-        # for person in persons:
-        #    print(f'Person={person.has_medical_history}')
         p2_recap = persons[0]
         p2mh = p2_recap.has_medical_history
         assert p2mh[0].duration == e1.duration
@@ -361,7 +352,6 @@ class SQLAlchemyGeneratorTestCase(unittest.TestCase):
         session.add(mod.Person(id="P2", aliases=["Fred"], has_news_events=[news_event]))
         # session.add(mod.Person(id='P3', has_familial_relationships=[{"related_to": "P4"}]))
         session.commit()
-        # print(f'QUERYING::  {mod.NewsEvent} // {type(mod.NewsEvent)}')
         q = session.query(mod.NewsEvent)
         all_news = q.all()
         # ensure news object is shared between persons
@@ -371,7 +361,6 @@ class SQLAlchemyGeneratorTestCase(unittest.TestCase):
         for person in persons:
             assert isinstance(person, mod.NamedThing)
             logging.info(f"Person={person}")
-            # print(f' Person.address={person.current_address}')
             for a in person.aliases:
                 logging.info(f"  ALIAS={a}")
             for e in person.has_medical_history:

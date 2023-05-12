@@ -30,8 +30,6 @@ class SchemaFixerTestCase(unittest.TestCase):
         s = b.schema
         fixer = SchemaFixer()
         fixer.add_titles(s)
-        #print(fixer.history)
-        #print(yaml_dumper.dumps(s))
         c = s.classes[MY_CLASS]
         e = s.enums[MY_ENUM]
         self.assertEqual(c.title, "my class")
@@ -61,8 +59,6 @@ class SchemaFixerTestCase(unittest.TestCase):
         s = b.schema
         fixer = SchemaFixer()
         fixer.attributes_to_slots(s, remove_redundant_slot_usage=False)
-        #print(fixer.history)
-        #print(yaml_dumper.dumps(s))
         c = s.classes[MY_CLASS]
         self.assertCountEqual([FULL_NAME, DESC], c.slots)
         self.assertEqual({}, c.attributes)
@@ -78,7 +74,6 @@ class SchemaFixerTestCase(unittest.TestCase):
         fixer.merge_slot_usage(
             s, c, SlotDefinition(FULL_NAME, description="desc1", range="string")
         )
-        #print(yaml_dumper.dumps(s))
         su = c.slot_usage[FULL_NAME]
         self.assertEqual("desc1", su.description)
         self.assertEqual("string", su.range)
@@ -93,7 +88,6 @@ class SchemaFixerTestCase(unittest.TestCase):
                 range="string",
             ),
         )
-        #print(yaml_dumper.dumps(s))
         su = c.slot_usage[FULL_NAME]
         with self.assertRaises(ValueError):
             fixer.merge_slot_usage(s, c, SlotDefinition(FULL_NAME, description="desc2"))
@@ -101,7 +95,6 @@ class SchemaFixerTestCase(unittest.TestCase):
         fixer.merge_slot_usage(
             s, c, SlotDefinition(FULL_NAME, description="desc2"), overwrite=True
         )
-        #print(yaml_dumper.dumps(s))
         su = c.slot_usage[FULL_NAME]
         self.assertEqual("desc2", su.description)
 
@@ -164,8 +157,6 @@ class SchemaFixerTestCase(unittest.TestCase):
         s = b.schema
         fixer = SchemaFixer()
         fixer.attributes_to_slots(s, remove_redundant_slot_usage=True)
-        #print(fixer.history)
-        #print(yaml_dumper.dumps(s))
         c = s.classes[MY_CLASS]
         self.assertCountEqual([ID, FULL_NAME, DESC], c.slots)
         self.assertEqual({}, c.attributes)
@@ -191,7 +182,6 @@ class SchemaFixerTestCase(unittest.TestCase):
         b.add_defaults()
         fixer = SchemaFixer()
         schema = b.schema
-        print(yaml_dumper.dumps(schema))
         fixed_schema = fixer.fix_element_names(schema)
         for v in slots.values():
             self.assertIn(v, fixed_schema.slots)

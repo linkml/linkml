@@ -22,7 +22,6 @@ class TestCommandLineInterface(unittest.TestCase):
         result = self.runner.invoke(cli, ["--help"])
         out = result.stdout
         err = result.stderr
-        # print(err)
         self.assertIn("INPUT", out)
         # self.assertEqual(0, result.exit_code)
 

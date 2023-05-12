@@ -184,6 +184,8 @@ class ExampleRunner:
                 success = True
                 try:
                     validator.validate_dict(input_dict, tc, closed=True)
+                    # json validation is incomplete: also try object instantiation
+                    self._load_from_dict(input_dict, target_class=tc)
                 except Exception as e:
                     success = False
                     if not counter_examples:

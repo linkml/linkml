@@ -143,7 +143,6 @@ class GenJSONLDTestCase(ClickTestCase):
 
         # Generate an image of the metamodel
         gen = ContextGenerator(env.meta_yaml, importmap=env.import_map)
-        print(f"P {env.meta_yaml}")
 
         base = gen.namespaces[gen.schema.default_prefix]
         if str(base)[-1] not in "/#":

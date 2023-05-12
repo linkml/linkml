@@ -53,6 +53,18 @@ def get_yaml_files(root: Path) -> Iterable[str]:
     help="Report format.",
     show_default=True,
 )
+@click.option(
+    "--validate",
+    is_flag=True,
+    default=False,
+    help="Validate the schema against the LinkML Metamodel before linting.",
+)
+@click.option(
+    "--validate-only",
+    is_flag=True,
+    default=False,
+    help="Validate the schema against the LinkML Metamodel and then exit without checking linter rules.",
+)
 @click.option("-v", "--verbose", is_flag=True)
 @click.option(
     "-o", "--output", type=click.File("w"), default="-", help="Report file name."
@@ -77,10 +89,12 @@ def main(
     fix: bool,
     config: str,
     format: str,
+    validate: bool,
+    validate_only: bool,
     output,
     ignore_warnings: bool,
     max_warnings: int,
-    verbose: bool
+    verbose: bool,
 ):
     """Run linter on SCHEMA.
 
@@ -117,7 +131,9 @@ def main(
     formatter.start_report()
     for path in get_yaml_files(schema):
         formatter.start_schema(path)
-        report = linter.lint(path, fix=fix)
+        report = linter.lint(
+            path, fix=fix, validate_schema=validate, validate_only=validate_only
+        )
         for problem in report:
             if str(problem.level) is RuleLevel.error.text:
                 error_count += 1
