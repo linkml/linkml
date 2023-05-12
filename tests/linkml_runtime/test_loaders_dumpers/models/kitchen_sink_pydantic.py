@@ -1,7 +1,8 @@
 from __future__ import annotations
 from datetime import datetime, date
 from enum import Enum
-from typing import List, Dict, Optional, Any, Union, Literal
+from typing import List, Dict, Optional, Any, Union
+from typing_extensions import Literal
 from pydantic import BaseModel as BaseModel, Field
 from linkml_runtime.linkml_model import Decimal
 
@@ -17,7 +18,7 @@ class ConfiguredBaseModel(WeakRefShimBaseModel,
                 underscore_attrs_are_private = True,
                 extra = 'forbid',
                 arbitrary_types_allowed = True,
-                use_enum_values = False):
+                use_enum_values = True):
     pass
 
 
@@ -169,8 +170,8 @@ class FamilialRelationship(Relationship):
     
     started_at_time: Optional[date] = Field(None)
     ended_at_time: Optional[date] = Field(None)
-    related_to: str = Field(None)
-    type: FamilialRelationshipType = Field(None)
+    related_to: str = Field(...)
+    type: FamilialRelationshipType = Field(...)
     
 
 
