@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "linkml"
-version = "0.0.0"
+version = "1.5.2.post19.dev0+6c3b6f39"
 description = "Linked Open Data Modeling Language"
 authors = [
     "Chris Mungall <cjmungall@lbl.gov>",
@@ -43,7 +43,7 @@ packages = [
 ]
 
 [tool.poetry-dynamic-versioning]
-enable = true
+enable = false
 vcs = "git"
 style = "pep440"
 
@@ -96,7 +96,7 @@ gen-linkml = "linkml.generators.linkmlgen:cli"
 linkml-schema-fixer = "linkml.utils.schema_fixer:main"
 
 [tool.poetry.dependencies]
-python = "^3.7.6"
+python = "^3.8.0"
 antlr4-python3-runtime = "<4.10,==4.*,>=4.9.0"
 click = ">=7.0"
 graphviz = ">=0.10.1"
@@ -136,7 +136,7 @@ ipython-genutils = "*"
 nbconvert = "*"
 nbformat = "*"
 coverage = "^6.4.1"
-
+numpy = ">=1.24.3"
 [tool.poetry.extras]
 docs = ["Sphinx", "sphinxcontrib-mermaid", "furo"]
 
