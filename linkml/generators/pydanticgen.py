@@ -1,9 +1,15 @@
+import logging
 import os
 import logging
 from collections import defaultdict
 from copy import deepcopy
-from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Set, TextIO, Union
+from dataclasses import field, dataclass
+from types import ModuleType
+from typing import Dict, List, TextIO, Union, Optional, Set
+
+from linkml_runtime.utils.compile_python import compile_python
+
+from linkml.utils.ifabsent_functions import ifabsent_value_declaration
 
 import click
 from jinja2 import Template
@@ -145,6 +151,19 @@ class PydanticGenerator(OOCodeGenerator):
     gen_slots: bool = field(default_factory=lambda: True)
     genmeta: bool = field(default_factory=lambda: False)
     emit_metadata: bool = field(default_factory=lambda: True)
+
+    def compile_module(self, **kwargs) -> ModuleType:
+        """
+        Compiles generated python code to a module
+        :return:
+        """
+        pycode = self.serialize(**kwargs)
+        try:
+            return compile_python(pycode)
+        except NameError as e:
+            logging.error(f"Code:\n{pycode}")
+            logging.error(f"Error compiling generated python code: {e}")
+            raise e
 
     def generate_enums(
         self, all_enums: Dict[EnumDefinitionName, EnumDefinition]
