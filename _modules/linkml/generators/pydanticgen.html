@@ -336,9 +336,15 @@
 <span class="s2">from __future__ import annotations</span>
 <span class="s2">from datetime import datetime, date</span>
 <span class="s2">from enum import Enum</span>
-<span class="s2">from typing import List, Dict, Optional, Any, Union, Literal</span>
+<span class="s2">from typing import List, Dict, Optional, Any, Union</span>
 <span class="s2">from pydantic import BaseModel as BaseModel, Field</span>
 <span class="s2">from linkml_runtime.linkml_model import Decimal</span>
+<span class="s2">import sys</span>
+<span class="s2">if sys.version_info &gt;= (3, 8):</span>
+<span class="s2">    from typing import Literal</span>
+<span class="s2">else:</span>
+<span class="s2">    from typing_extensions import Literal</span>
+
 
 <span class="s2">metamodel_version = &quot;{{metamodel_version}}&quot;</span>
 <span class="s2">version = &quot;{{version if version else None}}&quot;</span>
