@@ -26,7 +26,6 @@ class ContextTestCase(unittest.TestCase):
         json_dumper.dump(element=inst, to_file=DATA_JSON)
         with open(CONTEXT_OUT, "w") as stream:
             stream.write(ContextGenerator(SCHEMA).serialize())
-        print(rdf_dumper.dumps(inst, CONTEXT_OUT))
 
 
 if __name__ == "__main__":

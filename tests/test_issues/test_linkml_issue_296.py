@@ -41,17 +41,13 @@ class Issue296TestCase(TestEnvironmentTestCase):
 
     def test_any(self):
         py = PythonGenerator(schema).serialize()
-        # print(py)
         mod = compile_python(py)
         dict_obj = {"x": 1, "y": {"foo": "foo1", "bar": "bar1"}}
         x = mod.C(s="foo")
-        # print(x)
         self.assertEqual(x.s, "foo")
         x = mod.C(s=dict_obj)
-        # print(x)
         self.assertEqual(x.s, JsonObj(dict_obj))
         x = mod.C(s=1)
-        # print(x)
         self.assertEqual(x.s, 1)
         with self.assertRaises(Exception):
             mod.C(t=dict_obj)

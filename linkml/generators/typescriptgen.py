@@ -45,17 +45,15 @@ export type {{cref}} = string
  */
 {%- endif -%} 
 {% set parents = gen.parents(c) %}
-export interface {{gen.name(c)}} {% if parents %} extends {{parents|join(', ')}} {% endif %} {
+export interface {{gen.name(c)}} {%- if parents %} extends {{parents|join(', ')}} {%- endif %} {
     {%- for sn in view.class_slots(c.name, direct=False) %}
     {% set s = view.induced_slot(sn, c.name) %}
     {%- if s.description -%}
-    /**
-     * {{s.description}}
-     */
-     {%- endif -%}
-    {{gen.name(s)}}?: {{gen.range(s)}},
+    /** {{s.description}} */
+    {% endif -%}
+    {{gen.name(s)}}{%- if not s.required -%}?{%- endif -%}: {{gen.range(s)}},
     {%- endfor %}
-}
+};
 {% endfor %}
 """
 
@@ -151,10 +149,14 @@ class TypescriptGenerator(Generator):
         else:
             if r in sv.all_types():
                 t = sv.get_type(r)
+                tsrange = "string"
                 if t.base and t.base in type_map:
-                    return type_map[t.base]
+                    tsrange = type_map[t.base]
                 else:
                     logging.warning(f"Unknown type.base: {t.name}")
+                if slot.multivalued:
+                    tsrange = f"{tsrange}[]"
+                return tsrange
             return "string"
 
     def parents(self, cls: ClassDefinition) -> List[ClassDefinitionName]:

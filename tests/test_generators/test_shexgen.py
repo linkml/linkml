@@ -45,10 +45,8 @@ class ShExTestCase(unittest.TestCase):
                     )
                     return
                 raise e
-            # print(g)
             nodes = set()
             for s, p, o in g.triples((None, None, None)):
-                # print(f'{s} {p} {o}')
                 nodes.add(s)
             for node in nodes:
                 r = evaluate(g, shexstr, focus=node)
