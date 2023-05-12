@@ -137,6 +137,7 @@ nbconvert = "*"
 nbformat = "*"
 coverage = "^6.4.1"
 numpy = ">=1.24.3"
+
 [tool.poetry.extras]
 docs = ["Sphinx", "sphinxcontrib-mermaid", "furo"]
 
