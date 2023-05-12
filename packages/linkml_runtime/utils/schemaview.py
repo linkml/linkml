@@ -1242,6 +1242,8 @@ class SchemaView(object):
                 setattr(induced_slot, metaslot_name, v)
         if slot.inlined_as_list:
             slot.inlined = True
+        if slot.identifier or slot.key:
+            slot.required = True
         if mangle_name:
             mangled_name = f'{camelcase(class_name)}__{underscore(slot_name)}'
             induced_slot.name = mangled_name
@@ -1705,7 +1707,7 @@ class SchemaView(object):
 
     def materialize_derived_schema(self) -> SchemaDefinition:
         """ Materialize a schema view into a schema definition """
-        derived_schema = copy(self.schema)
+        derived_schema = deepcopy(self.schema)
         derived_schemaview = SchemaView(derived_schema)
         derived_schemaview.merge_imports()
         for typ in [deepcopy(t) for t in self.all_types().values()]:

@@ -222,14 +222,14 @@ toml = ["tomli"]
 
 [[package]]
 name = "curies"
-version = "0.4.3"
+version = "0.5.4"
 description = "Idiomatic conversion between URIs and compact URIs (CURIEs)."
 category = "main"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "curies-0.4.3-py3-none-any.whl", hash = "sha256:490b678b6be314c3c5c8f82db7ad9234ed9a36d41ddb6cf7c53308df19364ce1"},
-    {file = "curies-0.4.3.tar.gz", hash = "sha256:ee4177ea366b4893edeb1cfd27bd5f394b5d435f2d53d6ed97c07c1c7be8c4de"},
+    {file = "curies-0.5.4-py3-none-any.whl", hash = "sha256:833be5989b9d71ffb54fe521810ae126d122b78ab56a57370aa9049de1eac291"},
+    {file = "curies-0.5.4.tar.gz", hash = "sha256:bad4262b7f0ddd3dfa8a7159f70bc3745b9a1c24048ad2bbc241d5e23a3131e3"},
 ]
 
 [package.dependencies]
@@ -239,9 +239,10 @@ requests = "*"
 [package.extras]
 bioregistry = ["bioregistry (>=0.5.136)"]
 docs = ["sphinx", "sphinx-autodoc-typehints", "sphinx-automodapi", "sphinx-rtd-theme"]
-fastapi = ["fastapi", "httpx"]
-flask = ["flask"]
+fastapi = ["defusedxml", "fastapi", "httpx", "python-multipart", "uvicorn"]
+flask = ["defusedxml", "flask"]
 pandas = ["pandas"]
+rdflib = ["rdflib"]
 tests = ["coverage", "pytest"]
 
 [[package]]
@@ -942,4 +943,4 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.7.6"
-content-hash = "0a05eaeadda9d7ba79b7e71e566eaac03045e35542dd3500bd60390bf08b63ec"
+content-hash = "94744c46efabdb00948c34fed7b746d8ea5c87e9e401345c10ab9d64caddf330"

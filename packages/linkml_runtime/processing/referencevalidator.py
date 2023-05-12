@@ -76,6 +76,69 @@ XSD_OR_BASE_TO_PYTHON = {
 }
 
 
+def _is_list_of_lists(x: Any) -> bool:
+    """
+    True x is of the form `[[...`
+
+    >>> _is_list_of_lists([1])
+    False
+    >>> _is_list_of_lists([[1,2],[3,4]])
+    True
+    >>> _is_list_of_lists([[]])
+    True
+
+    :param x: element to be tested
+    :return: True if LoL
+    """
+    return x and isinstance(x, list) and isinstance(x[0], list)
+
+
+def linearize_nested_lists(nested_list: List, is_row_ordered=True):
+    """
+    Returns a linear sequence of elements corresponding to a nested list array representation
+
+    >>> linearize_nested_lists([[11,12,13],[21,22,23],[31,32,33]], is_row_ordered=True)
+    [11, 12, 13, 21, 22, 23, 31, 32, 33]
+
+    >>> linearize_nested_lists([[11,12,13],[21,22,23],[31,32,33]], is_row_ordered=False)
+    [11, 21, 31, 12, 22, 32, 13, 23, 33]
+
+    :param nested_list:
+    :param is_row_ordered:
+    :return:
+    """
+    if not is_row_ordered:
+        return _linearize_nested_list_column_order(nested_list)
+    # row-ordered
+    result = []
+    stack = [iter(nested_list)]
+    while stack:
+        try:
+            item = next(stack[-1])
+            if isinstance(item, list):
+                stack.append(iter(item))
+            else:
+                result.append(item)
+        except StopIteration:
+            stack.pop()
+    return result
+
+
+def _linearize_nested_list_column_order(nested_list):
+    result = []
+    if not nested_list:
+        return result
+
+    num_rows = len(nested_list)
+    max_row_len = max(len(row) for row in nested_list)
+
+    for col in range(max_row_len):
+        for row in range(num_rows):
+            if col < len(nested_list[row]):
+                result.append(nested_list[row][col])
+
+    return result
+
 class CollectionForm(Enum):
     """Form of a schema element.
     See Part 6 of the LinkML specification"""
@@ -85,6 +148,7 @@ class CollectionForm(Enum):
     CompactDict = "CompactDict"
     SimpleDict = "SimpleDict"
     List = "List"
+    ListOfLists = "ListOfLists"
 
 
 COLLECTION_FORM_NORMALIZATION = Tuple[CollectionForm, CollectionForm]
@@ -227,6 +291,8 @@ def _remove_pk(obj: dict, pk_slot_name: str) -> dict:
 
 def _add_pk(obj: dict, pk_slot_name: str, pk_val: Any) -> dict:
     """Make a new ExpandedDict ready copy of a dict, adding the pk_slot_name"""
+    if obj is None:
+        return {pk_slot_name: pk_val}
     if pk_slot_name not in obj:
         obj = copy(obj)
         obj[pk_slot_name] = pk_val
@@ -327,7 +393,7 @@ class ReferenceValidator:
         :return:
         """
         target = self._schema_root(target)
-        slot = SlotDefinition(name="temp", range=target)
+        slot = SlotDefinition(name="temp", range=target, inlined=True)
         if input_object is None or isinstance(input_object, dict):
             slot.inlined = True
         elif isinstance(input_object, list):
@@ -356,7 +422,7 @@ class ReferenceValidator:
         normalized_object = copy(input_object)
         if isinstance(range_element, ClassDefinition):
             pk_slot_name = self._identifier_slot_name(range_element)
-        normalized_object = self.normalize_to_collection_from(
+        normalized_object = self.normalize_to_collection_form(
             form, normalized_object, parent_slot, pk_slot_name, report
         )
         # Validate
@@ -383,12 +449,15 @@ class ReferenceValidator:
                     k: self.normalize_instance(v, simple_dict_value_slot, new_report)
                     for k, v in normalized_object.items()
                 }
+        elif _is_list_of_lists(normalized_object):
+            raise NotImplementedError(f"List of Lists: {normalized_object}")
         elif isinstance(normalized_object, list):
             output_object = [
                 self.normalize_instance(v, parent_slot, new_report)
                 for v in normalized_object
             ]
         else:
+            # normalize an instance
             output_object = self.normalize_instance(
                 normalized_object, parent_slot, new_report
             )
@@ -432,7 +501,7 @@ class ReferenceValidator:
             return CollectionForm.ExpandedDict
         return CollectionForm.CompactDict
 
-    def normalize_to_collection_from(
+    def normalize_to_collection_form(
         self,
         form: CollectionForm,
         input_object: Any,
@@ -440,6 +509,23 @@ class ReferenceValidator:
         pk_slot_name: SlotDefinitionName,
         report: Report,
     ) -> Any:
+        """
+        Normalizes the input object to a defined form
+
+        :param form:
+        :param input_object:
+        :param slot:
+        :param pk_slot_name:
+        :param report:
+        :return:
+        """
+        if _is_list_of_lists(input_object):
+            if form != CollectionForm.List:
+                return input_object
+            if not any(impl for impl in slot.implements if impl == "linkml:elements"):
+                return input_object
+            is_row_ordered = not any(impl for impl in slot.implements if impl == "linkml:ColumnOrderedArray")
+            input_object = linearize_nested_lists(input_object, is_row_ordered)
         if form == CollectionForm.NonCollection:
             return self.ensure_non_collection(input_object, slot, pk_slot_name, report)
         elif form == CollectionForm.List:
@@ -663,7 +749,7 @@ class ReferenceValidator:
         elif isinstance(range_element, TypeDefinition):
             return self.normalize_type(input_object, range_element, report, parent_slot)
         else:
-            raise ValueError(f"Cannot normalize: unknown range {parent_slot.range}")
+            return input_object
 
     def normalize_reference(
         self, input_object: dict, target: ClassDefinition, report: Report
@@ -672,7 +758,7 @@ class ReferenceValidator:
         if pk_slot is None:
             raise AssertionError(f"Cannot normalize: no primary key for {target.name}")
         return self.normalize_type(
-            input_object, self.derived_schema.types[pk_slot.range], report
+            input_object, self.derived_schema.types.get(pk_slot.range, None), report
         )
 
     def normalize_object(
@@ -769,12 +855,14 @@ class ReferenceValidator:
     def normalize_type(
         self,
         input_object: Any,
-        target: TypeDefinition,
+        target: Optional[TypeDefinition],
         report: Report,
         parent_slot: SlotDefinition = None,
     ) -> Any:
         if input_object is None:
             return None
+        if target is None:
+           return input_object
         output_value = input_object
         if target.base in XSD_OR_BASE_TO_PYTHON:
             expected_python_type = XSD_OR_BASE_TO_PYTHON[target.base]
@@ -870,7 +958,7 @@ class ReferenceValidator:
             child.name, reflexive=True
         )
 
-    def _slot_range_element(self, slot: SlotDefinition) -> Element:
+    def _slot_range_element(self, slot: SlotDefinition) -> Optional[Element]:
         ds = self.derived_schema
         sr = slot.range
         if sr in ds.classes:
@@ -880,7 +968,7 @@ class ReferenceValidator:
         elif sr in ds.types:
             return ds.types[sr]
         else:
-            raise ValueError(f"Undefined range {sr}")
+            return None
 
     def _slot_collection_form(self, slot: SlotDefinition) -> CollectionForm:
         if not slot.multivalued:

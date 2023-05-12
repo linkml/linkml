@@ -457,7 +457,7 @@ class SchemaViewTestCase(unittest.TestCase):
         Tests that building a SchemaView directly from a remote URL works.
 
         Note: this should be the only test in this suite that fails if there is
-        no network
+        no network connection.
         """
         view = SchemaView("https://w3id.org/linkml/meta.yaml")
         main_classes = ["class_definition", "prefix"]
@@ -468,6 +468,17 @@ class SchemaViewTestCase(unittest.TestCase):
         for c in imported_classes:
             self.assertIn(c, view.all_classes(imports=True))
             self.assertNotIn(c, view.all_classes(imports=False))
+
+    @unittest.skip("Skipped as fragile: will break if the remote schema changes")
+    def test_direct_remote_imports_additional(self):
+        """
+        Alternative test to: https://github.com/linkml/linkml/pull/1379
+        """
+        url = "https://raw.githubusercontent.com/GenomicsStandardsConsortium/mixs/main/model/schema/mixs.yaml"
+        view = SchemaView(url)
+        self.assertEqual(view.schema.name, "MIxS")
+        class_count = len(view.all_classes())
+        self.assertGreater(class_count, 0)
 
 
     def test_merge_imports(self):
@@ -630,13 +641,20 @@ class SchemaViewTestCase(unittest.TestCase):
 
     def test_metamodel_in_schemaview(self):
         view = package_schemaview('linkml_runtime.linkml_model.meta')
+        self.assertIn('meta', view.imports_closure())
+        self.assertIn('linkml:types', view.imports_closure())
+        self.assertIn('meta', view.imports_closure(imports=False))
+        self.assertNotIn('linkml:types', view.imports_closure(imports=False))
+        self.assertEqual(1, len(view.imports_closure(imports=False)))
+        all_classes = list(view.all_classes().keys())
+        all_classes_no_imports = list(view.all_classes(imports=False).keys())
         for cn in ['class_definition', 'type_definition', 'slot_definition']:
-            self.assertIn(cn, view.all_classes())
-            self.assertIn(cn, view.all_classes(imports=False))
+            self.assertIn(cn, all_classes)
+            self.assertIn(cn, all_classes_no_imports)
             self.assertEqual(view.get_identifier_slot(cn).name, 'name')
         for cn in ['annotation', 'extension']:
-            self.assertIn(cn, view.all_classes())
-            self.assertNotIn(cn, view.all_classes(imports=False))
+            self.assertIn(cn, all_classes, "imports should be included by default")
+            self.assertNotIn(cn, all_classes_no_imports, "imported class unexpectedly included")
         for sn in ['id', 'name', 'description']:
             self.assertIn(sn, view.all_slots())
         for tn in ['uriorcurie', 'string', 'float']:
