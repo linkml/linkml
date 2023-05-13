@@ -1,7 +1,8 @@
 import io
 import yaml
 import json
-from typing import Dict, List, Any
+from typing import Union
+from pydantic import BaseModel
 
 from linkml_runtime.dumpers.dumper_root import Dumper
 from linkml_runtime.dumpers.json_dumper import JSONDumper
@@ -15,7 +16,7 @@ from json_flattener import flatten_to_csv
 
 class CSVDumper(Dumper):
 
-    def dumps(self, element: YAMLRoot,
+    def dumps(self, element: Union[BaseModel, YAMLRoot],
               index_slot: SlotDefinitionName = None,
               schema: SchemaDefinition = None,
               schemaview: SchemaView = None,

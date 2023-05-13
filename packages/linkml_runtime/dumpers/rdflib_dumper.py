@@ -1,7 +1,8 @@
 import logging
 import urllib
 from abc import abstractmethod
-from typing import Optional, Any, Dict
+from typing import Optional, Any, Dict, Union
+from pydantic import BaseModel
 
 from rdflib import Graph, URIRef, XSD
 from rdflib.term import Node, BNode, Literal
@@ -23,7 +24,7 @@ class RDFLibDumper(Dumper):
     This requires a SchemaView object
 
     """
-    def as_rdf_graph(self, element: YAMLRoot, schemaview: SchemaView, prefix_map: Dict[str, str] = None) -> Graph:
+    def as_rdf_graph(self, element: Union[BaseModel, YAMLRoot], schemaview: SchemaView, prefix_map: Dict[str, str] = None) -> Graph:
         """
         Dumps from element to an rdflib Graph,
         following a schema
@@ -136,7 +137,7 @@ class RDFLibDumper(Dumper):
             graph.add((element_uri, RDF.type, URIRef(schemaview.get_uri(cn, expand=True))))
         return element_uri
 
-    def dump(self, element: YAMLRoot,
+    def dump(self, element: Union[BaseModel, YAMLRoot],
              to_file: str,
              schemaview: SchemaView = None,
              fmt: str = 'turtle', prefix_map: Dict[str, str] = None, **args) -> None:
@@ -152,7 +153,7 @@ class RDFLibDumper(Dumper):
         """
         super().dump(element, to_file, schemaview=schemaview, fmt=fmt, prefix_map=prefix_map)
 
-    def dumps(self, element: YAMLRoot, schemaview: SchemaView = None,
+    def dumps(self, element: Union[BaseModel, YAMLRoot], schemaview: SchemaView = None,
               fmt: Optional[str] = 'turtle', prefix_map: Dict[str, str] = None) -> str:
         """
         Convert element into an RDF graph guided by the schema

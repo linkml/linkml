@@ -1,0 +1,412 @@
+id: https://w3id.org/linkml/tests/kitchen_sink
+name: kitchen_sink
+title: Kitchen Sink Schema
+description: |-
+  Kitchen Sink Schema
+
+  This schema does not do anything useful. It exists to test all features of linkml.
+
+  This particular text field exists to demonstrate markdown within a text field:
+
+  Lists:
+
+     * a
+     * b
+     * c
+
+  And links, e.g to [Person](Person.md)
+
+default_curi_maps:
+  - semweb_context
+imports:
+  - linkml:types
+  - core
+prefixes:
+  pav: http://purl.org/pav/
+  dce: http://purl.org/dc/elements/1.1/
+  lego: http://geneontology.org/lego/
+  linkml: https://w3id.org/linkml/
+  biolink: https://w3id.org/biolink/
+  ks: https://w3id.org/linkml/tests/kitchen_sink/
+  RO: http://purl.obolibrary.org/obo/RO_
+  BFO: http://purl.obolibrary.org/obo/BFO_
+  CODE: http://example.org/code/
+  ROR: http://example.org/ror/
+  A: http://example.org/activities/
+  P: http://example.org/person/
+  skos: http://www.w3.org/2004/02/skos/core#
+  bizcodes: https://example.org/bizcodes/
+  schema: http://schema.org/
+default_prefix: ks
+see_also:
+  - https://example.org/
+
+subsets:
+
+  subset A:
+    rank: 2
+    description: |-
+      test subset A
+
+      This is a subset for testing
+    comments:
+      - this subset is meaningless, it is just here for testing
+      - another comment
+    aliases:
+      - A
+  subset B:
+    rank: 1
+    description: >-
+      test subset B
+    aliases:
+      - B
+
+classes:
+
+  HasAliases:
+    mixin: true
+    attributes:
+      aliases:
+        slot_uri: skos:altLabel
+        multivalued: true
+
+  Friend:
+    abstract: true
+    slots:
+      - name
+
+  Person:
+    rank: 2
+    description: A person, living or dead
+    in_subset:
+      - subset A
+    mixins:
+      - HasAliases
+    slots:
+      - id
+      - name
+      - has employment history
+      - has familial relationships
+      - has medical history
+      - age in years
+      - addresses
+      - has birth event
+      - species name
+      - stomach count
+    attributes:
+      is_living:
+        range: LifeStatusEnum
+    slot_usage:
+      name:
+        pattern: "^\\S+ \\S+$"  ## do not do this in a real schema, people have all kinds of names
+      species name:
+        equals_string: human
+      stomach count:
+        equals_number: 1
+    id_prefixes:
+      - P
+    exact_mappings:
+      - schema:Person
+    see_also:
+      - https://en.wikipedia.org/wiki/Person
+      - schema:Person
+
+  Organization:
+    rank: 3
+    description: |-
+      An organization.
+
+      This description
+      includes newlines
+
+      ## Markdown headers
+
+       * and
+       * a
+       * list
+
+
+    mixins:
+      - HasAliases
+    slots:
+      - id
+      - name
+    id_prefixes:
+      - ROR
+
+
+  Place:
+    mixins:
+      - HasAliases
+    slots:
+      - id
+      - name
+  Address:
+    slots:
+      - street
+      - city
+
+  Concept:
+    slots:
+      - id
+      - name
+      - in code system
+    id_prefixes:
+      - CODE
+
+  DiagnosisConcept:
+    is_a: Concept
+    close_mappings:
+      - biolink:Disease
+
+  ProcedureConcept:
+    is_a: Concept
+
+  Event:
+    slots:
+      - started at time
+      - ended at time
+      - is current
+      - metadata
+
+  Relationship:
+    slots:
+      - started at time
+      - ended at time
+      - related to
+      - type
+
+  FamilialRelationship:
+    rank: 5
+    is_a: Relationship
+    slot_usage:
+      type:
+        range: FamilialRelationshipType
+        required: true
+      related to:
+        range: Person
+        required: true
+
+  BirthEvent:
+    is_a: Event
+    slots:
+      - in location
+
+  EmploymentEvent:
+    rank: 6
+    is_a: Event
+    slots:
+      - employed at
+      - type
+    slot_usage:
+      type:
+        range: EmploymentEventType
+        required: false
+
+  MedicalEvent:
+    is_a: Event
+    slots:
+      - in location
+      - diagnosis
+      - procedure
+
+  WithLocation:
+    mixin: true
+    slots:
+      - in location
+
+  MarriageEvent:
+    is_a: Event
+    mixins:
+      - WithLocation
+    slots:
+      - married to
+
+  Company:
+    is_a: Organization
+    attributes:
+      ceo:
+        range: Person
+        slot_uri: schema:ceo
+        ## TODO - schemaview requires all attributes to have explicit uri otherwise slot_uri fails
+
+  CodeSystem:
+    slots:
+      - id
+      - name
+
+  Dataset:
+    tree_root: true
+    rank: 1
+    attributes:
+      persons:
+        range: Person
+        inlined: true
+        inlined_as_list: true
+        multivalued: true
+      companies:
+        range: Company
+        inlined_as_list: true
+        inlined: true
+        multivalued: true
+      activities:
+        range: activity
+        inlined_as_list: true
+        inlined: true
+        multivalued: true
+      code systems:
+        range: CodeSystem
+        inlined: true
+        multivalued: true
+    slots:
+      - metadata
+
+  FakeClass:
+    deprecated: this is not a real class, we are using it to test deprecation
+    attributes:
+      test_attribute:
+
+  class with spaces:
+    attributes:
+      slot with space 1:
+  subclass test:
+    is_a: class with spaces
+    attributes:
+      slot with space 2:
+        range: class with spaces
+  # these below two sub classes at the same depth have
+  # been added to check if class hierarchy methods
+  # follow lexigraphic sorting
+  Sub sub class 2:
+    is_a: subclass test
+  tub sub class 1:
+    description: Same depth as Sub sub class 1
+    is_a: subclass test
+
+
+  AnyObject:
+    class_uri: linkml:Any
+    description: Example of unconstrained class
+
+slots:
+  employed at:
+    range: Company
+    in_subset:
+      - subset A
+  is current:
+    range: boolean
+  has employment history:
+    rank: 7
+    range: EmploymentEvent
+    multivalued: true
+    inlined_as_list: true
+    in_subset:
+      - subset B
+  has marriage history:
+    range: MarriageEvent
+    multivalued: true
+    inlined_as_list: true
+    in_subset:
+      - subset B
+  has medical history:
+    rank: 5
+    range: MedicalEvent
+    multivalued: true
+    inlined_as_list: true
+    in_subset:
+      - subset B
+  has familial relationships:
+    range: FamilialRelationship
+    multivalued: true
+    inlined_as_list: true
+    in_subset:
+      - subset B
+  married to:
+    range: Person
+  in location:
+    range: Place
+    annotations:
+      "biolink:opposite": location_of
+  diagnosis:
+    range: DiagnosisConcept
+    inlined: true
+  procedure:
+    range: ProcedureConcept
+    inlined: true
+  addresses:
+    range: Address
+    multivalued: True
+  age in years:
+    description: number of years since birth
+    range: integer
+    minimum_value: 0
+    maximum_value: 999
+    in_subset:
+      - subset A
+      - subset B
+  related to:
+  type:
+  street:
+  city:
+  has birth event:
+    range: BirthEvent
+  in code system:
+    range: CodeSystem
+  metadata:
+    range: AnyObject
+    description: Example of a slot that has an unconstrained range
+  species name:
+  stomach count:
+    range: integer
+  # slots added for inheritance tree purposes
+  tree_slot_A:
+    slot_uri: ks:A
+  tree_slot_B:
+    slot_uri: ks:B
+    is_a: tree_slot_A
+  tree_slot_C:
+    slot_uri: ks:C
+    is_a: tree_slot_B
+    mixins: mixin_slot_I
+  mixin_slot_I:
+    mixin: true
+  life_status:
+    range: LifeStatusEnum
+    
+
+enums:
+  FamilialRelationshipType:
+    permissible_values:
+      SIBLING_OF:
+      PARENT_OF:
+      CHILD_OF:
+  DiagnosisType:
+    permissible_values:
+      TODO:
+  EmploymentEventType:
+    description: codes for different kinds of employment/HR related events
+    aliases:
+      - HR code
+    permissible_values:
+      HIRE:
+        meaning: bizcodes:001
+        description: event for a new employee
+      FIRE:
+        meaning: bizcodes:002
+        annotations:
+          "biolink:opposite": HIRE
+      PROMOTION:
+        meaning: bizcodes:003
+        description: promotion event
+      TRANSFER:
+        meaning: bizcodes:004
+        description: transfer internally
+  other codes:
+    permissible_values:
+      a b:
+      #1+2:
+  LifeStatusEnum:
+    permissible_values:
+      LIVING:
+      DEAD:
+      UNKNOWN:

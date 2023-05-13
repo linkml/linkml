@@ -5,6 +5,7 @@ from hbreader import FileInfo
 from linkml_runtime.loaders.loader_root import Loader
 from linkml_runtime.utils.context_utils import CONTEXTS_PARAM_TYPE
 from linkml_runtime.utils.yamlutils import YAMLRoot
+from pydantic import BaseModel
 from rdflib import Graph
 
 from linkml_runtime.loaders.requests_ssl_patch import no_ssl_verification
@@ -15,12 +16,13 @@ RDF_MIME_TYPES = "application/x-turtle;q=0.9, application/rdf+n3;q=0.8, applicat
 
 class RDFLoader(Loader):
 
-    def load_any(self, *args, **kwargs) -> Union[YAMLRoot, List[YAMLRoot]]:
+    def load_any(self, *args, **kwargs) -> Union[BaseModel, YAMLRoot, List[BaseModel], List[YAMLRoot]]:
         return self.load(*args, **kwargs)
 
-    def load(self, source: Union[str, TextIO, Graph], target_class: Type[YAMLRoot], *, base_dir: Optional[str] = None,
+
+    def load(self, source: Union[str, TextIO, Graph], target_class: Type[Union[BaseModel, YAMLRoot]], *, base_dir: Optional[str] = None,
              contexts: CONTEXTS_PARAM_TYPE = None, fmt: Optional[str] = 'turtle',
-             metadata: Optional[FileInfo] = None) -> YAMLRoot:
+             metadata: Optional[FileInfo] = None) -> Union[BaseModel, YAMLRoot]:
         """
         Load the RDF in source into the python target_class structure
         :param source: RDF data source. Can be a URL, a file name, an RDF string, an open handle or an existing graph
