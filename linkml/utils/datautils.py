@@ -27,7 +27,7 @@ dumpers_loaders = {
     "json": (JSONDumper, JSONLoader),
     "rdf": (RDFLibDumper, RDFLibLoader),
     "ttl": (RDFLibDumper, RDFLibLoader),
-    "json-ld": (RDFLibDumper, RDFLibLoader),
+    "json-ld": (JSONDumper, JSONLoader),
     "csv": (CSVDumper, CSVLoader),
     "tsv": (CSVDumper, CSVLoader),
 }

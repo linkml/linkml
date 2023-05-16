@@ -159,8 +159,6 @@ def cli(
             else:
                 raise Exception("Must pass in context OR schema for RDF output")
         outargs["contexts"] = list(context)
-        outargs["fmt"] = "json-ld"
-        outargs["schemaview"] = sv
     if output_format == "rdf" or output_format == "ttl":
         if sv is None:
             raise Exception(f"Must pass schema arg")
