@@ -12,6 +12,7 @@ on:
 
 jobs:
   docker:
+    if: github.repository == 'linkml/linkml'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
