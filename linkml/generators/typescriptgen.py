@@ -51,7 +51,7 @@ export enum {{e.name}} {
     {% if not e.values -%}
     dummy = "dummy"
     {%- endif %}
-    {%- for pv_label, pv in e['values'].items() %}
+    {%- for _, pv in e['values'].items() %}
     {% if pv.description -%}
     /** {{pv.description}} */
     {% endif -%}

@@ -70,7 +70,7 @@ class {{ e.name }}(str, Enum):
     {{ e.description }}
     \"\"\"
     {%- endif %}
-    {% for pv_label, pv in e['values'].items() -%}
+    {% for _, pv in e['values'].items() -%}
     {% if pv.description -%}
     # {{pv.description}}
     {%- endif %}
