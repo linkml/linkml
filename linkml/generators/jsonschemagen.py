@@ -433,7 +433,7 @@ class JsonSchemaGenerator(Generator):
             }
 
         if bool_subschema:
-            if slot_is_multivalued:
+            if prop.is_array:
                 if 'items' not in prop:
                     prop['items'] = {}
                 prop["type"] = "array"
