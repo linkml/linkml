@@ -262,7 +262,7 @@ class JsonSchemaTestCase(unittest.TestCase):
         expected_json_schema_subset={},
         data_cases=[],
     ):
-        generator = JsonSchemaGenerator(schema)
+        generator = JsonSchemaGenerator(schema, not_closed=False)
         json_schema = json.loads(generator.serialize())
 
         self.assertDictSubset(expected_json_schema_subset, json_schema)

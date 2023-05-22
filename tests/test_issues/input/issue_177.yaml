@@ -8,6 +8,7 @@ types:
     base: int
     uri: xsd:int
 
+default_range: string
 
 classes:
   c1:
