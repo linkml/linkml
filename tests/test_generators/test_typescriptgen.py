@@ -70,8 +70,6 @@ enums:
         gen = TypescriptGenerator(schema=unit_test_schema)
         enums = gen.generate_enums(sv.all_enums())
         assert enums
-        import pprint
-        pprint.pprint(enums)
         enum = enums["TestEnum"]
         assert enum
         assert enum["values"]["number_123"]["value"] == "123"
