@@ -1936,6 +1936,11 @@ building</p>
 <dd></dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="linkml.generators.oocodegen.OOCodeGenerator.generate_enums">
+<span class="sig-name descname"><span class="pre">generate_enums</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">all_enums</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">EnumDefinitionName</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">EnumDefinition</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span></span></span><a class="reference internal" href="_modules/linkml/generators/oocodegen.html#OOCodeGenerator.generate_enums"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.oocodegen.OOCodeGenerator.generate_enums" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="linkml.generators.oocodegen.OOCodeGenerator.get_class_name">
 <span class="sig-name descname"><span class="pre">get_class_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cn</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/linkml/generators/oocodegen.html#OOCodeGenerator.get_class_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.oocodegen.OOCodeGenerator.get_class_name" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
@@ -2569,11 +2574,6 @@ an exception will be raised.</p>
 </dd>
 </dl>
 </dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="linkml.generators.pydanticgen.PydanticGenerator.generate_enums">
-<span class="sig-name descname"><span class="pre">generate_enums</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">all_enums</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">EnumDefinitionName</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">EnumDefinition</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/linkml/generators/pydanticgen.html#PydanticGenerator.generate_enums"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.pydanticgen.PydanticGenerator.generate_enums" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="linkml.generators.pydanticgen.PydanticGenerator.generate_python_range">
@@ -4426,6 +4426,7 @@ representation such as JsonSchema</p>
 <li><a class="reference internal" href="#linkml.generators.oocodegen.OOCodeGenerator.create_documents"><code class="docutils literal notranslate"><span class="pre">OOCodeGenerator.create_documents()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.oocodegen.OOCodeGenerator.default_value_for_type"><code class="docutils literal notranslate"><span class="pre">OOCodeGenerator.default_value_for_type()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.oocodegen.OOCodeGenerator.generate_enum_label"><code class="docutils literal notranslate"><span class="pre">OOCodeGenerator.generate_enum_label()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.oocodegen.OOCodeGenerator.generate_enums"><code class="docutils literal notranslate"><span class="pre">OOCodeGenerator.generate_enums()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.oocodegen.OOCodeGenerator.get_class_name"><code class="docutils literal notranslate"><span class="pre">OOCodeGenerator.get_class_name()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.oocodegen.OOCodeGenerator.get_slot_name"><code class="docutils literal notranslate"><span class="pre">OOCodeGenerator.get_slot_name()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.oocodegen.OOCodeGenerator.java_style"><code class="docutils literal notranslate"><span class="pre">OOCodeGenerator.java_style</span></code></a></li>
@@ -4556,7 +4557,6 @@ representation such as JsonSchema</p>
 <li><a class="reference internal" href="#linkml.generators.pydanticgen.PydanticGenerator.gen_mixin_inheritance"><code class="docutils literal notranslate"><span class="pre">PydanticGenerator.gen_mixin_inheritance</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.pydanticgen.PydanticGenerator.gen_slots"><code class="docutils literal notranslate"><span class="pre">PydanticGenerator.gen_slots</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.pydanticgen.PydanticGenerator.generate_collection_key"><code class="docutils literal notranslate"><span class="pre">PydanticGenerator.generate_collection_key()</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.pydanticgen.PydanticGenerator.generate_enums"><code class="docutils literal notranslate"><span class="pre">PydanticGenerator.generate_enums()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.pydanticgen.PydanticGenerator.generate_python_range"><code class="docutils literal notranslate"><span class="pre">PydanticGenerator.generate_python_range()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.pydanticgen.PydanticGenerator.generatorname"><code class="docutils literal notranslate"><span class="pre">PydanticGenerator.generatorname</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.pydanticgen.PydanticGenerator.generatorversion"><code class="docutils literal notranslate"><span class="pre">PydanticGenerator.generatorversion</span></code></a></li>
