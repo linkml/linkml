@@ -523,7 +523,9 @@ class PydanticGenerator(OOCodeGenerator):
 
                 slot_ranges: List[str] = []
 
-                if len(s.any_of) > 0 and s.range is not None:
+                # Confirm that the original slot range (ignoring the default that comes in from
+                # induced_slot) isn't in addition to setting any_of
+                if len(s.any_of) > 0 and sv.get_slot(sn).range is not None:
                     raise ValueError("Slot cannot have both range and any_of defined")
 
                 if s.any_of is not None and len(s.any_of) > 0:
