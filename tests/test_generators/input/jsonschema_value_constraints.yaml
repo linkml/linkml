@@ -46,6 +46,12 @@ schema:
       none_of:
         - equals_string: purple
         - equals_string: green
+    integer_over_ten_or_string_na:
+      exactly_one_of:
+        - range: integer
+          minimum_value: 10
+        - range: string
+          pattern: "[nN]/?[aA]"
 
   classes:
     Test:
@@ -61,6 +67,7 @@ schema:
         - string_all_patterns
         - string_exactly_one_pattern
         - string_none_of
+        - integer_over_ten_or_string_na
 
 data_cases:
   - data:
@@ -130,3 +137,16 @@ data_cases:
   - data: 
       string_none_of: green
     error_message: should not be valid under
+  - data:
+      integer_over_ten_or_string_na: 100
+  - data:
+      integer_over_ten_or_string_na: 5
+    error_message: 5 is less than the minimum
+  - data:
+      integer_over_ten_or_string_na: n/a
+  - data:
+      integer_over_ten_or_string_na: wrong
+    error_message: "'wrong' does not match"
+  - data:
+      integer_over_ten_or_string_na: false
+    error_message: False is not valid under any of the given schemas

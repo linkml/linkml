@@ -1,0 +1,74 @@
+schema:
+  id: http://example.org/test_class_inheritance
+  name: test_class_inheritance
+
+  slots:
+    alpha_value:
+      range: string
+      required: true
+    gamma_value:
+      range: string
+      required: true
+    alpha_obj:
+      range: Alpha
+    beta_obj:
+      range: Beta
+    gamma_obj:
+      range: Gamma
+
+  classes:
+    Alpha:
+      slots:
+        - alpha_value
+    Beta:
+      is_a: Alpha
+    Gamma:
+      is_a: Beta
+      slots:
+        - gamma_value
+    Test:
+      tree_root: true
+      slots:
+        - alpha_obj
+        - beta_obj
+        - gamma_obj
+
+json_schema:
+  properties:
+    alpha_obj:
+      anyOf: 
+        - "$ref": "#/$defs/Alpha"
+        - "$ref": "#/$defs/Beta"
+        - "$ref": "#/$defs/Gamma"
+    beta_obj:
+      anyOf: 
+        - "$ref": "#/$defs/Beta"
+        - "$ref": "#/$defs/Gamma"
+    gamma_obj:
+      anyOf: 
+        - "$ref": "#/$defs/Gamma"
+
+data_cases:
+  - data:
+      alpha_obj:
+        alpha_value: v1
+  - data:
+      alpha_obj:
+        alpha_value: v1
+        gamma_value: v2
+  - data:
+      beta_obj:
+        alpha_value: v1
+  - data:
+      beta_obj:
+        alpha_value: v1
+        gamma_value: v2
+  - data:
+      gamma_obj:
+        alpha_value: v1
+    error_message: "'gamma_value' is a required property"
+  - data:
+      gamma_obj:
+        alpha_value: v1
+        gamma_value: v2
+  
