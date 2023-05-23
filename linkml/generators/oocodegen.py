@@ -5,6 +5,7 @@ from dataclasses import dataclass, field
 from typing import List, Optional, Dict
 
 from linkml_runtime.linkml_model.meta import (ClassDefinition,
+                                              EnumDefinition, EnumDefinitionName,
                                               SchemaDefinition, SlotDefinition,
                                               TypeDefinition)
 from linkml_runtime.utils.formatutils import camelcase, lcamelcase, underscore
@@ -126,6 +127,37 @@ class OOCodeGenerator(Generator):
                 safe_label += self.replace_invalid_identifier_character(character)
 
             return safe_label
+
+    def generate_enums(
+        self, all_enums: Dict[EnumDefinitionName, EnumDefinition]
+    ) -> Dict:
+        # TODO: make an explicit class to represent how an enum is passed to the template
+        enums = {}
+        for enum_name, enum_original in all_enums.items():
+            enum = {
+                "name": camelcase(enum_name),
+                "values": {}
+            }
+
+            if hasattr(enum_original, "description"):
+                enum["description"] = enum_original.description
+
+            for pv in enum_original.permissible_values.values():
+                label = self.generate_enum_label(pv.text)
+                val = {
+                    "label": label,
+                    "value": pv.text.replace('"', '\\"')
+                }
+                if hasattr(pv, "description"):
+                    val["description"] = pv.description
+                else :
+                    val["description"] = None
+
+                enum["values"][label] = val
+                
+            enums[enum_name] = enum
+
+        return enums
 
     def create_documents(self) -> List[OODocument]:
         """
