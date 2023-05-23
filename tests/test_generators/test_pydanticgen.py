@@ -110,7 +110,7 @@ enums:
 id: test_schema
 name: test_info
 description: just testing
-
+default_range: string
 prefixes:
   linkml: https://w3id.org/linkml/
   schema: http://schema.org/
