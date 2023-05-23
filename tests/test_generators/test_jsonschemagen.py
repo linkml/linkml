@@ -143,25 +143,13 @@ class JsonSchemaTestCase(unittest.TestCase):
         self.externalFileTest("jsonschema_top_class_identifier.yaml")
 
     def test_value_constraints(self):
-        with open(env.input_path("jsonschema_value_constraints.yaml")) as f:
-            test_def = yaml.safe_load(f)
-
-        generator = JsonSchemaGenerator(
-            yaml.dump(test_def["schema"]), stacktrace=True, not_closed=False
-        )
-        json_schema = json.loads(generator.serialize())
-
-        for data_case in test_def.get("data_cases", []):
-            data = data_case["data"]
-            with self.subTest(data=data):
-                if "error_message" in data_case:
-                    self.assertRaisesRegex(
-                        jsonschema.ValidationError,
-                        data_case["error_message"],
-                        lambda: jsonschema.validate(data, json_schema),
-                    )
-                else:
-                    jsonschema.validate(data, json_schema)
+        """Test the translation of metaslots that constrain values.
+        
+        Tests the translation of equals_string, equals_number, pattern, maximum_value,
+        and minimum_value metaslots. Additionally contains one test case that verifies
+        these work with multiple ranges as well.
+        """
+        self.externalFileTest("jsonschema_value_constraints.yaml")
 
     def test_rules(self):
         """Tests translation of various types of class rules.
@@ -271,6 +259,7 @@ class JsonSchemaTestCase(unittest.TestCase):
     ):
         generator = JsonSchemaGenerator(schema, **generator_args)
         json_schema = json.loads(generator.serialize())
+        print(generator.serialize())
 
         self.assertDictSubset(expected_json_schema_subset, json_schema)
 
