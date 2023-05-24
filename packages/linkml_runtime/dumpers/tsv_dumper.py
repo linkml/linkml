@@ -1,8 +1,8 @@
 from linkml_runtime.dumpers.delimited_file_dumper import DelimitedFileDumper
 
 
-class CSVDumper(DelimitedFileDumper):
+class TSVDumper(DelimitedFileDumper):
 
     @property
     def delimiter(self):
-        return ","
+        return "\t"
