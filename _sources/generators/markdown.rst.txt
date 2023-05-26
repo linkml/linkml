@@ -67,7 +67,7 @@ approach:
 
 .. code:: bash
 
-   gen-docs -d docs personinfo.yaml 
+   gen-doc -d docs personinfo.yaml 
 
 This is not yet as stable and feature complete as gen-markdown. One
 advantage is that it allows you to customize the templates used.
