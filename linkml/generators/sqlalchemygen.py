@@ -13,7 +13,7 @@ from linkml_runtime.linkml_model import (Annotation, ClassDefinition,
 from linkml_runtime.utils.compile_python import compile_python
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.schemaview import SchemaView
-from sqlalchemy import *
+from sqlalchemy import Enum
 
 from linkml._version import __version__
 from linkml.generators.pydanticgen import PydanticGenerator
@@ -64,15 +64,22 @@ class SQLAlchemyGenerator(Generator):
     ) -> str:
         # src_sv = SchemaView(self.schema)
         # self.schema = src_sv.schema
-        sqltr = RelationalModelTransformer(self.schemaview)
+        # use two underscores to distinguish it from the snake case underscore
+        sqltr = RelationalModelTransformer(self.schemaview, join_table_separator="__")
         if foreign_key_policy:
             sqltr.foreign_key_policy = foreign_key_policy
         tgen = SQLTableGenerator(self.schemaview.schema)
         tr_result = sqltr.transform(**kwargs)
         tr_schema = tr_result.schema
+        tr_schema_view = SchemaView(tr_schema)
         for c in tr_schema.classes.values():
             for a in c.attributes.values():
-                sql_range = tgen.get_sql_range(a, tr_schema)
+                sql_range = tgen.get_sql_range(a, tr_schema, tr_schema_view)
+                if isinstance(sql_range, Enum):
+                    # enums can be use multiple times, but sqlalchemy alembic migrations are really bad detecting this
+                    # and so will fail. As a workaround, we make the questionable decision to add the table name to
+                    # the enum name here to not run into that problem
+                    sql_range.name = underscore(f"enum_{c.name}_{sql_range.name}")
                 sql_type = sql_range.__repr__()
                 ann = Annotation("sql_type", sql_type)
                 a.annotations[ann.tag] = ann
@@ -119,6 +126,9 @@ class SQLAlchemyGenerator(Generator):
             mappings=tr_result.mappings,
             backrefs=backrefs,
             classname=camelcase,
+            schemaname=underscore,
+            tablename=underscore,
+            columnname=underscore,
             no_model_import=no_model_import,
             is_join_table=lambda c: any(
                 tag for tag in c.annotations.keys() if tag == "linkml:derived_from"
@@ -249,7 +259,7 @@ def cli(
         foreign_key_policy = ForeignKeyPolicy.NO_FOREIGN_KEYS
     print(gen.generate_sqla(template=t, foreign_key_policy=foreign_key_policy))
     if generate_classes:
-        raise NotImplementedError(f"generate classes not implemented")
+        raise NotImplementedError("generate classes not implemented")
 
 
 if __name__ == "__main__":

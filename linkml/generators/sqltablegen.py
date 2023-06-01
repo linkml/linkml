@@ -10,8 +10,8 @@ from linkml_runtime.linkml_model import (ClassDefinition, SchemaDefinition,
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.schemaview import SchemaView
 from sqlalchemy import Column, ForeignKey, MetaData, Table, create_mock_engine
-from sqlalchemy.types import (Boolean, Date, DateTime, Enum, Float, Integer,
-                              Text, Time)
+from sqlalchemy.types import (BigInteger, Boolean, Date, DateTime, Enum, Float,
+                              Integer, Text, Time)
 
 from linkml._version import __version__
 from linkml.generators.yamlgen import YAMLGenerator
@@ -51,6 +51,7 @@ RANGEMAP = {
     "NCName": Text(),
     "URIorCURIE": Text(),
     "int": Integer(),
+    "bigint": BigInteger(),
     "Decimal": Integer(),
     "double": Float(),
     "float": Float(),
@@ -206,7 +207,7 @@ class SQLTableGenerator(Generator):
         return ddl_str
 
     # TODO: merge with code from sqlddlgen
-    def get_sql_range(self, slot: SlotDefinition, schema: SchemaDefinition = None):
+    def get_sql_range(self, slot: SlotDefinition, schema: SchemaDefinition = None, sv: SchemaView = None):
         """
         returns a SQL Alchemy column type
         """
@@ -218,13 +219,28 @@ class SQLTableGenerator(Generator):
             schema = SchemaLoader(data=self.schema).resolve()
 
         if range in schema.classes:
-            # FKs treated as Text
-            return Text()
+            # A class has an identifier and that id column will have a type
+            # -> this FK column needs to have the same type
+            # We need a schemaview to resolve this id column
+            if sv is None:
+                # Fallback: FKs treated as Text
+                return Text()
+            # For a class with a single identifier, we use that type
+            referenced_attribute = sv.get_identifier_slot(range)
+            if referenced_attribute:
+                # Use that range to resolve the real type
+                range = referenced_attribute.range
+            else:
+                # Fallback: FKs treated as Text
+                return Text()
+
         if range in schema.enums:
             e = schema.enums[range]
             if e.permissible_values is not None:
                 vs = [str(v) for v in e.permissible_values]
-                return Enum(name=e.name, *vs)
+                enum = Enum(name=e.name, *vs)
+                enum.inherit_schema = True
+                return enum
         if range in METAMODEL_TYPE_TO_BASE:
             range_base = METAMODEL_TYPE_TO_BASE[range]
         elif range in schema.types:
