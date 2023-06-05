@@ -306,7 +306,7 @@ class JsonSchemaGenerator(Generator):
         })
         self.top_level_schema.add_def(enum.name, enum_schema)
 
-    def get_type_info_for_slot_subschema(self, slot: AnonymousSlotExpression, parent_slot_is_inlined: bool) -> Tuple[str, str, Union[str, List[str]]]:
+    def get_type_info_for_slot_subschema(self, slot: AnonymousSlotExpression) -> Tuple[str, str, Union[str, List[str]]]:
         typ = None  # JSON Schema type (https://json-schema.org/understanding-json-schema/reference/type.html)
         reference = None  # Reference to a JSON schema entity (https://json-schema.org/understanding-json-schema/structuring.html#ref)
         fmt = None  # JSON Schema format (https://json-schema.org/understanding-json-schema/reference/string.html#format)
@@ -318,7 +318,7 @@ class JsonSchemaGenerator(Generator):
         elif slot.range in self.schemaview.all_enums().keys():
             reference = slot.range
         elif slot.range in self.schemaview.all_classes().keys():
-            if slot_is_inlined or parent_slot_is_inlined:
+            if slot_is_inlined:
                 descendants = [desc for desc in self.schemaview.class_descendants(slot.range) 
                     if not self.schemaview.get_class(desc).abstract]
                 if descendants and self.include_range_class_descendants:
@@ -327,7 +327,7 @@ class JsonSchemaGenerator(Generator):
                     reference = slot.range
             else:
                 id_slot = self.schemaview.get_identifier_slot(slot.range)
-                typ = id_slot.range or "string"
+                return self.get_type_info_for_slot_subschema(id_slot)
 
         return (typ, fmt, reference)
     
@@ -348,7 +348,7 @@ class JsonSchemaGenerator(Generator):
         slot_is_multivalued = 'multivalued' in slot and slot.multivalued
         slot_is_inlined = self.schemaview.is_inlined(slot)
         if not omit_type:
-            typ, fmt, reference = self.get_type_info_for_slot_subschema(slot, slot_is_inlined)
+            typ, fmt, reference = self.get_type_info_for_slot_subschema(slot)
             if slot_is_inlined:
                 # If inline we have to include redefined slots
                 if slot_is_multivalued:
