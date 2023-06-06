@@ -52,34 +52,10 @@ class Loader(ABC):
         :return: Instance of the target class if loader worked
         """
 
-        # Makes coding easier down the line if we've got this, even if it is strictly internal
-        if metadata is None:
-            metadata = FileInfo()
-        if not isinstance(source, dict):
-            data = hbread(source, metadata, metadata.base_path, accept_header)
-        else:
-            data = source
+        data = self._read_source(source, metadata=metadata, base_dir=metadata.base_path, accept_header=accept_header)
         data_as_dict = loader(data, metadata)
+        return self._construct_target_class(data_as_dict, target_class=target_class)
 
-        if data_as_dict:
-            if isinstance(data_as_dict, list):
-               if issubclass(target_class, YAMLRoot):
-                   return [target_class(**as_dict(x)) for x in data_as_dict]
-               elif issubclass(target_class, BaseModel):
-                   return [target_class.parse_obj(**as_dict(x)) for x in data_as_dict]
-               else:
-                   raise ValueError(f'Cannot load list of {target_class}')
-            elif isinstance(data_as_dict, dict):
-                if issubclass(target_class, BaseModel):
-                    return target_class.parse_obj(data_as_dict)
-                else:
-                    return target_class(**data_as_dict)
-            elif isinstance(data_as_dict, JsonObj):
-                return [target_class(**as_dict(x)) for x in data_as_dict]
-            else:
-                raise ValueError(f'Unexpected type {data_as_dict}')
-        else:
-            return None
 
     def load(self, *args, **kwargs) -> Union[BaseModel, YAMLRoot]:
         """
@@ -97,6 +73,9 @@ class Loader(ABC):
             return results
         else:
             raise ValueError(f'Result is not an instance of BaseModel or YAMLRoot: {type(results)}')
+    
+    def load_as_dict(self, *args, **kwargs) -> Union[dict, List[dict]]:
+        raise NotImplementedError()
 
     @abstractmethod
     def load_any(self, source: Union[str, dict, TextIO], target_class: Type[Union[BaseModel, YAMLRoot]], *, base_dir: Optional[str] = None,
@@ -134,3 +113,44 @@ class Loader(ABC):
         :return: instance of taarget_class
         """
         return self.load(source, target_class, metadata=metadata)
+
+    def _construct_target_class(self, 
+                                data_as_dict: Union[dict, List[dict]],
+                                target_class: Union[Type[YAMLRoot], Type[BaseModel]]) -> Optional[Union[BaseModel, YAMLRoot, List[BaseModel], List[YAMLRoot]]]:
+        if data_as_dict:
+            if isinstance(data_as_dict, list):
+               if issubclass(target_class, YAMLRoot):
+                   return [target_class(**as_dict(x)) for x in data_as_dict]
+               elif issubclass(target_class, BaseModel):
+                   return [target_class.parse_obj(**as_dict(x)) for x in data_as_dict]
+               else:
+                   raise ValueError(f'Cannot load list of {target_class}')
+            elif isinstance(data_as_dict, dict):
+                if issubclass(target_class, BaseModel):
+                    return target_class.parse_obj(data_as_dict)
+                else:
+                    return target_class(**data_as_dict)
+            elif isinstance(data_as_dict, JsonObj):
+                return [target_class(**as_dict(x)) for x in data_as_dict]
+            else:
+                raise ValueError(f'Unexpected type {data_as_dict}')
+        else:
+            return None
+
+    def _read_source(self,
+                     source: Union[str, dict, TextIO], 
+                     *, 
+                     base_dir: Optional[str] = None, 
+                     metadata: Optional[FileInfo] = None, 
+                     accept_header: Optional[str] = "text/plain, application/yaml;q=0.9") -> Union[dict, str]:
+        if metadata is None:
+            metadata = FileInfo()
+        if base_dir and not metadata.base_path:
+            metadata.base_path = base_dir
+
+        if not isinstance(source, dict):
+            data = hbread(source, metadata, metadata.base_path, accept_header)
+        else:
+            data = source
+
+        return data
