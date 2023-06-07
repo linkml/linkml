@@ -19,10 +19,17 @@ class DelimitedFileLoader(Loader, ABC):
     def delimiter(self):
         pass
 
+    def load_as_dict(self, 
+                     source: str,
+                     index_slot: SlotDefinitionName = None,
+                     schema: SchemaDefinition = None,
+                     schemaview: SchemaView = None,
+                     **kwargs) -> Union[dict, List[dict]]:
+        json_str = self._get_json_str_to_load(source, index_slot, schema, schemaview, **kwargs)
+        return JSONLoader().load_as_dict(json_str)
 
     def load_any(self, *args, **kwargs) -> Union[YAMLRoot, List[YAMLRoot]]:
         return self.load(*args, **kwargs)
-
 
     def loads(self, input,
               target_class: Type[Union[BaseModel, YAMLRoot]],
@@ -30,12 +37,8 @@ class DelimitedFileLoader(Loader, ABC):
               schema: SchemaDefinition = None,
               schemaview: SchemaView = None,
               **kwargs) -> str:
-        if schemaview is None:
-            schemaview = SchemaView(schema)
-        configmap = get_configmap(schemaview, index_slot)
-        config = GlobalConfig(key_configs=configmap, csv_delimiter=self.delimiter)
-        objs = unflatten_from_csv(input, config=config, **kwargs)
-        return JSONLoader().loads(json.dumps({index_slot: objs}), target_class=target_class)
+        json_str = self._get_json_str_to_load(input, index_slot, schema, schemaview, **kwargs)
+        return JSONLoader().loads(json_str, target_class=target_class)
 
     def load(self, source: str,
              target_class: Type[Union[BaseModel, YAMLRoot]],
@@ -43,10 +46,18 @@ class DelimitedFileLoader(Loader, ABC):
              schema: SchemaDefinition = None,
              schemaview: SchemaView = None,
              **kwargs) -> str:
+        json_str = self._get_json_str_to_load(source, index_slot, schema, schemaview, **kwargs)
+        return JSONLoader().loads(json_str, target_class=target_class)
+
+    def _get_json_str_to_load(self,
+                          input,
+                          index_slot: SlotDefinitionName = None,
+                          schema: SchemaDefinition = None,
+                          schemaview: SchemaView = None,
+                          **kwargs):
         if schemaview is None:
             schemaview = SchemaView(schema)
         configmap = get_configmap(schemaview, index_slot)
         config = GlobalConfig(key_configs=configmap, csv_delimiter=self.delimiter)
-        print(f'Loading from {source}')
-        objs = unflatten_from_csv(source, config=config, **kwargs)
-        return JSONLoader().loads(json.dumps({index_slot: objs}), target_class=target_class)
+        objs = unflatten_from_csv(input, config=config, **kwargs)
+        return json.dumps({index_slot: objs})

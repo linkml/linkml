@@ -62,12 +62,26 @@ class CsvAndTsvGenTestCase(unittest.TestCase):
         logging.debug(f'COMPARE 2: {data}')
         assert roundtrip == data
 
+    def test_csvgen_roundtrip_to_dict(self):
+        schemaview = SchemaView(SCHEMA)
+        data = yaml_loader.load(DATA, target_class=Shop)
+        csv_dumper.dump(data, to_file=OUTPUT, index_slot='all_book_series', schemaview=schemaview)
+        roundtrip = csv_loader.load_as_dict(OUTPUT, index_slot='all_book_series', schemaview=schemaview)
+        assert roundtrip == json_dumper.to_dict(data)
+
     def test_tsvgen_roundtrip(self):
         schemaview = SchemaView(SCHEMA)
         data = yaml_loader.load(DATA, target_class=Shop)
         tsv_dumper.dump(data, to_file=OUTPUT, index_slot='all_book_series', schemaview=schemaview)
         roundtrip = tsv_loader.load(OUTPUT, target_class=Shop, index_slot='all_book_series', schemaview=schemaview)
         assert roundtrip == data
+
+    def test_tsvgen_roundtrip_to_dict(self):
+        schemaview = SchemaView(SCHEMA)
+        data = yaml_loader.load(DATA, target_class=Shop)
+        tsv_dumper.dump(data, to_file=OUTPUT, index_slot='all_book_series', schemaview=schemaview)
+        roundtrip = tsv_loader.load_as_dict(OUTPUT, index_slot='all_book_series', schemaview=schemaview)
+        assert roundtrip == json_dumper.to_dict(data)
 
     def test_csvgen_unroundtrippable(self):
         schemaview = SchemaView(SCHEMA)
