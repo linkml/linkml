@@ -82,6 +82,7 @@ class OwlSchemaGenerator(Generator):
     graph: Optional[Graph] = None
     top_value_uri: Optional[URIRef] = None
     type_objects: bool = field(default_factory=lambda: True)
+    assert_equivalent_classes: bool = False
 
     def visit_schema(self, output: Optional[str] = None, **_):
         owl_id = self.schema.id
@@ -266,6 +267,13 @@ class OwlSchemaGenerator(Generator):
                             cls_uri,
                         )
                     )
+
+        if cls.class_uri and self.assert_equivalent_classes:
+            eq_class_uri = self.namespaces.uri_for(cls.class_uri)
+            if str(eq_class_uri) != cls.definition_uri:
+                self.graph.add((cls_uri, OWL.equivalentClass, eq_class_uri))
+                self.graph.remove((cls_uri, SKOS.exactMatch, eq_class_uri))
+
         # If defining slots, we generate an equivalentClass entry
         # equ_node = BNode()
         # self.graph.add((cls_uri, OWL.equivalentClass, equ_node))
@@ -678,6 +686,12 @@ class OwlSchemaGenerator(Generator):
     default=".owl.ttl",
     show_default=True,
     help="Suffix to append to schema id to generate OWL Ontology IRI",
+)
+@click.option(
+    "--assert-equivalent-classes/--no-assert-equivalent-classes",
+    default=False,
+    show_default=True,
+    help="If true, add owl:equivalentClass between a class and a class_uri",
 )
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, metadata_profile: str, **kwargs):
