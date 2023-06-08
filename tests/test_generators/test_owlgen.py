@@ -123,6 +123,35 @@ class OwlGeneratorTestCase(unittest.TestCase):
         for t in expected:
             self.assertIn(t, triples)
 
+    def test_equivalent_uris(self):
+        """
+        Test behavior of asserting owl:equivalentClass between a class
+        and its corresponding class_uri
+        """
+        sb = SchemaBuilder()
+        sb.add_class('MyPerson',
+                     class_uri='schema:Person',
+                     slots=[SlotDefinition("name", slot_uri="schema:name")])
+        sb.add_defaults()
+        sb.add_prefix("schema", "http://schema.org/")
+        schema = sb.schema
+        gen = OwlSchemaGenerator(
+            schema=schema,
+            mergeimports=False,
+            metaclasses=False,
+            type_objects=False,
+            assert_equivalent_classes=True
+        )
+        owl = gen.serialize()
+        with open(OWL_OUTPUT, "w", encoding="UTF-8") as stream:
+            stream.write(owl)
+        graph = Graph()
+        graph.parse(OWL_OUTPUT)
+        assert (
+            URIRef('http://example.org/test-schema/MyPerson'),
+            OWL.equivalentClass,
+            URIRef('http://schema.org/Person')
+        ) in graph
 
 if __name__ == "__main__":
     unittest.main()
