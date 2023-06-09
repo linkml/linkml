@@ -80,7 +80,7 @@ types:
     uri: xsd:string
     base: str
     pattern: "^\\w+$"
-    description: A symbol is a string used as a shorthand identifier that is restriced to a subset of characters
+    description: A symbol is a string used as a shorthand identifier that is restricted to a subset of characters
 ```
 
 Some applications may choose to interpret this in particular ways. E.g. you may want to define all narrative text fields as being amenable to spellchecking, or machine learning natual language processing, or special kinds of indexing in ElasticSearch/Solr
@@ -332,7 +332,7 @@ Then this will translate as follows:
    * my_schema:MyClass
    * my_schema:my_slot
 
-Note in the RDF/OWL representation, seperate `rdfs:label` triples will be generated retaining the original human-friendly name.
+Note in the RDF/OWL representation, separate `rdfs:label` triples will be generated retaining the original human-friendly name.
 
 This has the advantage of keeping human-friendly nomenclature in the appropriate places without specifying redundant computer names and human names
 
@@ -504,7 +504,7 @@ Any element in a LinkML schema can have any number of *mappings* associated with
 
 Mappings are useful in a variety of ways including: 
 
-- they make your data and your schema more FAIR (Findable, Accessable, Reusable, and Interoperable)
+- they make your data and your schema more FAIR (Findable, Accessible, Reusable, and Interoperable)
 - when people use data that conforms to your model, and integrated with data that conforms to another model, they can use mappings between models to help automate data harmonization.  
 - mappings can provide links to other documentation sources for your model, allowing expertise to be shared between projects and not duplicated
 - mappings allow advanced users to reason over your model.
@@ -536,6 +536,6 @@ Depending on the answer, LinkML has different modeling constructs to help you, i
 
 - [range](https://w3id.org/linkml/range) constraints, which can refer to classes
 - the ability to assign a slot as an [identifier](https://w3id.org/linkml/identifier), allowing other objects to link to it
-- [inlining](https://w3id.org/linkml/inlining) which determins how relationships are serialized in formats like JSON
+- [inlining](https://w3id.org/linkml/inlining) which determines how relationships are serialized in formats like JSON
 
 Other more advanced constructs are also possible to allow you to treat relationships as first-class entities

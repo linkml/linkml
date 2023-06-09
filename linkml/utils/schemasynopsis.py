@@ -239,7 +239,7 @@ class SchemaSynopsis:
 
         :param typ: element type
         :param k: element name
-        :param v: element deffinition
+        :param v: element definition
         :return:
         """
         if k != v.name:

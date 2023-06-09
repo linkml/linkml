@@ -72,7 +72,7 @@ def execute_blocks(directory: str, blocks: List[Block]) -> List[str]:
                 cmd = cmd[0:pos]
                 if len(outpath) > 1:
                     raise Exception(
-                        f"Maximim 1 token after > in {block.content}. Got: {outpath}"
+                        f"Maximum 1 token after > in {block.content}. Got: {outpath}"
                     )
                 outpath = str(Path(directory, *outpath))
                 logging.info(f"OUTPATH = {outpath}")

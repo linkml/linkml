@@ -1232,7 +1232,7 @@ dictionary.  You can construct a list of integers with a single value:
 ```python
     my_entries = ListOfIntegers(17)
 ```
-Which would, if the class `ListOfIntegers`'s first variable was a multivalued slot with a range of intgers, result in
+Which would, if the class `ListOfIntegers`'s first variable was a multivalued slot with a range of integers, result in
 `my_entries.v == [17]`.  When dealing with classes, however, the following:
 ```python
     my_entries = ListOfClasses(dict(name='element1', value=17))
@@ -1243,7 +1243,7 @@ The final line in the `__post_init__` section:
 ```python
     self._normalize_inlined_slot(slot_name="v1", slot_type=IdentifiedThreeElementClass, key_name="name", inlined_as_list=True, keyed=True)
 ```
-passes the remainder of the post initilization normalization to a function defined in `YAMLRoot`.  
+passes the remainder of the post initialization normalization to a function defined in `YAMLRoot`.  
 
 
 The final case, Case 2.4 (Inlined as dictionary) is essentially the same, with the exception that the target type is

@@ -203,11 +203,11 @@ class ERDiagramGenerator(Generator):
         :param diagram: ER Diagram
         :return:
         """
-        ser = str(diagram)
+        set = str(diagram)
         if self.format == 'markdown':
-            return f'```mermaid\n{ser}\n```\n'
+            return f'```mermaid\n{set}\n```\n'
         else:
-            return ser
+            return set
 
     def add_class(self, class_name: ClassDefinitionName, diagram: ERDiagram) -> None:
         """

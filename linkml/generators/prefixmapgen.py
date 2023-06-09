@@ -44,7 +44,7 @@ class PrefixGenerator(Generator):
         super().__post_init__()
         if self.namespaces is None:
             raise TypeError(
-                "Schema text must be supplied to context generater.  Preparsed schema will not work"
+                "Schema text must be supplied to context generator.  Preparsed schema will not work"
             )
 
     def visit_schema(
