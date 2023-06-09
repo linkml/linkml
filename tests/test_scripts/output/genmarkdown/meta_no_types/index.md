@@ -180,7 +180,7 @@ refer to the official URI for each construct, e.g.
  * [list_elements_ordered](list_elements_ordered.md) - If True, then the order of elements of a multivalued slot is guaranteed to be preserved. If False, the order may still be preserved but this is not guaranteed
  * [list_elements_unique](list_elements_unique.md) - If True, then there must be no duplicates in the elements of a multivalued slot
  * [list_value_specification_constant](list_value_specification_constant.md) - Grouping for metamodel slots that constrain members of a multivalued slot value to equal a specified constant
-     * [all_members](all_members.md) - the value of the multiavlued slot is a list where all elements conform to the specified values.
+     * [all_members](all_members.md) - the value of the multivalued slot is a list where all elements conform to the specified values.
      * [equals_expression](equals_expression.md) - the value of the slot must equal the value of the evaluated expression
      * [equals_number](equals_number.md) - the slot must have range of a number and the value of the slot must equal the specified value
      * [equals_number_in](equals_number_in.md) - the slot must have range number and the value of the slot must equal one of the specified values

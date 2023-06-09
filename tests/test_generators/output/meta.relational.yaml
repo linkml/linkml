@@ -863,7 +863,7 @@ slots:
     inlined: true
   all_members:
     name: all_members
-    description: "the value of the multiavlued slot is a list where all elements conform\
+    description: "the value of the multivalued slot is a list where all elements conform\
       \ to the specified values.\nthis defines a dynamic class with named slots according\
       \ to matching constraints\n\nE.g to state that all members of a list are between\
       \ 1 and 10\n```\nall_members:\n  x:\n    range: integer\n    minimum_value:\
@@ -25478,7 +25478,7 @@ source_file: "id: https://w3id.org/linkml/meta\ntitle: LinkML Schema Metamodel\n
   \    description: the values of the slot is multivalued with at least one member\
   \ satisfying the condition\n    status: testing\n\n  all_members:\n    is_a: list_value_specification_constant\n\
   \    range: slot_definition\n    multivalued: true\n    inlined: true\n    description:\
-  \ |-\n      the value of the multiavlued slot is a list where all elements conform\
+  \ |-\n      the value of the multivalued slot is a list where all elements conform\
   \ to the specified values.\n      this defines a dynamic class with named slots\
   \ according to matching constraints\n\n      E.g to state that all members of a\
   \ list are between 1 and 10\n      ```\n      all_members:\n        x:\n       \

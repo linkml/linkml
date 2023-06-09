@@ -2,7 +2,7 @@
 # Slot: all_members
 
 
-the value of the multiavlued slot is a list where all elements conform to the specified values.
+the value of the multivalued slot is a list where all elements conform to the specified values.
 this defines a dynamic class with named slots according to matching constraints
 
 E.g to state that all members of a list are between 1 and 10

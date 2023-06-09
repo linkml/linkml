@@ -67,7 +67,7 @@ See also:
 ## Mixin classes and slots
 
 * The [mixin](https://w3id.org/linkml/mixin) boolean slot to declare a class as a mixin
-* The [mixins](https://w3id.org/linkml/mixins) multiavlued slot which specifies a range of mixin parents.
+* The [mixins](https://w3id.org/linkml/mixins) multivalued slot which specifies a range of mixin parents.
 
 Mixin parents operate similarly to `is_a` parents, but they do not have the constraint of forming a tree.
 
