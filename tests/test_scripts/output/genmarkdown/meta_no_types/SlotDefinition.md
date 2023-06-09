@@ -169,7 +169,7 @@ linkml_runtime.utils.ifabsent_functions.default_library:
      * Range: [Boolean](Boolean.md)
      * in subsets: (basic)
  * [path_rule](path_rule.md)  <sub>0..1</sub>
-     * Description: a rule for inferring a slot assignment based on evaluating a path through a sequence of slot assignemnts
+     * Description: a rule for inferring a slot assignment based on evaluating a path through a sequence of slot assignments
      * Range: [PathExpression](PathExpression.md)
  * [slot_definition➞disjoint_with](slot_definition_disjoint_with.md)  <sub>0..\*</sub>
      * Description: Two classes are disjoint if they have no instances in common, two slots are disjoint if they can never hold between the same two instances

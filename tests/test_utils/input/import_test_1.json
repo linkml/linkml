@@ -172,7 +172,7 @@
          "definition_uri": "metatype:Objectidentifier",
          "description": "A URI or CURIE that represents an object in the model.",
          "comments": [
-            "Used for inheritence and type checking"
+            "Used for inheritance and type checking"
          ],
          "from_schema": "https://w3id.org/linkml/types",
          "base": "ElementIdentifier",

@@ -149,7 +149,7 @@ biolink:nodeidentifier a linkml:TypeDefinition ;
 biolink:objectidentifier a linkml:TypeDefinition ;
     ns1:definition "A URI or CURIE that represents an object in the model." ;
     ns1:inScheme linkml:types ;
-    ns1:note "Used for inheritence and type checking" ;
+    ns1:note "Used for inheritance and type checking" ;
     linkml:base "ElementIdentifier" ;
     linkml:definition_uri linkml:Objectidentifier ;
     linkml:imported_from "linkml:types" ;

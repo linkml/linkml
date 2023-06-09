@@ -303,7 +303,7 @@ fields:
   display_name: is_grouping_slot
 - id: path_rule
   description: a rule for inferring a slot assignment based on evaluating a path through
-    a sequence of slot assignemnts
+    a sequence of slot assignments
   display_name: path_rule
 - id: disjoint_with
   description: Two classes are disjoint if they have no instances in common, two slots
