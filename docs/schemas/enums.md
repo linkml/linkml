@@ -43,7 +43,7 @@ enums:
 
 As an example, we will map the Permissible Values above to terms from the GA4GH [pedigree standard](https://github.com/GA4GH-Pedigree-Standard/) kinship ontology.
 
-We will first add a base prefix declaration (KIN concepts have PURLs of the form http://purl.org/ga4gh/kin.owl#KIN_007
+We will first add a base prefix declaration (KIN concepts have PURLs of the form http://purl.org/ga4gh/kin.owl#KIN_007):
 
 ```yaml
 prefixes:
@@ -75,7 +75,7 @@ Enumerations are mapped directly to Python enums. See
 
  * [enumerations notebook](https://github.com/linkml/linkml/blob/main/notebooks/enumerations.ipynb)
 
-For examples
+for examples.
 
 ## Dynamic Enums
 
@@ -99,7 +99,8 @@ enums:
 
 Arbitrarily nested boolean expressions can be used, combined with the [minus](https://w3id.org/linkml/minus) operator to subtract from sets:
 
-```
+```yaml
+enums:
   LoincExample:
     enum_uri: http://hl7.org/fhir/ValueSet/example-intensional
     see_also:
@@ -117,7 +118,7 @@ Arbitrarily nested boolean expressions can be used, combined with the [minus](ht
 
 Enums can extend other enums using [inherits](https://w3id.org/linkml/inherits):
 
-```
+```yaml
 enums:
   Disease:
     reachable_from:
