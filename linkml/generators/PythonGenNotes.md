@@ -122,7 +122,7 @@ the builtin type `int`.  Four class variables are included in the generation:
 * `type_name` - the non-mangled name assigned to the type in the original definition
 * `type_model_uri` - the URIRef of the type definition in the default LinkML namespace
 
-The python then emits a class definition for the `Integers` classe, where we have defined four slot type permutations:
+The python then emits a class definition for the `Integers` class, where we have defined four slot type permutations:
 
 1) `mand_integer` - a single valued required type:
 
