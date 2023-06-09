@@ -6543,7 +6543,7 @@
         ],
         "http://www.w3.org/2004/02/skos/core#note": [
           {
-            "@value": "Used for inheritence and type checking"
+            "@value": "Used for inheritance and type checking"
           }
         ]
       },
@@ -7218,7 +7218,7 @@
         ],
         "http://www.w3.org/2004/02/skos/core#note": [
           {
-            "@value": "the base is inherited by child types but may be overriden.  Base compatibility is not checked."
+            "@value": "the base is inherited by child types but may be overridden.  Base compatibility is not checked."
           },
           {
             "@value": "every root type must have a base"

@@ -222,7 +222,7 @@ _:Nc5e68fe8d3c9418cb0ccf869926c3e45 <https://w3id.org/linkml/prefix_reference> <
 <https://w3id.org/linkml/tests/prefixtest/uri> <http://www.w3.org/2004/02/skos/core#inScheme> <https://w3id.org/linkml/types> .
 <https://w3id.org/linkml/tests/prefixtest/part_of> <https://w3id.org/linkml/slot_uri> <http://purl.obolibrary.org/obo/BFO_0000050> .
 <https://w3id.org/linkml/tests/prefixtest/additionalName> <https://w3id.org/linkml/slot_uri> <http://schema.org/additionalName> .
-<https://w3id.org/linkml/tests/prefixtest/objectidentifier> <http://www.w3.org/2004/02/skos/core#note> "Used for inheritence and type checking" .
+<https://w3id.org/linkml/tests/prefixtest/objectidentifier> <http://www.w3.org/2004/02/skos/core#note> "Used for inheritance and type checking" .
 <https://w3id.org/linkml/tests/prefixtest/uri> <https://w3id.org/linkml/imported_from> "linkml:types" .
 <https://w3id.org/linkml/tests/prefixtest/double> <https://w3id.org/linkml/imported_from> "linkml:types" .
 <https://w3id.org/linkml/tests/prefixtest/part_of> <https://w3id.org/linkml/definition_uri> <https://w3id.org/linkml/tests/prefixtest/part_of> .

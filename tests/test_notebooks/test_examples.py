@@ -28,7 +28,7 @@ class NotebookTests(unittest.TestCase):
         self.eval_test("examples.txt", "tests.test_notebooks.input.examples")
 
     def test_inheritence(self):
-        self.eval_test("inheritence.txt", "tests.test_notebooks.input.inheritence")
+        self.eval_test("inheritance.txt", "tests.test_notebooks.input.inheritance")
 
     @unittest.skipIf(True, "Re-enable this once online biolink model is fixed")
     def test_distributed_models(self):

@@ -116,7 +116,7 @@ types:
     name: objectidentifier
     description: A URI or CURIE that represents an object in the model.
     comments:
-    - Used for inheritence and type checking
+    - Used for inheritance and type checking
     base: ElementIdentifier
     uri: shex:iri
     repr: str

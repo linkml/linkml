@@ -218,7 +218,7 @@ refer to the official URI for each construct, e.g.
  * [owned_by](owned_by.md) - agent that owns or is the steward of the element
  * [owner](owner.md) - the "owner" of the slot. It is the class if it appears in the slots list, otherwise the declaring slot
  * [partial_match](partial_match.md) - if true then the pattern must match the whole string, as if enclosed in ^...$
- * [path_rule](path_rule.md) - a rule for inferring a slot assignment based on evaluating a path through a sequence of slot assignemnts
+ * [path_rule](path_rule.md) - a rule for inferring a slot assignment based on evaluating a path through a sequence of slot assignments
  * [pattern](pattern.md) - the string value of the slot must conform to this regular expression expressed in the string
  * [permissible_values](permissible_values.md) - A list of possible values for a slot range
  * [postconditions](postconditions.md) - an expression that must hold for an instance of the class, if the preconditions hold
