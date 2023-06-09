@@ -348,7 +348,7 @@ where we have defined four slot type permutations:
 
       ``opt_multi_integer: Optional[Union[int, List[int]]] = empty_list()``
 
-   -  The absence of a list property is always represented as an emtpy
+   -  The absence of a list property is always represented as an empty
       list:
       ``if self.opt_multi_integer is None:       self.opt_multi_integer = []``
 
