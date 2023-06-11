@@ -14,7 +14,7 @@ from tests.utils.test_environment import TestEnvironmentTestCase
 class InheritedPhenotypicFeatureTestCase(TestEnvironmentTestCase):
     env = env
 
-    def test_inheritence(self):
+    def test_inheritance(self):
         env.generate_single_file(
             "issue_14.py",
             lambda: PythonGenerator(env.input_path("issue_14.yaml")).serialize(),
