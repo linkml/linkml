@@ -18,7 +18,7 @@ sys.path.insert(0, os.path.abspath('..'))
 # -- Project information -----------------------------------------------------
 
 project = 'linkml'
-copyright = '2021, LinkML Authors'
+copyright = '2021-2023, LinkML Authors'
 author = 'LinkML Authors'
 
 
