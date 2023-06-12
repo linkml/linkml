@@ -335,7 +335,7 @@ with permissible values <code class="docutils literal notranslate"><span class="
 <section id="mapping-permissible-values-to-ontologies">
 <h2>Mapping Permissible Values to Ontologies<a class="headerlink" href="#mapping-permissible-values-to-ontologies" title="Permalink to this heading">#</a></h2>
 <p>As an example, we will map the Permissible Values above to terms from the GA4GH <a class="reference external" href="https://github.com/GA4GH-Pedigree-Standard/">pedigree standard</a> kinship ontology.</p>
-<p>We will first add a base prefix declaration (KIN concepts have PURLs of the form http://purl.org/ga4gh/kin.owl#KIN_007</p>
+<p>We will first add a base prefix declaration (KIN concepts have PURLs of the form http://purl.org/ga4gh/kin.owl#KIN_007):</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">prefixes</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">kin</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://purl.org/ga4gh/kin.owl#</span>
 <span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">...</span>
@@ -363,7 +363,7 @@ with permissible values <code class="docutils literal notranslate"><span class="
 <ul class="simple">
 <li><p><a class="reference external" href="https://github.com/linkml/linkml/blob/main/notebooks/enumerations.ipynb">enumerations notebook</a></p></li>
 </ul>
-<p>For examples</p>
+<p>for examples.</p>
 </section>
 <section id="dynamic-enums">
 <h2>Dynamic Enums<a class="headerlink" href="#dynamic-enums" title="Permalink to this heading">#</a></h2>
@@ -382,56 +382,57 @@ with permissible values <code class="docutils literal notranslate"><span class="
 </pre></div>
 </div>
 <p>Arbitrarily nested boolean expressions can be used, combined with the <a class="reference external" href="https://w3id.org/linkml/minus">minus</a> operator to subtract from sets:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>  <span class="n">LoincExample</span><span class="p">:</span>
-    <span class="n">enum_uri</span><span class="p">:</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">hl7</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="n">fhir</span><span class="o">/</span><span class="n">ValueSet</span><span class="o">/</span><span class="n">example</span><span class="o">-</span><span class="n">intensional</span>
-    <span class="n">see_also</span><span class="p">:</span>
-      <span class="o">-</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">build</span><span class="o">.</span><span class="n">fhir</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="n">valueset</span><span class="o">-</span><span class="n">example</span><span class="o">-</span><span class="n">intensional</span><span class="o">.</span><span class="n">json</span><span class="o">.</span><span class="n">html</span>
-    <span class="n">include</span><span class="p">:</span>
-      <span class="o">-</span> <span class="n">reachable_from</span><span class="p">:</span>
-          <span class="n">source_ontology</span><span class="p">:</span> <span class="n">bioregistry</span><span class="p">:</span><span class="n">loinc</span>
-          <span class="n">source_nodes</span><span class="p">:</span>
-            <span class="o">-</span> <span class="n">LOINC</span><span class="p">:</span><span class="n">LP43571</span><span class="o">-</span><span class="mi">6</span>
-          <span class="n">is_direct</span><span class="p">:</span> <span class="n">true</span>
-    <span class="n">minus</span><span class="p">:</span>
-      <span class="n">concepts</span><span class="p">:</span>
-        <span class="o">-</span> <span class="n">LOINC</span><span class="p">:</span><span class="mi">5932</span><span class="o">-</span><span class="mi">9</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">enums</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">LoincExample</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">enum_uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://hl7.org/fhir/ValueSet/example-intensional</span>
+<span class="w">    </span><span class="nt">see_also</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://build.fhir.org/valueset-example-intensional.json.html</span>
+<span class="w">    </span><span class="nt">include</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">reachable_from</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">source_ontology</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bioregistry:loinc</span>
+<span class="w">          </span><span class="nt">source_nodes</span><span class="p">:</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">LOINC:LP43571-6</span>
+<span class="w">          </span><span class="nt">is_direct</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">minus</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">concepts</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">LOINC:5932-9</span>
 </pre></div>
 </div>
 <p>Enums can extend other enums using <a class="reference external" href="https://w3id.org/linkml/inherits">inherits</a>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">enums</span><span class="p">:</span>
-  <span class="n">Disease</span><span class="p">:</span>
-    <span class="n">reachable_from</span><span class="p">:</span>
-      <span class="n">source_ontology</span><span class="p">:</span> <span class="n">bioregistry</span><span class="p">:</span><span class="n">mondo</span>
-      <span class="n">source_nodes</span><span class="p">:</span>
-        <span class="o">-</span> <span class="n">MONDO</span><span class="p">:</span><span class="mi">0000001</span> <span class="c1">## disease or disorder</span>
-      <span class="n">is_direct</span><span class="p">:</span> <span class="n">false</span>
-      <span class="n">relationship_types</span><span class="p">:</span>
-        <span class="o">-</span> <span class="n">rdfs</span><span class="p">:</span><span class="n">subClassOf</span>
-    <span class="n">minus</span><span class="p">:</span>
-      <span class="n">permissible_values</span><span class="p">:</span>
-        <span class="n">root_node</span><span class="p">:</span>
-          <span class="n">meaning</span><span class="p">:</span> <span class="n">MONDO</span><span class="p">:</span><span class="mi">0000001</span> <span class="c1">## disease or disorder</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">enums</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">Disease</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">reachable_from</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">source_ontology</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bioregistry:mondo</span>
+<span class="w">      </span><span class="nt">source_nodes</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MONDO:0000001</span><span class="w"> </span><span class="c1">## disease or disorder</span>
+<span class="w">      </span><span class="nt">is_direct</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">      </span><span class="nt">relationship_types</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">rdfs:subClassOf</span>
+<span class="w">    </span><span class="nt">minus</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">permissible_values</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">root_node</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">meaning</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MONDO:0000001</span><span class="w"> </span><span class="c1">## disease or disorder</span>
 
-  <span class="n">HumanDisease</span><span class="p">:</span>
-    <span class="n">description</span><span class="p">:</span> <span class="n">Extends</span> <span class="n">the</span> <span class="n">Disease</span> <span class="n">value</span> <span class="nb">set</span><span class="p">,</span> <span class="n">including</span> <span class="n">NCIT</span> <span class="n">neoplasms</span><span class="p">,</span> <span class="n">excluding</span> <span class="n">non</span><span class="o">-</span><span class="n">human</span> <span class="n">diseases</span>
-    <span class="n">inherits</span><span class="p">:</span>
-      <span class="o">-</span> <span class="n">Disease</span>
-    <span class="n">include</span><span class="p">:</span>
-      <span class="o">-</span> <span class="n">reachable_from</span><span class="p">:</span>
-          <span class="n">source_ontology</span><span class="p">:</span> <span class="n">bioregistry</span><span class="p">:</span><span class="n">ncit</span>
-          <span class="n">source_nodes</span><span class="p">:</span>
-            <span class="o">-</span> <span class="n">NCIT</span><span class="p">:</span><span class="n">C3262</span>
-    <span class="n">minus</span><span class="p">:</span>
-      <span class="o">-</span> <span class="n">reachable_from</span><span class="p">:</span>
-          <span class="n">source_ontology</span><span class="p">:</span> <span class="n">bioregistry</span><span class="p">:</span><span class="n">mondo</span>
-          <span class="n">source_nodes</span><span class="p">:</span>
-            <span class="o">-</span> <span class="n">MONDO</span><span class="p">:</span><span class="mi">0005583</span> <span class="c1">## non-human animal disease</span>
-          <span class="n">relationship_types</span><span class="p">:</span>
-            <span class="o">-</span> <span class="n">rdfs</span><span class="p">:</span><span class="n">subClassOf</span>
-      <span class="o">-</span> <span class="n">permissible_values</span><span class="p">:</span>
-          <span class="n">NOT_THIS_ONE</span><span class="p">:</span>
-            <span class="n">meaning</span><span class="p">:</span> <span class="n">MONDO</span><span class="p">:</span><span class="mi">9999</span>
-            <span class="n">description</span><span class="p">:</span> <span class="n">Example</span> <span class="n">of</span> <span class="n">excluding</span> <span class="n">a</span> <span class="n">single</span> <span class="n">node</span>
+<span class="w">  </span><span class="nt">HumanDisease</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Extends the Disease value set, including NCIT neoplasms, excluding non-human diseases</span>
+<span class="w">    </span><span class="nt">inherits</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Disease</span>
+<span class="w">    </span><span class="nt">include</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">reachable_from</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">source_ontology</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bioregistry:ncit</span>
+<span class="w">          </span><span class="nt">source_nodes</span><span class="p">:</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">NCIT:C3262</span>
+<span class="w">    </span><span class="nt">minus</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">reachable_from</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">source_ontology</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bioregistry:mondo</span>
+<span class="w">          </span><span class="nt">source_nodes</span><span class="p">:</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MONDO:0005583</span><span class="w"> </span><span class="c1">## non-human animal disease</span>
+<span class="w">          </span><span class="nt">relationship_types</span><span class="p">:</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">rdfs:subClassOf</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">permissible_values</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">NOT_THIS_ONE</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">meaning</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MONDO:9999</span>
+<span class="w">            </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Example of excluding a single node</span>
 </pre></div>
 </div>
 </section>
@@ -480,7 +481,7 @@ in your schema documentation.</p>
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2021, LinkML Authors
+                Copyright &#169; 2021-2023, LinkML Authors
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
