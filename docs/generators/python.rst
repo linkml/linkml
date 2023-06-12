@@ -1617,7 +1617,7 @@ a list of integers with a single value:
        my_entries = ListOfIntegers(17)
 
 Which would, if the class ``ListOfIntegers``\ ’s first variable was a
-multivalued slot with a range of intgers, result in
+multivalued slot with a range of integers, result in
 ``my_entries.v == [17]``. When dealing with classes, however, the
 following:
 
@@ -1634,7 +1634,7 @@ The final line in the ``__post_init__`` section:
 
        self._normalize_inlined_slot(slot_name="v1", slot_type=IdentifiedThreeElementClass, key_name="name", inlined_as_list=True, keyed=True)
 
-passes the remainder of the post initilization normalization to a
+passes the remainder of the post initialization normalization to a
 function defined in ``YAMLRoot``.
 
 The final case, Case 2.4 (Inlined as dictionary) is essentially the

@@ -275,7 +275,7 @@ class DocGenerator(Generator):
         Create a jinja2 template object for a given schema element type
 
         The default location for templates is in the linkml/docgen folder,
-        but this can be overriden
+        but this can be overridden
         :param element_type: e.g. class, enum, index, subset, ...
         :return:
         """
@@ -433,7 +433,7 @@ class DocGenerator(Generator):
         self, element: Definition, children: bool = True, **kwargs
     ) -> str:
         """
-        Show an element in the context of its is-a hierachy
+        Show an element in the context of its is-a hierarchy
 
         Limitations: currently only implemented for markdown (uses nested bullets)
 

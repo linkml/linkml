@@ -106,12 +106,12 @@ sqlschema
 
 ### GitHub Guides
 
-We recommend maintaing your source for your schema, plus all generated products in GitHub
+We recommend maintaining your source for your schema, plus all generated products in GitHub
 
 Some resources to help you:
 
 * [software carpentry guide](https://swcarpentry.github.io/git-novice/)
-* We hace created a [slide deck on GitHub](https://docs.google.com/presentation/u/0/d/1ydkB8y3cPYcDZYCT9DcENQk6gwWr0xR6/) for LinkML users
+* We have created a [slide deck on GitHub](https://docs.google.com/presentation/u/0/d/1ydkB8y3cPYcDZYCT9DcENQk6gwWr0xR6/) for LinkML users
 
 ### ProjectGen docs
 

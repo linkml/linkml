@@ -203,7 +203,7 @@ class SparqlGenerator(Generator):
 def cli(yamlfile, dir, **kwargs):
     """Generate SPARQL queries for validation
 
-    This will generate a directory of queries that cann be used for QC over a triplestore that
+    This will generate a directory of queries that can be used for QC over a triplestore that
     is conformant to the same LinkML schema.
 
     Each query in the directory will be of the form
