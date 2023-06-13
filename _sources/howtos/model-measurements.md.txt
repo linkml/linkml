@@ -53,7 +53,7 @@ We will work through a number of different alternatives, but all use the followi
 ```yaml
 id: https://w3id.org/linkml/howtos/measurements
 name: research_subject_measurements
-title: A demonstrator schema for measuing properties of research subjects
+title: A demonstrator schema for measuring properties of research subjects
 license: https://creativecommons.org/publicdomain/zero/1.0/
 
 prefixes:

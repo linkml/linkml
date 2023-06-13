@@ -631,7 +631,7 @@
                         <span class="p">)</span>
                         <span class="c1"># If we&#39;ve got a parent slot and the range of the parent is the range of the child, the</span>
                         <span class="c1"># child slot is a subclass of the parent.  Otherwise, the child range has been overridden,</span>
-                        <span class="c1"># so the inheritence chain has been broken</span>
+                        <span class="c1"># so the inheritance chain has been broken</span>
                         <span class="n">parent_pk</span> <span class="o">=</span> <span class="p">(</span>
                             <span class="bp">self</span><span class="o">.</span><span class="n">class_identifier</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">is_a</span><span class="p">)</span> <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">is_a</span> <span class="k">else</span> <span class="kc">None</span>
                         <span class="p">)</span>
@@ -815,7 +815,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate the variable declarations for a dataclass.</span>
 
-<span class="sd">        :param cls: class containing variables to be rendered in inheritence hierarchy</span>
+<span class="sd">        :param cls: class containing variables to be rendered in inheritance hierarchy</span>
 <span class="sd">        :return: variable declarations for target class and its ancestors</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">initializers</span> <span class="o">=</span> <span class="p">[]</span>
@@ -1121,7 +1121,7 @@
                     <span class="sa">f</span><span class="s2">&quot;if self.</span><span class="si">{</span><span class="n">aliased_slot_name</span><span class="si">}</span><span class="s2"> is not None and &quot;</span>
                     <span class="sa">f</span><span class="s2">&quot;not isinstance(self.</span><span class="si">{</span><span class="n">aliased_slot_name</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">base_type_name</span><span class="si">}</span><span class="s2">):&quot;</span>
                 <span class="p">)</span>
-            <span class="c1"># A really wierd case -- a class that has no properties</span>
+            <span class="c1"># A really weird case -- a class that has no properties</span>
             <span class="k">if</span> <span class="p">(</span>
                 <span class="n">slot</span><span class="o">.</span><span class="n">range</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">classes</span>
                 <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">classes</span><span class="p">[</span><span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="p">]</span><span class="o">.</span><span class="n">slots</span>

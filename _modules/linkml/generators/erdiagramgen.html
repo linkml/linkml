@@ -501,11 +501,11 @@
 <span class="sd">        :param diagram: ER Diagram</span>
 <span class="sd">        :return:</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">ser</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">diagram</span><span class="p">)</span>
+        <span class="n">er</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">diagram</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">format</span> <span class="o">==</span> <span class="s1">&#39;markdown&#39;</span><span class="p">:</span>
-            <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;```mermaid</span><span class="se">\n</span><span class="si">{</span><span class="n">ser</span><span class="si">}</span><span class="se">\n</span><span class="s1">```</span><span class="se">\n</span><span class="s1">&#39;</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;```mermaid</span><span class="se">\n</span><span class="si">{</span><span class="n">er</span><span class="si">}</span><span class="se">\n</span><span class="s1">```</span><span class="se">\n</span><span class="s1">&#39;</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">ser</span>
+            <span class="k">return</span> <span class="n">er</span>
 
     <span class="k">def</span> <span class="nf">add_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">class_name</span><span class="p">:</span> <span class="n">ClassDefinitionName</span><span class="p">,</span> <span class="n">diagram</span><span class="p">:</span> <span class="n">ERDiagram</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>

@@ -12,7 +12,7 @@ In principle, two styles of mappings are possible:
 
 1. Declarative, in which SQLA-style classes are generated, with
    combined mappings
-2. Imperative, in which seperate mappings are created for a
+2. Imperative, in which separate mappings are created for a
    pre-existing object model, such as one created by the existing
    python or pydantic generators
 

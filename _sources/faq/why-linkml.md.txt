@@ -106,7 +106,7 @@ This has a number of advantages:
 
  - you make the intended meaning of your columns more transparent and explicit
  - your TSVs can be automatically translated to JSON-LD and RDF via the LinkML framework
- - it faciliates automated and semi-automated mapping between your data and other representations
+ - it facilitates automated and semi-automated mapping between your data and other representations
 
 There are a number of proposed frameworks for providing lightweight data dictionaries for your TSVs/spreadsheets:
 

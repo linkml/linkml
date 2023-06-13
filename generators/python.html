@@ -558,7 +558,7 @@ Python base type.</p>
 <dd><p>Generate output in the required format</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>kwargs</strong> – Generater specific parameters</p>
+<dd class="field-odd"><p><strong>kwargs</strong> – Generator specific parameters</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Generated output</p>
@@ -719,7 +719,7 @@ Four class variables are included in the generation: *
 <code class="docutils literal notranslate"><span class="pre">type_name</span></code> - the non-mangled name assigned to the type in the
 original definition * <code class="docutils literal notranslate"><span class="pre">type_model_uri</span></code> - the URIRef of the type
 definition in the default LinkML namespace</p>
-<p>The python then emits a class definition for the <code class="docutils literal notranslate"><span class="pre">Integers</span></code> classe,
+<p>The python then emits a class definition for the <code class="docutils literal notranslate"><span class="pre">Integers</span></code> class,
 where we have defined four slot type permutations:</p>
 <ol class="arabic">
 <li><p><code class="docutils literal notranslate"><span class="pre">mand_integer</span></code> - a single valued required type:</p>
@@ -786,7 +786,7 @@ the <code class="docutils literal notranslate"><span class="pre">Optional</span>
 can be coerced into <code class="docutils literal notranslate"><span class="pre">List[int]</span></code>:</p>
 <p><code class="docutils literal notranslate"><span class="pre">opt_multi_integer:</span> <span class="pre">Optional[Union[int,</span> <span class="pre">List[int]]]</span> <span class="pre">=</span> <span class="pre">empty_list()</span></code></p>
 </li>
-<li><p>The absence of a list property is always represented as an emtpy
+<li><p>The absence of a list property is always represented as an empty
 list:
 <code class="docutils literal notranslate"><span class="pre">if</span> <span class="pre">self.opt_multi_integer</span> <span class="pre">is</span> <span class="pre">None:</span>&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">self.opt_multi_integer</span> <span class="pre">=</span> <span class="pre">[]</span></code></p></li>
 <li><p>Coerce any other non-list into a list:
@@ -2067,7 +2067,7 @@ a list of integers with a single value:</p>
 </pre></div>
 </div>
 <p>Which would, if the class <code class="docutils literal notranslate"><span class="pre">ListOfIntegers</span></code>’s first variable was a
-multivalued slot with a range of intgers, result in
+multivalued slot with a range of integers, result in
 <code class="docutils literal notranslate"><span class="pre">my_entries.v</span> <span class="pre">==</span> <span class="pre">[17]</span></code>. When dealing with classes, however, the
 following:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">my_entries</span> <span class="o">=</span> <span class="n">ListOfClasses</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;element1&#39;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mi">17</span><span class="p">))</span>
@@ -2079,7 +2079,7 @@ following:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="bp">self</span><span class="o">.</span><span class="n">_normalize_inlined_slot</span><span class="p">(</span><span class="n">slot_name</span><span class="o">=</span><span class="s2">&quot;v1&quot;</span><span class="p">,</span> <span class="n">slot_type</span><span class="o">=</span><span class="n">IdentifiedThreeElementClass</span><span class="p">,</span> <span class="n">key_name</span><span class="o">=</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="n">inlined_as_list</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">keyed</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>passes the remainder of the post initilization normalization to a
+<p>passes the remainder of the post initialization normalization to a
 function defined in <code class="docutils literal notranslate"><span class="pre">YAMLRoot</span></code>.</p>
 <p>The final case, Case 2.4 (Inlined as dictionary) is essentially the
 same, with the exception that the target type is a dictionary rather

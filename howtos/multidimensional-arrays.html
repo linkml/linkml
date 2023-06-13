@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" />
 
     <link rel="shortcut icon" href="https://linkml.io/uploads/linkml-logo_color-no-words.png"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
-        <title>Multidimension Arrays - linkml documentation</title>
+        <title>Multidimensional Arrays - linkml documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
@@ -297,8 +297,8 @@
           </label>
         </div>
         <article role="main">
-          <section id="multidimension-arrays">
-<h1>Multidimension Arrays<a class="headerlink" href="#multidimension-arrays" title="Permalink to this heading">#</a></h1>
+          <section id="multidimensional-arrays">
+<h1>Multidimensional Arrays<a class="headerlink" href="#multidimensional-arrays" title="Permalink to this heading">#</a></h1>
 <p><strong>NOTE</strong> This is an <em>experimental</em> feature of LinkML. It may be only
 partially implemented, and subject to change.</p>
 <section id="background">
@@ -399,7 +399,7 @@ that for 2D arrays, a direct wide array representation in SQL would be
 1,2,3,4), this would be highly non-idiomatic.</p>
 <p>This representation is quite convenient for scientific computing. The underlying data typically maps to
 an N-dimensional (nested lists) in many languages:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">measurments</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="s2">&quot;lolol.yaml&quot;</span><span class="p">))</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">measurements</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="s2">&quot;lolol.yaml&quot;</span><span class="p">))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">measurements</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
 <span class="go">111</span>
 </pre></div>
@@ -544,7 +544,7 @@ data is highly ambiguous when removed from its original context.</p>
 <p>This relies on a feature implemented in LinkML 1.5,
 <a class="reference external" href="https://w3id.org/linkml/implements">implements</a>. This provides
 information for tools to <em>interpret</em> the axes and elements.</p>
-<p>In particalar:</p>
+<p>In particular:</p>
 <ul class="simple">
 <li><p>our <code class="docutils literal notranslate"><span class="pre">TemperatureMatrix</span></code> class <em>implements</em> <code class="docutils literal notranslate"><span class="pre">linkml:ThreeDimensionalArray</span></code></p></li>
 <li><p>the 3 axes class <em>implements</em> <code class="docutils literal notranslate"><span class="pre">linkml:OneDimensionalSeries</span></code></p></li>
@@ -638,7 +638,7 @@ elements using array index tuples.</p>
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">Multidimension Arrays</a><ul>
+<li><a class="reference internal" href="#">Multidimensional Arrays</a><ul>
 <li><a class="reference internal" href="#background">Background</a></li>
 <li><a class="reference internal" href="#alternatives-wide-table-representation">Alternatives: Wide table representation</a></li>
 <li><a class="reference internal" href="#n-dimensional-arrays-in-linkml">N-Dimensional Arrays in LinkML</a><ul>
