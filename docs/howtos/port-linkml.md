@@ -110,7 +110,7 @@ support for a target language via *bootstrapping*
 ### Step 1: Bootstrap metamodel data access classes
 
 Even if you intended to ultimately use the target language for doing
-code geneation, we strongly recommend you bootstrap by using the existing
+code generation, we strongly recommend you bootstrap by using the existing
 generators framework. This may take a small amount of Python coding,
 but the majority of this involves writing Jinja2 templates, so no Python expertise
 is required.
@@ -280,7 +280,7 @@ See: [gen-typescript](../generators/typescript)
 
 In contrast to the python approaches, this targets typescript *Interfaces* as the construct of choice in the target language
 
-Note that interfaces are "compiled away" but are used for static analyis and IDE support
+Note that interfaces are "compiled away" but are used for static analysis and IDE support
 
 This is being used to bootstrap a javascript runtime: [linkml-runtime.js](https://github.com/linkml/linkml-runtime.js)
 

@@ -274,7 +274,7 @@ Four class variables are included in the generation: \*
 original definition \* ``type_model_uri`` - the URIRef of the type
 definition in the default LinkML namespace
 
-The python then emits a class definition for the ``Integers`` classe,
+The python then emits a class definition for the ``Integers`` class,
 where we have defined four slot type permutations:
 
 1) ``mand_integer`` - a single valued required type:
@@ -348,7 +348,7 @@ where we have defined four slot type permutations:
 
       ``opt_multi_integer: Optional[Union[int, List[int]]] = empty_list()``
 
-   -  The absence of a list property is always represented as an emtpy
+   -  The absence of a list property is always represented as an empty
       list:
       ``if self.opt_multi_integer is None:       self.opt_multi_integer = []``
 
@@ -1617,7 +1617,7 @@ a list of integers with a single value:
        my_entries = ListOfIntegers(17)
 
 Which would, if the class ``ListOfIntegers``\ ’s first variable was a
-multivalued slot with a range of intgers, result in
+multivalued slot with a range of integers, result in
 ``my_entries.v == [17]``. When dealing with classes, however, the
 following:
 
@@ -1634,7 +1634,7 @@ The final line in the ``__post_init__`` section:
 
        self._normalize_inlined_slot(slot_name="v1", slot_type=IdentifiedThreeElementClass, key_name="name", inlined_as_list=True, keyed=True)
 
-passes the remainder of the post initilization normalization to a
+passes the remainder of the post initialization normalization to a
 function defined in ``YAMLRoot``.
 
 The final case, Case 2.4 (Inlined as dictionary) is essentially the

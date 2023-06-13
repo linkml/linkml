@@ -291,7 +291,7 @@ enums:
         meaning: GSSO:000385
 ```
 
-With the introduction of LinkML 1.3, LinkML supports *dynamic* or *intensional* enums,
+With the introduction of LinkML 1.3, LinkML supports *dynamic* or *intentional* enums,
 which allow enumerations to be derived from queries - e.g. to take all terms in a branch of
 an ontology.
 

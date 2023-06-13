@@ -163,7 +163,7 @@ prefixes:
   qud: http://qudt.org/1.1/schema/qudt#
 ```
 
-The CURIE `wgs:lat` will exand to http://www.w3.org/2003/01/geo/wgs84_pos#lat.
+The CURIE `wgs:lat` will expand to http://www.w3.org/2003/01/geo/wgs84_pos#lat.
 
 * an external CURIE map specified via a [default_curi_maps](https://w3id.org/linkml/meta/default_curi_maps) section.
 

@@ -220,7 +220,7 @@ Database. Examples of ORMs are:
 The LinkML metamodel has aspects of OO modeling, so ORMs can be useful
 here. Note that ORMs can be divisive among developers, with some
 believe ORMs to be add unnecessary complexity, and others finding them
-indispensible. Use of ORMs is completely optional with LinkML, but if
+indispensable. Use of ORMs is completely optional with LinkML, but if
 you are using a RDBMS you may find them useful.
 
 Currently the only ORM directly supported in SQL Alchemy
