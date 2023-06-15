@@ -1,13 +1,13 @@
-import json
 import logging
 import sys
 from dataclasses import dataclass
-from typing import TextIO, Type, Union, Dict, Optional
+from functools import lru_cache
+from typing import Iterable, List, Type
 
 import click
 import jsonschema
-from linkml_runtime.dumpers import json_dumper
-from linkml_runtime.linkml_model import SchemaDefinition, ClassDefinitionName
+from jsonschema.exceptions import best_match
+from linkml_runtime.linkml_model import ClassDefinitionName
 from linkml_runtime.utils.compile_python import compile_python
 from linkml_runtime.utils.dictutils import as_simple_dict
 from linkml_runtime.utils.schemaview import SchemaView
@@ -20,21 +20,30 @@ from linkml.utils import datautils
 from linkml.utils.datavalidator import DataValidator
 
 
+@lru_cache(maxsize=None)
+def _generate_jsonschema(schema, top_class, closed):
+    logging.debug(f"Generating JSON Schema")
+    not_closed = not closed
+    return JsonSchemaGenerator(
+        schema=schema,
+        mergeimports=True,
+        top_class=top_class,
+        not_closed=not_closed,
+    ).generate()
+
+
 @dataclass
 class JsonSchemaDataValidator(DataValidator):
     """
     Implementation of DataValidator that wraps jsonschema validation
     """
 
-    jsonschema_objs: Optional[Dict[str, Dict]] = None
-    """Cached outputs of jsonschema generation"""
-
     def validate_file(self, input: str, format: str = "json", **kwargs):
         return self.validate_object(obj)
 
     def validate_object(
         self, data: YAMLRoot, target_class: Type[YAMLRoot] = None, closed: bool = True
-    ) -> None:
+    ) -> List[str]:
         """
         validates instance data against a schema
 
@@ -46,30 +55,11 @@ class JsonSchemaDataValidator(DataValidator):
         if target_class is None:
             target_class = type(data)
         inst_dict = as_simple_dict(data)
-        not_closed = not closed
-        if self.schema is None:
-            raise ValueError(f"schema object must be set")
-        if self.jsonschema_objs is None:
-            self.jsonschema_objs = {}
-        schema_id = self.schema.id if isinstance(self.schema, SchemaDefinition) else self.schema
-        cache_params = frozenset([schema_id, target_class.class_name])
-        if cache_params not in self.jsonschema_objs:
-            jsonschemastr = JsonSchemaGenerator(
-                self.schema,
-                mergeimports=True,
-                top_class=target_class.class_name,
-                not_closed=not_closed,
-            ).serialize(not_closed=not_closed)
-            jsonschema_obj = json.loads(jsonschemastr)
-            self.jsonschema_objs[cache_params] = jsonschema_obj
-        else:
-            logging.info(f"Using cached jsonschema for {schema_id}")
-            jsonschema_obj = self.jsonschema_objs[cache_params]
-        return jsonschema.validate(inst_dict, schema=jsonschema_obj, format_checker=jsonschema.Draft7Validator.FORMAT_CHECKER)
+        return self.validate_dict(inst_dict, target_class.class_name, closed)
 
     def validate_dict(
         self, data: dict, target_class: ClassDefinitionName = None, closed: bool = True
-    ) -> None:
+    ) -> List[str]:
         """
         validates instance data against a schema
 
@@ -78,7 +68,11 @@ class JsonSchemaDataValidator(DataValidator):
         :param closed:
         :return:
         """
-        not_closed = not closed
+        return list(self.iter_validate_dict(data, target_class, closed))
+
+    def iter_validate_dict(
+        self, data: dict, target_class: ClassDefinitionName = None, closed: bool = True
+    ) -> Iterable[str]:
         if self.schema is None:
             raise ValueError(f"schema object must be set")
         if target_class is None:
@@ -86,14 +80,15 @@ class JsonSchemaDataValidator(DataValidator):
             if len(roots) != 1:
                 raise ValueError(f"Cannot determine tree root: {roots}")
             target_class = roots[0]
-        jsonschemastr = JsonSchemaGenerator(
-            self.schema,
-            mergeimports=True,
-            top_class=target_class,
-            not_closed=not_closed,
-        ).serialize(not_closed=not_closed)
-        jsonschema_obj = json.loads(jsonschemastr)
-        return jsonschema.validate(data, schema=jsonschema_obj, format_checker=jsonschema.Draft7Validator.FORMAT_CHECKER)
+        jsonschema_obj = _generate_jsonschema(self.schema, target_class, closed)
+        validator = jsonschema.Draft7Validator(
+            jsonschema_obj, format_checker=jsonschema.Draft7Validator.FORMAT_CHECKER
+        )
+        for error in validator.iter_errors(data):
+            best_error = best_match([error])
+            # TODO: This should return some kind of standard validation result
+            # object, but until that is defined just yield string messages
+            yield f"{best_error.message} in {best_error.json_path}"
 
 
 @click.command()
@@ -157,15 +152,29 @@ def cli(
     if datautils._is_rdf_format(input_format):
         inargs["schemaview"] = sv
         inargs["fmt"] = input_format
-    obj = loader.load(source=input, target_class=py_target_class, **inargs)
+
+    try:
+        data_as_dict = loader.load_as_dict(source=input, **inargs)
+    except NotImplementedError:
+        obj = loader.load(source=input, target_class=py_target_class, **inargs)
+        data_as_dict = as_simple_dict(obj)
+
     # Validation
     if schema is None:
         raise Exception(
             "--schema must be passed in order to validate. Suppress with --no-validate"
         )
+
     validator = JsonSchemaDataValidator(schema)
-    results = validator.validate_object(obj, target_class=py_target_class)
-    print(results)
+    error_count = 0
+    for error in validator.iter_validate_dict(
+        data_as_dict, target_class=py_target_class
+    ):
+        error_count += 1
+        click.echo(click.style("\u2717 ", fg="red") + error)
+
+    if not error_count:
+        click.echo(click.style("\u2713 ", fg="green") + "No problems found")
 
 
 if __name__ == "__main__":
