@@ -1,13 +1,13 @@
 import logging
 import sys
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass, field
 from functools import lru_cache
-from typing import Iterable, List, Type
+from typing import Any, Iterable, List, Type, Union
 
 import click
 import jsonschema
 from jsonschema.exceptions import best_match
-from linkml_runtime.linkml_model import ClassDefinitionName
+from linkml_runtime.linkml_model import ClassDefinitionName, SchemaDefinition
 from linkml_runtime.utils.compile_python import compile_python
 from linkml_runtime.utils.dictutils import as_simple_dict
 from linkml_runtime.utils.schemaview import SchemaView
@@ -18,6 +18,12 @@ from linkml.generators.jsonschemagen import JsonSchemaGenerator
 from linkml.generators.pythongen import PythonGenerator
 from linkml.utils import datautils
 from linkml.utils.datavalidator import DataValidator
+
+
+class HashableSchemaDefinition(SchemaDefinition):
+
+    def __hash__(self) -> int:
+        return hash(self.id)
 
 
 @lru_cache(maxsize=None)
@@ -37,6 +43,17 @@ class JsonSchemaDataValidator(DataValidator):
     """
     Implementation of DataValidator that wraps jsonschema validation
     """
+
+    _hashable_schema: Union[str, HashableSchemaDefinition] = field(init=False, repr=False)
+
+    def __setattr__(self, __name: str, __value: Any) -> None:
+        if (__name == 'schema'):
+            if isinstance(__value, SchemaDefinition):
+                self._hashable_schema = HashableSchemaDefinition(**asdict(__value))
+            else:
+                self._hashable_schema = __value
+        return super().__setattr__(__name, __value)
+        
 
     def validate_file(self, input: str, format: str = "json", **kwargs):
         return self.validate_object(obj)
@@ -68,7 +85,8 @@ class JsonSchemaDataValidator(DataValidator):
         :param closed:
         :return:
         """
-        return list(self.iter_validate_dict(data, target_class, closed))
+        results = list(self.iter_validate_dict(data, target_class, closed))
+        return results or None
 
     def iter_validate_dict(
         self, data: dict, target_class: ClassDefinitionName = None, closed: bool = True
@@ -80,7 +98,7 @@ class JsonSchemaDataValidator(DataValidator):
             if len(roots) != 1:
                 raise ValueError(f"Cannot determine tree root: {roots}")
             target_class = roots[0]
-        jsonschema_obj = _generate_jsonschema(self.schema, target_class, closed)
+        jsonschema_obj = _generate_jsonschema(self._hashable_schema, target_class, closed)
         validator = jsonschema.Draft7Validator(
             jsonschema_obj, format_checker=jsonschema.Draft7Validator.FORMAT_CHECKER
         )

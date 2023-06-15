@@ -22,7 +22,7 @@ class JsonSchemaValidatorTestCase(unittest.TestCase):
 
         obj = yaml_loader.load(source=PERSON_1, target_class=mod.Person)
         results = validator.validate_object(obj, target_class=mod.Person)
-        self.assertEqual(results, [])
+        self.assertIsNone(results)
 
         obj = yaml_loader.load(source=PERSON_INVALID_1, target_class=mod.Person)
         results = validator.validate_object(obj, target_class=mod.Person)
@@ -35,7 +35,7 @@ class JsonSchemaValidatorTestCase(unittest.TestCase):
         with open(PERSON_1) as file:
             obj = yaml.safe_load(file)
         results = validator.validate_dict(obj, "Person")
-        self.assertEqual(results, [])
+        self.assertIsNone(results)
 
         with open(PERSON_INVALID_1) as file:
             obj = yaml.safe_load(file)
