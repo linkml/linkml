@@ -302,22 +302,23 @@
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
-<span class="kn">from</span> <span class="nn">linkml_runtime.dumpers.csv_dumper</span> <span class="kn">import</span> <span class="n">CSVDumper</span>
-<span class="kn">from</span> <span class="nn">linkml_runtime.dumpers.json_dumper</span> <span class="kn">import</span> <span class="n">JSONDumper</span>
-<span class="kn">from</span> <span class="nn">linkml_runtime.dumpers.rdf_dumper</span> <span class="kn">import</span> <span class="n">RDFDumper</span>
-<span class="kn">from</span> <span class="nn">linkml_runtime.dumpers.rdflib_dumper</span> <span class="kn">import</span> <span class="n">RDFLibDumper</span>
-<span class="kn">from</span> <span class="nn">linkml_runtime.dumpers.yaml_dumper</span> <span class="kn">import</span> <span class="n">YAMLDumper</span>
-<span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model.meta</span> <span class="kn">import</span> <span class="p">(</span><span class="n">ClassDefinitionName</span><span class="p">,</span>
-                                              <span class="n">SchemaDefinition</span><span class="p">,</span>
-                                              <span class="n">SlotDefinitionName</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">linkml_runtime.loaders.csv_loader</span> <span class="kn">import</span> <span class="n">CSVLoader</span>
-<span class="kn">from</span> <span class="nn">linkml_runtime.loaders.json_loader</span> <span class="kn">import</span> <span class="n">JSONLoader</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime.dumpers</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">CSVDumper</span><span class="p">,</span>
+    <span class="n">JSONDumper</span><span class="p">,</span>
+    <span class="n">RDFLibDumper</span><span class="p">,</span>
+    <span class="n">TSVDumper</span><span class="p">,</span>
+    <span class="n">YAMLDumper</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model.meta</span> <span class="kn">import</span> <span class="n">ClassDefinitionName</span><span class="p">,</span> <span class="n">SlotDefinitionName</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime.loaders</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">CSVLoader</span><span class="p">,</span>
+    <span class="n">JSONLoader</span><span class="p">,</span>
+    <span class="n">RDFLibLoader</span><span class="p">,</span>
+    <span class="n">TSVLoader</span><span class="p">,</span>
+    <span class="n">YAMLLoader</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime.loaders.loader_root</span> <span class="kn">import</span> <span class="n">Loader</span>
-<span class="kn">from</span> <span class="nn">linkml_runtime.loaders.rdf_loader</span> <span class="kn">import</span> <span class="n">RDFLoader</span>
-<span class="kn">from</span> <span class="nn">linkml_runtime.loaders.rdflib_loader</span> <span class="kn">import</span> <span class="n">RDFLibLoader</span>
-<span class="kn">from</span> <span class="nn">linkml_runtime.loaders.yaml_loader</span> <span class="kn">import</span> <span class="n">YAMLLoader</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime.utils.schemaview</span> <span class="kn">import</span> <span class="n">SchemaView</span>
-<span class="kn">from</span> <span class="nn">linkml_runtime.utils.yamlutils</span> <span class="kn">import</span> <span class="n">YAMLRoot</span>
 
 <span class="kn">from</span> <span class="nn">linkml.generators.jsonldcontextgen</span> <span class="kn">import</span> <span class="n">ContextGenerator</span>
 
@@ -329,7 +330,7 @@
     <span class="s2">&quot;ttl&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">RDFLibDumper</span><span class="p">,</span> <span class="n">RDFLibLoader</span><span class="p">),</span>
     <span class="s2">&quot;json-ld&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">JSONDumper</span><span class="p">,</span> <span class="n">JSONLoader</span><span class="p">),</span>
     <span class="s2">&quot;csv&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">CSVDumper</span><span class="p">,</span> <span class="n">CSVLoader</span><span class="p">),</span>
-    <span class="s2">&quot;tsv&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">CSVDumper</span><span class="p">,</span> <span class="n">CSVLoader</span><span class="p">),</span>
+    <span class="s2">&quot;tsv&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">TSVDumper</span><span class="p">,</span> <span class="n">TSVLoader</span><span class="p">),</span>
 <span class="p">}</span>
 
 <span class="n">aliases</span> <span class="o">=</span> <span class="p">{</span>
