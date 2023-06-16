@@ -448,7 +448,7 @@ classes:
           - linkml:elements
         required: true
         unit:
-          ucum_code: a
+          ucum_code: d
 """
 
         gen = PydanticGenerator(schema=unit_test_schema)
