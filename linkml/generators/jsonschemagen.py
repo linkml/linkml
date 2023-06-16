@@ -452,7 +452,7 @@ class JsonSchemaGenerator(Generator):
         prop = self.get_subschema_for_slot(slot)
         subschema.add_property(aliased_slot_name, prop, slot_is_required)
 
-    def serialize(self, **kwargs) -> str:
+    def generate(self) -> dict:
         self.start_schema()
         for enum_definition in self.schemaview.all_enums().values():
             self.handle_enum(enum_definition)
@@ -460,7 +460,10 @@ class JsonSchemaGenerator(Generator):
         for class_definition in self.schemaview.all_classes().values():
             self.handle_class(class_definition)
 
-        return self.top_level_schema.to_json(sort_keys=True, indent=self.indent if self.indent > 0 else None)
+        return self.top_level_schema
+        
+    def serialize(self, **kwargs) -> str:
+        return self.generate().to_json(sort_keys=True, indent=self.indent if self.indent > 0 else None)
     
     def _get_range_associated_slots(self, slot: SlotDefinition) -> Tuple[Union[SlotDefinition, None], Union[SlotDefinition, None], Union[List[SlotDefinition], None]]:
         range_class = self.schemaview.get_class(slot.range)

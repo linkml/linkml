@@ -186,7 +186,7 @@ Note you can also use standard LinkML tools to generate YAML, RDF, TSV, store in
 
 Often the last step will fail because the generated JSON sometimes does not strictly conform to the schema.
 
-For example, sometimes the LLM is overly eager to fill in all slots, and rather than null/empy it may
+For example, sometimes the LLM is overly eager to fill in all slots, and rather than null/empty it may
 fill these in with empty strings:
 
 ```json
