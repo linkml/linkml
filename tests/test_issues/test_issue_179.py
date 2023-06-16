@@ -9,7 +9,7 @@ class Issue179TestCase(TestEnvironmentTestCase):
     env = env
 
     def test_issue_179(self):
-        """Make sure that inheritence isn't implied by reference slots"""
+        """Make sure that inheritance isn't implied by reference slots"""
         env.generate_directory(
             "issue179",
             lambda d: MarkdownGenerator(env.input_path("issue_179.yaml")).serialize(

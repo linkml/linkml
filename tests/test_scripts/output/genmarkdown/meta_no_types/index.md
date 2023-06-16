@@ -180,7 +180,7 @@ refer to the official URI for each construct, e.g.
  * [list_elements_ordered](list_elements_ordered.md) - If True, then the order of elements of a multivalued slot is guaranteed to be preserved. If False, the order may still be preserved but this is not guaranteed
  * [list_elements_unique](list_elements_unique.md) - If True, then there must be no duplicates in the elements of a multivalued slot
  * [list_value_specification_constant](list_value_specification_constant.md) - Grouping for metamodel slots that constrain members of a multivalued slot value to equal a specified constant
-     * [all_members](all_members.md) - the value of the multiavlued slot is a list where all elements conform to the specified values.
+     * [all_members](all_members.md) - the value of the multivalued slot is a list where all elements conform to the specified values.
      * [equals_expression](equals_expression.md) - the value of the slot must equal the value of the evaluated expression
      * [equals_number](equals_number.md) - the slot must have range of a number and the value of the slot must equal the specified value
      * [equals_number_in](equals_number_in.md) - the slot must have range number and the value of the slot must equal one of the specified values
@@ -218,7 +218,7 @@ refer to the official URI for each construct, e.g.
  * [owned_by](owned_by.md) - agent that owns or is the steward of the element
  * [owner](owner.md) - the "owner" of the slot. It is the class if it appears in the slots list, otherwise the declaring slot
  * [partial_match](partial_match.md) - if true then the pattern must match the whole string, as if enclosed in ^...$
- * [path_rule](path_rule.md) - a rule for inferring a slot assignment based on evaluating a path through a sequence of slot assignemnts
+ * [path_rule](path_rule.md) - a rule for inferring a slot assignment based on evaluating a path through a sequence of slot assignments
  * [pattern](pattern.md) - the string value of the slot must conform to this regular expression expressed in the string
  * [permissible_values](permissible_values.md) - A list of possible values for a slot range
  * [postconditions](postconditions.md) - an expression that must hold for an instance of the class, if the preconditions hold

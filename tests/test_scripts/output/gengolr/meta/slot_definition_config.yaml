@@ -303,7 +303,7 @@ fields:
   display_name: is_grouping_slot
 - id: path_rule
   description: a rule for inferring a slot assignment based on evaluating a path through
-    a sequence of slot assignemnts
+    a sequence of slot assignments
   display_name: path_rule
 - id: disjoint_with
   description: Two classes are disjoint if they have no instances in common, two slots
@@ -406,7 +406,7 @@ fields:
     the condition
   display_name: has_member
 - id: all_members
-  description: "the value of the multiavlued slot is a list where all elements conform\
+  description: "the value of the multivalued slot is a list where all elements conform\
     \ to the specified values.\nthis defines a dynamic class with named slots according\
     \ to matching constraints\n\nE.g to state that all members of a list are between\
     \ 1 and 10\n```\nall_members:\n  x:\n    range: integer\n    minimum_value: 10\n\
