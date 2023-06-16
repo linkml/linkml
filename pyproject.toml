@@ -96,7 +96,7 @@ gen-linkml = "linkml.generators.linkmlgen:cli"
 linkml-schema-fixer = "linkml.utils.schema_fixer:main"
 
 [tool.poetry.dependencies]
-python = "^3.8.0"
+python = "^3.7.6"
 antlr4-python3-runtime = "<4.10,==4.*,>=4.9.0"
 click = ">=7.0"
 graphviz = ">=0.10.1"
@@ -106,12 +106,11 @@ jinja2 = ">= 3.1.0"
 jsonasobj2 = "==1.*,>=1.0.0,>=1.0.3"
 jsonschema = {extras = ["format"], version = ">=4.0.0"}
 linkml-dataops = "*"
-linkml-runtime = ">=1.5.0"
-myst-parser = "*"
+linkml-runtime = ">=1.5.4"
 openpyxl = "*"
 parse = "*"
 prefixcommons = ">=0.1.7"
-prefixmaps = "^0.1.3"
+prefixmaps = ">=0.1.3"
 pydantic = "*"
 pyjsg = ">=0.11.6"
 pyshex = ">=0.7.20"
@@ -120,14 +119,8 @@ python-dateutil = "*"
 pyyaml = "*"
 rdflib = ">=6.0.0"
 requests = ">=2.22"
-sphinx = "*"
-sphinx-click = "*"
-sphinx-rtd-theme = "*"
 sqlalchemy = ">=1.4.31"
 watchdog = ">=0.9.0"
-tox = "^3.25.1"
-furo = {version = "^2023.03.27", extras = ["docs"]}
-sphinxcontrib-mermaid = {version = "^0.7.1", extras = ["docs"]}
 typing-extensions = {version = "^4.5.0", python = "3.7"}
 
 [tool.poetry.dev-dependencies]
@@ -137,7 +130,13 @@ ipython-genutils = "*"
 nbconvert = "*"
 nbformat = "*"
 coverage = "^6.4.1"
-numpy = ">=1.24.3"
+tox = "^3.25.1"
+furo = {version = "^2023.03.27", extras = ["docs"]}
+sphinxcontrib-mermaid = {version = "^0.7.1", extras = ["docs"]}
+sphinx = "*"
+sphinx-click = "*"
+sphinx-rtd-theme = "*"
+myst-parser = "*"
 
 [tool.poetry.extras]
 docs = ["Sphinx", "sphinxcontrib-mermaid", "furo"]
@@ -145,3 +144,12 @@ docs = ["Sphinx", "sphinxcontrib-mermaid", "furo"]
 [build-system]
 requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning"]
 build-backend = "poetry_dynamic_versioning.backend"
+
+[tool.codespell]
+# TODO: bring in tests in too
+skip = '.git,*.pdf,*.svg,tests,pyproject.toml,*.dill'
+# Ignore table where words could be split across rows
+# Ignore shortcut specifications like [Ff]alse
+ignore-regex = '(\|.*\|.*\|.*\||\[[A-Z][a-z]\][a-z][a-z])'
+#
+ignore-words-list = 'mater,connexion,infarction'
