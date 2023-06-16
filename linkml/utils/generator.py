@@ -251,7 +251,7 @@ class Generator(metaclass=abc.ABCMeta):
         """
         Generate output in the required format
 
-        :param kwargs: Generater specific parameters
+        :param kwargs: Generator specific parameters
         :return: Generated output
         """
         output = StringIO()

@@ -333,7 +333,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
                         )
                         # If we've got a parent slot and the range of the parent is the range of the child, the
                         # child slot is a subclass of the parent.  Otherwise, the child range has been overridden,
-                        # so the inheritence chain has been broken
+                        # so the inheritance chain has been broken
                         parent_pk = (
                             self.class_identifier(cls.is_a) if cls.is_a else None
                         )
@@ -517,7 +517,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
         """
         Generate the variable declarations for a dataclass.
 
-        :param cls: class containing variables to be rendered in inheritence hierarchy
+        :param cls: class containing variables to be rendered in inheritance hierarchy
         :return: variable declarations for target class and its ancestors
         """
         initializers = []
@@ -823,7 +823,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
                     f"if self.{aliased_slot_name} is not None and "
                     f"not isinstance(self.{aliased_slot_name}, {base_type_name}):"
                 )
-            # A really wierd case -- a class that has no properties
+            # A really weird case -- a class that has no properties
             if (
                 slot.range in self.schema.classes
                 and not self.schema.classes[slot.range].slots

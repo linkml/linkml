@@ -332,7 +332,7 @@
 --     * Slot: class_expression_id Description: Autocreated FK slot
 --     * Slot: anonymous_class_expression_id Description: Autocreated FK slot
 --     * Slot: class_definition_name Description: Autocreated FK slot
---     * Slot: path_rule_id Description: a rule for inferring a slot assignment based on evaluating a path through a sequence of slot assignemnts
+--     * Slot: path_rule_id Description: a rule for inferring a slot assignment based on evaluating a path through a sequence of slot assignments
 --     * Slot: range_expression_id Description: A range that is described as a boolean expression combining existing ranges
 --     * Slot: structured_pattern_id Description: the string value of the slot must conform to the regular expression in the pattern expression
 --     * Slot: has_member_id Description: the values of the slot is multivalued with at least one member satisfying the condition

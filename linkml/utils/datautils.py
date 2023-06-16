@@ -2,22 +2,23 @@ import os
 from collections import defaultdict
 from typing import Optional, Union
 
-from linkml_runtime.dumpers.csv_dumper import CSVDumper
-from linkml_runtime.dumpers.json_dumper import JSONDumper
-from linkml_runtime.dumpers.rdf_dumper import RDFDumper
-from linkml_runtime.dumpers.rdflib_dumper import RDFLibDumper
-from linkml_runtime.dumpers.yaml_dumper import YAMLDumper
-from linkml_runtime.linkml_model.meta import (ClassDefinitionName,
-                                              SchemaDefinition,
-                                              SlotDefinitionName)
-from linkml_runtime.loaders.csv_loader import CSVLoader
-from linkml_runtime.loaders.json_loader import JSONLoader
+from linkml_runtime.dumpers import (
+    CSVDumper,
+    JSONDumper,
+    RDFLibDumper,
+    TSVDumper,
+    YAMLDumper,
+)
+from linkml_runtime.linkml_model.meta import ClassDefinitionName, SlotDefinitionName
+from linkml_runtime.loaders import (
+    CSVLoader,
+    JSONLoader,
+    RDFLibLoader,
+    TSVLoader,
+    YAMLLoader,
+)
 from linkml_runtime.loaders.loader_root import Loader
-from linkml_runtime.loaders.rdf_loader import RDFLoader
-from linkml_runtime.loaders.rdflib_loader import RDFLibLoader
-from linkml_runtime.loaders.yaml_loader import YAMLLoader
 from linkml_runtime.utils.schemaview import SchemaView
-from linkml_runtime.utils.yamlutils import YAMLRoot
 
 from linkml.generators.jsonldcontextgen import ContextGenerator
 
@@ -27,9 +28,9 @@ dumpers_loaders = {
     "json": (JSONDumper, JSONLoader),
     "rdf": (RDFLibDumper, RDFLibLoader),
     "ttl": (RDFLibDumper, RDFLibLoader),
-    "json-ld": (RDFLibDumper, RDFLibLoader),
+    "json-ld": (JSONDumper, JSONLoader),
     "csv": (CSVDumper, CSVLoader),
-    "tsv": (CSVDumper, CSVLoader),
+    "tsv": (TSVDumper, TSVLoader),
 }
 
 aliases = {

@@ -262,7 +262,7 @@
       "definition_uri": "https://w3id.org/linkml/Objectidentifier",
       "description": "A URI or CURIE that represents an object in the model.",
       "comments": [
-        "Used for inheritence and type checking"
+        "Used for inheritance and type checking"
       ],
       "from_schema": "https://w3id.org/linkml/types",
       "imported_from": "linkml:types",
@@ -1085,7 +1085,7 @@
       "definition_uri": "https://w3id.org/linkml/mixins",
       "description": "List of definitions to be mixed in. Targets may be any definition of the same type",
       "comments": [
-        "mixins act in the same way as parents (is_a). They allow a model to have a primary strict hierachy, while keeping the benefits of multiple inheritance"
+        "mixins act in the same way as parents (is_a). They allow a model to have a primary strict hierarchy, while keeping the benefits of multiple inheritance"
       ],
       "in_subset": [
         "basic",
@@ -1587,7 +1587,7 @@
       "from_schema": "https://w3id.org/linkml/meta",
       "domain": "SchemaDefinition",
       "slot_uri": "https://w3id.org/linkml/source_file",
-      "readonly": "suppplied by the schema loader",
+      "readonly": "supplied by the schema loader",
       "owner": "SchemaDefinition",
       "domain_of": [
         "SchemaDefinition"
@@ -2513,7 +2513,7 @@
     {
       "name": "all_members",
       "definition_uri": "https://w3id.org/linkml/all_members",
-      "description": "the value of the multiavlued slot is a list where all elements conform to the specified values.\nthis defines a dynamic class with named slots according to matching constraints\n\nE.g to state that all members of a list are between 1 and 10\n```\nall_members:\n  x:\n    range: integer\n    minimum_value: 10\n    maximum_value: 10\n```",
+      "description": "the value of the multivalued slot is a list where all elements conform to the specified values.\nthis defines a dynamic class with named slots according to matching constraints\n\nE.g to state that all members of a list are between 1 and 10\n```\nall_members:\n  x:\n    range: integer\n    minimum_value: 10\n    maximum_value: 10\n```",
       "from_schema": "https://w3id.org/linkml/meta",
       "is_a": "list_value_specification_constant",
       "status": "testing",
@@ -3280,7 +3280,7 @@
       "description": "python base type that implements this type definition",
       "comments": [
         "every root type must have a base",
-        "the base is inherited by child types but may be overriden.  Base compatibility is not checked."
+        "the base is inherited by child types but may be overridden.  Base compatibility is not checked."
       ],
       "in_subset": [
         "basic"
@@ -3749,7 +3749,7 @@
     {
       "name": "path_rule",
       "definition_uri": "https://w3id.org/linkml/path_rule",
-      "description": "a rule for inferring a slot assignment based on evaluating a path through a sequence of slot assignemnts",
+      "description": "a rule for inferring a slot assignment based on evaluating a path through a sequence of slot assignments",
       "from_schema": "https://w3id.org/linkml/meta",
       "domain": "SlotDefinition",
       "slot_uri": "https://w3id.org/linkml/path_rule",
@@ -4434,7 +4434,7 @@
       "definition_uri": "https://w3id.org/linkml/mixins",
       "description": "List of definitions to be mixed in. Targets may be any definition of the same type",
       "comments": [
-        "mixins act in the same way as parents (is_a). They allow a model to have a primary strict hierachy, while keeping the benefits of multiple inheritance"
+        "mixins act in the same way as parents (is_a). They allow a model to have a primary strict hierarchy, while keeping the benefits of multiple inheritance"
       ],
       "in_subset": [
         "basic",
@@ -4619,7 +4619,7 @@
       "definition_uri": "https://w3id.org/linkml/mixins",
       "description": "List of definitions to be mixed in. Targets may be any definition of the same type",
       "comments": [
-        "mixins act in the same way as parents (is_a). They allow a model to have a primary strict hierachy, while keeping the benefits of multiple inheritance"
+        "mixins act in the same way as parents (is_a). They allow a model to have a primary strict hierarchy, while keeping the benefits of multiple inheritance"
       ],
       "in_subset": [
         "basic",
@@ -4735,7 +4735,7 @@
       "definition_uri": "https://w3id.org/linkml/mixins",
       "description": "List of definitions to be mixed in. Targets may be any definition of the same type",
       "comments": [
-        "mixins act in the same way as parents (is_a). They allow a model to have a primary strict hierachy, while keeping the benefits of multiple inheritance"
+        "mixins act in the same way as parents (is_a). They allow a model to have a primary strict hierarchy, while keeping the benefits of multiple inheritance"
       ],
       "in_subset": [
         "basic",

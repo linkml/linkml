@@ -6,12 +6,13 @@ import logging
 import os
 from dataclasses import dataclass, field
 from enum import Enum, unique
-from typing import Optional, TextIO, Union, Set, List
+from typing import List, Optional, Set, TextIO, Union
 
 import click
 from linkml_runtime.linkml_model.meta import (ClassDefinition,
                                               ClassDefinitionName, Definition,
-                                              Element, EnumDefinition,
+                                              Element, ElementName,
+                                              EnumDefinition,
                                               EnumDefinitionName,
                                               SchemaDefinition, SlotDefinition,
                                               SlotDefinitionName,
@@ -60,13 +61,15 @@ class OwlSchemaGenerator(Generator):
         type_objects    if True, represent TypeDefinitions as objects; if False, as literals
         metaclasses     if True, include OWL representations of ClassDefinition, SlotDefinition, etc. Introduces punning
     """
+
     schema: Union[str, TextIO, SchemaDefinition] = None
 
     # ClassVars
     generatorname = os.path.basename(__file__)
     generatorversion = "0.1.1"
     valid_formats = ["owl", "ttl"] + [
-        x.name for x in rdflib_plugins(None, rdflib_Parser) if "/" not in str(x.name)]
+        x.name for x in rdflib_plugins(None, rdflib_Parser) if "/" not in str(x.name)
+    ]
     visits_are_sorted = True
     uses_schemaloader = True
     requires_metamodel = True
@@ -79,6 +82,7 @@ class OwlSchemaGenerator(Generator):
     graph: Optional[Graph] = None
     top_value_uri: Optional[URIRef] = None
     type_objects: bool = field(default_factory=lambda: True)
+    assert_equivalent_classes: bool = False
 
     def visit_schema(self, output: Optional[str] = None, **_):
         owl_id = self.schema.id
@@ -263,6 +267,13 @@ class OwlSchemaGenerator(Generator):
                             cls_uri,
                         )
                     )
+
+        if cls.class_uri and self.assert_equivalent_classes:
+            eq_class_uri = self.namespaces.uri_for(cls.class_uri)
+            if str(eq_class_uri) != cls.definition_uri:
+                self.graph.add((cls_uri, OWL.equivalentClass, eq_class_uri))
+                self.graph.remove((cls_uri, SKOS.exactMatch, eq_class_uri))
+
         # If defining slots, we generate an equivalentClass entry
         # equ_node = BNode()
         # self.graph.add((cls_uri, OWL.equivalentClass, equ_node))
@@ -504,12 +515,31 @@ class OwlSchemaGenerator(Generator):
             self.graph.add((enum_uri, OWL.unionOf, union_bnode))
 
     def _add_element_properties(self, uri: URIRef, el: Element) -> None:
+        metamodel = self.metamodel
         for k, v in el.__dict__.items():
-            if k in self.metamodel.schema.slots:
+            if k in metamodel.schema.slots:
                 defining_slot = self.metamodel.schema.slots[k]
-                if v is not None and ("owl" in defining_slot.in_subset or "OwlProfile" in defining_slot.in_subset):
-                    ve = v if isinstance(v, list) else [v]
+                if v is not None and (
+                    "owl" in defining_slot.in_subset
+                    or "OwlProfile" in defining_slot.in_subset
+                ):
+                    if isinstance(v, list):
+                        ve = v
+                    elif isinstance(v, dict):
+                        ve = v.values()
+                    else:
+                        ve = [v]
                     for e in ve:
+                        if isinstance(
+                            e,
+                            (
+                                ClassDefinition,
+                                SlotDefinition,
+                                TypeDefinition,
+                                EnumDefinition,
+                            ),
+                        ):
+                            return
                         if (
                             k == "name"
                             and isinstance(el, SlotDefinition)
@@ -523,7 +553,31 @@ class OwlSchemaGenerator(Generator):
                                     defining_slot.slot_uri
                                 )
                             )
-                        self.graph.add((uri, prop_uri, Literal(e)))
+                        object = self._as_rdf_element(e, defining_slot)
+                        if object is not None:
+                            self.graph.add((uri, prop_uri, object))
+
+    def _as_rdf_element(
+        self, element: Union[ElementName, Element], parent_slot: SlotDefinition
+    ) -> Optional[Union[URIRef, Literal]]:
+        if parent_slot.range in self.metamodel.schema.types:
+            return Literal(element)
+        elif parent_slot.range in self.metamodel.schema.enums:
+            return Literal(element)
+        elif parent_slot.range in self.metamodel.schema.classes:
+            if parent_slot.inlined:
+                element_name = element.name
+            else:
+                element_name = element
+            if element_name in self.metamodel.schema.classes:
+                return self._class_uri(element_name)
+            elif element_name in self.metamodel.schema.types:
+                return self._type_uri(element_name)
+            elif element_name in self.metamodel.schema.enums:
+                return self._enum_uri(element_name)
+        else:
+            logging.warning(f"Unknown range {defining_slot.range}")
+            return None
 
     def _range_is_datatype(self, slot: SlotDefinition) -> bool:
         if self.type_objects:
@@ -571,7 +625,7 @@ class OwlSchemaGenerator(Generator):
             camelcase(metac.name)
         ]
         self.graph.add((metac_uri, RDF.type, OWL.Class))
-        self._add_element_properties(metac_uri, metac)
+        # self._add_element_properties(metac_uri, metac)
 
     def slot_owl_type(self, slot: SlotDefinition) -> URIRef:
         if self.type_objects:
@@ -632,6 +686,12 @@ class OwlSchemaGenerator(Generator):
     default=".owl.ttl",
     show_default=True,
     help="Suffix to append to schema id to generate OWL Ontology IRI",
+)
+@click.option(
+    "--assert-equivalent-classes/--no-assert-equivalent-classes",
+    default=False,
+    show_default=True,
+    help="If true, add owl:equivalentClass between a class and a class_uri",
 )
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, metadata_profile: str, **kwargs):

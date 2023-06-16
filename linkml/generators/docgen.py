@@ -139,6 +139,7 @@ class DocGenerator(Generator):
     gen_slots: bool = field(default_factory=lambda: True)
     no_types_dir: bool = field(default_factory=lambda: False)
     use_slot_uris: bool = field(default_factory=lambda: False)
+    hierarchical_class_view: bool = field(default_factory=lambda: False)
 
 
     def __post_init__(self):
@@ -274,7 +275,7 @@ class DocGenerator(Generator):
         Create a jinja2 template object for a given schema element type
 
         The default location for templates is in the linkml/docgen folder,
-        but this can be overriden
+        but this can be overridden
         :param element_type: e.g. class, enum, index, subset, ...
         :return:
         """
@@ -432,7 +433,7 @@ class DocGenerator(Generator):
         self, element: Definition, children: bool = True, **kwargs
     ) -> str:
         """
-        Show an element in the context of its is-a hierachy
+        Show an element in the context of its is-a hierarchy
 
         Limitations: currently only implemented for markdown (uses nested bullets)
 
@@ -883,12 +884,17 @@ class DocGenerator(Generator):
     help="Use IDs from slot_uri instead of names",
 )
 @click.option(
+    "--hierarchical-class-view/--no-hierarchical-class-view",
+    default=True,
+    help="Render class table on index page in a hierarchically indented view",
+)
+@click.option(
     "--example-directory",
     help="Folder in which example files are found. These are used to make inline examples"
 )
 @click.version_option(__version__, "-V", "--version")
 @click.command()
-def cli(yamlfile, directory, dialect, template_directory, use_slot_uris, **args):
+def cli(yamlfile, directory, dialect, template_directory, use_slot_uris, hierarchical_class_view, **args):
     """Generate documentation folder from a LinkML YAML schema
 
     Currently a default set of templates for markdown is provided (see the folder linkml/generators/docgen/)
@@ -912,6 +918,7 @@ def cli(yamlfile, directory, dialect, template_directory, use_slot_uris, **args)
         dialect=dialect,
         template_directory=template_directory,
         use_slot_uris=use_slot_uris,
+        hierarchical_class_view=hierarchical_class_view,
         **args,
     )
     print(gen.serialize())

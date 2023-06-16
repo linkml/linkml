@@ -5,7 +5,7 @@ from typing import List, Tuple
 
 def get_type_designator_value(sv: SchemaView, type_designator_slot: SlotDefinition, class_def: ClassDefinition) -> str:
     """
-        retuns the correct value for a type designator field for a given class, depending on its range
+        returns the correct value for a type designator field for a given class, depending on its range
         this implements the logic described in https://github.com/linkml/linkml/issues/945:
     """
     slot_types = set(sv.type_ancestors(type_designator_slot.range))
@@ -21,7 +21,7 @@ def get_type_designator_value(sv: SchemaView, type_designator_slot: SlotDefiniti
 
 def get_accepted_type_designator_values(sv: SchemaView, type_designator_slot: SlotDefinition, class_def: ClassDefinition) -> List[str]:
     """
-        retuns the accepted values for a type designator field for a given class, depending on its range
+        returns the accepted values for a type designator field for a given class, depending on its range
         this implements the logic described in https://github.com/linkml/linkml/issues/945:
     """
     accepted_uri_values = [

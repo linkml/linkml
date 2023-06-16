@@ -95,6 +95,7 @@ jobs:
       #           upload coverage results
       #----------------------------------------------
       - name: Upload coverage report
+        if: github.repository == 'linkml/linkml'
         uses: codecov/codecov-action@v3.1.0
         with:
           name: codecov-results-${{ matrix.os }}-${{ matrix.python-version }}

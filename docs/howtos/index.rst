@@ -14,4 +14,6 @@ Some of these guides are works in progress
    using-jsonld
    model-measurements
    port-linkml
+   multidimensional-arrays
+   generate-ai-prompts
 

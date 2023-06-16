@@ -1,5 +1,4 @@
 import unittest
-from collections import namedtuple
 
 import yaml
 from linkml_runtime import SchemaView
@@ -96,13 +95,13 @@ enums:
         assert enums
         enum = enums["TestEnum"]
         assert enum
-        assert enum["values"]["number_123"] == "123"
-        assert enum["values"]["PLUS_SIGN"] == "+"
+        assert enum["values"]["number_123"]["value"] == "123"
+        assert enum["values"]["PLUS_SIGN"]["value"] == "+"
         assert (
-            enum["values"]["This_AMPERSAND_that_plus_maybe_a_TOP_HAT"]
+            enum["values"]["This_AMPERSAND_that_plus_maybe_a_TOP_HAT"]["value"]
             == "This & that, plus maybe a 🎩"
         )
-        assert enum["values"]["Ohio"] == "Ohio"
+        assert enum["values"]["Ohio"]["value"] == "Ohio"
 
     def test_pydantic_any_of(self):
         # TODO: convert to SchemaBuilder and parameterize?
@@ -110,7 +109,7 @@ enums:
 id: test_schema
 name: test_info
 description: just testing
-
+default_range: string
 prefixes:
   linkml: https://w3id.org/linkml/
   schema: http://schema.org/

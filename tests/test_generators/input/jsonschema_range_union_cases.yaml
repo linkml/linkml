@@ -54,6 +54,18 @@ schema:
       any_of:
         - range: C1
         - range: C2
+    c1_xor_c2_single_value:
+      multivalued: false
+      inlined: true
+      exactly_one_of:
+        - range: C1
+        - range: C2
+    c1_xor_c2_multi_value:
+      multivalued: true
+      inlined_as_list: true
+      exactly_one_of:
+        - range: C1
+        - range: C2
     grab_bag:
       multivalued: true
       inlined_as_list: true
@@ -102,6 +114,8 @@ schema:
         - c1_mutli_value
         - c1_or_c2_single_value
         - c1_or_c2_multi_value
+        - c1_xor_c2_single_value
+        - c1_xor_c2_multi_value
         - grab_bag
 
 data_cases:
@@ -133,6 +147,13 @@ data_cases:
         s2: hi
   - data:
       c1_or_c2_multi_value:
+        - s1: hi
+        - s2: hello
+  - data:
+      c1_xor_c2_single_value:
+        s2: hi
+  - data:
+      c1_xor_c2_multi_value:
         - s1: hi
         - s2: hello
   - data:
@@ -222,6 +243,24 @@ data_cases:
         - s2: 'hello'
         - s3: 'hola'
     error_message: Failed validating 'anyOf' in schema
+  - data:
+      c1_xor_c2_single_value:
+        - s1: 'hi'
+    error_message: Failed validating 'oneOf' in schema
+  - data:
+      c1_xor_c2_single_value:
+        s3: 'hi'
+    error_message: Failed validating 'oneOf' in schema
+  - data:
+      c1_xor_c2_multi_value:
+        s1: 'hi'
+    error_message: is not of type 'array'
+  - data:
+      c1_xor_c2_multi_value:
+        - s1: 'hi'
+        - s2: 'hello'
+        - s3: 'hola'
+    error_message: Failed validating 'oneOf' in schema
   - data:
       grab_bag:
         - s2: 'two'

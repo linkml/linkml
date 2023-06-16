@@ -625,6 +625,21 @@ class DocGeneratorTestCase(unittest.TestCase):
                 
         shutil.rmtree(md_temp_dir)
 
+    def test_hierarchical_class_view(self):
+        """Test to check if class table view on index page follows hierarchical view"""
+        gen = DocGenerator(SCHEMA, mergeimports=True, hierarchical_class_view=True)
+
+        md_temp_dir = tempfile.mkdtemp()
+
+        md = gen.serialize(directory=md_temp_dir)
+
+        assert_mdfile_contains("index.md", "Event", after="Dataset")
+        
+        assert_mdfile_contains("index.md", "BirthEvent", after="Event")
+
+        assert_mdfile_contains("index.md", "EmploymentEvent", after="BirthEvent")
+        
+        assert_mdfile_contains("index.md", "MarriageEvent", after="EmploymentEvent")
 
 if __name__ == "__main__":
     unittest.main()

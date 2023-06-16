@@ -45,7 +45,7 @@ types:
       repr: str
       description: A URI or CURIE that represents an object in the model.
       comments:
-        - Used for inheritence and type checking
+        - Used for inheritance and type checking
 
     nodeidentifier:
       uri: shex:nonliteral

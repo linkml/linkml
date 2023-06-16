@@ -26,6 +26,6 @@ URI: [linkml:base](https://w3id.org/linkml/base)
 |  |  |  |
 | --- | --- | --- |
 | **Comments:** | | every root type must have a base |
-|  | | the base is inherited by child types but may be overriden.  Base compatibility is not checked. |
+|  | | the base is inherited by child types but may be overridden.  Base compatibility is not checked. |
 | **In Subsets:** | | basic |
 
