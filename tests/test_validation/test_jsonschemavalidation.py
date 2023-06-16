@@ -5,7 +5,7 @@ import yaml
 from linkml_runtime.loaders import yaml_loader
 
 from linkml.generators.pythongen import PythonGenerator
-from linkml.validators import JsonSchemaDataValidator
+from linkml.validators.jsonschemavalidator import JsonSchemaDataValidator, _generate_jsonschema
 from tests.test_validation.environment import env
 
 SCHEMA = env.input_path("kitchen_sink.yaml")
@@ -16,6 +16,11 @@ PERSON_INVALID_1 = env.input_path("Person-invalid-01.yaml")
 
 
 class JsonSchemaValidatorTestCase(unittest.TestCase):
+
+    def setUp(self):
+        # Ensure each test runs from a clean state
+        _generate_jsonschema.cache_clear()
+
     def test_validate_object(self):
         mod = PythonGenerator(SCHEMA).compile_module()
         validator = JsonSchemaDataValidator(schema=SCHEMA)
