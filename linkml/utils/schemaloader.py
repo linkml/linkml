@@ -111,16 +111,6 @@ class SchemaLoader:
             self.namespaces[prefix.prefix_prefix] = prefix.prefix_reference
         for cmap in self.schema.default_curi_maps:
             self.namespaces.add_prefixmap(cmap, include_defaults=False)
-        if not self.namespaces._default:
-            if "://" in self.schema.default_prefix:
-                self.namespaces._default = self.schema.default_prefix
-            elif self.schema.default_prefix in self.namespaces:
-                self.namespaces._default = self.namespaces[self.schema.default_prefix]
-            else:
-                self.raise_value_error(
-                    f"Default prefix: {self.schema.default_prefix} is not defined",
-                    self.schema.default_prefix,
-                )
 
         # Process imports
         for imp in self.schema.imports:
@@ -173,6 +163,17 @@ class SchemaLoader:
                 self.schema_defaults[
                     import_schemadefinition.id
                 ] = import_schemadefinition.default_prefix
+
+        if not self.namespaces._default:
+            if "://" in self.schema.default_prefix:
+                self.namespaces._default = self.schema.default_prefix
+            elif self.schema.default_prefix in self.namespaces:
+                self.namespaces._default = self.namespaces[self.schema.default_prefix]
+            else:
+                self.raise_value_error(
+                    f"Default prefix: {self.schema.default_prefix} is not defined",
+                    self.schema.default_prefix,
+                )
 
         self.namespaces._base = (
             self.schema.default_prefix
