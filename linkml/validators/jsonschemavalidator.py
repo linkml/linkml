@@ -38,6 +38,12 @@ def _generate_jsonschema(schema, top_class, closed):
     ).generate()
 
 
+class JsonSchemaDataValidatorError(Exception):
+    def __init__(self, validation_messages: List[str]) -> None:
+        super().__init__("\n".join(validation_messages))
+        self.validation_messages = validation_messages
+
+
 @dataclass
 class JsonSchemaDataValidator(DataValidator):
     """
@@ -60,7 +66,7 @@ class JsonSchemaDataValidator(DataValidator):
 
     def validate_object(
         self, data: YAMLRoot, target_class: Type[YAMLRoot] = None, closed: bool = True
-    ) -> List[str]:
+    ) -> None:
         """
         validates instance data against a schema
 
@@ -72,11 +78,11 @@ class JsonSchemaDataValidator(DataValidator):
         if target_class is None:
             target_class = type(data)
         inst_dict = as_simple_dict(data)
-        return self.validate_dict(inst_dict, target_class.class_name, closed)
+        self.validate_dict(inst_dict, target_class.class_name, closed)
 
     def validate_dict(
         self, data: dict, target_class: ClassDefinitionName = None, closed: bool = True
-    ) -> List[str]:
+    ) -> None:
         """
         validates instance data against a schema
 
@@ -86,19 +92,20 @@ class JsonSchemaDataValidator(DataValidator):
         :return:
         """
         results = list(self.iter_validate_dict(data, target_class, closed))
-        return results or None
+        if results:
+            raise JsonSchemaDataValidatorError(results)
 
     def iter_validate_dict(
-        self, data: dict, target_class: ClassDefinitionName = None, closed: bool = True
+        self, data: dict, target_class_name: ClassDefinitionName = None, closed: bool = True
     ) -> Iterable[str]:
         if self.schema is None:
             raise ValueError(f"schema object must be set")
-        if target_class is None:
+        if target_class_name is None:
             roots = [c.name for c in self.schema.classes.values() if c.tree_root]
             if len(roots) != 1:
                 raise ValueError(f"Cannot determine tree root: {roots}")
-            target_class = roots[0]
-        jsonschema_obj = _generate_jsonschema(self._hashable_schema, target_class, closed)
+            target_class_name = roots[0]
+        jsonschema_obj = _generate_jsonschema(self._hashable_schema, target_class_name, closed)
         validator = jsonschema.Draft7Validator(
             jsonschema_obj, format_checker=jsonschema.Draft7Validator.FORMAT_CHECKER
         )
@@ -186,7 +193,7 @@ def cli(
     validator = JsonSchemaDataValidator(schema)
     error_count = 0
     for error in validator.iter_validate_dict(
-        data_as_dict, target_class=py_target_class
+        data_as_dict, target_class_name=py_target_class.class_name
     ):
         error_count += 1
         click.echo(click.style("\u2717 ", fg="red") + error)

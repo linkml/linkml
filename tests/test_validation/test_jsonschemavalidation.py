@@ -5,7 +5,7 @@ import yaml
 from linkml_runtime.loaders import yaml_loader
 
 from linkml.generators.pythongen import PythonGenerator
-from linkml.validators.jsonschemavalidator import JsonSchemaDataValidator, _generate_jsonschema
+from linkml.validators.jsonschemavalidator import JsonSchemaDataValidator, JsonSchemaDataValidatorError, _generate_jsonschema
 from tests.test_validation.environment import env
 
 SCHEMA = env.input_path("kitchen_sink.yaml")
@@ -26,27 +26,34 @@ class JsonSchemaValidatorTestCase(unittest.TestCase):
         validator = JsonSchemaDataValidator(schema=SCHEMA)
 
         obj = yaml_loader.load(source=PERSON_1, target_class=mod.Person)
-        results = validator.validate_object(obj, target_class=mod.Person)
-        self.assertIsNone(results)
+        result = validator.validate_object(obj, target_class=mod.Person)
+        self.assertIsNone(result)
 
-        obj = yaml_loader.load(source=PERSON_INVALID_1, target_class=mod.Person)
-        results = validator.validate_object(obj, target_class=mod.Person)
-        self.assertEqual(len(results), 1)
-        self.assertIn("name", results[0])
+        with self.assertRaises(JsonSchemaDataValidatorError) as ctx:
+            obj = yaml_loader.load(source=PERSON_INVALID_1, target_class=mod.Person)
+            validator.validate_object(obj, target_class=mod.Person)
+        
+        messages = ctx.exception.validation_messages
+        self.assertEqual(len(messages), 1)
+        self.assertIn("name", messages[0])
 
     def test_validate_dict(self):
         validator = JsonSchemaDataValidator(schema=SCHEMA)
 
         with open(PERSON_1) as file:
             obj = yaml.safe_load(file)
-        results = validator.validate_dict(obj, "Person")
-        self.assertIsNone(results)
+        result = validator.validate_dict(obj, "Person")
+        self.assertIsNone(result)
 
         with open(PERSON_INVALID_1) as file:
             obj = yaml.safe_load(file)
-        results = validator.validate_dict(obj, "Person")
-        self.assertEqual(len(results), 1)
-        self.assertIn("name", results[0])
+
+        with self.assertRaises(JsonSchemaDataValidatorError) as ctx:
+            validator.validate_dict(obj, "Person")
+        
+        messages = ctx.exception.validation_messages
+        self.assertEqual(len(messages), 1)
+        self.assertIn("name", messages[0])
 
     @patch(
         "linkml.generators.jsonschemagen.JsonSchemaGenerator.generate", return_value={}

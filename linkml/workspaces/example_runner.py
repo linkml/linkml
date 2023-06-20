@@ -189,7 +189,7 @@ class ExampleRunner:
                 except Exception as e:
                     success = False
                     if not counter_examples:
-                        raise ValueError(f"Example {input_example} failed validation: {e}")
+                        raise ValueError(f"Example {input_example} failed validation:\n{e}")
                 if counter_examples:
                     if success:
                         raise ValueError(f"Counter example {input_example} succeeded validation")
