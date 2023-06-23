@@ -118,7 +118,6 @@ class JsonSchemaDataValidator(DataValidator):
 
 @click.command()
 @click.option("--module", "-m", help="Path to python datamodel module")
-@click.option("--output", "-o", help="Path to output file")
 @click.option(
     "--input-format",
     "-f",
@@ -140,7 +139,6 @@ def cli(
     input,
     module,
     target_class,
-    output=None,
     input_format=None,
     schema=None,
     index_slot=None,
