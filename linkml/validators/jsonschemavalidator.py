@@ -201,6 +201,7 @@ def cli(
     if not error_count:
         click.echo(click.style("\u2713 ", fg="green") + "No problems found")
 
+    sys.exit(0 if error_count == 0 else 1)
 
 if __name__ == "__main__":
     cli(sys.argv[1:])
