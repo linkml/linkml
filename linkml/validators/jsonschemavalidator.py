@@ -133,6 +133,11 @@ class JsonSchemaDataValidator(DataValidator):
     "--index-slot", "-S", help="top level slot. Required for CSV dumping/loading"
 )
 @click.option("--schema", "-s", help="Path to schema specified as LinkML yaml")
+@click.option(
+    "--exit-on-first-failure/--no-exit-on-first-failure", 
+    default=False,
+    help="Exit after the first validation failure is found. If not specified all validation failures are reported."
+)
 @click.argument("input")
 @click.version_option(__version__, "-V", "--version")
 def cli(
@@ -142,6 +147,7 @@ def cli(
     input_format=None,
     schema=None,
     index_slot=None,
+    exit_on_first_failure=False,
 ) -> None:
     """
     Validates instance data
@@ -195,6 +201,8 @@ def cli(
     ):
         error_count += 1
         click.echo(click.style("\u2717 ", fg="red") + error)
+        if exit_on_first_failure:
+            sys.exit(1)
 
     if not error_count:
         click.echo(click.style("\u2713 ", fg="green") + "No problems found")
