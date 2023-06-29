@@ -4,6 +4,7 @@
 import os
 from dataclasses import dataclass, field
 from typing import List, Optional, TextIO, Union
+import urllib.parse as urlparse
 
 import click
 from jsonasobj import as_json as as_json_1
@@ -152,7 +153,22 @@ class ShExGenerator(Generator):
             constraint.predicate = self.namespaces.uri_for(slot.slot_uri)
             constraint.min = int(bool(slot.required))
             constraint.max = 1 if not slot.multivalued else -1
-            constraint.valueExpr = self._class_or_type_uri(slot.range)
+            if slot.range in self.schema.enums:
+                # Handle permissible values from enums
+                enum = self.schema.enums[slot.range]
+                values = []
+                for value in enum.permissible_values.values():
+                    # if value.meaning:
+                    #     values.append(self.namespaces.uri_for(value.meaning))
+                    # else:
+                    values.append(self.namespaces.uri_for(urlparse.quote(value.text)))
+                node_constraint = NodeConstraint(
+                    id=self._class_or_type_uri(slot.range),
+                    values=values,
+                )
+                constraint.valueExpr = node_constraint
+            else:
+                constraint.valueExpr = self._class_or_type_uri(slot.range)
 
     def end_schema(self, output: Optional[str] = None, **_) -> None:
         self.shex.shapes = self.shapes if self.shapes else [Shape()]
