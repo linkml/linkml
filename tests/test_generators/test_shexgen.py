@@ -30,6 +30,9 @@ class ShExTestCase(unittest.TestCase):
         self.assertIn(
             "<has_familial_relationships> @<FamilialRelationship> * ;", shexstr
         )
+        self.assertIn("<EmploymentEvent> CLOSED {", shexstr)
+        self.assertIn("<type> [ bizcodes:001 bizcodes:002 bizcodes:003 bizcodes:004 ] ?", shexstr)
+
         # validation
         # TODO: provide starting shape
         ctxt = ContextGenerator(SCHEMA, mergeimports=True).serialize()
