@@ -21,7 +21,7 @@ class ContextTestCase(unittest.TestCase):
     def test_context(self):
         """json schema"""
         kitchen_module = make_python(SCHEMA, PYTHON, False)
-        inst: Dataset
+        inst: kitchen_module.Dataset
         inst = yaml_loader.load(DATA, target_class=kitchen_module.Dataset)
         json_dumper.dump(element=inst, to_file=DATA_JSON)
         with open(CONTEXT_OUT, "w") as stream:

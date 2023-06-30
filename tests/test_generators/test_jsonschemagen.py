@@ -42,7 +42,7 @@ class JsonSchemaTestCase(unittest.TestCase):
         kitchen_sink_json_schema = json.loads(generator.serialize())
 
         kitchen_module = make_python(SCHEMA, PYTHON, False)
-        inst: Dataset
+        inst: kitchen_module.Dataset
         inst = yaml_loader.load(DATA, target_class=kitchen_module.Dataset)
         # p = [p for p in persons if p.id == 'P:002'][0]
         ok_address = False

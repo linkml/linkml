@@ -18,6 +18,7 @@ from sqlalchemy import (
     Column,
     Date,
     DateTime,
+    Enum,
     Float,
     ForeignKey,
     Integer,

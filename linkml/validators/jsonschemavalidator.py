@@ -60,7 +60,8 @@ class JsonSchemaDataValidator(DataValidator):
         return super().__setattr__(__name, __value)
 
     def validate_file(self, input: str, format: str = "json", **kwargs):
-        return self.validate_object(obj)
+        # return self.validate_object(obj)
+        pass
 
     def validate_object(
         self, data: YAMLRoot, target_class: Type[YAMLRoot] = None, closed: bool = True

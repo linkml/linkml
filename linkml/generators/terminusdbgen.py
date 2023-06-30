@@ -1,6 +1,7 @@
 import json
 import os
 from dataclasses import dataclass
+from typing import List
 
 import click
 from linkml_runtime.linkml_model.meta import ClassDefinition, SlotDefinition

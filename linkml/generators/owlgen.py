@@ -562,7 +562,7 @@ class OwlSchemaGenerator(Generator):
             elif element_name in self.metamodel.schema.enums:
                 return self._enum_uri(element_name)
         else:
-            logging.warning(f"Unknown range {defining_slot.range}")
+            logging.warning(f"Unknown range {parent_slot.range}")
             return None
 
     def _range_is_datatype(self, slot: SlotDefinition) -> bool:
