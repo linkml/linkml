@@ -13,7 +13,7 @@ from linkml_runtime.linkml_model import (
     SlotDefinition,
 )
 from linkml_runtime.utils.schemaview import SchemaView, SlotDefinitionName
-from sqlalchemy import *
+from sqlalchemy import Enum
 
 
 class RelationalAnnotations(Enum):

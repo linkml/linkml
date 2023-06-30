@@ -13,7 +13,20 @@ from linkml_runtime.linkml_model.meta import (
     SlotDefinition,
 )
 from linkml_runtime.utils.formatutils import camelcase, underscore
-from sqlalchemy import *
+from sqlalchemy import (
+    Boolean,
+    Column,
+    Date,
+    DateTime,
+    Float,
+    ForeignKey,
+    Integer,
+    MetaData,
+    Table,
+    Text,
+    Time,
+    create_mock_engine,
+)
 
 from linkml._version import __version__
 from linkml.utils.generator import Generator, shared_arguments

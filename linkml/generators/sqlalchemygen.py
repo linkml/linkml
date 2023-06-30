@@ -16,7 +16,7 @@ from linkml_runtime.linkml_model import (
 from linkml_runtime.utils.compile_python import compile_python
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.schemaview import SchemaView
-from sqlalchemy import *
+from sqlalchemy import Enum
 
 from linkml._version import __version__
 from linkml.generators.pydanticgen import PydanticGenerator
