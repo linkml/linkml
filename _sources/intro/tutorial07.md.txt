@@ -333,6 +333,8 @@ slots:
   id:
     identifier: true
   full_name:
+  related_to:
+  relationship_type:
 
 enums:
   FamilialRelationshipType:
