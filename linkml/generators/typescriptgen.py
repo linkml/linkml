@@ -48,7 +48,7 @@ export enum {{e.name}} {
     {% if pv.description -%}
     /** {{pv.description}} */
     {% endif -%}
-    {{pv.label}} = "{{pv.value}}",    
+    {{pv.label}} = "{{pv.value}}",
     {%- endfor %}
 };
 {% endfor %}
@@ -58,7 +58,7 @@ export enum {{e.name}} {
 /**
  * {{c.description}}
  */
-{%- endif -%} 
+{%- endif -%}
 {% set parents = gen.parents(c) %}
 export interface {{gen.name(c)}} {%- if parents %} extends {{parents|join(', ')}} {%- endif %} {
     {%- for sn in view.class_slots(c.name, direct=False) %}

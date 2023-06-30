@@ -484,8 +484,8 @@ from {model_path} import *
                     backref_slot_range = camelcase(backref_slot.range)
                     print(
                         f"""
-    '{underscore(original_col.mapped_to_alias)}': 
-        relationship({backref_slot_range}, 
+    '{underscore(original_col.mapped_to_alias)}':
+        relationship({backref_slot_range},
                       foreign_keys={backref.backref_column.table.as_var()}.columns["{backref.backref_column.name}"],
                       backref='{cn}'),
 """
@@ -520,7 +520,7 @@ Python import header for generated sql-alchemy code
     default=False,
     show_default=True,
     help="""
-Map classes directly to 
+Map classes directly to
 """,
 )
 @click.option(

@@ -18,7 +18,7 @@ description: test
 classes:
   person:
     slots:
-      - id      
+      - id
       - has_bikes
     slot_usage:
       - has_bikes:

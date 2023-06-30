@@ -60,7 +60,7 @@ classes:
 
 slots:
     root_id:
-        description: Unique identifier 
+        description: Unique identifier
         identifier: true
 
     description:

@@ -44,7 +44,7 @@ class {{classname(c.name)}}({% if c.is_a %}{{ classname(c.is_a) }}{% else %}Base
     def __repr__(self):
         return f"{{c.name}}(
         {%- for s in c.attributes.values() -%}
-        {{s.alias}}={self.{{s.alias}}}, 
+        {{s.alias}}={self.{{s.alias}}},
         {%- endfor %})"
 
 

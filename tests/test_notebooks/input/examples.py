@@ -79,7 +79,7 @@ slots:
         slot_uri: foaf:age
 
     knows:
-        description: | 
+        description: |
             A person known by this person (indicating some level of reciprocated
             interaction between the parties).
         range: person

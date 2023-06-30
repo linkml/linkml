@@ -58,7 +58,7 @@ class FormatUtilsTestCase(unittest.TestCase):
         self.assertEqual(["X" * 100 + " "], split_line("X" * 100, 20))
         self.assertEqual(
             """This is a mess'o test that goes on for a long way.  It has some carriage
-	returns embedded in it but otherwise it drags on and on and on until the cows come home. Splitline covers this we 
+	returns embedded in it but otherwise it drags on and on and on until the cows come home. Splitline covers this we
 	hope. """,
             wrapped_annotation(text),
         )
