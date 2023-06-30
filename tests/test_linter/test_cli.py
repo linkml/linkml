@@ -26,7 +26,7 @@ classes:
     description: a person
     slots:
       - age_in_years
-  
+
   Adult:
     is_a: person
     slot_usage:

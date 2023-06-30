@@ -14,7 +14,7 @@ class {{classname(c.name)}}({% if c.is_a %}{{ classname(c.is_a) }}{% else %}Base
     {% if c.description %}{{c.description}}{% else %}{{c.alias}}{% endif %}
     \"\"\"
     __tablename__ = '{{c.name}}'
-    
+
     {% for s in c.attributes.values() -%}
     {{s.alias}} = Column({{s.annotations['sql_type'].value}}
            {%- if 'foreign_key' in s.annotations -%}, ForeignKey('{{ s.annotations['foreign_key'].value }}') {%- endif -%}
@@ -26,7 +26,7 @@ class {{classname(c.name)}}({% if c.is_a %}{{ classname(c.is_a) }}{% else %}Base
     {{s.annotations['original_slot'].value}} = relationship("{{classname(s.range)}}", uselist=False, foreign_keys=[{{s.alias}}])
     {% endif -%}
     {% endfor %}
-    
+
     {%- for mapping in backrefs[c.name] %}
     {% if mapping.mapping_type == "ManyToMany" %}
     # ManyToMany
@@ -40,15 +40,15 @@ class {{classname(c.name)}}({% if c.is_a %}{{ classname(c.is_a) }}{% else %}Base
     {{mapping.source_slot}} = relationship( "{{ classname(mapping.target_class) }}", foreign_keys="[{{ mapping.target_class }}.{{mapping.target_slot}}]")
     {% endif -%}
     {%- endfor %}
-    
+
     def __repr__(self):
         return f"{{c.name}}(
         {%- for s in c.attributes.values() -%}
         {{s.alias}}={self.{{s.alias}}}, 
         {%- endfor %})"
-        
-    
-        
+
+
+
     {% if c.is_a or c.mixins %}
     # Using concrete inheritance: see https://docs.sqlalchemy.org/en/14/orm/inheritance.html
     __mapper_args__ = {

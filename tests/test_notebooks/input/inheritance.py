@@ -31,42 +31,42 @@ types:
 classes:
     root:
         description: an empty class
-        
+
     children:
         description: an identified class
         is_a: root
         slots:
             - root_id
-            
+
     child_1:
         description: first child
         is_a: children
-        
+
     child_2:
         description: second child
         is_a: children
         slots:
             - description
-            
+
     child_2_1:
         description: grand child with a parent slot
         is_a: child_2
-        
+
     child_2_2:
         description: grand child with parent and own slot
         is_a: child_2
         slots:
             - angry
-            
+
 slots:
     root_id:
         description: Unique identifier 
         identifier: true
-        
+
     description:
         description: Text description of class
         required: true
-        
+
     angry:
         description: angry grandchild
         range: boolean

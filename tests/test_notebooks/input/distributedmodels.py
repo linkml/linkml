@@ -17,7 +17,7 @@ version: 0.0.1
 
 # A license is not required at this point -- should it be?
 license: https://creativecommons.org/publicdomain/zero/1.0/
-                                                         
+
 # Prefixes can be assigned specifically.  We define two below:
 #   biolink -- the prefix used by the biolink-model
 #   dist1 -- the URI prefix used by this example.  Note that the dist1 prefix may or 
@@ -68,7 +68,7 @@ types:
     uri: dist:seq
     typeof: string
     description: A gene sequence
-        
+
 # Slots that are defined in this model extension
 slots:
     gene has sequence:
@@ -86,8 +86,8 @@ classes:
         is_a: gene
         slots:
             - gene has sequence
-    
-    
+
+
 """
 
 

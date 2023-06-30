@@ -48,7 +48,7 @@ classes:
       is_current: Local unpredixed annotation
       err:non_existing: "This annotation will be skipped silently"
       oa:describing: "Annotation not in prefxes, but present in metamodel namespaces"
-    
+
 slots:
   is current:
     range: boolean
@@ -63,7 +63,7 @@ slots:
       is_current: Local unpredixed annotation
       err:non_existing: "This annotation will be skipped silently"
       oa:describing: "Annotation not in prefxes, but present in metamodel namespaces"
-  
+
   family name:
     title: Family name
     description: Family name. In the U.S., the last name of a Person.

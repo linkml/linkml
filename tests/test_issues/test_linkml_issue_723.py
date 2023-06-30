@@ -37,7 +37,7 @@ classes:
       roles:
         range: Role
         multivalued: true
-    
+
 enums:
   VitalStatus:
     permissible_values:
@@ -45,7 +45,7 @@ enums:
         meaning: x:Alive
       DEAD:
         meaning: x:Dead
-  
+
   Role:
     permissible_values:
       INVESTIGATOR:

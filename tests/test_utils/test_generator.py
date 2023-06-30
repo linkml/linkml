@@ -439,16 +439,16 @@ default_range: string
 types:
     string:
         base: str
-        
+
     dup name:
         base: int
-        
+
     dn2:
 
-        
+
 classes:
     dn2:
-    
+
     dup name:
 """
         with self.assertRaises(ValueError):
@@ -479,12 +479,12 @@ types:
     type t1:
         base: int
         uri: xsd:integer
-    
-        
+
+
 slots:
     dup name:
         domain: class c1
-        
+
 classes:
     class c1:
 """
@@ -699,16 +699,16 @@ slots:
 
     slot s2:
         is_a: slot s1
-        
+
     slot s3:
         is_a: slot s2
-        
+
     slot s4:
         is_a: slot s2
-        
+
 classes:
     slot s1:
-    
+
     class c2:
         is_a: slot s1
 """
@@ -750,10 +750,10 @@ types:
     type 1:
         base: int
         uri: xsd:integer
-        
+
     type 2:
         typeof: type 1
-        
+
     type 3:
         typeof: type 2
 """
@@ -770,21 +770,21 @@ name: t1
 
 prefixes:
     xsd: http://www.w3.org/2001/XMLSchema#
-    
+
 types:
     string:
         base: str
         uri: xsd:string
-        
+
 slots:
     s1:
         domain: c1
         range: c2
-        
+
     s2:
         domain: c2
         range: string
-        
+
 classes:
     c1:
     c2:
