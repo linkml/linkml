@@ -15,7 +15,8 @@ class EnumImportTestCase(TestEnvironmentTestCase):
         # env.generate_single_file('file1.py',
         #                          lambda: PythonGenerator(env.input_path(self.directory, 'file1.yaml'),
         #                                                  mergeimports=True).serialize(),
-        #                          comparator=lambda exp, act: compare_python(exp, act, env.expected_path(self.directory, 'file1.py')),
+        #                          comparator=lambda exp,
+        #                          act: compare_python(exp, act, env.expected_path(self.directory, 'file1.py')),
         #                          value_is_returned=True)
         env.generate_single_file(
             "file2.py",

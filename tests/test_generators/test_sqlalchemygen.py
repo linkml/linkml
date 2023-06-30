@@ -322,7 +322,8 @@ class SQLAlchemyGeneratorTestCase(unittest.TestCase):
         # aliases =['x']
         # aliases = []
         address = mod.Address(street="1 a street", city="big city", postal_code="ZZ1 ZZ2")
-        # p1 = mod.Person(id='P1', name='a b', aliases=aliases, age_in_years=22, has_medical_history=[e1, e2], current_address=address)
+        # p1 = mod.Person(id='P1', name='a b', aliases=aliases, age_in_years=22,
+        #                 has_medical_history=[e1, e2], current_address=address)
         p1 = mod.Person(id="P1", name="a b", age_in_years=22, has_medical_history=[e1, e2])
         p1.aliases = ["Anne"]
         # p1.aliases_rel = [mod.Person_alias(alias='zzz')]

@@ -102,9 +102,11 @@ class ClickTestCase(TestEnvironmentTestCase):
         @param args: Argument string or list to command.  'meta.yaml' is always supplied
         @param testFileOrDirectory: name of file or directory to record output in
         @param expected_error: If present, we expect this error
-        @param filtr: Filter to remove date and app specific information from text. Only used for single file generation
+        @param filtr: Filter to remove date and app specific information from text. Only
+            used for single file generation
         @param is_directory: True means output is to a directory
-        @param add_yaml: True means add the default meta.yaml file.  False means both yaml and importmap are pre-supplied
+        @param add_yaml: True means add the default meta.yaml file.  False means both yaml
+            and importmap are pre-supplied
         @param comparator: If present, use this method for comparison
         """
         assert testFileOrDirectory

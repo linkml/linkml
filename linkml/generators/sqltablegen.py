@@ -162,7 +162,8 @@ class SQLTableGenerator(Generator):
                 return ""
             return txt.replace("\n", "")
 
-        # Currently SQLite dialect in SQLA does not generated comments; see https://github.com/sqlalchemy/sqlalchemy/issues/1546#issuecomment-1067389172
+        # Currently SQLite dialect in SQLA does not generated comments; see
+        # https://github.com/sqlalchemy/sqlalchemy/issues/1546#issuecomment-1067389172
         # As a workaround we add these as "--" comments via direct string manipulation
         include_comments = self.dialect == "sqlite"
         sv = SchemaView(schema)

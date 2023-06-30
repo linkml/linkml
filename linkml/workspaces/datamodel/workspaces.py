@@ -57,7 +57,8 @@ class FileSystemPath(String):
 
 
 class ProjectName(String):
-    """A project name MUST contain no whitespace and SHOULD only contains alphanumeric characters and hyphens (no underscores)"""
+    """A project name MUST contain no whitespace and SHOULD only contains
+    alphanumeric characters and hyphens (no underscores)"""
 
     type_class_uri = XSD.string
     type_class_curie = "xsd:string"

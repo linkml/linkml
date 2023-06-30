@@ -38,7 +38,7 @@ public{% if cls.abstract %} abstract{% endif %} class {{ cls.name }} {% if cls.i
   private {{f.range}} {{ f.name }};
 {%- endfor %}
 
-}"""
+}"""  # noqa: E501
 
 TYPEMAP = {
     "xsd:string": "String",

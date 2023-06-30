@@ -2,8 +2,9 @@ import unittest
 
 from linkml_runtime import SchemaView
 
-from tests.utils.test_environment import TestEnvironmentTestCase
 from tests.test_issues.environment import env
+from tests.utils.test_environment import TestEnvironmentTestCase
+
 
 class IssueSlotInheritanceTestCase(TestEnvironmentTestCase):
     """

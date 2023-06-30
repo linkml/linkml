@@ -48,7 +48,8 @@ def validate_python(
     Validate the python in text
     :param text: Input python
     :param fail_on_error: True means fail if python is bad
-    :param expected_path: If present, this is transformed into  `__package__` parameter that gets passed to the exec function to address
+    :param expected_path: If present, this is transformed into  `__package__` parameter
+        that gets passed to the exec function to address
     relative imports
     :return: None if success, otherwise the error message
     """

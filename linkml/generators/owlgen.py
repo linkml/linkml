@@ -376,8 +376,9 @@ class OwlSchemaGenerator(Generator):
         @param slot:
         @return:
         """
-        # determine if this is a slot that has been induced by slot_usage; if so the meaning of the slot is context-specific
-        # and should not be used for global properties
+        # determine if this is a slot that has been induced by slot_usage; if so
+        # the meaning of the slot is context-specific and should not be used for
+        # global properties
         if slot.alias is not None and slot.alias != slot.name and slot.alias in self.schema.slots:
             logging.debug(
                 f"SKIPPING slot induced by slot_usage: {slot.alias} // {slot.name} // {slot}"

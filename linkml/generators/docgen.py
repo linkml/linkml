@@ -83,14 +83,15 @@ class DocGenerator(Generator):
 
     Note: this is a replacement for MarkdownGenerator
 
-    Documents can be generated using either provided Jinja2 templates, or by providing your own
+    Documents can be generated using either provided Jinja2 templates, or by
+    providing your own
 
-    Currently the provided templates are for markdown but this framework allows direct generation
-    to rst, html, etc
+    Currently the provided templates are for markdown but this framework allows
+    direct generation to rst, html, etc
 
-    This works via jinja2 templates (found in docgen/ folder). By default, only markdown templates
-    are provided. You can either override these, or you can create entirely different templates
-    e.g. for html, latex, etc
+    This works via jinja2 templates (found in docgen/ folder). By default, only
+    markdown templates are provided. You can either override these, or you can
+    create entirely different templates e.g. for html, latex, etc
 
     The template folder is expected to have files:
 
@@ -102,8 +103,9 @@ class DocGenerator(Generator):
         - subset.FMT.jinja2
         - index.FMT.jinja2
 
-    Most of these accept a jinja2 variable `element`, except index, schema, which accept `schema`. See docgen for examples
-    This will generate a single document for every
+    Most of these accept a jinja2 variable `element`, except index, schema,
+    which accept `schema`. See docgen for examples This will generate a single
+    document for every
 
     - class, enum, type, slot
     - subset
@@ -896,14 +898,16 @@ def cli(
 ):
     """Generate documentation folder from a LinkML YAML schema
 
-    Currently a default set of templates for markdown is provided (see the folder linkml/generators/docgen/)
+    Currently a default set of templates for markdown is provided (see the
+    folder linkml/generators/docgen/)
 
-    If you specify another format (e.g. html) then you need to provide a template_directory argument, with a template for
-    each type of entity inside.
+    If you specify another format (e.g. html) then you need to provide a
+    template_directory argument, with a template for each type of entity inside.
 
-    Examples can optionally be integrated into the documentation; to enable this, pass in the
-    --example-directory argument.  The example directory should contain one file per example,
-    following the naming convention <ClassName>-<ExampleName>.<extension>.
+    Examples can optionally be integrated into the documentation; to enable
+    this, pass in the --example-directory argument.  The example directory
+    should contain one file per example, following the naming convention
+    <ClassName>-<ExampleName>.<extension>.
 
     For example, to include examples on the page for Person, include examples
 

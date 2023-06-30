@@ -180,9 +180,7 @@ class ExampleRunner:
                     input_dict = json.load(file)
                 else:
                     raise NotImplementedError(f"Cannot handle format: {input_format}")
-                summary.add(
-                    f"## {stem}", "### Input", "```yaml", f"{yaml.dump(input_dict)}", "```"
-                )
+                summary.add(f"## {stem}", "### Input", "```yaml", f"{yaml.dump(input_dict)}", "```")
                 success = True
                 try:
                     validator.validate_dict(input_dict, tc, closed=True)

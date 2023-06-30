@@ -28,7 +28,10 @@ python_types_entries = {
         [
             ("s1", ["s21", "s22"], "s3", ["s41", "s42"]),
             {},
-            "Strings(mand_string='s1', mand_multi_string=['s21', 's22'], opt_string='s3', opt_multi_string=['s41', 's42'])",
+            (
+                "Strings(mand_string='s1', mand_multi_string=['s21', 's22'], "
+                "opt_string='s3', opt_multi_string=['s41', 's42'])"
+            ),
             None,
         ],
         [
@@ -51,7 +54,10 @@ python_types_entries = {
                 [NonStr("s41"), "s42"],
             ),
             {},
-            "Strings(mand_string='s1', mand_multi_string=['s21', 's22'], opt_string='s3', opt_multi_string=['s41', 's42'])",
+            (
+                "Strings(mand_string='s1', mand_multi_string=['s21', 's22'], "
+                "opt_string='s3', opt_multi_string=['s41', 's42'])"
+            ),
             None,
         ],
         [(), {}, "mand_string must be supplied", ValueError],
@@ -62,7 +68,10 @@ python_types_entries = {
         [
             ("True", "false", 1, [1, 0, True, False]),
             {},
-            "Booleans(mand_boolean=True, mand_multi_boolean=[False], opt_boolean=True, opt_multi_boolean=[True, False, True, False])",
+            (
+                "Booleans(mand_boolean=True, mand_multi_boolean=[False], opt_boolean=True, "
+                "opt_multi_boolean=[True, False, True, False])"
+            ),
             None,
         ]
     ],

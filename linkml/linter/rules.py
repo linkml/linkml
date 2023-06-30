@@ -253,7 +253,8 @@ class StandardNamingRule(LinterRule):
             for permissible_value_name in enum_definition.permissible_values.keys():
                 if permissible_value_pattern.fullmatch(permissible_value_name) is None:
                     yield LinterProblem(
-                        f"Permissible value of {self.format_element(enum_definition)} has name '{permissible_value_name}'"
+                        f"Permissible value of {self.format_element(enum_definition)} "
+                        f"has name '{permissible_value_name}'"
                     )
 
 
@@ -271,10 +272,14 @@ class CanonicalPrefixesRule(LinterRule):
             if prefix.prefix_prefix in prefix_to_namespace:
                 if prefix.prefix_reference != prefix_to_namespace[prefix.prefix_prefix]:
                     yield LinterProblem(
-                        f"Schema maps prefix '{prefix.prefix_prefix}' to namespace '{prefix.prefix_reference}' instead of namespace '{prefix_to_namespace[prefix.prefix_prefix]}'"
+                        f"Schema maps prefix '{prefix.prefix_prefix}' to namespace "
+                        f"'{prefix.prefix_reference}' instead of namespace "
+                        f"'{prefix_to_namespace[prefix.prefix_prefix]}'"
                     )
             if prefix.prefix_reference in namespace_to_prefix:
                 if prefix.prefix_prefix != namespace_to_prefix[prefix.prefix_reference]:
                     yield LinterProblem(
-                        f"Schema maps prefix '{prefix.prefix_prefix}' to namespace '{prefix.prefix_reference}' instead of using prefix '{namespace_to_prefix[prefix.prefix_reference]}'"
+                        f"Schema maps prefix '{prefix.prefix_prefix}' to namespace "
+                        f"'{prefix.prefix_reference}' instead of using prefix "
+                        f"'{namespace_to_prefix[prefix.prefix_reference]}'"
                     )

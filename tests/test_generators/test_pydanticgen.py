@@ -352,9 +352,15 @@ classes:
         with open(MLM_PYDANTIC, "w") as stream:
             stream.write(mlm)
 
-        assert (
-            gen.schema.enums["EmploymentEventType"].description
-            == 'codes for different kinds of employment\nor HR related events\n"""\nprint(\'Deleting your stuff!!\')\n"""\nHR is pretty dull\nbut they get "annoyed if [they]\nare not included"\n'
+        assert gen.schema.enums["EmploymentEventType"].description == "\n".join(
+            [
+                "codes for different kinds of employment",
+                "or HR related events",
+                '"""',
+                "print('Deleting your stuff!!')",
+                '"""' "HR is pretty dull" 'but they get "annoyed if [they]',
+                'are not included"',
+            ]
         )
 
         assert (

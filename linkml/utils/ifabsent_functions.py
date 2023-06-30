@@ -89,8 +89,11 @@ default_library: List[
         lambda m, __, ___, ____: f"datetime.datetime({m[1]}, {m[2]}, {m[3]}, {m[4]}, {m[5]}, {m[6]})",
     ),
     # TODO: We have to make the real URI available before any of these can work
-    # ("class_uri", True, lambda _, loader, ___, ____: f'"{default_uri_for(loader)}" + camelcase(self.name)'),
-    # ("slot_uri", True, lambda _, loader, ___, ____: f'"{default_uri_for(loader)}" + underscore(self.alias if self.alias else self.name)'),
+    # ("class_uri", True,
+    #     lambda _, loader, ___, ____: f'"{default_uri_for(loader)}" + camelcase(self.name)'),
+    # ("slot_uri", True,
+    #     lambda _, loader, ___, ____: f'"{default_uri_for(loader)}" +
+    #     underscore(self.alias if self.alias else self.name)'),
     # ("class_curie", True, lambda _, loader, ___, ____: curie_for(loader, True)),
     # ("slot_curie", True, lambda _, loader, ___, ____: curie_for(loader, False)),
     ("class_uri", True, lambda _, loader, ___, ____: "None"),

@@ -146,10 +146,12 @@ class SchemaLoader:
                         f"Schema {import_schemadefinition.name} - version mismatch",
                         import_schemadefinition.name,
                     )
-                # Note: for debugging purposes we also check whether the version came from the same spot.  This should
-                #       be loosened to version only once we're sure that everything is working
-                # TODO: The test below needs review -- there are cases where it fails because self.loaded[...][0] has the
-                #       full path name and loaded_schema[0] is just the local name
+                # Note: for debugging purposes we also check whether the version
+                #       came from the same spot.  This should be loosened to
+                #       version only once we're sure that everything is working
+                # TODO: The test below needs review -- there are cases where it
+                #       fails because self.loaded[...][0] has the full path name
+                #       and loaded_schema[0] is just the local name
                 # if self.loaded[import_schemadefinition.id] != loaded_schema:
                 #     self.raise_value_error(f"Schema imported from different files: "
                 #                            f"{self.loaded[import_schemadefinition.id][0]} : {loaded_schema[0]}")

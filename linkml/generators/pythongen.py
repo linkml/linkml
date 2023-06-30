@@ -309,7 +309,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
         )
         return "\n".join(
             [
-                f"{pfx.upper().replace('.', '_').replace('-', '_')} = CurieNamespace('{pfx.replace('.', '_')}', '{self.namespaces[pfx]}')"
+                f"{pfx.upper().replace('.', '_').replace('-', '_')} = CurieNamespace('{pfx.replace('.', '_')}', '{self.namespaces[pfx]}')"  # noqa: E501
                 for pfx in sorted(self.emit_prefixes)
                 if pfx in self.namespaces
             ]
@@ -365,7 +365,9 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
             defs_can_generate = [x for x in defs_to_generate_typeof if x.typeof in emitted_types]
             if len(defs_can_generate) == 0:
                 raise ValueError(
-                    f"Cannot generate type definition for {[f'{x.name} of {x.typeof}' for x in defs_to_generate_typeof]}. Forgot a link in the type hierarchy chain?"
+                    "Cannot generate type definition for "
+                    f"{[f'{x.name} of {x.typeof}' for x in defs_to_generate_typeof]}. "
+                    "Forgot a link in the type hierarchy chain?"
                 )
             for typ in defs_can_generate:
                 self._gen_typedef(typ, camelcase(typ.typeof), rval, emitted_types)
@@ -1023,11 +1025,14 @@ class {enum_name}(EnumDefinitionImpl):
             else None
         )
         desc = f"{enum_desc},\n" if enum.description else ""
-        cs = (
-            f"\t\tcode_set={self.namespaces.curie_for(self.namespaces.uri_for(enum.code_set), default_ok=False, pythonform=True)},\n"
+        enum_code_set = (
+            self.namespaces.curie_for(
+                self.namespaces.uri_for(enum.code_set), default_ok=False, pythonform=True
+            )
             if enum.code_set
-            else ""
+            else None
         )
+        cs = f"\t\tcode_set={enum_code_set},\n" if enum_code_set else ""
         tag = f'\t\tcode_set_tag="{enum.code_set_tag}",\n' if enum.code_set_tag else ""
         ver = f'\t\tcode_set_version="{enum.code_set_version}",\n' if enum.code_set_version else ""
         vf = (

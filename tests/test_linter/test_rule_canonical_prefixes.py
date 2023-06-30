@@ -25,11 +25,13 @@ class TestCanonicalPrefixesRule(unittest.TestCase):
 
         messages = [p.message for p in problems]
         self.assertIn(
-            "Schema maps prefix 'UPHENO' to namespace 'http://example.com/wrong/upheno_' instead of namespace 'http://purl.obolibrary.org/obo/UPHENO_'",
+            "Schema maps prefix 'UPHENO' to namespace 'http://example.com/wrong/upheno_' instead "
+            "of namespace 'http://purl.obolibrary.org/obo/UPHENO_'",
             messages,
         )
         self.assertIn(
-            "Schema maps prefix 'WRONG' to namespace 'http://identifiers.org/orcid/' instead of using prefix 'ORCID'",
+            "Schema maps prefix 'WRONG' to namespace 'http://identifiers.org/orcid/' instead "
+            "of using prefix 'ORCID'",
             messages,
         )
 
@@ -52,10 +54,12 @@ class TestCanonicalPrefixesRule(unittest.TestCase):
         self.assertEqual(len(problems), 2)
         messages = [p.message for p in problems]
         self.assertIn(
-            "Schema maps prefix 'UPHENO' to namespace 'http://example.com/wrong/upheno_' instead of namespace 'http://purl.obolibrary.org/obo/UPHENO_'",
+            "Schema maps prefix 'UPHENO' to namespace 'http://example.com/wrong/upheno_' "
+            "instead of namespace 'http://purl.obolibrary.org/obo/UPHENO_'",
             messages,
         )
         self.assertIn(
-            "Schema maps prefix 'WRONG' to namespace 'http://identifiers.org/orcid/' instead of using prefix 'ORCID'",
+            "Schema maps prefix 'WRONG' to namespace 'http://identifiers.org/orcid/' "
+            "instead of using prefix 'ORCID'",
             messages,
         )

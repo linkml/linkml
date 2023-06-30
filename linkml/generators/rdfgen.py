@@ -25,7 +25,8 @@ class RDFGenerator(Generator):
     # ClassVars
     generatorname = os.path.basename(__file__)
     generatorversion = "0.1.1"
-    # TODO: we leave ttl as default for backwards compatibility but nt is recommended, see https://github.com/linkml/linkml/issues/163
+    # TODO: we leave ttl as default for backwards compatibility but nt is
+    # recommended, see https://github.com/linkml/linkml/issues/163
     valid_formats = ["ttl"] + sorted(
         [x.name for x in rdflib_plugins(None, rdflib_Parser) if "/" not in str(x.name)]
     )

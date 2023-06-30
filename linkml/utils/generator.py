@@ -130,7 +130,8 @@ class Generator(metaclass=abc.ABCMeta):
     """Verbosity"""
 
     output: Optional[str] = None
-    """Path to output file. Note all generators may not implement this uniformly, see https://github.com/linkml/linkml/issues/923"""
+    """Path to output file. Note all generators may not implement this
+    uniformly, see https://github.com/linkml/linkml/issues/923"""
 
     namespaces: Optional[Namespaces] = None
     """All prefix expansions used"""

@@ -31,9 +31,7 @@ def _get_format(path: str, specified_format: str = None, default=None):
     if specified_format is None:
         if path is None:
             if default is None:
-                raise Exception(
-                    "Must pass format option OR pass a filename with known file suffix"
-                )
+                raise Exception("Must pass format option OR pass a filename with known file suffix")
             else:
                 specified_format = default
         else:

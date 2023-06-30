@@ -17,13 +17,6 @@ class NamespacesTestCase(unittest.TestCase):
         ns["l1"] = "http://example.org/subset/"
         ns["l2"] = "http://example.org/subset/test/"
         ns["l3"] = "http://example.org/subset/t"
-        # This is now a warning instead of a value error
-        # with self.assertRaises(ValueError):
-        #     ns['OIO'] = URIRef("http://www.geneontology.org/formats/another")
-        # try:
-        #     ns.OIO = URIRef("http://www.geneontology.org/formats/another")
-        # except ValueError as e:
-        #     self.assertEqual("Namespace OIO is already mapped to http://www.geneontology.org/formats/oboInOwl", str(e))
         with self.assertRaises(ValueError):
             ns["123"] = "http://example.org/foo/"
 

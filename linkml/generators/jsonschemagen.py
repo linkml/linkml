@@ -111,11 +111,9 @@ class JsonSchema(UserDict):
     @classmethod
     def ref_for(cls, class_name: Union[str, List[str]], identifier_optional: bool = False):
         def _ref(class_name):
-            return JsonSchema(
-                {
-                    "$ref": f"#/$defs/{camelcase(class_name)}{cls.OPTIONAL_IDENTIFIER_SUFFIX if identifier_optional else ''}"
-                }
-            )
+            def_name = camelcase(class_name)
+            def_suffix = cls.OPTIONAL_IDENTIFIER_SUFFIX if identifier_optional else ""
+            return JsonSchema({"$ref": f"#/$defs/{def_name}{def_suffix}"})
 
         if isinstance(class_name, list):
             return JsonSchema({"anyOf": [_ref(name) for name in class_name]})
@@ -329,9 +327,12 @@ class JsonSchemaGenerator(Generator):
     def get_type_info_for_slot_subschema(
         self, slot: AnonymousSlotExpression
     ) -> Tuple[str, str, Union[str, List[str]]]:
-        typ = None  # JSON Schema type (https://json-schema.org/understanding-json-schema/reference/type.html)
-        reference = None  # Reference to a JSON schema entity (https://json-schema.org/understanding-json-schema/structuring.html#ref)
-        fmt = None  # JSON Schema format (https://json-schema.org/understanding-json-schema/reference/string.html#format)
+        # JSON Schema type (https://json-schema.org/understanding-json-schema/reference/type.html)
+        typ = None
+        # Reference to a JSON schema entity (https://json-schema.org/understanding-json-schema/structuring.html#ref)
+        reference = None
+        # JSON Schema format (https://json-schema.org/understanding-json-schema/reference/string.html#format)
+        fmt = None
 
         slot_is_inlined = self.schemaview.is_inlined(slot)
         if slot.range in self.schemaview.all_types().keys():
