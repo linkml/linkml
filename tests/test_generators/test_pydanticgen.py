@@ -358,8 +358,11 @@ classes:
                 "or HR related events",
                 '"""',
                 "print('Deleting your stuff!!')",
-                '"""' "HR is pretty dull" 'but they get "annoyed if [they]',
+                '"""',
+                "HR is pretty dull",
+                'but they get "annoyed if [they]',
                 'are not included"',
+                "",
             ]
         )
 
