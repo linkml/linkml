@@ -199,7 +199,7 @@ class OwlSchemaGenerator(Generator):
                 k_curie = k
                 try:
                     k_uri = self.namespaces.uri_for(k_curie)
-                except ValueError as e:
+                except ValueError:
                     try:
                         k_uri = self.metamodel.namespaces.uri_for(k_curie)
                     except ValueError as me:

@@ -265,7 +265,6 @@ class ERDiagramGenerator(Generator):
         """
         if self.exclude_attributes:
             return
-        sv = self.schemaview
         dt = slot.range
         if slot.multivalued:
             # NOTE: mermaid does not support []s or *s in attribute types

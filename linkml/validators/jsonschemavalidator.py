@@ -166,7 +166,6 @@ def cli(
     loader = datautils.get_loader(input_format)
 
     inargs = {}
-    outargs = {}
     if datautils._is_xsv(input_format):
         if index_slot is None:
             index_slot = datautils.infer_index_slot(sv, target_class)

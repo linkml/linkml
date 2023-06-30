@@ -69,14 +69,14 @@ class Issue349Case(TestEnvironmentTestCase):
     def _test_pythongen(self, schema: SchemaDefinition, inst: YAMLRoot, cn: str, sn: str):
         gen_slots = False  # TODO
         pygen = PythonGenerator(schema, gen_slots=gen_slots)
-        pycode = pygen.serialize()
+        pygen.serialize()
         mod = pygen.compile_module()
         py_cls_name = camelcase(cn)
         py_cls = getattr(mod, py_cls_name)
         s = schema.slots[sn]
         k = s.alias if s.alias else s.name
         init_dict = {k: "test"}
-        obj = py_cls(**init_dict)
+        py_cls(**init_dict)
 
 
 if __name__ == "__main__":

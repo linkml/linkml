@@ -21,7 +21,6 @@ class TestCommandLineInterface(unittest.TestCase):
     def test_help(self):
         result = self.runner.invoke(cli, ["--help"])
         out = result.stdout
-        err = result.stderr
         self.assertIn("INPUT", out)
         # self.assertEqual(0, result.exit_code)
 
@@ -30,10 +29,10 @@ class TestCommandLineInterface(unittest.TestCase):
         Tests using the --infer option to add missing values, and also roundtripping
         through yaml->json->yaml->rdf->json
         """
-        result = self.runner.invoke(cli, ["--infer", "-s", SCHEMA, DATA_IN, "-o", JSON_OUT])
-        result = self.runner.invoke(cli, ["-s", SCHEMA, JSON_OUT, "-t", "yaml", "-o", YAML_OUT])
-        result = self.runner.invoke(cli, ["-s", SCHEMA, YAML_OUT, "-t", "rdf", "-o", RDF_OUT])
-        result = self.runner.invoke(cli, ["-s", SCHEMA, RDF_OUT, "-t", "json", "-o", JSON_OUT])
+        self.runner.invoke(cli, ["--infer", "-s", SCHEMA, DATA_IN, "-o", JSON_OUT])
+        self.runner.invoke(cli, ["-s", SCHEMA, JSON_OUT, "-t", "yaml", "-o", YAML_OUT])
+        self.runner.invoke(cli, ["-s", SCHEMA, YAML_OUT, "-t", "rdf", "-o", RDF_OUT])
+        self.runner.invoke(cli, ["-s", SCHEMA, RDF_OUT, "-t", "json", "-o", JSON_OUT])
         with open(JSON_OUT) as file:
             obj = json.load(file)
             persons = obj["persons"]

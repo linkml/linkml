@@ -36,7 +36,7 @@ class Issue532TestCase(TestEnvironmentTestCase):
                 target_class=target_class,
                 schemaview=sv,
             )
-            results = validator.validate_object(bad_obj)
+            validator.validate_object(bad_obj)
 
 
 if __name__ == "__main__":

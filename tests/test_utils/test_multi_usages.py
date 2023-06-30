@@ -92,7 +92,7 @@ class SlotUsageTestCase(TestEnvironmentTestCase):
     def test_multi_usages_3(self):
         """Illegal alias usage"""
         with self.assertRaises(ValueError) as e:
-            schema = SchemaLoader(env.input_path("multi_usages_3.yaml")).resolve()
+            SchemaLoader(env.input_path("multi_usages_3.yaml")).resolve()
         self.assertIn(
             'Class: "child_class1" - alias not permitted in slot_usage slot: foo',
             str(e.exception),

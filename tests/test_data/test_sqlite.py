@@ -41,17 +41,16 @@ class SQLiteStoreTest(unittest.TestCase):
 
         See https://github.com/linkml/linkml/issues/817
         """
-        r = FamilialRelationship(type="SIBLING_OF", related_to="x")
+        FamilialRelationship(type="SIBLING_OF", related_to="x")
         p = Person(id="x", gender=GenderType(GenderType.cisgender_man))
         self.assertEqual(type(p.gender), GenderType)
-        c = Container(persons=[p])
+        Container(persons=[p])
 
     def test_sqlite_store(self):
         """
         tests a complete end-to-end example with a dump-load cycle
         """
         # step 1: setup
-        sv = SchemaView(SCHEMA)
         # TODO: currently it is necessary to pass the actual yaml rather than a schema object
         # endpoint = SQLiteEndpoint(sv.schema, database_path=DB, include_schema_in_database=False)
         endpoint = SQLStore(SCHEMA, database_path=DB, include_schema_in_database=False)
@@ -95,7 +94,7 @@ class SQLiteStoreTest(unittest.TestCase):
         endpoint.db_exists(force=True)
         endpoint.compile()
         # step 2: load data from file and store in SQLStore
-        container: SchemaDefinition = yaml_loader.load(SCHEMA, target_class=SchemaDefinition)
+        yaml_loader.load(SCHEMA, target_class=SchemaDefinition)
         schema_instance = SchemaDefinition(id="test", name="test")
         endpoint.dump(schema_instance)
 

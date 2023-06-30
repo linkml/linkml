@@ -46,7 +46,7 @@ class RelationalModelTransformerTestCase(unittest.TestCase):
         b = SchemaBuilder()
         slots = ["name", "description"]
         b.add_class(DUMMY_CLASS, slots)
-        results = self._translate(b)
+        self._translate(b)
         rel_schema = self._translate(b).schema
         self.assertCountEqual(
             slots + ["id"], list(rel_schema.classes[DUMMY_CLASS].attributes.keys())
@@ -118,7 +118,7 @@ class RelationalModelTransformerTestCase(unittest.TestCase):
         b = SchemaBuilder()
         slots = ["name", "description"]
         b.add_class(DUMMY_CLASS, slots).set_slot("name", identifier=True)
-        results = self._translate(b)
+        self._translate(b)
         rel_schema = self._translate(b).schema
         self.assertCountEqual(slots, list(rel_schema.classes[DUMMY_CLASS].attributes.keys()))
         self.assertEqual([], rel_schema.mappings)
@@ -134,7 +134,7 @@ class RelationalModelTransformerTestCase(unittest.TestCase):
         b.add_class("c", ["name", "description", "aliases"]).set_slot(
             "aliases", multivalued=True, singular_name="alias"
         )
-        results = self._translate(b)
+        self._translate(b)
         rel_schema = self._translate(b).schema
         rsv = SchemaView(rel_schema)
         c = rsv.get_class("c")
@@ -157,7 +157,7 @@ class RelationalModelTransformerTestCase(unittest.TestCase):
         b = SchemaBuilder()
         slots = ["name", "description", "has_d"]
         b.add_class("c", slots).add_class("d", ["name"]).set_slot("has_d", range="d")
-        results = self._translate(b)
+        self._translate(b)
         rel_schema = self._translate(b).schema
         rsv = SchemaView(rel_schema)
         c = rsv.get_class("c")
@@ -183,7 +183,7 @@ class RelationalModelTransformerTestCase(unittest.TestCase):
             multivalued=True,
             inlined=True,
         )
-        results = self._translate(b)
+        self._translate(b)
         rel_schema = self._translate(b).schema
         rsv = SchemaView(rel_schema)
         c = rsv.get_class("c")
@@ -221,7 +221,7 @@ class RelationalModelTransformerTestCase(unittest.TestCase):
                 )
                 if add_id_to_c or add_id_to_d:
                     b = b.set_slot("id", identifier=True)
-                results = self._translate(b)
+                self._translate(b)
                 rel_schema = self._translate(b).schema
                 rsv = SchemaView(rel_schema)
                 c = rsv.get_class("c")
@@ -250,15 +250,15 @@ class RelationalModelTransformerTestCase(unittest.TestCase):
         )
         b.add_class("c1", is_a="c", slot_usage={"has_ds": SlotDefinition("has_ds", range="d1")})
         b.add_class("d1", is_a="d")
-        results = self._translate(b)
+        self._translate(b)
         rel_schema = self._translate(b).schema
         rsv = SchemaView(rel_schema)
         c = rsv.get_class("c")
         d = rsv.get_class("d")
-        c1 = rsv.get_class("c1")
+        rsv.get_class("c1")
         d1 = rsv.get_class("d1")
         c_has_d = rsv.get_class("c_has_d")
-        c1_has_d = rsv.get_class("c1_has_d")
+        rsv.get_class("c1_has_d")
         self.assertCountEqual(["id"], get_primary_key_attributes(d1))
         self.assertCountEqual(["id", "name", "description"], list(c.attributes.keys()))
         self.assertCountEqual(["id", "name"], list(d.attributes.keys()))
@@ -293,7 +293,6 @@ class RelationalModelTransformerTestCase(unittest.TestCase):
         tests using alias to override name
         """
         b = SchemaBuilder()
-        slots = ["foo_name", "foo_description", "foo_has_d", "foo_aliases"]
         b.add_class(
             "c",
             [
@@ -304,7 +303,7 @@ class RelationalModelTransformerTestCase(unittest.TestCase):
             ],
         )
         b.add_class("d", [SlotDefinition("name")])
-        results = self._translate(b)
+        self._translate(b)
         rel_schema = self._translate(b).schema
         rsv = SchemaView(rel_schema)
         c = rsv.get_class("c")

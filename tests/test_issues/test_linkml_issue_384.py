@@ -103,7 +103,6 @@ class IssueOWLNamespaceTestCase(TestEnvironmentTestCase):
             parent = uri("parent")
             age = uri("age")
             aliases = uri("aliases")
-            full_name = uri("full_name")
             classes = [Thing, Person, Organization]
             props = [parent, age]
             # if type_objects=True then the range of slots that are types will be mapped to Object

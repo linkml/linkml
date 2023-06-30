@@ -28,7 +28,7 @@ class MarkdownGeneratorTestCase(unittest.TestCase):
     def test_markdowngen(self):
         """DDL"""
         gen = MarkdownGenerator(SCHEMA, mergeimports=True, no_types_dir=True)
-        md = gen.serialize(directory=MD_DIR)
+        gen.serialize(directory=MD_DIR)
 
         assert_mdfile_contains("index.md", "Address", after="Classes")
         assert_mdfile_contains("index.md", "HasAliases", after="Mixins")
@@ -62,7 +62,7 @@ class MarkdownGeneratorTestCase(unittest.TestCase):
         self.assertEqual(gen.get_metamodel_slot_name("classes"), "Records")
         self.assertEqual(gen.get_metamodel_slot_name("Classes"), "Records")
         self.assertEqual(gen.get_metamodel_slot_name("Mixins"), "Traits")
-        md = gen.serialize(directory=MD_DIR)
+        gen.serialize(directory=MD_DIR)
         assert_mdfile_contains("index.md", "Address", after="Records")
         assert_mdfile_contains("index.md", "HasAliases", after="Traits")
 

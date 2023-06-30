@@ -62,9 +62,8 @@ class ShaclGenerator(Generator):
             if c.description is not None:
                 shape_pv(SH.description, Literal(c.description))
             list_node = BNode()
-            coll = Collection(g, list_node, [RDF.type])
+            Collection(g, list_node, [RDF.type])
             shape_pv(SH.ignoredProperties, list_node)
-            type_designator = None
             order = 0
             for s in sv.class_induced_slots(c.name):
                 # fixed in linkml-runtime 1.1.3
@@ -112,7 +111,7 @@ class ShaclGenerator(Generator):
                 elif r in sv.all_enums():
                     e = sv.get_enum(r)
                     pv_node = BNode()
-                    pv_coll = Collection(
+                    Collection(
                         g,
                         pv_node,
                         [
@@ -125,8 +124,6 @@ class ShaclGenerator(Generator):
                     None  # TODO
                 if s.pattern:
                     prop_pv(SH.pattern, Literal(s.pattern))
-                if s.designates_type:
-                    type_designator = s
 
         return g
 

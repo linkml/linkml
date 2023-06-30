@@ -237,7 +237,6 @@ class RelationalModelTransformer:
         for cn, c in target_sv.all_classes().items():
             if self.foreign_key_policy == ForeignKeyPolicy.NO_FOREIGN_KEYS:
                 continue
-            incoming_links = [link for link in links if link.target_class == cn]
             pk_slot = self.get_direct_identifier_attribute(target_sv, cn)
             # if self.is_skip(c) and len(incoming_links) == 0:
             #    logging.info(f'Skipping class: {c.name}')
@@ -247,8 +246,6 @@ class RelationalModelTransformer:
                 slot = copy(src_slot)
                 slot_range = slot.range
                 slot_range_is_class = slot_range in target_sv.all_classes()
-                links_to_range = [link for link in links if link.target_class == slot_range]
-                is_only_ref_to_range = len(links_to_range) == 1
                 is_shared = slot_range_is_class and (
                     slot.inlined or slot.inlined_as_list or "shared" in slot.annotations
                 )

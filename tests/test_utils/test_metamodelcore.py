@@ -104,13 +104,11 @@ class MetamodelCoreTest(unittest.TestCase):
         self.assertFalse(Bool(Bool(0)))
         # Strict mode
         with self.assertRaises(ValueError):
-            x = Bool(17)
+            Bool(17)
         with self.assertRaises(ValueError):
-            x = Bool("a")
+            Bool("a")
         lax()
-        x = Bool(17)
         self.assertFalse(Bool.is_valid(17))
-        x = Bool("a")
         self.assertFalse(Bool.is_valid("a"))
         self.assertTrue(Bool.is_valid(True))
         self.assertTrue(Bool.is_valid(Bool(True)))

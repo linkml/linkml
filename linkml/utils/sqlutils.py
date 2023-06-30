@@ -231,10 +231,6 @@ class SQLStore:
             cls = nm[typ.__name__]
         else:
             cls = None
-        try:
-            kvs = vars(obj).items()
-        except TypeError:
-            kvs = None
         if isinstance(obj, list) or isinstance(obj, _AssociationCollection):
             nu_obj = [self.from_sqla(x) for x in obj]
             if nu_obj:
@@ -242,7 +238,6 @@ class SQLStore:
             else:
                 return None
         elif cls:
-            nu_cls = self.from_sqla_type(typ)
             inst_args = {}
             for sn in self.schemaview.class_slots(cls.name):
                 sn = underscore(sn)

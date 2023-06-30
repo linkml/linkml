@@ -41,7 +41,7 @@ class SQLiteStoreTest(unittest.TestCase):
 
         See https://github.com/linkml/linkml/issues/817
         """
-        r = FamilialRelationship(type="SIBLING_OF", related_to="x")
+        FamilialRelationship(type="SIBLING_OF", related_to="x")
         p = Person(id="x", gender=GenderType("cisgender_man"))
         self.assertIsInstance(p.gender, GenderType)
 
@@ -50,7 +50,6 @@ class SQLiteStoreTest(unittest.TestCase):
         tests a complete end-to-end example with a dump-load cycle
         """
         # step 1: setup
-        sv = SchemaView(SCHEMA)
         # TODO: currently it is necessary to pass the actual yaml rather than a schema object
         # endpoint = SQLiteEndpoint(sv.schema, database_path=DB, include_schema_in_database=False)
         endpoint = SQLStore(SCHEMA, database_path=DB, include_schema_in_database=False)
@@ -84,7 +83,7 @@ class SQLiteStoreTest(unittest.TestCase):
             # 4b: next test load implicit object, diff to original data should be empty
             container_loaded = endpoint.load()
             yaml_dumper.dump(container_loaded, to_file=DATA_RECAP)
-            y = yaml_dumper.dumps(container_loaded)
+            yaml_dumper.dumps(container_loaded)
             diff = compare_yaml(DATA, DATA_RECAP)
             self.assertEqual(diff, "")
 

@@ -134,7 +134,7 @@ class EnumerationTestCase(TestEnvironmentTestCase):
             value_is_returned=True,
         )
 
-        module = compile_python(env.expected_path(python_name))
+        compile_python(env.expected_path(python_name))
 
     def test_notebook_model_1(self):
         file = "notebook_model_1"
@@ -163,7 +163,7 @@ class EnumerationTestCase(TestEnvironmentTestCase):
         self.assertEqual("a", str(c1.position))
         self.assertEqual("(text='a', description='top')", repr(c1.position))
         try:
-            c2 = module.PositionalRecord("your location", "z")
+            module.PositionalRecord("your location", "z")
         except ValueError as e:
             self.assertEqual("Unknown OpenEnum enumeration code: z", str(e))
         x = module.PositionalRecord("117493", "c")
@@ -193,7 +193,7 @@ class EnumerationTestCase(TestEnvironmentTestCase):
         )
 
         module = compile_python(env.expected_path(python_name))
-        t = module.Sample(
+        module.Sample(
             "Something",
             [module.UnusualEnumPatterns.M, module.UnusualEnumPatterns["% ! -- whoo"]],
         )

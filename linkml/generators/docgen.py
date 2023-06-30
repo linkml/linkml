@@ -356,7 +356,6 @@ class DocGenerator(Generator):
 
         uri = self.uri(element)
         curie = self.uri(element, expand=False)
-        sc = element.from_schema
         return f"[{curie}]({uri})"
 
     def link(self, e: Union[Definition, DefinitionName]) -> str:

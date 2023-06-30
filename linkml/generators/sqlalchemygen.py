@@ -93,7 +93,6 @@ class SQLAlchemyGenerator(Generator):
         backrefs = defaultdict(list)
         for m in tr_result.mappings:
             backrefs[m.source_class].append(m)
-        skip = {}
         # for c in tr_schema.classes.values():
         #    if len(c.attributes) == 0:
         #        skip[c.name] = True

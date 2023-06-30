@@ -144,7 +144,7 @@ class SQLAlchemyGeneratorTestCase(unittest.TestCase):
         assert "class Annotation(" in code
         with open(META_OUT_SQLA, "w") as stream:
             stream.write(code)
-        mod = gen.compile_sqla(template=TemplateEnum.DECLARATIVE)
+        gen.compile_sqla(template=TemplateEnum.DECLARATIVE)
         # TODO: investigate unusual SQL-Alchemy error messages
         # c = mod.ClassDefinition(name="c1")
         # s = mod.SchemaDefinition(id='S1', name='S1')

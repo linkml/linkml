@@ -64,7 +64,7 @@ class IssueDecimalCase(TestEnvironmentTestCase):
             except ValidationError as e:
                 logging.info(f'Error="{e}" ;;\nExpected={expected_pass}')
                 assert not expected_pass
-            yaml_str = yaml.dump(obj)
+            yaml.dump(obj)
             # Python initializers will convert from string to decimal
             try:
                 py_obj = pymod.Person(**obj)

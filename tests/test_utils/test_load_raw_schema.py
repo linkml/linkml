@@ -116,7 +116,7 @@ class RawLoaderTestCase(unittest.TestCase):
     def test_representation_errors(self):
         """Test misformed schema elements"""
         fn = env.input_path("typeerror1.yaml")
-        with self.assertRaises(ValueError) as e:
+        with self.assertRaises(ValueError):
             SchemaLoader(fn)
         # previously, this returned a value error.  The new loader is robust enough that it no longer does
         fn = env.input_path("typeerror2.yaml")

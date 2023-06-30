@@ -108,8 +108,7 @@ class RewriteRuleTestCase(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        for from_url, to_url, hdr in sorted(list(cls.results)):
-            fmt = "" if hdr == "text/html" else f" ({hdr})"
+        for from_url, _, _ in sorted(list(cls.results)):
             if DEFAULT_SERVER != W3ID_SERVER:
                 from_url = from_url.replace(DEFAULT_SERVER, W3ID_SERVER)
 

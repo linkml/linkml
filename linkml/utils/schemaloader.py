@@ -300,7 +300,6 @@ class SchemaLoader:
                     slot.range = self.schema.default_range
 
         # Update enums
-        merged_enums: List[EnumDefinitionName] = []
         for enum in self.schema.enums.values():
             if not enum.from_schema:
                 enum.from_schema = self.schema.id

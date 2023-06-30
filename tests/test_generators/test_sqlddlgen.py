@@ -161,7 +161,6 @@ class SQLDDLTestCase(unittest.TestCase):
                 log.write(f"org = {o}\n")
             q = session.query(kitchen_module.Person)
             p: kitchen_module.Person
-            is_found_address = False
             for p in q.all():
                 log.write(f"Person={p.id} {p.name}\n")
                 for a in p.addresses:

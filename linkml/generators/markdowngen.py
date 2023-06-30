@@ -336,7 +336,6 @@ class MarkdownGenerator(Generator):
                 self.element_properties(subset)
 
     def element_header(self, obj: Element, name: str, curie: str, uri: str) -> None:
-        simple_name = curie.split(":", 1)[1]
         if isinstance(obj, TypeDefinition):
             obj_type = "Type"
         elif isinstance(obj, ClassDefinition):

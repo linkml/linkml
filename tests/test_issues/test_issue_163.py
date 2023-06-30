@@ -44,7 +44,7 @@ class IssueOWLNamespaceTestCase(TestEnvironmentTestCase):
 
     def test_aliases(self):
         """Make sure aliases work"""
-        g = self._test_owl("issue_163c")
+        self._test_owl("issue_163c")
 
 
 if __name__ == "__main__":

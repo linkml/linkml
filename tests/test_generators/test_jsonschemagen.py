@@ -63,6 +63,7 @@ class JsonSchemaTestCase(unittest.TestCase):
                         ok_metadata = True
         assert ok_address
         assert ok_history
+        assert ok_metadata
 
         json_instance = json.loads(json_dumper.dumps(inst))
         del json_instance["@type"]

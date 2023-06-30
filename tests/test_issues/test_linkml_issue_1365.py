@@ -34,4 +34,4 @@ class Issue1365TestCase(TestEnvironmentTestCase):
     def test_generation_of_type_hierarchies(self):
         gen = PythonGenerator(schema)
         output = gen.serialize()
-        mod = compile_python(output, "testschema")
+        compile_python(output, "testschema")

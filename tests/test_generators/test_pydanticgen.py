@@ -54,8 +54,8 @@ class PydanticGeneratorTestCase(unittest.TestCase):
             assert p1.id == "x"
             assert p1.name is None
             json = {"id": "P1", "has_employment_history": [{"is_current": True}]}
-            p2 = Person(**json)
-            p2 = Person(**dataset_dict["persons"][0])
+            Person(**json)
+            Person(**dataset_dict["persons"][0])
             print(dataset_dict)
             ds1 = Dataset(**dataset_dict)
             assert len(ds1.persons) == 2

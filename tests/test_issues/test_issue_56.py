@@ -21,7 +21,7 @@ class SlotSubclassTestCase(TestEnvironmentTestCase):
             value_is_returned=True,
         )
 
-        with self.assertRaises(Exception) as e:
+        with self.assertRaises(Exception):
             env.generate_single_file(
                 "issue_56_bad.py",
                 lambda: PythonGenerator(env.input_path("issue_56_bad.yaml")).serialize(),

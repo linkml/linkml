@@ -24,7 +24,6 @@ class IssueOWLNamespaceTestCase(TestEnvironmentTestCase):
 
     def test_attribute_behavior(self):
         name = "linkml_issue_388"
-        infile = env.input_path(f"{name}.yaml")
         self.env.generate_single_file(
             f"{name}.yaml",
             lambda: YAMLGenerator(

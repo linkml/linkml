@@ -760,8 +760,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
         aliased_slot_name = self.slot_name(
             slot.name
         )  # Mangled name by which the slot is known in python
-        range_type, base_type, base_type_name = self.class_reference_type(slot, cls)
-        slot_identifier = self.class_identifier(slot.range)
+        _, _, base_type_name = self.class_reference_type(slot, cls)
 
         # Generate existence check for required slots.  Note that inherited classes have to do post init checks because
         # You can't have required elements after optional elements in the parent class
@@ -770,7 +769,6 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
             rlines.append(f'\tself.MissingRequiredField("{aliased_slot_name}")')
 
         # Generate the type co-orcion for the various types.
-        indent = len(f"self.{aliased_slot_name} = [") * " "
         # NOTE: if you set this to true, we will cast all types.   This may be what we really want
         if not slot.multivalued:
             if slot.required:

@@ -391,7 +391,6 @@ class SQLDDLGenerator(Generator):
         engine = create_mock_engine(f"{self.dialect}://./MyDb", strategy="mock", executor=dump)
         schema_metadata = MetaData()
         for t in self.sqlschema.tables.values():
-            cls = t.mapped_to
             sqlcols = t.columns.values()
             if len(sqlcols) > 0:
                 cols = []
@@ -409,7 +408,7 @@ class SQLDDLGenerator(Generator):
                     )
 
                     cols.append(col)
-                alchemy_tbl = Table(t.name, schema_metadata, *cols)
+                Table(t.name, schema_metadata, *cols)
         print()
         schema_metadata.create_all(engine)
 

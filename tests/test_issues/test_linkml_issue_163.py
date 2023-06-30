@@ -65,10 +65,6 @@ class IssueRDFNamespaceTestCase(TestEnvironmentTestCase):
         assert nsl["rdf"] == "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
         assert nsl["owl"] == "http://www.w3.org/2002/07/owl#"
 
-        im = gen.importmap
-
-        em = gen.emit_metadata
-
         graph = Graph()
         graph.parse(
             data=jsonld_str,

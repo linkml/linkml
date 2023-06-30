@@ -79,7 +79,7 @@ class DocGeneratorTestCase(unittest.TestCase):
     def test_latex_generation(self):
         """Tests minimal latex generation"""
         gen = DocGenerator(SCHEMA, mergeimports=True, no_types_dir=True, format="latex")
-        md = gen.serialize(directory=LATEX_DIR)
+        gen.serialize(directory=LATEX_DIR)
 
     def test_docgen(self):
         """Tests basic document generator functionality"""
@@ -88,7 +88,7 @@ class DocGeneratorTestCase(unittest.TestCase):
         )
         blobs = gen.example_object_blobs("Person")
         self.assertGreater(len(blobs), 0)
-        md = gen.serialize(directory=MD_DIR)
+        gen.serialize(directory=MD_DIR)
         # test class docs
         assert_mdfile_contains("Organization.md", "Organization", after="Inheritance")
         assert_mdfile_contains("Organization.md", "[aliases](aliases.md)", after="Slots")
@@ -324,7 +324,7 @@ class DocGeneratorTestCase(unittest.TestCase):
     def test_docgen_no_mergeimports(self):
         """Tests when imported schemas are not folded into main schema"""
         gen = DocGenerator(SCHEMA, mergeimports=False, no_types_dir=True)
-        md = gen.serialize(directory=MD_DIR3)
+        gen.serialize(directory=MD_DIR3)
 
         assert_mdfile_contains(
             "index.md", "| [Address](Address.md) |  |", after="## Classes", outdir=MD_DIR3
@@ -369,7 +369,7 @@ class DocGeneratorTestCase(unittest.TestCase):
     def test_docgen_rank_ordering(self):
         """Tests overriding default order"""
         gen = DocGenerator(SCHEMA, mergeimports=True, no_types_dir=True, sort_by="rank")
-        md = gen.serialize(directory=MD_DIR)
+        gen.serialize(directory=MD_DIR)
         # test rank ordering
         assert_mdfile_contains(
             "index.md",
@@ -428,7 +428,7 @@ class DocGeneratorTestCase(unittest.TestCase):
         See <https://github.com/linkml/linkml/issues/835>_
         """
         gen = DocGenerator(SCHEMA, mergeimports=True, no_types_dir=True, dialect="myst")
-        md = gen.serialize(directory=MD_DIR)
+        gen.serialize(directory=MD_DIR)
         assert_mdfile_contains(
             "Organization.md",
             "```{mermaid}",
@@ -443,7 +443,7 @@ class DocGeneratorTestCase(unittest.TestCase):
         """
         tdir = env.input_path("docgen_md_templates")
         gen = DocGenerator(SCHEMA, mergeimports=True, no_types_dir=True, template_directory=tdir)
-        md = gen.serialize(directory=MD_DIR2)
+        gen.serialize(directory=MD_DIR2)
         # assert_mdfile_contains('Organization.md', 'Organization', after='Inheritance')
         assert_mdfile_contains("Organization.md", "FAKE TEMPLATE", outdir=MD_DIR2)
 
@@ -460,7 +460,7 @@ class DocGeneratorTestCase(unittest.TestCase):
             format="html",
         )
         assert gen._file_suffix() == "html"
-        md = gen.serialize(directory=HTML_DIR)
+        gen.serialize(directory=HTML_DIR)
         assert_mdfile_contains("Organization.html", "Fake example Organization", outdir=HTML_DIR)
 
     def test_class_hierarchy_as_tuples(self):
@@ -619,7 +619,7 @@ class DocGeneratorTestCase(unittest.TestCase):
 
         md_temp_dir = tempfile.mkdtemp()
 
-        md = gen.serialize(directory=md_temp_dir)
+        gen.serialize(directory=md_temp_dir)
 
         # this is a markdown file created from slot_uri
         assert_mdfile_contains("actedOnBehalfOf.md", "Slot: actedOnBehalfOf", outdir=md_temp_dir)
@@ -647,7 +647,7 @@ class DocGeneratorTestCase(unittest.TestCase):
 
         md_temp_dir = tempfile.mkdtemp()
 
-        md = gen.serialize(directory=md_temp_dir)
+        gen.serialize(directory=md_temp_dir)
 
         assert_mdfile_contains("index.md", "Event", after="Dataset")
 

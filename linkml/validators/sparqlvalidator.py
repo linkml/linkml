@@ -122,8 +122,6 @@ def cli(
 
         linkml-sparql-validate -U http://sparql.hegroup.org/sparql -s tests/test_validation/input/omo.yaml
     """
-    if schema is not None:
-        sv = SchemaView(schema)
     validator = SparqlDataValidator(schema)
     if endpoint_url is not None:
         results = validator.validate_endpoint(endpoint_url, limit=limit, named_graphs=named_graph)

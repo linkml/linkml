@@ -44,7 +44,7 @@ class TestActivityAgent(unittest.TestCase):
     def test_dump_json(self):
         # log = logging.getLogger("TestActivityAgent.test_schema_ttl")
         ly = yaml_loader.load(DATA, Database)
-        jd = json_dumper.dumps(ly)  # creates a JSON string
+        json_dumper.dumps(ly)  # creates a JSON string
         # log.warning(jd)
 
     def test_prepare_dump_sqlite(self):
@@ -52,7 +52,7 @@ class TestActivityAgent(unittest.TestCase):
         endpoint.native_module = tests.test_issues.model.issue_1104_classes
         endpoint.db_exists(force=True)
         endpoint.compile()
-        database: Database = yaml_loader.load(DATA, target_class=Database)
+        yaml_loader.load(DATA, target_class=Database)
         endpoint.engine.dispose()
 
     def test_do_dump_sqlite(self):
