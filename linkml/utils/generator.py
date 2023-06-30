@@ -908,7 +908,7 @@ def shared_arguments(g: Type[Generator]) -> Callable[[Command], Command]:
                 type=click.Choice(g.valid_formats),
                 default=g.valid_formats[0],
                 show_default=True,
-                help=f"Output format",
+                help="Output format",
             )
         )
         f.params.append(
@@ -934,7 +934,7 @@ def shared_arguments(g: Type[Generator]) -> Callable[[Command], Command]:
             Option(
                 ("--log_level",),
                 type=click.Choice(_LOG_LEVEL_STRINGS),
-                help=f"Logging level",
+                help="Logging level",
                 default=DEFAULT_LOG_LEVEL,
                 show_default=True,
                 callback=log_level_callback,
@@ -944,7 +944,7 @@ def shared_arguments(g: Type[Generator]) -> Callable[[Command], Command]:
             Option(
                 ("--verbose", "-v"),
                 count=True,
-                help=f"verbosity",
+                help="verbosity",
                 callback=verbosity_callback,
             )
         )

@@ -177,7 +177,7 @@ class DocGenerator(Generator):
         if directory is None:
             directory = self.directory
         if directory is None:
-            raise ValueError(f"Directory must be provided")
+            raise ValueError("Directory must be provided")
         template_vars = {
             "sort_by": self.sort_by,
             "diagram_type": self.diagram_type.value if self.diagram_type else None,

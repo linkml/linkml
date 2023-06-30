@@ -99,7 +99,7 @@ class ProjectGenerator:
 
     def generate(self, schema_path: str, config: ProjectConfiguration = ProjectConfiguration()):
         if config.directory is None:
-            raise Exception(f"Must pass directory")
+            raise Exception("Must pass directory")
         Path(config.directory).mkdir(parents=True, exist_ok=True)
         if config.mergeimports:
             all_schemas = [schema_path]
@@ -244,7 +244,7 @@ def cli(
         try:
             project_config.generator_args = yaml.safe_load(generator_arguments)
         except Exception:
-            raise Exception(f"Argument must be a valid YAML blob")
+            raise Exception("Argument must be a valid YAML blob")
         logging.info(f"generator args: {project_config.generator_args}")
     if dir is not None:
         project_config.directory = dir

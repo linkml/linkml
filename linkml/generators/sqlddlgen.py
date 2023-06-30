@@ -263,7 +263,7 @@ class SQLDDLGenerator(Generator):
             # postgresql supports inheritance
             # if you want to use plain SQL DDL then use sqlutils to unfold hierarchy
             # TODO: raise error if the target is standard SQL
-            raise Exception(f"PostgreSQL Inheritance not yet supported")
+            raise Exception("PostgreSQL Inheritance not yet supported")
 
     def visit_class_slot(
         self, cls: ClassDefinition, aliased_slot_name: str, slot: SlotDefinition

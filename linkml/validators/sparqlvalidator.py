@@ -127,7 +127,7 @@ def cli(
         results = validator.validate_endpoint(endpoint_url, limit=limit, named_graphs=named_graph)
     else:
         if input is None:
-            raise Exception(f"Must pass one of --endpoint-url OR --input")
+            raise Exception("Must pass one of --endpoint-url OR --input")
         input_format = _get_format(input, input_format)
         results = validator.validate_file(input, format=input_format)
     output_format = _get_format(output, output_format, default="json")

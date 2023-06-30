@@ -21,7 +21,7 @@ class RemoteSparqlValidatorTestCase(unittest.TestCase):
         sv = SparqlDataValidator()
         sv.load_schema(SCHEMA)
         if SKIP_REMOTE_SPARQL_TESTS:
-            print(f"Skipping ontobee test")
+            print("Skipping ontobee test")
         else:
             results = sv.validate_endpoint("http://sparql.hegroup.org/sparql", named_graphs=NGS)
             print(results)

@@ -95,7 +95,7 @@ class YumlGenerator(Generator):
             if load_image:
                 payload = "dsl_text=" + (",".join(yumlclassdef))
                 payload = payload.replace("%3F", "?").replace("%2B", "+")
-                url = f"https://yuml.me/diagram/plain/class/"
+                url = "https://yuml.me/diagram/plain/class/"
                 resp = requests.post(url, data=payload)
                 if resp.ok:
                     filename = resp.text.strip().replace(".svg", file_suffix)

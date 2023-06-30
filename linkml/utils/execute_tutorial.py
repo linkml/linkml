@@ -89,7 +89,7 @@ def execute_blocks(directory: str, blocks: List[Block]) -> List[str]:
                 if r.returncode == 0:
                     err(f"Command unexpectedly succeeded: {cmd}")
                 else:
-                    logging.info(f"Failed as expected")
+                    logging.info("Failed as expected")
                 if block.error:
                     logging.info(f"ERR [sample] = ...{block.error[-200:]}")
             else:
@@ -98,7 +98,7 @@ def execute_blocks(directory: str, blocks: List[Block]) -> List[str]:
                 if r.returncode != 0:
                     err(f"Command failed: {cmd}")
                 else:
-                    logging.info(f"Success!")
+                    logging.info("Success!")
         elif block.is_stdout():
             if "compare_rdf" in block.annotations:
                 logging.warning(
@@ -108,7 +108,7 @@ def execute_blocks(directory: str, blocks: List[Block]) -> List[str]:
                 if last_block.output.strip() != block.content.strip():
                     err(f"Mismatch: {str(last_block.output)} != {block.content}")
                 else:
-                    logging.info(f"Hurray! Contents match!")
+                    logging.info("Hurray! Contents match!")
             else:
                 logging.info("No comparison performed")
         else:

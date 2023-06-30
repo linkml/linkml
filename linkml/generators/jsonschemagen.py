@@ -165,7 +165,7 @@ class JsonSchemaGenerator(Generator):
 
     def __post_init__(self):
         if self.topClass:
-            logging.warning(f"topClass is deprecated - use top_class")
+            logging.warning("topClass is deprecated - use top_class")
             self.top_class = self.topClass
 
         super().__post_init__()

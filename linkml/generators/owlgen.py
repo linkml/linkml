@@ -325,7 +325,7 @@ class OwlSchemaGenerator(Generator):
             slot_uri = self.namespaces.uri_for(slot.slot_uri)
             if slot_uri == "rdf:type":
                 logging.warning(
-                    f"rdflib may have issues serializing rdf:type with turtle serializer"
+                    "rdflib may have issues serializing rdf:type with turtle serializer"
                 )
             if slot.required:
                 if slot.multivalued:

@@ -75,7 +75,7 @@ class MarkdownGenerator(Generator):
         if directory:
             os.makedirs(directory, exist_ok=True)
         elif image_dir:
-            raise ValueError(f"Image directory can only be used with '-d' option")
+            raise ValueError("Image directory can only be used with '-d' option")
         if image_dir:
             self.image_directory = os.path.join(directory, "images")
             if not noimages:
@@ -379,7 +379,7 @@ class MarkdownGenerator(Generator):
         def enum_list(title: str, obj: EnumDefinition) -> None:
             # This data is from the enum provided in the YAML
             self.header(2, title)
-            print(f"| Text | Description | Meaning | Other Information |")
+            print("| Text | Description | Meaning | Other Information |")
             print("| :--- | :---: | :---: | ---: |")
 
             for item, item_info in obj.permissible_values.items():

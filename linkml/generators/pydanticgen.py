@@ -328,7 +328,7 @@ class PydanticGenerator(OOCodeGenerator):
                 and len(sv.class_descendants(slot_range)) > 1
             ):
                 return (
-                    f"Union["
+                    "Union["
                     + ",".join([camelcase(c) for c in sv.class_descendants(slot_range)])
                     + "]"
                 )

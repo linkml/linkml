@@ -181,7 +181,7 @@ class ExampleRunner:
                 else:
                     raise NotImplementedError(f"Cannot handle format: {input_format}")
                 summary.add(
-                    f"## {stem}", f"### Input", f"```yaml", f"{yaml.dump(input_dict)}", f"```"
+                    f"## {stem}", "### Input", "```yaml", f"{yaml.dump(input_dict)}", "```"
                 )
                 success = True
                 try:

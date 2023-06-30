@@ -138,7 +138,7 @@ def main(schema, output, class_names, slot_names):
     if slot_names:
         rename_map[SlotDefinition] = n2f(slot_names)
     if not rename_map.keys():
-        raise ValueError(f"No transformations specified")
+        raise ValueError("No transformations specified")
     renamer = SchemaRenamer(rename_function_map=rename_map)
     rschema = renamer.rename_elements(sv.schema)
     ystr = schema_as_yaml_dump(rschema)

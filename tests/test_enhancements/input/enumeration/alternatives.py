@@ -72,7 +72,7 @@ class AllEnums(YAMLRoot):
         elif not isinstance(self.code_1, list):
             self.code_1 = [self.code_1]
         elif len(self.code_1) == 0:
-            raise ValueError(f"code_1 must be a non-empty list")
+            raise ValueError("code_1 must be a non-empty list")
         self.code_1 = [v if isinstance(v, OpenEnum) else OpenEnum(v) for v in self.code_1]
 
         if self.code_2 is not None and not isinstance(self.code_2, ConstrainedEnum2):

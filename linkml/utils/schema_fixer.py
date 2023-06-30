@@ -93,7 +93,7 @@ class SchemaFixer:
         tree_roots = [c for c in sv.all_classes().values() if c.tree_root]
         if len(tree_roots) > 0:
             if force:
-                logging.info(f"Forcing addition of containers")
+                logging.info("Forcing addition of containers")
             else:
                 raise ValueError(f"Schema already has containers: {tree_roots}")
         container = ClassDefinition(class_name, tree_root=True)

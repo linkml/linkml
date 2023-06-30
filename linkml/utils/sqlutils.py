@@ -340,10 +340,10 @@ def dump(
         sv = SchemaView(schema)
     if target_class is None:
         if sv is None:
-            raise ValueError(f"Must specify schema if not target class is specified")
+            raise ValueError("Must specify schema if not target class is specified")
         target_class = infer_root_class(sv)
     if target_class is None:
-        raise Exception(f"target class not specified and could not be inferred")
+        raise Exception("target class not specified and could not be inferred")
     py_target_class = python_module.__dict__[target_class]
     input_format = _get_format(input, input_format)
     loader = get_loader(input_format)
@@ -351,7 +351,7 @@ def dump(
     inargs = {}
     if datautils._is_rdf_format(input_format):
         if sv is None:
-            raise Exception(f"Must pass schema arg")
+            raise Exception("Must pass schema arg")
         inargs["schemaview"] = sv
         inargs["fmt"] = input_format
     if _is_xsv(input_format):
@@ -455,7 +455,7 @@ def load(
         outargs["fmt"] = "json-ld"
     if output_format == "rdf" or output_format == "ttl":
         if sv is None:
-            raise Exception(f"Must pass schema arg")
+            raise Exception("Must pass schema arg")
         outargs["schemaview"] = sv
     if _is_xsv(output_format):
         if index_slot is None:

@@ -31,8 +31,8 @@ class ProtoGenerator(Generator):
         self.generate_header()
 
     def generate_header(self):
-        print(f' syntax="proto3";')
-        print(f" package")
+        print(' syntax="proto3";')
+        print(" package")
         print(f"// metamodel_version: {self.schema.metamodel_version}")
         if self.schema.version:
             print(f"// version: {self.schema.version}")

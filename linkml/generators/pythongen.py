@@ -69,7 +69,7 @@ class PythonGenerator(Generator):
         if self.format is None:
             self.format = self.valid_formats[0]
         if self.schema.default_prefix == "linkml" and not self.genmeta:
-            logging.error(f"Generating metamodel without --genmeta is highly inadvisable!")
+            logging.error("Generating metamodel without --genmeta is highly inadvisable!")
         if (
             not self.schema.source_file
             and isinstance(self.sourcefile, str)
@@ -928,7 +928,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
         if ns == "":
             ns = "DEFAULT_"
         if ns is None:
-            return f'"str(uriorcurie)"', None
+            return '"str(uriorcurie)"', None
         return (
             ns.upper() + (f".{ln}" if ln.isidentifier() else f"['{ln}']"),
             ns.upper() + f".curie('{ln}')",

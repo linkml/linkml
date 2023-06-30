@@ -37,7 +37,7 @@ class GenShExTestCase(ClickTestCase):
         self.do_test("-f rdf", "metashex.ttl")
         self.do_test("-f shex", "metashex.shex")
         self.do_test(
-            env.meta_yaml + f" -f xsv",
+            env.meta_yaml + " -f xsv",
             "meta_error",
             expected_error=click.exceptions.BadParameter,
         )

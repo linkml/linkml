@@ -257,7 +257,7 @@ class RelationalModelTransformer:
                         pk_slot = self.add_primary_key(c.name, target_sv)
                     backref_slot = SlotDefinition(
                         name=f"{c.name}_{pk_slot.name}",
-                        description=f"Autocreated FK slot",
+                        description="Autocreated FK slot",
                         range=c.name,
                         slot_uri="rdf:subject",
                         # close_mappings=[pk_slot.slot_uri],

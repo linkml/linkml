@@ -23,13 +23,13 @@ class GenMarkdownTestCase(ClickTestCase):
         self.assertTrue(os.path.exists(expected), f"Failed to create {expected}")
 
     def test_issue_2(self):
-        self.do_test(f"-c example -i ", "issue2", is_directory=True)
+        self.do_test("-c example -i ", "issue2", is_directory=True)
         self._exists("issue2", "images", "Example.svg")
 
     def test_no_types(self):
         """Test the no types directory setting"""
         self.do_test(
-            f"--notypesdir --warnonexist --log_level WARNING",
+            "--notypesdir --warnonexist --log_level WARNING",
             "meta_no_types",
             is_directory=True,
         )

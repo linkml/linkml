@@ -89,7 +89,7 @@ class SchemaBuilder:
                 if isinstance(s, SlotDefinition):
                     cls.attributes[s.name] = s
                 else:
-                    raise ValueError(f"If use_attributes=True then slots must be SlotDefinitions")
+                    raise ValueError("If use_attributes=True then slots must be SlotDefinitions")
         else:
             if slots is not None:
                 for s in slots:

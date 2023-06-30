@@ -91,7 +91,7 @@ class TestEnvironment:
 
         if USE_LOCAL_IMPORT_MAP and not TestEnvironment.import_map_warning_emitted:
             print(
-                f"WARNING: USE_LOCAL_IMPORT_MAP must be reset to False before completing submission."
+                "WARNING: USE_LOCAL_IMPORT_MAP must be reset to False before completing submission."
             )
             TestEnvironment.import_map_warning_emitted = True
 

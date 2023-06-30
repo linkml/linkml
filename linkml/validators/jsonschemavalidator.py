@@ -27,7 +27,7 @@ class HashableSchemaDefinition(SchemaDefinition):
 
 @lru_cache(maxsize=None)
 def _generate_jsonschema(schema, top_class, closed):
-    logging.debug(f"Generating JSON Schema")
+    logging.debug("Generating JSON Schema")
     not_closed = not closed
     return JsonSchemaGenerator(
         schema=schema,
@@ -97,7 +97,7 @@ class JsonSchemaDataValidator(DataValidator):
         self, data: dict, target_class_name: ClassDefinitionName = None, closed: bool = True
     ) -> Iterable[str]:
         if self.schema is None:
-            raise ValueError(f"schema object must be set")
+            raise ValueError("schema object must be set")
         if target_class_name is None:
             roots = [c.name for c in self.schema.classes.values() if c.tree_root]
             if len(roots) != 1:
@@ -160,7 +160,7 @@ def cli(
     if target_class is None:
         target_class = datautils.infer_root_class(sv)
     if target_class is None:
-        raise Exception(f"target class not specified and could not be inferred")
+        raise Exception("target class not specified and could not be inferred")
     py_target_class = python_module.__dict__[target_class]
     input_format = datautils._get_format(input, input_format)
     loader = datautils.get_loader(input_format)
