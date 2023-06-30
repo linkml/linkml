@@ -61,15 +61,11 @@ class OwlGeneratorTestCase(unittest.TestCase):
             types = list(g.objects(p, RDF.type))
             self.assertCountEqual(types, [OWL.DatatypeProperty])
         # check that definitions are present, and use the default profile
-        self.assertIn(
-            Literal("A person, living or dead"), g.objects(KS.Person, SKOS.definition)
-        )
+        self.assertIn(Literal("A person, living or dead"), g.objects(KS.Person, SKOS.definition))
         # test enums
         enum_bnode = list(g.objects(KS.EmploymentEventType, OWL.unionOf))[0]
         coll = Collection(g, enum_bnode)
-        self.assertCountEqual(
-            [BIZ["001"], BIZ["002"], BIZ["003"], BIZ["004"]], list(coll)
-        )
+        self.assertCountEqual([BIZ["001"], BIZ["002"], BIZ["003"], BIZ["004"]], list(coll))
         assert BIZ["001"] in owl_classes
 
     def test_rdfs_profile(self):
@@ -90,9 +86,7 @@ class OwlGeneratorTestCase(unittest.TestCase):
             # check not using the default metadata profile
             self.assertEqual([], list(g.objects(c, SKOS.definition)))
         # check that definitions are present, and use the RDFS profile
-        self.assertIn(
-            Literal("A person, living or dead"), g.objects(KS.Person, RDFS.comment)
-        )
+        self.assertIn(Literal("A person, living or dead"), g.objects(KS.Person, RDFS.comment))
 
     def test_definition_uris(self):
         """
@@ -102,9 +96,11 @@ class OwlGeneratorTestCase(unittest.TestCase):
         https://github.com/linkml/linkml/issues/932
         """
         sb = SchemaBuilder()
-        sb.add_class('MyPerson',
-                     class_uri='schema:Person',
-                     slots=[SlotDefinition("name", slot_uri="schema:name")])
+        sb.add_class(
+            "MyPerson",
+            class_uri="schema:Person",
+            slots=[SlotDefinition("name", slot_uri="schema:name")],
+        )
         sb.add_defaults()
         sb.add_prefix("schema", "http://schema.org/")
         schema = sb.schema
@@ -114,11 +110,13 @@ class OwlGeneratorTestCase(unittest.TestCase):
             stream.write(owl)
         g = Graph()
         g.parse(OWL_OUTPUT_TMP)
-        triples = list(g.triples((None,None,None)))
+        triples = list(g.triples((None, None, None)))
         expected = [
-            (URIRef('http://example.org/test-schema/MyPerson'),
-             URIRef('http://www.w3.org/2004/02/skos/core#exactMatch'),
-             URIRef('http://schema.org/Person'))
+            (
+                URIRef("http://example.org/test-schema/MyPerson"),
+                URIRef("http://www.w3.org/2004/02/skos/core#exactMatch"),
+                URIRef("http://schema.org/Person"),
+            )
         ]
         for t in expected:
             self.assertIn(t, triples)
@@ -129,9 +127,11 @@ class OwlGeneratorTestCase(unittest.TestCase):
         and its corresponding class_uri
         """
         sb = SchemaBuilder()
-        sb.add_class('MyPerson',
-                     class_uri='schema:Person',
-                     slots=[SlotDefinition("name", slot_uri="schema:name")])
+        sb.add_class(
+            "MyPerson",
+            class_uri="schema:Person",
+            slots=[SlotDefinition("name", slot_uri="schema:name")],
+        )
         sb.add_defaults()
         sb.add_prefix("schema", "http://schema.org/")
         schema = sb.schema
@@ -140,7 +140,7 @@ class OwlGeneratorTestCase(unittest.TestCase):
             mergeimports=False,
             metaclasses=False,
             type_objects=False,
-            assert_equivalent_classes=True
+            assert_equivalent_classes=True,
         )
         owl = gen.serialize()
         with open(OWL_OUTPUT, "w", encoding="UTF-8") as stream:
@@ -148,10 +148,11 @@ class OwlGeneratorTestCase(unittest.TestCase):
         graph = Graph()
         graph.parse(OWL_OUTPUT)
         assert (
-            URIRef('http://example.org/test-schema/MyPerson'),
+            URIRef("http://example.org/test-schema/MyPerson"),
             OWL.equivalentClass,
-            URIRef('http://schema.org/Person')
+            URIRef("http://schema.org/Person"),
         ) in graph
+
 
 if __name__ == "__main__":
     unittest.main()

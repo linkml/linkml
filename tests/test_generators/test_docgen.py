@@ -3,10 +3,10 @@ import os
 import shutil
 import tempfile
 import unittest
-import yaml
 from copy import copy
 from typing import List
 
+import yaml
 from linkml_runtime.utils.introspection import package_schemaview
 from linkml_runtime.utils.schemaview import SchemaView
 
@@ -21,7 +21,6 @@ MD_DIR2 = env.expected_path("kitchen_sink_md2")
 MD_DIR3 = env.expected_path("kitchen_sink_md3")
 HTML_DIR = env.expected_path("kitchen_sink_html")
 EXAMPLE_DIR = env.input_path("examples")
-
 
 
 def assert_mdfile_does_not_contain(*args, **kwargs) -> None:
@@ -76,6 +75,7 @@ class DocGeneratorTestCase(unittest.TestCase):
 
     Note that docgen replaces markdowngen
     """
+
     def test_latex_generation(self):
         """Tests minimal latex generation"""
         gen = DocGenerator(SCHEMA, mergeimports=True, no_types_dir=True, format="latex")
@@ -83,15 +83,15 @@ class DocGeneratorTestCase(unittest.TestCase):
 
     def test_docgen(self):
         """Tests basic document generator functionality"""
-        gen = DocGenerator(SCHEMA, mergeimports=True, no_types_dir=True, example_directory=EXAMPLE_DIR)
+        gen = DocGenerator(
+            SCHEMA, mergeimports=True, no_types_dir=True, example_directory=EXAMPLE_DIR
+        )
         blobs = gen.example_object_blobs("Person")
         self.assertGreater(len(blobs), 0)
         md = gen.serialize(directory=MD_DIR)
         # test class docs
         assert_mdfile_contains("Organization.md", "Organization", after="Inheritance")
-        assert_mdfile_contains(
-            "Organization.md", "[aliases](aliases.md)", after="Slots"
-        )
+        assert_mdfile_contains("Organization.md", "[aliases](aliases.md)", after="Slots")
         assert_mdfile_contains(
             "Organization.md",
             "URI: [ks:Organization](https://w3id.org/linkml/tests/kitchen_sink/Organization)",
@@ -102,9 +102,7 @@ class DocGeneratorTestCase(unittest.TestCase):
             "from_schema: https://w3id.org/linkml/tests/kitchen_sink",
             after="Class: Organization",
         )
-        assert_mdfile_contains(
-            "Organization.md", "slot_uri: skos:altLabel", after="Induced"
-        )
+        assert_mdfile_contains("Organization.md", "slot_uri: skos:altLabel", after="Induced")
         # test truncating newlines
         assert_mdfile_contains(
             "index.md", "An organization", after="## Classes", followed_by=["## Slots"]
@@ -196,9 +194,7 @@ class DocGeneratorTestCase(unittest.TestCase):
             "[EmploymentEventType](EmploymentEventType.md)",
             after="Enumerations",
         )
-        assert_mdfile_contains(
-            "index.md", "a provence-generating activity", after="Classes"
-        )
+        assert_mdfile_contains("index.md", "a provence-generating activity", after="Classes")
         # test default ordering (currently name)
         assert_mdfile_contains(
             "index.md",
@@ -223,68 +219,68 @@ class DocGeneratorTestCase(unittest.TestCase):
         )
 
         # test internal links
-        assert_mdfile_contains(
-            "ceo.md", "Range: [Person](Person.md)", after="Properties"
-        )
+        assert_mdfile_contains("ceo.md", "Range: [Person](Person.md)", after="Properties")
         # TODO: external links
-        
+
         # test slot hierarchy
-        assert_mdfile_contains(
-            "tree_slot_B.md", "tree_slot_C", after="tree_slot_B"
-        )
+        assert_mdfile_contains("tree_slot_B.md", "tree_slot_C", after="tree_slot_B")
 
         # test mixin page
-        assert_mdfile_contains(
-            "mixin_slot_I.md", "## Mixin Usage"
-        )
+        assert_mdfile_contains("mixin_slot_I.md", "## Mixin Usage")
 
         # test that mixin page is hyperlinked
-        assert_mdfile_contains(
-            "tree_slot_C.md", "[mixin_slot_I](mixin_slot_I.md)"
-        )
+        assert_mdfile_contains("tree_slot_C.md", "[mixin_slot_I](mixin_slot_I.md)")
 
         # test see_also hyperlinking
         assert_mdfile_contains(
-            "Person.md", 
+            "Person.md",
             "[https://en.wikipedia.org/wiki/Person](https://en.wikipedia.org/wiki/Person)",
-            after="## See Also"
+            after="## See Also",
         )
         assert_mdfile_contains(
-            "Person.md", 
-            "[schema:Person](http://schema.org/Person)",
-            after="## See Also"
+            "Person.md", "[schema:Person](http://schema.org/Person)", after="## See Also"
         )
 
         # test that Aliases is showing from common metadata
-        assert_mdfile_contains(
-            "EmploymentEventType.md", "* HR code", after="## Aliases"
-        )
+        assert_mdfile_contains("EmploymentEventType.md", "* HR code", after="## Aliases")
 
         # test that slots for enums are being rendered
         assert_mdfile_contains(
-            "LifeStatusEnum.md", "life_st", after="## Slots",
-            followed_by=["## Identifier and Mapping Information", 
-                        "### Schema Source", 
-                        "## LinkML Source"],
+            "LifeStatusEnum.md",
+            "life_st",
+            after="## Slots",
+            followed_by=[
+                "## Identifier and Mapping Information",
+                "### Schema Source",
+                "## LinkML Source",
+            ],
         )
         assert_mdfile_contains(
-            "LifeStatusEnum.md", "is_livin", after="## Slots",
-            followed_by=["## Identifier and Mapping Information", 
-                        "### Schema Source", 
-                        "## LinkML Source"],
+            "LifeStatusEnum.md",
+            "is_livin",
+            after="## Slots",
+            followed_by=[
+                "## Identifier and Mapping Information",
+                "### Schema Source",
+                "## LinkML Source",
+            ],
         )
         # test slot usage overrides. See https://github.com/linkml/linkml/issues/1208
         assert_mdfile_contains(
             "FamilialRelationship.md",
-            ("| [started_at_time](started_at_time.md) "
-             "| 0..1 <br/> [Date](Date.md) |  "
-             "| [Relationship](Relationship.md) |"),
+            (
+                "| [started_at_time](started_at_time.md) "
+                "| 0..1 <br/> [Date](Date.md) |  "
+                "| [Relationship](Relationship.md) |"
+            ),
             after="## Slots",
         )
         assert_mdfile_contains(
             "FamilialRelationship.md",
-            ("| [related_to](related_to.md) | 1..1 <br/> [Person](Person.md) |  | "
-             "[Relationship](Relationship.md) |"),
+            (
+                "| [related_to](related_to.md) | 1..1 <br/> [Person](Person.md) |  | "
+                "[Relationship](Relationship.md) |"
+            ),
             after="## Slots",
         )
         # test inheritance column
@@ -295,42 +291,35 @@ class DocGeneratorTestCase(unittest.TestCase):
         )
         assert_mdfile_contains(
             "Person.md",
-            ("| [aliases](aliases.md) | 0..* <br/> [String](String.md) |  | [HasAliases](HasAliases.md) |"),
+            (
+                "| [aliases](aliases.md) | 0..* <br/> [String](String.md) |  | [HasAliases](HasAliases.md) |"
+            ),
             after="## Slots",
         )
         # Examples
         assert_mdfile_contains(
             "Person.md",
             "Example: Person",
-            after="## Examples",)
+            after="## Examples",
+        )
         # Minimum Value showing up even if value is 0
-        assert_mdfile_contains(
-            "age_in_years.md",
-            "Minimum Value: 0",
-            after="## Properties"
-        )
+        assert_mdfile_contains("age_in_years.md", "Minimum Value: 0", after="## Properties")
         # Maximum Value
-        assert_mdfile_contains(
-            "age_in_years.md",
-            "Maximum Value: 999",
-            after="## Properties"
-        )
-        # 
+        assert_mdfile_contains("age_in_years.md", "Maximum Value: 999", after="## Properties")
+        #
         assert_mdfile_contains(
             "species_name.md",
             "Regex pattern: `^[A-Z]+[a-z]+(-[A-Z]+[a-z]+)?\\\.[A-Z]+(-[0-9]{4})?$`",
-            after="## Properties"
+            after="## Properties",
         )
-        
+
         # checks correctness of the YAML representation of source schema
         person_source = gen.yaml(gen.schemaview.get_class("Person"))
         person_dict = yaml.load(person_source, Loader=yaml.Loader)
         # consider the species name slot
         # species name has the Person class repeated multiple times in domain_of
         domain_of_species_name = person_dict["slot_usage"]["species name"]["domain_of"]
-        self.assertTrue(
-            len(set(domain_of_species_name)) == len(domain_of_species_name)
-        )
+        self.assertTrue(len(set(domain_of_species_name)) == len(domain_of_species_name))
 
     def test_docgen_no_mergeimports(self):
         """Tests when imported schemas are not folded into main schema"""
@@ -338,45 +327,43 @@ class DocGeneratorTestCase(unittest.TestCase):
         md = gen.serialize(directory=MD_DIR3)
 
         assert_mdfile_contains(
-            "index.md", 
-            "| [Address](Address.md) |  |", 
-            after="## Classes", 
-            outdir=MD_DIR3
-        )
-        
-        assert_mdfile_does_not_contain(
-            "index.md", 
-            "| [Activity](Activity.md) | a provence-generating activity |", 
-            after="## Classes", 
-            outdir=MD_DIR3
+            "index.md", "| [Address](Address.md) |  |", after="## Classes", outdir=MD_DIR3
         )
 
         assert_mdfile_does_not_contain(
-            "index.md", 
-            "| [acted_on_behalf_of](acted_on_behalf_of.md) |  |", 
-            after="## Slots", 
-            outdir=MD_DIR3
+            "index.md",
+            "| [Activity](Activity.md) | a provence-generating activity |",
+            after="## Classes",
+            outdir=MD_DIR3,
         )
 
         assert_mdfile_does_not_contain(
-            "index.md", 
-            "| [AgeInYearsType](AgeInYearsType.md) |  |", 
-            after="## Types", 
-            outdir=MD_DIR3
+            "index.md",
+            "| [acted_on_behalf_of](acted_on_behalf_of.md) |  |",
+            after="## Slots",
+            outdir=MD_DIR3,
         )
 
+        assert_mdfile_does_not_contain(
+            "index.md",
+            "| [AgeInYearsType](AgeInYearsType.md) |  |",
+            after="## Types",
+            outdir=MD_DIR3,
+        )
 
         # test that slots modifying classes are being rendered
         assert_mdfile_contains(
-            "type.md", "[FamilialRelationship](FamilialRelationship.md) |  |  yes  |", after="## Applicable Classes",
-            followed_by=["## Properties",
-                        "* Range"],
+            "type.md",
+            "[FamilialRelationship](FamilialRelationship.md) |  |  yes  |",
+            after="## Applicable Classes",
+            followed_by=["## Properties", "* Range"],
         )
 
         assert_mdfile_contains(
-            "type.md", "[EmploymentEvent](EmploymentEvent.md) |  |  yes  |", after="## Applicable Classes",
-            followed_by=["## Properties",
-                        "* Range"],
+            "type.md",
+            "[EmploymentEvent](EmploymentEvent.md) |  |  yes  |",
+            after="## Applicable Classes",
+            followed_by=["## Properties", "* Range"],
         )
 
     def test_docgen_rank_ordering(self):
@@ -409,9 +396,7 @@ class DocGeneratorTestCase(unittest.TestCase):
     def test_gen_metamodel(self):
         """Tests generation of docs for metamodel"""
         metamodel_sv = package_schemaview("linkml_runtime.linkml_model.meta")
-        gen = DocGenerator(
-            metamodel_sv.schema, mergeimports=True, no_types_dir=True, genmeta=True
-        )
+        gen = DocGenerator(metamodel_sv.schema, mergeimports=True, no_types_dir=True, genmeta=True)
         gen.serialize(directory=META_MD_DIR)
         assert_mdfile_contains(
             "index.md",
@@ -434,9 +419,7 @@ class DocGeneratorTestCase(unittest.TestCase):
             followed_by=["PvFormulaOptions"],
             outdir=META_MD_DIR,
         )
-        assert_mdfile_contains(
-            "index.md", "String", after="## Types", outdir=META_MD_DIR
-        )
+        assert_mdfile_contains("index.md", "String", after="## Types", outdir=META_MD_DIR)
 
     def test_myst_dialect(self):
         """
@@ -459,9 +442,7 @@ class DocGeneratorTestCase(unittest.TestCase):
         these act as overrides, if no template is found the default is used
         """
         tdir = env.input_path("docgen_md_templates")
-        gen = DocGenerator(
-            SCHEMA, mergeimports=True, no_types_dir=True, template_directory=tdir
-        )
+        gen = DocGenerator(SCHEMA, mergeimports=True, no_types_dir=True, template_directory=tdir)
         md = gen.serialize(directory=MD_DIR2)
         # assert_mdfile_contains('Organization.md', 'Organization', after='Inheritance')
         assert_mdfile_contains("Organization.md", "FAKE TEMPLATE", outdir=MD_DIR2)
@@ -480,9 +461,7 @@ class DocGeneratorTestCase(unittest.TestCase):
         )
         assert gen._file_suffix() == "html"
         md = gen.serialize(directory=HTML_DIR)
-        assert_mdfile_contains(
-            "Organization.html", "Fake example Organization", outdir=HTML_DIR
-        )
+        assert_mdfile_contains("Organization.html", "Fake example Organization", outdir=HTML_DIR)
 
     def test_class_hierarchy_as_tuples(self):
         """Test for method that seeks to generate hierarchically indented
@@ -528,15 +507,38 @@ class DocGeneratorTestCase(unittest.TestCase):
         self.assertGreater(tub_sub_class_order, sub_sub_class_order)
         self.assertGreater(sub_sub_class_order, sub_class_order)
         self.assertGreater(sub_class_order, parent_order)
-        
-        expected_result = [(0, 'activity'), (0, 'Address'), (0, 'agent'), (0, 'AnyObject'), 
-                           (0, 'class with spaces'), (1, 'subclass test'), (2, 'Sub sub class 2'), (2, 'tub sub class 1'),
-                           (0, 'CodeSystem'), (0, 'Concept'), (1, 'ProcedureConcept'), (1, 'DiagnosisConcept'), 
-                           (0, 'Dataset'), (0, 'Event'), (1, 'MarriageEvent'), (1, 'MedicalEvent'), 
-                           (1, 'EmploymentEvent'), (1, 'BirthEvent'), (0, 'FakeClass'), (0, 'Friend'), (0, 'HasAliases'), 
-                           (0, 'Organization'), (1, 'Company'), (0, 'Person'), (0, 'Place'), (0, 'Relationship'), 
-                           (1, 'FamilialRelationship'), (0, 'WithLocation')]
-                           
+
+        expected_result = [
+            (0, "activity"),
+            (0, "Address"),
+            (0, "agent"),
+            (0, "AnyObject"),
+            (0, "class with spaces"),
+            (1, "subclass test"),
+            (2, "Sub sub class 2"),
+            (2, "tub sub class 1"),
+            (0, "CodeSystem"),
+            (0, "Concept"),
+            (1, "ProcedureConcept"),
+            (1, "DiagnosisConcept"),
+            (0, "Dataset"),
+            (0, "Event"),
+            (1, "MarriageEvent"),
+            (1, "MedicalEvent"),
+            (1, "EmploymentEvent"),
+            (1, "BirthEvent"),
+            (0, "FakeClass"),
+            (0, "Friend"),
+            (0, "HasAliases"),
+            (0, "Organization"),
+            (1, "Company"),
+            (0, "Person"),
+            (0, "Place"),
+            (0, "Relationship"),
+            (1, "FamilialRelationship"),
+            (0, "WithLocation"),
+        ]
+
         self.assertCountEqual(actual_result, expected_result)
 
     def test_class_hierarchy_as_tuples_no_mergeimports(self):
@@ -555,12 +557,14 @@ class DocGeneratorTestCase(unittest.TestCase):
         actual_result = gen.class_hierarchy_as_tuples()
         actual_result = list(actual_result)
 
-        self.assertNotIn(actual_result, (0, 'activity'))
-        self.assertNotIn(actual_result, (0, 'agent'))
-        
+        self.assertNotIn(actual_result, (0, "activity"))
+        self.assertNotIn(actual_result, (0, "agent"))
+
     def test_fetch_slots_of_class(self):
-        tdir = env.input_path('docgen_html_templates')
-        gen = DocGenerator(SCHEMA, mergeimports=True, no_types_dir=True, template_directory=tdir, format='html')
+        tdir = env.input_path("docgen_html_templates")
+        gen = DocGenerator(
+            SCHEMA, mergeimports=True, no_types_dir=True, template_directory=tdir, format="html"
+        )
 
         sv = SchemaView(SCHEMA)
         cls = sv.get_class("Address")
@@ -575,7 +579,7 @@ class DocGeneratorTestCase(unittest.TestCase):
         cls = sv.get_class("EmploymentEvent")
         actual_result = [s.name for s in gen.get_indirect_slots(cls)]
         expected_result = ["ended at time", "metadata", "started at time", "is current"]
-        
+
         self.assertCountEqual(expected_result, actual_result)
 
         # test assertion for mixed in slots of a class
@@ -597,13 +601,21 @@ class DocGeneratorTestCase(unittest.TestCase):
         test_slot = sv.get_slot("started at time")
 
         expected_result = ["Event"]
-        actual_result = gen.get_slot_inherited_from(class_name=test_class.name, slot_name=test_slot.name)
+        actual_result = gen.get_slot_inherited_from(
+            class_name=test_class.name, slot_name=test_slot.name
+        )
 
         self.assertListEqual(expected_result, actual_result)
 
     def test_use_slot_uris(self):
         tdir = env.input_path("docgen_html_templates")
-        gen = DocGenerator(SCHEMA, mergeimports=True, no_types_dir=True, template_directory=tdir, use_slot_uris=True)
+        gen = DocGenerator(
+            SCHEMA,
+            mergeimports=True,
+            no_types_dir=True,
+            template_directory=tdir,
+            use_slot_uris=True,
+        )
 
         md_temp_dir = tempfile.mkdtemp()
 
@@ -612,17 +624,21 @@ class DocGeneratorTestCase(unittest.TestCase):
         # this is a markdown file created from slot_uri
         assert_mdfile_contains("actedOnBehalfOf.md", "Slot: actedOnBehalfOf", outdir=md_temp_dir)
 
-        # check label and link of documents in inheritance tree 
+        # check label and link of documents in inheritance tree
         # A.md
-        assert_mdfile_contains("A.md", "[tree_slot_B](B.md)", after="**tree_slot_A**", outdir=md_temp_dir)
+        assert_mdfile_contains(
+            "A.md", "[tree_slot_B](B.md)", after="**tree_slot_A**", outdir=md_temp_dir
+        )
 
         # B.md
-        assert_mdfile_contains("B.md", 
-                                "**tree_slot_B**", 
-                                after="[tree_slot_A](A.md)", 
-                                # followed_by="* [tree_slot_C](C.md) [ [mixin_slot_I](mixin_slot_I.md)]",
-                                outdir=md_temp_dir)
-                
+        assert_mdfile_contains(
+            "B.md",
+            "**tree_slot_B**",
+            after="[tree_slot_A](A.md)",
+            # followed_by="* [tree_slot_C](C.md) [ [mixin_slot_I](mixin_slot_I.md)]",
+            outdir=md_temp_dir,
+        )
+
         shutil.rmtree(md_temp_dir)
 
     def test_hierarchical_class_view(self):
@@ -634,12 +650,13 @@ class DocGeneratorTestCase(unittest.TestCase):
         md = gen.serialize(directory=md_temp_dir)
 
         assert_mdfile_contains("index.md", "Event", after="Dataset")
-        
+
         assert_mdfile_contains("index.md", "BirthEvent", after="Event")
 
         assert_mdfile_contains("index.md", "EmploymentEvent", after="BirthEvent")
-        
+
         assert_mdfile_contains("index.md", "MarriageEvent", after="EmploymentEvent")
+
 
 if __name__ == "__main__":
     unittest.main()

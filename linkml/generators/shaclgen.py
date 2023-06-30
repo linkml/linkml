@@ -2,12 +2,15 @@ import logging
 import os
 from copy import copy, deepcopy
 from dataclasses import field
-from typing import (Callable, Dict, Iterator, List, Optional, Set, TextIO,
-                    Tuple, Union)
+from typing import Callable, Dict, Iterator, List, Optional, Set, TextIO, Tuple, Union
 
 import click
-from linkml_runtime.linkml_model.meta import (Annotation, ClassDefinition,
-                                              SchemaDefinition, TypeDefinition)
+from linkml_runtime.linkml_model.meta import (
+    Annotation,
+    ClassDefinition,
+    SchemaDefinition,
+    TypeDefinition,
+)
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.schemaview import SchemaView
 from rdflib import BNode, Graph, Literal, URIRef
@@ -122,9 +125,7 @@ class ShaclGenerator(Generator):
                         g,
                         pv_node,
                         [
-                            URIRef(sv.expand_curie(pv.meaning))
-                            if pv.meaning
-                            else Literal(pv_name)
+                            URIRef(sv.expand_curie(pv.meaning)) if pv.meaning else Literal(pv_name)
                             for pv_name, pv in e.permissible_values.items()
                         ],
                     )

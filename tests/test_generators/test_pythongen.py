@@ -62,7 +62,9 @@ class PythonGenTestCase(unittest.TestCase):
             str(p),
         )
 
-        f = kitchen_module.FamilialRelationship(related_to="me", type="SIBLING_OF", cordialness="heartfelt")
+        f = kitchen_module.FamilialRelationship(
+            related_to="me", type="SIBLING_OF", cordialness="heartfelt"
+        )
         self.assertEqual(
             "FamilialRelationship(started_at_time=None, ended_at_time=None, related_to='me', type='SIBLING_OF', cordialness=(text='heartfelt', description='warm and hearty friendliness'))",
             str(f),

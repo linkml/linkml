@@ -31,9 +31,7 @@ class Issue167TestCase(TestEnvironmentTestCase):
         env.generate_single_file(
             "issue_167b.yaml",
             lambda: as_yaml(
-                SchemaLoader(
-                    env.input_path("issue_167b.yaml"), importmap=env.import_map
-                ).resolve()
+                SchemaLoader(env.input_path("issue_167b.yaml"), importmap=env.import_map).resolve()
             ),
             value_is_returned=True,
             filtr=yaml_filter,

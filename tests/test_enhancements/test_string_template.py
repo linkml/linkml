@@ -33,9 +33,7 @@ class TemplateTestCase(TestEnvironmentTestCase):
         inst = module.FirstClass("Sam Sneed", 42, "Male")
         self.assertEqual("Sam Sneed - a 42 year old Male", str(inst))
         inst2 = module.FirstClass.parse("Jillian Johnson - a 93 year old female")
-        self.assertEqual(
-            "FirstClass(name='Jillian Johnson', age=93, gender='female')", repr(inst2)
-        )
+        self.assertEqual("FirstClass(name='Jillian Johnson', age=93, gender='female')", repr(inst2))
         self.assertEqual("Jillian Johnson - a 93 year old female", str(inst2))
         with open(env.input_path(self.testdir, "jones.yaml")) as yf:
             inst3 = from_yaml(yf, module.FirstClass)

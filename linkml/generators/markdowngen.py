@@ -6,11 +6,16 @@ from typing import Any, Callable, Dict, List, Optional, Set, TextIO, Union
 
 import click
 from jsonasobj2 import JsonObj, values
-from linkml_runtime.linkml_model.meta import (ClassDefinition,
-                                              ClassDefinitionName, Element,
-                                              EnumDefinition, SchemaDefinition,
-                                              SlotDefinition, SubsetDefinition,
-                                              TypeDefinition)
+from linkml_runtime.linkml_model.meta import (
+    ClassDefinition,
+    ClassDefinitionName,
+    Element,
+    EnumDefinition,
+    SchemaDefinition,
+    SlotDefinition,
+    SubsetDefinition,
+    TypeDefinition,
+)
 from linkml_runtime.utils.formatutils import be, camelcase, underscore
 
 from linkml._version import __version__
@@ -30,7 +35,7 @@ class MarkdownGenerator(Generator):
     The markdown is suitable for deployment as a MkDocs or Sphinx site
     """
 
-    #ClassVars
+    # ClassVars
     generatorname = os.path.basename(__file__)
     generatorversion = "0.2.1"
     directory_output = True
@@ -80,9 +85,7 @@ class MarkdownGenerator(Generator):
         if not self.no_types_dir:
             os.makedirs(os.path.join(directory, "types"), exist_ok=True)
 
-        with open(
-            self.exist_warning(directory, index_file), "w", encoding="UTF-8"
-        ) as ixfile:
+        with open(self.exist_warning(directory, index_file), "w", encoding="UTF-8") as ixfile:
             with redirect_stdout(ixfile):
                 self.frontmatter(f"{self.schema.name}")
                 self.para(
@@ -92,11 +95,7 @@ class MarkdownGenerator(Generator):
 
                 self.header(3, "Classes")
                 for cls in sorted(self.schema.classes.values(), key=lambda c: c.name):
-                    if (
-                        not cls.is_a
-                        and not cls.mixin
-                        and self.is_secondary_ref(cls.name)
-                    ):
+                    if not cls.is_a and not cls.mixin and self.is_secondary_ref(cls.name):
                         self.class_hier(cls)
 
                 self.header(3, "Mixins")
@@ -114,9 +113,7 @@ class MarkdownGenerator(Generator):
                     self.enum_hier(enu)
 
                 self.header(3, "Subsets")
-                for subset in sorted(
-                    self.schema.subsets.values(), key=lambda s: s.name
-                ):
+                for subset in sorted(self.schema.subsets.values(), key=lambda s: s.name):
                     self.bullet(self.subset_link(subset, use_desc=True), 0)
 
                 self.header(3, "Types")
@@ -131,14 +128,9 @@ class MarkdownGenerator(Generator):
                         else:
                             typ_typ = f"**{typ.base}**"
 
-                        self.bullet(
-                            self.type_link(
-                                typ, after_link=f" ({typ_typ})", use_desc=True
-                            )
-                        )
+                        self.bullet(self.type_link(typ, after_link=f" ({typ_typ})", use_desc=True))
 
     def visit_class(self, cls: ClassDefinition) -> bool:
-
         # allow client to relabel metamodel
         mixin_local_name = self.get_metamodel_slot_name("Mixin")
         class_local_name = self.get_metamodel_slot_name("Class")
@@ -146,9 +138,7 @@ class MarkdownGenerator(Generator):
         if self.gen_classes and cls.name not in self.gen_classes:
             return False
 
-        with open(
-            self.exist_warning(self.dir_path(cls)), "w", encoding="UTF-8"
-        ) as clsfile:
+        with open(self.exist_warning(self.dir_path(cls)), "w", encoding="UTF-8") as clsfile:
             with redirect_stdout(clsfile):
                 class_curi = self.namespaces.uri_or_curie_for(
                     str(self.namespaces._base), camelcase(cls.name)
@@ -164,9 +154,7 @@ class MarkdownGenerator(Generator):
                             directory=self.image_directory,
                             load_image=not self.noimages,
                         )
-                        img_url = os.path.join(
-                            "images", os.path.basename(yg.output_file_name)
-                        )
+                        img_url = os.path.join("images", os.path.basename(yg.output_file_name))
                     else:
                         yg = YumlGenerator(self)
                         img_url = (
@@ -219,9 +207,7 @@ class MarkdownGenerator(Generator):
                 self.header(2, "Attributes")
 
                 # List all of the slots that directly belong to the class
-                slot_list = [
-                    slot for slot in [self.schema.slots[sn] for sn in cls.slots]
-                ]
+                slot_list = [slot for slot in [self.schema.slots[sn] for sn in cls.slots]]
                 own_slots = [slot for slot in slot_list if cls.name in slot.domain_of]
                 if own_slots:
                     self.header(3, "Own")
@@ -232,9 +218,7 @@ class MarkdownGenerator(Generator):
                 # List all of the inherited slots
                 ancestors = set(self.ancestors(cls))
                 inherited_slots = [
-                    slot
-                    for slot in slot_list
-                    if set(slot.domain_of).intersection(ancestors)
+                    slot for slot in slot_list if set(slot.domain_of).intersection(ancestors)
                 ]
                 if inherited_slots:
                     self.header(3, "Inherited from " + cls.is_a + ":")
@@ -246,9 +230,7 @@ class MarkdownGenerator(Generator):
                 mixed_in_classes = set()
                 for mixin in cls.mixins:
                     mixed_in_classes.add(mixin)
-                    mixed_in_classes.update(
-                        set(self.ancestors(self.schema.classes[mixin]))
-                    )
+                    mixed_in_classes.update(set(self.ancestors(self.schema.classes[mixin])))
                 for slot in slot_list:
                     mixers = set(slot.domain_of).intersection(mixed_in_classes)
                     for mixer in mixers:
@@ -260,9 +242,7 @@ class MarkdownGenerator(Generator):
         return False
 
     def visit_type(self, typ: TypeDefinition) -> None:
-        with open(
-            self.exist_warning(self.dir_path(typ)), "w", encoding="UTF-8"
-        ) as typefile:
+        with open(self.exist_warning(self.dir_path(typ)), "w", encoding="UTF-8") as typefile:
             with redirect_stdout(typefile):
                 type_uri = typ.definition_uri
                 type_curie = self.namespaces.curie_for(type_uri)
@@ -278,9 +258,7 @@ class MarkdownGenerator(Generator):
                 self.element_properties(typ)
 
     def visit_slot(self, aliased_slot_name: str, slot: SlotDefinition) -> None:
-        with open(
-            self.exist_warning(self.dir_path(slot)), "w", encoding="UTF-8"
-        ) as slotfile:
+        with open(self.exist_warning(self.dir_path(slot)), "w", encoding="UTF-8") as slotfile:
             with redirect_stdout(slotfile):
                 import logging
 
@@ -318,23 +296,17 @@ class MarkdownGenerator(Generator):
                 self.element_properties(slot)
 
     def visit_enum(self, enum: EnumDefinition) -> None:
-        with open(
-            self.exist_warning(self.dir_path(enum)), "w", encoding="UTF-8"
-        ) as enumfile:
+        with open(self.exist_warning(self.dir_path(enum)), "w", encoding="UTF-8") as enumfile:
             with redirect_stdout(enumfile):
                 enum_curie = self.namespaces.uri_or_curie_for(
                     str(self.namespaces._base), underscore(enum.name)
                 )
                 enum_uri = self.namespaces.uri_for(enum_curie)
-                self.element_header(
-                    obj=enum, name=enum.name, curie=enum_curie, uri=enum_uri
-                )
+                self.element_header(obj=enum, name=enum.name, curie=enum_curie, uri=enum_uri)
                 self.element_properties(enum)
 
     def visit_subset(self, subset: SubsetDefinition) -> None:
-        with open(
-            self.exist_warning(self.dir_path(subset)), "w", encoding="UTF-8"
-        ) as subsetfile:
+        with open(self.exist_warning(self.dir_path(subset)), "w", encoding="UTF-8") as subsetfile:
             with redirect_stdout(subsetfile):
                 curie = self.namespaces.uri_or_curie_for(
                     str(self.namespaces._base), underscore(subset.name)
@@ -382,9 +354,7 @@ class MarkdownGenerator(Generator):
             obj_type = "Class"
 
         header_label = (
-            f"{obj_type}: ~~{name}~~ _(deprecated)_"
-            if obj.deprecated
-            else f"{obj_type}: {name}"
+            f"{obj_type}: ~~{name}~~ _(deprecated)_" if obj.deprecated else f"{obj_type}: {name}"
         )
         self.header(1, header_label)
 
@@ -507,11 +477,7 @@ class MarkdownGenerator(Generator):
             if isinstance(obj, EnumDefinition)
             else camelcase(obj.name)
         )
-        subdir = (
-            "/types"
-            if isinstance(obj, TypeDefinition) and not self.no_types_dir
-            else ""
-        )
+        subdir = "/types" if isinstance(obj, TypeDefinition) and not self.no_types_dir else ""
         return f"{self.directory}{subdir}/{filename}.md"
 
     def mappings(self, obj: Union[SlotDefinition, ClassDefinition]) -> None:
@@ -641,11 +607,7 @@ class MarkdownGenerator(Generator):
                 parent = self.schema.classes[obj.is_a]
             else:
                 parent = None
-            return (
-                ""
-                if parent and obj.description == parent.description
-                else obj.description
-            )
+            return "" if parent and obj.description == parent.description else obj.description
         return ""
 
     def _link(
@@ -668,9 +630,7 @@ class MarkdownGenerator(Generator):
         if obj is None or not self.is_secondary_ref(obj.name):
             return self.bbin(obj)
         if isinstance(obj, SlotDefinition):
-            link_name = (
-                (be(obj.domain) + "➞") if obj.alias else ""
-            ) + self.aliased_slot_name(obj)
+            link_name = ((be(obj.domain) + "➞") if obj.alias else "") + self.aliased_slot_name(obj)
             link_ref = underscore(obj.name)
         elif isinstance(obj, TypeDefinition):
             link_name = camelcase(obj.name)
@@ -825,25 +785,17 @@ class MarkdownGenerator(Generator):
 @click.command()
 @click.option("--dir", "-d", required=True, help="Output directory")
 @click.option("--classes", "-c", multiple=True, help="Class(es) to emit")
-@click.option(
-    "--map-fields", "-M", multiple=True, help="Map metamodel fields, e.g. slot=field"
-)
-@click.option(
-    "--img", "-i", is_flag=True, help="Download YUML images to 'image' directory"
-)
+@click.option("--map-fields", "-M", multiple=True, help="Map metamodel fields, e.g. slot=field")
+@click.option("--img", "-i", is_flag=True, help="Download YUML images to 'image' directory")
 @click.option("--index-file", "-I", help="Name of markdown file that holds index")
 @click.option("--noimages", is_flag=True, help="Do not (re-)generate images")
 @click.option("--noyuml", is_flag=True, help="Do not add yUML figures to pages")
-@click.option(
-    "--notypesdir", is_flag=True, help="Do not create a separate types directory"
-)
+@click.option("--notypesdir", is_flag=True, help="Do not create a separate types directory")
 @click.option("--warnonexist", is_flag=True, help="Warn if output file already exists")
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, map_fields, dir, img, index_file, notypesdir, warnonexist, **kwargs):
     """Generate markdown documentation of a LinkML model"""
-    gen = MarkdownGenerator(
-        yamlfile, no_types_dir=notypesdir, warn_on_exist=warnonexist, **kwargs
-    )
+    gen = MarkdownGenerator(yamlfile, no_types_dir=notypesdir, warn_on_exist=warnonexist, **kwargs)
     if map_fields is not None:
         gen.metamodel_name_map = {}
         for mf in map_fields:

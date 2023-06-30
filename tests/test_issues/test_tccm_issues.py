@@ -91,9 +91,7 @@ class TCCMTestCase(TestEnvironmentTestCase):
                 importmap=env.import_map,
                 mergeimports=False,
             ).serialize(),
-            comparator=lambda exp, act: compare_python(
-                exp, act, env.expected_path("importee.py")
-            ),
+            comparator=lambda exp, act: compare_python(exp, act, env.expected_path("importee.py")),
             value_is_returned=True,
         )
         env.generate_single_file(
@@ -103,9 +101,7 @@ class TCCMTestCase(TestEnvironmentTestCase):
                 importmap=env.import_map,
                 mergeimports=False,
             ).serialize(),
-            comparator=lambda exp, act: compare_python(
-                exp, act, env.expected_path("importer.py")
-            ),
+            comparator=lambda exp, act: compare_python(exp, act, env.expected_path("importer.py")),
             value_is_returned=True,
         )
 

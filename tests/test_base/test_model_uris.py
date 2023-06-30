@@ -1,26 +1,39 @@
 import os
 import unittest
 
-from linkml import (LOCAL_MAPPINGS_JSONLD_FILE, LOCAL_MAPPINGS_LDCONTEXT_FILE,
-                    LOCAL_MAPPINGS_YAML_FILE, LOCAL_METAMODEL_JSONLD_FILE,
-                    LOCAL_METAMODEL_LDCONTEXT_FILE, LOCAL_METAMODEL_YAML_FILE,
-                    LOCAL_RDF_FILE_NAME, LOCAL_SHEXC_FILE_NAME,
-                    LOCAL_SHEXJ_FILE_NAME, LOCAL_TYPES_JSONLD_FILE,
-                    LOCAL_TYPES_LDCONTEXT_FILE, LOCAL_TYPES_YAML_FILE,
-                    METAMAPPING_NAME, METAMAPPING_NAMESPACE,
-                    METAMAPPING_NAMESPACE_NAME, METAMAPPING_URI,
-                    METAMODEL_NAME, METAMODEL_NAMESPACE,
-                    METAMODEL_NAMESPACE_NAME, METAMODEL_URI, METATYPE_NAME,
-                    METATYPE_NAMESPACE, METATYPE_NAMESPACE_NAME, METATYPE_URI)
+from linkml import (
+    LOCAL_MAPPINGS_JSONLD_FILE,
+    LOCAL_MAPPINGS_LDCONTEXT_FILE,
+    LOCAL_MAPPINGS_YAML_FILE,
+    LOCAL_METAMODEL_JSONLD_FILE,
+    LOCAL_METAMODEL_LDCONTEXT_FILE,
+    LOCAL_METAMODEL_YAML_FILE,
+    LOCAL_RDF_FILE_NAME,
+    LOCAL_SHEXC_FILE_NAME,
+    LOCAL_SHEXJ_FILE_NAME,
+    LOCAL_TYPES_JSONLD_FILE,
+    LOCAL_TYPES_LDCONTEXT_FILE,
+    LOCAL_TYPES_YAML_FILE,
+    METAMAPPING_NAME,
+    METAMAPPING_NAMESPACE,
+    METAMAPPING_NAMESPACE_NAME,
+    METAMAPPING_URI,
+    METAMODEL_NAME,
+    METAMODEL_NAMESPACE,
+    METAMODEL_NAMESPACE_NAME,
+    METAMODEL_URI,
+    METATYPE_NAME,
+    METATYPE_NAMESPACE,
+    METATYPE_NAMESPACE_NAME,
+    METATYPE_URI,
+)
 from linkml.utils.rawloader import load_raw_schema
 
 
 class ModelURITestCase(unittest.TestCase):
     """Make sure that the URI's in the include files match what is actually in the output"""
 
-    def validate_yaml_content(
-        self, uri, name, namespace_name, namespace, source
-    ) -> None:
+    def validate_yaml_content(self, uri, name, namespace_name, namespace, source) -> None:
         def check_yaml(source_file):
             model_yaml = load_raw_schema(source_file)
             # The model yaml id no longer mirrors the model uri

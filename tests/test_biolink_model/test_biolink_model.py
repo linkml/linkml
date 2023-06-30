@@ -25,9 +25,13 @@ from linkml.generators.protogen import ProtoGenerator
 from linkml.generators.pythongen import PythonGenerator
 from linkml.generators.rdfgen import RDFGenerator
 from linkml.generators.shexgen import ShExGenerator
-from tests import (SKIP_GRAPHVIZ_VALIDATION, SKIP_MARKDOWN_VALIDATION,
-                   SKIP_MARKDOWN_VALIDATION_REASON, SKIP_SHEX_VALIDATION,
-                   SKIP_SHEX_VALIDATION_REASON)
+from tests import (
+    SKIP_GRAPHVIZ_VALIDATION,
+    SKIP_MARKDOWN_VALIDATION,
+    SKIP_MARKDOWN_VALIDATION_REASON,
+    SKIP_SHEX_VALIDATION,
+    SKIP_SHEX_VALIDATION_REASON,
+)
 from tests.test_biolink_model.environment import env
 from tests.utils.compare_rdf import compare_rdf
 from tests.utils.filters import metadata_filter
@@ -50,13 +54,11 @@ class CurrentBiolinkModelTestCase(GeneratorTestCase):
             "py",
             PythonGenerator,
             filtr=metadata_filter,
-            comparator=lambda exp, act: compare_python(
-                exp, act, self.env.expected_path("py")
-            ),
+            comparator=lambda exp, act: compare_python(exp, act, self.env.expected_path("py")),
             output_name="model",
         )
 
-    #@unittest.skipIf(SKIP_MARKDOWN_VALIDATION, SKIP_MARKDOWN_VALIDATION_REASON)
+    # @unittest.skipIf(SKIP_MARKDOWN_VALIDATION, SKIP_MARKDOWN_VALIDATION_REASON)
     @unittest.skip("Too slow")
     def test_biolink_markdown(self):
         """Test the markdown generator for the biolink model"""
@@ -130,9 +132,7 @@ class CurrentBiolinkModelTestCase(GeneratorTestCase):
 
     def test_biolink_owl_schema(self):
         """Test the owl schema generator for the biolink model"""
-        self.single_file_generator(
-            "owl.ttl", OwlSchemaGenerator, comparator=compare_rdf
-        )
+        self.single_file_generator("owl.ttl", OwlSchemaGenerator, comparator=compare_rdf)
         # Generate a second copy with native identifiers
         self.single_file_generator(
             "model.owl.ttl",
@@ -160,9 +160,7 @@ class CurrentBiolinkModelTestCase(GeneratorTestCase):
         )
 
     @staticmethod
-    def _evaluate_shex_results(
-        results: List[EvaluationResult], printit: bool = True
-    ) -> bool:
+    def _evaluate_shex_results(results: List[EvaluationResult], printit: bool = True) -> bool:
         """
         Check the results of the ShEx evaluation
         :param results: evaluate output
@@ -198,9 +196,7 @@ class CurrentBiolinkModelTestCase(GeneratorTestCase):
         self.single_file_generator("shex", ShExGenerator)
         self.single_file_generator("shexj", ShExGenerator, format="json")
         # Generate native ShEx
-        self.single_file_generator(
-            "native.shex", ShExGenerator, generator_args=dict(useuris=False)
-        )
+        self.single_file_generator("native.shex", ShExGenerator, generator_args=dict(useuris=False))
         self.single_file_generator(
             "native.shexj",
             ShExGenerator,

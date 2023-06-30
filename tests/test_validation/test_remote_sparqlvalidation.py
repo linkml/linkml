@@ -23,9 +23,7 @@ class RemoteSparqlValidatorTestCase(unittest.TestCase):
         if SKIP_REMOTE_SPARQL_TESTS:
             print(f"Skipping ontobee test")
         else:
-            results = sv.validate_endpoint(
-                "http://sparql.hegroup.org/sparql", named_graphs=NGS
-            )
+            results = sv.validate_endpoint("http://sparql.hegroup.org/sparql", named_graphs=NGS)
             print(results)
             yaml_dumper.dump(results, to_file=REPORT)
 

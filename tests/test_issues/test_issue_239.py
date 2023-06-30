@@ -18,9 +18,7 @@ class IssueJSONSchemaEnumsTestCase(TestEnvironmentTestCase):
             gen.topCls = "c"
             return gen.serialize()
 
-        env.generate_single_file(
-            "issue_239.json", lambda: generator(), value_is_returned=True
-        )
+        env.generate_single_file("issue_239.json", lambda: generator(), value_is_returned=True)
 
 
 if __name__ == "__main__":

@@ -16,9 +16,7 @@ class IssueAAATestCase(TestEnvironmentTestCase):
 
     def test_alt_description_2(self):
         with self.assertRaises(ValueError) as e:
-            YAMLGenerator(env.input_path("issue_326a.yaml")).serialize(
-                validateonly=True
-            )
+            YAMLGenerator(env.input_path("issue_326a.yaml")).serialize(validateonly=True)
         self.assertIn("description must be supplied", str(e.exception))
 
 

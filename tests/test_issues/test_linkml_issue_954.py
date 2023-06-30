@@ -3,7 +3,7 @@ from copy import deepcopy
 
 from linkml_runtime import SchemaView
 from linkml_runtime.dumpers import yaml_dumper
-from linkml_runtime.linkml_model import SlotDefinitionName, SlotDefinition
+from linkml_runtime.linkml_model import SlotDefinition, SlotDefinitionName
 from linkml_runtime.utils.schema_as_dict import schema_as_dict, schema_as_yaml_dump
 
 from linkml.utils.schema_builder import SchemaBuilder
@@ -44,9 +44,6 @@ class SchemaIssue954(unittest.TestCase):
         self.assertNotIn("description", jgi_ecosystem)
         self.assertNotIn("name", jgi_ecosystem)
         self.assertNotIn("owner", jgi_ecosystem)
-
-
-
 
 
 if __name__ == "__main__":

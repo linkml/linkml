@@ -28,22 +28,23 @@ def assert_file_contains(filename, text, after=None, description=None) -> None:
 
 
 class JavaGeneratorTestCase(unittest.TestCase):
-
     def test_javagen_records(self):
         """Generate java records"""
         gen = JavaGenerator(SCHEMA, package=PACKAGE, generate_records=True)
         gen.serialize(directory=JAVA_DIR)
-        assert_file_contains("Address.java",
-                             "public record Address(String street, String city)",
-                             after="package org.sink.kitchen")
+        assert_file_contains(
+            "Address.java",
+            "public record Address(String street, String city)",
+            after="package org.sink.kitchen",
+        )
 
     def test_javagen_classes(self):
         """Generate java classes"""
         gen = JavaGenerator(SCHEMA, package=PACKAGE)
         gen.serialize(directory=JAVA_DIR)
-        assert_file_contains("Address.java",
-                             "public class Address",
-                             after="package org.sink.kitchen")
+        assert_file_contains(
+            "Address.java", "public class Address", after="package org.sink.kitchen"
+        )
 
 
 if __name__ == "__main__":

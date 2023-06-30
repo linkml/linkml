@@ -57,9 +57,7 @@ class IssueOWLNamespaceTestCase(TestEnvironmentTestCase):
         schema = gen.schema
         my_str = schema.types["my_str"]
         self.assertEqual(my_str.uri, "xsd:string")
-        self.assertEqual(
-            my_str.definition_uri, "https://w3id.org/linkml/examples/test/MyStr"
-        )
+        self.assertEqual(my_str.definition_uri, "https://w3id.org/linkml/examples/test/MyStr")
 
 
 if __name__ == "__main__":

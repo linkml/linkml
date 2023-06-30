@@ -151,9 +151,7 @@ class PrefixTestCase(unittest.TestCase):
         for k, v in expected.items():
             if k in obj:
                 if v != obj[k]:
-                    if not (
-                        "@id" in v and "@id" in obj[k] and v["@id"] == obj[k]["@id"]
-                    ):
+                    if not ("@id" in v and "@id" in obj[k] and v["@id"] == obj[k]["@id"]):
                         logging.error(f"{k} = {v} expected {expected[k]}")
                         fails += 1
             else:

@@ -28,9 +28,7 @@ class ProjectGeneratorTestCase(unittest.TestCase):
         gen.generate(SCHEMA, config)
         # some of these tests may be quite rigid as they make assumptions about formatting
         self.check_contains("CREATE TABLE", "sqlschema", "kitchen_sink.sql")
-        self.check_contains(
-            "ks:age_in_years a owl:DatatypeProperty", "owl", "kitchen_sink.owl.ttl"
-        )
+        self.check_contains("ks:age_in_years a owl:DatatypeProperty", "owl", "kitchen_sink.owl.ttl")
         # TODO: restore this test
         # self.check_contains("Address.md", "docs", "index.md")
         self.check_contains("ks:Address", "docs", "Address.md")

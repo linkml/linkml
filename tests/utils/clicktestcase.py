@@ -7,8 +7,7 @@ from warnings import warn
 from tests import DEFAULT_LOG_LEVEL_TEXT
 from tests.utils.compare_rdf import compare_rdf
 from tests.utils.dirutils import make_and_clear_directory
-from tests.utils.test_environment import (TestEnvironment,
-                                          TestEnvironmentTestCase)
+from tests.utils.test_environment import TestEnvironment, TestEnvironmentTestCase
 
 
 class ClickTestCase(TestEnvironmentTestCase):
@@ -35,9 +34,7 @@ class ClickTestCase(TestEnvironmentTestCase):
     def temp_file_path(self, *path: str, is_dir: bool = False) -> str:
         """Create subdirectory in the temp directory to hold path"""
         full_path = self.env.temp_file_path(self.testdir, *path)
-        self.env.make_testing_directory(
-            full_path if is_dir else os.path.dirname(full_path)
-        )
+        self.env.make_testing_directory(full_path if is_dir else os.path.dirname(full_path))
         return full_path
 
     @staticmethod
@@ -51,16 +48,12 @@ class ClickTestCase(TestEnvironmentTestCase):
         return compare_rdf(expected_data, actual_data, "n3")
 
     @staticmethod
-    def rdf_comparator(
-        expected_data: str, actual_data: str, fmt: Optional[str] = "turtle"
-    ) -> str:
+    def rdf_comparator(expected_data: str, actual_data: str, fmt: Optional[str] = "turtle") -> str:
         """compare expected_data to actual_data using basic RDF comparator method"""
         return compare_rdf(expected_data, actual_data, fmt=fmt)
 
     @staticmethod
-    def always_pass_comparator(
-        self, expected_data: str, new_data: str
-    ) -> Optional[str]:
+    def always_pass_comparator(self, expected_data: str, new_data: str) -> Optional[str]:
         """
         No-op comparator -- everyone passes!
         :param expected_data:
@@ -118,9 +111,7 @@ class ClickTestCase(TestEnvironmentTestCase):
         arg_list = shlex.split(args) if isinstance(args, str) else args
 
         if is_directory and (filtr or comparator):
-            warn(
-                "filtr and comparator parameters aren't implemented for directory generation"
-            )
+            warn("filtr and comparator parameters aren't implemented for directory generation")
 
         if add_yaml and (not arg_list or arg_list[0] != "--help"):
             arg_list.insert(0, self.env.meta_yaml)

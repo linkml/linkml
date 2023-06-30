@@ -125,9 +125,7 @@ class SQLDDLTestCase(unittest.TestCase):
             Session = sessionmaker(bind=engine)
             session = Session()
 
-            q = session.query(kitchen_module.Person).where(
-                kitchen_module.Person.name == NAME
-            )
+            q = session.query(kitchen_module.Person).where(kitchen_module.Person.name == NAME)
             log.write(f"Q={q}\n")
             agent = kitchen_module.Agent(id="Agent03")
             log.write(f"Agent={agent}\n")
@@ -145,9 +143,7 @@ class SQLDDLTestCase(unittest.TestCase):
                 aliases=["foo"],
                 addresses=[kitchen_module.Address(street="1 random streer", city=CITY)],
                 has_employment_history=[
-                    kitchen_module.EmploymentEvent(
-                        started_at_time="2020-01-01", is_current=True
-                    )
+                    kitchen_module.EmploymentEvent(started_at_time="2020-01-01", is_current=True)
                 ],
                 has_familial_relationships=[],
                 has_medical_history=[],
@@ -157,9 +153,7 @@ class SQLDDLTestCase(unittest.TestCase):
             session.flush()
             # todo: fix this
             # session.add(person)
-            org = kitchen_module.Organization(
-                id="org1", name="foo org", aliases=["bar org"]
-            )
+            org = kitchen_module.Organization(id="org1", name="foo org", aliases=["bar org"])
             org.aliases = ["abc def"]
             session.add(org)
             session.flush()

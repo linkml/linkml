@@ -8,8 +8,7 @@ from dataclasses import dataclass, field
 from typing import Optional, TextIO, Union
 
 import click
-from linkml_runtime.linkml_model.meta import (ClassDefinition,
-                                              SchemaDefinition, SlotDefinition)
+from linkml_runtime.linkml_model.meta import ClassDefinition, SchemaDefinition, SlotDefinition
 from linkml_runtime.utils.formatutils import camelcase
 
 from linkml._version import __version__
@@ -18,7 +17,6 @@ from linkml.utils.generator import Generator, shared_arguments
 
 @dataclass
 class SummaryGenerator(Generator):
-
     # ClassVars
     generatorname = os.path.basename(__file__)
     generatorversion = "0.1.1"

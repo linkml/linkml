@@ -53,9 +53,7 @@ class GenShExTestCase(ClickTestCase):
             f.write(json_str)
 
         context_file = os.path.join(test_dir, "metacontext.jsonld")
-        ContextGenerator(env.meta_yaml, importmap=env.import_map).serialize(
-            output=context_file
-        )
+        ContextGenerator(env.meta_yaml, importmap=env.import_map).serialize(output=context_file)
         self.assertTrue(os.path.exists(context_file))
 
         rdf_file = os.path.join(test_dir, "meta.ttl")

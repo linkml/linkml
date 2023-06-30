@@ -8,8 +8,7 @@ from typing import List, Optional, TextIO, Union
 import click
 from deprecated.classic import deprecated
 from graphviz import FORMATS, Digraph
-from linkml_runtime.linkml_model.meta import (ClassDefinition,
-                                              SchemaDefinition, SlotDefinition)
+from linkml_runtime.linkml_model.meta import ClassDefinition, SchemaDefinition, SlotDefinition
 from linkml_runtime.utils.formatutils import underscore
 
 from linkml._version import __version__
@@ -26,6 +25,7 @@ class DotGenerator(Generator):
 
     No longer in use: use mermaid generator instead
     """
+
     generatorname = os.path.basename(__file__)
     generatorversion = "0.1.1"
     directory_output = True
@@ -104,9 +104,7 @@ class DotGenerator(Generator):
                 format=self.format,
             )
 
-    def visit_class_slot(
-        self, cls: ClassDefinition, aliased_slot_name: str, slot: SlotDefinition
-    ):
+    def visit_class_slot(self, cls: ClassDefinition, aliased_slot_name: str, slot: SlotDefinition):
         if aliased_slot_name == "subject":
             self.cls_subj = slot
         elif aliased_slot_name == "object":
@@ -143,9 +141,7 @@ class DotGenerator(Generator):
     "-d",
     help="Output directory - if supplied, a graph per class will be generated",
 )
-@click.option(
-    "--out", "-o", help="Target file -- if supplied, one large graph will be generated"
-)
+@click.option("--out", "-o", help="Target file -- if supplied, one large graph will be generated")
 @click.option("--classname", "-c", multiple=True, help="Class(es) to transform")
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, out, **args):

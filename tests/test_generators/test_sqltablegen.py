@@ -69,9 +69,7 @@ class SQLTableGeneratorTestCase(unittest.TestCase):
         test dialect options
         """
         b = SchemaBuilder()
-        b.add_slot(
-            SlotDefinition("age", range="integer", description="age of person in years")
-        )
+        b.add_slot(SlotDefinition("age", range="integer", description="age of person in years"))
         slots = ["full name", "description", "age"]
         b.add_class(DUMMY_CLASS, slots, description="My dummy class")
         b.add_defaults()
@@ -89,7 +87,10 @@ class SQLTableGeneratorTestCase(unittest.TestCase):
             if dialect == "mysql":
                 # TODO: make this test stricter
                 # newer versions of linkml-runtime enforce required for identifier slots
-                assert "id INTEGER NOT NULL AUTO_INCREMENT" in ddl or "id INTEGER AUTO_INCREMENT" in ddl
+                assert (
+                    "id INTEGER NOT NULL AUTO_INCREMENT" in ddl
+                    or "id INTEGER AUTO_INCREMENT" in ddl
+                )
                 assert "COMMENT" in ddl
 
     def test_generate_ddl(self):

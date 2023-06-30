@@ -38,9 +38,7 @@ class GenMarkdownTestCase(ClickTestCase):
     def test_issue_2_excerpt(self):
         # This was a part of the unit tests for a while.  We have NO idea why we thought that markdown should NOT
         # have been generated for the abstract slot in meta.yaml, but that is definitely not the case now.
-        self.assertFalse(
-            os.path.exists(self.expected_file_path("issue2", "abstract.md"))
-        )
+        self.assertFalse(os.path.exists(self.expected_file_path("issue2", "abstract.md")))
 
 
 if __name__ == "__main__":

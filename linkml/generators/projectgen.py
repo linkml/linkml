@@ -98,9 +98,7 @@ class ProjectGenerator:
     Note this doesn't conform to overall generator framework, as it is a meta-generator
     """
 
-    def generate(
-        self, schema_path: str, config: ProjectConfiguration = ProjectConfiguration()
-    ):
+    def generate(self, schema_path: str, config: ProjectConfiguration = ProjectConfiguration()):
         if config.directory is None:
             raise Exception(f"Must pass directory")
         Path(config.directory).mkdir(parents=True, exist_ok=True)
@@ -115,9 +113,7 @@ class ProjectGenerator:
                 and config.includes != []
                 and gen_name not in config.includes
             ):
-                logging.info(
-                    f"Skipping {gen_name} as not in inclusion list: {config.includes}"
-                )
+                logging.info(f"Skipping {gen_name} as not in inclusion list: {config.includes}")
                 continue
             if config.excludes is not None and gen_name in config.excludes:
                 logging.info(f"Skipping {gen_name} as it is in exclusion list")
@@ -177,9 +173,7 @@ class ProjectGenerator:
     help="directory in which to place generated files. E.g. linkml_model, biolink_model",
 )
 @click.option("--generator-arguments", "-A", help="yaml configuration for generators")
-@click.option(
-    "--config-file", "-C", type=click.File("rb"), help="path to yaml configuration"
-)
+@click.option("--config-file", "-C", type=click.File("rb"), help="path to yaml configuration")
 @click.option(
     "--exclude", "-X", multiple=True, help="list of artefacts to be excluded"
 )  # TODO: make this an enum

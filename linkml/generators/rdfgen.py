@@ -7,7 +7,7 @@ Generate a JSON LD representation of the model
 import os
 import urllib.parse as urlparse
 from dataclasses import dataclass, field
-from typing import Optional, TextIO, Union, List
+from typing import List, Optional, TextIO, Union
 
 import click
 from linkml_runtime.linkml_model.meta import SchemaDefinition
@@ -23,7 +23,6 @@ from linkml.utils.generator import Generator, shared_arguments
 
 @dataclass
 class RDFGenerator(Generator):
-
     # ClassVars
     generatorname = os.path.basename(__file__)
     generatorversion = "0.1.1"
@@ -38,15 +37,10 @@ class RDFGenerator(Generator):
     emit_metadata: bool = field(default_factory=lambda: False)
     context: List[str] = None
 
-
     def _data(self, g: Graph) -> str:
-        return g.serialize(
-            format="turtle" if self.format == "ttl" else self.format
-        ).decode()
+        return g.serialize(format="turtle" if self.format == "ttl" else self.format).decode()
 
-    def end_schema(
-        self, output: Optional[str] = None, context: str = None, **_
-    ) -> None:
+    def end_schema(self, output: Optional[str] = None, context: str = None, **_) -> None:
         gen = JSONLDGenerator(
             self,
             format=JSONLDGenerator.valid_formats[0],

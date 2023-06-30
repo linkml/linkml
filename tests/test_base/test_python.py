@@ -83,9 +83,7 @@ class PythonTestCase(TestEnvironmentTestCase):
             ).serialize(),
             value_is_returned=True,
             filtr=metadata_filter,
-            comparator=lambda exp, act: compare_python(
-                exp, act, self.env.expected_path("meta.py")
-            ),
+            comparator=lambda exp, act: compare_python(exp, act, self.env.expected_path("meta.py")),
             use_testing_root=True,
         )
 

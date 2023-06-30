@@ -8,8 +8,7 @@ from linkml_runtime.loaders.loader_root import Loader
 from linkml_runtime.utils.yamlutils import YAMLRoot
 
 import tests.environment as test_base
-from tests.utils.test_environment import (TestEnvironment,
-                                          TestEnvironmentTestCase)
+from tests.utils.test_environment import TestEnvironment, TestEnvironmentTestCase
 
 
 class LoaderDumperTestCase(TestEnvironmentTestCase):

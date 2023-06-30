@@ -119,9 +119,7 @@ class RewriteRuleTestCase(unittest.TestCase):
     def rule_test(self, entries: List[TestEntry]) -> None:
         def test_it(e: TestEntry, accept_header: str) -> bool:
             expected = github_io + e.expected_url
-            resp = requests.head(
-                e.input_url, headers={"accept": accept_header}, verify=False
-            )
+            resp = requests.head(e.input_url, headers={"accept": accept_header}, verify=False)
 
             # w3id.org uses a 301 to go from http: to https:
             if resp.status_code == 301 and "location" in resp.headers:
@@ -140,9 +138,7 @@ class RewriteRuleTestCase(unittest.TestCase):
                 self.record_results(e.input_url, accept_header, actual)
                 return True
             elif expected != actual:
-                print(
-                    f"{e.input_url} ({accept_header}):\n expected {expected} - got {actual}"
-                )
+                print(f"{e.input_url} ({accept_header}):\n expected {expected} - got {actual}")
                 return False
             self.record_results(e.input_url, accept_header, actual)
             return True

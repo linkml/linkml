@@ -30,18 +30,10 @@ class TestCommandLineInterface(unittest.TestCase):
         Tests using the --infer option to add missing values, and also roundtripping
         through yaml->json->yaml->rdf->json
         """
-        result = self.runner.invoke(
-            cli, ["--infer", "-s", SCHEMA, DATA_IN, "-o", JSON_OUT]
-        )
-        result = self.runner.invoke(
-            cli, ["-s", SCHEMA, JSON_OUT, "-t", "yaml", "-o", YAML_OUT]
-        )
-        result = self.runner.invoke(
-            cli, ["-s", SCHEMA, YAML_OUT, "-t", "rdf", "-o", RDF_OUT]
-        )
-        result = self.runner.invoke(
-            cli, ["-s", SCHEMA, RDF_OUT, "-t", "json", "-o", JSON_OUT]
-        )
+        result = self.runner.invoke(cli, ["--infer", "-s", SCHEMA, DATA_IN, "-o", JSON_OUT])
+        result = self.runner.invoke(cli, ["-s", SCHEMA, JSON_OUT, "-t", "yaml", "-o", YAML_OUT])
+        result = self.runner.invoke(cli, ["-s", SCHEMA, YAML_OUT, "-t", "rdf", "-o", RDF_OUT])
+        result = self.runner.invoke(cli, ["-s", SCHEMA, RDF_OUT, "-t", "json", "-o", JSON_OUT])
         with open(JSON_OUT) as file:
             obj = json.load(file)
             persons = obj["persons"]

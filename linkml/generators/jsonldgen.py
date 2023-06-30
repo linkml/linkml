@@ -9,14 +9,18 @@ from typing import Any, Optional
 
 import click
 from jsonasobj2 import as_json, items, loads
-from linkml_runtime.linkml_model.meta import (ClassDefinition,
-                                              ClassDefinitionName, ElementName,
-                                              SchemaDefinition, SlotDefinition,
-                                              SlotDefinitionName,
-                                              SubsetDefinition,
-                                              SubsetDefinitionName,
-                                              TypeDefinition,
-                                              TypeDefinitionName)
+from linkml_runtime.linkml_model.meta import (
+    ClassDefinition,
+    ClassDefinitionName,
+    ElementName,
+    SchemaDefinition,
+    SlotDefinition,
+    SlotDefinitionName,
+    SubsetDefinition,
+    SubsetDefinitionName,
+    TypeDefinition,
+    TypeDefinitionName,
+)
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.yamlutils import YAMLRoot
 
@@ -35,6 +39,7 @@ class JSONLDGenerator(Generator):
 
     Note: this is distinct from :ref:`ContextGenerator`, which generates a JSON-LD context
     """
+
     # ClassVars
     generatorname = os.path.basename(__file__)
     generatorversion = "0.0.2"
@@ -160,9 +165,7 @@ class JSONLDGenerator(Generator):
             ).serialize()
             add_prefixes_json = loads(add_prefixes)
             context = [METAMODEL_CONTEXT_URI, add_prefixes_json["@context"]]
-        elif isinstance(
-            context, str
-        ):  # Some of the older code doesn't do multiple contexts
+        elif isinstance(context, str):  # Some of the older code doesn't do multiple contexts
             context = [context]
         elif isinstance(context, tuple):
             context = list(context)

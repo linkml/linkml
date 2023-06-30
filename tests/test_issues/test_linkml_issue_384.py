@@ -117,15 +117,11 @@ class IssueOWLNamespaceTestCase(TestEnvironmentTestCase):
                 self.assertIn((c, RDF.type, OWL.Class), g)
             for p in props:
                 self.assertIn((p, RDF.type, OWL.ObjectProperty), g)
-            assert self._contains_restriction(
-                g, Person, parent, OWL.allValuesFrom, Person
-            )
+            assert self._contains_restriction(g, Person, parent, OWL.allValuesFrom, Person)
             assert self._contains_restriction(
                 g, Organization, parent, OWL.allValuesFrom, Organization
             )
-            assert self._contains_restriction(
-                g, Person, aliases, OWL.allValuesFrom, string_rep
-            )
+            assert self._contains_restriction(g, Person, aliases, OWL.allValuesFrom, string_rep)
             # TODO: also validate cardinality restrictions
             # assert self._contains_restriction(g, Thing, full_name, OWL.allValuesFrom, string_rep)
 

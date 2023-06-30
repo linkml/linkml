@@ -46,12 +46,8 @@ class MarkdownGeneratorTestCase(unittest.TestCase):
         assert_mdfile_contains("Person.md", "has medical history", after="Own")
         assert_mdfile_contains("Person.md", "aliases", after="Mixed in from HasAliases")
 
-        assert_mdfile_contains(
-            "has_medical_history.md", "MedicalEvent", after="Domain and Range"
-        )
-        assert_mdfile_contains(
-            "has_medical_history.md", "subset B", after="Other properties"
-        )
+        assert_mdfile_contains("has_medical_history.md", "MedicalEvent", after="Domain and Range")
+        assert_mdfile_contains("has_medical_history.md", "subset B", after="Other properties")
 
     def test_slot_name_mapping(self):
         """Tests rewiring names of main metamodel types"""

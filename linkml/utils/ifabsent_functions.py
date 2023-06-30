@@ -13,20 +13,12 @@ def strval(txt: str) -> str:
 
 
 def default_uri_for(loader: SchemaLoader) -> str:
-    dflt = (
-        loader.schema.default_prefix
-        if loader.schema.default_prefix
-        else sfx(loader.schema.id)
-    )
+    dflt = loader.schema.default_prefix if loader.schema.default_prefix else sfx(loader.schema.id)
     return sfx(loader.namespaces.uri_for(dflt))
 
 
 def default_curie_or_uri(loader: SchemaLoader) -> str:
-    dflt = (
-        loader.schema.default_prefix
-        if loader.schema.default_prefix
-        else sfx(loader.schema.id)
-    )
+    dflt = loader.schema.default_prefix if loader.schema.default_prefix else sfx(loader.schema.id)
     if ":/" in dflt:
         prefix = loader.namespaces.prefix_for(loader.schema.default_prefix)
         if prefix:
@@ -65,6 +57,7 @@ def default_ns_for(loader: SchemaLoader, cls: ClassDefinition) -> str:
     #         cls_id = slotname
     # return f"sfx(str(self.{cls_id}))" if cls_id else "None"
 
+
 # Library of named default values -- this is here to prevent code injection
 # Contents: Match text (as re),
 #           flag that indicates whether we're generating a default value expression or postinig code
@@ -80,9 +73,21 @@ default_library: List[
     (r"[Tt]rue", False, lambda _, __, ___, ____: "True"),
     (r"[Ff]alse", False, lambda _, __, ___, ____: "False"),
     (r"int\(([-+]?[0-9]+)\)", False, lambda m, __, ___, ____: int(m[1])),
-    (r"float\(([-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?)\)", False, lambda m, __, ___, ____: float(m[1])),
-    (r"date\((\d{4})-(\d{2})-(\d{2})\)", False, lambda m, __, ___, ____: f"datetime.date({m[1]}, {m[2]}, {m[3]})"),
-    (r"datetime\((\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})Z\)", False, lambda m, __, ___, ____: f"datetime.datetime({m[1]}, {m[2]}, {m[3]}, {m[4]}, {m[5]}, {m[6]})"),
+    (
+        r"float\(([-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?)\)",
+        False,
+        lambda m, __, ___, ____: float(m[1]),
+    ),
+    (
+        r"date\((\d{4})-(\d{2})-(\d{2})\)",
+        False,
+        lambda m, __, ___, ____: f"datetime.date({m[1]}, {m[2]}, {m[3]})",
+    ),
+    (
+        r"datetime\((\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})Z\)",
+        False,
+        lambda m, __, ___, ____: f"datetime.datetime({m[1]}, {m[2]}, {m[3]}, {m[4]}, {m[5]}, {m[6]})",
+    ),
     # TODO: We have to make the real URI available before any of these can work
     # ("class_uri", True, lambda _, loader, ___, ____: f'"{default_uri_for(loader)}" + camelcase(self.name)'),
     # ("slot_uri", True, lambda _, loader, ___, ____: f'"{default_uri_for(loader)}" + underscore(self.alias if self.alias else self.name)'),

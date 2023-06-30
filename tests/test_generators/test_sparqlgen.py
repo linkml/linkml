@@ -10,13 +10,12 @@ DIR = env.expected_path("kitchen_sink_sparql")
 SPARQL = env.expected_path("kitchen_sink.rq")
 
 
-
 class SparqlGeneratorTestCase(unittest.TestCase):
     def test_sparqlgen(self):
         """Generate java classes"""
         gen = SparqlGenerator(SCHEMA)
         sparql = gen.serialize(directory=DIR)
-        #print(sparql)
+        # print(sparql)
         # TODO: add more checks
         self.assertIn("?subject rdf:type ks:Person", sparql)
 

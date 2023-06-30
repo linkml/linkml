@@ -12,9 +12,7 @@ class Issue62TestCase(TestEnvironmentTestCase):
         """Make sure that types are generated as part of the output"""
         env.generate_directory(
             "issue62",
-            lambda d: MarkdownGenerator(env.input_path("issue_62.yaml")).serialize(
-                directory=d
-            ),
+            lambda d: MarkdownGenerator(env.input_path("issue_62.yaml")).serialize(directory=d),
         )
 
 

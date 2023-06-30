@@ -10,7 +10,7 @@ from dataclasses import dataclass, field
 from io import StringIO
 from pathlib import Path
 from types import ModuleType
-from typing import Union, Any, Mapping, Optional, List, TextIO
+from typing import Any, List, Mapping, Optional, TextIO, Union
 
 import click
 import yaml
@@ -29,6 +29,7 @@ class SummaryDocument:
     """
     An object describing the summary for processing a set of examples
     """
+
     text: StringIO = field(default_factory=lambda: StringIO())
 
     inputs: List[str] = field(default_factory=list)
@@ -55,7 +56,7 @@ class ExampleRunner:
     input_directory: Optional[Path] = None
     """Directory in which positive instance examples are found."""
 
-    input_formats: Optional[List[str]] = field(default_factory=lambda: ['yaml'])
+    input_formats: Optional[List[str]] = field(default_factory=lambda: ["yaml"])
 
     counter_example_input_directory: Optional[Path] = None
     """Directory in which negative instance examples are found. These are expected to fail."""
@@ -63,7 +64,7 @@ class ExampleRunner:
     output_directory: Optional[Path] = None
     """Directory where processed examples are written to."""
 
-    output_formats: Optional[List[str]] = field(default_factory=lambda: ['yaml', 'json', 'ttl'])
+    output_formats: Optional[List[str]] = field(default_factory=lambda: ["yaml", "json", "ttl"])
 
     schemaview: Optional[SchemaView] = None
     """View over schema which all examples adhere to."""
@@ -129,13 +130,15 @@ class ExampleRunner:
         if counter_example_dir is None:
             counter_example_dir = Path.cwd() / "counter_examples"
         for fmt in self.input_formats:
-            input_examples = glob.glob(os.path.join(str(input_dir), f'*.{fmt}'))
-            input_counter_examples = glob.glob(os.path.join(str(counter_example_dir), f'*.{fmt}'))
+            input_examples = glob.glob(os.path.join(str(input_dir), f"*.{fmt}"))
+            input_counter_examples = glob.glob(os.path.join(str(counter_example_dir), f"*.{fmt}"))
             if not input_counter_examples:
-                logging.warning(f"No counter examples found in {self.counter_example_input_directory}")
+                logging.warning(
+                    f"No counter examples found in {self.counter_example_input_directory}"
+                )
             self.process_examples_from_list(input_examples, fmt, False)
             self.process_examples_from_list(input_counter_examples, fmt, True)
-            
+
     def example_source_inputs(self, class_name: str = None) -> List[str]:
         """
         Get the list of example source inputs.
@@ -148,15 +151,16 @@ class ExampleRunner:
             return []
         all_inputs = []
         for fmt in self.input_formats:
-            glob_expr = f'*.{fmt}'
+            glob_expr = f"*.{fmt}"
             if class_name is not None:
-                glob_expr = f'{class_name}-{glob_expr}'
+                glob_expr = f"{class_name}-{glob_expr}"
             input_examples = glob.glob(os.path.join(str(input_dir), glob_expr))
             all_inputs.extend(input_examples)
         return all_inputs
 
-
-    def process_examples_from_list(self, input_examples: list, input_format: str, counter_examples: bool = True):
+    def process_examples_from_list(
+        self, input_examples: list, input_format: str, counter_examples: bool = True
+    ):
         sv = self.schemaview
         validator = self.validator
         summary = self.summary
@@ -176,11 +180,9 @@ class ExampleRunner:
                     input_dict = json.load(file)
                 else:
                     raise NotImplementedError(f"Cannot handle format: {input_format}")
-                summary.add(f"## {stem}",
-                            f"### Input",
-                            f"```yaml",
-                            f"{yaml.dump(input_dict)}",
-                            f"```")
+                summary.add(
+                    f"## {stem}", f"### Input", f"```yaml", f"{yaml.dump(input_dict)}", f"```"
+                )
                 success = True
                 try:
                     validator.validate_dict(input_dict, tc, closed=True)
@@ -197,12 +199,14 @@ class ExampleRunner:
                 obj = self._load_from_dict(input_dict, target_class=tc)
                 for fmt in self.output_formats:
                     output_file = f"{base}.{fmt}"
-                    if fmt == 'yaml':
+                    if fmt == "yaml":
                         yaml_dumper.dump(obj, to_file=output_file)
-                    elif fmt == 'json':
+                    elif fmt == "json":
                         json_dumper.dump(obj, to_file=output_file)
-                    elif fmt == 'ttl':
-                        rdflib_dumper.dump(obj, to_file=output_file, schemaview=sv, prefix_map=self.prefix_map)
+                    elif fmt == "ttl":
+                        rdflib_dumper.dump(
+                            obj, to_file=output_file, schemaview=sv, prefix_map=self.prefix_map
+                        )
                     else:
                         raise NotImplementedError(f"Cannot output in format: {fmt}")
                     summary.outputs.append(f"{stem}.{fmt}")
@@ -223,7 +227,9 @@ class ExampleRunner:
         if target_class is None:
             target_class_names = [c.name for c in sv.all_classes().values() if c.tree_root]
             if len(target_class_names) != 1:
-                raise ValueError(f"Cannot determine single target class, found: {target_class_names}")
+                raise ValueError(
+                    f"Cannot determine single target class, found: {target_class_names}"
+                )
             target_class = target_class_names[0]
         if isinstance(dict_obj, dict):
             if target_class not in sv.all_classes():
@@ -238,7 +244,9 @@ class ExampleRunner:
             if ":" in target_class:
                 target_classes = [c for c in sv.all_classes() if sv.get_uri(c) == target_class]
                 if len(target_classes) != 1:
-                    raise ValueError(f"Cannot find unique class for URI {target_class}; got: {target_classes}")
+                    raise ValueError(
+                        f"Cannot find unique class for URI {target_class}; got: {target_classes}"
+                    )
                 target_class = target_classes[0]
             new_dict_obj = {}
             for k, v in dict_obj.items():
@@ -255,44 +263,51 @@ class ExampleRunner:
 
 
 @click.command()
-@click.option("--schema",
-              "-s",
-              required=True,
-              help="Path to linkml schema yaml file")
-@click.option("--prefixes",
-              "-P",
-              help="Path to prefixes")
-@click.option("--input-directory",
-              "-e",
-              help="folder containing positive examples that MUST pass validation")
-@click.option("--counter-example-input-directory",
-              "-N",
-              help="folder containing counter examples that MUST fail validation")
-@click.option("--output-directory",
-              "-d",
-              required=True,
-              help="folder containing positive examples that MUST pass validation")
-@click.option("--input-formats",
-              "-f",
-              multiple=True,
-              default=["yaml"],
-              show_default=True,
-              help="Target formats to be converted to (yaml, json)")
-@click.option("--output-formats",
-              "-t",
-              multiple=True,
-              default=["yaml", "json", "ttl"],
-              show_default=True,
-              help="Target formats to be converted to (yaml, json, ttl)")
-@click.option("--output",
-              "-o",
-              default=sys.stdout,
-              type=click.File("w", encoding="utf-8"),
-              help="Output file for markdown summary")
-@click.option("--use-type-designators/--no-use-type-designators",
-              default=True,
-              show_default=True,
-              help="If true use type_designators to deepen ranges")
+@click.option("--schema", "-s", required=True, help="Path to linkml schema yaml file")
+@click.option("--prefixes", "-P", help="Path to prefixes")
+@click.option(
+    "--input-directory", "-e", help="folder containing positive examples that MUST pass validation"
+)
+@click.option(
+    "--counter-example-input-directory",
+    "-N",
+    help="folder containing counter examples that MUST fail validation",
+)
+@click.option(
+    "--output-directory",
+    "-d",
+    required=True,
+    help="folder containing positive examples that MUST pass validation",
+)
+@click.option(
+    "--input-formats",
+    "-f",
+    multiple=True,
+    default=["yaml"],
+    show_default=True,
+    help="Target formats to be converted to (yaml, json)",
+)
+@click.option(
+    "--output-formats",
+    "-t",
+    multiple=True,
+    default=["yaml", "json", "ttl"],
+    show_default=True,
+    help="Target formats to be converted to (yaml, json, ttl)",
+)
+@click.option(
+    "--output",
+    "-o",
+    default=sys.stdout,
+    type=click.File("w", encoding="utf-8"),
+    help="Output file for markdown summary",
+)
+@click.option(
+    "--use-type-designators/--no-use-type-designators",
+    default=True,
+    show_default=True,
+    help="If true use type_designators to deepen ranges",
+)
 def cli(schema, prefixes, output: TextIO, **kwargs):
     """Process a folder of examples and a folder of counter examples.
 
@@ -302,16 +317,10 @@ def cli(schema, prefixes, output: TextIO, **kwargs):
     """
     schemaview = SchemaView(schema)
     prefix_map = yaml.safe_load(open(prefixes)) if prefixes else None
-    runner = ExampleRunner(schemaview=schemaview,
-                           prefix_map=prefix_map,
-                           **kwargs)
+    runner = ExampleRunner(schemaview=schemaview, prefix_map=prefix_map, **kwargs)
     runner.process_examples()
     output.write(str(runner.summary))
 
 
 if __name__ == "__main__":
     cli(sys.argv[1:])
-
-
-
-

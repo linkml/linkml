@@ -1,8 +1,13 @@
 import unittest
 
-from linkml_runtime.utils.formatutils import (be, camelcase, lcamelcase,
-                                              split_line, underscore,
-                                              wrapped_annotation)
+from linkml_runtime.utils.formatutils import (
+    be,
+    camelcase,
+    lcamelcase,
+    split_line,
+    underscore,
+    wrapped_annotation,
+)
 
 
 class FormatUtilsTestCase(unittest.TestCase):

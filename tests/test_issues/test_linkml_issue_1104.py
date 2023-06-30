@@ -1,17 +1,17 @@
 import logging
 import unittest
 
-from linkml.generators.linkmlgen import LinkmlGenerator
-from linkml.generators.owlgen import OwlSchemaGenerator
 # MetadataProfile
 from linkml_runtime import SchemaView
 from linkml_runtime.dumpers import json_dumper
 from linkml_runtime.loaders import yaml_loader
 
 import tests.test_issues.model.issue_1104_classes
-from tests.test_issues.model.issue_1104_classes import Database
-from tests.test_issues.environment import env
+from linkml.generators.linkmlgen import LinkmlGenerator
+from linkml.generators.owlgen import OwlSchemaGenerator
 from linkml.utils.sqlutils import SQLStore
+from tests.test_issues.environment import env
+from tests.test_issues.model.issue_1104_classes import Database
 
 SCHEMA = env.input_path("issue_1104_schema.yaml")
 DATA = env.input_path("issue_1104_data.yaml")
@@ -24,7 +24,7 @@ class TestActivityAgent(unittest.TestCase):
         assert schemaview.schema.name == "was_associated_with"
 
     def test_generated(self):
-        generator = LinkmlGenerator(SCHEMA, format='yaml')
+        generator = LinkmlGenerator(SCHEMA, format="yaml")
         generated = generator.serialize()
         assert generated
 

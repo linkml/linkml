@@ -4,7 +4,7 @@ import unittest
 
 from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.linkml_model import SchemaDefinition
-from linkml_runtime.utils.formatutils import underscore, camelcase
+from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.yamlutils import YAMLRoot
 
 from linkml.generators.jsonschemagen import JsonSchemaGenerator
@@ -16,8 +16,9 @@ from tests.utils.test_environment import TestEnvironmentTestCase
 
 # reported in https://github.com/linkml/linkml/issues/349
 
+
 def _safe_name(original_name: str, prefix: str = "x_") -> str:
-    safe_name = re.sub('[^0-9a-z_A-Z]+', '_', original_name)
+    safe_name = re.sub("[^0-9a-z_A-Z]+", "_", original_name)
     c1 = safe_name[0]
     if "0" <= c1 <= "9":
         safe_name = underscore(f"{prefix}{safe_name}")
@@ -42,7 +43,7 @@ class Issue349Case(TestEnvironmentTestCase):
     def test_reserved(self):
         slots = ["a", "1S", "a/b", "5'end"]
         # TODO: make classes safe
-        #classes = ["c", "1C", "x-y"]
+        # classes = ["c", "1C", "x-y"]
         classes = ["c"]
         for cn in classes:
             for sn in slots:
@@ -69,7 +70,7 @@ class Issue349Case(TestEnvironmentTestCase):
         self.assertIsNone(errs)
 
     def _test_pythongen(self, schema: SchemaDefinition, inst: YAMLRoot, cn: str, sn: str):
-        gen_slots = False # TODO
+        gen_slots = False  # TODO
         pygen = PythonGenerator(schema, gen_slots=gen_slots)
         pycode = pygen.serialize()
         mod = pygen.compile_module()

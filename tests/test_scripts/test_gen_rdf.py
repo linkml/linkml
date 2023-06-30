@@ -1,6 +1,7 @@
 import os
 import re
 import unittest
+
 # This has to occur post ClickTestCase
 from functools import reduce
 from pathlib import PurePath
@@ -30,9 +31,7 @@ repl1: List[Tuple[str, str]] = [
 
 
 def filtr(txt: str) -> str:
-    return reduce(
-        lambda s, expr: re.sub(expr[0], expr[1], s, flags=re.MULTILINE), repl1, txt
-    )
+    return reduce(lambda s, expr: re.sub(expr[0], expr[1], s, flags=re.MULTILINE), repl1, txt)
 
 
 class GenRDFTestCase(ClickTestCase):
@@ -94,9 +93,7 @@ class GenRDFTestCase(ClickTestCase):
 
     def test_make_script(self):
         """Test a relative file path in JSON"""
-        local_metamodel_LDcontext_file = PurePath(
-            LOCAL_METAMODEL_LDCONTEXT_FILE
-        ).as_posix()
+        local_metamodel_LDcontext_file = PurePath(LOCAL_METAMODEL_LDCONTEXT_FILE).as_posix()
         self.do_test(
             f"--context {local_metamodel_LDcontext_file}",
             "make_output.ttl",

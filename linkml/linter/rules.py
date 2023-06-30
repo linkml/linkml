@@ -3,17 +3,24 @@ from abc import ABC, abstractmethod
 from functools import lru_cache
 from typing import Callable, Iterable, List
 
-from linkml_runtime.linkml_model import (ClassDefinition, ClassDefinitionName,
-                                         Element, SlotDefinition)
+from linkml_runtime.linkml_model import (
+    ClassDefinition,
+    ClassDefinitionName,
+    Element,
+    SlotDefinition,
+)
 from linkml_runtime.utils.schemaview import SchemaView
 from prefixmaps.io.parser import load_multi_context
 
 from linkml import LOCAL_METAMODEL_YAML_FILE
 
-from .config.datamodel.config import (CanonicalPrefixesConfig,
-                                      RecommendedRuleConfig, RuleConfig,
-                                      StandardNamingConfig,
-                                      TreeRootClassRuleConfig)
+from .config.datamodel.config import (
+    CanonicalPrefixesConfig,
+    RecommendedRuleConfig,
+    RuleConfig,
+    StandardNamingConfig,
+    TreeRootClassRuleConfig,
+)
 from .linter import LinterProblem
 
 
@@ -53,18 +60,14 @@ class LinterRule(ABC):
 class NoEmptyTitleRule(LinterRule):
     id = "no_empty_title"
 
-    def check(
-        self, schema_view: SchemaView, fix: bool = False
-    ) -> Iterable[LinterProblem]:
+    def check(self, schema_view: SchemaView, fix: bool = False) -> Iterable[LinterProblem]:
         for e in schema_view.all_elements(imports=False).values():
             if fix and e.title is None:
                 title = e.name.replace("_", " ")
                 title = self.uncamel(title).lower()
                 e.title = title
             if e.title is None:
-                problem = LinterProblem(
-                    message=f"{self.format_element(e)} has no title"
-                )
+                problem = LinterProblem(message=f"{self.format_element(e)} has no title")
                 yield problem
 
 
@@ -77,17 +80,13 @@ class NoXsdIntTypeRule(LinterRule):
                 if fix:
                     type_definition.uri = "xsd:integer"
                 else:
-                    yield LinterProblem(
-                        f"{self.format_element(type_definition)} has uri xsd:int"
-                    )
+                    yield LinterProblem(f"{self.format_element(type_definition)} has uri xsd:int")
 
 
 class PermissibleValuesFormatRule(LinterRule):
     id = "permissible_values_format"
 
-    def check(
-        self, schema_view: SchemaView, fix: bool = False
-    ) -> Iterable[LinterProblem]:
+    def check(self, schema_view: SchemaView, fix: bool = False) -> Iterable[LinterProblem]:
         pattern = self.PATTERNS.get(self.config.format, re.compile(self.config.format))
         for enum_def in schema_view.all_enums(imports=False).values():
             for value in enum_def.permissible_values.keys():
@@ -117,9 +116,7 @@ class RecommendedRule(LinterRule):
 
     def check(self, schema_view: SchemaView, fix: bool = False):
         recommended_meta_slots = _get_recommended_metamodel_slots()
-        for element_name, element_definition in schema_view.all_elements(
-            imports=False
-        ).items():
+        for element_name, element_definition in schema_view.all_elements(imports=False).items():
             if self.config.include and element_name not in self.config.include:
                 continue
             if element_name in self.config.exclude:
@@ -138,19 +135,13 @@ class TreeRootClassRule(LinterRule):
     def __init__(self, config: TreeRootClassRuleConfig) -> None:
         super().__init__(config)
 
-    def check(
-        self, schema_view: SchemaView, fix: bool = False
-    ) -> Iterable[LinterProblem]:
-        tree_roots = [
-            c for c in schema_view.all_classes(imports=False).values() if c.tree_root
-        ]
+    def check(self, schema_view: SchemaView, fix: bool = False) -> Iterable[LinterProblem]:
+        tree_roots = [c for c in schema_view.all_classes(imports=False).values() if c.tree_root]
         if len(tree_roots) > 0:
             if self.config.validate_existing_class_name:
                 for tree_root in tree_roots:
                     if str(tree_root.name) != self.config.root_class_name:
-                        yield LinterProblem(
-                            message=f"Tree root class has name '{tree_root.name}'"
-                        )
+                        yield LinterProblem(message=f"Tree root class has name '{tree_root.name}'")
         else:
             if fix:
                 container = ClassDefinition(self.config.root_class_name, tree_root=True)
@@ -190,9 +181,7 @@ class TreeRootClassRule(LinterRule):
         ]
         if must_have_identifier:
             top_level_classes = [
-                c
-                for c in top_level_classes
-                if schema_view.get_identifier_slot(c.name) is not None
+                c for c in top_level_classes if schema_view.get_identifier_slot(c.name) is not None
             ]
         index_slots = []
         for c in top_level_classes:
@@ -220,12 +209,8 @@ class TreeRootClassRule(LinterRule):
 class NoInvalidSlotUsageRule(LinterRule):
     id = "no_invalid_slot_usage"
 
-    def check(
-        self, schema_view: SchemaView, fix: bool = False
-    ) -> Iterable[LinterProblem]:
-        for class_name, class_definition in schema_view.all_classes(
-            imports=False
-        ).items():
+    def check(self, schema_view: SchemaView, fix: bool = False) -> Iterable[LinterProblem]:
+        for class_name, class_definition in schema_view.all_classes(imports=False).items():
             slot_usage = class_definition.slot_usage
             if not slot_usage:
                 continue
@@ -243,9 +228,7 @@ class StandardNamingRule(LinterRule):
     def __init__(self, config: StandardNamingConfig) -> None:
         self.config = config
 
-    def check(
-        self, schema_view: SchemaView, fix: bool = False
-    ) -> Iterable[LinterProblem]:
+    def check(self, schema_view: SchemaView, fix: bool = False) -> Iterable[LinterProblem]:
         class_pattern = self.PATTERNS["uppercamel"]
         slot_pattern = self.PATTERNS["snake"]
         enum_pattern = self.PATTERNS["uppercamel"]
@@ -280,9 +263,7 @@ class CanonicalPrefixesRule(LinterRule):
     def __init__(self, config: CanonicalPrefixesConfig) -> None:
         self.config = config
 
-    def check(
-        self, schema_view: SchemaView, fix: bool = False
-    ) -> Iterable[LinterProblem]:
+    def check(self, schema_view: SchemaView, fix: bool = False) -> Iterable[LinterProblem]:
         context = load_multi_context(self.config.prefixmaps_contexts)
         prefix_to_namespace = context.as_dict()
         namespace_to_prefix = context.as_inverted_dict()

@@ -21,7 +21,6 @@ from linkml.utils.datavalidator import DataValidator
 
 
 class HashableSchemaDefinition(SchemaDefinition):
-
     def __hash__(self) -> int:
         return hash(self.id)
 
@@ -53,13 +52,12 @@ class JsonSchemaDataValidator(DataValidator):
     _hashable_schema: Union[str, HashableSchemaDefinition] = field(init=False, repr=False)
 
     def __setattr__(self, __name: str, __value: Any) -> None:
-        if (__name == 'schema'):
+        if __name == "schema":
             if isinstance(__value, SchemaDefinition):
                 self._hashable_schema = HashableSchemaDefinition(**asdict(__value))
             else:
                 self._hashable_schema = __value
         return super().__setattr__(__name, __value)
-        
 
     def validate_file(self, input: str, format: str = "json", **kwargs):
         return self.validate_object(obj)
@@ -129,14 +127,12 @@ class JsonSchemaDataValidator(DataValidator):
     "-C",
     help="name of class in datamodel that the root node instantiates",
 )
-@click.option(
-    "--index-slot", "-S", help="top level slot. Required for CSV dumping/loading"
-)
+@click.option("--index-slot", "-S", help="top level slot. Required for CSV dumping/loading")
 @click.option("--schema", "-s", help="Path to schema specified as LinkML yaml")
 @click.option(
-    "--exit-on-first-failure/--no-exit-on-first-failure", 
+    "--exit-on-first-failure/--no-exit-on-first-failure",
     default=False,
-    help="Exit after the first validation failure is found. If not specified all validation failures are reported."
+    help="Exit after the first validation failure is found. If not specified all validation failures are reported.",
 )
 @click.argument("input")
 @click.version_option(__version__, "-V", "--version")
@@ -190,9 +186,7 @@ def cli(
 
     # Validation
     if schema is None:
-        raise Exception(
-            "--schema must be passed in order to validate. Suppress with --no-validate"
-        )
+        raise Exception("--schema must be passed in order to validate. Suppress with --no-validate")
 
     validator = JsonSchemaDataValidator(schema)
     error_count = 0
@@ -208,6 +202,7 @@ def cli(
         click.echo(click.style("\u2713 ", fg="green") + "No problems found")
 
     sys.exit(0 if error_count == 0 else 1)
+
 
 if __name__ == "__main__":
     cli(sys.argv[1:])

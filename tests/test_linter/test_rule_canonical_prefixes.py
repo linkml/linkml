@@ -2,8 +2,7 @@ import unittest
 
 from linkml_runtime import SchemaView
 
-from linkml.linter.config.datamodel.config import (CanonicalPrefixesConfig,
-                                                   RuleLevel)
+from linkml.linter.config.datamodel.config import CanonicalPrefixesConfig, RuleLevel
 from linkml.linter.rules import CanonicalPrefixesRule
 from linkml.utils.schema_builder import SchemaBuilder
 
@@ -17,9 +16,7 @@ class TestCanonicalPrefixesRule(unittest.TestCase):
         builder.add_prefix("WRONG", "http://identifiers.org/orcid/")
 
         schema_view = SchemaView(builder.schema)
-        config = CanonicalPrefixesConfig(
-            level=RuleLevel.error, prefixmaps_contexts=["merged"]
-        )
+        config = CanonicalPrefixesConfig(level=RuleLevel.error, prefixmaps_contexts=["merged"])
 
         rule = CanonicalPrefixesRule(config)
         problems = list(rule.check(schema_view))

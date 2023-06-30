@@ -28,8 +28,16 @@ from linkml.generators.pythongen import PythonGenerator
 from linkml.generators.sqlalchemygen import SQLAlchemyGenerator, TemplateEnum
 from linkml.generators.sqltablegen import SQLTableGenerator
 from linkml.utils import datautils, validation
-from linkml.utils.datautils import (_get_context, _get_format, _is_xsv, dumpers_loaders,
-                                    get_dumper, get_loader, infer_root_class, infer_index_slot)
+from linkml.utils.datautils import (
+    _get_context,
+    _get_format,
+    _is_xsv,
+    dumpers_loaders,
+    get_dumper,
+    get_loader,
+    infer_index_slot,
+    infer_root_class,
+)
 
 
 @dataclass
@@ -118,9 +126,7 @@ class SQLStore:
         """
         return self.load_all(target_class=target_class)[0]
 
-    def load_all(
-        self, target_class: Union[str, Type[YAMLRoot]] = None
-    ) -> List[YAMLRoot]:
+    def load_all(self, target_class: Union[str, Type[YAMLRoot]] = None) -> List[YAMLRoot]:
         if target_class is None:
             target_class_name = infer_root_class(self.schemaview)
             target_class = self.native_module.__dict__[target_class_name]
@@ -132,7 +138,7 @@ class SQLStore:
             q = session.query(typ)
             all_objs = q.all()
             tmp = self.from_sqla(all_objs)
-        return tmp  
+        return tmp
 
     def dump(self, element: YAMLRoot, append=True) -> None:
         """
@@ -295,9 +301,7 @@ def main(verbose: int, quiet: bool, csv_field_size_limit: int):
     "-C",
     help="name of class in datamodel that the root node instantiates",
 )
-@click.option(
-    "--index-slot", "-S", help="top level slot. Required for CSV dumping/loading"
-)
+@click.option("--index-slot", "-S", help="top level slot. Required for CSV dumping/loading")
 @click.option("--schema", "-s", help="Path to schema specified as LinkML yaml")
 @click.option(
     "--validate/--no-validate",
@@ -393,9 +397,7 @@ def dump(
     "-C",
     help="name of class in datamodel that the root node instantiates",
 )
-@click.option(
-    "--index-slot", "-S", help="top level slot. Required for CSV dumping/loading"
-)
+@click.option("--index-slot", "-S", help="top level slot. Required for CSV dumping/loading")
 @click.option("--schema", "-s", help="Path to schema specified as LinkML yaml")
 @click.option(
     "--validate/--no-validate",

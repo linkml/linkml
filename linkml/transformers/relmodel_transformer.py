@@ -4,10 +4,15 @@ from dataclasses import dataclass, field
 from enum import unique
 from typing import Dict, List, Optional
 
-from linkml_runtime.linkml_model import (Annotation, ClassDefinition,
-                                         ClassDefinitionName, Definition,
-                                         Prefix, SchemaDefinition,
-                                         SlotDefinition)
+from linkml_runtime.linkml_model import (
+    Annotation,
+    ClassDefinition,
+    ClassDefinitionName,
+    Definition,
+    Prefix,
+    SchemaDefinition,
+    SlotDefinition,
+)
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.schemaview import SchemaView, SlotDefinitionName
 from sqlalchemy import *
@@ -99,9 +104,7 @@ class MultivaluedScalar(RelationalMapping):
     mapping_type: str = "MultivaluedScalar"
 
 
-def add_attribute(
-    attributes: Dict[str, SlotDefinition], tgt_slot: SlotDefinition
-) -> None:
+def add_attribute(attributes: Dict[str, SlotDefinition], tgt_slot: SlotDefinition) -> None:
     attributes[tgt_slot.name] = tgt_slot
 
 
@@ -221,9 +224,7 @@ class RelationalModelTransformer:
         for cn in target_sv.all_classes():
             pk = self.get_direct_identifier_attribute(target_sv, cn)
             if self.foreign_key_policy == ForeignKeyPolicy.NO_FOREIGN_KEYS:
-                logging.info(
-                    f"Will not inject any PKs, and policy == {self.foreign_key_policy}"
-                )
+                logging.info(f"Will not inject any PKs, and policy == {self.foreign_key_policy}")
             else:
                 if pk is None:
                     pk = self.add_primary_key(cn, target_sv)
@@ -248,9 +249,7 @@ class RelationalModelTransformer:
                 slot = copy(src_slot)
                 slot_range = slot.range
                 slot_range_is_class = slot_range in target_sv.all_classes()
-                links_to_range = [
-                    link for link in links if link.target_class == slot_range
-                ]
+                links_to_range = [link for link in links if link.target_class == slot_range]
                 is_only_ref_to_range = len(links_to_range) == 1
                 is_shared = slot_range_is_class and (
                     slot.inlined or slot.inlined_as_list or "shared" in slot.annotations
@@ -258,9 +257,7 @@ class RelationalModelTransformer:
                 if slot.multivalued:
                     slot.multivalued = False
                     slot_name = slot.name
-                    sn_singular = (
-                        slot.singular_name if slot.singular_name else slot.name
-                    )
+                    sn_singular = slot.singular_name if slot.singular_name else slot.name
                     if pk_slot is None:
                         pk_slot = self.add_primary_key(c.name, target_sv)
                     backref_slot = SlotDefinition(
@@ -361,13 +358,9 @@ class RelationalModelTransformer:
                 if a.range in target.classes:
                     tc = target.classes[a.range]
                     # tc_pk_slot = target_sv.get_identifier_slot(tc.name)
-                    tc_pk_slot = self.get_direct_identifier_attribute(
-                        target_sv, tc.name
-                    )
+                    tc_pk_slot = self.get_direct_identifier_attribute(target_sv, tc.name)
                     if tc_pk_slot is None:
-                        raise ValueError(
-                            f"No PK for attribute {a.name} range {a.range}"
-                        )
+                        raise ValueError(f"No PK for attribute {a.name} range {a.range}")
                     is_inlined = a.inlined or not source_sv.get_identifier_slot(tc.name)
                     if (
                         fk_policy == ForeignKeyPolicy.INJECT_FK_FOR_NESTED
@@ -449,9 +442,7 @@ class RelationalModelTransformer:
         candidate_names = ["id", "uid", "identifier", "pk"]
         valid_candidate_names = [n for n in candidate_names if n not in c.attributes]
         if not valid_candidate_names:
-            raise ValueError(
-                f"Cannot add primary key to class {cn}: no valid candidate names"
-            )
+            raise ValueError(f"Cannot add primary key to class {cn}: no valid candidate names")
         pk = SlotDefinition(name=valid_candidate_names[0], identifier=True, range="integer")
         add_annotation(pk, "dcterms:conformsTo", "rr:BlankNode")
         add_annotation(pk, "autoincrement", "true")

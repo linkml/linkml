@@ -2,21 +2,9 @@ import os
 from collections import defaultdict
 from typing import Optional, Union
 
-from linkml_runtime.dumpers import (
-    CSVDumper,
-    JSONDumper,
-    RDFLibDumper,
-    TSVDumper,
-    YAMLDumper,
-)
+from linkml_runtime.dumpers import CSVDumper, JSONDumper, RDFLibDumper, TSVDumper, YAMLDumper
 from linkml_runtime.linkml_model.meta import ClassDefinitionName, SlotDefinitionName
-from linkml_runtime.loaders import (
-    CSVLoader,
-    JSONLoader,
-    RDFLibLoader,
-    TSVLoader,
-    YAMLLoader,
-)
+from linkml_runtime.loaders import CSVLoader, JSONLoader, RDFLibLoader, TSVLoader, YAMLLoader
 from linkml_runtime.loaders.loader_root import Loader
 from linkml_runtime.utils.schemaview import SchemaView
 
@@ -53,9 +41,7 @@ def _get_format(path: str, specified_format: str = None, default=None):
             if ext is not None:
                 specified_format = ext.replace(".", "")
             else:
-                raise Exception(
-                    f"Must pass format option OR use known file suffix: {path}"
-                )
+                raise Exception(f"Must pass format option OR use known file suffix: {path}")
     specified_format = specified_format.lower()
     if specified_format in aliases:
         specified_format = aliases[specified_format]

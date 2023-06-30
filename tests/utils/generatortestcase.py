@@ -7,8 +7,7 @@ from rdflib import OWL, Graph, Namespace
 from linkml import METAMODEL_NAMESPACE
 from linkml.utils.generator import Generator
 from tests import DEFAULT_LOG_LEVEL
-from tests.utils.test_environment import (TestEnvironment,
-                                          TestEnvironmentTestCase)
+from tests.utils.test_environment import TestEnvironment, TestEnvironmentTestCase
 
 BIOLINK_NS = Namespace("https://w3id.org/biolink/vocab/")
 
@@ -62,9 +61,7 @@ class GeneratorTestCase(TestEnvironmentTestCase):
         if self.env.import_map is not None and "importmap" not in generator_args:
             generator_args["importmap"] = self.env.import_map
         generator_args["log_level"] = DEFAULT_LOG_LEVEL
-        yaml_file = yaml_file or self.env.input_path(
-            subdir or "", self.model_name + ".yaml"
-        )
+        yaml_file = yaml_file or self.env.input_path(subdir or "", self.model_name + ".yaml")
 
         self.env.generate_single_file(
             [subdir or "", (output_name or self.model_name) + "." + suffix],
@@ -100,9 +97,7 @@ class GeneratorTestCase(TestEnvironmentTestCase):
         if generator_args is None:
             generator_args = {}
         else:
-            generator_args = dict(
-                generator_args
-            )  # Make a copy so we don't damage the original
+            generator_args = dict(generator_args)  # Make a copy so we don't damage the original
         if self.env.import_map is not None and "importmap" not in generator_args:
             generator_args["importmap"] = self.env.import_map
         generator_args["log_level"] = DEFAULT_LOG_LEVEL

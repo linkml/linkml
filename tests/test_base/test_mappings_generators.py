@@ -12,8 +12,11 @@ from linkml.generators.pythongen import PythonGenerator
 from linkml.generators.rdfgen import RDFGenerator
 from tests import SKIP_MARKDOWN_VALIDATION, SKIP_MARKDOWN_VALIDATION_REASON
 from tests.test_base.environment import env
-from tests.utils.filters import (json_metadata_context_filter,
-                                 ldcontext_metadata_filter, metadata_filter)
+from tests.utils.filters import (
+    json_metadata_context_filter,
+    ldcontext_metadata_filter,
+    metadata_filter,
+)
 from tests.utils.generatortestcase import GeneratorTestCase
 from tests.utils.python_comparator import compare_python
 
@@ -65,9 +68,7 @@ class MappingsGeneratorTestCase(GeneratorTestCase):
 
         # Create the mappings context file
         context_file = os.path.join(test_dir, "mappings.context.jsonld")
-        ContextGenerator(env.meta_yaml, importmap=env.import_map).serialize(
-            output=context_file
-        )
+        ContextGenerator(env.meta_yaml, importmap=env.import_map).serialize(output=context_file)
         self.assertTrue(os.path.exists(context_file))
 
         # Generate context and use it to create the RDF
@@ -120,20 +121,14 @@ class MappingsGeneratorTestCase(GeneratorTestCase):
             {ns.EX.slot1_close, ns.FULL.slot1_close},
             set(g.objects(ns.EX.s1, ns.SKOS.closeMatch)),
         )
-        self.assertEqual(
-            {ns.EX.slot1, ns.FULL.slot1}, set(g.objects(ns.EX.s1, ns.SKOS.exactMatch))
-        )
+        self.assertEqual({ns.EX.slot1, ns.FULL.slot1}, set(g.objects(ns.EX.s1, ns.SKOS.exactMatch)))
         self.assertEqual(
             ns.EX.s3,
-            g.value(
-                ns.EX.s1, ns.META.deprecated_element_has_exact_replacement, any=False
-            ),
+            g.value(ns.EX.s1, ns.META.deprecated_element_has_exact_replacement, any=False),
         )
         self.assertEqual(
             ns.EX.s4,
-            g.value(
-                ns.EX.s1, ns.META.deprecated_element_has_possible_replacement, any=False
-            ),
+            g.value(ns.EX.s1, ns.META.deprecated_element_has_possible_replacement, any=False),
         )
 
         self.assertEqual(
@@ -145,23 +140,17 @@ class MappingsGeneratorTestCase(GeneratorTestCase):
         )
         self.assertEqual(
             ns.EX.c2,
-            g.value(
-                ns.EX.C1, ns.META.deprecated_element_has_exact_replacement, any=False
-            ),
+            g.value(ns.EX.C1, ns.META.deprecated_element_has_exact_replacement, any=False),
         )
         self.assertEqual(
             ns.EX.c3,
-            g.value(
-                ns.EX.C1, ns.META.deprecated_element_has_possible_replacement, any=False
-            ),
+            g.value(ns.EX.C1, ns.META.deprecated_element_has_possible_replacement, any=False),
         )
         if DO_SHEX_VALIDATION:
             EX = Namespace("http://example.org/mappings/")
             focus = EX.testMetamodelMappings
             start = METAMODEL_NAMESPACE.SchemaDefinition
-            results = ShExEvaluator(g, LOCAL_SHEXJ_FILE_NAME, focus, start).evaluate(
-                debug=False
-            )
+            results = ShExEvaluator(g, LOCAL_SHEXJ_FILE_NAME, focus, start).evaluate(debug=False)
             self.assertTrue(self._evaluate_shex_results(results))
         else:
             print(

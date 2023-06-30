@@ -1,4 +1,4 @@
-import  unittest
+import unittest
 
 from linkml.generators.pydanticgen import PydanticGenerator
 from tests.test_issues.environment import env

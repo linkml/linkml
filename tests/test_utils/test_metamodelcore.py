@@ -3,9 +3,17 @@ import unittest
 from dataclasses import dataclass
 
 from jsonasobj2 import as_json
-from linkml_runtime.utils.metamodelcore import (URI, Bool, Curie, NCName,
-                                                NodeIdentifier, URIorCURIE,
-                                                XSDDate, XSDDateTime, XSDTime)
+from linkml_runtime.utils.metamodelcore import (
+    URI,
+    Bool,
+    Curie,
+    NCName,
+    NodeIdentifier,
+    URIorCURIE,
+    XSDDate,
+    XSDDateTime,
+    XSDTime,
+)
 from linkml_runtime.utils.namespaces import Namespaces
 from linkml_runtime.utils.strictness import lax, strict
 from linkml_runtime.utils.yamlutils import YAMLRoot, as_rdf
@@ -130,9 +138,7 @@ class MetamodelCoreTest(unittest.TestCase):
     def test_date(self):
         v = datetime.date(2019, 7, 6)
         self.assertEqual("2019-07-06", XSDDate(v))  # A date can be a datetime
-        self.assertEqual(
-            "2019-07-06", XSDDate(Literal(v, datatype=XSD.date))
-        )  # An RDFLIB Literal
+        self.assertEqual("2019-07-06", XSDDate(Literal(v, datatype=XSD.date)))  # An RDFLIB Literal
         self.assertEqual("2019-07-06", v.isoformat())  # A string
         self.assertEqual("2019-07-06", XSDDate(XSDDate(v)))  # An existing date
         strict()
@@ -160,9 +166,7 @@ class MetamodelCoreTest(unittest.TestCase):
         self.assertEqual("2019-07-06T17:22:39.007300", v.isoformat())
         self.assertEqual("2019-07-06T17:22:39.007300", XSDDateTime(XSDDateTime(v)))
         vstr = str(Literal(v).value)
-        self.assertEqual(
-            "2019-07-06 17:22:39.007300", vstr
-        )  # Note that this has no 'T'
+        self.assertEqual("2019-07-06 17:22:39.007300", vstr)  # Note that this has no 'T'
         self.assertEqual("2019-07-06T17:22:39.007300", XSDDateTime(vstr))
         with self.assertRaises(ValueError):
             XSDDateTime("Jan 12, 2019")

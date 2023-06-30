@@ -171,9 +171,7 @@ class Issue723ExportCase(TestEnvironmentTestCase):
         pd = json_dumper.to_dict(p)
         # we might expect this
         # self.assertEqual(pd['status'], 'ALIVE')
-        self.assertCountEqual(
-            pd["roles"], [{"text": "ANALYST"}, {"text": "INVESTIGATOR"}]
-        )
+        self.assertCountEqual(pd["roles"], [{"text": "ANALYST"}, {"text": "INVESTIGATOR"}])
         p_json = json_dumper.dumps(p)
         # this does NOT roundtrip:
         # p_roundtrip = json_loader.loads(p_json, target_class=mod.Person)

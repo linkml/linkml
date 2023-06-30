@@ -15,13 +15,11 @@ from typing import Any, ClassVar, Dict, List, Optional, Union
 from includes.types import String
 from linkml_runtime.linkml_model.meta import EnumDefinition, PermissibleValue
 from linkml_runtime.utils.curienamespace import CurieNamespace
-from linkml_runtime.utils.dataclass_extensions_376 import \
-    dataclasses_init_fn_with_kwargs
+from linkml_runtime.utils.dataclass_extensions_376 import dataclasses_init_fn_with_kwargs
 from linkml_runtime.utils.formatutils import camelcase, sfx, underscore
 from linkml_runtime.utils.metamodelcore import bnode, empty_dict, empty_list
 from linkml_runtime.utils.slot import Slot
-from linkml_runtime.utils.yamlutils import (YAMLRoot, extended_float,
-                                            extended_int, extended_str)
+from linkml_runtime.utils.yamlutils import YAMLRoot, extended_float, extended_int, extended_str
 from parse import parse
 from rdflib import Namespace, URIRef
 
@@ -85,6 +83,7 @@ print(str(x))
 x = C(as_str="s:ess t:tee")
 print(str(x))
 x.as_str = "a b c "
+
 
 # Slots
 class slots:

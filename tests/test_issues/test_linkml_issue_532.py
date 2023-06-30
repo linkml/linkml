@@ -27,15 +27,12 @@ class Issue532TestCase(TestEnvironmentTestCase):
     env = env
 
     def test_issue_532(self):
-
         schemafile = env.input_path("linkml_issue_532.yaml")
         sv = SchemaView(schemafile)
         datafile = env.input_path("linkml_issue_532_data.jsonld")
         python_module = PythonGenerator(schemafile).compile_module()
         target_class = python_module.__dict__["PhysicalSampleRecord"]
-        obj = rdflib_loader.load(
-            datafile, fmt="json-ld", target_class=target_class, schemaview=sv
-        )
+        obj = rdflib_loader.load(datafile, fmt="json-ld", target_class=target_class, schemaview=sv)
         validator = JsonSchemaDataValidator(sv.schema)
         # throws an error if invalid
         validator.validate_object(obj)

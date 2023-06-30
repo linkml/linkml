@@ -14,9 +14,16 @@ from linkml_runtime.utils.schemaview import SchemaView
 from linkml._version import __version__
 from linkml.generators.pythongen import PythonGenerator
 from linkml.utils import datautils, validation
-from linkml.utils.datautils import (_get_context, _get_format, _is_xsv,
-                                    dumpers_loaders, get_dumper, get_loader,
-                                    infer_index_slot, infer_root_class)
+from linkml.utils.datautils import (
+    _get_context,
+    _get_format,
+    _is_xsv,
+    dumpers_loaders,
+    get_dumper,
+    get_loader,
+    infer_index_slot,
+    infer_root_class,
+)
 
 
 @click.command()
@@ -45,9 +52,7 @@ from linkml.utils.datautils import (_get_context, _get_format, _is_xsv,
     show_default=True,
     help="Infer the target class from the filename, should be ClassName-<other-chars>.{yaml,json,...}",
 )
-@click.option(
-    "--index-slot", "-S", help="top level slot. Required for CSV dumping/loading"
-)
+@click.option("--index-slot", "-S", help="top level slot. Required for CSV dumping/loading")
 @click.option("--schema", "-s", help="Path to schema specified as LinkML yaml")
 @click.option("--prefix", "-P", multiple=True, help="Prefixmap base=URI pairs")
 @click.option(
@@ -139,9 +144,7 @@ def cli(
         inargs["schema"] = schema
     obj = loader.load(source=input, target_class=py_target_class, **inargs)
     if infer:
-        infer_config = inference_utils.Config(
-            use_expressions=True, use_string_serialization=True
-        )
+        infer_config = inference_utils.Config(use_expressions=True, use_string_serialization=True)
         infer_all_slot_values(obj, schemaview=sv, config=infer_config)
     if validate:
         if schema is None:

@@ -7,13 +7,18 @@ from typing import Dict, List, Optional, TextIO, Union, cast
 
 import click
 from jinja2 import Template
-from linkml_runtime.linkml_model.meta import (ClassDefinition,
-                                              ClassDefinitionName, Element,
-                                              EnumDefinitionName, Prefix,
-                                              SchemaDefinition, SlotDefinition,
-                                              SlotDefinitionName,
-                                              TypeDefinition,
-                                              TypeDefinitionName)
+from linkml_runtime.linkml_model.meta import (
+    ClassDefinition,
+    ClassDefinitionName,
+    Element,
+    EnumDefinitionName,
+    Prefix,
+    SchemaDefinition,
+    SlotDefinition,
+    SlotDefinitionName,
+    TypeDefinition,
+    TypeDefinitionName,
+)
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.schemaview import SchemaView
 
@@ -109,9 +114,7 @@ x = """
 def materialize_schema(schemaview: SchemaView):
     schema = schemaview.schema
     if "rdf" not in schema.prefixes:
-        schema.prefixes["rdf"] = Prefix(
-            "rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-        )
+        schema.prefixes["rdf"] = Prefix("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#")
     for scn in schemaview.imports_closure():
         for pfxn, pfx in schemaview.schema_map[scn].prefixes.items():
             if pfxn not in schema:

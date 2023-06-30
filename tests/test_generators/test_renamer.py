@@ -1,14 +1,17 @@
 import unittest
 
 from linkml_runtime.dumpers import yaml_dumper
-from linkml_runtime.linkml_model import (ClassDefinition, EnumDefinition,
-                                         SlotDefinition)
+from linkml_runtime.linkml_model import ClassDefinition, EnumDefinition, SlotDefinition
 from linkml_runtime.utils.introspection import package_schemaview
 from linkml_runtime.utils.schemaview import SchemaView
 
 from linkml.transformers.relmodel_transformer import (
-    ForeignKeyPolicy, RelationalModelTransformer, TransformationResult,
-    get_foreign_key_map, get_primary_key_attributes)
+    ForeignKeyPolicy,
+    RelationalModelTransformer,
+    TransformationResult,
+    get_foreign_key_map,
+    get_primary_key_attributes,
+)
 from linkml.transformers.schema_renamer import SchemaRenamer
 from linkml.utils.schema_builder import SchemaBuilder
 from tests.test_generators.environment import env

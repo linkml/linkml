@@ -162,7 +162,6 @@ class SQLAlchemyGeneratorTestCase(unittest.TestCase):
         i2 = mod.MyClass2(ref_to_c1=[i1])
         self.assertEqual(i2.ref_to_c1[0], i1)
 
-
     def test_sqla_compile_imperative(self):
         """
         tests compilation of generated imperative mappings
@@ -175,14 +174,10 @@ class SQLAlchemyGeneratorTestCase(unittest.TestCase):
         # test three attributes with values supplied above
         self.assertTrue(hasattr(p1, "id"), f"'id' attribute not found in {p1}")
         self.assertTrue(hasattr(p1, "name"), f"'name' attribute not found in {p1}")
-        self.assertTrue(
-            hasattr(p1, "age_in_years"), f"'age_in_years' attribute not found in {p1}"
-        )
+        self.assertTrue(hasattr(p1, "age_in_years"), f"'age_in_years' attribute not found in {p1}")
 
         # test one or more attributes without values supplied during initialization
-        self.assertTrue(
-            hasattr(p1, "description"), f"'description' attribute not found in {p1}"
-        )
+        self.assertTrue(hasattr(p1, "description"), f"'description' attribute not found in {p1}")
 
     def test_sqla_imperative_dataclasses_exec(self):
         """
@@ -203,9 +198,7 @@ class SQLAlchemyGeneratorTestCase(unittest.TestCase):
         SessionClass = sessionmaker(bind=engine)
         session = SessionClass()
         gen = SQLAlchemyGenerator(SCHEMA)
-        mod = gen.compile_sqla(
-            template=TemplateEnum.IMPERATIVE, compile_python_dataclasses=True
-        )
+        mod = gen.compile_sqla(template=TemplateEnum.IMPERATIVE, compile_python_dataclasses=True)
         p1 = mod.Person(id="P1", name="a b", age_in_years=22)
         session.add(p1)
         q = session.query(mod.Person).where(mod.Person.name == p1.name)
@@ -218,9 +211,7 @@ class SQLAlchemyGeneratorTestCase(unittest.TestCase):
         session.commit()
         dc = mod.DiagnosisConcept(id="C001", name="cough")
         e1 = mod.MedicalEvent(duration=100.0, diagnosis=dc)
-        address = mod.Address(
-            street="1 a street", city="big city", postal_code="ZZ1 ZZ2"
-        )
+        address = mod.Address(street="1 a street", city="big city", postal_code="ZZ1 ZZ2")
         p2 = mod.Person(
             id="P2",
             name="p2 name",
@@ -287,9 +278,7 @@ class SQLAlchemyGeneratorTestCase(unittest.TestCase):
         assert p1.age_in_years == 22
         session.commit()
         e1 = mod.MedicalEvent(duration=100.0)
-        p2 = mod.Person(
-            id="P2", name="p2 name", aliases=["foo"], has_medical_history=[e1]
-        )
+        p2 = mod.Person(id="P2", name="p2 name", aliases=["foo"], has_medical_history=[e1])
         session.add(p2)
         session.commit()
         q = session.query(mod.Person).where(mod.Person.id == p2.id)
@@ -332,13 +321,9 @@ class SQLAlchemyGeneratorTestCase(unittest.TestCase):
         # add person - inlined medical events will be translated to backrefs
         # aliases =['x']
         # aliases = []
-        address = mod.Address(
-            street="1 a street", city="big city", postal_code="ZZ1 ZZ2"
-        )
+        address = mod.Address(street="1 a street", city="big city", postal_code="ZZ1 ZZ2")
         # p1 = mod.Person(id='P1', name='a b', aliases=aliases, age_in_years=22, has_medical_history=[e1, e2], current_address=address)
-        p1 = mod.Person(
-            id="P1", name="a b", age_in_years=22, has_medical_history=[e1, e2]
-        )
+        p1 = mod.Person(id="P1", name="a b", age_in_years=22, has_medical_history=[e1, e2])
         p1.aliases = ["Anne"]
         # p1.aliases_rel = [mod.Person_alias(alias='zzz')]
         p1.aliases.append("Fred")
@@ -388,9 +373,7 @@ class SQLAlchemyGeneratorTestCase(unittest.TestCase):
             for e in p1_medical_history
             if (e.diagnosis.id == "C999" and e.diagnosis.name == "rash")
         )
-        assert any(
-            r for r in p1_famrels if (r.related_to == "P2" and r.type == "SIBLING_OF")
-        )
+        assert any(r for r in p1_famrels if (r.related_to == "P2" and r.type == "SIBLING_OF"))
         assert any(n for n in p1_news if (n.headline == "foo"))
         session.commit()
         session.close()

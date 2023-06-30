@@ -23,9 +23,7 @@ repl: List[Tuple[str, str]] = [
 
 
 def filtr(txt: str) -> str:
-    return reduce(
-        lambda s, expr: re.sub(expr[0], expr[1], s, flags=re.MULTILINE), repl, txt
-    )
+    return reduce(lambda s, expr: re.sub(expr[0], expr[1], s, flags=re.MULTILINE), repl, txt)
 
 
 class OWLTestCase(TestEnvironmentTestCase):

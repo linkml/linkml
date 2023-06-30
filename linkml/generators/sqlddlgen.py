@@ -6,10 +6,13 @@ from typing import Dict, List, Optional, TextIO, Tuple, Union
 
 import click
 from deprecated.classic import deprecated
-from linkml_runtime.linkml_model.meta import (ClassDefinition,
-                                              ClassDefinitionName,
-                                              SchemaDefinition, SlotDefinition,
-                                              SlotDefinitionName)
+from linkml_runtime.linkml_model.meta import (
+    ClassDefinition,
+    ClassDefinitionName,
+    SchemaDefinition,
+    SlotDefinition,
+    SlotDefinitionName,
+)
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from sqlalchemy import *
 
@@ -320,17 +323,11 @@ class SQLDDLGenerator(Generator):
                     linktable_name = f"{table.name}_{sqlcol.name}"
                     backref_col_name = "backref_id"
                     linktable = SQLTable(name=linktable_name)
-                    linktable.add_column(
-                        SQLColumn(name=backref_col_name, foreign_key=table_pk)
-                    )
+                    linktable.add_column(SQLColumn(name=backref_col_name, foreign_key=table_pk))
                     linktable.add_column(sqlcol)
                     sqlschema.add_table(linktable)
                     table.remove_column(sqlcol)
-                if (
-                    not is_primitive
-                    and table_pk is not None
-                    and len(ref.referenced_by) == 1
-                ):
+                if not is_primitive and table_pk is not None and len(ref.referenced_by) == 1:
                     # e.g. user->addresses
                     backref_col_name = f"{table.name}_{table_pk.name}"
                     backref_col = SQLColumn(name=backref_col_name, foreign_key=table_pk)
@@ -392,9 +389,7 @@ class SQLDDLGenerator(Generator):
         def dump(sql, *multiparams, **params):
             print(f"{str(sql.compile(dialect=engine.dialect)).rstrip()};")
 
-        engine = create_mock_engine(
-            f"{self.dialect}://./MyDb", strategy="mock", executor=dump
-        )
+        engine = create_mock_engine(f"{self.dialect}://./MyDb", strategy="mock", executor=dump)
         schema_metadata = MetaData()
         for t in self.sqlschema.tables.values():
             cls = t.mapped_to

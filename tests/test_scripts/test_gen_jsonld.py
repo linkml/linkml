@@ -1,6 +1,7 @@
 import os
 import re
 import unittest
+
 # This has to occur post ClickTestCase
 from functools import reduce
 from pathlib import PurePath
@@ -119,20 +120,14 @@ class GenJSONLDTestCase(ClickTestCase):
                 n_classes,
                 f"Expected {expected_classes} classes in {model}",
             )
-            self.assertEqual(
-                expected_slots, n_slots, f"Expected {expected_slots} slots in {model}"
-            )
-            self.assertEqual(
-                expected_types, n_types, f"Expected {expected_types} types in {model}"
-            )
+            self.assertEqual(expected_slots, n_slots, f"Expected {expected_slots} slots in {model}")
+            self.assertEqual(expected_types, n_types, f"Expected {expected_types} types in {model}")
             self.assertEqual(
                 expected_subsets,
                 n_subsets,
                 f"Expected {expected_subsets} subsets in {model}",
             )
-            self.assertEqual(
-                expected_enums, n_enums, f"Expected {expected_enums} enums in {model}"
-            )
+            self.assertEqual(expected_enums, n_enums, f"Expected {expected_enums} enums in {model}")
 
     @unittest.skip("This test is too fragile, needs updated when metamodel changes")
     def test_meta_output(self):

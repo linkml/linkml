@@ -8,16 +8,26 @@ from typing import Callable, Dict, Iterator, List, Optional, Set, Tuple, Union
 
 import click
 from linkml_runtime.linkml_model import linkml_files
-from linkml_runtime.linkml_model.meta import (ClassDefinition,
-                                              ClassDefinitionName,
-                                              DefinitionName, Element,
-                                              EnumDefinition, PermissibleValue,
-                                              SlotDefinition,
-                                              SlotDefinitionName,
-                                              TypeDefinition)
+from linkml_runtime.linkml_model.meta import (
+    ClassDefinition,
+    ClassDefinitionName,
+    DefinitionName,
+    Element,
+    EnumDefinition,
+    PermissibleValue,
+    SlotDefinition,
+    SlotDefinitionName,
+    TypeDefinition,
+)
 from linkml_runtime.utils.compile_python import compile_python
-from linkml_runtime.utils.formatutils import (be, camelcase, sfx, split_col,
-                                              underscore, wrapped_annotation)
+from linkml_runtime.utils.formatutils import (
+    be,
+    camelcase,
+    sfx,
+    split_col,
+    underscore,
+    wrapped_annotation,
+)
 from linkml_runtime.utils.metamodelcore import builtinnames
 from rdflib import URIRef
 
@@ -25,9 +35,11 @@ import linkml
 from linkml._version import __version__
 from linkml.generators import PYTHON_GEN_VERSION
 from linkml.utils.generator import Generator, shared_arguments
-from linkml.utils.ifabsent_functions import (default_curie_or_uri,
-                                             ifabsent_postinit_declaration,
-                                             ifabsent_value_declaration)
+from linkml.utils.ifabsent_functions import (
+    default_curie_or_uri,
+    ifabsent_postinit_declaration,
+    ifabsent_value_declaration,
+)
 
 
 @dataclass
@@ -57,9 +69,7 @@ class PythonGenerator(Generator):
         if self.format is None:
             self.format = self.valid_formats[0]
         if self.schema.default_prefix == "linkml" and not self.genmeta:
-            logging.error(
-                f"Generating metamodel without --genmeta is highly inadvisable!"
-            )
+            logging.error(f"Generating metamodel without --genmeta is highly inadvisable!")
         if (
             not self.schema.source_file
             and isinstance(self.sourcefile, str)
@@ -82,18 +92,14 @@ class PythonGenerator(Generator):
 
     def visit_schema(self, **kwargs) -> None:
         # Add explicitly declared prefixes
-        self.emit_prefixes.update(
-            [p.prefix_prefix for p in self.schema.prefixes.values()]
-        )
+        self.emit_prefixes.update([p.prefix_prefix for p in self.schema.prefixes.values()])
 
         # Add all emit statements
         self.emit_prefixes.update(self.schema.emit_prefixes)
 
         # Add the default prefix
         if self.schema.default_prefix:
-            self.emit_prefixes.add(
-                self.namespaces.prefix_for(self.schema.default_prefix)
-            )
+            self.emit_prefixes.add(self.namespaces.prefix_for(self.schema.default_prefix))
 
     def visit_class(self, cls: ClassDefinition) -> bool:
         if not cls.imported_from:
@@ -123,9 +129,7 @@ class PythonGenerator(Generator):
             if self.genmeta
             else "from linkml_runtime.linkml_model.meta import EnumDefinition, PermissibleValue, PvFormulaOptions\n"
         )
-        handlerimport = (
-            "from linkml_runtime.utils.enumerations import EnumDefinitionImpl"
-        )
+        handlerimport = "from linkml_runtime.utils.enumerations import EnumDefinitionImpl"
         split_description = ""
         if self.schema.description:
             split_description = "\n#   ".join(
@@ -191,9 +195,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
         )
 
     def gen_imports(self) -> str:
-        listents = [
-            f"from {k} import {', '.join(v)}" for k, v in self.gen_import_list().items()
-        ]
+        listents = [f"from {k} import {', '.join(v)}" for k, v in self.gen_import_list().items()]
         return "\n".join(listents)
 
     def gen_import_list(self) -> Dict[str, List[str]]:
@@ -220,17 +222,13 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
                         model_base + path[len(linkml_files.LINKML_NAMESPACE) :], set()
                     ).add(name)
                 elif path == linkml.BIOLINK_MODEL_URI:
-                    innerself.v.setdefault(linkml.BIOLINK_MODEL_PYTHON_LOC, set()).add(
+                    innerself.v.setdefault(linkml.BIOLINK_MODEL_PYTHON_LOC, set()).add(name)
+                elif "://" in path:
+                    raise ValueError(f"Cannot map {path} into a python import statement")
+                elif "/" in path:
+                    innerself.v.setdefault(path.replace("./", ".").replace("/", "."), set()).add(
                         name
                     )
-                elif "://" in path:
-                    raise ValueError(
-                        f"Cannot map {path} into a python import statement"
-                    )
-                elif "/" in path:
-                    innerself.v.setdefault(
-                        path.replace("./", ".").replace("/", "."), set()
-                    ).add(name)
                 elif "." in path:
                     innerself.v.setdefault(path, set()).add(name)
                 else:
@@ -262,9 +260,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
                     cls = self.schema.classes[slot.range]
                     if cls.imported_from:
                         if self.class_identifier(cls):
-                            identifier_range = self.class_identifier_path(cls, False)[
-                                -1
-                            ]
+                            identifier_range = self.class_identifier_path(cls, False)[-1]
                             if identifier_range in self.schema.types:
                                 add_type_ref(TypeDefinition(identifier_range))
                             else:
@@ -328,22 +324,15 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
                 pkeys = self.primary_keys_for(cls)
                 if pkeys:
                     for pk in pkeys:
-                        classname = camelcase(cls.name) + camelcase(
-                            self.aliased_slot_name(pk)
-                        )
+                        classname = camelcase(cls.name) + camelcase(self.aliased_slot_name(pk))
                         # If we've got a parent slot and the range of the parent is the range of the child, the
                         # child slot is a subclass of the parent.  Otherwise, the child range has been overridden,
                         # so the inheritance chain has been broken
-                        parent_pk = (
-                            self.class_identifier(cls.is_a) if cls.is_a else None
-                        )
-                        parent_pk_slot = (
-                            self.schema.slots[parent_pk] if parent_pk else None
-                        )
+                        parent_pk = self.class_identifier(cls.is_a) if cls.is_a else None
+                        parent_pk_slot = self.schema.slots[parent_pk] if parent_pk else None
                         pk_slot = self.schema.slots[pk]
                         if parent_pk_slot and (
-                            parent_pk_slot.name == pk
-                            or pk_slot.range == parent_pk_slot.range
+                            parent_pk_slot.name == pk or pk_slot.range == parent_pk_slot.range
                         ):
                             parents = self.class_identifier_path(cls.is_a, False)
                         else:
@@ -360,14 +349,10 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
     def gen_typedefs(self) -> str:
         """Generate python type declarations for all defined types"""
         rval = []
-        defs_to_generate = [
-            x for x in self.schema.types.values() if not x.imported_from
-        ]
+        defs_to_generate = [x for x in self.schema.types.values() if not x.imported_from]
         emitted_types = []
         ## all imported_from types are already considered generated
-        emitted_types.extend(
-            [x.name for x in self.schema.types.values() if x.imported_from]
-        )
+        emitted_types.extend([x.name for x in self.schema.types.values() if x.imported_from])
         for typ in [x for x in defs_to_generate if not x.typeof]:
             self._gen_typedef(typ, typ.base.rsplit(".")[-1], rval, emitted_types)
 
@@ -377,9 +362,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
             ]
             if len(defs_to_generate_typeof) == 0:
                 break
-            defs_can_generate = [
-                x for x in defs_to_generate_typeof if x.typeof in emitted_types
-            ]
+            defs_can_generate = [x for x in defs_to_generate_typeof if x.typeof in emitted_types]
             if len(defs_can_generate) == 0:
                 raise ValueError(
                     f"Cannot generate type definition for {[f'{x.name} of {x.typeof}' for x in defs_to_generate_typeof]}. Forgot a link in the type hierarchy chain?"
@@ -395,9 +378,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
         if typ.description:
             description = typ.description.replace('"""', "---")
             desc = f'\n\t""" {description} """'
-        rval.append(
-            f"class {typname}({superclass}):{desc}\n\t{self.gen_type_meta(typ)}\n\n"
-        )
+        rval.append(f"class {typname}({superclass}):{desc}\n\t{self.gen_type_meta(typ)}\n\n")
         emitted_types.append(typ.name)
 
     def gen_classdefs(self) -> str:
@@ -459,9 +440,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
             class_class_curie = None
         if class_class_curie:
             class_class_curie = f'"{class_class_curie}"'
-        class_class_uri = (
-            cls_python_uri if cls_python_uri else f'URIRef("{class_class_uri}")'
-        )
+        class_class_uri = cls_python_uri if cls_python_uri else f'URIRef("{class_class_uri}")'
         class_model_uri = self.namespaces.uri_or_curie_for(
             self.schema.default_prefix or "DEFAULT_", camelcase(cls.name)
         )
@@ -493,9 +472,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
             type_class_curie = None
         if type_class_curie:
             type_class_curie = f'"{type_class_curie}"'
-        type_class_uri = (
-            type_python_uri if type_python_uri else f'URIRef("{type_class_uri}")'
-        )
+        type_class_uri = type_python_uri if type_python_uri else f'URIRef("{type_class_uri}")'
         type_model_uri = self.namespaces.uri_or_curie_for(
             self.schema.default_prefix, camelcase(typ.name)
         )
@@ -532,9 +509,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
             lambda slot: (slot.identifier or slot.key) and not slot.ifabsent,
             first_hit_only=True,
         )
-        initializers += [
-            self.gen_class_variable(cls, slot, not is_root) for slot in slot_variables
-        ]
+        initializers += [self.gen_class_variable(cls, slot, not is_root) for slot in slot_variables]
 
         # Required slots
         slot_variables = self._slot_iter(
@@ -544,25 +519,17 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
             and not slot.key
             and not slot.ifabsent,
         )
-        initializers += [
-            self.gen_class_variable(cls, slot, not is_root) for slot in slot_variables
-        ]
+        initializers += [self.gen_class_variable(cls, slot, not is_root) for slot in slot_variables]
 
         # Required or key slots with default values
-        slot_variables = self._slot_iter(
-            cls, lambda slot: slot.ifabsent and slot.required
-        )
-        initializers += [
-            self.gen_class_variable(cls, slot, False) for slot in slot_variables
-        ]
+        slot_variables = self._slot_iter(cls, lambda slot: slot.ifabsent and slot.required)
+        initializers += [self.gen_class_variable(cls, slot, False) for slot in slot_variables]
 
         # Followed by everything else
         slot_variables = self._slot_iter(
             cls, lambda slot: not slot.required and slot in domain_slots
         )
-        initializers += [
-            self.gen_class_variable(cls, slot, False) for slot in slot_variables
-        ]
+        initializers += [self.gen_class_variable(cls, slot, False) for slot in slot_variables]
 
         return "\n\t".join(initializers)
 
@@ -618,9 +585,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
         pkey = self.class_identifier(slot.range)
         # Special case, inlined, identified range
         if pkey and slot.inlined and slot.multivalued:
-            base_key = self.gen_class_reference(
-                self.class_identifier_path(slot.range, False)
-            )
+            base_key = self.gen_class_reference(self.class_identifier_path(slot.range, False))
             num_elements = len(self.schema.classes[slot.range].slots)
             dflt = None if slot.required and positional_allowed else "empty_dict()"
             if num_elements == 1:
@@ -709,12 +674,8 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
             if slot.ifabsent:
                 dflt = ifabsent_postinit_declaration(slot.ifabsent, self, cls, slot)
                 if dflt and dflt != "None":
-                    post_inits_pre_super.append(
-                        f"if self.{self.slot_name(slot.name)} is None:"
-                    )
-                    post_inits_pre_super.append(
-                        f"\tself.{self.slot_name(slot.name)} = {dflt}"
-                    )
+                    post_inits_pre_super.append(f"if self.{self.slot_name(slot.name)} is None:")
+                    post_inits_pre_super.append(f"\tself.{self.slot_name(slot.name)} = {dflt}")
 
         post_inits = []
         if not (cls.mixin or cls.abstract):
@@ -737,9 +698,9 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
                 if slot.name not in pkeys and (not slot.ifabsent or True):
                     post_inits.append(self.gen_postinit(cls, slot))
 
-        post_inits_pre_super_line = "\n\t\t".join(
-            [p for p in post_inits_pre_super if p]
-        ) + ("\n\t\t" if post_inits_pre_super else "")
+        post_inits_pre_super_line = "\n\t\t".join([p for p in post_inits_pre_super if p]) + (
+            "\n\t\t" if post_inits_pre_super else ""
+        )
         post_inits_line = "\n\t\t".join([p for p in post_inits if p])
         return (
             (
@@ -771,9 +732,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
                     del clist[i]
                     break
             if not can_add:
-                raise (
-                    f"could not find suitable element in {clist} that does not ref {slist}"
-                )
+                raise (f"could not find suitable element in {clist} that does not ref {slist}")
         return slist
 
     def is_key_value_class(self, range_name: DefinitionName) -> bool:
@@ -815,19 +774,14 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
         # NOTE: if you set this to true, we will cast all types.   This may be what we really want
         if not slot.multivalued:
             if slot.required:
-                rlines.append(
-                    f"if not isinstance(self.{aliased_slot_name}, {base_type_name}):"
-                )
+                rlines.append(f"if not isinstance(self.{aliased_slot_name}, {base_type_name}):")
             else:
                 rlines.append(
                     f"if self.{aliased_slot_name} is not None and "
                     f"not isinstance(self.{aliased_slot_name}, {base_type_name}):"
                 )
             # A really weird case -- a class that has no properties
-            if (
-                slot.range in self.schema.classes
-                and not self.schema.classes[slot.range].slots
-            ):
+            if slot.range in self.schema.classes and not self.schema.classes[slot.range].slots:
                 rlines.append(f"\tself.{aliased_slot_name} = {base_type_name}()")
             else:
                 if (
@@ -928,8 +882,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
         return [
             slot_name
             for slot_name in cls.slots
-            if self.schema.slots[slot_name].key
-            or self.schema.slots[slot_name].identifier
+            if self.schema.slots[slot_name].key or self.schema.slots[slot_name].identifier
         ]
 
     def key_name_for(self, class_name: ClassDefinitionName) -> Optional[str]:
@@ -949,12 +902,8 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
         """Determine whether slot_range is a forward reference"""
         # logging.info(f"CHECKING: {slot_range} {owning_class}")
         if (
-            slot_range in self.schema.classes
-            and self.schema.classes[slot_range].imported_from
-        ) or (
-            slot_range in self.schema.enums
-            and self.schema.enums[slot_range].imported_from
-        ):
+            slot_range in self.schema.classes and self.schema.classes[slot_range].imported_from
+        ) or (slot_range in self.schema.enums and self.schema.enums[slot_range].imported_from):
             logging.info(
                 f"FALSE: FORWARD: {slot_range} {owning_class} // IMP={self.schema.classes[slot_range].imported_from}"
             )
@@ -963,9 +912,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
             return True
         for cname in self.schema.classes:
             if cname == owning_class:
-                logging.info(
-                    f"TRUE: OCCURS SAME: {cname} == {slot_range} owning: {owning_class}"
-                )
+                logging.info(f"TRUE: OCCURS SAME: {cname} == {slot_range} owning: {owning_class}")
                 return True  # Occurs on or after
             elif cname == slot_range:
                 logging.info(
@@ -974,9 +921,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
                 return False  # Occurs before
         return True
 
-    def python_uri_for(
-        self, uriorcurie: Union[str, URIRef]
-    ) -> Tuple[str, Optional[str]]:
+    def python_uri_for(self, uriorcurie: Union[str, URIRef]) -> Tuple[str, Optional[str]]:
         """Return the python form of uriorcurie
         :param uriorcurie:
         :return: URI and CURIE form
@@ -1007,9 +952,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
         python_slot_name = underscore(slot.name)
         slot_uri, slot_curie = self.python_uri_for(slot.slot_uri)
         slot_model_uri, slot_model_curie = self.python_uri_for(
-            self.namespaces.uri_or_curie_for(
-                self.schema.default_prefix, python_slot_name
-            )
+            self.namespaces.uri_or_curie_for(self.schema.default_prefix, python_slot_name)
         )
         domain = (
             camelcase(slot.domain)
@@ -1038,20 +981,14 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
         else:
             mappings = ""
         pattern = (
-            f",\n                   pattern=re.compile(r'{slot.pattern}')"
-            if slot.pattern
-            else ""
+            f",\n                   pattern=re.compile(r'{slot.pattern}')" if slot.pattern else ""
         )
         return f"""slots.{python_slot_name} = Slot(uri={slot_uri}, name="{slot.name}", curie={slot_curie},
                    model_uri={slot_model_uri}, domain={domain}, range={rnge}{mappings}{pattern})"""
 
     def gen_enumerations(self) -> str:
         return "\n\n".join(
-            [
-                self.gen_enum(enum)
-                for enum in self.schema.enums.values()
-                if not enum.imported_from
-            ]
+            [self.gen_enum(enum) for enum in self.schema.enums.values() if not enum.imported_from]
         )
 
     def gen_enum(self, enum: EnumDefinition) -> str:
@@ -1094,11 +1031,7 @@ class {enum_name}(EnumDefinitionImpl):
             else ""
         )
         tag = f'\t\tcode_set_tag="{enum.code_set_tag}",\n' if enum.code_set_tag else ""
-        ver = (
-            f'\t\tcode_set_version="{enum.code_set_version}",\n'
-            if enum.code_set_version
-            else ""
-        )
+        ver = f'\t\tcode_set_version="{enum.code_set_version}",\n' if enum.code_set_version else ""
         vf = (
             f"\t\tpv_formula=PvFormulaOptions.{enum.pv_formula.code.text},\n"
             if enum.pv_formula
@@ -1147,9 +1080,7 @@ class {enum_name}(EnumDefinitionImpl):
                     indent_str = indent * " "
                     pv_text = pv.text.replace('"', '\\"').replace(r"\n", r"\\n")
                     pv_parts = self.gen_pv_constructor(pv, indent)
-                    init_list.append(
-                        f'        setattr(cls, "{pv_text}",\n{indent_str}{pv_parts})'
-                    )
+                    init_list.append(f'        setattr(cls, "{pv_text}",\n{indent_str}{pv_parts})')
 
             add_vals_text = "\n".join(init_list).rstrip()
 
@@ -1212,9 +1143,7 @@ class {enum_name}(EnumDefinitionImpl):
 
 @shared_arguments(PythonGenerator)
 @click.command()
-@click.option(
-    "--head/--no-head", default=True, show_default=True, help="Emit metadata heading"
-)
+@click.option("--head/--no-head", default=True, show_default=True, help="Emit metadata heading")
 @click.option(
     "--genmeta/--no-genmeta",
     default=False,

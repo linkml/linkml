@@ -2,23 +2,35 @@ import logging
 from dataclasses import dataclass, field
 from typing import Dict, List, Set, Union, cast
 
-from linkml_runtime.linkml_model.meta import (ClassDefinition,
-                                              ClassDefinitionName, Definition,
-                                              DefinitionName, Element,
-                                              ElementName, EnumDefinition,
-                                              EnumDefinitionName,
-                                              SchemaDefinition, SlotDefinition,
-                                              SlotDefinitionName,
-                                              SubsetDefinitionName,
-                                              TypeDefinition,
-                                              TypeDefinitionName)
+from linkml_runtime.linkml_model.meta import (
+    ClassDefinition,
+    ClassDefinitionName,
+    Definition,
+    DefinitionName,
+    Element,
+    ElementName,
+    EnumDefinition,
+    EnumDefinitionName,
+    SchemaDefinition,
+    SlotDefinition,
+    SlotDefinitionName,
+    SubsetDefinitionName,
+    TypeDefinition,
+    TypeDefinitionName,
+)
 from linkml_runtime.utils.metamodelcore import empty_dict
 from linkml_runtime.utils.yamlutils import TypedNode
 from rdflib import URIRef
 
-from linkml.utils.typereferences import (ClassType, EnumType, References,
-                                         RefType, SlotType, SubsetType,
-                                         TypeType)
+from linkml.utils.typereferences import (
+    ClassType,
+    EnumType,
+    References,
+    RefType,
+    SlotType,
+    SubsetType,
+    TypeType,
+)
 
 
 def empty_references() -> field:
@@ -33,29 +45,17 @@ class SchemaSynopsis:
     schema: SchemaDefinition = field(repr=False, compare=False)
 
     # References by type -- set by add_ref
-    typerefs: Dict[
-        TypeDefinitionName, References
-    ] = empty_dict()  # Type name to all references
-    slotrefs: Dict[
-        SlotDefinitionName, References
-    ] = empty_dict()  # Slot name to all references
-    classrefs: Dict[
-        ClassDefinitionName, References
-    ] = empty_dict()  # Class name to all references
-    subsetrefs: Dict[
-        SubsetDefinitionName, References
-    ] = empty_dict()  # Subset name to references
-    enumrefs: Dict[
-        EnumDefinitionName, References
-    ] = empty_dict()  # Enum name to references
+    typerefs: Dict[TypeDefinitionName, References] = empty_dict()  # Type name to all references
+    slotrefs: Dict[SlotDefinitionName, References] = empty_dict()  # Slot name to all references
+    classrefs: Dict[ClassDefinitionName, References] = empty_dict()  # Class name to all references
+    subsetrefs: Dict[SubsetDefinitionName, References] = empty_dict()  # Subset name to references
+    enumrefs: Dict[EnumDefinitionName, References] = empty_dict()  # Enum name to references
 
     # Type specific
     typebases: Dict[
         str, Set[TypeDefinitionName]
     ] = empty_dict()  # Base referencing types (direct and indirect)
-    typeofs: Dict[
-        TypeDefinitionName, TypeDefinitionName
-    ] = empty_dict()  # Type to specializations
+    typeofs: Dict[TypeDefinitionName, TypeDefinitionName] = empty_dict()  # Type to specializations
 
     # Slot specific
     slotclasses: Dict[
@@ -70,9 +70,7 @@ class SchemaSynopsis:
     owners: Dict[
         SlotDefinitionName, Set[ClassDefinitionName]
     ] = empty_dict()  # Slot to owning classes (sb. 1)
-    inverses: Dict[
-        str, Set[str]
-    ] = empty_dict()  # Slots declared as inverses of other slots
+    inverses: Dict[str, Set[str]] = empty_dict()  # Slots declared as inverses of other slots
 
     # Class specific
     ownslots: Dict[
@@ -88,18 +86,14 @@ class SchemaSynopsis:
 
     # Slot or Class (Definition) specific
     roots: References = empty_references()  # Definitions with no parents
-    isarefs: Dict[
-        DefinitionName, References
-    ] = empty_dict()  # Definition to isa references
+    isarefs: Dict[DefinitionName, References] = empty_dict()  # Definition to isa references
     mixinrefs: Dict[
         DefinitionName, References
     ] = empty_dict()  # Mixin to referencing classes or slots
     mixins: References = empty_references()  # Definitions declared as mixin
     abstracts: References = empty_references()  # Definitions declared as abstract
     applytos: References = empty_references()  # Definitions that include applytos
-    applytorefs: Dict[
-        DefinitionName, References
-    ] = empty_dict()  # Definition to applyier
+    applytorefs: Dict[DefinitionName, References] = empty_dict()  # Definition to applyier
 
     # Slot or Type specific
     rangerefs: Dict[
@@ -131,9 +125,7 @@ class SchemaSynopsis:
             for slotname in owned_slots:
                 self.owners.setdefault(slotname, set()).add(cls.name)
 
-    def summarize_slot_definition(
-        self, k: SlotDefinitionName, v: SlotDefinition
-    ) -> None:
+    def summarize_slot_definition(self, k: SlotDefinitionName, v: SlotDefinition) -> None:
         """
         Summarize a slot definition
         :param k: slot name
@@ -172,9 +164,7 @@ class SchemaSynopsis:
         if v.base:
             self.typebases.setdefault(v.base, set()).add(k)
 
-    def summarize_class_definition(
-        self, k: ClassDefinitionName, v: ClassDefinition
-    ) -> None:
+    def summarize_class_definition(self, k: ClassDefinitionName, v: ClassDefinition) -> None:
         """
         Summarize class definition element
 
@@ -203,9 +193,7 @@ class SchemaSynopsis:
         """
         self.summarize_element(EnumType, k, v)
 
-    def summarize_definition(
-        self, typ: RefType, k: DefinitionName, v: Definition
-    ) -> None:
+    def summarize_definition(self, typ: RefType, k: DefinitionName, v: Definition) -> None:
         """
         Summarize slot and class definitions
 
@@ -243,9 +231,7 @@ class SchemaSynopsis:
         :return:
         """
         if k != v.name:
-            raise ValueError(
-                "{typ} name mismatch: {k} != {v.name}"
-            )  # should never happen
+            raise ValueError("{typ} name mismatch: {k} != {v.name}")  # should never happen
         for subset in v.in_subset:
             self.add_ref(typ, k, SubsetType, subset)
 
@@ -277,9 +263,9 @@ class SchemaSynopsis:
                 fromtype, fromname
             )
         elif totype is SubsetType:
-            self.subsetrefs.setdefault(
-                SubsetDefinitionName(toname), References()
-            ).addref(fromtype, fromname)
+            self.subsetrefs.setdefault(SubsetDefinitionName(toname), References()).addref(
+                fromtype, fromname
+            )
         elif totype is EnumType:
             self.enumrefs.setdefault(SlotDefinitionName(toname), References()).addref(
                 fromtype, fromname
@@ -289,8 +275,7 @@ class SchemaSynopsis:
 
     def _ancestor_is_owned(self, slot: SlotDefinition) -> bool:
         return bool(slot.is_a) and (
-            slot.is_a in self.owners
-            or self._ancestor_is_owned(self.schema.slots[slot.is_a])
+            slot.is_a in self.owners or self._ancestor_is_owned(self.schema.slots[slot.is_a])
         )
 
     def errors(self) -> List[str]:
@@ -307,18 +292,14 @@ class SchemaSynopsis:
         undefined_slots = set(self.slotrefs.keys()) - set(self.schema.slots.keys())
         if undefined_slots:
             rval += [
-                f"\tUndefined slot references: "
-                f"{', '.join(format_undefineds(undefined_slots))}"
+                f"\tUndefined slot references: " f"{', '.join(format_undefineds(undefined_slots))}"
             ]
         undefined_types = set(self.typerefs.keys()) - set(self.schema.types.keys())
         if undefined_types:
             rval += [
-                f"\tUndefined type references: "
-                f"{', '.join(format_undefineds(undefined_types))}"
+                f"\tUndefined type references: " f"{', '.join(format_undefineds(undefined_types))}"
             ]
-        undefined_subsets = set(self.subsetrefs.keys()) - set(
-            self.schema.subsets.keys()
-        )
+        undefined_subsets = set(self.subsetrefs.keys()) - set(self.schema.subsets.keys())
         if undefined_subsets:
             rval += [
                 f"\tUndefined subset references: "
@@ -327,8 +308,7 @@ class SchemaSynopsis:
         undefined_enums = set(self.enumrefs.keys()) - set(self.schema.enums.keys())
         if undefined_enums:
             rval += [
-                f"\tUndefined enun references: "
-                f"{', '.join(format_undefineds(undefined_enums))}"
+                f"\tUndefined enun references: " f"{', '.join(format_undefineds(undefined_enums))}"
             ]
 
         # Inlined slots must be multivalued (not a inviolable rule, but we make assumptions about this elsewhere in
@@ -416,9 +396,7 @@ class SchemaSynopsis:
                     else:
                         unowned_slots.add(slotname)
         if n_unreferenced_descendants:
-            rval += [
-                f"\tUnreferenced descendants of owned slots: {n_unreferenced_descendants}"
-            ]
+            rval += [f"\tUnreferenced descendants of owned slots: {n_unreferenced_descendants}"]
         if unowned_slots:
             rval += [f"\t* Unowned slots: {', '.join(sorted(unowned_slots))}"]
 

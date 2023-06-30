@@ -4,9 +4,14 @@ from datetime import date
 from typing import Optional, TextIO, Union
 
 import click
-from linkml_runtime.linkml_model.meta import (LINKML, ClassDefinition,
-                                              Definition, EnumDefinition,
-                                              SchemaDefinition, SlotDefinition)
+from linkml_runtime.linkml_model.meta import (
+    LINKML,
+    ClassDefinition,
+    Definition,
+    EnumDefinition,
+    SchemaDefinition,
+    SlotDefinition,
+)
 
 from linkml._version import __version__
 from linkml.utils.generator import Generator, shared_arguments
@@ -19,6 +24,7 @@ class SSSOMGenerator(Generator):
     """
     Generates Simple Standard for Sharing Ontology Mappings (SSSOM) TSVs
     """
+
     # ClassVats
     generatorname = os.path.basename(__file__)
     generatorversion = "0.0.1"
@@ -61,7 +67,6 @@ class SSSOMGenerator(Generator):
             self.output_file = self.output
         else:
             self.output_file = DEFAULT_OUTPUT_FILENAME
-
 
     def make_msdf_list(self, row_as_dict: dict) -> None:
         list_of_row = []
@@ -118,11 +123,7 @@ class SSSOMGenerator(Generator):
                 for k, v in obj.permissible_values.items():
                     if v["meaning"]:
                         subject_id = (
-                            default_prefix
-                            + ":"
-                            + subject_category
-                            + "#"
-                            + k.replace(" ", "")
+                            default_prefix + ":" + subject_category + "#" + k.replace(" ", "")
                         )
                         subject_label = k.replace(" ", "")
                         object_id = obj.permissible_values[k]["meaning"]
@@ -164,9 +165,7 @@ class SSSOMGenerator(Generator):
         metadata["mapping_tool"] = LINKML
         metadata["creator_id"] = "linkml_user"
         metadata["mapping_date"] = date.today().strftime("%Y-%m-%d")
-        metadata["curie_map"] = {
-            k: v.prefix_reference for k, v in schema.prefixes.items()
-        }
+        metadata["curie_map"] = {k: v.prefix_reference for k, v in schema.prefixes.items()}
         with open(self.output_file, "w", encoding="UTF-8") as sssom_tsv:
             for k, v in metadata.items():
                 if k != "curie_map":
