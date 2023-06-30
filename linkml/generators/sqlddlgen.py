@@ -2,7 +2,7 @@ import logging
 import os
 from contextlib import redirect_stdout
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional, TextIO, Tuple, Union
+from typing import Dict, List, Optional, TextIO, Union
 
 import click
 from deprecated.classic import deprecated
@@ -11,7 +11,6 @@ from linkml_runtime.linkml_model.meta import (
     ClassDefinitionName,
     SchemaDefinition,
     SlotDefinition,
-    SlotDefinitionName,
 )
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from sqlalchemy import *

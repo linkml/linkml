@@ -20,18 +20,11 @@ from linkml.generators.jsonschemagen import JsonSchemaGenerator
 from linkml.generators.markdowngen import MarkdownGenerator
 from linkml.generators.namespacegen import NamespaceGenerator
 from linkml.generators.owlgen import OwlSchemaGenerator
-from linkml.generators.prefixmapgen import PrefixGenerator
 from linkml.generators.protogen import ProtoGenerator
 from linkml.generators.pythongen import PythonGenerator
 from linkml.generators.rdfgen import RDFGenerator
 from linkml.generators.shexgen import ShExGenerator
-from tests import (
-    SKIP_GRAPHVIZ_VALIDATION,
-    SKIP_MARKDOWN_VALIDATION,
-    SKIP_MARKDOWN_VALIDATION_REASON,
-    SKIP_SHEX_VALIDATION,
-    SKIP_SHEX_VALIDATION_REASON,
-)
+from tests import SKIP_GRAPHVIZ_VALIDATION, SKIP_SHEX_VALIDATION, SKIP_SHEX_VALIDATION_REASON
 from tests.test_biolink_model.environment import env
 from tests.utils.compare_rdf import compare_rdf
 from tests.utils.filters import metadata_filter

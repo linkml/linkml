@@ -1,10 +1,7 @@
 import configparser
-import logging
 
 # Global testing control variables
 import os
-
-from tests.utils.test_environment import MismatchAction
 
 # ---------------------------------------------------------------
 #                DO NOT change this file.

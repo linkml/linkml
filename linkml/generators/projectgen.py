@@ -4,7 +4,7 @@ from collections import defaultdict
 from dataclasses import dataclass, field
 from functools import lru_cache
 from pathlib import Path
-from typing import Any, Dict, List, Tuple, Type, Union
+from typing import Any, Dict, List, Tuple, Type
 
 import click
 import yaml
@@ -12,7 +12,6 @@ import yaml
 from linkml._version import __version__
 from linkml.generators.excelgen import ExcelGenerator
 from linkml.generators.graphqlgen import GraphqlGenerator
-from linkml.generators.javagen import JavaGenerator
 from linkml.generators.jsonldcontextgen import ContextGenerator
 from linkml.generators.jsonldgen import JSONLDGenerator
 from linkml.generators.jsonschemagen import JsonSchemaGenerator
@@ -24,7 +23,7 @@ from linkml.generators.pythongen import PythonGenerator
 from linkml.generators.shaclgen import ShaclGenerator
 from linkml.generators.shexgen import ShExGenerator
 from linkml.generators.sqlddlgen import SQLDDLGenerator
-from linkml.utils.generator import Generator, shared_arguments
+from linkml.utils.generator import Generator
 
 PATH_FSTRING = str
 GENERATOR_NAME = str

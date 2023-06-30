@@ -1,6 +1,4 @@
-import os
 import unittest
-from contextlib import redirect_stdout
 
 from linkml.generators.sparqlgen import SparqlGenerator
 from tests.test_generators.environment import env

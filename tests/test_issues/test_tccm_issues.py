@@ -1,8 +1,6 @@
-import inspect
 import logging
 import unittest
 
-from linkml.generators import *
 from linkml.generators.pythongen import PythonGenerator
 from linkml.generators.yamlgen import YAMLGenerator
 from linkml.utils.generator import Generator

@@ -1,4 +1,3 @@
-import os
 import re
 from typing import Callable, Optional
 
@@ -7,7 +6,7 @@ from rdflib import OWL, Graph, Namespace
 from linkml import METAMODEL_NAMESPACE
 from linkml.utils.generator import Generator
 from tests import DEFAULT_LOG_LEVEL
-from tests.utils.test_environment import TestEnvironment, TestEnvironmentTestCase
+from tests.utils.test_environment import TestEnvironmentTestCase
 
 BIOLINK_NS = Namespace("https://w3id.org/biolink/vocab/")
 

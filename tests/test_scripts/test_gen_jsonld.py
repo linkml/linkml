@@ -15,7 +15,6 @@ from linkml.generators import jsonldgen
 from linkml.generators.jsonldcontextgen import ContextGenerator
 from tests.test_scripts.environment import env
 from tests.utils.clicktestcase import ClickTestCase
-from tests.utils.filters import ldcontext_metadata_filter
 
 cwd = os.path.dirname(__file__)
 meta_context = "file:./output/gencontext/meta.jsonld"

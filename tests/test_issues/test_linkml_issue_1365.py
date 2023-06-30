@@ -1,11 +1,6 @@
-import json
-import unittest
-
 from linkml_runtime.utils.compile_python import compile_python
-from linkml_runtime.utils.schemaview import SchemaDefinition, SchemaView
 
 from linkml.generators.pythongen import PythonGenerator
-from linkml.validators import JsonSchemaDataValidator
 from tests.test_issues.environment import env
 from tests.utils.test_environment import TestEnvironmentTestCase
 

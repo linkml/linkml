@@ -6,7 +6,7 @@ import logging
 import os
 from dataclasses import dataclass, field
 from enum import Enum, unique
-from typing import List, Optional, Set, TextIO, Union
+from typing import Optional, TextIO, Union
 
 import click
 from linkml_runtime.linkml_model.meta import (
@@ -33,7 +33,6 @@ from rdflib.plugin import plugins as rdflib_plugins
 from linkml import METAMODEL_NAMESPACE, METAMODEL_NAMESPACE_NAME
 from linkml._version import __version__
 from linkml.utils.generator import Generator, shared_arguments
-from linkml.utils.schemaloader import SchemaLoader
 
 
 @unique

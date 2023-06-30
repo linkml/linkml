@@ -7,10 +7,9 @@ Generate a JSON LD representation of the model
 import os
 import urllib.parse as urlparse
 from dataclasses import dataclass, field
-from typing import List, Optional, TextIO, Union
+from typing import List, Optional
 
 import click
-from linkml_runtime.linkml_model.meta import SchemaDefinition
 from rdflib import Graph
 from rdflib.plugin import Parser as rdflib_Parser
 from rdflib.plugin import plugins as rdflib_plugins

@@ -2,7 +2,7 @@ import os
 from contextlib import redirect_stdout
 from dataclasses import dataclass, field
 from io import StringIO
-from typing import Any, Callable, Dict, List, Optional, Set, TextIO, Union
+from typing import Any, Callable, Dict, List, Optional, Set, Union
 
 import click
 from jsonasobj2 import JsonObj, values
@@ -11,7 +11,6 @@ from linkml_runtime.linkml_model.meta import (
     ClassDefinitionName,
     Element,
     EnumDefinition,
-    SchemaDefinition,
     SlotDefinition,
     SubsetDefinition,
     TypeDefinition,
@@ -260,8 +259,6 @@ class MarkdownGenerator(Generator):
     def visit_slot(self, aliased_slot_name: str, slot: SlotDefinition) -> None:
         with open(self.exist_warning(self.dir_path(slot)), "w", encoding="UTF-8") as slotfile:
             with redirect_stdout(slotfile):
-                import logging
-
                 slot_curie = self.namespaces.uri_or_curie_for(
                     str(self.namespaces._base), underscore(slot.name)
                 )

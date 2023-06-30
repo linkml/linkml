@@ -4,11 +4,11 @@ from enum import Enum
 
 import rdflib
 from linkml_runtime import SchemaView
-from linkml_runtime.dumpers import json_dumper, rdflib_dumper, yaml_dumper
+from linkml_runtime.dumpers import json_dumper, rdflib_dumper
 from linkml_runtime.linkml_model import PermissibleValue
 from linkml_runtime.loaders import json_loader
 from linkml_runtime.utils.compile_python import compile_python
-from rdflib import Graph, Literal, URIRef
+from rdflib import Literal
 
 from linkml.generators.pydanticgen import PydanticGenerator
 from linkml.generators.pythongen import PythonGenerator

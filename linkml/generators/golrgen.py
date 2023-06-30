@@ -8,10 +8,10 @@ See the golr-views directory in this repo for examples
 """
 import os
 from dataclasses import dataclass
-from typing import List, Optional, TextIO, Union
+from typing import List, Optional
 
 import click
-from linkml_runtime.linkml_model.meta import ClassDefinition, SchemaDefinition, SlotDefinition
+from linkml_runtime.linkml_model.meta import ClassDefinition, SlotDefinition
 from linkml_runtime.utils.formatutils import underscore
 from linkml_runtime.utils.metamodelcore import empty_list
 from linkml_runtime.utils.yamlutils import YAMLRoot, as_yaml

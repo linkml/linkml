@@ -1,6 +1,6 @@
 import unittest
 
-from linkml_runtime.dumpers import json_dumper, rdf_dumper
+from linkml_runtime.dumpers import json_dumper
 from linkml_runtime.loaders import yaml_loader
 
 from linkml.generators.jsonldcontextgen import ContextGenerator

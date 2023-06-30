@@ -1,19 +1,12 @@
-import csv
 import os
 import unittest
 
-import _csv
 import yaml
 from linkml_runtime.dumpers import yaml_dumper
-from linkml_runtime.linkml_model import SlotDefinition
-from linkml_runtime.loaders import csv_loader, yaml_loader
-from linkml_runtime.utils.introspection import package_schemaview
-from linkml_runtime.utils.schemaview import SchemaDefinition, SchemaView
+from linkml_runtime.utils.schemaview import SchemaView
 from sqlalchemy.orm import sessionmaker
 
 import tests.test_data.model.personinfo
-from linkml.utils.schema_builder import SchemaBuilder
-from linkml.utils.schema_fixer import SchemaFixer
 from linkml.utils.sqlutils import SQLStore
 from tests.test_data.environment import env
 from tests.test_data.model.personinfo_pydantic import (
@@ -22,7 +15,7 @@ from tests.test_data.model.personinfo_pydantic import (
     GenderType,
     Person,
 )
-from tests.utils.dict_comparator import compare_objs, compare_yaml
+from tests.utils.dict_comparator import compare_yaml
 
 SCHEMA = env.input_path("personinfo.yaml")
 METAMODEL_SCHEMA = env.input_path(os.path.join("meta", "meta.yaml"))

@@ -3,7 +3,7 @@
 """
 import os
 from dataclasses import dataclass, field
-from typing import List, Optional, TextIO, Union
+from typing import List, Optional, Union
 
 import click
 from jsonasobj import as_json as as_json_1
@@ -11,7 +11,6 @@ from linkml_runtime.linkml_model.meta import (
     ClassDefinition,
     ElementName,
     EnumDefinition,
-    SchemaDefinition,
     SlotDefinition,
     SlotDefinitionName,
     TypeDefinition,

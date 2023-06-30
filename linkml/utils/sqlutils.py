@@ -11,7 +11,7 @@ import click
 import linkml_runtime.linkml_model.meta as metamodel
 from linkml_runtime import SchemaView
 from linkml_runtime.dumpers import yaml_dumper
-from linkml_runtime.linkml_model import PermissibleValue, SchemaDefinition
+from linkml_runtime.linkml_model import SchemaDefinition
 from linkml_runtime.utils.compile_python import compile_python
 from linkml_runtime.utils.enumerations import EnumDefinitionImpl
 from linkml_runtime.utils.formatutils import underscore

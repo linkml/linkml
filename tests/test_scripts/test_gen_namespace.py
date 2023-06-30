@@ -1,5 +1,4 @@
 import unittest
-from types import ModuleType
 
 import click
 

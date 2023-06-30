@@ -1,7 +1,5 @@
-import os
 import unittest
 from pathlib import PurePath
-from types import ModuleType
 
 from jsonasobj2 import loads
 from linkml_runtime.utils.compile_python import compile_python

@@ -1,4 +1,3 @@
-import logging
 import os
 from dataclasses import dataclass, field
 from enum import Enum
@@ -6,20 +5,7 @@ from typing import List, Optional, Union
 
 import click
 import pydantic
-from linkml_runtime.linkml_model.meta import (
-    Annotation,
-    ClassDefinition,
-    ClassDefinitionName,
-    Definition,
-    DefinitionName,
-    Element,
-    EnumDefinition,
-    SchemaDefinition,
-    SlotDefinition,
-    SlotDefinitionName,
-    SubsetDefinition,
-    TypeDefinition,
-)
+from linkml_runtime.linkml_model.meta import ClassDefinitionName, SlotDefinition
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.schemaview import SchemaView
 

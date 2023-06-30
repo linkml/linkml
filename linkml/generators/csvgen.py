@@ -5,10 +5,10 @@ import os
 import sys
 from csv import DictWriter
 from dataclasses import dataclass
-from typing import List, Optional, Set, TextIO, Union
+from typing import List, Optional, Set
 
 import click
-from linkml_runtime.linkml_model.meta import ClassDefinition, ClassDefinitionName, SchemaDefinition
+from linkml_runtime.linkml_model.meta import ClassDefinition, ClassDefinitionName
 from linkml_runtime.utils.formatutils import be, underscore
 
 from linkml._version import __version__

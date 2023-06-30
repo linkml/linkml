@@ -8,17 +8,11 @@ from linkml import LOCAL_MAPPINGS_YAML_FILE, LOCAL_METAMODEL_LDCONTEXT_FILE
 from linkml.generators.jsonldcontextgen import ContextGenerator
 from linkml.generators.jsonldgen import JSONLDGenerator
 from linkml.generators.markdowngen import MarkdownGenerator
-from linkml.generators.pythongen import PythonGenerator
 from linkml.generators.rdfgen import RDFGenerator
 from tests import SKIP_MARKDOWN_VALIDATION, SKIP_MARKDOWN_VALIDATION_REASON
 from tests.test_base.environment import env
-from tests.utils.filters import (
-    json_metadata_context_filter,
-    ldcontext_metadata_filter,
-    metadata_filter,
-)
+from tests.utils.filters import json_metadata_context_filter, ldcontext_metadata_filter
 from tests.utils.generatortestcase import GeneratorTestCase
-from tests.utils.python_comparator import compare_python
 
 
 class MappingsGeneratorTestCase(GeneratorTestCase):

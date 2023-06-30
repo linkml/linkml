@@ -3,23 +3,16 @@
 https://yuml.me/diagram/scruffy/class/samples
 
 """
-import logging
 import os
 from dataclasses import dataclass, field
-from typing import Callable, List, Optional, Set, TextIO, Union, cast
+from typing import Callable, List, Optional, Set, cast
 
 import click
 import requests
-from linkml_runtime.linkml_model.meta import (
-    ClassDefinition,
-    ClassDefinitionName,
-    SchemaDefinition,
-    SlotDefinition,
-)
+from linkml_runtime.linkml_model.meta import ClassDefinition, ClassDefinitionName, SlotDefinition
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from rdflib import Namespace
 
-from linkml._version import __version__
 from linkml.utils.generator import Generator, shared_arguments
 
 yuml_is_a = "^-"

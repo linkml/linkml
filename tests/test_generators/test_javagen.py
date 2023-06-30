@@ -1,6 +1,5 @@
 import os
 import unittest
-from contextlib import redirect_stdout
 
 from linkml.generators.javagen import JavaGenerator
 from tests.test_generators.environment import env

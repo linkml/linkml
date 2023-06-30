@@ -4,7 +4,7 @@ from collections import defaultdict
 from copy import deepcopy
 from dataclasses import dataclass, field
 from types import ModuleType
-from typing import Dict, List, Optional, Set, TextIO, Union
+from typing import Dict, List, Optional, Set
 
 import click
 from jinja2 import Template
@@ -12,10 +12,7 @@ from jinja2 import Template
 # from linkml.generators import pydantic_GEN_VERSION
 from linkml_runtime.linkml_model.meta import (
     Annotation,
-    AnonymousSlotExpression,
     ClassDefinition,
-    EnumDefinition,
-    EnumDefinitionName,
     SchemaDefinition,
     SlotDefinition,
     TypeDefinition,

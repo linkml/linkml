@@ -1,8 +1,7 @@
-import os
 import unittest
 
 from rdflib import Graph, URIRef
-from rdflib.namespace import OWL, RDF, RDFS
+from rdflib.namespace import OWL, RDF
 
 from linkml.generators.owlgen import OwlSchemaGenerator
 from tests.test_issues.environment import env

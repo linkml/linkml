@@ -1,4 +1,3 @@
-import inspect
 from copy import deepcopy
 from dataclasses import dataclass, field
 from typing import Any, Callable, Dict, Type
@@ -9,7 +8,6 @@ from linkml_runtime import SchemaView
 from linkml_runtime.linkml_model import (
     ClassDefinition,
     ClassDefinitionName,
-    Element,
     ElementName,
     EnumDefinition,
     EnumDefinitionName,

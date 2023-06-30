@@ -1,12 +1,11 @@
 import dataclasses
-import sys
 import unittest
-from dataclasses import InitVar, dataclass, field, fields
-from typing import Any, ClassVar, Dict, Optional
+from dataclasses import dataclass
+from typing import ClassVar, Optional
 
 import yaml
 from linkml_runtime.utils.dataclass_extensions_376 import dataclasses_init_fn_with_kwargs
-from linkml_runtime.utils.yamlutils import DupCheckYamlLoader, TypedNode, YAMLRoot
+from linkml_runtime.utils.yamlutils import DupCheckYamlLoader, YAMLRoot
 
 # Overwrite dataclasses _init_fn to add **kwargs in __init__
 dataclasses._init_fn = dataclasses_init_fn_with_kwargs

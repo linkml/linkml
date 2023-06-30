@@ -1,7 +1,5 @@
 import unittest
 
-import yaml
-
 from linkml.utils.schema_builder import SchemaBuilder
 
 MY_CLASS = "MyClass"

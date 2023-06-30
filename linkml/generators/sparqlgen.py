@@ -3,23 +3,12 @@ import os
 from collections import defaultdict
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, List, Optional, TextIO, Union, cast
+from typing import Dict, List, Optional
 
 import click
 from jinja2 import Template
-from linkml_runtime.linkml_model.meta import (
-    ClassDefinition,
-    ClassDefinitionName,
-    Element,
-    EnumDefinitionName,
-    Prefix,
-    SchemaDefinition,
-    SlotDefinition,
-    SlotDefinitionName,
-    TypeDefinition,
-    TypeDefinitionName,
-)
-from linkml_runtime.utils.formatutils import camelcase, underscore
+from linkml_runtime.linkml_model.meta import Prefix
+from linkml_runtime.utils.formatutils import underscore
 from linkml_runtime.utils.schemaview import SchemaView
 
 from linkml._version import __version__

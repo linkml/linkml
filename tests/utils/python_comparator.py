@@ -1,11 +1,7 @@
-import os
-from types import ModuleType
 from typing import Optional, Tuple
 
 from linkml_runtime.utils.compile_python import compile_python
 
-from tests.environment import env
-from tests.utils.dirutils import file_text
 from tests.utils.filters import metadata_filter
 
 

@@ -1,4 +1,3 @@
-import os
 import unittest
 
 from linkml_runtime.linkml_model import String

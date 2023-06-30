@@ -3,7 +3,6 @@ import unittest
 from linkml_runtime.utils.yamlutils import as_yaml
 
 from linkml.generators.jsonldgen import JSONLDGenerator
-from linkml.generators.markdowngen import MarkdownGenerator
 from linkml.generators.pythongen import PythonGenerator
 from linkml.generators.rdfgen import RDFGenerator
 from linkml.utils.schemaloader import SchemaLoader

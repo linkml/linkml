@@ -5,32 +5,18 @@ from copy import deepcopy
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
-from typing import (
-    Callable,
-    Dict,
-    Iterable,
-    Iterator,
-    List,
-    Optional,
-    Set,
-    TextIO,
-    Tuple,
-    TypeVar,
-    Union,
-)
+from typing import Dict, Iterable, Iterator, List, Optional, Tuple, Union
 
 import click
 from jinja2 import Environment, FileSystemLoader, Template
 from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.linkml_model.meta import (
-    Annotation,
     ClassDefinition,
     ClassDefinitionName,
     Definition,
     DefinitionName,
     Element,
     EnumDefinition,
-    SchemaDefinition,
     SlotDefinition,
     SlotDefinitionName,
     SubsetDefinition,

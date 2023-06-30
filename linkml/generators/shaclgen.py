@@ -1,21 +1,12 @@
 import logging
 import os
-from copy import copy, deepcopy
-from dataclasses import field
-from typing import Callable, Dict, Iterator, List, Optional, Set, TextIO, Tuple, Union
 
 import click
-from linkml_runtime.linkml_model.meta import (
-    Annotation,
-    ClassDefinition,
-    SchemaDefinition,
-    TypeDefinition,
-)
-from linkml_runtime.utils.formatutils import camelcase, underscore
+from linkml_runtime.utils.formatutils import underscore
 from linkml_runtime.utils.schemaview import SchemaView
 from rdflib import BNode, Graph, Literal, URIRef
 from rdflib.collection import Collection
-from rdflib.namespace import RDF, RDFS, SH, XSD
+from rdflib.namespace import RDF, SH
 
 from linkml._version import __version__
 from linkml.utils.generator import Generator, shared_arguments

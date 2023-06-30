@@ -6,7 +6,6 @@ import unittest
 from functools import reduce
 from pathlib import PurePath
 from typing import List, Tuple
-from urllib.parse import urljoin
 
 import click
 

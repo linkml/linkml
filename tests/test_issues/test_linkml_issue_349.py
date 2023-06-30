@@ -1,13 +1,10 @@
-import json
 import re
 import unittest
 
-from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.linkml_model import SchemaDefinition
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.yamlutils import YAMLRoot
 
-from linkml.generators.jsonschemagen import JsonSchemaGenerator
 from linkml.generators.pythongen import PythonGenerator
 from linkml.utils.schema_builder import SchemaBuilder
 from linkml.validators import JsonSchemaDataValidator

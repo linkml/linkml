@@ -1,18 +1,17 @@
 import logging
 import os
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional, TextIO, Union
+from typing import Optional
 
 import click
 from linkml_runtime.dumpers import yaml_dumper
-from linkml_runtime.linkml_model import ClassDefinition, SchemaDefinition, SlotDefinition
+from linkml_runtime.linkml_model import SchemaDefinition, SlotDefinition
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.schemaview import SchemaView
 from sqlalchemy import Column, ForeignKey, MetaData, Table, create_mock_engine
 from sqlalchemy.types import Boolean, Date, DateTime, Enum, Float, Integer, Text, Time
 
 from linkml._version import __version__
-from linkml.generators.yamlgen import YAMLGenerator
 from linkml.transformers.relmodel_transformer import ForeignKeyPolicy, RelationalModelTransformer
 from linkml.utils.generator import Generator, shared_arguments
 from linkml.utils.schemaloader import SchemaLoader

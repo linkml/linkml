@@ -1,28 +1,17 @@
 import logging
 import os
-from copy import deepcopy
 from dataclasses import dataclass
-from pathlib import Path
-from typing import Callable, Dict, Iterator, List, Optional, Set, TextIO, Tuple, Union
+from typing import List, Optional
 
 import click
-from jinja2 import Environment, FileSystemLoader, Template
-from linkml_runtime.dumpers import yaml_dumper
+from jinja2 import Template
 from linkml_runtime.linkml_model.meta import (
-    Annotation,
     ClassDefinition,
     ClassDefinitionName,
-    Definition,
-    DefinitionName,
     Element,
-    EnumDefinition,
-    SchemaDefinition,
     SlotDefinition,
-    SlotDefinitionName,
-    TypeDefinition,
 )
 from linkml_runtime.utils.formatutils import camelcase, underscore
-from linkml_runtime.utils.schemaview import SchemaView
 
 from linkml._version import __version__
 from linkml.utils.generator import Generator, shared_arguments

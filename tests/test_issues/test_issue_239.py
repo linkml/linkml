@@ -1,7 +1,5 @@
 import unittest
 
-import jsonasobj
-
 from linkml.generators.jsonschemagen import JsonSchemaGenerator
 from tests.test_issues.environment import env
 from tests.utils.test_environment import TestEnvironmentTestCase

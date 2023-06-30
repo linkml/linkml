@@ -1,7 +1,6 @@
 import logging
 from copy import copy
 from dataclasses import dataclass, field
-from enum import unique
 from typing import Dict, List, Optional
 
 from linkml_runtime.linkml_model import (
@@ -13,7 +12,6 @@ from linkml_runtime.linkml_model import (
     SchemaDefinition,
     SlotDefinition,
 )
-from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.schemaview import SchemaView, SlotDefinitionName
 from sqlalchemy import *
 

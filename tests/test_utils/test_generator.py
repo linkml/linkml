@@ -3,7 +3,6 @@ import os
 import unittest
 from dataclasses import dataclass, field
 from io import StringIO
-from pprint import pprint
 from typing import TextIO, Union, cast
 
 from linkml_runtime.linkml_model.meta import (
@@ -16,12 +15,10 @@ from linkml_runtime.linkml_model.meta import (
     SlotDefinitionName,
     SubsetDefinition,
     TypeDefinition,
-    TypeDefinitionName,
 )
 
 from linkml import LOCAL_METAMODEL_YAML_FILE
 from linkml.utils.generator import Generator
-from linkml.utils.typereferences import References
 from tests.test_utils.environment import env
 
 

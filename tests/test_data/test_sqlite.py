@@ -2,7 +2,6 @@ import csv
 import os
 import unittest
 
-import _csv
 from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.linkml_model import SlotDefinition
 from linkml_runtime.loaders import csv_loader, yaml_loader

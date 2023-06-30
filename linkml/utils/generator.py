@@ -26,11 +26,9 @@ from pathlib import Path
 from typing import Callable, ClassVar, Dict, List, Mapping, Optional, Set, TextIO, Type, Union, cast
 
 import click
-import linkml_runtime.linkml_model.meta as metamodel
 from click import Argument, Command, Option
 from linkml_runtime import SchemaView
 from linkml_runtime.dumpers import yaml_dumper
-from linkml_runtime.linkml_model.linkml_files import LOCAL_BASE
 from linkml_runtime.linkml_model.meta import (
     ClassDefinition,
     ClassDefinitionName,
@@ -49,10 +47,9 @@ from linkml_runtime.linkml_model.meta import (
     TypeDefinitionName,
 )
 from linkml_runtime.utils.formatutils import camelcase, underscore
-from linkml_runtime.utils.introspection import package_schemaview
 from linkml_runtime.utils.namespaces import Namespaces
 
-from linkml import LOCAL_METAMODEL_YAML_FILE, META_BASE_URI, METAMODEL_YAML_URI
+from linkml import LOCAL_METAMODEL_YAML_FILE
 from linkml.utils.mergeutils import alias_root
 from linkml.utils.schemaloader import SchemaLoader
 from linkml.utils.typereferences import References

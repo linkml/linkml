@@ -4,15 +4,13 @@ import sqlite3
 import tempfile
 import unittest
 from enum import Enum
-from typing import List
 
 from linkml_runtime.linkml_model.meta import SlotDefinition
 from linkml_runtime.utils.introspection import package_schemaview
 from linkml_runtime.utils.schemaview import SchemaView
 from sqlalchemy.sql.sqltypes import Enum, Text
 
-from linkml.generators.sqltablegen import SqlNamingPolicy, SQLTableGenerator
-from linkml.transformers.relmodel_transformer import ForeignKeyPolicy
+from linkml.generators.sqltablegen import SQLTableGenerator
 from linkml.utils.schema_builder import SchemaBuilder
 from tests.test_generators.environment import env
 

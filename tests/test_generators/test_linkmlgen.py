@@ -1,4 +1,3 @@
-import os
 import tempfile
 import unittest
 
@@ -6,8 +5,6 @@ import yaml
 from linkml_runtime import SchemaView
 
 from linkml.generators.linkmlgen import LinkmlGenerator
-from linkml.generators.sssomgen import SSSOMGenerator
-from linkml.generators.yamlgen import YAMLGenerator
 from tests.test_generators.environment import env
 
 SCHEMA = env.input_path("kitchen_sink.yaml")

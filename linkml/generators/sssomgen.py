@@ -1,7 +1,6 @@
 import os
 from dataclasses import dataclass
 from datetime import date
-from typing import Optional, TextIO, Union
 
 import click
 from linkml_runtime.linkml_model.meta import (

@@ -1,7 +1,5 @@
-import sys
 import unittest
 
-from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.linkml_model import SlotDefinition
 from rdflib import RDFS, SKOS, Graph, Literal, Namespace, URIRef
 from rdflib.collection import Collection

@@ -7,13 +7,12 @@ import click
 from linkml_runtime.linkml_model import SchemaDefinition
 from linkml_runtime.utils.schemaview import SchemaView
 from rdflib import Graph
-from SPARQLWrapper import JSON, N3, RDF, RDFXML, TURTLE, SPARQLWrapper, SPARQLWrapper2
+from SPARQLWrapper import JSON, SPARQLWrapper
 
 from linkml._version import __version__
 from linkml.generators.sparqlgen import SparqlGenerator
-from linkml.generators.yamlgen import YAMLGenerator
 from linkml.reporting import CheckResult, Report
-from linkml.utils.datautils import _get_format, dumpers_loaders, get_dumper, get_loader
+from linkml.utils.datautils import _get_format, dumpers_loaders, get_dumper
 from linkml.utils.datavalidator import DataValidator
 
 

@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Set, cast
+from typing import Set
 
 from linkml_runtime.linkml_model.meta import (
     ClassDefinitionName,

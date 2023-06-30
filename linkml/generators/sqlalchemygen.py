@@ -3,7 +3,7 @@ import os
 from collections import defaultdict
 from dataclasses import dataclass
 from types import ModuleType
-from typing import Dict, List, TextIO, Union
+from typing import List, Union
 
 import click
 from jinja2 import Template
@@ -11,7 +11,6 @@ from linkml_runtime.linkml_model import (
     Annotation,
     ClassDefinition,
     ClassDefinitionName,
-    Prefix,
     SchemaDefinition,
 )
 from linkml_runtime.utils.compile_python import compile_python

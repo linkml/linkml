@@ -4,12 +4,11 @@ import unittest
 from decimal import Decimal
 from numbers import Number
 
-import jsonasobj
 import jsonschema
 import yaml
 from jsonschema.exceptions import ValidationError
-from linkml_runtime.dumpers import json_dumper, yaml_dumper
-from linkml_runtime.loaders import json_loader, yaml_loader
+from linkml_runtime.dumpers import json_dumper
+from linkml_runtime.loaders import json_loader
 
 from linkml.generators.jsonschemagen import JsonSchemaGenerator
 from linkml.generators.pythongen import PythonGenerator

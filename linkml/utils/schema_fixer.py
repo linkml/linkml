@@ -1,13 +1,13 @@
 import logging
 import re
-from copy import copy, deepcopy
+from copy import copy
 from dataclasses import dataclass
 from typing import Any, Callable, Dict, List, Union
 
 import click
 import yaml
 from linkml_runtime import SchemaView
-from linkml_runtime.dumpers import json_dumper, yaml_dumper
+from linkml_runtime.dumpers import json_dumper
 from linkml_runtime.linkml_model import (
     ClassDefinition,
     ClassDefinitionName,

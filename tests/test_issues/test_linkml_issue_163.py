@@ -1,8 +1,7 @@
-import os
 import unittest
 
 from rdflib import Graph, Namespace, URIRef
-from rdflib.namespace import OWL, RDF, RDFS, SKOS
+from rdflib.namespace import SKOS
 
 from linkml.generators.rdfgen import JSONLDGenerator, RDFGenerator
 from tests.test_issues.environment import env

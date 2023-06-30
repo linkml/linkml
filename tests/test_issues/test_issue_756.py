@@ -1,6 +1,5 @@
 import unittest
 
-import yaml
 from linkml_runtime import SchemaView
 from linkml_runtime.dumpers import yaml_dumper
 

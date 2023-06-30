@@ -1,7 +1,6 @@
 import unittest
 
-from rdflib import Graph, Namespace, URIRef
-from rdflib.namespace import DCTERMS, RDFS
+from rdflib import Graph, Namespace
 
 from linkml.generators.owlgen import MetadataProfile, OwlSchemaGenerator
 from tests.test_issues.environment import env

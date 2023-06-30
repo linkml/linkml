@@ -1,4 +1,4 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Dict, List, Optional, Union
 
 from linkml_runtime.linkml_model import (
@@ -10,7 +10,7 @@ from linkml_runtime.linkml_model import (
     SlotDefinition,
     TypeDefinition,
 )
-from linkml_runtime.utils.formatutils import camelcase, underscore
+from linkml_runtime.utils.formatutils import underscore
 from linkml_runtime.utils.schema_as_dict import schema_as_dict
 
 

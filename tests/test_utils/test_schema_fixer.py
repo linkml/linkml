@@ -1,7 +1,6 @@
 import unittest
 from copy import deepcopy
 
-from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.linkml_model import SlotDefinition, SlotDefinitionName
 
 from linkml.utils.schema_builder import SchemaBuilder

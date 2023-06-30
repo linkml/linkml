@@ -1,5 +1,5 @@
 import unittest
-from typing import List, Tuple, Type
+from typing import Type
 
 from linkml_runtime.utils.compile_python import compile_python
 

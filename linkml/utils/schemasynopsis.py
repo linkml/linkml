@@ -1,6 +1,5 @@
-import logging
 from dataclasses import dataclass, field
-from typing import Dict, List, Set, Union, cast
+from typing import Dict, List, Set, Union
 
 from linkml_runtime.linkml_model.meta import (
     ClassDefinition,

@@ -3,8 +3,6 @@ import unittest
 from functools import reduce
 from typing import List, Tuple
 
-from rdflib import Graph
-
 from linkml.generators.owlgen import OwlSchemaGenerator
 from tests.test_utils.environment import env
 from tests.utils.compare_rdf import compare_rdf

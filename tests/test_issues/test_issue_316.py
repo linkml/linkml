@@ -1,7 +1,5 @@
 import unittest
 
-import yaml.constructor
-
 from linkml.generators.yamlgen import YAMLGenerator
 from tests.test_issues.environment import env
 from tests.utils.test_environment import TestEnvironmentTestCase

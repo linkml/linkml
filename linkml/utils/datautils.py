@@ -1,6 +1,6 @@
 import os
 from collections import defaultdict
-from typing import Optional, Union
+from typing import Optional
 
 from linkml_runtime.dumpers import CSVDumper, JSONDumper, RDFLibDumper, TSVDumper, YAMLDumper
 from linkml_runtime.linkml_model.meta import ClassDefinitionName, SlotDefinitionName

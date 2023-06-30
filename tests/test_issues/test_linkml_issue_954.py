@@ -1,12 +1,8 @@
 import unittest
-from copy import deepcopy
 
 from linkml_runtime import SchemaView
-from linkml_runtime.dumpers import yaml_dumper
-from linkml_runtime.linkml_model import SlotDefinition, SlotDefinitionName
-from linkml_runtime.utils.schema_as_dict import schema_as_dict, schema_as_yaml_dump
+from linkml_runtime.utils.schema_as_dict import schema_as_yaml_dump
 
-from linkml.utils.schema_builder import SchemaBuilder
 from linkml.utils.schema_fixer import SchemaFixer
 from tests.test_issues.environment import env
 
