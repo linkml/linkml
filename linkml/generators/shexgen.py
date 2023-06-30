@@ -158,12 +158,13 @@ class ShExGenerator(Generator):
                 enum = self.schema.enums[slot.range]
                 values = []
                 for value in enum.permissible_values.values():
-                    # if value.meaning:
-                    #     values.append(self.namespaces.uri_for(value.meaning))
-                    # else:
-                    values.append(self.namespaces.uri_for(urlparse.quote(value.text)))
+                    if value.meaning:
+                        values.append(self.namespaces.uri_for(value.meaning))
+                    else:
+                        value_uri = f"{self._class_or_type_uri(enum.name)}#{urlparse.quote(value.text)}"
+                        values.append(value_uri)
                 node_constraint = NodeConstraint(
-                    id=self._class_or_type_uri(slot.range),
+                    #id=self._class_or_type_uri(slot.range),
                     values=values,
                 )
                 constraint.valueExpr = node_constraint
