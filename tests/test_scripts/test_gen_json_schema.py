@@ -40,7 +40,7 @@ class GenJSONSchemaTestCase(ClickTestCase):
             add_yaml=False,
         )
 
-    def test_tree_root_closed(self):
+    def test_tree_root_not_closed(self):
         self.do_test(
             [env.input_path("roottest.yaml"), "--not-closed"],
             "rootttest4.jsonld",

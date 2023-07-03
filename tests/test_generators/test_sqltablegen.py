@@ -3,7 +3,6 @@ import re
 import sqlite3
 import tempfile
 import unittest
-from enum import Enum
 
 from linkml_runtime.linkml_model.meta import SlotDefinition
 from linkml_runtime.utils.introspection import package_schemaview
