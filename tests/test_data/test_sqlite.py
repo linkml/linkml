@@ -6,7 +6,7 @@ from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.linkml_model import SlotDefinition
 from linkml_runtime.loaders import csv_loader, yaml_loader
 from linkml_runtime.utils.introspection import package_schemaview
-from linkml_runtime.utils.schemaview import SchemaDefinition, SchemaView
+from linkml_runtime.utils.schemaview import SchemaDefinition
 from sqlalchemy.orm import sessionmaker
 
 import tests.test_data.model.personinfo

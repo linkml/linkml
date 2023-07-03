@@ -3,7 +3,6 @@ import unittest
 
 import yaml
 from linkml_runtime.dumpers import yaml_dumper
-from linkml_runtime.utils.schemaview import SchemaView
 from sqlalchemy.orm import sessionmaker
 
 import tests.test_data.model.personinfo
