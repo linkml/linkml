@@ -159,7 +159,7 @@ class DocGenerator(Generator):
                 elif dialect == MarkdownDialect.python.value:
                     dialect = MarkdownDialect.python
                 else:
-                    raise NotImplemented(f"{dialect} not supported")
+                    raise NotImplementedError(f"{dialect} not supported")
             self.dialect = dialect
         if isinstance(self.diagram_type, str):
             self.diagram_type = DiagramType[self.diagram_type]
