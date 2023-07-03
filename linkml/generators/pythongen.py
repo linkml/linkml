@@ -351,7 +351,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
         rval = []
         defs_to_generate = [x for x in self.schema.types.values() if not x.imported_from]
         emitted_types = []
-        ## all imported_from types are already considered generated
+        # all imported_from types are already considered generated
         emitted_types.extend([x.name for x in self.schema.types.values() if x.imported_from])
         for typ in [x for x in defs_to_generate if not x.typeof]:
             self._gen_typedef(typ, typ.base.rsplit(".")[-1], rval, emitted_types)
