@@ -514,7 +514,7 @@ class PydanticGenerator(OOCodeGenerator):
                         collection_key = self.generate_collection_key(slot_ranges, s, class_def)
                     else:
                         collection_key = None
-                    if s.inlined == False or collection_key is None or s.inlined_as_list == True:
+                    if s.inlined is False or collection_key is None or s.inlined_as_list is True:
                         pyrange = f"List[{pyrange}]"
                     else:
                         pyrange = f"Dict[{collection_key}, {pyrange}]"
