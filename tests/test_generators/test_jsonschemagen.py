@@ -113,12 +113,13 @@ class JsonSchemaTestCase(unittest.TestCase):
                 else:
                     schema = kitchen_sink_json_schema_not_closed
 
-                def do_validate(): 
+                def do_validate():
                     jsonschema.validate(
                         dataset,
                         schema,
                         format_checker=jsonschema.Draft7Validator.FORMAT_CHECKER,
                     )
+
                 if expected_valid:
                     # this will raise an exception and fail the test if the
                     # instance does *not* validate

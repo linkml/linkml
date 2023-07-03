@@ -29,6 +29,10 @@ def no_click_exit(_self, code=0):
 click.core.Context.exit = no_click_exit
 
 
+def _identity(s):
+    return s
+
+
 class MismatchAction(Enum):
     Ignore = 0
     Report = 1
@@ -211,7 +215,7 @@ class TestEnvironment:
         filename: Union[str, List[str]],
         generator: Callable[[Optional[str]], Optional[str]],
         value_is_returned: bool = False,
-        filtr: Callable[[str], str] = lambda s: s,
+        filtr: Callable[[str], str] = None,
         comparator: Callable[[str, str], str] = None,
         use_testing_root: bool = False,
     ) -> str:
@@ -225,6 +229,9 @@ class TestEnvironment:
         :param use_testing_root: True means output directory is in test root instead of local directory
         :return: the generator output
         """
+        # If no filter, default to identity function
+        if not filtr:
+            filtr = _identity
         filename = filename if isinstance(filename, List) else [filename]
         actual_file = (
             self.root_temp_file_path(*filename) if use_testing_root else self.actual_path(*filename)
@@ -259,12 +266,14 @@ class TestEnvironment:
         self,
         expected_file_path: str,
         actual_text: str,
-        filtr: Callable[[str], str] = lambda s: s,
+        filtr: Callable[[str], str] = None,
         comparator: Callable[[str, str], str] = None,
     ) -> bool:
         """Compare actual_text to the contents of the expected file.  Log a message if there is a mismatch and
         overwrite the expected file if we're not in the fail on error mode
         """
+        if filtr is None:
+            filtr = _identity
         if comparator is None:
             comparator = self.string_comparator
         if os.path.exists(expected_file_path):
