@@ -358,7 +358,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
 
         while True:
             defs_to_generate_typeof = [
-                x for x in defs_to_generate if x.typeof and not x.name in emitted_types
+                x for x in defs_to_generate if x.typeof and x.name not in emitted_types
             ]
             if len(defs_to_generate_typeof) == 0:
                 break

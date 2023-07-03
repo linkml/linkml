@@ -155,7 +155,7 @@ class YumlGenerator(Generator):
                 cn, False, lambda s: s.range in self.schema.classes
             )[::-1]:
                 # Swap the two boxes because, in the case of self reference, the last definition wins
-                if not slot.range in self.associations_generated and cn in slot.domain_of:
+                if slot.range not in self.associations_generated and cn in slot.domain_of:
                     rhs = self.class_box(cn)
                     lhs = self.class_box(cast(ClassDefinitionName, slot.range))
                     assocs.append(
