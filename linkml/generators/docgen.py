@@ -33,8 +33,8 @@ from linkml.workspaces.example_runner import ExampleRunner
 
 
 class MarkdownDialect(Enum):
-    python = "python"  ## https://python-markdown.github.io/ -- used by mkdocs
-    myst = "myst"  ## https://myst-parser.readthedocs.io/en/latest/ -- used by sphinx
+    python = "python"  # https://python-markdown.github.io/ -- used by mkdocs
+    myst = "myst"  # https://myst-parser.readthedocs.io/en/latest/ -- used by sphinx
 
 
 class DiagramType(Enum):
@@ -187,7 +187,7 @@ class DocGenerator(Generator):
         }
         template = self._get_template("index")
         out_str = template.render(gen=self, schema=sv.schema, schemaview=sv, **template_vars)
-        self._write(out_str, directory, "index")  ## TODO: make configurable
+        self._write(out_str, directory, "index")  # TODO: make configurable
         if self._is_single_file_format(self.format):
             logging.info(f"{self.format} is a single-page format, skipping non-index elements")
             return

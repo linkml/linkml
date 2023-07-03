@@ -10,7 +10,7 @@ MD_DIR = env.expected_path("kitchen_sink_docs")
 
 def assert_mdfile_contains(filename, text, after=None, description=None) -> None:
     found = False
-    is_after = False  ## have we reached the after mark?
+    is_after = False  # have we reached the after mark?
     with open(os.path.join(MD_DIR, filename)) as stream:
         for line in stream.readlines():
             if text in line:

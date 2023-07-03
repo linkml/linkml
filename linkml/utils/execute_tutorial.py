@@ -18,7 +18,7 @@ re_html_comment = re.compile(r"^<!-- (.+) -->")
 
 @dataclass
 class Block:
-    category: str = None  ## yaml, bash, python, ...
+    category: str = None  # yaml, bash, python, ...
     title: str = None
     content: str = None
     output: str = None

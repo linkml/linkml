@@ -121,7 +121,7 @@ class SQLTableGenerator(Generator):
     uses_schemaloader = False
 
     # ObjectVars
-    use_inherits: bool = False  ## postgresql supports inheritance
+    use_inherits: bool = False  # postgresql supports inheritance
     dialect: str = field(default_factory=lambda: "sqlite")
     inject_primary_keys: bool = field(default_factory=lambda: True)
     use_foreign_keys: bool = field(default_factory=lambda: True)

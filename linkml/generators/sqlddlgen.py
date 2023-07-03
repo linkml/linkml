@@ -218,7 +218,7 @@ class SQLDDLGenerator(Generator):
     generatorversion = "0.1.1"
     valid_formats = ["sql"]
     visit_all_class_slots: bool = True
-    use_inherits: bool = False  ## postgresql supports inheritance
+    use_inherits: bool = False  # postgresql supports inheritance
     dialect: str
     inject_primary_keys: bool = True
     sqlschema: SQLSchema = SQLSchema()
@@ -264,7 +264,7 @@ class SQLDDLGenerator(Generator):
         if self._is_hidden(cls):
             return False
         if cls.description:
-            None  ## TODO
+            None  # TODO
         tname = self._class_name_to_table(cls.name)
         # add table
         self.sqlschema.tables[tname] = SQLTable(name=tname, mapped_to=cls)

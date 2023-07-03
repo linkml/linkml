@@ -36,7 +36,7 @@ def assert_mdfile_contains(
     invert=False,
 ) -> None:
     found = False
-    is_after = False  ## have we reached the after mark?
+    is_after = False  # have we reached the after mark?
     with open(os.path.join(outdir, filename)) as stream:
         lines = stream.readlines()
         for i in range(0, len(lines)):

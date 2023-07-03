@@ -447,8 +447,8 @@ class RelationalModelTransformer:
             )
         # add PK to start of attributes
         atts = copy(c.attributes)
-        c.attributes.clear()  ## See https://github.com/linkml/linkml/issues/370
-        add_attribute(c.attributes, pk)  ## add to start
+        c.attributes.clear()  # See https://github.com/linkml/linkml/issues/370
+        add_attribute(c.attributes, pk)  # add to start
         c.attributes.update(atts)
         sv.set_modified()
         return pk

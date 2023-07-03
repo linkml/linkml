@@ -12,7 +12,7 @@ PACKAGE = "org.sink.kitchen"
 # TODO: move this somewhere reusable
 def assert_file_contains(filename, text, after=None, description=None) -> None:
     found = False
-    is_after = False  ## have we reached the after mark?
+    is_after = False  # have we reached the after mark?
     with open(os.path.join(JAVA_DIR, filename)) as stream:
         for line in stream.readlines():
             if text in line:
