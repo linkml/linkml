@@ -76,7 +76,7 @@ type {{gen.name(c)}} struct {
 }
 
 {% endfor %}
-"""  # noqa: E101
+"""  # noqa: E101, W191
 
 
 @dataclass
