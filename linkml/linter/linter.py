@@ -117,7 +117,7 @@ class Linter:
 
         try:
             schema_view = SchemaView(schema)
-        except:
+        except Exception:
             if not validate_schema:
                 yield LinterProblem(
                     message="File is not a valid LinkML schema. Use --validate for more details.",
