@@ -52,15 +52,15 @@ class GenJSONSchemaTestCase(ClickTestCase):
 
         # the default is to pretty-print with new lines + 4 spaces
         result = runner.invoke(self.click_ep, [env.input_path("roottest.yaml")])
-        self.assertRegex(result.output, '^{\n    "\$defs"')
+        self.assertRegex(result.output, r'^{\n    "\$defs"')
 
         # test custom indent level with 2 spaces
         result = runner.invoke(self.click_ep, ["--indent", 2, env.input_path("roottest.yaml")])
-        self.assertRegex(result.output, '^{\n  "\$defs"')
+        self.assertRegex(result.output, r'^{\n  "\$defs"')
 
         # test no newlines or spaces when indent = 0
         result = runner.invoke(self.click_ep, ["--indent", 0, env.input_path("roottest.yaml")])
-        self.assertRegex(result.output, '^{"\$defs"')
+        self.assertRegex(result.output, r'^{"\$defs"')
 
 
 if __name__ == "__main__":

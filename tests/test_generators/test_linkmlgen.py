@@ -66,7 +66,7 @@ class LinkMLGenTestCase(unittest.TestCase):
 
         pattern_gen.serialize(output=yaml_filename)
         # log yaml_filename so developers can look at its contents
-        self.assertEqual(pattern_gen.schemaview.get_slot("id").pattern, "^P\d{7}")
+        self.assertEqual(pattern_gen.schemaview.get_slot("id").pattern, r"^P\d{7}")
         self.assertEqual(
             pattern_gen.schemaview.get_slot("height").pattern,
             "\\d+[\\.\\d+] (centimeter|meter|inch)",

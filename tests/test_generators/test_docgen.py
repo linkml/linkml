@@ -309,7 +309,7 @@ class DocGeneratorTestCase(unittest.TestCase):
         #
         assert_mdfile_contains(
             "species_name.md",
-            "Regex pattern: `^[A-Z]+[a-z]+(-[A-Z]+[a-z]+)?\\\.[A-Z]+(-[0-9]{4})?$`",
+            r"Regex pattern: `^[A-Z]+[a-z]+(-[A-Z]+[a-z]+)?\\.[A-Z]+(-[0-9]{4})?$`",
             after="## Properties",
         )
 

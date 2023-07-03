@@ -38,7 +38,7 @@ class RawLoaderTestCase(unittest.TestCase):
         self.assertTrue(isinstance(schema.metamodel_version, str))
         expected.metamodel_version = schema.metamodel_version
 
-        pattern = "\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}"  # date in ISO 8601 format
+        pattern = r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}"  # date in ISO 8601 format
         self.assertTrue(isinstance(schema.source_file_date, str))
         self.assertRegex(schema.source_file_date, pattern)
         expected.source_file_date = schema.source_file_date

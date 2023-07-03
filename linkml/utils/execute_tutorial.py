@@ -10,10 +10,10 @@ import click
 
 from linkml._version import __version__
 
-re_decl = re.compile("^(\\S+):$")
-re_start_yaml = re.compile("^```(\w+)$")
-re_end_yaml = re.compile("^```$")
-re_html_comment = re.compile("^<!-- (.+) -->")
+re_decl = re.compile(r"^(\S+):$")
+re_start_yaml = re.compile(r"^```(\w+)$")
+re_end_yaml = re.compile(r"^```$")
+re_html_comment = re.compile(r"^<!-- (.+) -->")
 
 
 @dataclass

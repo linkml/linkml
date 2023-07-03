@@ -123,7 +123,7 @@ class OOCodeGenerator(Generator):
             return label
         else:
             # add an underscore if the value starts with a digit
-            label = re.sub("(?=^\d)", "number_", label)
+            label = re.sub(r"(?=^\d)", "number_", label)
 
             safe_label = ""
             for character in label:

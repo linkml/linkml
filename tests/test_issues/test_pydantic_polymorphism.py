@@ -134,7 +134,7 @@ class PydanticPolymorphismTestCase(TestEnvironmentTestCase):
 
         self.assertNotRegex(
             output,
-            "Union\[[a-zA-Z0-9]*\]",
+            r"Union\[[a-zA-Z0-9]*\]",
             "a python Union should always have more than one option",
         )
 
