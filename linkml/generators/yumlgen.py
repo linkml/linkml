@@ -237,7 +237,7 @@ class YumlGenerator(Generator):
         self,
         cn: ClassDefinitionName,
         all_slots: bool = True,
-        filtr: Callable[[SlotDefinition], bool] = None,
+        filtr: Callable[[SlotDefinition], bool] = lambda: True,
     ) -> List[SlotDefinition]:
         """Return the set of slots associated with the class that meet the filter criteria.  Slots will be returned
         in defining order, with class slots returned last
@@ -247,9 +247,6 @@ class YumlGenerator(Generator):
         @param filtr: Slot filter predicate
         @return: List of slot definitions
         """
-        if filtr is None:
-            filtr = lambda x: True
-
         rval = []
         cls = self.schema.classes[cn]
         cls_slots = self.all_slots(cls, cls_slots_first=True)
