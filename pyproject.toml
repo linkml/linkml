@@ -130,7 +130,7 @@ ipython-genutils = "*"
 nbconvert = "*"
 nbformat = "*"
 coverage = "^6.4.1"
-tox = "^3.25.1"
+tox = "^4"
 furo = {version = "^2023.03.27", extras = ["docs"]}
 sphinxcontrib-mermaid = {version = "^0.7.1", extras = ["docs"]}
 sphinx = "*"
