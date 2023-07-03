@@ -11,6 +11,7 @@ from io import StringIO
 from pathlib import Path
 from typing import Callable, List, Optional, Union
 
+import click
 from linkml_runtime.linkml_model import linkml_files
 from linkml_runtime.linkml_model.linkml_files import Format, Source
 
@@ -24,9 +25,6 @@ def no_click_exit(_self, code=0):
 
     raise CLIExitException(code)
 
-
-# This import has to occur here
-import click
 
 click.core.Context.exit = no_click_exit
 
