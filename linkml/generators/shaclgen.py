@@ -17,6 +17,14 @@ from rdflib.namespace import RDF, RDFS, SH, XSD
 from linkml._version import __version__
 from linkml.utils.generator import Generator, shared_arguments
 
+LINK_ML_TYPES_STRING = URIRef("http://www.w3.org/2001/XMLSchema#string")
+LINK_ML_TYPES_BOOL = URIRef("http://www.w3.org/2001/XMLSchema#boolean")
+LINK_ML_TYPES_DECIMAL = URIRef("http://www.w3.org/2001/XMLSchema#decimal")
+LINK_ML_TYPES_INTEGER = URIRef("http://www.w3.org/2001/XMLSchema#integer")
+LINK_ML_TYPES_DURATION = URIRef("http://www.w3.org/2001/XMLSchema#duration")
+LINK_ML_TYPES_DATETIME = URIRef("http://www.w3.org/2001/XMLSchema#dateTime")
+LINK_ML_TYPES_DATE = URIRef("http://www.w3.org/2001/XMLSchema#date")
+LINK_ML_TYPES_TIME = URIRef("http://www.w3.org/2001/XMLSchema#time")
 
 class ShaclGenerator(Generator):
     # ClassVars
@@ -130,7 +138,22 @@ class ShaclGenerator(Generator):
                     )
                     prop_pv(SH["in"], pv_node)
                 else:
-                    None  # TODO
+                    if r == "string":
+                        prop_pv(SH.datatype, LINK_ML_TYPES_STRING)
+                    elif r == "boolean":
+                        prop_pv(SH.datatype, LINK_ML_TYPES_BOOL)
+                    elif r == "duration":
+                        prop_pv(SH.datatype, LINK_ML_TYPES_DURATION)
+                    elif r == "datetime":
+                        prop_pv(SH.datatype, LINK_ML_TYPES_DATETIME)
+                    elif r == "date":
+                        prop_pv(SH.datatype, LINK_ML_TYPES_DATE)
+                    elif r == "time":
+                        prop_pv(SH.datatype, LINK_ML_TYPES_TIME)
+                    elif r == "decimal":
+                        prop_pv(SH.datatype, LINK_ML_TYPES_DECIMAL)
+                    elif r == "integer":
+                        prop_pv(SH.datatype, LINK_ML_TYPES_INTEGER)
                 if s.pattern:
                     prop_pv(SH.pattern, Literal(s.pattern))
                 if s.designates_type:
