@@ -158,7 +158,23 @@ ignore-words-list = 'mater,connexion,infarction'
 line-length = 100
 extend-exclude = "tests.*/output"
 
-[tool.isort]
-profile = "black"
-line_length = 100
-extend_skip_glob = ["tests/output", "tests/**/output"]
+[tool.ruff]
+extend-exclude = [
+    "tests/output",
+    "tests/**/output"
+]
+line-length = 120
+extend-ignore = ["E203"]
+select = [
+  "E",  # pycodestyle errors
+  "F",  # Pyflakes
+  "I",  # isort
+]
+
+[tool.ruff.per-file-ignores]
+# These templates can have long lines
+"linkml/generators/sqlalchemy/sqlalchemy_declarative_template.py" = ["E501"]
+"linkml/generators/sqlalchemy/sqlalchemy_imperative_template.py" = ["E501"]
+
+# Notebooks can have unsorted imports
+"tests/test_notebooks/input/*" = ["E402"]
