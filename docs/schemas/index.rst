@@ -23,12 +23,14 @@ use the guide below.
    enums
    inlining
    constraints
+   type-designators
    subsets
    imports
    advanced
    generators
    linter
    derived-models
+   annotations
    metamodel
 
 .. seealso:: `Programmatic example in a Jupyter Notebook <https://github.com/linkml/linkml/blob/main/notebooks/examples.ipynb>`_
