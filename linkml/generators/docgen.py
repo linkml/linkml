@@ -331,10 +331,8 @@ class DocGenerator(Generator):
 
             if self.use_slot_uris:
                 curie = self.schemaview.get_uri(element)
-                if curie is not None:
+                if curie:
                     return curie.split(":")[1]
-                else:
-                    return underscore(element.name)
 
             return underscore(element.name)
         else:
