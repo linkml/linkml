@@ -23,7 +23,7 @@ class AmbiguousInferredTargetClass(unittest.TestCase):
             "or by adding a tree_root: true to the relevant class in the schema",
         ):
             # infer target_class rather than explicit specification
-            inferred_target_class = infer_root_class(sv)
+            infer_root_class(sv)
 
 
 if __name__ == "__main__":

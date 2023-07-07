@@ -11,7 +11,7 @@ import click
 import linkml_runtime.linkml_model.meta as metamodel
 from linkml_runtime import SchemaView
 from linkml_runtime.dumpers import yaml_dumper
-from linkml_runtime.linkml_model import PermissibleValue, SchemaDefinition
+from linkml_runtime.linkml_model import SchemaDefinition
 from linkml_runtime.utils.compile_python import compile_python
 from linkml_runtime.utils.enumerations import EnumDefinitionImpl
 from linkml_runtime.utils.formatutils import underscore
@@ -28,8 +28,16 @@ from linkml.generators.pythongen import PythonGenerator
 from linkml.generators.sqlalchemygen import SQLAlchemyGenerator, TemplateEnum
 from linkml.generators.sqltablegen import SQLTableGenerator
 from linkml.utils import datautils, validation
-from linkml.utils.datautils import (_get_context, _get_format, _is_xsv, dumpers_loaders,
-                                    get_dumper, get_loader, infer_root_class, infer_index_slot)
+from linkml.utils.datautils import (
+    _get_context,
+    _get_format,
+    _is_xsv,
+    dumpers_loaders,
+    get_dumper,
+    get_loader,
+    infer_index_slot,
+    infer_root_class,
+)
 
 
 @dataclass
@@ -118,9 +126,7 @@ class SQLStore:
         """
         return self.load_all(target_class=target_class)[0]
 
-    def load_all(
-        self, target_class: Union[str, Type[YAMLRoot]] = None
-    ) -> List[YAMLRoot]:
+    def load_all(self, target_class: Union[str, Type[YAMLRoot]] = None) -> List[YAMLRoot]:
         if target_class is None:
             target_class_name = infer_root_class(self.schemaview)
             target_class = self.native_module.__dict__[target_class_name]
@@ -132,7 +138,7 @@ class SQLStore:
             q = session.query(typ)
             all_objs = q.all()
             tmp = self.from_sqla(all_objs)
-        return tmp  
+        return tmp
 
     def dump(self, element: YAMLRoot, append=True) -> None:
         """
@@ -225,10 +231,6 @@ class SQLStore:
             cls = nm[typ.__name__]
         else:
             cls = None
-        try:
-            kvs = vars(obj).items()
-        except TypeError:
-            kvs = None
         if isinstance(obj, list) or isinstance(obj, _AssociationCollection):
             nu_obj = [self.from_sqla(x) for x in obj]
             if nu_obj:
@@ -236,7 +238,6 @@ class SQLStore:
             else:
                 return None
         elif cls:
-            nu_cls = self.from_sqla_type(typ)
             inst_args = {}
             for sn in self.schemaview.class_slots(cls.name):
                 sn = underscore(sn)
@@ -295,9 +296,7 @@ def main(verbose: int, quiet: bool, csv_field_size_limit: int):
     "-C",
     help="name of class in datamodel that the root node instantiates",
 )
-@click.option(
-    "--index-slot", "-S", help="top level slot. Required for CSV dumping/loading"
-)
+@click.option("--index-slot", "-S", help="top level slot. Required for CSV dumping/loading")
 @click.option("--schema", "-s", help="Path to schema specified as LinkML yaml")
 @click.option(
     "--validate/--no-validate",
@@ -341,10 +340,10 @@ def dump(
         sv = SchemaView(schema)
     if target_class is None:
         if sv is None:
-            raise ValueError(f"Must specify schema if not target class is specified")
+            raise ValueError("Must specify schema if not target class is specified")
         target_class = infer_root_class(sv)
     if target_class is None:
-        raise Exception(f"target class not specified and could not be inferred")
+        raise Exception("target class not specified and could not be inferred")
     py_target_class = python_module.__dict__[target_class]
     input_format = _get_format(input, input_format)
     loader = get_loader(input_format)
@@ -352,7 +351,7 @@ def dump(
     inargs = {}
     if datautils._is_rdf_format(input_format):
         if sv is None:
-            raise Exception(f"Must pass schema arg")
+            raise Exception("Must pass schema arg")
         inargs["schemaview"] = sv
         inargs["fmt"] = input_format
     if _is_xsv(input_format):
@@ -393,9 +392,7 @@ def dump(
     "-C",
     help="name of class in datamodel that the root node instantiates",
 )
-@click.option(
-    "--index-slot", "-S", help="top level slot. Required for CSV dumping/loading"
-)
+@click.option("--index-slot", "-S", help="top level slot. Required for CSV dumping/loading")
 @click.option("--schema", "-s", help="Path to schema specified as LinkML yaml")
 @click.option(
     "--validate/--no-validate",
@@ -458,7 +455,7 @@ def load(
         outargs["fmt"] = "json-ld"
     if output_format == "rdf" or output_format == "ttl":
         if sv is None:
-            raise Exception(f"Must pass schema arg")
+            raise Exception("Must pass schema arg")
         outargs["schemaview"] = sv
     if _is_xsv(output_format):
         if index_slot is None:

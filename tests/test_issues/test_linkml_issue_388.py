@@ -1,17 +1,14 @@
-import os
 import unittest
 
 from rdflib import Graph, URIRef
-from rdflib.namespace import OWL, RDF, RDFS
+from rdflib.namespace import RDFS
 
 from linkml import METAMODEL_CONTEXT_URI
-from linkml.generators.jsonldcontextgen import ContextGenerator
 from linkml.generators.jsonschemagen import JsonSchemaGenerator
 from linkml.generators.owlgen import OwlSchemaGenerator
 from linkml.generators.rdfgen import RDFGenerator
 from linkml.generators.yamlgen import YAMLGenerator
 from tests.test_issues.environment import env
-from tests.utils.compare_rdf import compare_rdf
 from tests.utils.test_environment import TestEnvironmentTestCase
 
 
@@ -27,7 +24,6 @@ class IssueOWLNamespaceTestCase(TestEnvironmentTestCase):
 
     def test_attribute_behavior(self):
         name = "linkml_issue_388"
-        infile = env.input_path(f"{name}.yaml")
         self.env.generate_single_file(
             f"{name}.yaml",
             lambda: YAMLGenerator(

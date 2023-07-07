@@ -3,10 +3,8 @@
 """
 import os
 from dataclasses import dataclass, field
-from typing import TextIO, Union
 
 import click
-from linkml_runtime.linkml_model.meta import SchemaDefinition
 from linkml_runtime.utils.yamlutils import as_yaml
 
 from linkml._version import __version__

@@ -38,7 +38,7 @@ class RawLoaderTestCase(unittest.TestCase):
         self.assertTrue(isinstance(schema.metamodel_version, str))
         expected.metamodel_version = schema.metamodel_version
 
-        pattern = "\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}"  # date in ISO 8601 format
+        pattern = r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}"  # date in ISO 8601 format
         self.assertTrue(isinstance(schema.source_file_date, str))
         self.assertRegex(schema.source_file_date, pattern)
         expected.source_file_date = schema.source_file_date
@@ -54,9 +54,7 @@ class RawLoaderTestCase(unittest.TestCase):
 
     def test_load_raw_file(self):
         """Test loading a data file"""
-        self._verify_schema1_content(
-            load_raw_schema(env.input_path("schema1.yaml")), "schema1"
-        )
+        self._verify_schema1_content(load_raw_schema(env.input_path("schema1.yaml")), "schema1")
 
         # Verify that we can't pass source_file parameters when we've got a directory name
         with self.assertRaises(AssertionError) as e:
@@ -69,9 +67,7 @@ class RawLoaderTestCase(unittest.TestCase):
     @unittest.skip("Disabled until we implement SchemaDefinitionList")
     def test_explicit_name(self):
         """Test the named schema option"""
-        self._verify_schema1_content(
-            load_raw_schema(env.input_path("schema2.yaml")), "schema2"
-        )
+        self._verify_schema1_content(load_raw_schema(env.input_path("schema2.yaml")), "schema2")
 
     @unittest.skip("Disabled until we implement SchemaDefinitionList")
     def test_multi_schemas(self):
@@ -83,20 +79,13 @@ class RawLoaderTestCase(unittest.TestCase):
                 with open(output, "w") as f:
                     f.write(
                         as_json(
-                            JsonObj(
-                                **{
-                                    k: as_dict(loads(as_json(v)))
-                                    for k, v in s.types.items()
-                                }
-                            )
+                            JsonObj(**{k: as_dict(loads(as_json(v))) for k, v in s.types.items()})
                         )
                     )
 
             with open(output) as f:
                 expected = as_dict(load(f))
-            self.assertEqual(
-                expected, {k: as_dict(loads(as_json(v))) for k, v in s.types.items()}
-            )
+            self.assertEqual(expected, {k: as_dict(loads(as_json(v))) for k, v in s.types.items()})
             s.types = None
 
         self._verify_schema1_content(
@@ -105,15 +94,11 @@ class RawLoaderTestCase(unittest.TestCase):
 
     def test_base_dir(self):
         """Test the base directory option"""
-        self._verify_schema1_content(
-            load_raw_schema("schema1.yaml", base_dir=env.indir), "schema1"
-        )
+        self._verify_schema1_content(load_raw_schema("schema1.yaml", base_dir=env.indir), "schema1")
 
     def test_schema_id(self):
         """Test loading a schema with just an id"""
-        self._verify_schema1_content(
-            load_raw_schema("schema3.yaml", base_dir=env.indir), "schema3"
-        )
+        self._verify_schema1_content(load_raw_schema("schema3.yaml", base_dir=env.indir), "schema3")
 
     def test_name_from_sourcefile(self):
         """Test no identifier at all"""
@@ -124,16 +109,14 @@ class RawLoaderTestCase(unittest.TestCase):
         """Test loading straight text"""
         with open(env.input_path("schema1.yaml")) as f:
             self._verify_schema1_content(
-                load_raw_schema(
-                    f.read(), "schema1.yaml", "Mon Dec 31 11:25:38 2018", 76
-                ),
+                load_raw_schema(f.read(), "schema1.yaml", "Mon Dec 31 11:25:38 2018", 76),
                 "schema1",
             )
 
     def test_representation_errors(self):
         """Test misformed schema elements"""
         fn = env.input_path("typeerror1.yaml")
-        with self.assertRaises(ValueError) as e:
+        with self.assertRaises(ValueError):
             SchemaLoader(fn)
         # previously, this returned a value error.  The new loader is robust enough that it no longer does
         fn = env.input_path("typeerror2.yaml")

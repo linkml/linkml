@@ -1,4 +1,3 @@
-import os
 import tempfile
 import unittest
 
@@ -6,16 +5,14 @@ import yaml
 from linkml_runtime import SchemaView
 
 from linkml.generators.linkmlgen import LinkmlGenerator
-from linkml.generators.sssomgen import SSSOMGenerator
-from linkml.generators.yamlgen import YAMLGenerator
 from tests.test_generators.environment import env
 
 SCHEMA = env.input_path("kitchen_sink.yaml")
 PATTERN_SCHEMA = env.input_path("pattern-example.yaml")
 CORE = env.input_path("core.yaml")
 
-class LinkMLGenTestCase(unittest.TestCase):
 
+class LinkMLGenTestCase(unittest.TestCase):
     def setUp(self):
         self.schemaview = SchemaView(SCHEMA)
 
@@ -25,21 +22,21 @@ class LinkMLGenTestCase(unittest.TestCase):
         self.assertNotIn("activity", sv.all_classes(imports=False))
         self.assertListEqual(["is_living"], list(sv.get_class("Person").attributes.keys()))
 
-        gen = LinkmlGenerator(SCHEMA, format='yaml', mergeimports=False)
+        gen = LinkmlGenerator(SCHEMA, format="yaml", mergeimports=False)
         out = gen.serialize()
         # TODO: restore this when imports works for string inputs
-        #schema2 = YAMLGenerator(out).schema
-        #sv2 = SchemaView(schema2)
-        #self.assertEqual(len(sv2.all_classes(imports=False)), len(sv.all_classes(imports=False)))
-        #self.assertIn("activity", sv2.all_classes(imports=True))
-        #self.assertNotIn("activity", sv2.all_classes(imports=False))
-        #self.assertEqual([], list(sv2.get_class("Person").attributes.keys()))
+        # schema2 = YAMLGenerator(out).schema
+        # sv2 = SchemaView(schema2)
+        # self.assertEqual(len(sv2.all_classes(imports=False)), len(sv.all_classes(imports=False)))
+        # self.assertIn("activity", sv2.all_classes(imports=True))
+        # self.assertNotIn("activity", sv2.all_classes(imports=False))
+        # self.assertEqual([], list(sv2.get_class("Person").attributes.keys()))
 
         yobj = yaml.safe_load(out)
         self.assertEqual(len(yobj["classes"]), len(sv.all_classes(imports=False)))
         # self.assertNotIn("attributes", yobj["classes"]["Person"])
         # test with material-attributes option
-        gen2 = LinkmlGenerator(SCHEMA, format='yaml', mergeimports=False)
+        gen2 = LinkmlGenerator(SCHEMA, format="yaml", mergeimports=False)
         gen2.materialize_attributes = True
         out2 = gen2.serialize()
         yobj2 = yaml.safe_load(out2)
@@ -66,13 +63,10 @@ class LinkMLGenTestCase(unittest.TestCase):
 
         _, filename = tempfile.mkstemp()
         yaml_filename = filename + ".yaml"
-                
+
         pattern_gen.serialize(output=yaml_filename)
         # log yaml_filename so developers can look at its contents
-        self.assertEqual(
-            pattern_gen.schemaview.get_slot("id").pattern,
-            "^P\d{7}"
-        )
+        self.assertEqual(pattern_gen.schemaview.get_slot("id").pattern, r"^P\d{7}")
         self.assertEqual(
             pattern_gen.schemaview.get_slot("height").pattern,
             "\\d+[\\.\\d+] (centimeter|meter|inch)",
@@ -81,7 +75,7 @@ class LinkMLGenTestCase(unittest.TestCase):
             pattern_gen.schemaview.get_slot("weight").pattern,
             "\\d+[\\.\\d+] (kg|g|lbs|stone)",
         )
-        
+
 
 if __name__ == "__main__":
     unittest.main()

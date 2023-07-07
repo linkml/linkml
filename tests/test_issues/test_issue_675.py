@@ -1,8 +1,8 @@
 import unittest
 
-from linkml.generators.pydanticgen import PydanticGenerator
 from linkml_runtime.utils.compile_python import compile_python
 
+from linkml.generators.pydanticgen import PydanticGenerator
 from linkml.generators.pythongen import PythonGenerator
 
 model_txt = """
@@ -131,7 +131,7 @@ class IfAbsentTestCase(unittest.TestCase):
         # self.assertEqual(sample.class_uri_slot, m.HighClass.class_class_uri)
         self.assertIsNone(sample.class_uri_slot)
         # TODO: default_ns fails
-        self.assertEqual(sample.default_ns_slot, 'ex')
+        self.assertEqual(sample.default_ns_slot, "ex")
         # TODO: default_range fails
         # self.assertEqual(sample.default_range_slot, 'string')
         self.assertIsNone(sample.default_range_slot)
@@ -150,5 +150,5 @@ class IfAbsentTestCase(unittest.TestCase):
         self.assertEqual(sample.mt_string_slot, "")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

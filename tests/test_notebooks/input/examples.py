@@ -1,14 +1,11 @@
 from types import ModuleType
 
-from IPython.core.display import HTML, display
 from linkml_runtime.dumpers import json_dumper
-from linkml_runtime.utils.yamlutils import DupCheckYamlLoader
 from rdflib import Graph
 
 from linkml.generators.jsonldcontextgen import ContextGenerator
 from linkml.generators.pythongen import PythonGenerator
 from linkml.generators.shexgen import ShExGenerator
-from linkml.generators.yumlgen import YumlGenerator
 
 yaml = """
 id: http://example.org/sample/example1
@@ -82,7 +79,9 @@ slots:
         slot_uri: foaf:age
 
     knows:
-        description: A person known by this person (indicating some level of reciprocated interaction between the parties).
+        description: |
+            A person known by this person (indicating some level of reciprocated
+            interaction between the parties).
         range: person
         slot_uri: foaf:knows
         multivalued: true

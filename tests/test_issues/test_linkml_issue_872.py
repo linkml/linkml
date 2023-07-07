@@ -1,12 +1,9 @@
-import json
 import unittest
 
 from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.linkml_model import SlotDefinition
 
 from linkml.generators.jsonldgen import JSONLDGenerator
-from linkml.generators.jsonschemagen import JsonSchemaGenerator
-from linkml.generators.yamlgen import YAMLGenerator
 from linkml.utils.schema_builder import SchemaBuilder
 from tests.test_issues.environment import env
 from tests.utils.test_environment import TestEnvironmentTestCase

@@ -21,14 +21,13 @@ from linkml.utils.datavalidator import DataValidator
 
 
 class HashableSchemaDefinition(SchemaDefinition):
-
     def __hash__(self) -> int:
         return hash(self.id)
 
 
 @lru_cache(maxsize=None)
 def _generate_jsonschema(schema, top_class, closed):
-    logging.debug(f"Generating JSON Schema")
+    logging.debug("Generating JSON Schema")
     not_closed = not closed
     return JsonSchemaGenerator(
         schema=schema,
@@ -53,16 +52,16 @@ class JsonSchemaDataValidator(DataValidator):
     _hashable_schema: Union[str, HashableSchemaDefinition] = field(init=False, repr=False)
 
     def __setattr__(self, __name: str, __value: Any) -> None:
-        if (__name == 'schema'):
+        if __name == "schema":
             if isinstance(__value, SchemaDefinition):
                 self._hashable_schema = HashableSchemaDefinition(**asdict(__value))
             else:
                 self._hashable_schema = __value
         return super().__setattr__(__name, __value)
-        
 
     def validate_file(self, input: str, format: str = "json", **kwargs):
-        return self.validate_object(obj)
+        # return self.validate_object(obj)
+        pass
 
     def validate_object(
         self, data: YAMLRoot, target_class: Type[YAMLRoot] = None, closed: bool = True
@@ -99,7 +98,7 @@ class JsonSchemaDataValidator(DataValidator):
         self, data: dict, target_class_name: ClassDefinitionName = None, closed: bool = True
     ) -> Iterable[str]:
         if self.schema is None:
-            raise ValueError(f"schema object must be set")
+            raise ValueError("schema object must be set")
         if target_class_name is None:
             roots = [c.name for c in self.schema.classes.values() if c.tree_root]
             if len(roots) != 1:
@@ -129,14 +128,12 @@ class JsonSchemaDataValidator(DataValidator):
     "-C",
     help="name of class in datamodel that the root node instantiates",
 )
-@click.option(
-    "--index-slot", "-S", help="top level slot. Required for CSV dumping/loading"
-)
+@click.option("--index-slot", "-S", help="top level slot. Required for CSV dumping/loading")
 @click.option("--schema", "-s", help="Path to schema specified as LinkML yaml")
 @click.option(
-    "--exit-on-first-failure/--no-exit-on-first-failure", 
+    "--exit-on-first-failure/--no-exit-on-first-failure",
     default=False,
-    help="Exit after the first validation failure is found. If not specified all validation failures are reported."
+    help="Exit after the first validation failure is found. If not specified all validation failures are reported.",
 )
 @click.argument("input")
 @click.version_option(__version__, "-V", "--version")
@@ -164,13 +161,12 @@ def cli(
     if target_class is None:
         target_class = datautils.infer_root_class(sv)
     if target_class is None:
-        raise Exception(f"target class not specified and could not be inferred")
+        raise Exception("target class not specified and could not be inferred")
     py_target_class = python_module.__dict__[target_class]
     input_format = datautils._get_format(input, input_format)
     loader = datautils.get_loader(input_format)
 
     inargs = {}
-    outargs = {}
     if datautils._is_xsv(input_format):
         if index_slot is None:
             index_slot = datautils.infer_index_slot(sv, target_class)
@@ -190,9 +186,7 @@ def cli(
 
     # Validation
     if schema is None:
-        raise Exception(
-            "--schema must be passed in order to validate. Suppress with --no-validate"
-        )
+        raise Exception("--schema must be passed in order to validate. Suppress with --no-validate")
 
     validator = JsonSchemaDataValidator(schema)
     error_count = 0
@@ -208,6 +202,7 @@ def cli(
         click.echo(click.style("\u2713 ", fg="green") + "No problems found")
 
     sys.exit(0 if error_count == 0 else 1)
+
 
 if __name__ == "__main__":
     cli(sys.argv[1:])

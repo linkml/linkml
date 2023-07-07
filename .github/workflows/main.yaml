@@ -77,9 +77,11 @@ jobs:
         uses: ts-graphviz/setup-graphviz@v1
 
       #----------------------------------------------
-      #    Linting
+      #    Linting & code quality
       #----------------------------------------------
-      - name: Lint with black and isort
+      - name: Check common spelling errors
+        run: poetry run tox -e codespell
+      - name: Check with flake8
         run: poetry run tox -e lint
 
       #----------------------------------------------

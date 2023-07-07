@@ -37,9 +37,7 @@ class SlotUsageTestCase(TestEnvironmentTestCase):
         """Slot usage chain without starting alias"""
         schema = SchemaLoader(env.input_path("multi_usages.yaml")).resolve()
         self._eval_expected(schema, "s1", None, "root_class", None, None, "string")
-        self._eval_expected(
-            schema, "child_class1_s1", "s1", "child_class1", "s1", "s1", "boolean"
-        )
+        self._eval_expected(schema, "child_class1_s1", "s1", "child_class1", "s1", "s1", "boolean")
         self._eval_expected(
             schema,
             "child_class2_s1",
@@ -94,7 +92,7 @@ class SlotUsageTestCase(TestEnvironmentTestCase):
     def test_multi_usages_3(self):
         """Illegal alias usage"""
         with self.assertRaises(ValueError) as e:
-            schema = SchemaLoader(env.input_path("multi_usages_3.yaml")).resolve()
+            SchemaLoader(env.input_path("multi_usages_3.yaml")).resolve()
         self.assertIn(
             'Class: "child_class1" - alias not permitted in slot_usage slot: foo',
             str(e.exception),

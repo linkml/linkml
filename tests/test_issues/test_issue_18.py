@@ -25,9 +25,7 @@ class Issue18TestCase(TestEnvironmentTestCase):
         with self.assertRaises(ValueError) as e:
             env.generate_single_file(
                 "issue_18_error1.yaml",
-                lambda: as_yaml(
-                    SchemaLoader(env.input_path("issue_18_error1.yaml")).resolve()
-                ),
+                lambda: as_yaml(SchemaLoader(env.input_path("issue_18_error1.yaml")).resolve()),
                 value_is_returned=True,
             )
         self.assertEqual(
@@ -39,22 +37,16 @@ class Issue18TestCase(TestEnvironmentTestCase):
         with self.assertRaises(ValueError) as e:
             env.generate_single_file(
                 "issue_18_error2.yaml",
-                lambda: as_yaml(
-                    SchemaLoader(env.input_path("issue_18_error2.yaml")).resolve()
-                ),
+                lambda: as_yaml(SchemaLoader(env.input_path("issue_18_error2.yaml")).resolve()),
                 value_is_returned=True,
             )
-        self.assertEqual(
-            "Slot s1.inverse (s2) is not defined", str(e.exception).strip()
-        )
+        self.assertEqual("Slot s1.inverse (s2) is not defined", str(e.exception).strip())
 
     def test_no_inverse_domain(self):
         with self.assertRaises(ValueError) as e:
             env.generate_single_file(
                 "issue_18_error3.yaml",
-                lambda: as_yaml(
-                    SchemaLoader(env.input_path("issue_18_error3.yaml")).resolve()
-                ),
+                lambda: as_yaml(SchemaLoader(env.input_path("issue_18_error3.yaml")).resolve()),
                 value_is_returned=True,
             )
         self.assertEqual(
@@ -67,9 +59,7 @@ class Issue18TestCase(TestEnvironmentTestCase):
             env.generate_single_file(
                 "issue_18_warning1.yaml",
                 lambda: as_yaml(
-                    SchemaLoader(
-                        env.input_path("issue_18_warning1.yaml"), logger=logger
-                    ).resolve()
+                    SchemaLoader(env.input_path("issue_18_warning1.yaml"), logger=logger).resolve()
                 ),
                 filtr=yaml_filter,
                 value_is_returned=True,

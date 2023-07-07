@@ -13,14 +13,8 @@ class DefinedPrefixTestCase(unittest.TestCase):
     def test_dct_prefix(self):
         """Make sure prefixes are handled correctly"""
         with self.assertRaises(ValueError, msg="A colon in an identifier is illegal"):
-            shex = loads(
-                ShExGenerator(env.input_path("Issue_6.yaml"), format="json").serialize()
-            )
-        shex = loads(
-            ShExGenerator(
-                env.input_path("Issue_6_fixed.yaml"), format="json"
-            ).serialize()
-        )
+            shex = loads(ShExGenerator(env.input_path("Issue_6.yaml"), format="json").serialize())
+        shex = loads(ShExGenerator(env.input_path("Issue_6_fixed.yaml"), format="json").serialize())
         company_shape = [s for s in shex.shapes if "Company" in s.id][0]
         for expr in company_shape.expression.expressions:
             if expr.min == 0:

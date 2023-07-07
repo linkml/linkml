@@ -14,9 +14,7 @@ class NamespaceIssueTestCase(TestEnvironmentTestCase):
         context = "https://biolink.github.io/biolink-model/context.jsonld"
         env.generate_single_file(
             "issue_namespace.ttl",
-            lambda: RDFGenerator(env.input_path("issue_namespace.yaml")).serialize(
-                context=context
-            ),
+            lambda: RDFGenerator(env.input_path("issue_namespace.yaml")).serialize(context=context),
             comparator=compare_rdf,
             value_is_returned=True,
         )
