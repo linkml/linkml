@@ -1,11 +1,16 @@
-from dataclasses import dataclass, field
-from typing import Dict, List, Union, Optional
+from dataclasses import dataclass
+from typing import Dict, List, Optional, Union
 
-from linkml_runtime.linkml_model import (ClassDefinition, EnumDefinition,
-                                         PermissibleValue, Prefix,
-                                         SchemaDefinition, SlotDefinition,
-                                         TypeDefinition)
-from linkml_runtime.utils.formatutils import camelcase, underscore
+from linkml_runtime.linkml_model import (
+    ClassDefinition,
+    EnumDefinition,
+    PermissibleValue,
+    Prefix,
+    SchemaDefinition,
+    SlotDefinition,
+    TypeDefinition,
+)
+from linkml_runtime.utils.formatutils import underscore
 from linkml_runtime.utils.schema_as_dict import schema_as_dict
 
 
@@ -84,9 +89,7 @@ class SchemaBuilder:
                 if isinstance(s, SlotDefinition):
                     cls.attributes[s.name] = s
                 else:
-                    raise ValueError(
-                        f"If use_attributes=True then slots must be SlotDefinitions"
-                    )
+                    raise ValueError("If use_attributes=True then slots must be SlotDefinitions")
         else:
             if slots is not None:
                 for s in slots:
@@ -103,7 +106,11 @@ class SchemaBuilder:
         return self
 
     def add_slot(
-        self, slot: Union[SlotDefinition, Dict, str], class_name: str = None, replace_if_present=False, **kwargs
+        self,
+        slot: Union[SlotDefinition, Dict, str],
+        class_name: str = None,
+        replace_if_present=False,
+        **kwargs,
     ) -> "SchemaBuilder":
         """
         Adds the slot to the schema.
@@ -170,7 +177,7 @@ class SchemaBuilder:
                     enum_def.permissible_values[pv.text] = pv
         return self
 
-    def add_prefix(self, prefix: str, url: str, replace_if_present = False) -> "SchemaBuilder":
+    def add_prefix(self, prefix: str, url: str, replace_if_present=False) -> "SchemaBuilder":
         """
         Adds a prefix for use with CURIEs
 
@@ -205,12 +212,12 @@ class SchemaBuilder:
         return self
 
     def add_type(
-            self,
-            type: Union[TypeDefinition, Dict, str],
-            typeof: str = None,
-            uri: str = None,
-            replace_if_present=False,
-            **kwargs
+        self,
+        type: Union[TypeDefinition, Dict, str],
+        typeof: str = None,
+        uri: str = None,
+        replace_if_present=False,
+        **kwargs,
     ) -> "SchemaBuilder":
         """
         Adds the type to the schema

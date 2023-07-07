@@ -1,8 +1,7 @@
-import os
 import unittest
 
 from rdflib import Graph, Namespace, URIRef
-from rdflib.namespace import OWL, RDF, RDFS, SKOS
+from rdflib.namespace import SKOS
 
 from linkml.generators.rdfgen import JSONLDGenerator, RDFGenerator
 from tests.test_issues.environment import env
@@ -16,6 +15,7 @@ BIOLINK = Namespace("https://w3id.org/biolink/vocab/")
 # TODO: make this test work when format = 'ttl'
 RDF_FORMAT = "ttl"
 
+
 # Tests: https://github.com/linkml/linkml/issues/163
 class IssueRDFNamespaceTestCase(TestEnvironmentTestCase):
     env = env
@@ -24,9 +24,7 @@ class IssueRDFNamespaceTestCase(TestEnvironmentTestCase):
         path = f"{name}.{RDF_FORMAT}"
         self.env.generate_single_file(
             path,
-            lambda: RDFGenerator(
-                env.input_path(f"{name}.yaml"), format=RDF_FORMAT
-            ).serialize(),
+            lambda: RDFGenerator(env.input_path(f"{name}.yaml"), format=RDF_FORMAT).serialize(),
             value_is_returned=True,
             comparator=compare_rdf,
         )
@@ -43,9 +41,7 @@ class IssueRDFNamespaceTestCase(TestEnvironmentTestCase):
         g = Graph()
         g.parse(outpath, format=RDF_FORMAT)
 
-    @unittest.skip(
-        "skipping until https://github.com/linkml/linkml/issues/163 is fixed"
-    )
+    @unittest.skip("skipping until https://github.com/linkml/linkml/issues/163 is fixed")
     def test_namespace(self):
         name = "linkml_issue_163"
         inpath = env.input_path(f"{name}.yaml")
@@ -69,10 +65,6 @@ class IssueRDFNamespaceTestCase(TestEnvironmentTestCase):
         assert nsl["rdf"] == "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
         assert nsl["owl"] == "http://www.w3.org/2002/07/owl#"
 
-        im = gen.importmap
-
-        em = gen.emit_metadata
-
         graph = Graph()
         graph.parse(
             data=jsonld_str,
@@ -84,9 +76,7 @@ class IssueRDFNamespaceTestCase(TestEnvironmentTestCase):
         with open(env.expected_path(f"{name}-via-jsonld.ttl"), "w") as outf:
             outf.write(graph.serialize(format="turtle").decode())
 
-    @unittest.skip(
-        "skipping until https://github.com/linkml/linkml/issues/163 is fixed"
-    )
+    @unittest.skip("skipping until https://github.com/linkml/linkml/issues/163 is fixed")
     def test_issue_mappings_namespace(self):
         """Make sure that types are generated as part of the output"""
         g = self._test_rdf("linkml_issue_163")
@@ -113,9 +103,7 @@ class IssueRDFNamespaceTestCase(TestEnvironmentTestCase):
             (SNV, SKOS.exactMatch, URIRef("http://purl.obolibrary.org/obo/SO_0001483")),
             g,
         )
-        self.assertIn(
-            (NAME, SKOS.narrowMatch, URIRef("http://purl.org/dc/terms/title")), g
-        )
+        self.assertIn((NAME, SKOS.narrowMatch, URIRef("http://purl.org/dc/terms/title")), g)
 
 
 if __name__ == "__main__":

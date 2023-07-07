@@ -1,4 +1,4 @@
-import  unittest
+import unittest
 
 from linkml_runtime.utils.compile_python import compile_python
 from pydantic import ValidationError
@@ -8,6 +8,7 @@ from tests.test_issues.environment import env
 from tests.utils.test_environment import TestEnvironmentTestCase
 
 SCHEMA = env.input_path("linkml_issue_1429.yaml")
+
 
 class Issue1429ConstCase(TestEnvironmentTestCase):
     env = env
@@ -32,8 +33,6 @@ class Issue1429ConstCase(TestEnvironmentTestCase):
         p = mod.Person(id=id, full_name=full_name)
         self.assertEqual(id, p.id)
         self.assertEqual(full_name, p.full_name)
-
-
 
 
 if __name__ == "__main__":

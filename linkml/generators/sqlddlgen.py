@@ -2,16 +2,32 @@ import logging
 import os
 from contextlib import redirect_stdout
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional, TextIO, Tuple, Union
+from typing import Dict, List, Optional, TextIO, Union
 
 import click
 from deprecated.classic import deprecated
-from linkml_runtime.linkml_model.meta import (ClassDefinition,
-                                              ClassDefinitionName,
-                                              SchemaDefinition, SlotDefinition,
-                                              SlotDefinitionName)
+from linkml_runtime.linkml_model.meta import (
+    ClassDefinition,
+    ClassDefinitionName,
+    SchemaDefinition,
+    SlotDefinition,
+)
 from linkml_runtime.utils.formatutils import camelcase, underscore
-from sqlalchemy import *
+from sqlalchemy import (
+    Boolean,
+    Column,
+    Date,
+    DateTime,
+    Enum,
+    Float,
+    ForeignKey,
+    Integer,
+    MetaData,
+    Table,
+    Text,
+    Time,
+    create_mock_engine,
+)
 
 from linkml._version import __version__
 from linkml.utils.generator import Generator, shared_arguments
@@ -202,7 +218,7 @@ class SQLDDLGenerator(Generator):
     generatorversion = "0.1.1"
     valid_formats = ["sql"]
     visit_all_class_slots: bool = True
-    use_inherits: bool = False  ## postgresql supports inheritance
+    use_inherits: bool = False  # postgresql supports inheritance
     dialect: str
     inject_primary_keys: bool = True
     sqlschema: SQLSchema = SQLSchema()
@@ -248,7 +264,7 @@ class SQLDDLGenerator(Generator):
         if self._is_hidden(cls):
             return False
         if cls.description:
-            None  ## TODO
+            None  # TODO
         tname = self._class_name_to_table(cls.name)
         # add table
         self.sqlschema.tables[tname] = SQLTable(name=tname, mapped_to=cls)
@@ -261,7 +277,7 @@ class SQLDDLGenerator(Generator):
             # postgresql supports inheritance
             # if you want to use plain SQL DDL then use sqlutils to unfold hierarchy
             # TODO: raise error if the target is standard SQL
-            raise Exception(f"PostgreSQL Inheritance not yet supported")
+            raise Exception("PostgreSQL Inheritance not yet supported")
 
     def visit_class_slot(
         self, cls: ClassDefinition, aliased_slot_name: str, slot: SlotDefinition
@@ -320,17 +336,11 @@ class SQLDDLGenerator(Generator):
                     linktable_name = f"{table.name}_{sqlcol.name}"
                     backref_col_name = "backref_id"
                     linktable = SQLTable(name=linktable_name)
-                    linktable.add_column(
-                        SQLColumn(name=backref_col_name, foreign_key=table_pk)
-                    )
+                    linktable.add_column(SQLColumn(name=backref_col_name, foreign_key=table_pk))
                     linktable.add_column(sqlcol)
                     sqlschema.add_table(linktable)
                     table.remove_column(sqlcol)
-                if (
-                    not is_primitive
-                    and table_pk is not None
-                    and len(ref.referenced_by) == 1
-                ):
+                if not is_primitive and table_pk is not None and len(ref.referenced_by) == 1:
                     # e.g. user->addresses
                     backref_col_name = f"{table.name}_{table_pk.name}"
                     backref_col = SQLColumn(name=backref_col_name, foreign_key=table_pk)
@@ -392,12 +402,9 @@ class SQLDDLGenerator(Generator):
         def dump(sql, *multiparams, **params):
             print(f"{str(sql.compile(dialect=engine.dialect)).rstrip()};")
 
-        engine = create_mock_engine(
-            f"{self.dialect}://./MyDb", strategy="mock", executor=dump
-        )
+        engine = create_mock_engine(f"{self.dialect}://./MyDb", strategy="mock", executor=dump)
         schema_metadata = MetaData()
         for t in self.sqlschema.tables.values():
-            cls = t.mapped_to
             sqlcols = t.columns.values()
             if len(sqlcols) > 0:
                 cols = []
@@ -415,7 +422,7 @@ class SQLDDLGenerator(Generator):
                     )
 
                     cols.append(col)
-                alchemy_tbl = Table(t.name, schema_metadata, *cols)
+                Table(t.name, schema_metadata, *cols)
         print()
         schema_metadata.create_all(engine)
 
@@ -491,8 +498,8 @@ from {model_path} import *
                     backref_slot_range = camelcase(backref_slot.range)
                     print(
                         f"""
-    '{underscore(original_col.mapped_to_alias)}': 
-        relationship({backref_slot_range}, 
+    '{underscore(original_col.mapped_to_alias)}':
+        relationship({backref_slot_range},
                       foreign_keys={backref.backref_column.table.as_var()}.columns["{backref.backref_column.name}"],
                       backref='{cn}'),
 """
@@ -527,7 +534,7 @@ Python import header for generated sql-alchemy code
     default=False,
     show_default=True,
     help="""
-Map classes directly to 
+Map classes directly to
 """,
 )
 @click.option(

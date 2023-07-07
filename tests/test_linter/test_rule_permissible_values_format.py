@@ -2,8 +2,7 @@ import unittest
 
 from linkml_runtime import SchemaView
 
-from linkml.linter.config.datamodel.config import (
-    PermissibleValuesFormatRuleConfig, RuleLevel)
+from linkml.linter.config.datamodel.config import PermissibleValuesFormatRuleConfig, RuleLevel
 from linkml.linter.rules import PermissibleValuesFormatRule
 from linkml.utils.schema_builder import SchemaBuilder
 
@@ -24,9 +23,7 @@ class TestRulePermissibleValuesFormat(unittest.TestCase):
         self.schema_view = SchemaView(schema_builder.schema)
 
     def test_format_snake(self):
-        config = PermissibleValuesFormatRuleConfig(
-            level=RuleLevel.error, format="snake"
-        )
+        config = PermissibleValuesFormatRuleConfig(level=RuleLevel.error, format="snake")
         rule = PermissibleValuesFormatRule(config)
         problems = list(rule.check(self.schema_view))
 
@@ -42,9 +39,7 @@ class TestRulePermissibleValuesFormat(unittest.TestCase):
         self.assertFalse(any("fries" in m for m in messages))
 
     def test_format_upper_snake(self):
-        config = PermissibleValuesFormatRuleConfig(
-            level=RuleLevel.error, format="uppersnake"
-        )
+        config = PermissibleValuesFormatRuleConfig(level=RuleLevel.error, format="uppersnake")
         rule = PermissibleValuesFormatRule(config)
         problems = list(rule.check(self.schema_view))
 
@@ -60,9 +55,7 @@ class TestRulePermissibleValuesFormat(unittest.TestCase):
         self.assertFalse(any("BIG_MAC" in m for m in messages))
 
     def test_format_camel(self):
-        config = PermissibleValuesFormatRuleConfig(
-            level=RuleLevel.error, format="camel"
-        )
+        config = PermissibleValuesFormatRuleConfig(level=RuleLevel.error, format="camel")
         rule = PermissibleValuesFormatRule(config)
         problems = list(rule.check(self.schema_view))
 
@@ -78,9 +71,7 @@ class TestRulePermissibleValuesFormat(unittest.TestCase):
         self.assertFalse(any("fries" in m for m in messages))
 
     def test_format_kebab(self):
-        config = PermissibleValuesFormatRuleConfig(
-            level=RuleLevel.error, format="kebab"
-        )
+        config = PermissibleValuesFormatRuleConfig(level=RuleLevel.error, format="kebab")
         rule = PermissibleValuesFormatRule(config)
         problems = list(rule.check(self.schema_view))
 
@@ -96,9 +87,7 @@ class TestRulePermissibleValuesFormat(unittest.TestCase):
         self.assertFalse(any("fries" in m for m in messages))
 
     def test_format_custom_regex(self):
-        config = PermissibleValuesFormatRuleConfig(
-            level=RuleLevel.error, format="[a-z]+"
-        )
+        config = PermissibleValuesFormatRuleConfig(level=RuleLevel.error, format="[a-z]+")
         rule = PermissibleValuesFormatRule(config)
         problems = list(rule.check(self.schema_view))
 

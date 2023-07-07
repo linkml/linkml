@@ -10,7 +10,7 @@ class ClassListIssueTest(unittest.TestCase):
     @unittest.expectedFailure
     def test_class_list(self):
         """SchemaLoader should be monotonic - metamodel test"""
-        biolink_schema = SchemaLoader(env.input_path("issue_206.yaml")).resolve()
+        SchemaLoader(env.input_path("issue_206.yaml")).resolve()
 
 
 if __name__ == "__main__":

@@ -8,7 +8,7 @@ class ParserErrorTestCase(unittest.TestCase):
 
     def test_missing_exception_type(self):
         try:
-            from dateutil.parser import ParserError
+            from dateutil.parser import ParserError  # noqa
         except ImportError:
             self.fail("ParserError() cannot be found in python-dateutil<2.8.1")
 

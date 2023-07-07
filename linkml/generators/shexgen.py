@@ -3,23 +3,25 @@
 """
 import os
 from dataclasses import dataclass, field
-from typing import List, Optional, TextIO, Union
+from typing import List, Optional, Union
 
 import click
 from jsonasobj import as_json as as_json_1
-from linkml_runtime.linkml_model.meta import (ClassDefinition, ElementName,
-                                              EnumDefinition, SchemaDefinition,
-                                              SlotDefinition,
-                                              SlotDefinitionName,
-                                              TypeDefinition)
+from linkml_runtime.linkml_model.meta import (
+    ClassDefinition,
+    ElementName,
+    EnumDefinition,
+    SlotDefinition,
+    SlotDefinitionName,
+    TypeDefinition,
+)
 from linkml_runtime.linkml_model.types import SHEX
 from linkml_runtime.utils.formatutils import camelcase, sfx
 from linkml_runtime.utils.metamodelcore import URIorCURIE
 from rdflib import OWL, RDF, XSD, Graph, Namespace
 from ShExJSG import ShExC
 from ShExJSG.SchemaWithContext import Schema
-from ShExJSG.ShExJ import (IRIREF, EachOf, NodeConstraint, Shape, ShapeOr,
-                           TripleConstraint)
+from ShExJSG.ShExJ import IRIREF, EachOf, NodeConstraint, Shape, ShapeOr, TripleConstraint
 
 from linkml import METAMODEL_NAMESPACE, METAMODEL_NAMESPACE_NAME
 from linkml._version import __version__
@@ -39,7 +41,9 @@ class ShExGenerator(Generator):
     shex: Schema = field(default_factory=lambda: Schema())  # ShEx Schema being generated
     shapes: List = field(default_factory=lambda: [])
     shape: Optional[Shape] = None  # Current shape being defined
-    list_shapes: List[IRIREF] = field(default_factory=lambda: [])  # Shapes that have been defined as lists
+    list_shapes: List[IRIREF] = field(
+        default_factory=lambda: []
+    )  # Shapes that have been defined as lists
 
     def __post_init__(self):
         super().__post_init__()
@@ -71,14 +75,10 @@ class ShExGenerator(Generator):
                 if typ_type_uri in (XSD.anyURI, SHEX.iri):
                     self.shapes.append(NodeConstraint(id=model_uri, nodeKind="iri"))
                 elif typ_type_uri == SHEX.nonLiteral:
-                    self.shapes.append(
-                        NodeConstraint(id=model_uri, nodeKind="nonliteral")
-                    )
+                    self.shapes.append(NodeConstraint(id=model_uri, nodeKind="nonliteral"))
                 else:
                     self.shapes.append(
-                        NodeConstraint(
-                            id=model_uri, datatype=self.namespaces.uri_for(typ.uri)
-                        )
+                        NodeConstraint(id=model_uri, datatype=self.namespaces.uri_for(typ.uri))
                     )
             else:
                 typeof_uri = self._class_or_type_uri(typ.typeof)
@@ -95,9 +95,7 @@ class ShExGenerator(Generator):
                 struct_ref_list.append(applier)
         for sr in struct_ref_list:
             self._add_constraint(self._class_or_type_uri(sr, "_tes"))
-            self._add_constraint(
-                self._type_arc(self.schema.classes[sr].class_uri, opt=True)
-            )
+            self._add_constraint(self._type_arc(self.schema.classes[sr].class_uri, opt=True))
         return True
 
     def end_class(self, cls: ClassDefinition) -> None:
@@ -121,9 +119,7 @@ class ShExGenerator(Generator):
         # If this class has subtypes, define the class as the union of its subtypes and itself (if not abstract)
         if cls.name in self.synopsis.isarefs:
             childrenExprs = []
-            for child_classname in sorted(
-                list(self.synopsis.isarefs[cls.name].classrefs)
-            ):
+            for child_classname in sorted(list(self.synopsis.isarefs[cls.name].classrefs)):
                 childrenExprs.append(self._class_or_type_uri(child_classname))
             if not (cls.mixin or cls.abstract) or len(childrenExprs) == 1:
                 childrenExprs.insert(0, self.shape)
@@ -203,9 +199,7 @@ class ShExGenerator(Generator):
             self.shape.expression = constraint
         # One constraint
         elif not isinstance(self.shape.expression, EachOf):
-            self.shape.expression = EachOf(
-                expressions=[self.shape.expression, constraint]
-            )
+            self.shape.expression = EachOf(expressions=[self.shape.expression, constraint])
         # Two or more constraints
         else:
             self.shape.expression.expressions.append(constraint)

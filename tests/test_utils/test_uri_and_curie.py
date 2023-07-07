@@ -1,7 +1,5 @@
-import os
 import unittest
 from pathlib import PurePath
-from types import ModuleType
 
 from jsonasobj2 import loads
 from linkml_runtime.utils.compile_python import compile_python
@@ -12,8 +10,7 @@ from linkml.generators.jsonldgen import JSONLDGenerator
 from linkml.generators.pythongen import PythonGenerator
 from tests.test_utils.environment import env
 from tests.utils.compare_rdf import compare_rdf
-from tests.utils.filters import (json_metadata_filter,
-                                 ldcontext_metadata_filter, metadata_filter)
+from tests.utils.filters import json_metadata_filter, ldcontext_metadata_filter, metadata_filter
 from tests.utils.generatortestcase import GeneratorTestCase
 from tests.utils.python_comparator import compare_python
 
@@ -29,9 +26,7 @@ class URIAndCurieTestCase(GeneratorTestCase):
             "py",
             PythonGenerator,
             filtr=metadata_filter,
-            comparator=lambda exp, act: compare_python(
-                exp, act, self.env.expected_path("foo.py")
-            ),
+            comparator=lambda exp, act: compare_python(exp, act, self.env.expected_path("foo.py")),
         )
 
         # Check that the interpretations are correct
@@ -39,9 +34,7 @@ class URIAndCurieTestCase(GeneratorTestCase):
             "jsonld",
             ContextGenerator,
             filtr=ldcontext_metadata_filter,
-            comparator=lambda expected, actual: compare_rdf(
-                expected, actual, fmt="json-ld"
-            ),
+            comparator=lambda expected, actual: compare_rdf(expected, actual, fmt="json-ld"),
         )
         self.single_file_generator("json", JSONLDGenerator, filtr=json_metadata_filter)
 

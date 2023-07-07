@@ -70,9 +70,7 @@ class Linter:
         default_config = deepcopy(get_named_config("default"))
         merged_config = config
         if config.get("extends") == ExtendableConfigs.recommended.text:
-            recommended_config = deepcopy(
-                get_named_config(ExtendableConfigs.recommended.text)
-            )
+            recommended_config = deepcopy(get_named_config(ExtendableConfigs.recommended.text))
             merged_config = merge_configs(recommended_config, merged_config)
         merged_config = merge_configs(default_config, merged_config)
         self.config = Config(**merged_config)
@@ -119,7 +117,7 @@ class Linter:
 
         try:
             schema_view = SchemaView(schema)
-        except:
+        except Exception:
             if not validate_schema:
                 yield LinterProblem(
                     message="File is not a valid LinkML schema. Use --validate for more details.",

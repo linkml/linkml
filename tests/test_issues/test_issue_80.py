@@ -41,11 +41,7 @@ class Issue80TestCase(TestEnvironmentTestCase):
                 f.write(ContextGenerator(env.input_path("issue_80.yaml")).serialize())
             with open(os.path.join(dirname, "issue_80.ttl"), "w") as f:
                 context = PurePath(context).as_uri()
-                f.write(
-                    as_rdf(example, contexts=context)
-                    .serialize(format="turtle")
-                    .decode()
-                )
+                f.write(as_rdf(example, contexts=context).serialize(format="turtle").decode())
 
         env.generate_directory("issue_80", lambda dirname: output_generator(dirname))
 

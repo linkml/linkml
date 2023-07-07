@@ -6,9 +6,7 @@ from urllib.parse import urlparse
 import yaml
 from dateutil.parser import ParserError, parse
 from hbreader import FileInfo, HBType, detect_type
-from linkml_runtime.linkml_model.meta import (ClassDefinition,
-                                              SchemaDefinition, SlotDefinition,
-                                              metamodel_version)
+from linkml_runtime.linkml_model.meta import SchemaDefinition, metamodel_version
 from linkml_runtime.loaders import yaml_loader
 from linkml_runtime.utils.yamlutils import YAMLMark, YAMLRoot
 
@@ -56,9 +54,7 @@ def load_raw_schema(
 
     # Passing a URL or file name
     if detect_type(data, base_dir) not in (HBType.STRING, HBType.STRINGABLE):
-        assert (
-            source_file is None
-        ), "source_file parameter not allowed if data is a file or URL"
+        assert source_file is None, "source_file parameter not allowed if data is a file or URL"
         assert (
             source_file_date is None
         ), "source_file_date parameter not allowed if data is a file or URL"

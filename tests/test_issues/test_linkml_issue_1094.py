@@ -1,4 +1,4 @@
-import  unittest
+import unittest
 
 from linkml.generators.pydanticgen import PydanticGenerator
 from tests.test_issues.environment import env
@@ -18,7 +18,7 @@ description: test
 classes:
   person:
     slots:
-      - id      
+      - id
       - has_bikes
     slot_usage:
       - has_bikes:

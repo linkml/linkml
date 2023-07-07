@@ -5,7 +5,11 @@ import yaml
 from linkml_runtime.loaders import yaml_loader
 
 from linkml.generators.pythongen import PythonGenerator
-from linkml.validators.jsonschemavalidator import JsonSchemaDataValidator, JsonSchemaDataValidatorError, _generate_jsonschema
+from linkml.validators.jsonschemavalidator import (
+    JsonSchemaDataValidator,
+    JsonSchemaDataValidatorError,
+    _generate_jsonschema,
+)
 from tests.test_validation.environment import env
 
 SCHEMA = env.input_path("kitchen_sink.yaml")
@@ -16,7 +20,6 @@ PERSON_INVALID_1 = env.input_path("Person-invalid-01.yaml")
 
 
 class JsonSchemaValidatorTestCase(unittest.TestCase):
-
     def setUp(self):
         # Ensure each test runs from a clean state
         _generate_jsonschema.cache_clear()
@@ -32,7 +35,7 @@ class JsonSchemaValidatorTestCase(unittest.TestCase):
         with self.assertRaises(JsonSchemaDataValidatorError) as ctx:
             obj = yaml_loader.load(source=PERSON_INVALID_1, target_class=mod.Person)
             validator.validate_object(obj, target_class=mod.Person)
-        
+
         messages = ctx.exception.validation_messages
         self.assertEqual(len(messages), 1)
         self.assertIn("name", messages[0])
@@ -50,14 +53,12 @@ class JsonSchemaValidatorTestCase(unittest.TestCase):
 
         with self.assertRaises(JsonSchemaDataValidatorError) as ctx:
             validator.validate_dict(obj, "Person")
-        
+
         messages = ctx.exception.validation_messages
         self.assertEqual(len(messages), 1)
         self.assertIn("name", messages[0])
 
-    @patch(
-        "linkml.generators.jsonschemagen.JsonSchemaGenerator.generate", return_value={}
-    )
+    @patch("linkml.generators.jsonschemagen.JsonSchemaGenerator.generate", return_value={})
     def test_jsonschema_caching(self, generate_mock):
         """Validate that JSON Schema generation is only done when needed"""
 

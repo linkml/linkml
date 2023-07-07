@@ -1,4 +1,3 @@
-import sys
 import unittest
 
 from linkml.generators.golanggen import GolangGenerator

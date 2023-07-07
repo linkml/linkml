@@ -13,7 +13,6 @@ OUTPUT_PATH = os.path.join(OUTPUT_DIR, OUTPUT_FILENAME)
 
 
 class SSSOMGenTestCase(unittest.TestCase):
-
     def setUp(self) -> None:
         gen = SSSOMGenerator(SCHEMA, output=OUTPUT_PATH)
         gen.serialize()

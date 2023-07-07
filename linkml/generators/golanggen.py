@@ -1,23 +1,17 @@
 import logging
 import os
-from copy import deepcopy
 from dataclasses import dataclass
-from pathlib import Path
-from typing import (Callable, Dict, Iterator, List, Optional, Set, TextIO,
-                    Tuple, Union)
+from typing import List, Optional
 
 import click
-from jinja2 import Environment, FileSystemLoader, Template
-from linkml_runtime.dumpers import yaml_dumper
-from linkml_runtime.linkml_model.meta import (Annotation, ClassDefinition,
-                                              ClassDefinitionName, Definition,
-                                              DefinitionName, Element,
-                                              EnumDefinition, SchemaDefinition,
-                                              SlotDefinition,
-                                              SlotDefinitionName,
-                                              TypeDefinition)
+from jinja2 import Template
+from linkml_runtime.linkml_model.meta import (
+    ClassDefinition,
+    ClassDefinitionName,
+    Element,
+    SlotDefinition,
+)
 from linkml_runtime.utils.formatutils import camelcase, underscore
-from linkml_runtime.utils.schemaview import SchemaView
 
 from linkml._version import __version__
 from linkml.utils.generator import Generator, shared_arguments
@@ -82,7 +76,7 @@ type {{gen.name(c)}} struct {
 }
 
 {% endfor %}
-"""
+"""  # noqa: E101, W191
 
 
 @dataclass
@@ -103,9 +97,7 @@ class GolangGenerator(Generator):
         :return:
         """
         template_obj = Template(default_template)
-        out_str = template_obj.render(
-            gen=self, schema=self.schemaview.schema, view=self.schemaview
-        )
+        out_str = template_obj.render(gen=self, schema=self.schemaview.schema, view=self.schemaview)
         return out_str
 
     def name(self, element: Element) -> str:
@@ -148,9 +140,7 @@ class GolangGenerator(Generator):
         else:
             return None
 
-    def get_identifier_or_key_slot(
-        self, cn: ClassDefinitionName
-    ) -> Optional[SlotDefinition]:
+    def get_identifier_or_key_slot(self, cn: ClassDefinitionName) -> Optional[SlotDefinition]:
         sv = self.schemaview
         id_slot = sv.get_identifier_slot(cn)
         if id_slot:

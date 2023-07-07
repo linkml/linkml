@@ -20,9 +20,7 @@ class CuriePrefixTestCase(TestEnvironmentTestCase):
     def _do_test(self, tfn):
         env.generate_single_file(
             f"{tfn}.yaml",
-            lambda: YAMLGenerator(
-                env.input_path(f"{tfn}.yaml"), log_level=INFO
-            ).serialize(),
+            lambda: YAMLGenerator(env.input_path(f"{tfn}.yaml"), log_level=INFO).serialize(),
             filtr=yaml_filter,
             value_is_returned=True,
         )

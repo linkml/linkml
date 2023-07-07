@@ -1,13 +1,8 @@
 import logging
-import os
 import unittest
-
-from rdflib import Graph, Namespace, URIRef
-from rdflib.namespace import OWL, RDF, RDFS, SKOS
 
 from linkml.generators.yamlgen import YAMLGenerator
 from tests.test_issues.environment import env
-from tests.utils.compare_rdf import compare_rdf
 from tests.utils.test_environment import TestEnvironmentTestCase
 
 

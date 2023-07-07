@@ -1,8 +1,9 @@
-import os
-from dataclasses import field, dataclass
-from typing import Optional
-import click
 import importlib.util
+import os
+from dataclasses import dataclass, field
+from typing import Optional
+
+import click
 from jinja2 import Environment, FileSystemLoader, Template
 from linkml_runtime.linkml_model.meta import TypeDefinition
 
@@ -37,7 +38,7 @@ public{% if cls.abstract %} abstract{% endif %} class {{ cls.name }} {% if cls.i
   private {{f.range}} {{ f.name }};
 {%- endfor %}
 
-}"""
+}"""  # noqa: E501
 
 TYPEMAP = {
     "xsd:string": "String",
@@ -52,13 +53,8 @@ TYPEMAP = {
     "xsd:decimal": "BigDecimal",
 }
 
-TYPE_DEFAULTS = {
-    "boolean": "false",
-    "int": "0",
-    "float": "0f",
-    "double": "0d",
-    "String": '""'
-}
+TYPE_DEFAULTS = {"boolean": "false", "int": "0", "float": "0f", "double": "0d", "String": '""'}
+
 
 @dataclass
 class JavaGenerator(OOCodeGenerator):
@@ -143,9 +139,7 @@ class JavaGenerator(OOCodeGenerator):
     help="Output directory for individually generated class files",
 )
 @click.option("--package", help="Package name where relevant for generated class files")
-@click.option(
-    "--template-file", help="Optional jinja2 template to use for class generation"
-)
+@click.option("--template-file", help="Optional jinja2 template to use for class generation")
 @click.option(
     "--generate-records/--no-generate-records",
     default=False,

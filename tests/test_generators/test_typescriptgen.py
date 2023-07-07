@@ -2,6 +2,7 @@ import unittest
 
 from linkml_runtime import SchemaView
 from linkml_runtime.linkml_model import SlotDefinition
+
 from linkml.generators.typescriptgen import TypescriptGenerator
 from linkml.utils.schema_builder import SchemaBuilder
 from tests.test_generators.environment import env
@@ -34,11 +35,11 @@ class TypescriptGeneratorTestCase(unittest.TestCase):
         sb.add_class("Person", slots=[id, description])
         schema = sb.schema
         tss = TypescriptGenerator(schema, mergeimports=True).serialize()
-        assert("id: string" in tss)
-        assert("description?: string" in tss)
+        assert "id: string" in tss
+        assert "description?: string" in tss
 
     def test_mutlivalued_string(self):
-        """ Test that multivalued string slots are generated as string arrays """
+        """Test that multivalued string slots are generated as string arrays"""
 
         sb = SchemaBuilder("test")
         sb.add_defaults()
@@ -46,7 +47,7 @@ class TypescriptGeneratorTestCase(unittest.TestCase):
         sb.add_class("Person", slots=[aliases])
         schema = sb.schema
         tss = TypescriptGenerator(schema, mergeimports=True).serialize()
-        assert("aliases?: string[]" in tss)
+        assert "aliases?: string[]" in tss
 
     def test_enums(self):
         unit_test_schema = """

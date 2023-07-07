@@ -51,12 +51,8 @@ class Issue378TestCase(TestEnvironmentTestCase):
     def test_default_vocab(self):
         json_ld_text = ContextGenerator(without_default).serialize()
         json_ld = loads(json_ld_text)
-        self.assertEqual(
-            "http://example.org/sssom/schema/", json_ld["@context"]["@vocab"]
-        )
-        self.assertEqual(
-            "http://example.org/sssom/schema/name", json_ld["@context"]["name"]["@id"]
-        )
+        self.assertEqual("http://example.org/sssom/schema/", json_ld["@context"]["@vocab"])
+        self.assertEqual("http://example.org/sssom/schema/name", json_ld["@context"]["name"]["@id"])
         json_ld_text2 = ContextGenerator(with_default).serialize()
         json_ld2 = loads(json_ld_text2)
         self.assertEqual("https://w3id.org/sssom/", json_ld2["@context"]["@vocab"])

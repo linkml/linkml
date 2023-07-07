@@ -3,7 +3,6 @@ import unittest
 from linkml_runtime.linkml_model.meta import LINKML
 from rdflib import Graph, Namespace
 
-from linkml.generators.jsonldgen import JSONLDGenerator
 from linkml.generators.rdfgen import RDFGenerator
 from tests.test_issues.environment import env
 from tests.utils.test_environment import TestEnvironmentTestCase

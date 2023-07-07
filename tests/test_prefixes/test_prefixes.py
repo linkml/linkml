@@ -2,8 +2,6 @@ import csv
 import json
 import logging
 import re
-import sys
-import tempfile
 import unittest
 
 from rdflib import Graph, URIRef
@@ -12,7 +10,6 @@ from linkml.generators.jsonldcontextgen import ContextGenerator
 from linkml.generators.owlgen import OwlSchemaGenerator
 from linkml.generators.prefixmapgen import PrefixGenerator
 from linkml.generators.rdfgen import RDFGenerator
-from tests.test_generators import output
 from tests.test_prefixes.environment import env
 
 SCHEMA = env.input_path("prefixtest.yaml")
@@ -151,9 +148,7 @@ class PrefixTestCase(unittest.TestCase):
         for k, v in expected.items():
             if k in obj:
                 if v != obj[k]:
-                    if not (
-                        "@id" in v and "@id" in obj[k] and v["@id"] == obj[k]["@id"]
-                    ):
+                    if not ("@id" in v and "@id" in obj[k] and v["@id"] == obj[k]["@id"]):
                         logging.error(f"{k} = {v} expected {expected[k]}")
                         fails += 1
             else:

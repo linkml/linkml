@@ -29,19 +29,18 @@ class TestExampleRunner(unittest.TestCase):
 
     def get_example_runner(self) -> ExampleRunner:
         """Get an example runner."""
-        return ExampleRunner(schemaview=self.schemaview,
-                      input_directory=INPUT_EXAMPLES_PATH,
-                      counter_example_input_directory=COUNTER_EXAMPLES_PATH,
-                      output_directory=env.outdir,
-                      prefix_map=self.ctxt.as_dict())
+        return ExampleRunner(
+            schemaview=self.schemaview,
+            input_directory=INPUT_EXAMPLES_PATH,
+            counter_example_input_directory=COUNTER_EXAMPLES_PATH,
+            output_directory=env.outdir,
+            prefix_map=self.ctxt.as_dict(),
+        )
 
     def test_load_from_dict(self):
         """test loading from a dict object, including using type designators."""
         er = self.example_runner
-        obj = er._load_from_dict(
-            {"persons": [
-                {'id': 'p1', 'name': 'John'}
-            ]})
+        obj = er._load_from_dict({"persons": [{"id": "p1", "name": "John"}]})
         print(obj)
 
     def test_example_runner(self):
@@ -63,8 +62,8 @@ class TestExampleRunner(unittest.TestCase):
         :return:
         """
         er = self.get_example_runner()
-        er.input_formats = ['json']
-        er.output_formats = ['ttl']
+        er.input_formats = ["json"]
+        er.output_formats = ["ttl"]
         er.process_examples()
         md = str(er.summary)
         self.assertIn("Container-002", er.summary.inputs)
@@ -73,6 +72,3 @@ class TestExampleRunner(unittest.TestCase):
         self.assertIn("Container-002.ttl", er.summary.outputs)
         self.assertNotIn("Container-001", md)
         self.assertIn("Container-002", md)
-
-
-

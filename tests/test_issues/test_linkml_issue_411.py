@@ -1,7 +1,6 @@
 import json
 import unittest
 
-import jsonasobj
 import jsonschema
 
 from linkml.generators.jsonschemagen import JsonSchemaGenerator

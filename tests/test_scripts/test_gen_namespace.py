@@ -1,5 +1,4 @@
 import unittest
-from types import ModuleType
 
 import click
 
@@ -37,9 +36,7 @@ class GenNamespaceTestCase(ClickTestCase):
                 exp, act, self.env.expected_path("meta_namespaces.py")
             ),
         )
-        self.do_test(
-            "-f xsv", "meta_error", expected_error=click.exceptions.BadParameter
-        )
+        self.do_test("-f xsv", "meta_error", expected_error=click.exceptions.BadParameter)
 
 
 if __name__ == "__main__":

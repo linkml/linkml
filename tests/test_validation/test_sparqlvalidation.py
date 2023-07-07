@@ -9,12 +9,11 @@ DATA = env.input_path("kitchen_sink_inst_01.ttl")
 
 
 class SparqlValidatorTestCase(unittest.TestCase):
-
     # rdflib bug on parsing sparql queries
     @unittest.skip
     def test_sparql_validation(self):
         """Validate using in-memory sparql"""
-        sg = SparqlGenerator(SCHEMA)
+        SparqlGenerator(SCHEMA)
         sv = SparqlDataValidator()
         sv.load_schema(SCHEMA)
         results = sv.validate_file(DATA)
