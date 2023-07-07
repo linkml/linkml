@@ -317,6 +317,14 @@
 <span class="kn">from</span> <span class="nn">linkml._version</span> <span class="kn">import</span> <span class="n">__version__</span>
 <span class="kn">from</span> <span class="nn">linkml.utils.generator</span> <span class="kn">import</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">shared_arguments</span>
 
+<span class="n">LINK_ML_TYPES_STRING</span> <span class="o">=</span> <span class="n">URIRef</span><span class="p">(</span><span class="s2">&quot;http://www.w3.org/2001/XMLSchema#string&quot;</span><span class="p">)</span>
+<span class="n">LINK_ML_TYPES_BOOL</span> <span class="o">=</span> <span class="n">URIRef</span><span class="p">(</span><span class="s2">&quot;http://www.w3.org/2001/XMLSchema#boolean&quot;</span><span class="p">)</span>
+<span class="n">LINK_ML_TYPES_DECIMAL</span> <span class="o">=</span> <span class="n">URIRef</span><span class="p">(</span><span class="s2">&quot;http://www.w3.org/2001/XMLSchema#decimal&quot;</span><span class="p">)</span>
+<span class="n">LINK_ML_TYPES_INTEGER</span> <span class="o">=</span> <span class="n">URIRef</span><span class="p">(</span><span class="s2">&quot;http://www.w3.org/2001/XMLSchema#integer&quot;</span><span class="p">)</span>
+<span class="n">LINK_ML_TYPES_DURATION</span> <span class="o">=</span> <span class="n">URIRef</span><span class="p">(</span><span class="s2">&quot;http://www.w3.org/2001/XMLSchema#duration&quot;</span><span class="p">)</span>
+<span class="n">LINK_ML_TYPES_DATETIME</span> <span class="o">=</span> <span class="n">URIRef</span><span class="p">(</span><span class="s2">&quot;http://www.w3.org/2001/XMLSchema#dateTime&quot;</span><span class="p">)</span>
+<span class="n">LINK_ML_TYPES_DATE</span> <span class="o">=</span> <span class="n">URIRef</span><span class="p">(</span><span class="s2">&quot;http://www.w3.org/2001/XMLSchema#date&quot;</span><span class="p">)</span>
+<span class="n">LINK_ML_TYPES_TIME</span> <span class="o">=</span> <span class="n">URIRef</span><span class="p">(</span><span class="s2">&quot;http://www.w3.org/2001/XMLSchema#time&quot;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="ShaclGenerator"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.shaclgen.ShaclGenerator">[docs]</a><span class="k">class</span> <span class="nc">ShaclGenerator</span><span class="p">(</span><span class="n">Generator</span><span class="p">):</span>
     <span class="c1"># ClassVars</span>
@@ -430,7 +438,22 @@
                     <span class="p">)</span>
                     <span class="n">prop_pv</span><span class="p">(</span><span class="n">SH</span><span class="p">[</span><span class="s2">&quot;in&quot;</span><span class="p">],</span> <span class="n">pv_node</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="kc">None</span>  <span class="c1"># TODO</span>
+                    <span class="k">if</span> <span class="n">r</span> <span class="o">==</span> <span class="s2">&quot;string&quot;</span><span class="p">:</span>
+                        <span class="n">prop_pv</span><span class="p">(</span><span class="n">SH</span><span class="o">.</span><span class="n">datatype</span><span class="p">,</span> <span class="n">LINK_ML_TYPES_STRING</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">r</span> <span class="o">==</span> <span class="s2">&quot;boolean&quot;</span><span class="p">:</span>
+                        <span class="n">prop_pv</span><span class="p">(</span><span class="n">SH</span><span class="o">.</span><span class="n">datatype</span><span class="p">,</span> <span class="n">LINK_ML_TYPES_BOOL</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">r</span> <span class="o">==</span> <span class="s2">&quot;duration&quot;</span><span class="p">:</span>
+                        <span class="n">prop_pv</span><span class="p">(</span><span class="n">SH</span><span class="o">.</span><span class="n">datatype</span><span class="p">,</span> <span class="n">LINK_ML_TYPES_DURATION</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">r</span> <span class="o">==</span> <span class="s2">&quot;datetime&quot;</span><span class="p">:</span>
+                        <span class="n">prop_pv</span><span class="p">(</span><span class="n">SH</span><span class="o">.</span><span class="n">datatype</span><span class="p">,</span> <span class="n">LINK_ML_TYPES_DATETIME</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">r</span> <span class="o">==</span> <span class="s2">&quot;date&quot;</span><span class="p">:</span>
+                        <span class="n">prop_pv</span><span class="p">(</span><span class="n">SH</span><span class="o">.</span><span class="n">datatype</span><span class="p">,</span> <span class="n">LINK_ML_TYPES_DATE</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">r</span> <span class="o">==</span> <span class="s2">&quot;time&quot;</span><span class="p">:</span>
+                        <span class="n">prop_pv</span><span class="p">(</span><span class="n">SH</span><span class="o">.</span><span class="n">datatype</span><span class="p">,</span> <span class="n">LINK_ML_TYPES_TIME</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">r</span> <span class="o">==</span> <span class="s2">&quot;decimal&quot;</span><span class="p">:</span>
+                        <span class="n">prop_pv</span><span class="p">(</span><span class="n">SH</span><span class="o">.</span><span class="n">datatype</span><span class="p">,</span> <span class="n">LINK_ML_TYPES_DECIMAL</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">r</span> <span class="o">==</span> <span class="s2">&quot;integer&quot;</span><span class="p">:</span>
+                        <span class="n">prop_pv</span><span class="p">(</span><span class="n">SH</span><span class="o">.</span><span class="n">datatype</span><span class="p">,</span> <span class="n">LINK_ML_TYPES_INTEGER</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">pattern</span><span class="p">:</span>
                     <span class="n">prop_pv</span><span class="p">(</span><span class="n">SH</span><span class="o">.</span><span class="n">pattern</span><span class="p">,</span> <span class="n">Literal</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">pattern</span><span class="p">))</span>
                 <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">designates_type</span><span class="p">:</span>
