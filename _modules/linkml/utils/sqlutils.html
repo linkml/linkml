@@ -311,7 +311,7 @@
 <span class="kn">import</span> <span class="nn">linkml_runtime.linkml_model.meta</span> <span class="k">as</span> <span class="nn">metamodel</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime</span> <span class="kn">import</span> <span class="n">SchemaView</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime.dumpers</span> <span class="kn">import</span> <span class="n">yaml_dumper</span>
-<span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model</span> <span class="kn">import</span> <span class="n">PermissibleValue</span><span class="p">,</span> <span class="n">SchemaDefinition</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model</span> <span class="kn">import</span> <span class="n">SchemaDefinition</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime.utils.compile_python</span> <span class="kn">import</span> <span class="n">compile_python</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime.utils.enumerations</span> <span class="kn">import</span> <span class="n">EnumDefinitionImpl</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime.utils.formatutils</span> <span class="kn">import</span> <span class="n">underscore</span>
@@ -328,8 +328,16 @@
 <span class="kn">from</span> <span class="nn">linkml.generators.sqlalchemygen</span> <span class="kn">import</span> <span class="n">SQLAlchemyGenerator</span><span class="p">,</span> <span class="n">TemplateEnum</span>
 <span class="kn">from</span> <span class="nn">linkml.generators.sqltablegen</span> <span class="kn">import</span> <span class="n">SQLTableGenerator</span>
 <span class="kn">from</span> <span class="nn">linkml.utils</span> <span class="kn">import</span> <span class="n">datautils</span><span class="p">,</span> <span class="n">validation</span>
-<span class="kn">from</span> <span class="nn">linkml.utils.datautils</span> <span class="kn">import</span> <span class="p">(</span><span class="n">_get_context</span><span class="p">,</span> <span class="n">_get_format</span><span class="p">,</span> <span class="n">_is_xsv</span><span class="p">,</span> <span class="n">dumpers_loaders</span><span class="p">,</span>
-                                    <span class="n">get_dumper</span><span class="p">,</span> <span class="n">get_loader</span><span class="p">,</span> <span class="n">infer_root_class</span><span class="p">,</span> <span class="n">infer_index_slot</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">linkml.utils.datautils</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_get_context</span><span class="p">,</span>
+    <span class="n">_get_format</span><span class="p">,</span>
+    <span class="n">_is_xsv</span><span class="p">,</span>
+    <span class="n">dumpers_loaders</span><span class="p">,</span>
+    <span class="n">get_dumper</span><span class="p">,</span>
+    <span class="n">get_loader</span><span class="p">,</span>
+    <span class="n">infer_index_slot</span><span class="p">,</span>
+    <span class="n">infer_root_class</span><span class="p">,</span>
+<span class="p">)</span>
 
 
 <div class="viewcode-block" id="SQLStore"><a class="viewcode-back" href="../../../developers/sqlstore.html#linkml.utils.sqlutils.SQLStore">[docs]</a><span class="nd">@dataclass</span>
@@ -418,9 +426,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_all</span><span class="p">(</span><span class="n">target_class</span><span class="o">=</span><span class="n">target_class</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span></div>
 
-    <span class="k">def</span> <span class="nf">load_all</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">target_class</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Type</span><span class="p">[</span><span class="n">YAMLRoot</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">YAMLRoot</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">load_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_class</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Type</span><span class="p">[</span><span class="n">YAMLRoot</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">YAMLRoot</span><span class="p">]:</span>
         <span class="k">if</span> <span class="n">target_class</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">target_class_name</span> <span class="o">=</span> <span class="n">infer_root_class</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="p">)</span>
             <span class="n">target_class</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">native_module</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="n">target_class_name</span><span class="p">]</span>
@@ -432,7 +438,7 @@
             <span class="n">q</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">typ</span><span class="p">)</span>
             <span class="n">all_objs</span> <span class="o">=</span> <span class="n">q</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
             <span class="n">tmp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">from_sqla</span><span class="p">(</span><span class="n">all_objs</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">tmp</span>  
+        <span class="k">return</span> <span class="n">tmp</span>
 
 <div class="viewcode-block" id="SQLStore.dump"><a class="viewcode-back" href="../../../developers/sqlstore.html#linkml.utils.sqlutils.SQLStore.dump">[docs]</a>    <span class="k">def</span> <span class="nf">dump</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">:</span> <span class="n">YAMLRoot</span><span class="p">,</span> <span class="n">append</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -525,10 +531,6 @@
             <span class="bp">cls</span> <span class="o">=</span> <span class="n">nm</span><span class="p">[</span><span class="n">typ</span><span class="o">.</span><span class="vm">__name__</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">cls</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">kvs</span> <span class="o">=</span> <span class="nb">vars</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
-        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
-            <span class="n">kvs</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">_AssociationCollection</span><span class="p">):</span>
             <span class="n">nu_obj</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">from_sqla</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">obj</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">nu_obj</span><span class="p">:</span>
@@ -536,7 +538,6 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">return</span> <span class="kc">None</span>
         <span class="k">elif</span> <span class="bp">cls</span><span class="p">:</span>
-            <span class="n">nu_cls</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">from_sqla_type</span><span class="p">(</span><span class="n">typ</span><span class="p">)</span>
             <span class="n">inst_args</span> <span class="o">=</span> <span class="p">{}</span>
             <span class="k">for</span> <span class="n">sn</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">class_slots</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">):</span>
                 <span class="n">sn</span> <span class="o">=</span> <span class="n">underscore</span><span class="p">(</span><span class="n">sn</span><span class="p">)</span>
@@ -595,9 +596,7 @@
     <span class="s2">&quot;-C&quot;</span><span class="p">,</span>
     <span class="n">help</span><span class="o">=</span><span class="s2">&quot;name of class in datamodel that the root node instantiates&quot;</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
-    <span class="s2">&quot;--index-slot&quot;</span><span class="p">,</span> <span class="s2">&quot;-S&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;top level slot. Required for CSV dumping/loading&quot;</span>
-<span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&quot;--index-slot&quot;</span><span class="p">,</span> <span class="s2">&quot;-S&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;top level slot. Required for CSV dumping/loading&quot;</span><span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&quot;--schema&quot;</span><span class="p">,</span> <span class="s2">&quot;-s&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Path to schema specified as LinkML yaml&quot;</span><span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
     <span class="s2">&quot;--validate/--no-validate&quot;</span><span class="p">,</span>
@@ -641,10 +640,10 @@
         <span class="n">sv</span> <span class="o">=</span> <span class="n">SchemaView</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">target_class</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">sv</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Must specify schema if not target class is specified&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Must specify schema if not target class is specified&quot;</span><span class="p">)</span>
         <span class="n">target_class</span> <span class="o">=</span> <span class="n">infer_root_class</span><span class="p">(</span><span class="n">sv</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">target_class</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;target class not specified and could not be inferred&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;target class not specified and could not be inferred&quot;</span><span class="p">)</span>
     <span class="n">py_target_class</span> <span class="o">=</span> <span class="n">python_module</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="n">target_class</span><span class="p">]</span>
     <span class="n">input_format</span> <span class="o">=</span> <span class="n">_get_format</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">input_format</span><span class="p">)</span>
     <span class="n">loader</span> <span class="o">=</span> <span class="n">get_loader</span><span class="p">(</span><span class="n">input_format</span><span class="p">)</span>
@@ -652,7 +651,7 @@
     <span class="n">inargs</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">if</span> <span class="n">datautils</span><span class="o">.</span><span class="n">_is_rdf_format</span><span class="p">(</span><span class="n">input_format</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">sv</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Must pass schema arg&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Must pass schema arg&quot;</span><span class="p">)</span>
         <span class="n">inargs</span><span class="p">[</span><span class="s2">&quot;schemaview&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sv</span>
         <span class="n">inargs</span><span class="p">[</span><span class="s2">&quot;fmt&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">input_format</span>
     <span class="k">if</span> <span class="n">_is_xsv</span><span class="p">(</span><span class="n">input_format</span><span class="p">):</span>
@@ -693,9 +692,7 @@
     <span class="s2">&quot;-C&quot;</span><span class="p">,</span>
     <span class="n">help</span><span class="o">=</span><span class="s2">&quot;name of class in datamodel that the root node instantiates&quot;</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
-    <span class="s2">&quot;--index-slot&quot;</span><span class="p">,</span> <span class="s2">&quot;-S&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;top level slot. Required for CSV dumping/loading&quot;</span>
-<span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&quot;--index-slot&quot;</span><span class="p">,</span> <span class="s2">&quot;-S&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;top level slot. Required for CSV dumping/loading&quot;</span><span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&quot;--schema&quot;</span><span class="p">,</span> <span class="s2">&quot;-s&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Path to schema specified as LinkML yaml&quot;</span><span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
     <span class="s2">&quot;--validate/--no-validate&quot;</span><span class="p">,</span>
@@ -758,7 +755,7 @@
         <span class="n">outargs</span><span class="p">[</span><span class="s2">&quot;fmt&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;json-ld&quot;</span>
     <span class="k">if</span> <span class="n">output_format</span> <span class="o">==</span> <span class="s2">&quot;rdf&quot;</span> <span class="ow">or</span> <span class="n">output_format</span> <span class="o">==</span> <span class="s2">&quot;ttl&quot;</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">sv</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Must pass schema arg&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Must pass schema arg&quot;</span><span class="p">)</span>
         <span class="n">outargs</span><span class="p">[</span><span class="s2">&quot;schemaview&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sv</span>
     <span class="k">if</span> <span class="n">_is_xsv</span><span class="p">(</span><span class="n">output_format</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">index_slot</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>

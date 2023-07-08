@@ -307,27 +307,18 @@
 <span class="c1"># license: https://creativecommons.org/publicdomain/zero/1.0/</span>
 
 <span class="kn">import</span> <span class="nn">dataclasses</span>
-<span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">ClassVar</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
-<span class="kn">from</span> <span class="nn">jsonasobj2</span> <span class="kn">import</span> <span class="n">JsonObj</span><span class="p">,</span> <span class="n">as_dict</span>
-<span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model.meta</span> <span class="kn">import</span> <span class="p">(</span><span class="n">EnumDefinition</span><span class="p">,</span> <span class="n">PermissibleValue</span><span class="p">,</span>
-                                              <span class="n">PvFormulaOptions</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model.types</span> <span class="kn">import</span> <span class="p">(</span><span class="n">Nodeidentifier</span><span class="p">,</span> <span class="n">String</span><span class="p">,</span>
-                                               <span class="n">Uriorcurie</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">jsonasobj2</span> <span class="kn">import</span> <span class="n">as_dict</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model.meta</span> <span class="kn">import</span> <span class="n">EnumDefinition</span><span class="p">,</span> <span class="n">PermissibleValue</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime.utils.curienamespace</span> <span class="kn">import</span> <span class="n">CurieNamespace</span>
-<span class="kn">from</span> <span class="nn">linkml_runtime.utils.dataclass_extensions_376</span> <span class="kn">import</span> \
-    <span class="n">dataclasses_init_fn_with_kwargs</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime.utils.dataclass_extensions_376</span> <span class="kn">import</span> <span class="n">dataclasses_init_fn_with_kwargs</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime.utils.enumerations</span> <span class="kn">import</span> <span class="n">EnumDefinitionImpl</span>
-<span class="kn">from</span> <span class="nn">linkml_runtime.utils.formatutils</span> <span class="kn">import</span> <span class="n">camelcase</span><span class="p">,</span> <span class="n">sfx</span><span class="p">,</span> <span class="n">underscore</span>
-<span class="kn">from</span> <span class="nn">linkml_runtime.utils.metamodelcore</span> <span class="kn">import</span> <span class="p">(</span><span class="n">NodeIdentifier</span><span class="p">,</span> <span class="n">URIorCURIE</span><span class="p">,</span>
-                                                <span class="n">bnode</span><span class="p">,</span> <span class="n">empty_dict</span><span class="p">,</span> <span class="n">empty_list</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime.utils.metamodelcore</span> <span class="kn">import</span> <span class="n">NodeIdentifier</span><span class="p">,</span> <span class="n">URIorCURIE</span><span class="p">,</span> <span class="n">empty_list</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime.utils.slot</span> <span class="kn">import</span> <span class="n">Slot</span>
-<span class="kn">from</span> <span class="nn">linkml_runtime.utils.yamlutils</span> <span class="kn">import</span> <span class="p">(</span><span class="n">YAMLRoot</span><span class="p">,</span> <span class="n">extended_float</span><span class="p">,</span>
-                                            <span class="n">extended_int</span><span class="p">,</span> <span class="n">extended_str</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">rdflib</span> <span class="kn">import</span> <span class="n">Namespace</span><span class="p">,</span> <span class="n">URIRef</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime.utils.yamlutils</span> <span class="kn">import</span> <span class="n">YAMLRoot</span>
+<span class="kn">from</span> <span class="nn">rdflib</span> <span class="kn">import</span> <span class="n">URIRef</span>
 
 <span class="n">metamodel_version</span> <span class="o">=</span> <span class="s2">&quot;1.7.0&quot;</span>
 
@@ -373,8 +364,7 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">results</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">results</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">results</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="n">v</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">CheckResult</span><span class="p">)</span> <span class="k">else</span> <span class="n">CheckResult</span><span class="p">(</span><span class="o">**</span><span class="n">as_dict</span><span class="p">(</span><span class="n">v</span><span class="p">))</span>
-            <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">results</span>
+            <span class="n">v</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">CheckResult</span><span class="p">)</span> <span class="k">else</span> <span class="n">CheckResult</span><span class="p">(</span><span class="o">**</span><span class="n">as_dict</span><span class="p">(</span><span class="n">v</span><span class="p">))</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">results</span>
         <span class="p">]</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
@@ -409,14 +399,10 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">subject</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">subject</span><span class="p">,</span> <span class="n">NodeIdentifier</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">subject</span> <span class="o">=</span> <span class="n">NodeIdentifier</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">subject</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">instantiates</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">instantiates</span><span class="p">,</span> <span class="n">NodeIdentifier</span>
-        <span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">instantiates</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instantiates</span><span class="p">,</span> <span class="n">NodeIdentifier</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">instantiates</span> <span class="o">=</span> <span class="n">NodeIdentifier</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instantiates</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">predicate</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">predicate</span><span class="p">,</span> <span class="n">NodeIdentifier</span>
-        <span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">predicate</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">predicate</span><span class="p">,</span> <span class="n">NodeIdentifier</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">predicate</span> <span class="o">=</span> <span class="n">NodeIdentifier</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">predicate</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">object</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">object</span><span class="p">,</span> <span class="n">NodeIdentifier</span><span class="p">):</span>
@@ -484,7 +470,6 @@
 
 <span class="c1"># Enumerations</span>
 <div class="viewcode-block" id="SeverityOptions"><a class="viewcode-back" href="../../../linkml.reporting.html#linkml.reporting.model.SeverityOptions">[docs]</a><span class="k">class</span> <span class="nc">SeverityOptions</span><span class="p">(</span><span class="n">EnumDefinitionImpl</span><span class="p">):</span>
-
     <span class="n">FATAL</span> <span class="o">=</span> <span class="n">PermissibleValue</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s2">&quot;FATAL&quot;</span><span class="p">)</span>
     <span class="n">ERROR</span> <span class="o">=</span> <span class="n">PermissibleValue</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s2">&quot;ERROR&quot;</span><span class="p">)</span>
     <span class="n">WARNING</span> <span class="o">=</span> <span class="n">PermissibleValue</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s2">&quot;WARNING&quot;</span><span class="p">)</span>

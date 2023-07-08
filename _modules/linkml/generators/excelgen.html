@@ -298,22 +298,21 @@
         </div>
         <article role="main">
           <h1>Source code for linkml.generators.excelgen</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">logging</span>
-
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
 
 <span class="kn">import</span> <span class="nn">click</span>
-
 <span class="kn">from</span> <span class="nn">linkml_runtime.utils.schemaview</span> <span class="kn">import</span> <span class="n">SchemaView</span>
-<span class="kn">from</span> <span class="nn">linkml.utils.generator</span> <span class="kn">import</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">shared_arguments</span>
-<span class="kn">from</span> <span class="nn">linkml._version</span> <span class="kn">import</span> <span class="n">__version__</span>
-<span class="kn">from</span> <span class="nn">linkml.utils.helpers</span> <span class="kn">import</span> <span class="n">convert_to_snake_case</span>
 <span class="kn">from</span> <span class="nn">openpyxl</span> <span class="kn">import</span> <span class="n">Workbook</span>
-<span class="kn">from</span> <span class="nn">openpyxl.worksheet.worksheet</span> <span class="kn">import</span> <span class="n">Worksheet</span>
-<span class="kn">from</span> <span class="nn">openpyxl.worksheet.datavalidation</span> <span class="kn">import</span> <span class="n">DataValidation</span>
 <span class="kn">from</span> <span class="nn">openpyxl.utils</span> <span class="kn">import</span> <span class="n">get_column_letter</span>
+<span class="kn">from</span> <span class="nn">openpyxl.worksheet.datavalidation</span> <span class="kn">import</span> <span class="n">DataValidation</span>
+<span class="kn">from</span> <span class="nn">openpyxl.worksheet.worksheet</span> <span class="kn">import</span> <span class="n">Worksheet</span>
+
+<span class="kn">from</span> <span class="nn">linkml._version</span> <span class="kn">import</span> <span class="n">__version__</span>
+<span class="kn">from</span> <span class="nn">linkml.utils.generator</span> <span class="kn">import</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">shared_arguments</span>
+<span class="kn">from</span> <span class="nn">linkml.utils.helpers</span> <span class="kn">import</span> <span class="n">convert_to_snake_case</span>
 
 
 <div class="viewcode-block" id="ExcelGenerator"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.excelgen.ExcelGenerator">[docs]</a><span class="nd">@dataclass</span>
@@ -452,22 +451,17 @@
         <span class="k">for</span> <span class="n">cls_name</span><span class="p">,</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">all_classes</span><span class="p">(</span><span class="n">imports</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mergeimports</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">cls</span><span class="o">.</span><span class="n">mixin</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">cls</span><span class="o">.</span><span class="n">abstract</span><span class="p">:</span>
                 <span class="n">slots</span> <span class="o">=</span> <span class="p">[</span>
-                    <span class="n">s</span><span class="o">.</span><span class="n">name</span>
-                    <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">class_induced_slots</span><span class="p">(</span><span class="n">cls_name</span><span class="p">,</span> <span class="n">imports</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mergeimports</span><span class="p">)</span>
+                    <span class="n">s</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">class_induced_slots</span><span class="p">(</span><span class="n">cls_name</span><span class="p">,</span> <span class="n">imports</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mergeimports</span><span class="p">)</span>
                 <span class="p">]</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">add_columns_to_worksheet</span><span class="p">(</span><span class="n">workbook</span><span class="p">,</span> <span class="n">cls_name</span><span class="p">,</span> <span class="n">slots</span><span class="p">)</span>
 
-        <span class="n">enum_list</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="n">e_name</span> <span class="k">for</span> <span class="n">e_name</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">all_enums</span><span class="p">(</span><span class="n">imports</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mergeimports</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
-        <span class="p">]</span>
+        <span class="n">enum_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">e_name</span> <span class="k">for</span> <span class="n">e_name</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">all_enums</span><span class="p">(</span><span class="n">imports</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mergeimports</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()]</span>
         <span class="k">for</span> <span class="n">cls_name</span><span class="p">,</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">all_classes</span><span class="p">(</span><span class="n">imports</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mergeimports</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">cls</span><span class="o">.</span><span class="n">mixin</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">cls</span><span class="o">.</span><span class="n">abstract</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">class_induced_slots</span><span class="p">(</span><span class="n">cls_name</span><span class="p">,</span> <span class="n">imports</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mergeimports</span><span class="p">):</span>
                     <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">range</span> <span class="ow">in</span> <span class="n">enum_list</span><span class="p">:</span>
                         <span class="n">pv_list</span> <span class="o">=</span> <span class="p">[]</span>
-                        <span class="k">for</span> <span class="n">pv_name</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">get_enum</span><span class="p">(</span>
-                            <span class="n">s</span><span class="o">.</span><span class="n">range</span>
-                        <span class="p">)</span><span class="o">.</span><span class="n">permissible_values</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                        <span class="k">for</span> <span class="n">pv_name</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">get_enum</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">range</span><span class="p">)</span><span class="o">.</span><span class="n">permissible_values</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                             <span class="n">pv_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pv_name</span><span class="p">)</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">column_enum_validation</span><span class="p">(</span><span class="n">workbook</span><span class="p">,</span> <span class="n">cls_name</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">pv_list</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The Excel workbook has been written to </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div></div>

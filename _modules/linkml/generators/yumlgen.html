@@ -303,20 +303,16 @@
 <span class="sd">https://yuml.me/diagram/scruffy/class/samples</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">cast</span>
 
 <span class="kn">import</span> <span class="nn">click</span>
 <span class="kn">import</span> <span class="nn">requests</span>
-<span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model.meta</span> <span class="kn">import</span> <span class="p">(</span><span class="n">ClassDefinition</span><span class="p">,</span>
-                                              <span class="n">ClassDefinitionName</span><span class="p">,</span>
-                                              <span class="n">SchemaDefinition</span><span class="p">,</span> <span class="n">SlotDefinition</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model.meta</span> <span class="kn">import</span> <span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">ClassDefinitionName</span><span class="p">,</span> <span class="n">SlotDefinition</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime.utils.formatutils</span> <span class="kn">import</span> <span class="n">camelcase</span><span class="p">,</span> <span class="n">underscore</span>
 <span class="kn">from</span> <span class="nn">rdflib</span> <span class="kn">import</span> <span class="n">Namespace</span>
 
-<span class="kn">from</span> <span class="nn">linkml._version</span> <span class="kn">import</span> <span class="n">__version__</span>
 <span class="kn">from</span> <span class="nn">linkml.utils.generator</span> <span class="kn">import</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">shared_arguments</span>
 
 <span class="n">yuml_is_a</span> <span class="o">=</span> <span class="s2">&quot;^-&quot;</span>
@@ -341,33 +337,20 @@
     <span class="n">valid_formats</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;yuml&quot;</span><span class="p">,</span> <span class="s2">&quot;png&quot;</span><span class="p">,</span> <span class="s2">&quot;pdf&quot;</span><span class="p">,</span> <span class="s2">&quot;jpg&quot;</span><span class="p">,</span> <span class="s2">&quot;json&quot;</span><span class="p">,</span> <span class="s2">&quot;svg&quot;</span><span class="p">]</span>
     <span class="n">visit_all_class_slots</span> <span class="o">=</span> <span class="kc">False</span>
 
-    <span class="n">referenced</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span>
-        <span class="n">Set</span><span class="p">[</span><span class="n">ClassDefinitionName</span><span class="p">]</span>
-    <span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># List of classes that have to be emitted</span>
-    <span class="n">generated</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span>
-        <span class="n">Set</span><span class="p">[</span><span class="n">ClassDefinitionName</span><span class="p">]</span>
-    <span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># List of classes that have been emitted</span>
-    <span class="n">box_generated</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span>
-        <span class="n">Set</span><span class="p">[</span><span class="n">ClassDefinitionName</span><span class="p">]</span>
-    <span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Class boxes that have been emitted</span>
+    <span class="n">referenced</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Set</span><span class="p">[</span><span class="n">ClassDefinitionName</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># List of classes that have to be emitted</span>
+    <span class="n">generated</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Set</span><span class="p">[</span><span class="n">ClassDefinitionName</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># List of classes that have been emitted</span>
+    <span class="n">box_generated</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Set</span><span class="p">[</span><span class="n">ClassDefinitionName</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Class boxes that have been emitted</span>
     <span class="n">associations_generated</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span>
         <span class="n">Set</span><span class="p">[</span><span class="n">ClassDefinitionName</span><span class="p">]</span>
     <span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Classes with associations generated</span>
-    <span class="n">focus_classes</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span>
-        <span class="n">Set</span><span class="p">[</span><span class="n">ClassDefinitionName</span><span class="p">]</span>
-    <span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Classes to be completely filled</span>
-    <span class="n">gen_classes</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span>
-        <span class="n">Set</span><span class="p">[</span><span class="n">ClassDefinitionName</span><span class="p">]</span>
-    <span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Classes to be generated</span>
-    <span class="n">output_file_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span>
-        <span class="nb">str</span>
-    <span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Location of output file if directory used</span>
+    <span class="n">focus_classes</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Set</span><span class="p">[</span><span class="n">ClassDefinitionName</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Classes to be completely filled</span>
+    <span class="n">gen_classes</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Set</span><span class="p">[</span><span class="n">ClassDefinitionName</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Classes to be generated</span>
+    <span class="n">output_file_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Location of output file if directory used</span>
 
     <span class="n">classes</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="n">ClassDefinitionName</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">directory</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">diagram_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">load_image</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="kc">True</span><span class="p">)</span>
-
 
 <div class="viewcode-block" id="YumlGenerator.visit_schema"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.yumlgen.YumlGenerator.visit_schema">[docs]</a>    <span class="k">def</span> <span class="nf">visit_schema</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -394,22 +377,16 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">generated</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
         <span class="n">yumlclassdef</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">referenced</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">generated</span><span class="p">):</span>
-            <span class="n">cn</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">referenced</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">generated</span><span class="p">)),</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span>
-                <span class="mi">0</span>
-            <span class="p">]</span>
+            <span class="n">cn</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">referenced</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">generated</span><span class="p">)),</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">generated</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">cn</span><span class="p">)</span>
-            <span class="n">assocs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">class_associations</span><span class="p">(</span>
-                <span class="n">ClassDefinitionName</span><span class="p">(</span><span class="n">cn</span><span class="p">),</span> <span class="n">cn</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">referenced</span>
-            <span class="p">)</span>
+            <span class="n">assocs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">class_associations</span><span class="p">(</span><span class="n">ClassDefinitionName</span><span class="p">(</span><span class="n">cn</span><span class="p">),</span> <span class="n">cn</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">referenced</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">assocs</span><span class="p">:</span>
                 <span class="n">yumlclassdef</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">assocs</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">yumlclassdef</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">class_box</span><span class="p">(</span><span class="n">ClassDefinitionName</span><span class="p">(</span><span class="n">cn</span><span class="p">)))</span>
 
         <span class="n">file_suffix</span> <span class="o">=</span> <span class="s2">&quot;.svg&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">format</span> <span class="o">==</span> <span class="s2">&quot;yuml&quot;</span> <span class="k">else</span> <span class="s2">&quot;.&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">format</span>
-        <span class="n">file_name</span> <span class="o">=</span> <span class="n">diagram_name</span> <span class="ow">or</span> <span class="n">camelcase</span><span class="p">(</span>
-            <span class="nb">sorted</span><span class="p">(</span><span class="n">classes</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">classes</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">name</span>
-        <span class="p">)</span>
+        <span class="n">file_name</span> <span class="o">=</span> <span class="n">diagram_name</span> <span class="ow">or</span> <span class="n">camelcase</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">classes</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">classes</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">directory</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">output_file_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
                 <span class="n">directory</span><span class="p">,</span>
@@ -418,7 +395,7 @@
             <span class="k">if</span> <span class="n">load_image</span><span class="p">:</span>
                 <span class="n">payload</span> <span class="o">=</span> <span class="s2">&quot;dsl_text=&quot;</span> <span class="o">+</span> <span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">yumlclassdef</span><span class="p">))</span>
                 <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%3F</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;?&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;%2B&quot;</span><span class="p">,</span> <span class="s2">&quot;+&quot;</span><span class="p">)</span>
-                <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;https://yuml.me/diagram/plain/class/&quot;</span>
+                <span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;https://yuml.me/diagram/plain/class/&quot;</span>
                 <span class="n">resp</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">payload</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">resp</span><span class="o">.</span><span class="n">ok</span><span class="p">:</span>
                     <span class="n">filename</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;.svg&quot;</span><span class="p">,</span> <span class="n">file_suffix</span><span class="p">)</span>
@@ -439,9 +416,7 @@
 <span class="sd">        @return:</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">slot_defs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">if</span> <span class="n">cn</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">box_generated</span> <span class="ow">and</span> <span class="p">(</span>
-            <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">focus_classes</span> <span class="ow">or</span> <span class="n">cn</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">focus_classes</span>
-        <span class="p">):</span>
+        <span class="k">if</span> <span class="n">cn</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">box_generated</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">focus_classes</span> <span class="ow">or</span> <span class="n">cn</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">focus_classes</span><span class="p">):</span>
             <span class="bp">cls</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">classes</span><span class="p">[</span><span class="n">cn</span><span class="p">]</span>
             <span class="k">for</span> <span class="n">slot</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">filtered_cls_slots</span><span class="p">(</span>
                 <span class="n">cn</span><span class="p">,</span> <span class="n">all_slots</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">filtr</span><span class="o">=</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">range</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">classes</span>
@@ -457,13 +432,9 @@
                     <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">box_generated</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">cn</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">referenced</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">cn</span><span class="p">)</span>
-        <span class="k">return</span> <span class="p">(</span>
-            <span class="s2">&quot;[&quot;</span> <span class="o">+</span> <span class="n">camelcase</span><span class="p">(</span><span class="n">cn</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="s2">&quot;|&quot;</span> <span class="o">+</span> <span class="s2">&quot;;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">slot_defs</span><span class="p">)</span> <span class="k">if</span> <span class="n">slot_defs</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;]&quot;</span>
-        <span class="p">)</span></div>
+        <span class="k">return</span> <span class="s2">&quot;[&quot;</span> <span class="o">+</span> <span class="n">camelcase</span><span class="p">(</span><span class="n">cn</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="s2">&quot;|&quot;</span> <span class="o">+</span> <span class="s2">&quot;;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">slot_defs</span><span class="p">)</span> <span class="k">if</span> <span class="n">slot_defs</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;]&quot;</span></div>
 
-<div class="viewcode-block" id="YumlGenerator.class_associations"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.yumlgen.YumlGenerator.class_associations">[docs]</a>    <span class="k">def</span> <span class="nf">class_associations</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">cn</span><span class="p">:</span> <span class="n">ClassDefinitionName</span><span class="p">,</span> <span class="n">must_render</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="viewcode-block" id="YumlGenerator.class_associations"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.yumlgen.YumlGenerator.class_associations">[docs]</a>    <span class="k">def</span> <span class="nf">class_associations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cn</span><span class="p">:</span> <span class="n">ClassDefinitionName</span><span class="p">,</span> <span class="n">must_render</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Emit all associations for a focus class.  If none are specified, all classes are generated</span>
 
 <span class="sd">        @param cn: Name of class to be emitted</span>
@@ -484,10 +455,7 @@
                 <span class="n">cn</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">range</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">classes</span>
             <span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
                 <span class="c1"># Swap the two boxes because, in the case of self reference, the last definition wins</span>
-                <span class="k">if</span> <span class="p">(</span>
-                    <span class="ow">not</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">associations_generated</span>
-                    <span class="ow">and</span> <span class="n">cn</span> <span class="ow">in</span> <span class="n">slot</span><span class="o">.</span><span class="n">domain_of</span>
-                <span class="p">):</span>
+                <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">associations_generated</span> <span class="ow">and</span> <span class="n">cn</span> <span class="ow">in</span> <span class="n">slot</span><span class="o">.</span><span class="n">domain_of</span><span class="p">:</span>
                     <span class="n">rhs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">class_box</span><span class="p">(</span><span class="n">cn</span><span class="p">)</span>
                     <span class="n">lhs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">class_box</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="n">ClassDefinitionName</span><span class="p">,</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="p">))</span>
                     <span class="n">assocs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
@@ -505,10 +473,7 @@
                 <span class="n">slot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">slots</span><span class="p">[</span><span class="n">slotname</span><span class="p">]</span>
                 <span class="c1"># Don&#39;t do self references twice</span>
                 <span class="c1"># Also, slot must be owned by the class</span>
-                <span class="k">if</span> <span class="p">(</span>
-                    <span class="bp">cls</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">slot</span><span class="o">.</span><span class="n">domain_of</span>
-                    <span class="ow">and</span> <span class="bp">cls</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">associations_generated</span>
-                <span class="p">):</span>
+                <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">slot</span><span class="o">.</span><span class="n">domain_of</span> <span class="ow">and</span> <span class="bp">cls</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">associations_generated</span><span class="p">:</span>
                     <span class="k">for</span> <span class="n">dom</span> <span class="ow">in</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">classes</span><span class="p">[</span><span class="n">dof</span><span class="p">]</span> <span class="k">for</span> <span class="n">dof</span> <span class="ow">in</span> <span class="n">slot</span><span class="o">.</span><span class="n">domain_of</span><span class="p">]:</span>
                         <span class="n">assocs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                             <span class="bp">self</span><span class="o">.</span><span class="n">class_box</span><span class="p">(</span><span class="n">dom</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
@@ -526,20 +491,14 @@
 
             <span class="c1"># Classes that use the class as a mixin</span>
             <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">synopsis</span><span class="o">.</span><span class="n">mixinrefs</span><span class="p">:</span>
-                <span class="k">for</span> <span class="n">mixin</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">synopsis</span><span class="o">.</span><span class="n">mixinrefs</span><span class="p">[</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">classrefs</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span>
-                <span class="p">):</span>
+                <span class="k">for</span> <span class="n">mixin</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">synopsis</span><span class="o">.</span><span class="n">mixinrefs</span><span class="p">[</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">classrefs</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
                     <span class="n">assocs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">class_box</span><span class="p">(</span><span class="n">ClassDefinitionName</span><span class="p">(</span><span class="n">mixin</span><span class="p">))</span>
-                        <span class="o">+</span> <span class="n">yuml_uses</span>
-                        <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">class_box</span><span class="p">(</span><span class="n">cn</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">class_box</span><span class="p">(</span><span class="n">ClassDefinitionName</span><span class="p">(</span><span class="n">mixin</span><span class="p">))</span> <span class="o">+</span> <span class="n">yuml_uses</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">class_box</span><span class="p">(</span><span class="n">cn</span><span class="p">)</span>
                     <span class="p">)</span>
 
             <span class="c1"># Classes that inject information</span>
             <span class="k">if</span> <span class="n">cn</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">synopsis</span><span class="o">.</span><span class="n">applytos</span><span class="o">.</span><span class="n">classrefs</span><span class="p">:</span>
-                <span class="k">for</span> <span class="n">injector</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">synopsis</span><span class="o">.</span><span class="n">applytorefs</span><span class="p">[</span><span class="n">cn</span><span class="p">]</span><span class="o">.</span><span class="n">classrefs</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span>
-                <span class="p">):</span>
+                <span class="k">for</span> <span class="n">injector</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">synopsis</span><span class="o">.</span><span class="n">applytorefs</span><span class="p">[</span><span class="n">cn</span><span class="p">]</span><span class="o">.</span><span class="n">classrefs</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
                     <span class="n">assocs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">class_box</span><span class="p">(</span><span class="n">cn</span><span class="p">)</span>
                         <span class="o">+</span> <span class="n">yuml_injected</span>
@@ -549,9 +508,7 @@
 
             <span class="c1"># Children</span>
             <span class="k">if</span> <span class="n">cn</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">synopsis</span><span class="o">.</span><span class="n">isarefs</span><span class="p">:</span>
-                <span class="k">for</span> <span class="n">is_a_cls</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">synopsis</span><span class="o">.</span><span class="n">isarefs</span><span class="p">[</span><span class="n">cn</span><span class="p">]</span><span class="o">.</span><span class="n">classrefs</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span>
-                <span class="p">):</span>
+                <span class="k">for</span> <span class="n">is_a_cls</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">synopsis</span><span class="o">.</span><span class="n">isarefs</span><span class="p">[</span><span class="n">cn</span><span class="p">]</span><span class="o">.</span><span class="n">classrefs</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
                     <span class="n">assocs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">class_box</span><span class="p">(</span><span class="n">cn</span><span class="p">)</span>
                         <span class="o">+</span> <span class="n">yuml_is_a</span>
@@ -580,7 +537,7 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">cn</span><span class="p">:</span> <span class="n">ClassDefinitionName</span><span class="p">,</span>
         <span class="n">all_slots</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="n">filtr</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">SlotDefinition</span><span class="p">],</span> <span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">filtr</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">SlotDefinition</span><span class="p">],</span> <span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">SlotDefinition</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the set of slots associated with the class that meet the filter criteria.  Slots will be returned</span>
 <span class="sd">        in defining order, with class slots returned last</span>
@@ -590,9 +547,6 @@
 <span class="sd">        @param filtr: Slot filter predicate</span>
 <span class="sd">        @return: List of slot definitions</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">filtr</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">filtr</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="kc">True</span>
-
         <span class="n">rval</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">cls</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">classes</span><span class="p">[</span><span class="n">cn</span><span class="p">]</span>
         <span class="n">cls_slots</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_slots</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">cls_slots_first</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -625,9 +579,7 @@
                 <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">synopsis</span><span class="o">.</span><span class="n">applytorefs</span><span class="p">[</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">classrefs</span><span class="p">)</span>
             <span class="p">]</span>
         <span class="p">]</span>
-        <span class="k">return</span> <span class="n">pk</span> <span class="o">+</span> <span class="p">(</span>
-            <span class="s2">&quot;(a)&quot;</span> <span class="k">if</span> <span class="n">injected</span> <span class="k">else</span> <span class="s2">&quot;(m)&quot;</span> <span class="k">if</span> <span class="n">mixin</span> <span class="k">else</span> <span class="s2">&quot;(i)&quot;</span> <span class="k">if</span> <span class="n">inherited</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
-        <span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="n">pk</span> <span class="o">+</span> <span class="p">(</span><span class="s2">&quot;(a)&quot;</span> <span class="k">if</span> <span class="n">injected</span> <span class="k">else</span> <span class="s2">&quot;(m)&quot;</span> <span class="k">if</span> <span class="n">mixin</span> <span class="k">else</span> <span class="s2">&quot;(i)&quot;</span> <span class="k">if</span> <span class="n">inherited</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">)</span></div></div>
 
 
 <span class="nd">@shared_arguments</span><span class="p">(</span><span class="n">YumlGenerator</span><span class="p">)</span>

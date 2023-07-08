@@ -299,15 +299,12 @@
         <article role="main">
           <h1>Source code for linkml.utils.validation</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">jsonschema</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime.dumpers</span> <span class="kn">import</span> <span class="n">json_dumper</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model</span> <span class="kn">import</span> <span class="n">SchemaDefinition</span>
-<span class="kn">from</span> <span class="nn">linkml_runtime.utils.schemaview</span> <span class="kn">import</span> <span class="n">SchemaView</span>
-<span class="kn">from</span> <span class="nn">linkml_runtime.utils.yamlutils</span> <span class="kn">import</span> <span class="n">YAMLRoot</span><span class="p">,</span> <span class="n">as_dict</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime.utils.yamlutils</span> <span class="kn">import</span> <span class="n">YAMLRoot</span>
 
 <span class="kn">from</span> <span class="nn">linkml.generators.jsonschemagen</span> <span class="kn">import</span> <span class="n">JsonSchemaGenerator</span>
 
@@ -346,7 +343,9 @@
         <span class="n">not_closed</span><span class="o">=</span><span class="n">not_closed</span><span class="p">,</span>
     <span class="p">)</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="n">not_closed</span><span class="o">=</span><span class="n">not_closed</span><span class="p">)</span>
     <span class="n">jsonschema_obj</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">jsonschemastr</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">jsonschema</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">inst_dict</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="n">jsonschema_obj</span><span class="p">,</span> <span class="n">format_checker</span><span class="o">=</span><span class="n">jsonschema</span><span class="o">.</span><span class="n">Draft7Validator</span><span class="o">.</span><span class="n">FORMAT_CHECKER</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">jsonschema</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span>
+        <span class="n">inst_dict</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="n">jsonschema_obj</span><span class="p">,</span> <span class="n">format_checker</span><span class="o">=</span><span class="n">jsonschema</span><span class="o">.</span><span class="n">Draft7Validator</span><span class="o">.</span><span class="n">FORMAT_CHECKER</span>
+    <span class="p">)</span></div>
 </pre></div>
         </article>
       </div>

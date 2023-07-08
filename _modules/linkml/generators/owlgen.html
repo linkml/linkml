@@ -306,18 +306,23 @@
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
 <span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span><span class="p">,</span> <span class="n">unique</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">click</span>
-<span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model.meta</span> <span class="kn">import</span> <span class="p">(</span><span class="n">ClassDefinition</span><span class="p">,</span>
-                                              <span class="n">ClassDefinitionName</span><span class="p">,</span> <span class="n">Definition</span><span class="p">,</span>
-                                              <span class="n">Element</span><span class="p">,</span> <span class="n">ElementName</span><span class="p">,</span>
-                                              <span class="n">EnumDefinition</span><span class="p">,</span>
-                                              <span class="n">EnumDefinitionName</span><span class="p">,</span>
-                                              <span class="n">SchemaDefinition</span><span class="p">,</span> <span class="n">SlotDefinition</span><span class="p">,</span>
-                                              <span class="n">SlotDefinitionName</span><span class="p">,</span>
-                                              <span class="n">TypeDefinition</span><span class="p">,</span>
-                                              <span class="n">TypeDefinitionName</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model.meta</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">ClassDefinition</span><span class="p">,</span>
+    <span class="n">ClassDefinitionName</span><span class="p">,</span>
+    <span class="n">Definition</span><span class="p">,</span>
+    <span class="n">Element</span><span class="p">,</span>
+    <span class="n">ElementName</span><span class="p">,</span>
+    <span class="n">EnumDefinition</span><span class="p">,</span>
+    <span class="n">EnumDefinitionName</span><span class="p">,</span>
+    <span class="n">SchemaDefinition</span><span class="p">,</span>
+    <span class="n">SlotDefinition</span><span class="p">,</span>
+    <span class="n">SlotDefinitionName</span><span class="p">,</span>
+    <span class="n">TypeDefinition</span><span class="p">,</span>
+    <span class="n">TypeDefinitionName</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime.utils.formatutils</span> <span class="kn">import</span> <span class="n">camelcase</span><span class="p">,</span> <span class="n">underscore</span>
 <span class="kn">from</span> <span class="nn">rdflib</span> <span class="kn">import</span> <span class="n">OWL</span><span class="p">,</span> <span class="n">RDF</span><span class="p">,</span> <span class="n">BNode</span><span class="p">,</span> <span class="n">Graph</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">URIRef</span>
 <span class="kn">from</span> <span class="nn">rdflib.collection</span> <span class="kn">import</span> <span class="n">Collection</span>
@@ -328,7 +333,6 @@
 <span class="kn">from</span> <span class="nn">linkml</span> <span class="kn">import</span> <span class="n">METAMODEL_NAMESPACE</span><span class="p">,</span> <span class="n">METAMODEL_NAMESPACE_NAME</span>
 <span class="kn">from</span> <span class="nn">linkml._version</span> <span class="kn">import</span> <span class="n">__version__</span>
 <span class="kn">from</span> <span class="nn">linkml.utils.generator</span> <span class="kn">import</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">shared_arguments</span>
-<span class="kn">from</span> <span class="nn">linkml.utils.schemaloader</span> <span class="kn">import</span> <span class="n">SchemaLoader</span>
 
 
 <div class="viewcode-block" id="MetadataProfile"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.owlgen.MetadataProfile">[docs]</a><span class="nd">@unique</span>
@@ -393,9 +397,7 @@
         <span class="k">for</span> <span class="n">prefix</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">metamodel</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">emit_prefixes</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">metamodel</span><span class="o">.</span><span class="n">namespaces</span><span class="p">[</span><span class="n">prefix</span><span class="p">])</span>
         <span class="k">for</span> <span class="n">pfx</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">prefixes</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">namespace_manager</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span>
-                <span class="n">pfx</span><span class="o">.</span><span class="n">prefix_prefix</span><span class="p">,</span> <span class="n">URIRef</span><span class="p">(</span><span class="n">pfx</span><span class="o">.</span><span class="n">prefix_reference</span><span class="p">)</span>
-            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">namespace_manager</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">pfx</span><span class="o">.</span><span class="n">prefix_prefix</span><span class="p">,</span> <span class="n">URIRef</span><span class="p">(</span><span class="n">pfx</span><span class="o">.</span><span class="n">prefix_reference</span><span class="p">))</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">base</span><span class="p">,</span> <span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">OWL</span><span class="o">.</span><span class="n">Ontology</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_add_element_properties</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="p">)</span>
@@ -413,9 +415,7 @@
         <span class="c1"># add value placeholder</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">type_objects</span><span class="p">:</span>
             <span class="c1"># TODO: additional axioms, e.g. String subClassOf hasValue some string</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">top_value_uri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">metamodel</span><span class="o">.</span><span class="n">namespaces</span><span class="p">[</span><span class="n">METAMODEL_NAMESPACE_NAME</span><span class="p">][</span>
-                <span class="s2">&quot;topValue&quot;</span>
-            <span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">top_value_uri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">metamodel</span><span class="o">.</span><span class="n">namespaces</span><span class="p">[</span><span class="n">METAMODEL_NAMESPACE_NAME</span><span class="p">][</span><span class="s2">&quot;topValue&quot;</span><span class="p">]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">top_value_uri</span><span class="p">,</span> <span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">OWL</span><span class="o">.</span><span class="n">DatatypeProperty</span><span class="p">))</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">top_value_uri</span><span class="p">,</span> <span class="n">RDFS</span><span class="o">.</span><span class="n">label</span><span class="p">,</span> <span class="n">Literal</span><span class="p">(</span><span class="s2">&quot;value&quot;</span><span class="p">)))</span></div>
 
@@ -499,7 +499,7 @@
                 <span class="n">k_curie</span> <span class="o">=</span> <span class="n">k</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">k_uri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">uri_for</span><span class="p">(</span><span class="n">k_curie</span><span class="p">)</span>
-                <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
                     <span class="k">try</span><span class="p">:</span>
                         <span class="n">k_uri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">metamodel</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">uri_for</span><span class="p">(</span><span class="n">k_curie</span><span class="p">)</span>
                     <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">me</span><span class="p">:</span>
@@ -625,7 +625,7 @@
             <span class="n">slot_uri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">uri_for</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">slot_uri</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">slot_uri</span> <span class="o">==</span> <span class="s2">&quot;rdf:type&quot;</span><span class="p">:</span>
                 <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;rdflib may have issues serializing rdf:type with turtle serializer&quot;</span>
+                    <span class="s2">&quot;rdflib may have issues serializing rdf:type with turtle serializer&quot;</span>
                 <span class="p">)</span>
             <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">required</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">multivalued</span><span class="p">:</span>
@@ -654,9 +654,7 @@
                 <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">multivalued</span><span class="p">:</span>
                     <span class="c1">#    restriction(slot only type)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">slot_node</span><span class="p">,</span> <span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">OWL</span><span class="o">.</span><span class="n">Restriction</span><span class="p">))</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
-                        <span class="p">(</span><span class="n">slot_node</span><span class="p">,</span> <span class="n">OWL</span><span class="o">.</span><span class="n">allValuesFrom</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_range_uri</span><span class="p">(</span><span class="n">slot</span><span class="p">))</span>
-                    <span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">slot_node</span><span class="p">,</span> <span class="n">OWL</span><span class="o">.</span><span class="n">allValuesFrom</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_range_uri</span><span class="p">(</span><span class="n">slot</span><span class="p">)))</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">slot_node</span><span class="p">,</span> <span class="n">OWL</span><span class="o">.</span><span class="n">onProperty</span><span class="p">,</span> <span class="n">slot_uri</span><span class="p">))</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="c1">#    intersectionOf(restriction(slot only type) restriction(slot max 1 type))</span>
@@ -678,13 +676,10 @@
 <span class="sd">        @param slot:</span>
 <span class="sd">        @return:</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># determine if this is a slot that has been induced by slot_usage; if so the meaning of the slot is context-specific</span>
-        <span class="c1"># and should not be used for global properties</span>
-        <span class="k">if</span> <span class="p">(</span>
-            <span class="n">slot</span><span class="o">.</span><span class="n">alias</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-            <span class="ow">and</span> <span class="n">slot</span><span class="o">.</span><span class="n">alias</span> <span class="o">!=</span> <span class="n">slot</span><span class="o">.</span><span class="n">name</span>
-            <span class="ow">and</span> <span class="n">slot</span><span class="o">.</span><span class="n">alias</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">slots</span>
-        <span class="p">):</span>
+        <span class="c1"># determine if this is a slot that has been induced by slot_usage; if so</span>
+        <span class="c1"># the meaning of the slot is context-specific and should not be used for</span>
+        <span class="c1"># global properties</span>
+        <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">alias</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">slot</span><span class="o">.</span><span class="n">alias</span> <span class="o">!=</span> <span class="n">slot</span><span class="o">.</span><span class="n">name</span> <span class="ow">and</span> <span class="n">slot</span><span class="o">.</span><span class="n">alias</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">slots</span><span class="p">:</span>
             <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;SKIPPING slot induced by slot_usage: </span><span class="si">{</span><span class="n">slot</span><span class="o">.</span><span class="n">alias</span><span class="si">}</span><span class="s2"> // </span><span class="si">{</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> // </span><span class="si">{</span><span class="n">slot</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="p">)</span>
@@ -800,9 +795,7 @@
                 <span class="n">g</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
                     <span class="p">(</span>
                         <span class="n">enum_uri</span><span class="p">,</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">metamodel</span><span class="o">.</span><span class="n">namespaces</span><span class="p">[</span><span class="n">METAMODEL_NAMESPACE_NAME</span><span class="p">][</span>
-                            <span class="s2">&quot;permissible_values&quot;</span>
-                        <span class="p">],</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">metamodel</span><span class="o">.</span><span class="n">namespaces</span><span class="p">[</span><span class="n">METAMODEL_NAMESPACE_NAME</span><span class="p">][</span><span class="s2">&quot;permissible_values&quot;</span><span class="p">],</span>
                         <span class="n">pv_uri</span><span class="p">,</span>
                     <span class="p">)</span>
                 <span class="p">)</span>
@@ -820,8 +813,7 @@
             <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">metamodel</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">slots</span><span class="p">:</span>
                 <span class="n">defining_slot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">metamodel</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">slots</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
                 <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="p">(</span>
-                    <span class="s2">&quot;owl&quot;</span> <span class="ow">in</span> <span class="n">defining_slot</span><span class="o">.</span><span class="n">in_subset</span>
-                    <span class="ow">or</span> <span class="s2">&quot;OwlProfile&quot;</span> <span class="ow">in</span> <span class="n">defining_slot</span><span class="o">.</span><span class="n">in_subset</span>
+                    <span class="s2">&quot;owl&quot;</span> <span class="ow">in</span> <span class="n">defining_slot</span><span class="o">.</span><span class="n">in_subset</span> <span class="ow">or</span> <span class="s2">&quot;OwlProfile&quot;</span> <span class="ow">in</span> <span class="n">defining_slot</span><span class="o">.</span><span class="n">in_subset</span>
                 <span class="p">):</span>
                     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
                         <span class="n">ve</span> <span class="o">=</span> <span class="n">v</span>
@@ -840,18 +832,12 @@
                             <span class="p">),</span>
                         <span class="p">):</span>
                             <span class="k">return</span>
-                        <span class="k">if</span> <span class="p">(</span>
-                            <span class="n">k</span> <span class="o">==</span> <span class="s2">&quot;name&quot;</span>
-                            <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">el</span><span class="p">,</span> <span class="n">SlotDefinition</span><span class="p">)</span>
-                            <span class="ow">and</span> <span class="n">el</span><span class="o">.</span><span class="n">alias</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-                        <span class="p">):</span>
+                        <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="s2">&quot;name&quot;</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">el</span><span class="p">,</span> <span class="n">SlotDefinition</span><span class="p">)</span> <span class="ow">and</span> <span class="n">el</span><span class="o">.</span><span class="n">alias</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                             <span class="n">prop_uri</span> <span class="o">=</span> <span class="n">RDFS</span><span class="o">.</span><span class="n">label</span>
                             <span class="n">e</span> <span class="o">=</span> <span class="n">el</span><span class="o">.</span><span class="n">alias</span>
                         <span class="k">else</span><span class="p">:</span>
                             <span class="n">prop_uri</span> <span class="o">=</span> <span class="n">URIRef</span><span class="p">(</span>
-                                <span class="bp">self</span><span class="o">.</span><span class="n">metamodel</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">uri_for</span><span class="p">(</span>
-                                    <span class="n">defining_slot</span><span class="o">.</span><span class="n">slot_uri</span>
-                                <span class="p">)</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">metamodel</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">uri_for</span><span class="p">(</span><span class="n">defining_slot</span><span class="o">.</span><span class="n">slot_uri</span><span class="p">)</span>
                             <span class="p">)</span>
                         <span class="nb">object</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_as_rdf_element</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">defining_slot</span><span class="p">)</span>
                         <span class="k">if</span> <span class="nb">object</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -876,7 +862,7 @@
             <span class="k">elif</span> <span class="n">element_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">metamodel</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">enums</span><span class="p">:</span>
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_enum_uri</span><span class="p">(</span><span class="n">element_name</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown range </span><span class="si">{</span><span class="n">defining_slot</span><span class="o">.</span><span class="n">range</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown range </span><span class="si">{</span><span class="n">parent_slot</span><span class="o">.</span><span class="n">range</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">None</span>
 
     <span class="k">def</span> <span class="nf">_range_is_datatype</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
@@ -921,9 +907,7 @@
 
     <span class="k">def</span> <span class="nf">_add_metamodel_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cname</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">metac</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">metamodel</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">classes</span><span class="p">[</span><span class="n">cname</span><span class="p">]</span>
-        <span class="n">metac_uri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">metamodel</span><span class="o">.</span><span class="n">namespaces</span><span class="p">[</span><span class="n">METAMODEL_NAMESPACE_NAME</span><span class="p">][</span>
-            <span class="n">camelcase</span><span class="p">(</span><span class="n">metac</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-        <span class="p">]</span>
+        <span class="n">metac_uri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">metamodel</span><span class="o">.</span><span class="n">namespaces</span><span class="p">[</span><span class="n">METAMODEL_NAMESPACE_NAME</span><span class="p">][</span><span class="n">camelcase</span><span class="p">(</span><span class="n">metac</span><span class="o">.</span><span class="n">name</span><span class="p">)]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">metac_uri</span><span class="p">,</span> <span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">OWL</span><span class="o">.</span><span class="n">Class</span><span class="p">))</span>
         <span class="c1"># self._add_element_properties(metac_uri, metac)</span>
 
@@ -1014,9 +998,9 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">metadata_profile</span> <span class="o">=</span> <span class="n">MetadataProfile</span><span class="o">.</span><span class="n">linkml</span>
     <span class="nb">print</span><span class="p">(</span>
-        <span class="n">OwlSchemaGenerator</span><span class="p">(</span>
-            <span class="n">yamlfile</span><span class="p">,</span> <span class="n">metadata_profile</span><span class="o">=</span><span class="n">metadata_profile</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
-        <span class="p">)</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">OwlSchemaGenerator</span><span class="p">(</span><span class="n">yamlfile</span><span class="p">,</span> <span class="n">metadata_profile</span><span class="o">=</span><span class="n">metadata_profile</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span>
+            <span class="o">**</span><span class="n">kwargs</span>
+        <span class="p">)</span>
     <span class="p">)</span>
 
 

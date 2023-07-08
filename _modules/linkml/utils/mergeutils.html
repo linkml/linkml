@@ -303,12 +303,16 @@
 <span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
 
-<span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model.meta</span> <span class="kn">import</span> <span class="p">(</span><span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">Element</span><span class="p">,</span>
-                                              <span class="n">EnumDefinition</span><span class="p">,</span> <span class="n">SchemaDefinition</span><span class="p">,</span>
-                                              <span class="n">SlotDefinition</span><span class="p">,</span>
-                                              <span class="n">SlotDefinitionName</span><span class="p">,</span>
-                                              <span class="n">TypeDefinition</span><span class="p">,</span>
-                                              <span class="n">TypeDefinitionName</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model.meta</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">ClassDefinition</span><span class="p">,</span>
+    <span class="n">Element</span><span class="p">,</span>
+    <span class="n">EnumDefinition</span><span class="p">,</span>
+    <span class="n">SchemaDefinition</span><span class="p">,</span>
+    <span class="n">SlotDefinition</span><span class="p">,</span>
+    <span class="n">SlotDefinitionName</span><span class="p">,</span>
+    <span class="n">TypeDefinition</span><span class="p">,</span>
+    <span class="n">TypeDefinitionName</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime.utils.formatutils</span> <span class="kn">import</span> <span class="n">camelcase</span><span class="p">,</span> <span class="n">underscore</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime.utils.namespaces</span> <span class="kn">import</span> <span class="n">Namespaces</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime.utils.yamlutils</span> <span class="kn">import</span> <span class="n">extended_str</span>
@@ -345,26 +349,14 @@
             <span class="n">imported_from_uri</span> <span class="o">=</span> <span class="n">imported_from</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">imported_from_uri</span> <span class="o">=</span> <span class="n">namespaces</span><span class="o">.</span><span class="n">uri_for</span><span class="p">(</span><span class="n">imported_from</span><span class="p">)</span>
-    <span class="n">merge_dicts</span><span class="p">(</span>
-        <span class="n">target</span><span class="o">.</span><span class="n">classes</span><span class="p">,</span> <span class="n">mergee</span><span class="o">.</span><span class="n">classes</span><span class="p">,</span> <span class="n">imported_from</span><span class="p">,</span> <span class="n">imported_from_uri</span><span class="p">,</span> <span class="n">merge_imports</span>
-    <span class="p">)</span>
-    <span class="n">merge_dicts</span><span class="p">(</span>
-        <span class="n">target</span><span class="o">.</span><span class="n">slots</span><span class="p">,</span> <span class="n">mergee</span><span class="o">.</span><span class="n">slots</span><span class="p">,</span> <span class="n">imported_from</span><span class="p">,</span> <span class="n">imported_from_uri</span><span class="p">,</span> <span class="n">merge_imports</span>
-    <span class="p">)</span>
-    <span class="n">merge_dicts</span><span class="p">(</span>
-        <span class="n">target</span><span class="o">.</span><span class="n">types</span><span class="p">,</span> <span class="n">mergee</span><span class="o">.</span><span class="n">types</span><span class="p">,</span> <span class="n">imported_from</span><span class="p">,</span> <span class="n">imported_from_uri</span><span class="p">,</span> <span class="n">merge_imports</span>
-    <span class="p">)</span>
-    <span class="n">merge_dicts</span><span class="p">(</span>
-        <span class="n">target</span><span class="o">.</span><span class="n">subsets</span><span class="p">,</span> <span class="n">mergee</span><span class="o">.</span><span class="n">subsets</span><span class="p">,</span> <span class="n">imported_from</span><span class="p">,</span> <span class="n">imported_from_uri</span><span class="p">,</span> <span class="n">merge_imports</span>
-    <span class="p">)</span>
-    <span class="n">merge_dicts</span><span class="p">(</span>
-        <span class="n">target</span><span class="o">.</span><span class="n">enums</span><span class="p">,</span> <span class="n">mergee</span><span class="o">.</span><span class="n">enums</span><span class="p">,</span> <span class="n">imported_from</span><span class="p">,</span> <span class="n">imported_from_uri</span><span class="p">,</span> <span class="n">merge_imports</span>
-    <span class="p">)</span></div>
+    <span class="n">merge_dicts</span><span class="p">(</span><span class="n">target</span><span class="o">.</span><span class="n">classes</span><span class="p">,</span> <span class="n">mergee</span><span class="o">.</span><span class="n">classes</span><span class="p">,</span> <span class="n">imported_from</span><span class="p">,</span> <span class="n">imported_from_uri</span><span class="p">,</span> <span class="n">merge_imports</span><span class="p">)</span>
+    <span class="n">merge_dicts</span><span class="p">(</span><span class="n">target</span><span class="o">.</span><span class="n">slots</span><span class="p">,</span> <span class="n">mergee</span><span class="o">.</span><span class="n">slots</span><span class="p">,</span> <span class="n">imported_from</span><span class="p">,</span> <span class="n">imported_from_uri</span><span class="p">,</span> <span class="n">merge_imports</span><span class="p">)</span>
+    <span class="n">merge_dicts</span><span class="p">(</span><span class="n">target</span><span class="o">.</span><span class="n">types</span><span class="p">,</span> <span class="n">mergee</span><span class="o">.</span><span class="n">types</span><span class="p">,</span> <span class="n">imported_from</span><span class="p">,</span> <span class="n">imported_from_uri</span><span class="p">,</span> <span class="n">merge_imports</span><span class="p">)</span>
+    <span class="n">merge_dicts</span><span class="p">(</span><span class="n">target</span><span class="o">.</span><span class="n">subsets</span><span class="p">,</span> <span class="n">mergee</span><span class="o">.</span><span class="n">subsets</span><span class="p">,</span> <span class="n">imported_from</span><span class="p">,</span> <span class="n">imported_from_uri</span><span class="p">,</span> <span class="n">merge_imports</span><span class="p">)</span>
+    <span class="n">merge_dicts</span><span class="p">(</span><span class="n">target</span><span class="o">.</span><span class="n">enums</span><span class="p">,</span> <span class="n">mergee</span><span class="o">.</span><span class="n">enums</span><span class="p">,</span> <span class="n">imported_from</span><span class="p">,</span> <span class="n">imported_from_uri</span><span class="p">,</span> <span class="n">merge_imports</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="merge_namespaces"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.mergeutils.merge_namespaces">[docs]</a><span class="k">def</span> <span class="nf">merge_namespaces</span><span class="p">(</span>
-    <span class="n">target</span><span class="p">:</span> <span class="n">SchemaDefinition</span><span class="p">,</span> <span class="n">mergee</span><span class="p">:</span> <span class="n">SchemaDefinition</span><span class="p">,</span> <span class="n">namespaces</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="merge_namespaces"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.mergeutils.merge_namespaces">[docs]</a><span class="k">def</span> <span class="nf">merge_namespaces</span><span class="p">(</span><span class="n">target</span><span class="p">:</span> <span class="n">SchemaDefinition</span><span class="p">,</span> <span class="n">mergee</span><span class="p">:</span> <span class="n">SchemaDefinition</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Add the mergee namespace definitions to target</span>
 
@@ -374,7 +366,6 @@
 <span class="sd">    :return:</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">for</span> <span class="n">prefix</span> <span class="ow">in</span> <span class="n">mergee</span><span class="o">.</span><span class="n">prefixes</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-
         <span class="c1"># Handle local prefixes special: we assume that these happen because we are in different (levels of) folders,</span>
         <span class="c1"># and we assume that they reference the same linkml file</span>
         <span class="k">if</span> <span class="s2">&quot;://&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">prefix</span><span class="o">.</span><span class="n">prefix_reference</span><span class="p">:</span>
@@ -410,8 +401,7 @@
         <span class="c1">#     target.prefixes[prefix.prefix_prefix] = prefix</span>
         <span class="k">if</span> <span class="p">(</span>
             <span class="n">prefix</span><span class="o">.</span><span class="n">prefix_prefix</span> <span class="ow">in</span> <span class="n">target</span><span class="o">.</span><span class="n">prefixes</span>
-            <span class="ow">and</span> <span class="n">target</span><span class="o">.</span><span class="n">prefixes</span><span class="p">[</span><span class="n">prefix</span><span class="o">.</span><span class="n">prefix_prefix</span><span class="p">]</span><span class="o">.</span><span class="n">prefix_reference</span>
-            <span class="o">!=</span> <span class="n">prefix</span><span class="o">.</span><span class="n">prefix_reference</span>
+            <span class="ow">and</span> <span class="n">target</span><span class="o">.</span><span class="n">prefixes</span><span class="p">[</span><span class="n">prefix</span><span class="o">.</span><span class="n">prefix_prefix</span><span class="p">]</span><span class="o">.</span><span class="n">prefix_reference</span> <span class="o">!=</span> <span class="n">prefix</span><span class="o">.</span><span class="n">prefix_reference</span>
         <span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;Prefix: </span><span class="si">{</span><span class="n">prefix</span><span class="o">.</span><span class="n">prefix_prefix</span><span class="si">}</span><span class="s2"> mismatch between </span><span class="si">{</span><span class="n">target</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="n">mergee</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
@@ -477,11 +467,7 @@
     <span class="k">if</span> <span class="n">skip</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">skip</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">asdict</span><span class="p">(</span><span class="n">source</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="k">if</span> <span class="p">(</span>
-            <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">skip</span>
-            <span class="ow">and</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-            <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">inheriting</span> <span class="ow">or</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="p">):</span>
+        <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">skip</span> <span class="ow">and</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">inheriting</span> <span class="ow">or</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">source</span><span class="o">.</span><span class="n">_inherited_slots</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">inheriting</span><span class="p">:</span>
                 <span class="nb">setattr</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">v</span><span class="p">))</span>
             <span class="k">else</span><span class="p">:</span>
@@ -534,9 +520,7 @@
         <span class="k">if</span> <span class="n">slotbase</span> <span class="ow">in</span> <span class="n">target</span><span class="o">.</span><span class="n">slot_usage</span><span class="p">:</span>
             <span class="n">slotname</span> <span class="o">=</span> <span class="n">slot_usage_name</span><span class="p">(</span><span class="n">slotbase</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">slotbase</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">target_base_slots</span><span class="p">:</span>
-            <span class="n">target</span><span class="o">.</span><span class="n">slots</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">slotname</span><span class="p">)</span> <span class="k">if</span> <span class="n">at_end</span> <span class="k">else</span> <span class="n">target</span><span class="o">.</span><span class="n">slots</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span>
-                <span class="mi">0</span><span class="p">,</span> <span class="n">slotname</span>
-            <span class="p">)</span>
+            <span class="n">target</span><span class="o">.</span><span class="n">slots</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">slotname</span><span class="p">)</span> <span class="k">if</span> <span class="n">at_end</span> <span class="k">else</span> <span class="n">target</span><span class="o">.</span><span class="n">slots</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">slotname</span><span class="p">)</span>
             <span class="n">target_base_slots</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">slotbase</span><span class="p">)</span></div>
 
 

@@ -306,9 +306,7 @@
 <span class="kn">import</span> <span class="nn">yaml</span>
 <span class="kn">from</span> <span class="nn">dateutil.parser</span> <span class="kn">import</span> <span class="n">ParserError</span><span class="p">,</span> <span class="n">parse</span>
 <span class="kn">from</span> <span class="nn">hbreader</span> <span class="kn">import</span> <span class="n">FileInfo</span><span class="p">,</span> <span class="n">HBType</span><span class="p">,</span> <span class="n">detect_type</span>
-<span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model.meta</span> <span class="kn">import</span> <span class="p">(</span><span class="n">ClassDefinition</span><span class="p">,</span>
-                                              <span class="n">SchemaDefinition</span><span class="p">,</span> <span class="n">SlotDefinition</span><span class="p">,</span>
-                                              <span class="n">metamodel_version</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model.meta</span> <span class="kn">import</span> <span class="n">SchemaDefinition</span><span class="p">,</span> <span class="n">metamodel_version</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime.loaders</span> <span class="kn">import</span> <span class="n">yaml_loader</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime.utils.yamlutils</span> <span class="kn">import</span> <span class="n">YAMLMark</span><span class="p">,</span> <span class="n">YAMLRoot</span>
 
@@ -356,9 +354,7 @@
 
     <span class="c1"># Passing a URL or file name</span>
     <span class="k">if</span> <span class="n">detect_type</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">base_dir</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="n">HBType</span><span class="o">.</span><span class="n">STRING</span><span class="p">,</span> <span class="n">HBType</span><span class="o">.</span><span class="n">STRINGABLE</span><span class="p">):</span>
-        <span class="k">assert</span> <span class="p">(</span>
-            <span class="n">source_file</span> <span class="ow">is</span> <span class="kc">None</span>
-        <span class="p">),</span> <span class="s2">&quot;source_file parameter not allowed if data is a file or URL&quot;</span>
+        <span class="k">assert</span> <span class="n">source_file</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;source_file parameter not allowed if data is a file or URL&quot;</span>
         <span class="k">assert</span> <span class="p">(</span>
             <span class="n">source_file_date</span> <span class="ow">is</span> <span class="kc">None</span>
         <span class="p">),</span> <span class="s2">&quot;source_file_date parameter not allowed if data is a file or URL&quot;</span>

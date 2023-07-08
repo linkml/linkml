@@ -301,7 +301,6 @@
 <span></span><span class="sd">&quot;&quot;&quot; Generate JSONld</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
@@ -309,14 +308,18 @@
 
 <span class="kn">import</span> <span class="nn">click</span>
 <span class="kn">from</span> <span class="nn">jsonasobj2</span> <span class="kn">import</span> <span class="n">as_json</span><span class="p">,</span> <span class="n">items</span><span class="p">,</span> <span class="n">loads</span>
-<span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model.meta</span> <span class="kn">import</span> <span class="p">(</span><span class="n">ClassDefinition</span><span class="p">,</span>
-                                              <span class="n">ClassDefinitionName</span><span class="p">,</span> <span class="n">ElementName</span><span class="p">,</span>
-                                              <span class="n">SchemaDefinition</span><span class="p">,</span> <span class="n">SlotDefinition</span><span class="p">,</span>
-                                              <span class="n">SlotDefinitionName</span><span class="p">,</span>
-                                              <span class="n">SubsetDefinition</span><span class="p">,</span>
-                                              <span class="n">SubsetDefinitionName</span><span class="p">,</span>
-                                              <span class="n">TypeDefinition</span><span class="p">,</span>
-                                              <span class="n">TypeDefinitionName</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model.meta</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">ClassDefinition</span><span class="p">,</span>
+    <span class="n">ClassDefinitionName</span><span class="p">,</span>
+    <span class="n">ElementName</span><span class="p">,</span>
+    <span class="n">SchemaDefinition</span><span class="p">,</span>
+    <span class="n">SlotDefinition</span><span class="p">,</span>
+    <span class="n">SlotDefinitionName</span><span class="p">,</span>
+    <span class="n">SubsetDefinition</span><span class="p">,</span>
+    <span class="n">SubsetDefinitionName</span><span class="p">,</span>
+    <span class="n">TypeDefinition</span><span class="p">,</span>
+    <span class="n">TypeDefinitionName</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime.utils.formatutils</span> <span class="kn">import</span> <span class="n">camelcase</span><span class="p">,</span> <span class="n">underscore</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime.utils.yamlutils</span> <span class="kn">import</span> <span class="n">YAMLRoot</span>
 
@@ -335,6 +338,7 @@
 
 <span class="sd">    Note: this is distinct from :ref:`ContextGenerator`, which generates a JSON-LD context</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="c1"># ClassVars</span>
     <span class="n">generatorname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
     <span class="n">generatorversion</span> <span class="o">=</span> <span class="s2">&quot;0.0.2&quot;</span>
@@ -460,9 +464,7 @@
             <span class="p">)</span><span class="o">.</span><span class="n">serialize</span><span class="p">()</span>
             <span class="n">add_prefixes_json</span> <span class="o">=</span> <span class="n">loads</span><span class="p">(</span><span class="n">add_prefixes</span><span class="p">)</span>
             <span class="n">context</span> <span class="o">=</span> <span class="p">[</span><span class="n">METAMODEL_CONTEXT_URI</span><span class="p">,</span> <span class="n">add_prefixes_json</span><span class="p">[</span><span class="s2">&quot;@context&quot;</span><span class="p">]]</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span>
-            <span class="n">context</span><span class="p">,</span> <span class="nb">str</span>
-        <span class="p">):</span>  <span class="c1"># Some of the older code doesn&#39;t do multiple contexts</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>  <span class="c1"># Some of the older code doesn&#39;t do multiple contexts</span>
             <span class="n">context</span> <span class="o">=</span> <span class="p">[</span><span class="n">context</span><span class="p">]</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
             <span class="n">context</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>

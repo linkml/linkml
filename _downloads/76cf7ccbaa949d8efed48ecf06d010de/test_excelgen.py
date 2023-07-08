@@ -40,7 +40,7 @@ class ExcelGenTestCase(unittest.TestCase):
             "aliases",
             "first name",
             "id",
-            "last name"
+            "last name",
         ]
 
         # test case to check the column names in Manager worksheet
