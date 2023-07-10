@@ -20,6 +20,7 @@ LINK_ML_TYPES_DATETIME = URIRef("http://www.w3.org/2001/XMLSchema#dateTime")
 LINK_ML_TYPES_DATE = URIRef("http://www.w3.org/2001/XMLSchema#date")
 LINK_ML_TYPES_TIME = URIRef("http://www.w3.org/2001/XMLSchema#time")
 
+
 class ShaclGenerator(Generator):
     # ClassVars
     generatorname = os.path.basename(__file__)
