@@ -114,6 +114,9 @@ classes:
           ...
 ```
 
+Note that here the `attributes` section of the `Person` definition is the attributes that an
+instance of `Person` may have. The `annotations` section pertains to the *class* Person, not instances.
+
 ## Validation of annotations
 
 If a schema element does not instantiate a metamodel extension class, then any annotation tag is valid.
