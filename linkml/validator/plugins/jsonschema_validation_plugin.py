@@ -22,9 +22,7 @@ class JsonschemaValidationPlugin(ValidationPlugin):
         self.closed = closed
         self.strict = strict
 
-    def process(
-        self, instance: Any, context: ValidationContext
-    ) -> Iterable[ValidationResult]:
+    def process(self, instance: Any, context: ValidationContext) -> Iterable[ValidationResult]:
         """Perform JSON Schema validation on the provided instance
 
         :param instance: The instance to validate

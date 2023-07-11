@@ -68,6 +68,4 @@ class TestValidate(unittest.TestCase):
     def test_not_a_valid_schema(self):
         instance = {}
         schema = {"foo": "bar"}
-        self.assertRaisesRegex(
-            ValueError, "Invalid schema", lambda: validate(instance, schema)
-        )
+        self.assertRaisesRegex(ValueError, "Invalid schema", lambda: validate(instance, schema))

@@ -12,9 +12,7 @@ class ValidationPlugin(ABC):
     """
 
     @abstractmethod
-    def process(
-        self, instance: dict, context: ValidationContext
-    ) -> Iterable[ValidationResult]:
+    def process(self, instance: dict, context: ValidationContext) -> Iterable[ValidationResult]:
         """Lazily yield validation results for an instance according to
         the validation context.
 

@@ -20,9 +20,7 @@ SCHEMA = SchemaDefinition(
 
 
 class AcceptAnythingValidationPlugin(ValidationPlugin):
-    def process(
-        self, instance: dict, context: ValidationContext
-    ) -> Iterable[ValidationResult]:
+    def process(self, instance: dict, context: ValidationContext) -> Iterable[ValidationResult]:
         return []
 
 
@@ -31,9 +29,7 @@ class AcceptNothingValidationPlugin(ValidationPlugin):
         super().__init__()
         self.num_results = num_results
 
-    def process(
-        self, instance: dict, context: ValidationContext
-    ) -> Iterable[ValidationResult]:
+    def process(self, instance: dict, context: ValidationContext) -> Iterable[ValidationResult]:
         for i in range(self.num_results):
             yield ValidationResult(
                 type="accept nothing",

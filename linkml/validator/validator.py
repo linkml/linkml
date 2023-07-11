@@ -30,9 +30,7 @@ class Validator:
         self._schema_view = SchemaView(schema)
         self._validation_plugins = validation_plugins
 
-    def validate(
-        self, instance: Any, target_class: Optional[str] = None
-    ) -> ValidationReport:
+    def validate(self, instance: Any, target_class: Optional[str] = None) -> ValidationReport:
         """Validate the given instance
 
         :param instance: The instance to validate
@@ -57,9 +55,7 @@ class Validator:
         :return: A validation report
         :rtype: ValidationReport
         """
-        return ValidationReport(
-            results=list(self.iter_results_from_source(loader, target_class))
-        )
+        return ValidationReport(results=list(self.iter_results_from_source(loader, target_class)))
 
     def iter_results(
         self, instance: Any, target_class: Optional[str] = None

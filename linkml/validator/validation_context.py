@@ -16,10 +16,7 @@ class ValidationContext:
         if not isinstance(other, ValidationContext):
             return False
 
-        return (
-            self.schema.id == other.schema.id
-            and self.target_class == other.target_class
-        )
+        return self.schema.id == other.schema.id and self.target_class == other.target_class
 
     def __hash__(self) -> int:
         return hash((self.schema.id, self.target_class))
