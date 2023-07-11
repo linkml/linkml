@@ -182,12 +182,14 @@
 <li class="toctree-l2"><a class="reference internal" href="../schemas/enums.html">Semantic Enumerations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../schemas/inlining.html">Inlining objects</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../schemas/constraints.html">Adding constraints and rules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../schemas/type-designators.html">Type designators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../schemas/subsets.html">Subsets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../schemas/imports.html">Imports</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../schemas/advanced.html">Advanced features</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../schemas/generators.html">Mapping schemas to other frameworks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../schemas/linter.html">Schema Linter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../schemas/derived-models.html">Derived models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../schemas/annotations.html">Annotations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../schemas/metamodel.html">The metamodel</a></li>
 </ul>
 </li>
@@ -301,12 +303,22 @@
         <article role="main">
           <section id="linkml-specification">
 <h1>LinkML specification<a class="headerlink" href="#linkml-specification" title="Permalink to this heading">#</a></h1>
-<p>The LinkML specification has moved to the LinkML model repo:</p>
+<p>The LinkML specification has a permanent URL:</p>
 <ul class="simple">
-<li><p><a class="reference external" href="https://linkml.io/linkml-model/docs/specification/">LinkML specification</a></p></li>
+<li><p><a class="reference external" href="https://w3id.org/linkml/specification">https://w3id.org/linkml/specification</a></p></li>
 </ul>
-<p>This formal specification is aimed at implementors of LinkML tools rather
-than general users.</p>
+<p>Note the specification is hosted on the <a class="reference external" href="https://github.com/linkml/linkml-model">linkml-model</a> repository.</p>
+<p>This specification is aimed at implementors of LinkML tools rather
+than general users. It is more formal in its language than this main LinkML guide.</p>
+<p>The specification is in the following parts:</p>
+<ol class="arabic simple">
+<li><p><strong>Introduction</strong>: general background</p></li>
+<li><p><strong>Instances</strong>: formalization of what instance data is in LinkML.</p></li>
+<li><p><strong>Schemas</strong>: the LinkML metamodel and the structure of LinkML schemas.</p></li>
+<li><p><strong>Derived Schemas</strong>: Inference rules for schemas - for example how <a class="reference external" href="https://w3id.org/linkml/is_a">is_a</a> is used.</p></li>
+<li><p><strong>Validation</strong>: Rules for validating instance data given a schema.</p></li>
+<li><p><strong>Mapping</strong>: Serializing and deserializing instance data to dictionary and graph representations.</p></li>
+</ol>
 </section>
 
         </article>

@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="The metamodel" href="metamodel.html" /><link rel="prev" title="Derived models" href="derived-models.html" />
 
     <link rel="shortcut icon" href="https://linkml.io/uploads/linkml-logo_color-no-words.png"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
-        <title>Compound keys - linkml documentation</title>
+        <title>Annotations - linkml documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
@@ -134,7 +134,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -158,7 +158,7 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../intro/overview.html">LinkML at a glance</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../intro/install.html">Quick Install Guide</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../intro/tutorial.html">Tutorial</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -173,7 +173,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../intro/tutorial09.html">Part 9: Working with SQL databases</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="index.html">LinkML Schemas</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">LinkML Schemas</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="models.html">Models</a></li>
 <li class="toctree-l2"><a class="reference internal" href="metadata.html">Schema Element Metadata</a></li>
 <li class="toctree-l2"><a class="reference internal" href="inheritance.html">Inheritance</a></li>
@@ -182,12 +182,14 @@
 <li class="toctree-l2"><a class="reference internal" href="enums.html">Semantic Enumerations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="inlining.html">Inlining objects</a></li>
 <li class="toctree-l2"><a class="reference internal" href="constraints.html">Adding constraints and rules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="type-designators.html">Type designators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="subsets.html">Subsets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="imports.html">Imports</a></li>
 <li class="toctree-l2"><a class="reference internal" href="advanced.html">Advanced features</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generators.html">Mapping schemas to other frameworks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="linter.html">Schema Linter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="derived-models.html">Derived models</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Annotations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="metamodel.html">The metamodel</a></li>
 </ul>
 </li>
@@ -293,14 +295,148 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
-          <section id="compound-keys">
-<h1>Compound keys<a class="headerlink" href="#compound-keys" title="Permalink to this heading">#</a></h1>
+          <section id="annotations">
+<h1>Annotations<a class="headerlink" href="#annotations" title="Permalink to this heading">#</a></h1>
+<section id="background">
+<h2>Background<a class="headerlink" href="#background" title="Permalink to this heading">#</a></h2>
+<p>The LinkML model provides a fixed set of metamodel slots which can be applied to any schema element.</p>
+<p>Examples of these are:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://w3id.org/linkml/description">description</a> - a human readable description of the element</p></li>
+<li><p><a class="reference external" href="https://w3id.org/linkml/comments">comments</a> - a human readable comment about the element</p></li>
+<li><p><a class="reference external" href="https://w3id.org/linkml/aliases">aliases</a> - a set of alternative names for the element</p></li>
+<li><p><a class="reference external" href="https://w3id.org/linkml/deprecated">deprecated</a> - a boolean flag indicating that the element is deprecated</p></li>
+<li><p><a class="reference external" href="https://w3id.org/linkml/seeAlso">seeAlso</a> - a set of URIs that provide additional information about the element</p></li>
+</ul>
+<p>If you attempt to assign a slot that is not in the metamodel, you will get an error. For example,
+if you wanted to add a <code class="docutils literal notranslate"><span class="pre">review</span></code> slot to the <code class="docutils literal notranslate"><span class="pre">Person</span></code> class like this:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">Person</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">A person, living or dead</span>
+<span class="w">    </span><span class="nt">review</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">A very useful class that is well defined</span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">...</span>
+</pre></div>
+</div>
+<p>This will result in an error, because <code class="docutils literal notranslate"><span class="pre">review</span></code> is not a metamodel slot.</p>
+<p>This conformance to a single metamodel can be useful for ensuring consistency and interoperability
+among LinkML schemas. However, it can be too constraining in some cases. To get around this,
+the LinkML metamodel has a generic <a class="reference external" href="https://w3id.org/linkml/annotations">annotations</a> slot that can be used
+to assign arbitrary tags and values to any schema element.</p>
+</section>
+<section id="adding-your-own-annotations">
+<h2>Adding your own annotations<a class="headerlink" href="#adding-your-own-annotations" title="Permalink to this heading">#</a></h2>
+<p>In the above case, we can add the <code class="docutils literal notranslate"><span class="pre">review</span></code> annotation to the <code class="docutils literal notranslate"><span class="pre">Person</span></code> class like this:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">Person</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">annotations</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">review</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">A very useful class that is well defined</span>
+<span class="w">      </span><span class="l l-Scalar l-Scalar-Plain">...</span>
+</pre></div>
+</div>
+<p>Note that in the underlying metamodel, the range of <a class="reference external" href="https://w3id.org/linkml/annotations">annotations</a> is
+an <a class="reference external" href="https://w3id.org/linkml/Annotation">Annotation</a> class, which has two slots: <code class="docutils literal notranslate"><span class="pre">tag</span></code> and <code class="docutils literal notranslate"><span class="pre">value</span></code>. This is
+usually written in <em>compact form</em> as <code class="docutils literal notranslate"><span class="pre">tag:</span> <span class="pre">value</span></code>, as in the above.</p>
+<p>Note also that prior to LinkML 1.6, the range of the annotation value was <code class="docutils literal notranslate"><span class="pre">string</span></code>, but in 1.6 and higher,
+the range can be any object.</p>
+</section>
+<section id="annotation-validation">
+<h2>Annotation validation<a class="headerlink" href="#annotation-validation" title="Permalink to this heading">#</a></h2>
+<p>By default, all annotation tags and values are valid. Feel free to add whatever annotations you like
+to any schema element - classes, enums, permissible values, slots, even schemas themselves.</p>
+<p>However, if you want to restrict the set of valid annotations, you can do this starting from LinkMK 1.6,
+where you can treat annotation tags as if they were slots in your own metamodel extension.</p>
+<p>This is done by adding an <a class="reference external" href="https://w3id.org/linkml/instantiates">instantiates</a> slot-value assignment onto any schema element. The range of
+the <code class="docutils literal notranslate"><span class="pre">instantiates</span></code> slot is a <code class="docutils literal notranslate"><span class="pre">uriorcurie</span></code> that references a class that serves as a metamodel extension class.</p>
+<p>For example, given our example schema fragment, we can add an <code class="docutils literal notranslate"><span class="pre">instantiates</span></code> slot to the <code class="docutils literal notranslate"><span class="pre">Person</span></code> class,
+stating that this class is an instance of the <code class="docutils literal notranslate"><span class="pre">Reviewable</span></code> metamodel extension class:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">Person</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">instantiates</span><span class="p">:</span><span class="w"> </span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mymetamodel:Reviewable</span>
+<span class="w">    </span><span class="nt">annotations</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">review</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">A very useful class that is well defined</span>
+<span class="w">      </span><span class="l l-Scalar l-Scalar-Plain">...</span>
+</pre></div>
+</div>
+<p>This metaclass extension can live in the same schema, or in a different schema. This is why they are referenced
+by <code class="docutils literal notranslate"><span class="pre">uriorcurie</span></code> rather than a local name.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">Reviewable</span></code> class might be defined as follows:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://example.org/mymetamodel/</span>
+<span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mymetamodel</span>
+<span class="nn">...</span>
+<span class="nt">classes</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">Reviewable</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">class_uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mymetamodel:Reviewable</span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">review</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">an expert review of a schema element</span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+</pre></div>
+</div>
+<p>This can be thought of as a schema element mixin class - the class defines the extra slots that can be
+attached to schema elements via annotations.</p>
+<p>Other schema elements can also instantiate the <code class="docutils literal notranslate"><span class="pre">Reviewable</span></code> class:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">Person</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">instantiates</span><span class="p">:</span><span class="w"> </span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mymetamodel:Reviewable</span>
+<span class="w">    </span><span class="nt">annotations</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">review</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">A very useful class that is well defined</span>
+<span class="w">      </span><span class="l l-Scalar l-Scalar-Plain">...</span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">name</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">the name of a person</span>
+<span class="w">        </span><span class="nt">instantiates</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mymetamodel:Reviewable</span>
+<span class="w">        </span><span class="nt">annotations</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">review</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">A very useful attribute that is well defined</span>
+<span class="w">          </span><span class="l l-Scalar l-Scalar-Plain">...</span>
+</pre></div>
+</div>
+<p>Note that here the <code class="docutils literal notranslate"><span class="pre">attributes</span></code> section of the <code class="docutils literal notranslate"><span class="pre">Person</span></code> definition is the attributes that an
+instance of <code class="docutils literal notranslate"><span class="pre">Person</span></code> may have. The <code class="docutils literal notranslate"><span class="pre">annotations</span></code> section pertains to the <em>class</em> Person, not instances.</p>
+</section>
+<section id="validation-of-annotations">
+<h2>Validation of annotations<a class="headerlink" href="#validation-of-annotations" title="Permalink to this heading">#</a></h2>
+<p>If a schema element does not instantiate a metamodel extension class, then any annotation tag is valid.
+(this is already the case for all pre 1.6 schemas, since the <code class="docutils literal notranslate"><span class="pre">instantiates</span></code> slot is not defined in previous
+versions of the metamodel).</p>
+<p>If a schema element does instantiate a metamodel extension class, then the set of valid annotation tags
+should conform to the slots defined in the metamodel extension class, as if the annotation tags were
+first-class slots, and instantiates value was a mixin.</p>
+<p>However, this is not yet supported in the current LinkML validator, so using <code class="docutils literal notranslate"><span class="pre">instantiates</span></code> indicates your
+intent, but does not yet enforce validation.</p>
+</section>
+<section id="other-uses-of-instantiates">
+<h2>Other uses of instantiates<a class="headerlink" href="#other-uses-of-instantiates" title="Permalink to this heading">#</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">instantiates</span></code> slot can also be used constrain rather than extend.</p>
+<p>For example, to define a <em>strict</em> metamodel element that must have a description:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://example.org/mymetamodel/</span>
+<span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mymetamodel</span>
+<span class="nn">...</span>
+<span class="nt">classes</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">StrictElement</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">class_uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mymetamodel:StrictClassDefinition</span>
+<span class="w">    </span><span class="nt">slot_usage</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">description</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</pre></div>
+</div>
+<p>Any schema element that instantiates <code class="docutils literal notranslate"><span class="pre">StrictElement</span></code> must have a description:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">Person</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">instantiates</span><span class="p">:</span><span class="w"> </span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mymetamodel:StrictElement</span>
+<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">A person, living or dead</span><span class="w">   </span><span class="c1">## must be provided</span>
+</pre></div>
+</div>
+</section>
 </section>
 
         </article>
@@ -308,8 +444,26 @@
       <footer>
         
         <div class="related-pages">
-          
-          
+          <a class="next-page" href="metamodel.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">The metamodel</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="derived-models.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Derived models</div>
+                
+              </div>
+            </a>
         </div>
         <div class="bottom-of-page">
           <div class="left-details">
@@ -328,8 +482,31 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Annotations</a><ul>
+<li><a class="reference internal" href="#background">Background</a></li>
+<li><a class="reference internal" href="#adding-your-own-annotations">Adding your own annotations</a></li>
+<li><a class="reference internal" href="#annotation-validation">Annotation validation</a></li>
+<li><a class="reference internal" href="#validation-of-annotations">Validation of annotations</a></li>
+<li><a class="reference internal" href="#other-uses-of-instantiates">Other uses of instantiates</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>

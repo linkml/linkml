@@ -182,12 +182,14 @@
 <li class="toctree-l2"><a class="reference internal" href="../schemas/enums.html">Semantic Enumerations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../schemas/inlining.html">Inlining objects</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../schemas/constraints.html">Adding constraints and rules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../schemas/type-designators.html">Type designators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../schemas/subsets.html">Subsets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../schemas/imports.html">Imports</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../schemas/advanced.html">Advanced features</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../schemas/generators.html">Mapping schemas to other frameworks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../schemas/linter.html">Schema Linter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../schemas/derived-models.html">Derived models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../schemas/annotations.html">Annotations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../schemas/metamodel.html">The metamodel</a></li>
 </ul>
 </li>
@@ -317,8 +319,8 @@
 <li><p><a class="reference external" href="https://github.com/linkml/schemasheets">linkml/schemasheets</a>, for managing your schema as a spreadsheet</p></li>
 <li><p><a class="reference external" href="https://github.com/linkml/linkml-model-enrichment">linkml/linkml-model-enrichment</a>, for bootstrapping and enhancing schemas</p></li>
 <li><p><a class="reference external" href="https://github.com/linkml/linkml-owl">linkml/linkml-owl</a>, for generating OWL ontologies using schemas as templates</p></li>
-<li><p><a class="reference external" href="https://github.com/linkml/sparqlfun">linkml/sparqlfun</a>, for templated SPARQL queries</p></li>
 </ul>
+<p>See <a class="reference internal" href="../ecosystem.html"><span class="doc std std-doc">../ecosystem</span></a> for more info on the LinkML ecosystem.</p>
 </section>
 <section id="how-do-i-install-the-linkml-tools">
 <h2>How do I install the LinkML tools?<a class="headerlink" href="#how-do-i-install-the-linkml-tools" title="Permalink to this heading">#</a></h2>
@@ -351,7 +353,11 @@ schema class in the metamodel)</p>
 <p>For small schemas with limited inheritance, it should be possible to mentally picture the structure just by examining the source YAML. For larger schemas, with deep inheritance, it can help to have some kind of hierarchical browsing tool.</p>
 <p>There are a few strategies:</p>
 <ul class="simple">
-<li><p>Use <a class="reference external" href="https://linkml.io/linkml/generators/markdown">gen-markdown</a> to make markdown that can be viewed using mkdocs</p></li>
+<li><p>Use <a class="reference external" href="https://linkml.io/linkml/generators/markdown">gen-doc</a> to make markdown that can be viewed using mkdocs</p>
+<ul>
+<li><p>note you get this “for free” if you set up your project using the LinkML cookiecutter</p></li>
+</ul>
+</li>
 <li><p>Use <a class="reference external" href="https://linkml.io/linkml/generators/owl">gen-owl</a> to make an OWL ontology, which can be browsed:</p>
 <ul>
 <li><p>Using an ontology editing tool like Protege</p></li>
@@ -468,7 +474,7 @@ LinkML as a schema language.</p>
 <p>Yes!</p>
 <p>See the <a class="reference external" href="https://linkml.io/linkml/generators/markdown">markdown generator</a> for details.</p>
 <p>If you run:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gen</span><span class="o">-</span><span class="n">markdown</span> <span class="o">-</span><span class="n">d</span> <span class="n">docs</span> <span class="n">personinfo</span><span class="o">.</span><span class="n">yaml</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gen</span><span class="o">-</span><span class="n">doc</span> <span class="o">-</span><span class="n">d</span> <span class="n">docs</span> <span class="n">personinfo</span><span class="o">.</span><span class="n">yaml</span>
 </pre></div>
 </div>
 <p>It will place all the markdown documents you need to run a <a class="reference external" href="https://www.mkdocs.org/">mkdocs</a> site</p>
@@ -517,6 +523,9 @@ if you are incorporating LinkML into a software project that uses <a class="refe
 <li><p>iterate until they look how you want, then deploy (e.g. <code class="docutils literal notranslate"><span class="pre">mkdocs</span> <span class="pre">gh-deploy</span></code>)</p></li>
 </ol>
 <p>An example repo that uses highly customized templates: <a class="reference external" href="https://genomicsstandardsconsortium.github.io/mixs">GSC MIxS</a></p>
+<p>Note that one disadvantage of using custom templates is that you will not automatically get improvements
+made back in the core templates - you will need to manually sync. We are working on ways to make the
+Jinja2 templates more compositional so that this is less of an issue.</p>
 </section>
 <section id="can-i-use-linkml-in-conjunction-with-sql-databases">
 <h2>Can I use LinkML in conjunction with SQL Databases?<a class="headerlink" href="#can-i-use-linkml-in-conjunction-with-sql-databases" title="Permalink to this heading">#</a></h2>

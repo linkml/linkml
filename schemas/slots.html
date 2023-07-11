@@ -182,12 +182,14 @@
 <li class="toctree-l2"><a class="reference internal" href="enums.html">Semantic Enumerations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="inlining.html">Inlining objects</a></li>
 <li class="toctree-l2"><a class="reference internal" href="constraints.html">Adding constraints and rules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="type-designators.html">Type designators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="subsets.html">Subsets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="imports.html">Imports</a></li>
 <li class="toctree-l2"><a class="reference internal" href="advanced.html">Advanced features</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generators.html">Mapping schemas to other frameworks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="linter.html">Schema Linter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="derived-models.html">Derived models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="annotations.html">Annotations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="metamodel.html">The metamodel</a></li>
 </ul>
 </li>
@@ -348,6 +350,7 @@ are applicable to that class.</p>
 <li><p>A <a class="reference external" href="https://w3id.org/linkml/ClassDefinition">ClassDefinition</a>, when the value of the slot is a complex object</p></li>
 <li><p>A <a class="reference external" href="https://w3id.org/linkml/TypeDefinition">TypeDefinition</a>, when the value of the slot is an atomic object</p></li>
 <li><p>An <a class="reference external" href="https://w3id.org/linkml/EnumDefinition">EnumDefinition</a>, when the value of the slot is a token that represents a vocabulary element</p></li>
+<li><p>A boolean combination of the above</p></li>
 </ul>
 <p>Examples:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">slots</span><span class="p">:</span>
@@ -414,6 +417,7 @@ be used for <a class="reference internal" href="inlining.html"><span class="doc 
 <span class="w">    </span><span class="nt">designates_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 </pre></div>
 </div>
+<p>See the <a class="reference internal" href="#type-designator.md"><span class="xref myst">type-designators</span></a> section of the docs for more details.</p>
 </section>
 <section id="slot-cardinality">
 <h2>Slot cardinality<a class="headerlink" href="#slot-cardinality" title="Permalink to this heading">#</a></h2>
@@ -482,6 +486,9 @@ be used for <a class="reference internal" href="inlining.html"><span class="doc 
 <span class="w">    </span><span class="nt">inverse</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">child_of</span>
 </pre></div>
 </div>
+<p>For most purposes, the specification of an inverse acts as additional documentation and doesn’t
+affect programming semantics. However, some frameworks like RDF/OWL allow for the inference of
+inverses.</p>
 </section>
 <section id="logical-characteristics">
 <h2>logical characteristics<a class="headerlink" href="#logical-characteristics" title="Permalink to this heading">#</a></h2>

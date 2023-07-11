@@ -182,12 +182,14 @@
 <li class="toctree-l2"><a class="reference internal" href="../schemas/enums.html">Semantic Enumerations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../schemas/inlining.html">Inlining objects</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../schemas/constraints.html">Adding constraints and rules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../schemas/type-designators.html">Type designators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../schemas/subsets.html">Subsets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../schemas/imports.html">Imports</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../schemas/advanced.html">Advanced features</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../schemas/generators.html">Mapping schemas to other frameworks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../schemas/linter.html">Schema Linter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../schemas/derived-models.html">Derived models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../schemas/annotations.html">Annotations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../schemas/metamodel.html">The metamodel</a></li>
 </ul>
 </li>
@@ -303,24 +305,25 @@
 <h1>FAQ: General<a class="headerlink" href="#faq-general" title="Permalink to this heading">#</a></h1>
 <section id="why-does-this-project-exist">
 <h2>Why does this project exist?<a class="headerlink" href="#why-does-this-project-exist" title="Permalink to this heading">#</a></h2>
-<p>LinkML originally grew out of the needs of the Biolink Model project,
+<p>LinkML originally grew out of the needs of the <a class="reference external" href="https://w3id.org/biolink/">Biolink-Model</a> project,
 which needed a flexible schema representation for biological knowledge
 graphs that was independent of particular database systems
 (relational, triplestore, graph database) and serialization format
 (TSV, JSON, RDF, RDFStar).</p>
-<p>Recognizing similar needs elsewhere, Harold Solbrig took the original
-Biolink metamodel and generalized it to create the BiolinkML framework. This was later named LinkML.</p>
+<p>Recognizing similar needs elsewhere, <a class="reference external" href="https://github.com/hsolbrig">Harold Solbrig</a> took the original
+Biolink metamodel and generalized it to create the original BiolinkML framework.
+This was later named LinkML.</p>
 </section>
 <section id="is-linkml-stable">
 <h2>Is LinkML stable?<a class="headerlink" href="#is-linkml-stable" title="Permalink to this heading">#</a></h2>
 <p>The features of the core LinkML model are stable, you can use this to
-describe your datamodel without fear of breaking changes.</p>
+describe your data model without fear of breaking changes.</p>
 <p>The language is being continually extended to meet the needs of a
-growing community.</p>
-<p>Similarly, the LinkML toolchain is also growing.</p>
-<p>Mappings between LinkML and other formalisms such as JSON-Schema and
-ShEx may be currently incomplete, and these are continually being
-improved, with plans to create new generators (e.g. for SHACL, and XSD)</p>
+growing community. New language features are always added to be
+backwards compatible with existing schemas.</p>
+<p>Similarly, the LinkML toolchain is also growing. The core toolchain
+is in Python, but efforts are underway to build tooling in Java, Typescript,
+and Go. Some language features may be unsupported in some toolchains.</p>
 </section>
 <section id="how-is-linkml-licensed">
 <h2>How is LinkML licensed?<a class="headerlink" href="#how-is-linkml-licensed" title="Permalink to this heading">#</a></h2>
@@ -330,7 +333,9 @@ are in the public domain through a CC-0 waiver.</p>
 <section id="who-uses-linkml">
 <h2>Who uses LinkML?<a class="headerlink" href="#who-uses-linkml" title="Permalink to this heading">#</a></h2>
 <p>A subset of groups using LinkML can be found via the
-<a class="reference external" href="https://linkml.io/linkml-registry/registry/">linkml-registry</a></p>
+<a class="reference external" href="https://linkml.io/linkml-registry/registry/">linkml-registry</a>.
+However, we do not have the resources to track all uses,
+and the registry only scratches the surface of current usage.</p>
 <p>LinkML is used in a number of major database resource projects. Many
 of these are centered around genomics and managing complex biological
 or environmental data, but the framework is completely domain neutral.</p>

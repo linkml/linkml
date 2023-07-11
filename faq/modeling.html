@@ -182,12 +182,14 @@
 <li class="toctree-l2"><a class="reference internal" href="../schemas/enums.html">Semantic Enumerations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../schemas/inlining.html">Inlining objects</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../schemas/constraints.html">Adding constraints and rules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../schemas/type-designators.html">Type designators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../schemas/subsets.html">Subsets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../schemas/imports.html">Imports</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../schemas/advanced.html">Advanced features</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../schemas/generators.html">Mapping schemas to other frameworks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../schemas/linter.html">Schema Linter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../schemas/derived-models.html">Derived models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../schemas/annotations.html">Annotations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../schemas/metamodel.html">The metamodel</a></li>
 </ul>
 </li>
@@ -337,7 +339,8 @@ hierarchies should be stratified.</p>
 </section>
 <section id="what-are-induced-slots">
 <h2>What are induced slots?<a class="headerlink" href="#what-are-induced-slots" title="Permalink to this heading">#</a></h2>
-<p>Because the same slot can be reused in different classes (with each class potentially refining semantics using slot_usage), it can be useful to give a new “name” for the implicit class-specific version of that slot.</p>
+<p>Because the same slot can be reused in different classes (with each class potentially refining semantics using <a class="reference external" href="https://w3id.org/linkml/slot_usage">slot_usage</a>),
+it can be useful to give a new “name” for the implicit class-specific version of that slot.</p>
 <p>For example, if you have a slot <code class="docutils literal notranslate"><span class="pre">name</span></code>, and this is used in classes <code class="docutils literal notranslate"><span class="pre">Person</span></code> and <code class="docutils literal notranslate"><span class="pre">Organization</span></code>, and these are refined for each class (for example, “Organization” may refine the name slot to follow a particular regular expression). In some generators such as the markdown generator, you will see “induced” slots such as <code class="docutils literal notranslate"><span class="pre">Organization_name</span></code>.</p>
 <p>The extent to which these are made visible is currently the subject of some discussion, see GitHub for details.</p>
 <p>Induced slots can be <em>materialized</em> as attributes using the <a class="reference internal" href="../generators/linkml.html"><span class="doc std std-doc">linkml generator</span></a></p>
@@ -410,14 +413,18 @@ text.</p>
 <span class="w">  </span><span class="nt">variant_type_enum</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">permissible_values</span><span class="p">:</span><span class="w"> </span>
 <span class="w">      </span><span class="nt">point_mutation</span><span class="p">:</span>
-<span class="w">          </span><span class="nt">meaning</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SO:12345</span>
+<span class="w">          </span><span class="nt">meaning</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SO:1000008</span>
 <span class="w">      </span><span class="nt">deletion</span><span class="p">:</span>
-<span class="w">          </span><span class="nt">meaning</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SO:24681</span>
+<span class="w">          </span><span class="nt">meaning</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SO:0000159</span>
 <span class="w">      </span><span class="nt">insertion</span><span class="p">:</span><span class="w"> </span>
-<span class="w">          </span><span class="nt">meaning</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SO:36912</span>
+<span class="w">          </span><span class="nt">meaning</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SO:0000667</span>
 </pre></div>
 </div>
-<p>Note that we are mapping each permissible value to an ontology term</p>
+<p>Note that we are mapping each permissible value to an ontology term.
+Mapping to ontology/vocabulary terms is optional, but if you can do it,
+we strongly recommend it. It provides <em>interoperation hooks</em> - others with different
+data models may have their own enumerations, by making the meaning of each permissible
+value explicit, data can be merged automatically.</p>
 </section>
 <section id="how-do-i-constrain-a-slot-to-a-branch-of-an-ontology-or-a-whole-ontology">
 <h3>How do I constrain a slot to a branch of an ontology or a whole ontology?<a class="headerlink" href="#how-do-i-constrain-a-slot-to-a-branch-of-an-ontology-or-a-whole-ontology" title="Permalink to this heading">#</a></h3>
@@ -515,6 +522,7 @@ occupation ontology, any body part from an anatomical ontology.</p>
 <span class="w">  </span><span class="nt">secondary ids</span><span class="p">:</span>
 </pre></div>
 </div>
+<p>See <a class="reference external" href="https://linkml.io/linkml/schemas/enums.html#dynamic-enums">dynamic enums</a> for more details.</p>
 </section>
 <section id="can-i-combine-dynamic-enums-using-boolean-expressions">
 <h3>Can I combine dynamic enums using boolean expressions<a class="headerlink" href="#can-i-combine-dynamic-enums-using-boolean-expressions" title="Permalink to this heading">#</a></h3>
@@ -727,8 +735,34 @@ exploring mechanisms that provide more flexibility in reuse, including:</p>
 <li><p>using <a class="reference external" href="https://github.com/linkml/linkml-transformer">linkml-transformer</a> to <em>transform</em> upstream schemas rather than import them</p></li>
 </ul>
 </section>
-<section id="what-are-id-prefixes-used-for-and-why-do-we-want-them">
-<h2>What are id_prefixes used for and why do we want them?<a class="headerlink" href="#what-are-id-prefixes-used-for-and-why-do-we-want-them" title="Permalink to this heading">#</a></h2>
+<section id="what-is-the-prefixes-section-at-the-start-of-a-schema">
+<h2>What is the prefixes section at the start of a schema?<a class="headerlink" href="#what-is-the-prefixes-section-at-the-start-of-a-schema" title="Permalink to this heading">#</a></h2>
+<p>The prefixes section can be used to provide CURIE abbreviations for entities. Under the hood,
+all elements in a LinkML schema are identified by a URI, but we typically expose these
+as CURIEs.</p>
+<p>For example <code class="docutils literal notranslate"><span class="pre">linkml:SchemaDefinition</span></code> is a CURIE that expands to <code class="docutils literal notranslate"><span class="pre">https://w3id.org/linkml/SchemaDefinition</span></code>.</p>
+<p>The prefixes section allows you to define a set of prefixes that can be used throughout the schema,
+for example:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">prefixes</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">linkml</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://w3id.org/linkml/</span>
+<span class="w">  </span><span class="nt">biolink</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://w3id.org/biolink/</span>
+<span class="w">  </span><span class="nt">schema</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://schema.org/</span>
+</pre></div>
+</div>
+</section>
+<section id="is-there-a-standard-registry-of-prefixes">
+<h2>Is there a standard registry of prefixes?<a class="headerlink" href="#is-there-a-standard-registry-of-prefixes" title="Permalink to this heading">#</a></h2>
+<p>LinkML is closely aligned with the
+<a class="reference external" href="https://bioregistry.io/">bioregistry</a>, a community-driven, curated, hierarchical collection of prefix namespaces
+for use in data resources. Bioregistry is used commonly in the life sciences, but it is not restricted to
+this domain.</p>
+<p>We recommend using prefixes that align with bioregistry.</p>
+<p>See also
+<strong>Unifying the identification of biomedical entities with the Bioregistry</strong> (2022),
+<a class="reference external" href="https://doi.org/10.1038/s41597-022-01807-3">doi:10.1038/s41597-022-01807-3</a></p>
+</section>
+<section id="what-are-id-prefixes-used-for">
+<h2>What are id_prefixes used for?<a class="headerlink" href="#what-are-id-prefixes-used-for" title="Permalink to this heading">#</a></h2>
 <p>The LinkML meta modeling element, <a class="reference external" href="https://w3id.org/linkml/id_prefixes">id_prefixes</a> can be applied to any Class. This is used to specify which prefixes should be used on the identifiers for that class.</p>
 <p>The id_prefixes are listed in decreasing priority order, with the “preferred” prefix listed first.</p>
 <p>Downstream software components can use this field to constrain data entry to a particular kind of identifier.</p>
@@ -746,9 +780,9 @@ exploring mechanisms that provide more flexibility in reuse, including:</p>
 <li><p>mappings allow advanced users to reason over your model.</p></li>
 </ul>
 <p>Mappings can be established for exact equivalences, close, related, narrow and broad equivalences
-For more detail on the kinds of mappings (and their mappings to SKOS): https://linkml.io/linkml-model/docs/mappings/)</p>
+For more detail on the kinds of mappings (and their mappings to SKOS), see <a class="reference external" href="https://w3id.org/linkml/mappings">linkml:mappings</a></p>
 <p>Mappings are an entire optional feature, you can create a schema without any mappings. However, we encourage their use, and we
-encourage adding them <em>prospectively</em> as you build our your datamodel, rather than doing this <em>retrospectively</em>. Thinking about mappings
+encourage adding them <em>prospectively</em> as you build our your data model, rather than doing this <em>retrospectively</em>. Thinking about mappings
 will help you think about how your modeling relates to the modeling done by others as part of other databases or standards.</p>
 </section>
 <section id="how-do-i-represent-relationships-in-linkml">
@@ -851,7 +885,9 @@ will need to answer:</p>
 <li><a class="reference internal" href="#why-are-my-class-names-translated-to-camelcase">Why are my class names translated to CamelCase?</a></li>
 <li><a class="reference internal" href="#when-two-data-classes-are-linked-by-a-slot-in-one-class-definition-how-is-the-reciprocal-association-expressed-in-linkml">When two data classes are linked by a slot in one class definition, how is the reciprocal association expressed in LinkML?</a></li>
 <li><a class="reference internal" href="#how-do-i-avoid-name-clashes-when-importing-a-schema">How do I avoid name clashes when importing a schema?</a></li>
-<li><a class="reference internal" href="#what-are-id-prefixes-used-for-and-why-do-we-want-them">What are id_prefixes used for and why do we want them?</a></li>
+<li><a class="reference internal" href="#what-is-the-prefixes-section-at-the-start-of-a-schema">What is the prefixes section at the start of a schema?</a></li>
+<li><a class="reference internal" href="#is-there-a-standard-registry-of-prefixes">Is there a standard registry of prefixes?</a></li>
+<li><a class="reference internal" href="#what-are-id-prefixes-used-for">What are id_prefixes used for?</a></li>
 <li><a class="reference internal" href="#when-is-it-important-to-have-mappings">When is it important to have mappings?</a></li>
 <li><a class="reference internal" href="#how-do-i-represent-relationships-in-linkml">How do I represent relationships in LinkML?</a></li>
 </ul>

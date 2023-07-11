@@ -182,12 +182,14 @@
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Semantic Enumerations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="inlining.html">Inlining objects</a></li>
 <li class="toctree-l2"><a class="reference internal" href="constraints.html">Adding constraints and rules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="type-designators.html">Type designators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="subsets.html">Subsets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="imports.html">Imports</a></li>
 <li class="toctree-l2"><a class="reference internal" href="advanced.html">Advanced features</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generators.html">Mapping schemas to other frameworks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="linter.html">Schema Linter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="derived-models.html">Derived models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="annotations.html">Annotations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="metamodel.html">The metamodel</a></li>
 </ul>
 </li>
@@ -451,6 +453,13 @@ restrict autocomplete to defined values.</p>
 can still go ahead and use them in your schemas. The default behavior
 will be too permissive – however, you still gain additional clarity
 in your schema documentation.</p>
+<p>The <a class="reference external" href="https://github.com/INCATools/ontology-access-kit">Ontology Access Kit</a> (OAK)
+has a tool called vskit for expanding value sets.</p>
+<p>To run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>oaklib
+vskit<span class="w"> </span>expand<span class="w"> </span>-s<span class="w"> </span>my_schema.yaml<span class="w"> </span>-o<span class="w"> </span>my_schema_expanded.yaml
+</pre></div>
+</div>
 </section>
 </section>
 

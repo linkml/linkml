@@ -182,12 +182,14 @@
 <li class="toctree-l2"><a class="reference internal" href="enums.html">Semantic Enumerations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="inlining.html">Inlining objects</a></li>
 <li class="toctree-l2"><a class="reference internal" href="constraints.html">Adding constraints and rules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="type-designators.html">Type designators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="subsets.html">Subsets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="imports.html">Imports</a></li>
 <li class="toctree-l2"><a class="reference internal" href="advanced.html">Advanced features</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generators.html">Mapping schemas to other frameworks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="linter.html">Schema Linter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="derived-models.html">Derived models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="annotations.html">Annotations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="metamodel.html">The metamodel</a></li>
 </ul>
 </li>
@@ -514,7 +516,7 @@ it makes it harder to reuse slots outside the context of a class hierarchy.</p>
 <p>See <a class="reference external" href="https://w3id.org/linkml/TypeDefinition">TypeDefinition</a> in the metamodel.</p>
 <p>Types in LinkML are scalar data values such as strings, integers, floats, and so on. LinkML comes with its own set of types, and these can be extended.</p>
 <p>For example, you may represent chemical formulae as strings in your model, but if you provide an explicit type that maps to string, it makes the intended meaning clearer, and different applications can operate on these differently:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="w">  </span><span class="nt">chemical formula value</span><span class="p">:</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="w">  </span><span class="nt">ChemicalFormulaValue</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">xsd:string</span>
 <span class="w">    </span><span class="nt">base</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">str</span>
 <span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">A chemical formula</span>

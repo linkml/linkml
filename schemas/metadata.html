@@ -182,12 +182,14 @@
 <li class="toctree-l2"><a class="reference internal" href="enums.html">Semantic Enumerations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="inlining.html">Inlining objects</a></li>
 <li class="toctree-l2"><a class="reference internal" href="constraints.html">Adding constraints and rules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="type-designators.html">Type designators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="subsets.html">Subsets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="imports.html">Imports</a></li>
 <li class="toctree-l2"><a class="reference internal" href="advanced.html">Advanced features</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generators.html">Mapping schemas to other frameworks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="linter.html">Schema Linter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="derived-models.html">Derived models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="annotations.html">Annotations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="metamodel.html">The metamodel</a></li>
 </ul>
 </li>
@@ -437,22 +439,6 @@ different slots.</p>
 formally specifying the intended use of a slot, and provides a potential hook for interoperation
 and automated data model mapping.</p>
 </section>
-<section id="arbitrary-annotations">
-<h2>Arbitrary annotations<a class="headerlink" href="#arbitrary-annotations" title="Permalink to this heading">#</a></h2>
-<p>You can use the <a class="reference external" href="https://w3id.org/linkml/annotations">annotations</a> element to provide
-arbitrary key-value pairs for any of your schema elements. This can be
-used for when none of the existing metamodel slots are appropriate.</p>
-<p>One use case is providing various tooltips, display hints, or UI hints for
-deta elements. These can then be used by applications such as UIs to drive behavior.</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">slots</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">annotations</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">entry_hint</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">make sure you enter the FULL name here</span>
-<span class="w">      </span><span class="nt">color</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">green</span>
-<span class="w">      </span><span class="nt">tooltip</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">name of person</span>
-</pre></div>
-</div>
-</section>
 <section id="other-metadata-slots">
 <h2>Other metadata slots<a class="headerlink" href="#other-metadata-slots" title="Permalink to this heading">#</a></h2>
 <p>See <a class="reference external" href="https://w3id.org/linkml/CommonMetadata">CommonMetadata</a> for other slots</p>
@@ -520,7 +506,6 @@ deta elements. These can then be used by applications such as UIs to drive behav
 <li><a class="reference internal" href="#structured-aliases">Structured aliases</a></li>
 <li><a class="reference internal" href="#deprecating-elements">Deprecating elements</a></li>
 <li><a class="reference internal" href="#specifying-units">Specifying units</a></li>
-<li><a class="reference internal" href="#arbitrary-annotations">Arbitrary annotations</a></li>
 <li><a class="reference internal" href="#other-metadata-slots">Other metadata slots</a></li>
 </ul>
 </li>
