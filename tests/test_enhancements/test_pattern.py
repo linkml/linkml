@@ -38,7 +38,8 @@ class PatternTestCase(TestEnvironmentTestCase):
         d1 = yaml.load(StringIO(d1_test), yaml.loader.SafeLoader)
         dev1 = module.DiskDevice(**d1)
         self.assertEqual(
-            "DiskDevice(label='AbCd0123-1111-FF10-AAF1-A1B2C3D4A1B2C3D4A1B2C3D4', device='/dev/tty.Bluetooth-Incoming-Port')",
+            "DiskDevice(label='AbCd0123-1111-FF10-AAF1-A1B2C3D4A1B2C3D4A1B2C3D4', "
+            "device='/dev/tty.Bluetooth-Incoming-Port')",
             str(dev1),
         )
 

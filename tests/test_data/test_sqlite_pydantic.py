@@ -1,24 +1,20 @@
-import csv
 import os
 import unittest
 
-import _csv
-
 import yaml
 from linkml_runtime.dumpers import yaml_dumper
-from linkml_runtime.linkml_model import SlotDefinition
-from linkml_runtime.loaders import csv_loader, yaml_loader
-from linkml_runtime.utils.introspection import package_schemaview
-from linkml_runtime.utils.schemaview import SchemaDefinition, SchemaView
 from sqlalchemy.orm import sessionmaker
 
 import tests.test_data.model.personinfo
-from linkml.utils.schema_builder import SchemaBuilder
-from linkml.utils.schema_fixer import SchemaFixer
 from linkml.utils.sqlutils import SQLStore
 from tests.test_data.environment import env
-from tests.test_data.model.personinfo_pydantic import (Container, FamilialRelationship, Person, GenderType)
-from tests.utils.dict_comparator import compare_objs, compare_yaml
+from tests.test_data.model.personinfo_pydantic import (
+    Container,
+    FamilialRelationship,
+    GenderType,
+    Person,
+)
+from tests.utils.dict_comparator import compare_yaml
 
 SCHEMA = env.input_path("personinfo.yaml")
 METAMODEL_SCHEMA = env.input_path(os.path.join("meta", "meta.yaml"))
@@ -44,7 +40,7 @@ class SQLiteStoreTest(unittest.TestCase):
 
         See https://github.com/linkml/linkml/issues/817
         """
-        r = FamilialRelationship(type="SIBLING_OF", related_to="x")
+        FamilialRelationship(type="SIBLING_OF", related_to="x")
         p = Person(id="x", gender=GenderType("cisgender_man"))
         self.assertIsInstance(p.gender, GenderType)
 
@@ -53,7 +49,6 @@ class SQLiteStoreTest(unittest.TestCase):
         tests a complete end-to-end example with a dump-load cycle
         """
         # step 1: setup
-        sv = SchemaView(SCHEMA)
         # TODO: currently it is necessary to pass the actual yaml rather than a schema object
         # endpoint = SQLiteEndpoint(sv.schema, database_path=DB, include_schema_in_database=False)
         endpoint = SQLStore(SCHEMA, database_path=DB, include_schema_in_database=False)
@@ -75,7 +70,7 @@ class SQLiteStoreTest(unittest.TestCase):
         # step 4: test loading from SQLStore
         # 4a: first test load_all, diff to original data should be empty
         [returned_container] = endpoint.load_all(target_class=Container)
-        #y = yaml_dumper.dumps(x[0])
+        # y = yaml_dumper.dumps(x[0])
         returned_dict = returned_container.dict(exclude_none=True)
         if False:
             # Fix when this is fixed https://github.com/linkml/linkml/issues/999
@@ -87,10 +82,9 @@ class SQLiteStoreTest(unittest.TestCase):
             # 4b: next test load implicit object, diff to original data should be empty
             container_loaded = endpoint.load()
             yaml_dumper.dump(container_loaded, to_file=DATA_RECAP)
-            y = yaml_dumper.dumps(container_loaded)
+            yaml_dumper.dumps(container_loaded)
             diff = compare_yaml(DATA, DATA_RECAP)
             self.assertEqual(diff, "")
-
 
 
 if __name__ == "__main__":

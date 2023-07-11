@@ -3,7 +3,6 @@ import unittest
 from linkml import LOCAL_METAMODEL_YAML_FILE
 from linkml.utils.schemaloader import SchemaLoader
 from tests.test_biolink_model.environment import env as env2
-from tests.test_issues.environment import env
 
 
 class SchemaLoaderMonotonicityTest(unittest.TestCase):

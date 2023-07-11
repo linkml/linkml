@@ -4,7 +4,7 @@ from collections import defaultdict
 from dataclasses import dataclass, field
 from functools import lru_cache
 from pathlib import Path
-from typing import Any, Dict, List, Tuple, Type, Union
+from typing import Any, Dict, List, Tuple, Type
 
 import click
 import yaml
@@ -12,7 +12,6 @@ import yaml
 from linkml._version import __version__
 from linkml.generators.excelgen import ExcelGenerator
 from linkml.generators.graphqlgen import GraphqlGenerator
-from linkml.generators.javagen import JavaGenerator
 from linkml.generators.jsonldcontextgen import ContextGenerator
 from linkml.generators.jsonldgen import JSONLDGenerator
 from linkml.generators.jsonschemagen import JsonSchemaGenerator
@@ -24,7 +23,7 @@ from linkml.generators.pythongen import PythonGenerator
 from linkml.generators.shaclgen import ShaclGenerator
 from linkml.generators.shexgen import ShExGenerator
 from linkml.generators.sqlddlgen import SQLDDLGenerator
-from linkml.utils.generator import Generator, shared_arguments
+from linkml.utils.generator import Generator
 
 PATH_FSTRING = str
 GENERATOR_NAME = str
@@ -98,11 +97,9 @@ class ProjectGenerator:
     Note this doesn't conform to overall generator framework, as it is a meta-generator
     """
 
-    def generate(
-        self, schema_path: str, config: ProjectConfiguration = ProjectConfiguration()
-    ):
+    def generate(self, schema_path: str, config: ProjectConfiguration = ProjectConfiguration()):
         if config.directory is None:
-            raise Exception(f"Must pass directory")
+            raise Exception("Must pass directory")
         Path(config.directory).mkdir(parents=True, exist_ok=True)
         if config.mergeimports:
             all_schemas = [schema_path]
@@ -115,9 +112,7 @@ class ProjectGenerator:
                 and config.includes != []
                 and gen_name not in config.includes
             ):
-                logging.info(
-                    f"Skipping {gen_name} as not in inclusion list: {config.includes}"
-                )
+                logging.info(f"Skipping {gen_name} as not in inclusion list: {config.includes}")
                 continue
             if config.excludes is not None and gen_name in config.excludes:
                 logging.info(f"Skipping {gen_name} as it is in exclusion list")
@@ -177,9 +172,7 @@ class ProjectGenerator:
     help="directory in which to place generated files. E.g. linkml_model, biolink_model",
 )
 @click.option("--generator-arguments", "-A", help="yaml configuration for generators")
-@click.option(
-    "--config-file", "-C", type=click.File("rb"), help="path to yaml configuration"
-)
+@click.option("--config-file", "-C", type=click.File("rb"), help="path to yaml configuration")
 @click.option(
     "--exclude", "-X", multiple=True, help="list of artefacts to be excluded"
 )  # TODO: make this an enum
@@ -251,7 +244,7 @@ def cli(
         try:
             project_config.generator_args = yaml.safe_load(generator_arguments)
         except Exception:
-            raise Exception(f"Argument must be a valid YAML blob")
+            raise Exception("Argument must be a valid YAML blob")
         logging.info(f"generator args: {project_config.generator_args}")
     if dir is not None:
         project_config.directory = dir

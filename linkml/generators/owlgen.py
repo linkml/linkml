@@ -6,18 +6,23 @@ import logging
 import os
 from dataclasses import dataclass, field
 from enum import Enum, unique
-from typing import List, Optional, Set, TextIO, Union
+from typing import Optional, TextIO, Union
 
 import click
-from linkml_runtime.linkml_model.meta import (ClassDefinition,
-                                              ClassDefinitionName, Definition,
-                                              Element, ElementName,
-                                              EnumDefinition,
-                                              EnumDefinitionName,
-                                              SchemaDefinition, SlotDefinition,
-                                              SlotDefinitionName,
-                                              TypeDefinition,
-                                              TypeDefinitionName)
+from linkml_runtime.linkml_model.meta import (
+    ClassDefinition,
+    ClassDefinitionName,
+    Definition,
+    Element,
+    ElementName,
+    EnumDefinition,
+    EnumDefinitionName,
+    SchemaDefinition,
+    SlotDefinition,
+    SlotDefinitionName,
+    TypeDefinition,
+    TypeDefinitionName,
+)
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from rdflib import OWL, RDF, BNode, Graph, Literal, URIRef
 from rdflib.collection import Collection
@@ -28,7 +33,6 @@ from rdflib.plugin import plugins as rdflib_plugins
 from linkml import METAMODEL_NAMESPACE, METAMODEL_NAMESPACE_NAME
 from linkml._version import __version__
 from linkml.utils.generator import Generator, shared_arguments
-from linkml.utils.schemaloader import SchemaLoader
 
 
 @unique
@@ -93,9 +97,7 @@ class OwlSchemaGenerator(Generator):
         for prefix in self.metamodel.schema.emit_prefixes:
             self.graph.bind(prefix, self.metamodel.namespaces[prefix])
         for pfx in self.schema.prefixes.values():
-            self.graph.namespace_manager.bind(
-                pfx.prefix_prefix, URIRef(pfx.prefix_reference)
-            )
+            self.graph.namespace_manager.bind(pfx.prefix_prefix, URIRef(pfx.prefix_reference))
 
         self.graph.add((base, RDF.type, OWL.Ontology))
         self._add_element_properties(base, self.schema)
@@ -113,9 +115,7 @@ class OwlSchemaGenerator(Generator):
         # add value placeholder
         if self.type_objects:
             # TODO: additional axioms, e.g. String subClassOf hasValue some string
-            self.top_value_uri = self.metamodel.namespaces[METAMODEL_NAMESPACE_NAME][
-                "topValue"
-            ]
+            self.top_value_uri = self.metamodel.namespaces[METAMODEL_NAMESPACE_NAME]["topValue"]
             self.graph.add((self.top_value_uri, RDF.type, OWL.DatatypeProperty))
             self.graph.add((self.top_value_uri, RDFS.label, Literal("value")))
 
@@ -199,7 +199,7 @@ class OwlSchemaGenerator(Generator):
                 k_curie = k
                 try:
                     k_uri = self.namespaces.uri_for(k_curie)
-                except ValueError as e:
+                except ValueError:
                     try:
                         k_uri = self.metamodel.namespaces.uri_for(k_curie)
                     except ValueError as me:
@@ -325,7 +325,7 @@ class OwlSchemaGenerator(Generator):
             slot_uri = self.namespaces.uri_for(slot.slot_uri)
             if slot_uri == "rdf:type":
                 logging.warning(
-                    f"rdflib may have issues serializing rdf:type with turtle serializer"
+                    "rdflib may have issues serializing rdf:type with turtle serializer"
                 )
             if slot.required:
                 if slot.multivalued:
@@ -354,9 +354,7 @@ class OwlSchemaGenerator(Generator):
                 if slot.multivalued:
                     #    restriction(slot only type)
                     self.graph.add((slot_node, RDF.type, OWL.Restriction))
-                    self.graph.add(
-                        (slot_node, OWL.allValuesFrom, self._range_uri(slot))
-                    )
+                    self.graph.add((slot_node, OWL.allValuesFrom, self._range_uri(slot)))
                     self.graph.add((slot_node, OWL.onProperty, slot_uri))
                 else:
                     #    intersectionOf(restriction(slot only type) restriction(slot max 1 type))
@@ -378,13 +376,10 @@ class OwlSchemaGenerator(Generator):
         @param slot:
         @return:
         """
-        # determine if this is a slot that has been induced by slot_usage; if so the meaning of the slot is context-specific
-        # and should not be used for global properties
-        if (
-            slot.alias is not None
-            and slot.alias != slot.name
-            and slot.alias in self.schema.slots
-        ):
+        # determine if this is a slot that has been induced by slot_usage; if so
+        # the meaning of the slot is context-specific and should not be used for
+        # global properties
+        if slot.alias is not None and slot.alias != slot.name and slot.alias in self.schema.slots:
             logging.debug(
                 f"SKIPPING slot induced by slot_usage: {slot.alias} // {slot.name} // {slot}"
             )
@@ -500,9 +495,7 @@ class OwlSchemaGenerator(Generator):
                 g.add(
                     (
                         enum_uri,
-                        self.metamodel.namespaces[METAMODEL_NAMESPACE_NAME][
-                            "permissible_values"
-                        ],
+                        self.metamodel.namespaces[METAMODEL_NAMESPACE_NAME]["permissible_values"],
                         pv_uri,
                     )
                 )
@@ -520,8 +513,7 @@ class OwlSchemaGenerator(Generator):
             if k in metamodel.schema.slots:
                 defining_slot = self.metamodel.schema.slots[k]
                 if v is not None and (
-                    "owl" in defining_slot.in_subset
-                    or "OwlProfile" in defining_slot.in_subset
+                    "owl" in defining_slot.in_subset or "OwlProfile" in defining_slot.in_subset
                 ):
                     if isinstance(v, list):
                         ve = v
@@ -540,18 +532,12 @@ class OwlSchemaGenerator(Generator):
                             ),
                         ):
                             return
-                        if (
-                            k == "name"
-                            and isinstance(el, SlotDefinition)
-                            and el.alias is not None
-                        ):
+                        if k == "name" and isinstance(el, SlotDefinition) and el.alias is not None:
                             prop_uri = RDFS.label
                             e = el.alias
                         else:
                             prop_uri = URIRef(
-                                self.metamodel.namespaces.uri_for(
-                                    defining_slot.slot_uri
-                                )
+                                self.metamodel.namespaces.uri_for(defining_slot.slot_uri)
                             )
                         object = self._as_rdf_element(e, defining_slot)
                         if object is not None:
@@ -576,7 +562,7 @@ class OwlSchemaGenerator(Generator):
             elif element_name in self.metamodel.schema.enums:
                 return self._enum_uri(element_name)
         else:
-            logging.warning(f"Unknown range {defining_slot.range}")
+            logging.warning(f"Unknown range {parent_slot.range}")
             return None
 
     def _range_is_datatype(self, slot: SlotDefinition) -> bool:
@@ -621,9 +607,7 @@ class OwlSchemaGenerator(Generator):
 
     def _add_metamodel_class(self, cname: str) -> None:
         metac = self.metamodel.schema.classes[cname]
-        metac_uri = self.metamodel.namespaces[METAMODEL_NAMESPACE_NAME][
-            camelcase(metac.name)
-        ]
+        metac_uri = self.metamodel.namespaces[METAMODEL_NAMESPACE_NAME][camelcase(metac.name)]
         self.graph.add((metac_uri, RDF.type, OWL.Class))
         # self._add_element_properties(metac_uri, metac)
 
@@ -714,9 +698,9 @@ def cli(yamlfile, metadata_profile: str, **kwargs):
     else:
         metadata_profile = MetadataProfile.linkml
     print(
-        OwlSchemaGenerator(
-            yamlfile, metadata_profile=metadata_profile, **kwargs
-        ).serialize(**kwargs)
+        OwlSchemaGenerator(yamlfile, metadata_profile=metadata_profile, **kwargs).serialize(
+            **kwargs
+        )
     )
 
 

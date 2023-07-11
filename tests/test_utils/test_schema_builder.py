@@ -1,7 +1,5 @@
 import unittest
 
-import yaml
-
 from linkml.utils.schema_builder import SchemaBuilder
 
 MY_CLASS = "MyClass"
@@ -58,7 +56,7 @@ class SchemaBuilderTestCase(unittest.TestCase):
         # (b) add a slot definition to the top level slot definitions
         # Note that (b) should only happen if the slot is not already present
         self.assertEqual(b.schema.slots[AGE].range, "integer")
-        with self.assertRaises(ValueError) as e:
+        with self.assertRaises(ValueError):
             b.add_slot(AGE, range="string")
         b.add_slot(AGE, range="string", replace_if_present=True)
 

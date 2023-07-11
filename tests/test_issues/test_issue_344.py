@@ -12,7 +12,7 @@ class Issue344TestCase(TestEnvironmentTestCase):
 
     def test_issue_344(self):
         """Test to check if prefixes of CURIEs from granular mappings show up in the json-ld context"""
-        x = env.generate_single_file(
+        env.generate_single_file(
             "issue_344_context.json",
             lambda: ContextGenerator(
                 env.input_path("issue_344.yaml"),

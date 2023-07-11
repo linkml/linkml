@@ -20,9 +20,7 @@ class IfAbsentTestCase(GeneratorTestCase):
         self.single_file_generator(
             "py",
             PythonGenerator,
-            comparator=lambda exp, act: compare_python(
-                exp, act, self.env.expected_path("x.py")
-            ),
+            comparator=lambda exp, act: compare_python(exp, act, self.env.expected_path("x.py")),
         )
 
     def test_good_ifabsent(self):

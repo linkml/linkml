@@ -43,7 +43,10 @@ class PydanticGeneratorTestCase(unittest.TestCase):
         # note for developers: you will lack IDE support in this section of the code
         def test_dynamic():
             from tests.test_generators.output.kitchen_sink_pydantic import (
-                Dataset, EmploymentEvent, Person)
+                Dataset,
+                EmploymentEvent,
+                Person,
+            )
 
             # NOTE: generated pydantic doesn't yet do validation
             e1 = EmploymentEvent(is_current=True)
@@ -51,8 +54,8 @@ class PydanticGeneratorTestCase(unittest.TestCase):
             assert p1.id == "x"
             assert p1.name is None
             json = {"id": "P1", "has_employment_history": [{"is_current": True}]}
-            p2 = Person(**json)
-            p2 = Person(**dataset_dict["persons"][0])
+            Person(**json)
+            Person(**dataset_dict["persons"][0])
             print(dataset_dict)
             ds1 = Dataset(**dataset_dict)
             assert len(ds1.persons) == 2
@@ -332,10 +335,7 @@ classes:
         float_slot_line = lines[ix + 7].strip()
         assert float_slot_line == "attr4: Optional[float] = Field(1.0)"
         date_slot_line = lines[ix + 8].strip()
-        assert (
-            date_slot_line
-            == "attr5: Optional[date] = Field(datetime.date(2020, 01, 01))"
-        )
+        assert date_slot_line == "attr5: Optional[date] = Field(datetime.date(2020, 01, 01))"
         datetime_slot_line = lines[ix + 9].strip()
         assert (
             datetime_slot_line
@@ -352,9 +352,18 @@ classes:
         with open(MLM_PYDANTIC, "w") as stream:
             stream.write(mlm)
 
-        assert (
-            gen.schema.enums["EmploymentEventType"].description
-            == 'codes for different kinds of employment\nor HR related events\n"""\nprint(\'Deleting your stuff!!\')\n"""\nHR is pretty dull\nbut they get "annoyed if [they]\nare not included"\n'
+        assert gen.schema.enums["EmploymentEventType"].description == "\n".join(
+            [
+                "codes for different kinds of employment",
+                "or HR related events",
+                '"""',
+                "print('Deleting your stuff!!')",
+                '"""',
+                "HR is pretty dull",
+                'but they get "annoyed if [they]',
+                'are not included"',
+                "",
+            ]
         )
 
         assert (

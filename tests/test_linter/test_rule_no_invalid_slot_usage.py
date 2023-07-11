@@ -33,9 +33,7 @@ class TestNoInvalidSlotUsageRule(unittest.TestCase):
         problems = list(rule.check(schema_view, fix=False))
 
         self.assertEqual(len(problems), 1)
-        self.assertEqual(
-            problems[0].message, "Slot 'age_in_days' not found on class 'Adult'"
-        )
+        self.assertEqual(problems[0].message, "Slot 'age_in_days' not found on class 'Adult'")
 
     def test_valid_slot_usage(self):
         builder = SchemaBuilder()

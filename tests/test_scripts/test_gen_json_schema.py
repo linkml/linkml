@@ -20,15 +20,11 @@ class GenJSONSchemaTestCase(ClickTestCase):
     def test_meta(self):
         self.do_test([], "meta.json")
         self.do_test("-f json", "meta.json")
-        self.do_test(
-            "-f xsv", "meta_error", expected_error=click.exceptions.BadParameter
-        )
+        self.do_test("-f xsv", "meta_error", expected_error=click.exceptions.BadParameter)
         self.do_test("-i", "meta_inline.json")
 
     def test_tree_root(self):
-        self.do_test(
-            [env.input_path("roottest.yaml")], "rootttest.jsonld", add_yaml=False
-        )
+        self.do_test([env.input_path("roottest.yaml")], "rootttest.jsonld", add_yaml=False)
 
     def test_tree_root_args(self):
         self.do_test(
@@ -44,7 +40,7 @@ class GenJSONSchemaTestCase(ClickTestCase):
             add_yaml=False,
         )
 
-    def test_tree_root_closed(self):
+    def test_tree_root_not_closed(self):
         self.do_test(
             [env.input_path("roottest.yaml"), "--not-closed"],
             "rootttest4.jsonld",
@@ -56,15 +52,15 @@ class GenJSONSchemaTestCase(ClickTestCase):
 
         # the default is to pretty-print with new lines + 4 spaces
         result = runner.invoke(self.click_ep, [env.input_path("roottest.yaml")])
-        self.assertRegex(result.output, "^{\n    \"\$defs\"")
+        self.assertRegex(result.output, r'^{\n    "\$defs"')
 
         # test custom indent level with 2 spaces
-        result = runner.invoke(self.click_ep, ['--indent', 2, env.input_path("roottest.yaml")])
-        self.assertRegex(result.output, "^{\n  \"\$defs\"")
+        result = runner.invoke(self.click_ep, ["--indent", 2, env.input_path("roottest.yaml")])
+        self.assertRegex(result.output, r'^{\n  "\$defs"')
 
         # test no newlines or spaces when indent = 0
-        result = runner.invoke(self.click_ep, ['--indent', 0, env.input_path("roottest.yaml")])
-        self.assertRegex(result.output, "^{\"\$defs\"")
+        result = runner.invoke(self.click_ep, ["--indent", 0, env.input_path("roottest.yaml")])
+        self.assertRegex(result.output, r'^{"\$defs"')
 
 
 if __name__ == "__main__":

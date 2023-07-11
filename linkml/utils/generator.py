@@ -23,32 +23,33 @@ from contextlib import redirect_stdout
 from dataclasses import dataclass, field
 from io import StringIO
 from pathlib import Path
-from typing import (Callable, Dict, List, Optional, Set, TextIO, Type, Union,
-                    cast, Mapping, ClassVar)
+from typing import Callable, ClassVar, Dict, List, Mapping, Optional, Set, TextIO, Type, Union, cast
 
 import click
 from click import Argument, Command, Option
 from linkml_runtime import SchemaView
 from linkml_runtime.dumpers import yaml_dumper
-from linkml_runtime.linkml_model.linkml_files import LOCAL_BASE
-from linkml_runtime.linkml_model.meta import (ClassDefinition,
-                                              ClassDefinitionName, Definition,
-                                              Element, ElementName,
-                                              EnumDefinition,
-                                              EnumDefinitionName,
-                                              PrefixPrefixPrefix,
-                                              SchemaDefinition, SlotDefinition,
-                                              SlotDefinitionName,
-                                              SubsetDefinition,
-                                              SubsetDefinitionName,
-                                              TypeDefinition,
-                                              TypeDefinitionName)
-import linkml_runtime.linkml_model.meta as metamodel
+from linkml_runtime.linkml_model.meta import (
+    ClassDefinition,
+    ClassDefinitionName,
+    Definition,
+    Element,
+    ElementName,
+    EnumDefinition,
+    EnumDefinitionName,
+    PrefixPrefixPrefix,
+    SchemaDefinition,
+    SlotDefinition,
+    SlotDefinitionName,
+    SubsetDefinition,
+    SubsetDefinitionName,
+    TypeDefinition,
+    TypeDefinitionName,
+)
 from linkml_runtime.utils.formatutils import camelcase, underscore
-from linkml_runtime.utils.introspection import package_schemaview
 from linkml_runtime.utils.namespaces import Namespaces
 
-from linkml import LOCAL_METAMODEL_YAML_FILE, META_BASE_URI, METAMODEL_YAML_URI
+from linkml import LOCAL_METAMODEL_YAML_FILE
 from linkml.utils.mergeutils import alias_root
 from linkml.utils.schemaloader import SchemaLoader
 from linkml.utils.typereferences import References
@@ -79,8 +80,8 @@ class Generator(metaclass=abc.ABCMeta):
     uses_schemaloader: ClassVar[bool] = True
     """Old-style generator that uses the SchemaLoader and visitor pattern"""
 
-    #uses_schemaview: ClassVar[bool] = True
-    #"""New-style generator that uses SchemaView"""
+    # uses_schemaview: ClassVar[bool] = True
+    # """New-style generator that uses SchemaView"""
 
     requires_metamodel: ClassVar[bool] = True
     """Generator queries an instance of the metamodel"""
@@ -104,7 +105,7 @@ class Generator(metaclass=abc.ABCMeta):
     format: Optional[str] = None
     """expected output format"""
 
-    metadata: bool = field(default_factory= lambda: True)
+    metadata: bool = field(default_factory=lambda: True)
     """True means include date, generator, etc. information in source header if appropriate"""
 
     useuris: Optional[bool] = None
@@ -113,7 +114,7 @@ class Generator(metaclass=abc.ABCMeta):
     log_level: int = DEFAULT_LOG_LEVEL_INT
     """Logging level, 0 is minimum"""
 
-    mergeimports: Optional[bool] = field(default_factory= lambda: True)
+    mergeimports: Optional[bool] = field(default_factory=lambda: True)
     """True means merge non-linkml sources into importing package.  False means separate packages"""
 
     source_file_date: Optional[str] = None
@@ -129,7 +130,8 @@ class Generator(metaclass=abc.ABCMeta):
     """Verbosity"""
 
     output: Optional[str] = None
-    """Path to output file. Note all generators may not implement this uniformly, see https://github.com/linkml/linkml/issues/923"""
+    """Path to output file. Note all generators may not implement this
+    uniformly, see https://github.com/linkml/linkml/issues/923"""
 
     namespaces: Optional[Namespaces] = None
     """All prefix expansions used"""
@@ -140,9 +142,7 @@ class Generator(metaclass=abc.ABCMeta):
     base_dir: str = None  # Base directory of schema
     """Working directory or base URL of sources"""
 
-    metamodel_name_map: Dict[
-        str, str
-    ] = None
+    metamodel_name_map: Dict[str, str] = None
     """Allows mapping of names of metamodel elements such as slot, etc"""
 
     importmap: Optional[Union[str, Optional[Mapping[str, str]]]] = None
@@ -174,11 +174,11 @@ class Generator(metaclass=abc.ABCMeta):
                 base_dir = str(Path(str(LOCAL_METAMODEL_YAML_FILE)).parent)
                 logging.debug(f"BASE={base_dir}")
                 self.metamodel = SchemaLoader(
-                        LOCAL_METAMODEL_YAML_FILE,
-                        importmap={"linkml": base_dir},
-                        base_dir=base_dir,
-                        mergeimports=self.mergeimports,
-                    )
+                    LOCAL_METAMODEL_YAML_FILE,
+                    importmap={"linkml": base_dir},
+                    base_dir=base_dir,
+                    mergeimports=self.mergeimports,
+                )
             else:
                 raise AssertionError(f"{LOCAL_METAMODEL_YAML_FILE} not found")
             self.metamodel.resolve()
@@ -192,7 +192,9 @@ class Generator(metaclass=abc.ABCMeta):
             self.schema = self.schemaview.schema
         self._init_namespaces()
 
-    def _initialize_using_schemaloader(self, schema: Union[str, TextIO, SchemaDefinition, "Generator"]):
+    def _initialize_using_schemaloader(
+        self, schema: Union[str, TextIO, SchemaDefinition, "Generator"]
+    ):
         # currently generators are very liberal in what they accept, including
         # other generators.
         # See https://github.com/linkml/linkml/issues/923 for discussion on how
@@ -294,9 +296,7 @@ class Generator(metaclass=abc.ABCMeta):
             ):
                 if self.visit_class(cls):
                     for slot in (
-                        self.all_slots(cls)
-                        if self.visit_all_class_slots
-                        else self.own_slots(cls)
+                        self.all_slots(cls) if self.visit_all_class_slots else self.own_slots(cls)
                     ):
                         self.visit_class_slot(cls, self.aliased_slot_name(slot), slot)
                     self.end_class(cls)
@@ -376,9 +376,7 @@ class Generator(metaclass=abc.ABCMeta):
     # =============================
     # Helper methods
     # =============================
-    def own_slots(
-        self, cls: Union[ClassDefinitionName, ClassDefinition]
-    ) -> List[SlotDefinition]:
+    def own_slots(self, cls: Union[ClassDefinitionName, ClassDefinition]) -> List[SlotDefinition]:
         """Return the list of slots owned the class definition.  An "own slot" is any ``cls`` slot that does not appear
         in the class is_a parent.  Own_slots include:
 
@@ -440,9 +438,7 @@ class Generator(metaclass=abc.ABCMeta):
                     rval.append(slot)
                     seen.add(sname_base)
             return rval + (
-                self.all_slots(parent, cls_slots_first=cls_slots_first, seen=seen)
-                if parent
-                else []
+                self.all_slots(parent, cls_slots_first=cls_slots_first, seen=seen) if parent else []
             )
         else:
             for sname in cls.slots:
@@ -465,9 +461,7 @@ class Generator(metaclass=abc.ABCMeta):
             else self.schema.slots[element.is_a]
         )
 
-    def ancestors(
-        self, element: Union[ClassDefinition, SlotDefinition]
-    ) -> List[ElementName]:
+    def ancestors(self, element: Union[ClassDefinition, SlotDefinition]) -> List[ElementName]:
         """Return an ordered list of ancestor names for the supplied slot or class
 
         @param element: Slot or class name or definition
@@ -477,9 +471,7 @@ class Generator(metaclass=abc.ABCMeta):
             [] if element.is_a is None else self.ancestors(self.parent(element))
         )
 
-    def neighborhood(
-        self, elements: Union[str, ElementName, List[ElementName]]
-    ) -> References:
+    def neighborhood(self, elements: Union[str, ElementName, List[ElementName]]) -> References:
         """Return a list of all slots, classes and types that touch any element in elements, including the element
         itself
 
@@ -549,9 +541,7 @@ class Generator(metaclass=abc.ABCMeta):
             if element in self.schema.subsets:
                 touches.subsetrefs.add(cast(SubsetDefinitionName, element))
                 if element in self.synopsis.subsetrefs:
-                    touches.update(
-                        self.synopsis.subsetrefs[cast(SubsetDefinitionName, element)]
-                    )
+                    touches.update(self.synopsis.subsetrefs[cast(SubsetDefinitionName, element)])
             if not bool(touches):
                 self.logger.warning(f"neighborhood({element}) - {element} is undefined")
 
@@ -566,9 +556,9 @@ class Generator(metaclass=abc.ABCMeta):
         """
         formatted_typ_name = self.class_or_type_name(typ.name)
         if typ.typeof:
-            return self.range_type_path(
-                self.schema.types[cast(TypeDefinitionName, typ.typeof)]
-            ) + [formatted_typ_name]
+            return self.range_type_path(self.schema.types[cast(TypeDefinitionName, typ.typeof)]) + [
+                formatted_typ_name
+            ]
         elif typ.repr:
             return [typ.repr, formatted_typ_name]
         else:
@@ -595,9 +585,7 @@ class Generator(metaclass=abc.ABCMeta):
                 return slotname
         return None
 
-    def enum_identifier_path(
-        self, enum_or_enumname: Union[str, EnumDefinition]
-    ) -> List[str]:
+    def enum_identifier_path(self, enum_or_enumname: Union[str, EnumDefinition]) -> List[str]:
         """Return an enum_identifier path"""
         return [
             "str",
@@ -656,9 +644,7 @@ class Generator(metaclass=abc.ABCMeta):
         )
         if slot.range in self.schema.types:
             # Type
-            return self.range_type_path(
-                self.schema.types[cast(TypeDefinitionName, slot.range)]
-            )
+            return self.range_type_path(self.schema.types[cast(TypeDefinitionName, slot.range)])
         elif slot.range in self.schema.enums:
             return self.enum_identifier_path(slot.range)
         else:
@@ -758,9 +744,7 @@ class Generator(metaclass=abc.ABCMeta):
         else:
             return None
 
-    def obj_for(
-        self, el_or_elname: str, is_range_name: bool = False
-    ) -> Optional[Element]:
+    def obj_for(self, el_or_elname: str, is_range_name: bool = False) -> Optional[Element]:
         if is_range_name:
             return (
                 self.class_or_type_for(el_or_elname)
@@ -794,8 +778,7 @@ class Generator(metaclass=abc.ABCMeta):
         return [
             slot
             for slot in [self.schema.slots[sn] for sn in cls.slots]
-            if cls.name in slot.domain_of
-            or (set(cls.mixins).intersection(slot.domain_of))
+            if cls.name in slot.domain_of or (set(cls.mixins).intersection(slot.domain_of))
         ]
 
     def add_mappings(self, defn: Definition) -> None:
@@ -826,9 +809,7 @@ class Generator(metaclass=abc.ABCMeta):
                 else:
                     mapping = mcurie
             if ":" not in mapping or len(mapping.split(":")) != 2:
-                raise ValueError(
-                    f"Definition {defn.name} - unrecognized mapping: {mapping}"
-                )
+                raise ValueError(f"Definition {defn.name} - unrecognized mapping: {mapping}")
             ns = mapping.split(":")[0]
             logging.debug(f"Adding {ns} from {mapping} // {defn}")
             if ns:
@@ -873,18 +854,13 @@ class Generator(metaclass=abc.ABCMeta):
         slot_name_normalized_singular = re.sub(r"s$", "", slot_name_normalized)
         if slot_name_normalized == "classes":
             slot_name_normalized_singular = "class"
-        if (
-            self.metamodel_name_map is not None
-            and slot_name_normalized in self.metamodel_name_map
-        ):
+        if self.metamodel_name_map is not None and slot_name_normalized in self.metamodel_name_map:
             return capitalize(self.metamodel_name_map[slot_name_normalized])
         elif (
             self.metamodel_name_map is not None
             and slot_name_normalized_singular in self.metamodel_name_map
         ):
-            return capitalize(
-                f"{self.metamodel_name_map[slot_name_normalized_singular]}s"
-            )
+            return capitalize(f"{self.metamodel_name_map[slot_name_normalized_singular]}s")
         else:
             return slot_name
 
@@ -926,16 +902,14 @@ def shared_arguments(g: Type[Generator]) -> Callable[[Command], Command]:
         logging.basicConfig(level=_log_level_string_to_int(value))
 
     def decorator(f: Command) -> Command:
-        f.params.append(
-            Argument(("yamlfile",), type=click.Path(exists=True, dir_okay=False))
-        )
+        f.params.append(Argument(("yamlfile",), type=click.Path(exists=True, dir_okay=False)))
         f.params.append(
             Option(
                 ("--format", "-f"),
                 type=click.Choice(g.valid_formats),
                 default=g.valid_formats[0],
                 show_default=True,
-                help=f"Output format",
+                help="Output format",
             )
         )
         f.params.append(
@@ -955,15 +929,13 @@ def shared_arguments(g: Type[Generator]) -> Callable[[Command], Command]:
             )
         )
         f.params.append(
-            Option(
-                ("--importmap", "-im"), type=click.File(), help="Import mapping file"
-            )
+            Option(("--importmap", "-im"), type=click.File(), help="Import mapping file")
         )
         f.params.append(
             Option(
                 ("--log_level",),
                 type=click.Choice(_LOG_LEVEL_STRINGS),
-                help=f"Logging level",
+                help="Logging level",
                 default=DEFAULT_LOG_LEVEL,
                 show_default=True,
                 callback=log_level_callback,
@@ -973,7 +945,7 @@ def shared_arguments(g: Type[Generator]) -> Callable[[Command], Command]:
             Option(
                 ("--verbose", "-v"),
                 count=True,
-                help=f"verbosity",
+                help="verbosity",
                 callback=verbosity_callback,
             )
         )

@@ -7,15 +7,12 @@ import click
 from linkml_runtime.linkml_model import SchemaDefinition
 from linkml_runtime.utils.schemaview import SchemaView
 from rdflib import Graph
-from SPARQLWrapper import (JSON, N3, RDF, RDFXML, TURTLE, SPARQLWrapper,
-                           SPARQLWrapper2)
+from SPARQLWrapper import JSON, SPARQLWrapper
 
 from linkml._version import __version__
 from linkml.generators.sparqlgen import SparqlGenerator
-from linkml.generators.yamlgen import YAMLGenerator
 from linkml.reporting import CheckResult, Report
-from linkml.utils.datautils import (_get_format, dumpers_loaders, get_dumper,
-                                    get_loader)
+from linkml.utils.datautils import _get_format, dumpers_loaders, get_dumper
 from linkml.utils.datavalidator import DataValidator
 
 
@@ -34,7 +31,6 @@ def _make_result(row):
 
 @dataclass
 class SparqlDataValidator(DataValidator):
-
     schema: SchemaDefinition = None
     queries: dict = None
 
@@ -90,9 +86,7 @@ class SparqlDataValidator(DataValidator):
 
 
 @click.command()
-@click.option(
-    "--named-graph", "-G", multiple=True, help="Constrain query to a named graph"
-)
+@click.option("--named-graph", "-G", multiple=True, help="Constrain query to a named graph")
 @click.option("--input", "-i", help="Input file to validate")
 @click.option("--endpoint-url", "-U", help="URL of sparql endpoint")
 @click.option("--limit", "-L", help="Max results per query")
@@ -128,16 +122,12 @@ def cli(
 
         linkml-sparql-validate -U http://sparql.hegroup.org/sparql -s tests/test_validation/input/omo.yaml
     """
-    if schema is not None:
-        sv = SchemaView(schema)
     validator = SparqlDataValidator(schema)
     if endpoint_url is not None:
-        results = validator.validate_endpoint(
-            endpoint_url, limit=limit, named_graphs=named_graph
-        )
+        results = validator.validate_endpoint(endpoint_url, limit=limit, named_graphs=named_graph)
     else:
         if input is None:
-            raise Exception(f"Must pass one of --endpoint-url OR --input")
+            raise Exception("Must pass one of --endpoint-url OR --input")
         input_format = _get_format(input, input_format)
         results = validator.validate_file(input, format=input_format)
     output_format = _get_format(output, output_format, default="json")

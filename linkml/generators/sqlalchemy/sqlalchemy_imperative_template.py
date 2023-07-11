@@ -27,10 +27,10 @@ tbl_{{classname(c.name)}} = Table('{{c.name}}', metadata,
     Column('{{s.name}}',
           Text,
           {% if 'foreign_key' in s.annotations -%}
-            ForeignKey('{{ s.annotations['foreign_key'].value }}'), 
+            ForeignKey('{{ s.annotations['foreign_key'].value }}'),
           {% endif -%}
-          {% if 'primary_key' in s.annotations -%} 
-            primary_key=True 
+          {% if 'primary_key' in s.annotations -%}
+            primary_key=True
           {%- endif -%}
           ),
     {%- endfor %}

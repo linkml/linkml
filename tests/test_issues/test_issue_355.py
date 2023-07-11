@@ -1,7 +1,5 @@
-import os
 import unittest
 
-from jsonasobj2 import as_json
 from linkml_runtime.utils.yamlutils import YAMLRoot, as_yaml
 
 from linkml.generators.pythongen import PythonGenerator

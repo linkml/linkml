@@ -12,9 +12,7 @@ class Issue179TestCase(TestEnvironmentTestCase):
         """Make sure that inheritance isn't implied by reference slots"""
         env.generate_directory(
             "issue179",
-            lambda d: MarkdownGenerator(env.input_path("issue_179.yaml")).serialize(
-                directory=d
-            ),
+            lambda d: MarkdownGenerator(env.input_path("issue_179.yaml")).serialize(directory=d),
         )
 
 

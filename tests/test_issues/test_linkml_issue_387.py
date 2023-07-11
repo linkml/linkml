@@ -1,14 +1,9 @@
-import os
 import unittest
 
 from rdflib import Graph, Literal, URIRef
 from rdflib.namespace import OWL, RDF, RDFS, XSD
 
-from linkml import METAMODEL_CONTEXT_URI
-from linkml.generators.jsonldcontextgen import ContextGenerator
 from linkml.generators.owlgen import OwlSchemaGenerator
-from linkml.generators.rdfgen import RDFGenerator
-from linkml.generators.yamlgen import YAMLGenerator
 from tests.test_issues.environment import env
 from tests.utils.compare_rdf import compare_rdf
 from tests.utils.test_environment import TestEnvironmentTestCase
@@ -57,9 +52,7 @@ class IssueOWLNamespaceTestCase(TestEnvironmentTestCase):
         schema = gen.schema
         my_str = schema.types["my_str"]
         self.assertEqual(my_str.uri, "xsd:string")
-        self.assertEqual(
-            my_str.definition_uri, "https://w3id.org/linkml/examples/test/MyStr"
-        )
+        self.assertEqual(my_str.definition_uri, "https://w3id.org/linkml/examples/test/MyStr")
 
 
 if __name__ == "__main__":

@@ -1,9 +1,8 @@
 import unittest
 
 from jsonasobj2 import JsonObj
-from linkml_runtime.linkml_model.meta import LINKML
 from linkml_runtime.utils.compile_python import compile_python
-from rdflib import Graph, Namespace
+from rdflib import Namespace
 
 from linkml.generators.pythongen import PythonGenerator
 from tests.test_issues.environment import env

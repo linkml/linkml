@@ -3,16 +3,13 @@ import re
 import sqlite3
 import tempfile
 import unittest
-from enum import Enum
-from typing import List
 
 from linkml_runtime.linkml_model.meta import SlotDefinition
 from linkml_runtime.utils.introspection import package_schemaview
 from linkml_runtime.utils.schemaview import SchemaView
 from sqlalchemy.sql.sqltypes import Enum, Text
 
-from linkml.generators.sqltablegen import SqlNamingPolicy, SQLTableGenerator
-from linkml.transformers.relmodel_transformer import ForeignKeyPolicy
+from linkml.generators.sqltablegen import SQLTableGenerator
 from linkml.utils.schema_builder import SchemaBuilder
 from tests.test_generators.environment import env
 
@@ -69,9 +66,7 @@ class SQLTableGeneratorTestCase(unittest.TestCase):
         test dialect options
         """
         b = SchemaBuilder()
-        b.add_slot(
-            SlotDefinition("age", range="integer", description="age of person in years")
-        )
+        b.add_slot(SlotDefinition("age", range="integer", description="age of person in years"))
         slots = ["full name", "description", "age"]
         b.add_class(DUMMY_CLASS, slots, description="My dummy class")
         b.add_defaults()
@@ -89,7 +84,10 @@ class SQLTableGeneratorTestCase(unittest.TestCase):
             if dialect == "mysql":
                 # TODO: make this test stricter
                 # newer versions of linkml-runtime enforce required for identifier slots
-                assert "id INTEGER NOT NULL AUTO_INCREMENT" in ddl or "id INTEGER AUTO_INCREMENT" in ddl
+                assert (
+                    "id INTEGER NOT NULL AUTO_INCREMENT" in ddl
+                    or "id INTEGER AUTO_INCREMENT" in ddl
+                )
                 assert "COMMENT" in ddl
 
     def test_generate_ddl(self):

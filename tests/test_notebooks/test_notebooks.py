@@ -30,9 +30,7 @@ class NotebookTestCase(TestEnvironmentTestCase):
         # The information on how to do this comes from: http://tritemio.github.io/smbits/2016/01/02/execute-notebooks/
         with open(os.path.join(NotebookTestCase.nbbasedir, nbname)) as nbf:
             nb = nbformat.read(nbf, as_version=4)
-        NotebookTestCase.ep.preprocess(
-            nb, dict(metadata=dict(path=NotebookTestCase.nbbasedir))
-        )
+        NotebookTestCase.ep.preprocess(nb, dict(metadata=dict(path=NotebookTestCase.nbbasedir)))
 
         outf = StringIO()
         nbformat.write(nb, outf)

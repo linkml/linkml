@@ -2,6 +2,7 @@ import unittest
 
 from linkml.generators.sqlddlgen import SQLDDLGenerator
 from tests.test_issues.environment import env
+
 # from linkml.utils.sqlutils import SqlTransformer
 from tests.utils.test_environment import TestEnvironmentTestCase
 

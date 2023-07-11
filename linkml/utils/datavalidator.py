@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Union
 
-from linkml_runtime.linkml_model import SchemaDefinition, ClassDefinitionName
+from linkml_runtime.linkml_model import ClassDefinitionName, SchemaDefinition
 
 
 @dataclass
@@ -16,6 +16,6 @@ class DataValidator:
     """
 
     def validate_dict(
-            self, data: dict, target_class: ClassDefinitionName = None, closed: bool = True
+        self, data: dict, target_class: ClassDefinitionName = None, closed: bool = True
     ) -> None:
         raise NotImplementedError

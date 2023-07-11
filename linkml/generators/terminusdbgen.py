@@ -1,11 +1,10 @@
 import json
 import os
 from dataclasses import dataclass
-from typing import TextIO, Union
+from typing import List
 
 import click
-from linkml_runtime.linkml_model.meta import (ClassDefinition,
-                                              SchemaDefinition, SlotDefinition)
+from linkml_runtime.linkml_model.meta import ClassDefinition, SlotDefinition
 from linkml_runtime.utils.formatutils import be, camelcase, underscore
 from terminusdb_client.woqlquery import WOQLQuery as WQ
 
@@ -35,6 +34,7 @@ XSD_Ok = {
     ]
 }
 
+
 @dataclass
 class TerminusdbGenerator(Generator):
     """
@@ -61,17 +61,12 @@ class TerminusdbGenerator(Generator):
     raw_additions: List = None
     clswq: str = None
 
-
     def visit_schema(self, inline: bool = False, **kwargs) -> None:
         self.classes = []
         self.raw_additions = []
 
     def end_schema(self, **_) -> None:
-        print(
-            json.dumps(
-                WQ().woql_and(*self.classes, *self.raw_additions).to_dict(), indent=2
-            )
-        )
+        print(json.dumps(WQ().woql_and(*self.classes, *self.raw_additions).to_dict(), indent=2))
 
     def visit_class(self, cls: ClassDefinition) -> bool:
         self.clswq = (
@@ -86,8 +81,7 @@ class TerminusdbGenerator(Generator):
             self.clswq.abstract()
         if cls.broad_mappings:
             if any(
-                str(self.namespaces.uri_for(m))
-                == "http://terminusdb.com/schema/system#Document"
+                str(self.namespaces.uri_for(m)) == "http://terminusdb.com/schema/system#Document"
                 for m in cls.broad_mappings
             ):
                 self.clswq.parent("Document")
@@ -107,11 +101,7 @@ class TerminusdbGenerator(Generator):
         else:
             rng = "xsd:string"
 
-        name = (
-            f"{cls.name} {aliased_slot_name}"
-            if slot.is_usage_slot
-            else aliased_slot_name
-        )
+        name = f"{cls.name} {aliased_slot_name}" if slot.is_usage_slot else aliased_slot_name
 
         # translate to terminusdb xsd builtins:
         if rng == "xsd:int":
@@ -127,9 +117,7 @@ class TerminusdbGenerator(Generator):
                 f"Range {rng} is of type {type(rng)}."
             )
 
-        self.clswq.property(
-            underscore(name), rng, label=name, description=slot.description
-        )
+        self.clswq.property(underscore(name), rng, label=name, description=slot.description)
         if not slot.multivalued:
             self.clswq.max(1)
         if slot.required:
