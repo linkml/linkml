@@ -42,7 +42,8 @@ However, this can also be slightly inconvenient for simple schemas, especially t
 
 ## What are induced slots?
 
-Because the same slot can be reused in different classes (with each class potentially refining semantics using slot_usage), it can be useful to give a new "name" for the implicit class-specific version of that slot.
+Because the same slot can be reused in different classes (with each class potentially refining semantics using [slot_usage](https://w3id.org/linkml/slot_usage)),
+it can be useful to give a new "name" for the implicit class-specific version of that slot.
 
 For example, if you have a slot `name`, and this is used in classes `Person` and `Organization`, and these are refined for each class (for example, "Organization" may refine the name slot to follow a particular regular expression). In some generators such as the markdown generator, you will see "induced" slots such as `Organization_name`.
 
@@ -131,14 +132,18 @@ enums:
   variant_type_enum:
     permissible_values: 
       point_mutation:
-          meaning: SO:12345
+          meaning: SO:1000008
       deletion:
-          meaning: SO:24681
+          meaning: SO:0000159
       insertion: 
-          meaning: SO:36912
+          meaning: SO:0000667
 ```
 
-Note that we are mapping each permissible value to an ontology term
+Note that we are mapping each permissible value to an ontology term.
+Mapping to ontology/vocabulary terms is optional, but if you can do it,
+we strongly recommend it. It provides *interoperation hooks* - others with different
+data models may have their own enumerations, by making the meaning of each permissible
+value explicit, data can be merged automatically.
 
 ### How do I constrain a slot to a branch of an ontology or a whole ontology?
 
@@ -186,8 +191,6 @@ slots:
     range: CellTypeId
 
 ```
-
-
 
 However, this has a number of limitations
 
@@ -254,12 +257,13 @@ slots:
 
 ```
 
+See [dynamic enums](https://linkml.io/linkml/schemas/enums.html#dynamic-enums) for more details.
+
 ### Can I combine dynamic enums using boolean expressions
 
 Yes, this is possible.
 
 See [enum](../schemas/enums) documentation
-
 
 ## Can I use regular expressions to constrain values?
 
@@ -485,7 +489,38 @@ exploring mechanisms that provide more flexibility in reuse, including:
 - alternatives to imports and inheritance, such as using [implements](https://w3id.org/linkml/implements)
 - using [linkml-transformer](https://github.com/linkml/linkml-transformer) to *transform* upstream schemas rather than import them
 
-## What are id_prefixes used for and why do we want them?
+## What is the prefixes section at the start of a schema?
+
+The prefixes section can be used to provide CURIE abbreviations for entities. Under the hood,
+all elements in a LinkML schema are identified by a URI, but we typically expose these
+as CURIEs.
+
+For example `linkml:SchemaDefinition` is a CURIE that expands to `https://w3id.org/linkml/SchemaDefinition`.
+
+The prefixes section allows you to define a set of prefixes that can be used throughout the schema,
+for example:
+
+```yaml
+prefixes:
+  linkml: https://w3id.org/linkml/
+  biolink: https://w3id.org/biolink/
+  schema: http://schema.org/
+```
+
+## Is there a standard registry of prefixes?
+
+LinkML is closely aligned with the
+[bioregistry](https://bioregistry.io/), a community-driven, curated, hierarchical collection of prefix namespaces
+for use in data resources. Bioregistry is used commonly in the life sciences, but it is not restricted to
+this domain.
+
+We recommend using prefixes that align with bioregistry.
+
+See also
+**Unifying the identification of biomedical entities with the Bioregistry** (2022),
+[doi:10.1038/s41597-022-01807-3](https://doi.org/10.1038/s41597-022-01807-3)
+
+## What are id_prefixes used for?
 
 The LinkML meta modeling element, [id_prefixes](https://w3id.org/linkml/id_prefixes) can be applied to any Class. This is used to specify which prefixes should be used on the identifiers for that class.
 
@@ -496,7 +531,6 @@ Downstream software components can use this field to constrain data entry to a p
 To see examples, Biolink uses id_prefixes extensively. For example, the [MolecularEntity](https://biolink.github.io/biolink-model/docs/MolecularEntity) class shows that identifiers for this class can be drawn from PubChem, CHEBI, DrugBank, etc.
 
 For more, see [URIs and Mappings](https://linkml.io/linkml/schemas/uris-and-mappings.html)
-
 
 ## When is it important to have mappings?
 
@@ -510,10 +544,10 @@ Mappings are useful in a variety of ways including:
 - mappings allow advanced users to reason over your model.
 
 Mappings can be established for exact equivalences, close, related, narrow and broad equivalences
-For more detail on the kinds of mappings (and their mappings to SKOS): https://linkml.io/linkml-model/docs/mappings/)
+For more detail on the kinds of mappings (and their mappings to SKOS), see [linkml:mappings](https://w3id.org/linkml/mappings)
 
 Mappings are an entire optional feature, you can create a schema without any mappings. However, we encourage their use, and we
-encourage adding them *prospectively* as you build our your datamodel, rather than doing this *retrospectively*. Thinking about mappings
+encourage adding them *prospectively* as you build our your data model, rather than doing this *retrospectively*. Thinking about mappings
 will help you think about how your modeling relates to the modeling done by others as part of other databases or standards.
 
 ## How do I represent relationships in LinkML?

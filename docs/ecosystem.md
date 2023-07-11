@@ -2,7 +2,7 @@
 
 LinkML is part of a growing ecosystem of tools; these may be at varying levels of maturity
 
-## Tools that build off LinkML
+## Tools that build off or enhance LinkML
 
 ### Data Harmonizer
 
@@ -24,9 +24,41 @@ LinkML is part of a growing ecosystem of tools; these may be at varying levels o
 
  - [linkml-owl](https://github.com/linkml/linkml-owl) allows schemas to be used as templates for generating OWL ontologies from LinkML data
 
+### Large Language Models
+
+ - [OntoGPT](https://github.com/monarch-initiative/ontogpt) extracts LinkML-compliant data from unstructured text.
+
+### Valve and Nanobot
+
+ - [Valve](https://github.com/ontodev/valve.rs)
+ - [Nanobot](https://github.com/ontodev/nanobot.rs)
+
+Valve and Nanobot are Rust-based tools for validating and editing data.
+[valve2linkml](https://github.com/tmprd/valve-linkml/blob/master/valve_linkml/linkml2valve.py)
+provides a layer of interoperability between these frameworks.
+
+See [this presentation](https://lbnl.zoom.us/rec/share/chiJad2dFzJcnvHWnMXjVLOhuTv9z9izp5wcdvfc_EEdXDgpD9EcUiEHot4d8jVk.-qE8OtMpb-06lVi2?startTime=1686841814000)
+from the LinkML community meeting.
+
 ### Datalog reasoning
 
  - [linkml-datalog](https://github.com/linkml/linkml-datalog) allows rule-based reasoning over linkml data
+
+### Data Transformation
+
+ - [linkml-transformer](https://github.com/linkml/linkml-transformer) allows data to be transformed between linkml models
+
+### Data Rendering
+
+ - [linkml-renderer](https://github.com/linkml/linkml-renderer) allows linkml data to be rendered as markdowm or HTML.
+
+### Semantic DSL
+
+ - [semdsl](https://github.com/linkml/semdsl) allows for grammars to be embedded in LinkML models
+
+### SOLR
+
+ - [linkml-solr](https://github.com/linkml/linkml-solr) allows linkml data to be indexed and queried from SOLR
 
 ### SPARQL templates
 

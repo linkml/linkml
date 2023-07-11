@@ -171,3 +171,13 @@ At this time, tooling support for dynamic enums is maturing, but you
 can still go ahead and use them in your schemas. The default behavior
 will be too permissive -- however, you still gain additional clarity
 in your schema documentation.
+
+The [Ontology Access Kit](https://github.com/INCATools/ontology-access-kit) (OAK)
+has a tool called vskit for expanding value sets.
+
+To run:
+
+```bash
+pip install oaklib
+vskit expand -s my_schema.yaml -o my_schema_expanded.yaml
+```
