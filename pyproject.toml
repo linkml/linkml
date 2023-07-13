@@ -147,12 +147,12 @@ build-backend = "poetry_dynamic_versioning.backend"
 
 [tool.codespell]
 # TODO: bring in tests in too
-skip = '.git,*.pdf,*.svg,tests,pyproject.toml,*.dill'
+skip = '.git,*.pdf,*.svg,./tests,pyproject.toml,*.dill'
 # Ignore table where words could be split across rows
 # Ignore shortcut specifications like [Ff]alse
 ignore-regex = '(\|.*\|.*\|.*\||\[[A-Z][a-z]\][a-z][a-z])'
-#
 ignore-words-list = 'mater,connexion,infarction'
+quiet-level = 3
 
 [tool.black]
 line-length = 100
