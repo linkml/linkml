@@ -399,6 +399,29 @@ issues are with reference to the old <em>biolinkml</em> issue numbering conventi
 </ul>
 </section>
 </section>
+<section id="code-formatting-and-linting">
+<h2>Code formatting and linting<a class="headerlink" href="#code-formatting-and-linting" title="Permalink to this heading">#</a></h2>
+<p>This repository is configured to use <a class="reference external" href="https://black.readthedocs.io/en/stable/index.html#">Black</a> and <a class="reference external" href="https://beta.ruff.rs/docs/">Ruff</a> to ensure good  formatting and code quality standards.</p>
+<p>Each of these tools can be run on-demand via <code class="docutils literal notranslate"><span class="pre">tox</span></code>. To check the code for issues run:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>poetry<span class="w"> </span>run<span class="w"> </span>tox<span class="w"> </span>-e<span class="w"> </span>lint
+</pre></div>
+</div>
+<p>Any issues should be fixed before committing or pushing changes. This command is automatically run against pull requests and the testing workflow will fail if issues are found.</p>
+<p>Formatting and some code quality issues can be fixed automatically by running:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>poetry<span class="w"> </span>run<span class="w"> </span>tox<span class="w"> </span>-e<span class="w"> </span>format
+</pre></div>
+</div>
+<p>You can configure these tools to run automatically before each commit by using <a class="reference external" href="https://pre-commit.com/">pre-commit</a>. To set this up, first ensure that you have the pre-commit package installed globally. This can be done via <a class="reference external" href="https://pypa.github.io/pipx/">pipx</a>:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pipx<span class="w"> </span>install<span class="w"> </span>pre-commit
+</pre></div>
+</div>
+<p>Or one of their <a class="reference external" href="https://pre-commit.com/#installation">other supported installation options</a>.</p>
+<p>Then to enable the pre-commit hooks in this repository run:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pre-commit<span class="w"> </span>install
+</pre></div>
+</div>
+<p>Now each <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">commit</span></code> will trigger a check of the files staged in that commit and block the commit if issues were found. In an emergency you can bypass the pre-commit hooks by using the <code class="docutils literal notranslate"><span class="pre">--no-verify</span></code> flag on <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">commit</span></code>.</p>
+</section>
 <section id="release-to-pypi">
 <h2>Release to PyPI<a class="headerlink" href="#release-to-pypi" title="Permalink to this heading">#</a></h2>
 <p>A Github action is set up to automatically release the package to PyPI. When it is ready for a new release, create a <a class="reference external" href="https://github.com/linkml/releases">Github release</a>. The version should be in the vX.X.X format following <a class="reference external" href="https://semver.org/">the semantic versioning specification</a>.</p>
@@ -508,6 +531,7 @@ insight into your work and allows them to provide feedback early on.</p></li>
 <li><a class="reference internal" href="#ide-tips">IDE Tips</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#code-formatting-and-linting">Code formatting and linting</a></li>
 <li><a class="reference internal" href="#release-to-pypi">Release to PyPI</a></li>
 <li><a class="reference internal" href="#github-best-practices">GitHub Best Practices</a><ul>
 <li><a class="reference internal" href="#prs">PRs</a></li>
