@@ -353,6 +353,21 @@ class SchemaViewTestCase(unittest.TestCase):
         view.add_class(ClassDefinition('W'))
         self.assertCountEqual(['Y', 'Z', 'W'], view.all_classes())
 
+    def test_import_map(self):
+        """
+        Path to import file should be configurable
+        """
+        for im in [{"core": "/no/such/file"}, {"linkml:": "/no/such/file"}]:
+            with self.assertRaises(FileNotFoundError):
+                view = SchemaView(SCHEMA_WITH_IMPORTS, importmap=im)
+                view.all_classes()
+        for im in [None, {}, {"core": "core"}]:
+            view = SchemaView(SCHEMA_WITH_IMPORTS, importmap=im)
+            view.all_classes()
+            self.assertCountEqual(['kitchen_sink', 'core', 'linkml:types'], view.imports_closure())
+            self.assertIn(ACTIVITY, view.all_classes())
+            self.assertNotIn(ACTIVITY, view.all_classes(imports=False))
+
     def test_imports(self):
         """
         view should by default dynamically include imports chain

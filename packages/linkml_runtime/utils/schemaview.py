@@ -131,14 +131,14 @@ class SchemaView(object):
     uuid: str = None
 
     def __init__(self, schema: Union[str, Path, SchemaDefinition],
-                 importmap: Optional[Mapping[str, str]] = None, merge_imports: bool = False):
+                 importmap: Optional[Dict[str, str]] = None, merge_imports: bool = False, base_dir: str = None):
         if isinstance(schema, Path):
             schema = str(schema)
         if isinstance(schema, str):
             schema = load_schema_wrap(schema)
         self.schema = schema
         self.schema_map = {schema.name: schema}
-        self.importmap = parse_import_map(importmap, self.base_dir) if self.importmap is not None else dict()
+        self.importmap = parse_import_map(importmap, base_dir) if importmap is not None else dict()
         if merge_imports:
             self.merge_imports()
         self.uuid = str(uuid.uuid4())
