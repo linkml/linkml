@@ -120,7 +120,7 @@ Then to enable the pre-commit hooks in this repository run:
 pre-commit install
 ```
 
-Now each `git commit` will trigger a check of the files staged in that commit and block the commit if issues were found.
+Now each `git commit` will trigger a check of the files staged in that commit and block the commit if issues were found. In an emergency you can bypass the pre-commit hooks by using the `--no-verify` flag on `git commit`.
 
 ### Release to PyPI
 
