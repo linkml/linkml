@@ -156,13 +156,28 @@ quiet-level = 3
 
 [tool.black]
 line-length = 100
-extend-exclude = "tests.*/output"
+target-versions = ["py38", "py39", "py310", "py311"]
+force-exclude = '''
+/(
+  # default exclude
+  \.direnv|\.eggs|\.git|\.hg|\.ipynb_checkpoints|\.mypy_cache|\.nox|\.pytest_cache|\.ruff_cache|\.tox|\.svn|\.venv|\.vscode|__pypackages__|_build|buck-out|build|dist|venv
+  # additional exclude
+  | tests.*/output
+  | docs
+  | examples
+  | notebooks
+)/
+'''
 
 [tool.ruff]
 extend-exclude = [
     "tests/output",
-    "tests/**/output"
+    "tests/**/output",
+    "examples/",
+    "docs/",
+    "notebooks/"
 ]
+force-exclude = true
 line-length = 120
 extend-ignore = ["E203"]
 select = [
