@@ -47,7 +47,7 @@ enable = true
 vcs = "git"
 style = "pep440"
 
-[tool.poetry.scripts]    
+[tool.poetry.scripts]
 gen-jsonld-context = "linkml.generators.jsonldcontextgen:cli"
 gen-prefix-map = "linkml.generators.prefixmapgen:cli"
 gen-csv = "linkml.generators.csvgen:cli"
@@ -147,22 +147,37 @@ build-backend = "poetry_dynamic_versioning.backend"
 
 [tool.codespell]
 # TODO: bring in tests in too
-skip = '.git,*.pdf,*.svg,tests,pyproject.toml,*.dill'
+skip = '.git,*.pdf,*.svg,./tests,pyproject.toml,*.dill'
 # Ignore table where words could be split across rows
 # Ignore shortcut specifications like [Ff]alse
 ignore-regex = '(\|.*\|.*\|.*\||\[[A-Z][a-z]\][a-z][a-z])'
-#
 ignore-words-list = 'mater,connexion,infarction'
+quiet-level = 3
 
 [tool.black]
 line-length = 100
-extend-exclude = "tests.*/output"
+target-versions = ["py38", "py39", "py310", "py311"]
+force-exclude = '''
+/(
+  # default exclude
+  \.direnv|\.eggs|\.git|\.hg|\.ipynb_checkpoints|\.mypy_cache|\.nox|\.pytest_cache|\.ruff_cache|\.tox|\.svn|\.venv|\.vscode|__pypackages__|_build|buck-out|build|dist|venv
+  # additional exclude
+  | tests.*/output
+  | docs
+  | examples
+  | notebooks
+)/
+'''
 
 [tool.ruff]
 extend-exclude = [
     "tests/output",
-    "tests/**/output"
+    "tests/**/output",
+    "examples/",
+    "docs/",
+    "notebooks/"
 ]
+force-exclude = true
 line-length = 120
 extend-ignore = ["E203"]
 select = [
@@ -170,6 +185,8 @@ select = [
   "F",  # Pyflakes
   "I",  # isort
 ]
+# Assume Python 3.8
+target-version = "py38"
 
 [tool.ruff.per-file-ignores]
 # These templates can have long lines
