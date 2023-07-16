@@ -58,13 +58,13 @@ linkml/linter/config/datamodel/config.py: linkml/linter/config/datamodel/config.
 
 TUTORIALS = 01 02 03 04 05 06 07 08 09 10
 test-tutorials: $(patsubst %, test-tutorial-%, $(TUTORIALS))
-test-tutorial-%: sphinx/intro/tutorial%.md
-	pipenv run python -m linkml.utils.execute_tutorial -d /tmp/tutorial $<
+test-tutorial-%: docs/intro/tutorial%.md
+	$(RUN) python -m linkml.utils.execute_tutorial -d /tmp/tutorial $<
 
 rtd:
-	cd sphinx && $(RUN) make html
+	cd docs && $(RUN) make html
 deploy-rtd:
-	cd sphinx && $(RUN) make deploy
+	cd docs && $(RUN) make deploy
 
 ################################################
 #### Commands for building the Docker image ####
@@ -86,7 +86,7 @@ docker-build-use-cache-dev:
 
 docker-clean:
 	docker kill $(IM) || echo not running ;
-	docker rm $(IM) || echo not made 
+	docker rm $(IM) || echo not made
 
 docker-publish-no-build:
 	@docker push $(IM):$(VERSION) \
@@ -101,4 +101,4 @@ docker-publish: docker-build
 	&& docker push $(IM):latest
 
 docker-run:
-	@docker run  -v $(PWD):/work -w /work -ti $(IM):$(VERSION) 
+	@docker run  -v $(PWD):/work -w /work -ti $(IM):$(VERSION)
