@@ -25,9 +25,7 @@ class ShExTestCase(unittest.TestCase):
         inst = yaml_loader.load(DATA, target_class=kitchen_module.Dataset)
         shexstr = ShExGenerator(SCHEMA, mergeimports=True).serialize(collections=False)
         self.assertIn("<Person> CLOSED {", shexstr)
-        self.assertIn(
-            "<has_familial_relationships> @<FamilialRelationship> * ;", shexstr
-        )
+        self.assertIn("<has_familial_relationships> @<FamilialRelationship> * ;", shexstr)
         self.assertIn("<EmploymentEvent> CLOSED {", shexstr)
         self.assertIn("<type> [ bizcodes:001 bizcodes:002 bizcodes:003 bizcodes:004 ] ?", shexstr)
 
