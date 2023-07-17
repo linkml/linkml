@@ -131,12 +131,7 @@ Consult the above documentation for detailed documentation on each method. Some 
 
 ## Can I convert between SQL Alchemy models and dataclasses/pydantic
 
-Yes, [SQLStore](https://linkml.io/linkml/developers/sqlstore.html) can perform interconversion 
+Yes, [SQLStore](https://linkml.io/linkml/developers/sqlstore.html) can perform interconversion
 
-See [SQL-Examples notebook](https://github.com/linkml/linkml/blob/main/notebooks/SQL-examples.ipynb.ipynb)
+See [SQL-Examples notebook](https://github.com/linkml/linkml/blob/main/notebooks/SQL-examples.ipynb)
 for example code
-
-
-
-
-
