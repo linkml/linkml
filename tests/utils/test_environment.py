@@ -11,11 +11,11 @@ from io import StringIO
 from pathlib import Path
 from typing import Callable, List, Optional, Union
 
+import click
 from linkml_runtime.linkml_model import linkml_files
 from linkml_runtime.linkml_model.linkml_files import Format, Source
 
-from linkml import (LOCAL_MAPPINGS_YAML_FILE, LOCAL_METAMODEL_YAML_FILE,
-                    LOCAL_TYPES_YAML_FILE)
+from linkml import LOCAL_MAPPINGS_YAML_FILE, LOCAL_METAMODEL_YAML_FILE, LOCAL_TYPES_YAML_FILE
 from tests.utils.dirutils import are_dir_trees_equal
 from tests.utils.mismatchlog import MismatchLog
 
@@ -26,10 +26,11 @@ def no_click_exit(_self, code=0):
     raise CLIExitException(code)
 
 
-# This import has to occur here
-import click
-
 click.core.Context.exit = no_click_exit
+
+
+def _identity(s):
+    return s
 
 
 class MismatchAction(Enum):
@@ -45,14 +46,10 @@ class TestEnvironment:
     """ Testing environment """
 
     def __init__(self, filedir: str) -> None:
-        self.cwd = os.path.dirname(
-            filedir
-        )  # base directory for indir, outdir and tempdir
+        self.cwd = os.path.dirname(filedir)  # base directory for indir, outdir and tempdir
         self.indir = os.path.join(self.cwd, "input")  # Input files
         self.outdir = os.path.join(self.cwd, "output")  # Expected/actual output files
-        self.tempdir = os.path.join(
-            self.cwd, "temp"
-        )  # Scratch directory for temporary work
+        self.tempdir = os.path.join(self.cwd, "temp")  # Scratch directory for temporary work
 
         # Get the parent's directory name.  If it is a test directory, borrow from its environment
         parent = Path(self.cwd).parts[-2]
@@ -60,9 +57,7 @@ class TestEnvironment:
             parent_env = import_module("..environment", __package__)
             self.meta_yaml = linkml_files.LOCAL_PATH_FOR(Source.META, Format.YAML)
             self.types_yaml = linkml_files.LOCAL_PATH_FOR(Source.TYPES, Format.YAML)
-            self.mapping_yaml = linkml_files.LOCAL_PATH_FOR(
-                Source.MAPPINGS, Format.YAML
-            )
+            self.mapping_yaml = linkml_files.LOCAL_PATH_FOR(Source.MAPPINGS, Format.YAML)
             self.import_map = parent_env.env.import_map
             self.mismatch_action = parent_env.env.mismatch_action
             self.root_input_path = parent_env.env.root_input_path
@@ -77,9 +72,7 @@ class TestEnvironment:
             from tests import USE_LOCAL_IMPORT_MAP
 
             self.import_map = (
-                self.input_path("local_import_map.json")
-                if USE_LOCAL_IMPORT_MAP
-                else None
+                self.input_path("local_import_map.json") if USE_LOCAL_IMPORT_MAP else None
             )
             from tests import DEFAULT_MISMATCH_ACTION
 
@@ -100,7 +93,7 @@ class TestEnvironment:
 
         if USE_LOCAL_IMPORT_MAP and not TestEnvironment.import_map_warning_emitted:
             print(
-                f"WARNING: USE_LOCAL_IMPORT_MAP must be reset to False before completing submission."
+                "WARNING: USE_LOCAL_IMPORT_MAP must be reset to False before completing submission."
             )
             TestEnvironment.import_map_warning_emitted = True
 
@@ -166,10 +159,7 @@ class TestEnvironment:
         :param actual: actual string
         :return: Error message if mismatch else None
         """
-        if (
-            expected.replace("\r\n", "\n").strip()
-            != actual.replace("\r\n", "\n").strip()
-        ):
+        if expected.replace("\r\n", "\n").strip() != actual.replace("\r\n", "\n").strip():
             return f"Output {self.verb} changed."
 
     @staticmethod
@@ -187,9 +177,7 @@ class TestEnvironment:
             safety_file = os.path.join(directory, "generated")
             if os.path.exists(directory):
                 if not os.path.exists(safety_file):
-                    raise FileNotFoundError(
-                        f"'generated' guard file not found in {directory}"
-                    )
+                    raise FileNotFoundError(f"'generated' guard file not found in {directory}")
                 shutil.rmtree(directory)
             os.makedirs(directory, exist_ok=True)
             with open(safety_file, "w") as f:
@@ -243,12 +231,10 @@ class TestEnvironment:
         """
         # If no filter, default to identity function
         if not filtr:
-            filtr = lambda s: s
+            filtr = _identity
         filename = filename if isinstance(filename, List) else [filename]
         actual_file = (
-            self.root_temp_file_path(*filename)
-            if use_testing_root
-            else self.actual_path(*filename)
+            self.root_temp_file_path(*filename) if use_testing_root else self.actual_path(*filename)
         )
         expected_file = (
             self.root_expected_path(*filename)
@@ -287,7 +273,7 @@ class TestEnvironment:
         overwrite the expected file if we're not in the fail on error mode
         """
         if filtr is None:
-            filtr = lambda s: s
+            filtr = _identity
         if comparator is None:
             comparator = self.string_comparator
         if os.path.exists(expected_file_path):

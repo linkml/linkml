@@ -24,12 +24,12 @@ classes:
     slots:
         - name
         - family name
-    
+
 slots:
   name:
     title: Name
     description: The name of the item.
-  
+
   family name:
     title: Family name
     description: Family name. In the U.S., the last name of a Person.

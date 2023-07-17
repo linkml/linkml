@@ -1,5 +1,5 @@
-import unittest
 import itertools
+import unittest
 
 from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.linkml_model import SlotDefinition
@@ -7,8 +7,12 @@ from linkml_runtime.utils.introspection import package_schemaview
 from linkml_runtime.utils.schemaview import SchemaView
 
 from linkml.transformers.relmodel_transformer import (
-    ForeignKeyPolicy, RelationalModelTransformer, TransformationResult,
-    get_foreign_key_map, get_primary_key_attributes)
+    ForeignKeyPolicy,
+    RelationalModelTransformer,
+    TransformationResult,
+    get_foreign_key_map,
+    get_primary_key_attributes,
+)
 from linkml.utils.schema_builder import SchemaBuilder
 from tests.test_generators.environment import env
 
@@ -42,7 +46,7 @@ class RelationalModelTransformerTestCase(unittest.TestCase):
         b = SchemaBuilder()
         slots = ["name", "description"]
         b.add_class(DUMMY_CLASS, slots)
-        results = self._translate(b)
+        self._translate(b)
         rel_schema = self._translate(b).schema
         self.assertCountEqual(
             slots + ["id"], list(rel_schema.classes[DUMMY_CLASS].attributes.keys())
@@ -50,9 +54,7 @@ class RelationalModelTransformerTestCase(unittest.TestCase):
         self.assertEqual([], rel_schema.mappings)
         rsv = SchemaView(rel_schema)
         self.assertEqual("id", rsv.get_identifier_slot(DUMMY_CLASS).name)
-        self.assertCountEqual(
-            ["id"], get_primary_key_attributes(rel_schema.classes[DUMMY_CLASS])
-        )
+        self.assertCountEqual(["id"], get_primary_key_attributes(rel_schema.classes[DUMMY_CLASS]))
         self.assertDictEqual({}, get_foreign_key_map(rel_schema.classes[DUMMY_CLASS]))
 
     def test_injection_clash(self):
@@ -63,22 +65,26 @@ class RelationalModelTransformerTestCase(unittest.TestCase):
             with self.subTest():
                 name_slot = SlotDefinition("name")
                 b = SchemaBuilder(name=f"test_conflicting_primary_key_name_{c_has_pk}_{d_has_pk}")
-                b.add_class("c",
-                            use_attributes=True,
-                            slots=[
-                                SlotDefinition("id", identifier=c_has_pk),
-                                name_slot,
-                                SlotDefinition("has_ds",
-                                                singular_name="has_d",
-                                                range="d",
-                                                multivalued=True,
-                                                inlined=False)])
-                b = b.add_class("d",
-                                use_attributes=True,
-                                slots=[
-                                    SlotDefinition("id", identifier=d_has_pk),
-                                    name_slot
-                                    ])
+                b.add_class(
+                    "c",
+                    use_attributes=True,
+                    slots=[
+                        SlotDefinition("id", identifier=c_has_pk),
+                        name_slot,
+                        SlotDefinition(
+                            "has_ds",
+                            singular_name="has_d",
+                            range="d",
+                            multivalued=True,
+                            inlined=False,
+                        ),
+                    ],
+                )
+                b = b.add_class(
+                    "d",
+                    use_attributes=True,
+                    slots=[SlotDefinition("id", identifier=d_has_pk), name_slot],
+                )
                 rel_schema = self._translate(b).schema
                 rsv = SchemaView(rel_schema)
                 c = rsv.get_class("c")
@@ -98,8 +104,12 @@ class RelationalModelTransformerTestCase(unittest.TestCase):
                     self.assertCountEqual(["uid"], get_primary_key_attributes(d))
                 c_id_col = "id" if c_has_pk else "uid"
                 d_id_col = "id" if d_has_pk else "uid"
-                self.assertCountEqual([f"c_{c_id_col}", f"has_d_{d_id_col}"], list(c_has_d.attributes.keys()))
-                self.assertCountEqual([f"c_{c_id_col}", f"has_d_{d_id_col}"], get_primary_key_attributes(c_has_d))
+                self.assertCountEqual(
+                    [f"c_{c_id_col}", f"has_d_{d_id_col}"], list(c_has_d.attributes.keys())
+                )
+                self.assertCountEqual(
+                    [f"c_{c_id_col}", f"has_d_{d_id_col}"], get_primary_key_attributes(c_has_d)
+                )
 
     def test_no_inject_primary_key(self):
         """
@@ -108,17 +118,13 @@ class RelationalModelTransformerTestCase(unittest.TestCase):
         b = SchemaBuilder()
         slots = ["name", "description"]
         b.add_class(DUMMY_CLASS, slots).set_slot("name", identifier=True)
-        results = self._translate(b)
+        self._translate(b)
         rel_schema = self._translate(b).schema
-        self.assertCountEqual(
-            slots, list(rel_schema.classes[DUMMY_CLASS].attributes.keys())
-        )
+        self.assertCountEqual(slots, list(rel_schema.classes[DUMMY_CLASS].attributes.keys()))
         self.assertEqual([], rel_schema.mappings)
         rsv = SchemaView(rel_schema)
         self.assertEqual("name", rsv.get_identifier_slot(DUMMY_CLASS).name)
-        self.assertCountEqual(
-            ["name"], get_primary_key_attributes(rel_schema.classes[DUMMY_CLASS])
-        )
+        self.assertCountEqual(["name"], get_primary_key_attributes(rel_schema.classes[DUMMY_CLASS]))
 
     def test_multivalued_literal(self):
         """
@@ -128,7 +134,7 @@ class RelationalModelTransformerTestCase(unittest.TestCase):
         b.add_class("c", ["name", "description", "aliases"]).set_slot(
             "aliases", multivalued=True, singular_name="alias"
         )
-        results = self._translate(b)
+        self._translate(b)
         rel_schema = self._translate(b).schema
         rsv = SchemaView(rel_schema)
         c = rsv.get_class("c")
@@ -151,14 +157,12 @@ class RelationalModelTransformerTestCase(unittest.TestCase):
         b = SchemaBuilder()
         slots = ["name", "description", "has_d"]
         b.add_class("c", slots).add_class("d", ["name"]).set_slot("has_d", range="d")
-        results = self._translate(b)
+        self._translate(b)
         rel_schema = self._translate(b).schema
         rsv = SchemaView(rel_schema)
         c = rsv.get_class("c")
         d = rsv.get_class("d")
-        self.assertCountEqual(
-            ["id", "name", "description", "has_d_id"], list(c.attributes.keys())
-        )
+        self.assertCountEqual(["id", "name", "description", "has_d_id"], list(c.attributes.keys()))
         self.assertCountEqual(["id", "name"], list(d.attributes.keys()))
         self.assertCountEqual(["id"], get_primary_key_attributes(c))
         self.assertCountEqual(["id"], get_primary_key_attributes(d))
@@ -179,7 +183,7 @@ class RelationalModelTransformerTestCase(unittest.TestCase):
             multivalued=True,
             inlined=True,
         )
-        results = self._translate(b)
+        self._translate(b)
         rel_schema = self._translate(b).schema
         rsv = SchemaView(rel_schema)
         c = rsv.get_class("c")
@@ -212,10 +216,12 @@ class RelationalModelTransformerTestCase(unittest.TestCase):
                 b = SchemaBuilder()
                 b.add_class("c", slots_c + (["id"] if add_id_to_c else []))
                 b = b.add_class("d", slots_d + (["id"] if add_id_to_d else []))
-                b = b.set_slot("has_ds", singular_name="has_d", range="d", multivalued=True, inlined=False)
+                b = b.set_slot(
+                    "has_ds", singular_name="has_d", range="d", multivalued=True, inlined=False
+                )
                 if add_id_to_c or add_id_to_d:
                     b = b.set_slot("id", identifier=True)
-                results = self._translate(b)
+                self._translate(b)
                 rel_schema = self._translate(b).schema
                 rsv = SchemaView(rel_schema)
                 c = rsv.get_class("c")
@@ -242,19 +248,17 @@ class RelationalModelTransformerTestCase(unittest.TestCase):
         b.add_class("c", slots).add_class("d", ["name"]).set_slot(
             "has_ds", singular_name="has_d", range="d", multivalued=True, inlined=False
         )
-        b.add_class(
-            "c1", is_a="c", slot_usage={"has_ds": SlotDefinition("has_ds", range="d1")}
-        )
+        b.add_class("c1", is_a="c", slot_usage={"has_ds": SlotDefinition("has_ds", range="d1")})
         b.add_class("d1", is_a="d")
-        results = self._translate(b)
+        self._translate(b)
         rel_schema = self._translate(b).schema
         rsv = SchemaView(rel_schema)
         c = rsv.get_class("c")
         d = rsv.get_class("d")
-        c1 = rsv.get_class("c1")
+        rsv.get_class("c1")
         d1 = rsv.get_class("d1")
         c_has_d = rsv.get_class("c_has_d")
-        c1_has_d = rsv.get_class("c1_has_d")
+        rsv.get_class("c1_has_d")
         self.assertCountEqual(["id"], get_primary_key_attributes(d1))
         self.assertCountEqual(["id", "name", "description"], list(c.attributes.keys()))
         self.assertCountEqual(["id", "name"], list(d.attributes.keys()))
@@ -264,9 +268,7 @@ class RelationalModelTransformerTestCase(unittest.TestCase):
         self.assertCountEqual(["c_id", "has_d_id"], get_primary_key_attributes(c_has_d))
         self.assertDictEqual({}, get_foreign_key_map(c))
         self.assertDictEqual({}, get_foreign_key_map(d))
-        self.assertDictEqual(
-            {"c_id": "c.id", "has_d_id": "d.id"}, get_foreign_key_map(c_has_d)
-        )
+        self.assertDictEqual({"c_id": "c.id", "has_d_id": "d.id"}, get_foreign_key_map(c_has_d))
 
     def test_no_foreign_keys(self):
         """Test Simple transformation with no injections of FKs."""
@@ -275,14 +277,10 @@ class RelationalModelTransformerTestCase(unittest.TestCase):
         b.add_class("c", slots).add_class("d", ["name"]).set_slot(
             "has_ds", singular_name="has_d", range="d", multivalued=True, inlined=False
         )
-        b.add_class(
-            "c1", is_a="c", slot_usage={"has_ds": SlotDefinition("has_ds", range="d1")}
-        )
+        b.add_class("c1", is_a="c", slot_usage={"has_ds": SlotDefinition("has_ds", range="d1")})
         b.add_class("d1", is_a="d")
         sv = SchemaView(b.schema)
-        sqltr = RelationalModelTransformer(
-            sv, foreign_key_policy=ForeignKeyPolicy.NO_FOREIGN_KEYS
-        )
+        sqltr = RelationalModelTransformer(sv, foreign_key_policy=ForeignKeyPolicy.NO_FOREIGN_KEYS)
         result = sqltr.transform()
         rel_schema = result.schema
         rsv = SchemaView(rel_schema)
@@ -295,7 +293,6 @@ class RelationalModelTransformerTestCase(unittest.TestCase):
         tests using alias to override name
         """
         b = SchemaBuilder()
-        slots = ["foo_name", "foo_description", "foo_has_d", "foo_aliases"]
         b.add_class(
             "c",
             [
@@ -306,7 +303,7 @@ class RelationalModelTransformerTestCase(unittest.TestCase):
             ],
         )
         b.add_class("d", [SlotDefinition("name")])
-        results = self._translate(b)
+        self._translate(b)
         rel_schema = self._translate(b).schema
         rsv = SchemaView(rel_schema)
         c = rsv.get_class("c")
@@ -320,9 +317,7 @@ class RelationalModelTransformerTestCase(unittest.TestCase):
         self.assertCountEqual(["c_id", "has_d_id"], get_primary_key_attributes(c_has_d))
         self.assertDictEqual({}, get_foreign_key_map(c))
         self.assertDictEqual({}, get_foreign_key_map(d))
-        self.assertDictEqual(
-            {"c_id": "c.id", "has_d_id": "d.id"}, get_foreign_key_map(c_has_d)
-        )
+        self.assertDictEqual({"c_id": "c.id", "has_d_id": "d.id"}, get_foreign_key_map(c_has_d))
 
     def test_sqlt_on_metamodel(self):
         sv = package_schemaview("linkml_runtime.linkml_model.meta")
@@ -383,9 +378,7 @@ class RelationalModelTransformerTestCase(unittest.TestCase):
         ]:
             c = sv.get_class(relationship_class)
             assert any(
-                a
-                for a in c.attributes.values()
-                if a.range == "Person" and a.name == "Person_id"
+                a for a in c.attributes.values() if a.range == "Person" and a.name == "Person_id"
             )
             pk = sv.get_identifier_slot(cn)
             self.assertIsNotNone(pk)

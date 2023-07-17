@@ -1,4 +1,3 @@
-import os
 import unittest
 
 from linkml.utils.schemaloader import SchemaLoader

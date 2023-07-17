@@ -42,7 +42,7 @@ class JsonSchemaTestCase(unittest.TestCase):
         kitchen_sink_json_schema = json.loads(generator.serialize())
 
         kitchen_module = make_python(SCHEMA, PYTHON, False)
-        inst: Dataset
+        inst: kitchen_module.Dataset
         inst = yaml_loader.load(DATA, target_class=kitchen_module.Dataset)
         # p = [p for p in persons if p.id == 'P:002'][0]
         ok_address = False
@@ -63,6 +63,7 @@ class JsonSchemaTestCase(unittest.TestCase):
                         ok_metadata = True
         assert ok_address
         assert ok_history
+        assert ok_metadata
 
         json_instance = json.loads(json_dumper.dumps(inst))
         del json_instance["@type"]
@@ -76,9 +77,7 @@ class JsonSchemaTestCase(unittest.TestCase):
         See also https://github.com/linkml/linkml/issues/579
         """
 
-        self.assertSchemaValidates(
-            SCHEMA, {"$defs": {"AnyObject": {"additionalProperties": True}}}
-        )
+        self.assertSchemaValidates(SCHEMA, {"$defs": {"AnyObject": {"additionalProperties": True}}})
 
     def test_compliance_cases(self):
         """Tests various validation compliance cases.
@@ -114,11 +113,13 @@ class JsonSchemaTestCase(unittest.TestCase):
                 else:
                     schema = kitchen_sink_json_schema_not_closed
 
-                do_validate = lambda: jsonschema.validate(
-                    dataset,
-                    schema,
-                    format_checker=jsonschema.Draft7Validator.FORMAT_CHECKER,
-                )
+                def do_validate():
+                    jsonschema.validate(
+                        dataset,
+                        schema,
+                        format_checker=jsonschema.Draft7Validator.FORMAT_CHECKER,
+                    )
+
                 if expected_valid:
                     # this will raise an exception and fail the test if the
                     # instance does *not* validate
@@ -134,7 +135,10 @@ class JsonSchemaTestCase(unittest.TestCase):
     def test_class_inheritance(self):
         """Tests that a class definition's is_a slot is correctly accounted for."""
 
-        self.externalFileTest("jsonschema_class_inheritance.yaml", {'not_closed': False, 'include_range_class_descendants': True})
+        self.externalFileTest(
+            "jsonschema_class_inheritance.yaml",
+            {"not_closed": False, "include_range_class_descendants": True},
+        )
 
     def test_top_class_identifier(self):
         """Test that an identifier slot on the top_class becomes a required
@@ -144,7 +148,7 @@ class JsonSchemaTestCase(unittest.TestCase):
 
     def test_value_constraints(self):
         """Test the translation of metaslots that constrain values.
-        
+
         Tests the translation of equals_string, equals_number, pattern, maximum_value,
         and minimum_value metaslots. Additionally contains one test case that verifies
         these work with multiple ranges as well.
@@ -190,12 +194,10 @@ class JsonSchemaTestCase(unittest.TestCase):
                     },
                 )
 
-                self.assertSchemaValidates(
-                    schema, case["json_schema"], case.get("data_cases", [])
-                )
+                self.assertSchemaValidates(schema, case["json_schema"], case.get("data_cases", []))
 
     def test_rules_in_non_root_class(self):
-        """Tests that rules are applied to slots in non-root classes. """
+        """Tests that rules are applied to slots in non-root classes."""
 
         self.externalFileTest("jsonschema_rules_in_non_root_class.yaml")
 
@@ -232,14 +234,13 @@ class JsonSchemaTestCase(unittest.TestCase):
 
         self.externalFileTest("jsonschema_empty_inlined_as_dict_objects.yaml")
 
-
     # **********************************************************
     #
     #    Utility methods
     #
     # **********************************************************
 
-    def externalFileTest(self, file: str, generator_args={'not_closed': False}) -> None:
+    def externalFileTest(self, file: str, generator_args={"not_closed": False}) -> None:
         with open(env.input_path(file)) as f:
             test_definition = yaml.safe_load(f)
 
@@ -247,7 +248,7 @@ class JsonSchemaTestCase(unittest.TestCase):
             yaml.dump(test_definition["schema"]),
             test_definition.get("json_schema", {}),
             test_definition.get("data_cases", []),
-            generator_args=generator_args
+            generator_args=generator_args,
         )
 
     def assertSchemaValidates(
@@ -281,9 +282,7 @@ class JsonSchemaTestCase(unittest.TestCase):
 
             new_path = f'{path}["{key}"]'
 
-            self.assertIsInstance(
-                full[key], subset[key].__class__, f"in path {new_path}"
-            )
+            self.assertIsInstance(full[key], subset[key].__class__, f"in path {new_path}")
 
             if isinstance(full[key], dict):
                 self.assertDictSubset(subset[key], full[key], new_path)

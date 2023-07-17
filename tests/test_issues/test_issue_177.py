@@ -31,9 +31,7 @@ class Issue18TestCase(TestEnvironmentTestCase):
     def test_issue_177_dup(self):
         env.generate_single_file(
             "issue_177_error.yaml",
-            lambda: as_yaml(
-                SchemaLoader(env.input_path("issue_177_error.yaml")).resolve()
-            ),
+            lambda: as_yaml(SchemaLoader(env.input_path("issue_177_error.yaml")).resolve()),
             value_is_returned=True,
             filtr=yaml_filter,
         )

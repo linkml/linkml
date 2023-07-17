@@ -15,7 +15,7 @@ class Issue652TestCase(TestEnvironmentTestCase):
         Generate JSON Schema in default mode, where range class
         descendants are not included
         """
-        x = env.generate_single_file(
+        env.generate_single_file(
             "issue_652_scenario1.schema.json",
             lambda: JsonSchemaGenerator(
                 env.input_path("issue_652.yaml"), include_range_class_descendants=False
@@ -32,7 +32,7 @@ class Issue652TestCase(TestEnvironmentTestCase):
         Generate JSON Schema where descendants of range class
         are included for the type of a property
         """
-        x = env.generate_single_file(
+        env.generate_single_file(
             "issue_652_scenario2.schema.json",
             lambda: JsonSchemaGenerator(
                 env.input_path("issue_652.yaml"), include_range_class_descendants=True

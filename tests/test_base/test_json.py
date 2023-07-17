@@ -1,10 +1,17 @@
 import unittest
 
-from linkml import (LOCAL_ANNOTATIONS_YAML_FILE, LOCAL_EXTENSIONS_YAML_FILE,
-                    LOCAL_MAPPINGS_YAML_FILE, LOCAL_METAMODEL_YAML_FILE,
-                    LOCAL_TYPES_YAML_FILE, METAANNOTATIONS_NAMESPACE,
-                    METAEXTENSIONS_NAMESPACE, METAMAPPING_NAMESPACE,
-                    METAMODEL_NAMESPACE, METATYPE_NAMESPACE)
+from linkml import (
+    LOCAL_ANNOTATIONS_YAML_FILE,
+    LOCAL_EXTENSIONS_YAML_FILE,
+    LOCAL_MAPPINGS_YAML_FILE,
+    LOCAL_METAMODEL_YAML_FILE,
+    LOCAL_TYPES_YAML_FILE,
+    METAANNOTATIONS_NAMESPACE,
+    METAEXTENSIONS_NAMESPACE,
+    METAMAPPING_NAMESPACE,
+    METAMODEL_NAMESPACE,
+    METATYPE_NAMESPACE,
+)
 from linkml.generators.jsonldgen import JSONLDGenerator
 from tests.test_base.environment import env
 from tests.utils.filters import json_metadata_filter

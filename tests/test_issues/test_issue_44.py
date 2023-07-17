@@ -1,4 +1,3 @@
-import os
 import unittest
 
 from linkml.generators.pythongen import PythonGenerator

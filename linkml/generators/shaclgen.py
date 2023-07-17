@@ -1,21 +1,24 @@
 import logging
 import os
-from copy import copy, deepcopy
-from dataclasses import field
-from typing import (Callable, Dict, Iterator, List, Optional, Set, TextIO,
-                    Tuple, Union)
 
 import click
-from linkml_runtime.linkml_model.meta import (Annotation, ClassDefinition,
-                                              SchemaDefinition, TypeDefinition)
-from linkml_runtime.utils.formatutils import camelcase, underscore
+from linkml_runtime.utils.formatutils import underscore
 from linkml_runtime.utils.schemaview import SchemaView
 from rdflib import BNode, Graph, Literal, URIRef
 from rdflib.collection import Collection
-from rdflib.namespace import RDF, RDFS, SH, XSD
+from rdflib.namespace import RDF, SH
 
 from linkml._version import __version__
 from linkml.utils.generator import Generator, shared_arguments
+
+LINK_ML_TYPES_STRING = URIRef("http://www.w3.org/2001/XMLSchema#string")
+LINK_ML_TYPES_BOOL = URIRef("http://www.w3.org/2001/XMLSchema#boolean")
+LINK_ML_TYPES_DECIMAL = URIRef("http://www.w3.org/2001/XMLSchema#decimal")
+LINK_ML_TYPES_INTEGER = URIRef("http://www.w3.org/2001/XMLSchema#integer")
+LINK_ML_TYPES_DURATION = URIRef("http://www.w3.org/2001/XMLSchema#duration")
+LINK_ML_TYPES_DATETIME = URIRef("http://www.w3.org/2001/XMLSchema#dateTime")
+LINK_ML_TYPES_DATE = URIRef("http://www.w3.org/2001/XMLSchema#date")
+LINK_ML_TYPES_TIME = URIRef("http://www.w3.org/2001/XMLSchema#time")
 
 
 class ShaclGenerator(Generator):
@@ -58,7 +61,7 @@ class ShaclGenerator(Generator):
 
             class_uri = URIRef(sv.get_uri(c, expand=True))
             shape_pv(RDF.type, SH.NodeShape)
-            shape_pv(SH.targetClass, class_uri)  ## TODO
+            shape_pv(SH.targetClass, class_uri)  # TODO
             if c.mixin or c.abstract:
                 shape_pv(SH.closed, Literal(False))
             else:
@@ -68,9 +71,8 @@ class ShaclGenerator(Generator):
             if c.description is not None:
                 shape_pv(SH.description, Literal(c.description))
             list_node = BNode()
-            coll = Collection(g, list_node, [RDF.type])
+            Collection(g, list_node, [RDF.type])
             shape_pv(SH.ignoredProperties, list_node)
-            type_designator = None
             order = 0
             for s in sv.class_induced_slots(c.name):
                 # fixed in linkml-runtime 1.1.3
@@ -118,23 +120,34 @@ class ShaclGenerator(Generator):
                 elif r in sv.all_enums():
                     e = sv.get_enum(r)
                     pv_node = BNode()
-                    pv_coll = Collection(
+                    Collection(
                         g,
                         pv_node,
                         [
-                            URIRef(sv.expand_curie(pv.meaning))
-                            if pv.meaning
-                            else Literal(pv_name)
+                            URIRef(sv.expand_curie(pv.meaning)) if pv.meaning else Literal(pv_name)
                             for pv_name, pv in e.permissible_values.items()
                         ],
                     )
                     prop_pv(SH["in"], pv_node)
                 else:
-                    None  # TODO
+                    if r == "string":
+                        prop_pv(SH.datatype, LINK_ML_TYPES_STRING)
+                    elif r == "boolean":
+                        prop_pv(SH.datatype, LINK_ML_TYPES_BOOL)
+                    elif r == "duration":
+                        prop_pv(SH.datatype, LINK_ML_TYPES_DURATION)
+                    elif r == "datetime":
+                        prop_pv(SH.datatype, LINK_ML_TYPES_DATETIME)
+                    elif r == "date":
+                        prop_pv(SH.datatype, LINK_ML_TYPES_DATE)
+                    elif r == "time":
+                        prop_pv(SH.datatype, LINK_ML_TYPES_TIME)
+                    elif r == "decimal":
+                        prop_pv(SH.datatype, LINK_ML_TYPES_DECIMAL)
+                    elif r == "integer":
+                        prop_pv(SH.datatype, LINK_ML_TYPES_INTEGER)
                 if s.pattern:
                     prop_pv(SH.pattern, Literal(s.pattern))
-                if s.designates_type:
-                    type_designator = s
 
         return g
 

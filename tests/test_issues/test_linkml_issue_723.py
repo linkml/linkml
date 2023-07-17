@@ -4,11 +4,11 @@ from enum import Enum
 
 import rdflib
 from linkml_runtime import SchemaView
-from linkml_runtime.dumpers import json_dumper, rdflib_dumper, yaml_dumper
+from linkml_runtime.dumpers import json_dumper, rdflib_dumper
 from linkml_runtime.linkml_model import PermissibleValue
 from linkml_runtime.loaders import json_loader
 from linkml_runtime.utils.compile_python import compile_python
-from rdflib import Graph, Literal, URIRef
+from rdflib import Literal
 
 from linkml.generators.pydanticgen import PydanticGenerator
 from linkml.generators.pythongen import PythonGenerator
@@ -37,7 +37,7 @@ classes:
       roles:
         range: Role
         multivalued: true
-    
+
 enums:
   VitalStatus:
     permissible_values:
@@ -45,7 +45,7 @@ enums:
         meaning: x:Alive
       DEAD:
         meaning: x:Dead
-  
+
   Role:
     permissible_values:
       INVESTIGATOR:
@@ -93,8 +93,8 @@ class Issue723ExportCase(TestEnvironmentTestCase):
 
     def test_raises(self):
         mod = self.mod
-        with self.assertRaises(ValueError) as e:
-            p = mod.Person(status="FAKE")
+        with self.assertRaises(ValueError):
+            mod.Person(status="FAKE")
 
     def test_initialized_enums(self):
         """
@@ -171,10 +171,8 @@ class Issue723ExportCase(TestEnvironmentTestCase):
         pd = json_dumper.to_dict(p)
         # we might expect this
         # self.assertEqual(pd['status'], 'ALIVE')
-        self.assertCountEqual(
-            pd["roles"], [{"text": "ANALYST"}, {"text": "INVESTIGATOR"}]
-        )
-        p_json = json_dumper.dumps(p)
+        self.assertCountEqual(pd["roles"], [{"text": "ANALYST"}, {"text": "INVESTIGATOR"}])
+        json_dumper.dumps(p)
         # this does NOT roundtrip:
         # p_roundtrip = json_loader.loads(p_json, target_class=mod.Person)
         # self.assertEqual(p_roundtrip, p)
@@ -246,8 +244,8 @@ class Issue723ExportCase(TestEnvironmentTestCase):
     def test_pydantic(self):
         mod = self.pydantic_mod
         p = mod.Person(status="ALIVE", roles=["ANALYST", "INVESTIGATOR"])
-        with self.assertRaises(ValueError) as e:
-            p = mod.Person(status="FAKE")
+        with self.assertRaises(ValueError):
+            mod.Person(status="FAKE")
         # with self.assertRaises(ValueError) as e:
         #    p = mod.Person()
         #    p.status = "FAKE"

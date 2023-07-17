@@ -17,9 +17,7 @@ SHEXLOG = env.expected_path("shexgen_log.txt")
 
 
 class ShExTestCase(unittest.TestCase):
-    unittest.skipIf(
-        sys.version_info < (3, 8), "ShEx has issues with python 3.7 at the moment"
-    )
+    unittest.skipIf(sys.version_info < (3, 8), "ShEx has issues with python 3.7 at the moment")
 
     def test_shex(self):
         """tests generation of shex and subsequent evaluation"""

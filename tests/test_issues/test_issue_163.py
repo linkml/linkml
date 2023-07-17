@@ -1,8 +1,7 @@
-import os
 import unittest
 
 from rdflib import Graph, URIRef
-from rdflib.namespace import OWL, RDF, RDFS
+from rdflib.namespace import OWL, RDF
 
 from linkml.generators.owlgen import OwlSchemaGenerator
 from tests.test_issues.environment import env
@@ -45,7 +44,7 @@ class IssueOWLNamespaceTestCase(TestEnvironmentTestCase):
 
     def test_aliases(self):
         """Make sure aliases work"""
-        g = self._test_owl("issue_163c")
+        self._test_owl("issue_163c")
 
 
 if __name__ == "__main__":

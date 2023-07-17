@@ -1,12 +1,9 @@
 import unittest
 
 from linkml_runtime import LINKML
-from linkml_runtime.utils.compile_python import compile_python
-from pydantic import ValidationError
 from rdflib import OWL, RDF, RDFS, SKOS, XSD, Literal, Namespace, URIRef
 
 from linkml.generators.owlgen import OwlSchemaGenerator
-from linkml.generators.pydanticgen import PydanticGenerator
 from tests.test_issues.environment import env
 from tests.utils.test_environment import TestEnvironmentTestCase
 

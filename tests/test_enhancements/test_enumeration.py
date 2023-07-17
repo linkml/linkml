@@ -57,13 +57,9 @@ class EnumerationTestCase(TestEnvironmentTestCase):
         """Test the various enum constraints"""
         self._check_error("enum_name_error", '":" not allowed in identifier')
 
-        self._check_error(
-            "enum_class_name_error", "Overlapping enum and class names: test1, test2"
-        )
+        self._check_error("enum_class_name_error", "Overlapping enum and class names: test1, test2")
 
-        self._check_error(
-            "enum_type_name_error", "Overlapping type and enum names: test2"
-        )
+        self._check_error("enum_type_name_error", "Overlapping type and enum names: test2")
 
         self._check_warns(
             "enum_name_overlaps",
@@ -76,21 +72,13 @@ class EnumerationTestCase(TestEnvironmentTestCase):
 
     def test_enum_errors(self):
         """Test the other invariants"""
-        self._check_error(
-            "enum_error_1", 'Enum: "error1" needs a code set to have a version'
-        )
+        self._check_error("enum_error_1", 'Enum: "error1" needs a code set to have a version')
 
-        self._check_error(
-            "enum_error_2", 'Enum: "error2" cannot have both version and tag'
-        )
+        self._check_error("enum_error_2", 'Enum: "error2" cannot have both version and tag')
 
-        self._check_error(
-            "enum_error_3", 'Enum: "error3" needs a code set to have a tag'
-        )
+        self._check_error("enum_error_3", 'Enum: "error3" needs a code set to have a tag')
 
-        self._check_error(
-            "enum_error_4", 'Enum: "error4" needs a code set to have a formula'
-        )
+        self._check_error("enum_error_4", 'Enum: "error4" needs a code set to have a formula')
 
         self._check_error(
             "enum_error_5",
@@ -107,9 +95,7 @@ class EnumerationTestCase(TestEnvironmentTestCase):
             'Slot: "classError1__slot_1" enumerations cannot be inlined',
         )
 
-        self._check_error(
-            "enum_error_7", "Unknown PvFormulaOptions enumeration code: LABEL"
-        )
+        self._check_error("enum_error_7", "Unknown PvFormulaOptions enumeration code: LABEL")
 
     @unittest.skipIf(
         True,
@@ -124,9 +110,7 @@ class EnumerationTestCase(TestEnvironmentTestCase):
         file = "alternatives"
         env.generate_single_file(
             env.expected_path(self.testdir, f"{file}.yaml"),
-            lambda: YAMLGenerator(
-                env.input_path(self.testdir, f"{file}.yaml")
-            ).serialize(),
+            lambda: YAMLGenerator(env.input_path(self.testdir, f"{file}.yaml")).serialize(),
             filtr=yaml_filter,
             value_is_returned=True,
         )
@@ -150,7 +134,7 @@ class EnumerationTestCase(TestEnvironmentTestCase):
             value_is_returned=True,
         )
 
-        module = compile_python(env.expected_path(python_name))
+        compile_python(env.expected_path(python_name))
 
     def test_notebook_model_1(self):
         file = "notebook_model_1"
@@ -179,7 +163,7 @@ class EnumerationTestCase(TestEnvironmentTestCase):
         self.assertEqual("a", str(c1.position))
         self.assertEqual("(text='a', description='top')", repr(c1.position))
         try:
-            c2 = module.PositionalRecord("your location", "z")
+            module.PositionalRecord("your location", "z")
         except ValueError as e:
             self.assertEqual("Unknown OpenEnum enumeration code: z", str(e))
         x = module.PositionalRecord("117493", "c")
@@ -209,7 +193,7 @@ class EnumerationTestCase(TestEnvironmentTestCase):
         )
 
         module = compile_python(env.expected_path(python_name))
-        t = module.Sample(
+        module.Sample(
             "Something",
             [module.UnusualEnumPatterns.M, module.UnusualEnumPatterns["% ! -- whoo"]],
         )

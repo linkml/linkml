@@ -2,28 +2,28 @@
 
 ## Why does this project exist?
 
-LinkML originally grew out of the needs of the Biolink Model project,
+LinkML originally grew out of the needs of the [Biolink-Model](https://w3id.org/biolink/) project,
 which needed a flexible schema representation for biological knowledge
 graphs that was independent of particular database systems
 (relational, triplestore, graph database) and serialization format
 (TSV, JSON, RDF, RDFStar).
 
-Recognizing similar needs elsewhere, Harold Solbrig took the original
-Biolink metamodel and generalized it to create the BiolinkML framework. This was later named LinkML.
+Recognizing similar needs elsewhere, [Harold Solbrig](https://github.com/hsolbrig) took the original
+Biolink metamodel and generalized it to create the original BiolinkML framework.
+This was later named LinkML.
 
 ## Is LinkML stable?
 
 The features of the core LinkML model are stable, you can use this to
-describe your datamodel without fear of breaking changes.
+describe your data model without fear of breaking changes.
 
 The language is being continually extended to meet the needs of a
-growing community.
+growing community. New language features are always added to be
+backwards compatible with existing schemas.
 
-Similarly, the LinkML toolchain is also growing.
-
-Mappings between LinkML and other formalisms such as JSON-Schema and
-ShEx may be currently incomplete, and these are continually being
-improved, with plans to create new generators (e.g. for SHACL, and XSD)
+Similarly, the LinkML toolchain is also growing. The core toolchain
+is in Python, but efforts are underway to build tooling in Java, Typescript,
+and Go. Some language features may be unsupported in some toolchains.
 
 ## How is LinkML licensed?
 
@@ -33,7 +33,9 @@ are in the public domain through a CC-0 waiver.
 ## Who uses LinkML?
 
 A subset of groups using LinkML can be found via the 
-[linkml-registry](https://linkml.io/linkml-registry/registry/)
+[linkml-registry](https://linkml.io/linkml-registry/registry/).
+However, we do not have the resources to track all uses,
+and the registry only scratches the surface of current usage.
 
 LinkML is used in a number of major database resource projects. Many
 of these are centered around genomics and managing complex biological

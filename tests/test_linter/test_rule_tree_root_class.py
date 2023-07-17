@@ -2,8 +2,7 @@ import unittest
 
 from linkml_runtime import SchemaView
 
-from linkml.linter.config.datamodel.config import (RuleLevel,
-                                                   TreeRootClassRuleConfig)
+from linkml.linter.config.datamodel.config import RuleLevel, TreeRootClassRuleConfig
 from linkml.linter.rules import TreeRootClassRule
 from linkml.utils.schema_builder import SchemaBuilder
 
@@ -31,9 +30,7 @@ class TestTreeRootClassRule(unittest.TestCase):
         problems = list(rule.check(schema_view))
 
         self.assertEqual(len(problems), 1)
-        self.assertEqual(
-            problems[0].message, "Schema does not have class with `tree_root: true`"
-        )
+        self.assertEqual(problems[0].message, "Schema does not have class with `tree_root: true`")
 
     def test_fix_no_tree_root_class(self):
         builder = SchemaBuilder()

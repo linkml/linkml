@@ -7,23 +7,15 @@
 # license: https://creativecommons.org/publicdomain/zero/1.0/
 
 import dataclasses
-import re
-import sys
 from dataclasses import dataclass
 from typing import Any, ClassVar, Dict, List, Optional, Union
 
-from includes.types import String
-from linkml_runtime.linkml_model.meta import (EnumDefinition, PermissibleValue,
-                                              PvFormulaOptions)
+from linkml_runtime.linkml_model.meta import EnumDefinition, PermissibleValue, PvFormulaOptions
 from linkml_runtime.utils.curienamespace import CurieNamespace
-from linkml_runtime.utils.dataclass_extensions_376 import \
-    dataclasses_init_fn_with_kwargs
-from linkml_runtime.utils.formatutils import camelcase, sfx, underscore
-from linkml_runtime.utils.metamodelcore import bnode, empty_dict, empty_list
+from linkml_runtime.utils.dataclass_extensions_376 import dataclasses_init_fn_with_kwargs
 from linkml_runtime.utils.slot import Slot
-from linkml_runtime.utils.yamlutils import (YAMLRoot, extended_float,
-                                            extended_int, extended_str)
-from rdflib import Namespace, URIRef
+from linkml_runtime.utils.yamlutils import YAMLRoot, extended_str
+from rdflib import URIRef
 
 metamodel_version = "1.7.0"
 
@@ -39,6 +31,7 @@ DEFAULT_ = EVIDENCE
 
 
 # Types
+
 
 # Class references
 class AllEnumsEntryName(extended_str):
@@ -79,10 +72,8 @@ class AllEnums(YAMLRoot):
         elif not isinstance(self.code_1, list):
             self.code_1 = [self.code_1]
         elif len(self.code_1) == 0:
-            raise ValueError(f"code_1 must be a non-empty list")
-        self.code_1 = [
-            v if isinstance(v, OpenEnum) else OpenEnum(v) for v in self.code_1
-        ]
+            raise ValueError("code_1 must be a non-empty list")
+        self.code_1 = [v if isinstance(v, OpenEnum) else OpenEnum(v) for v in self.code_1]
 
         if self.code_2 is not None and not isinstance(self.code_2, ConstrainedEnum2):
             self.code_2 = ConstrainedEnum2(self.code_2)
@@ -220,9 +211,7 @@ class ConstrainedEvidence(YAMLRoot):
         code_set=EVIDENCE.clue_answers,
         permissible_values={
             "IEA": PermissibleValue("Colonel Mustard in the Ballroom"),
-            "ISS": PermissibleValue(
-                "Mrs. Peacock with the Dagger", meaning=CLUE["1173"]
-            ),
+            "ISS": PermissibleValue("Mrs. Peacock with the Dagger", meaning=CLUE["1173"]),
         },
     )
     code: str
