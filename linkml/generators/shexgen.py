@@ -4,6 +4,7 @@
 import os
 from dataclasses import dataclass, field
 from typing import List, Optional, Union
+from urllib.parse import urlparse
 
 import click
 from jsonasobj import as_json as as_json_1
