@@ -199,7 +199,7 @@ It will place all the markdown documents you need to run a [mkdocs](https://www.
 
 ## How do I include UML class diagrams?
 
-The docgen framework uses [Mermaid](https://mermaid-js.github.io/mermaid/#/) to generate class diagrams
+The docgen framework uses [Mermaid](https://mermaid.js.org/) to generate class diagrams
 from your schema. This is included as a default when you use the docgen framework.
 
 ## Can I include generated documentation in a Sphinx site?
@@ -299,7 +299,7 @@ itself follows commonly established Entity-Relationship (ER)
 patterns. Here you would have one set of classes corresponding to
 nodes, and another set of classes corresponding to edges. The slots on
 edge classes can be decorated with
-[relational_role](https://w3id.org/relational_role) descriptors.
+[relational_role](https://w3id.org/linkml/relational_role) descriptors.
 
 
 ## Can I use my schema to do reasoning over my data?

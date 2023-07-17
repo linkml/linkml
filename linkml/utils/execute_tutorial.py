@@ -195,7 +195,7 @@ def cli(inputs, directory):
     Example:
 
         export PYTHONPATH=`pwd`
-        python -m linkml.utils.execute_tutorial -d /tmp/tutorial/ sphinx/intro/tutorial01.md
+        python -m linkml.utils.execute_tutorial -d /tmp/tutorial/ docs/intro/tutorial01.md
 
     """
     logging.basicConfig(level=logging.INFO)

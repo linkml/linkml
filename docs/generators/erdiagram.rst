@@ -6,7 +6,7 @@ Overview
 
 Entity-Relationship (ER) Diagrams are a graphical representation of the structure of a schema.
 
-LinkML uses the [Mermaid ER Diagram](https://mermaid-js.github.io/mermaid/#/entityRelationshipDiagram)
+LinkML uses the [Mermaid ER Diagram](https://mermaid.js.org/syntax/entityRelationshipDiagram.html)
 syntax to represent ER diagrams.
 
 To run:
@@ -153,6 +153,6 @@ Command Line
 Code
 ^^^^
 
-                   
+
 .. autoclass:: ERDiagramGenerator
     :members: serialize, serialize_classes
