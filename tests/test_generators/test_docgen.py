@@ -53,8 +53,6 @@ def assert_mdfile_contains(
                         subsequent_line = lines[j]
                         if len(todo) > 0 and todo[0] in subsequent_line:
                             todo = todo[1:]
-                            # if len(todo) == 0:
-                            #     return  # Found all elements in followed_by
                     if len(todo) > 0:
                         if not invert:
                             logging.error(f"Did not find: {todo}")

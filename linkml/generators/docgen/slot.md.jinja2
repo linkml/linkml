@@ -58,10 +58,10 @@ URI: {{ gen.uri_link(element) }}
 * Recommended: {{ element.recommended }}
 {% endif -%}
 {% if element.minimum_value is not none %}
-* Minimum Value: {{ element.minimum_value|float }}
+* Minimum Value: {{ element.minimum_value|int }}
 {% endif -%}
 {% if element.maximum_value is not none %}
-* Maximum Value: {{ element.maximum_value|float }}
+* Maximum Value: {{ element.maximum_value|int }}
 {% endif -%}
 {% if element.pattern %}
 * Regex pattern: {{ '`' }}{{  element.pattern }}{{ '`' }}
