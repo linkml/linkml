@@ -163,11 +163,12 @@ class ShExGenerator(Generator):
                     else:
                         value_uri = f"{self._class_or_type_uri(enum.name)}#{urlparse.quote(value.text)}"
                         values.append(value_uri)
-                node_constraint = NodeConstraint(
-                    #id=self._class_or_type_uri(slot.range),
-                    values=values,
-                )
-                constraint.valueExpr = node_constraint
+                if values:
+                    node_constraint = NodeConstraint(
+                        #id=self._class_or_type_uri(slot.range),
+                        values=values,
+                    )
+                    constraint.valueExpr = node_constraint
             else:
                 constraint.valueExpr = self._class_or_type_uri(slot.range)
 
