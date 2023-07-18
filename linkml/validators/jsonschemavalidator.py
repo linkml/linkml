@@ -26,7 +26,7 @@ class HashableSchemaDefinition(SchemaDefinition):
 
 
 @lru_cache(maxsize=None)
-def _generate_jsonschema(schema, top_class, closed):
+def _generate_jsonschema(schema, top_class, closed, include_range_class_descendants):
     logging.debug("Generating JSON Schema")
     not_closed = not closed
     return JsonSchemaGenerator(
@@ -34,6 +34,7 @@ def _generate_jsonschema(schema, top_class, closed):
         mergeimports=True,
         top_class=top_class,
         not_closed=not_closed,
+        include_range_class_descendants=include_range_class_descendants,
     ).generate()
 
 
@@ -49,6 +50,7 @@ class JsonSchemaDataValidator(DataValidator):
     Implementation of DataValidator that wraps jsonschema validation
     """
 
+    include_range_class_descendants: bool = False
     _hashable_schema: Union[str, HashableSchemaDefinition] = field(init=False, repr=False)
 
     def __setattr__(self, __name: str, __value: Any) -> None:
@@ -104,7 +106,9 @@ class JsonSchemaDataValidator(DataValidator):
             if len(roots) != 1:
                 raise ValueError(f"Cannot determine tree root: {roots}")
             target_class_name = roots[0]
-        jsonschema_obj = _generate_jsonschema(self._hashable_schema, target_class_name, closed)
+        jsonschema_obj = _generate_jsonschema(
+            self._hashable_schema, target_class_name, closed, self.include_range_class_descendants
+        )
         validator = jsonschema.Draft7Validator(
             jsonschema_obj, format_checker=jsonschema.Draft7Validator.FORMAT_CHECKER
         )
@@ -135,6 +139,14 @@ class JsonSchemaDataValidator(DataValidator):
     default=False,
     help="Exit after the first validation failure is found. If not specified all validation failures are reported.",
 )
+@click.option(
+    "--include-range-class-descendants/--no-range-class-descendants",
+    default=False,
+    show_default=False,
+    help="""
+When handling range constraints, include all descendants of the range class instead of just the range class
+""",
+)
 @click.argument("input")
 @click.version_option(__version__, "-V", "--version")
 def cli(
@@ -145,6 +157,7 @@ def cli(
     schema=None,
     index_slot=None,
     exit_on_first_failure=False,
+    include_range_class_descendants=False,
 ) -> None:
     """
     Validates instance data
@@ -188,7 +201,9 @@ def cli(
     if schema is None:
         raise Exception("--schema must be passed in order to validate. Suppress with --no-validate")
 
-    validator = JsonSchemaDataValidator(schema)
+    validator = JsonSchemaDataValidator(
+        schema, include_range_class_descendants=include_range_class_descendants
+    )
     error_count = 0
     for error in validator.iter_validate_dict(
         data_as_dict, target_class_name=py_target_class.class_name
