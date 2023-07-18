@@ -657,6 +657,56 @@ class DocGeneratorTestCase(unittest.TestCase):
 
         assert_mdfile_contains("index.md", "MarriageEvent", after="EmploymentEvent")
 
+    def test_uml_diagrams(self):
+        gen = DocGenerator(
+            SCHEMA, mergeimports=True, diagram_type="er_diagram", include_top_level_diagram=True
+        )
+
+        md_temp_dir = tempfile.mkdtemp()
+
+        gen.serialize(directory=md_temp_dir)
+
+        # check if ER diagram has been included at top level, i.e., on the index page
+        assert_mdfile_contains(
+            "index.md",
+            "## Schema Diagram",
+            after="Name: kitchen_sink",
+            followed_by=["```mermaid", "erDiagram"],
+            outdir=md_temp_dir,
+        )
+
+        # pick a random class documentation markdown file and check if there
+        # is a mermaid ER diagram in it
+        assert_mdfile_contains(
+            "Person.md",
+            "# Class: Person",
+            followed_by=["```mermaid", "erDiagram", "Person"],
+            outdir=md_temp_dir,
+        )
+
+        shutil.rmtree(md_temp_dir)
+
+        gen = DocGenerator(
+            SCHEMA,
+            mergeimports=True,
+            diagram_type="uml_class_diagram",
+        )
+
+        md_temp_dir = tempfile.mkdtemp()
+
+        gen.serialize(directory=md_temp_dir)
+
+        # pick a random class documentation markdown file and check if there
+        # is a mermaid class diagram in it
+        assert_mdfile_contains(
+            "Person.md",
+            "# Class: Person",
+            followed_by=["```mermaid", "classDiagram", "Person"],
+            outdir=md_temp_dir,
+        )
+
+        shutil.rmtree(md_temp_dir)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -1,8 +1,3 @@
-{% if diagram_type == "er_diagram" %}
-```{{ gen.mermaid_directive() }}
-{{ gen.mermaid_diagram([element.name]) }}
-```
-{% else %}
 {% if schemaview.class_parents(element.name) and schemaview.class_children(element.name) %}
 ```{{ gen.mermaid_directive() }}
  classDiagram
@@ -61,5 +56,4 @@
         {% endif %}
       {% endfor %}
 ```
-{% endif %}
 {% endif %}
