@@ -2,9 +2,9 @@
 
 """
 import os
+import urllib.parse as urlparse
 from dataclasses import dataclass, field
 from typing import List, Optional, Union
-import urllib.parse as urlparse
 
 import click
 from jsonasobj import as_json as as_json_1
