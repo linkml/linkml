@@ -15,3 +15,4 @@ URI: [meta:Integer](https://w3id.org/linkml/Integer)
 |  |  |  |
 | --- | --- | --- |
 | **Exact Mappings:** | | schema:Integer |
+

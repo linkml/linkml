@@ -15,3 +15,4 @@ URI: [meta:Double](https://w3id.org/linkml/Double)
 |  |  |  |
 | --- | --- | --- |
 | **Close Mappings:** | | schema:Float |
+

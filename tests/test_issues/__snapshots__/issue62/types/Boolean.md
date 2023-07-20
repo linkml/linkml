@@ -16,3 +16,4 @@ URI: [meta:Boolean](https://w3id.org/linkml/Boolean)
 |  |  |  |
 | --- | --- | --- |
 | **Exact Mappings:** | | schema:Boolean |
+

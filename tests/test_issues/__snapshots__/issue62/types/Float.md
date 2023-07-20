@@ -15,3 +15,4 @@ URI: [meta:Float](https://w3id.org/linkml/Float)
 |  |  |  |
 | --- | --- | --- |
 | **Exact Mappings:** | | schema:Float |
+

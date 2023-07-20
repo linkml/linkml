@@ -16,3 +16,4 @@ URI: [meta:Date](https://w3id.org/linkml/Date)
 |  |  |  |
 | --- | --- | --- |
 | **Exact Mappings:** | | schema:Date |
+

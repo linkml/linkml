@@ -26,3 +26,4 @@ URI: [https://example.com/test62/category](https://example.com/test62/category)
 |  |  |  |
 | --- | --- | --- |
 | **Mappings:** | | rdfs:subClassOf |
+

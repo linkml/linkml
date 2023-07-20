@@ -15,3 +15,4 @@ URI: [meta:Decimal](https://w3id.org/linkml/Decimal)
 |  |  |  |
 | --- | --- | --- |
 | **Broad Mappings:** | | schema:Number |
+

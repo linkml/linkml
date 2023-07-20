@@ -16,3 +16,4 @@ URI: [meta:Time](https://w3id.org/linkml/Time)
 |  |  |  |
 | --- | --- | --- |
 | **Exact Mappings:** | | schema:Time |
+
