@@ -5,9 +5,12 @@ repos:
   rev: v4.4.0
   hooks:
   - id: end-of-file-fixer
+    exclude: __snapshots__
   - id: check-yaml
+    exclude: __snapshots__
   - id: check-toml
   - id: trailing-whitespace
+    exclude: __snapshots__
 - repo: https://github.com/psf/black
   rev: 23.7.0
   hooks:

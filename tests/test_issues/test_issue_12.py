@@ -1,23 +1,25 @@
-import unittest
+import datetime
 
+import pytest
 import requests
 
 from linkml.generators.yumlgen import YumlGenerator
-from tests.test_issues.environment import env
+
+# Get the "real" now before it is frozen within the test
+now = datetime.datetime.now()
 
 
-class Issue12UnitTest(unittest.TestCase):
-    def test_domain_slots(self):
-        """has_phenotype shouldn't appear in the UML graph"""
-        yuml = YumlGenerator(env.input_path("issue_12.yaml")).serialize()
-        self.assertEqual(
-            "https://yuml.me/diagram/nofunky;dir:TB/class/[BiologicalEntity]++- "
-            "required thing 0..1>[PhenotypicFeature],[BiologicalEntity]",
-            yuml,
-        )
-        resp = requests.get(yuml)
-        self.assertTrue(resp.ok)
+@pytest.mark.network
+def test_domain_slots(input_path, frozen_time):
+    """has_phenotype shouldn't appear in the UML graph"""
+    yuml = YumlGenerator(input_path("issue_12.yaml")).serialize()
+    expected = (
+        "https://yuml.me/diagram/nofunky;dir:TB/class/[BiologicalEntity]++- "
+        "required thing 0..1>[PhenotypicFeature],[BiologicalEntity]"
+    )
+    assert yuml == expected
 
-
-if __name__ == "__main__":
-    unittest.main()
+    # Need to move the frozen time ahead to avoid SSL issues
+    frozen_time.move_to(now)
+    resp = requests.get(yuml)
+    assert resp.ok
