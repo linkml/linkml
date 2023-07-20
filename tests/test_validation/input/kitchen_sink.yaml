@@ -74,6 +74,7 @@ classes:
       - age in years
       - addresses
       - has birth event
+      - has events
     slot_usage:
       name:
         pattern: "^\\S+ \\S+"  ## do not do this in a real schema, people have all kinds of names
@@ -240,6 +241,10 @@ slots:
   city:
   has birth event:
     range: BirthEvent
+  has events:
+    multivalued: True
+    range: Event
+    inlined_as_list: true
 
 enums:
   FamilialRelationshipType:
