@@ -18,13 +18,14 @@ class Snapshot(ABC):
         self.eq_state = ""
 
     def __eq__(self, other: object) -> bool:
+        __tracebackhide__ = True
         if self.config.getoption("generate_snapshots"):
             self.path.parent.mkdir(parents=True, exist_ok=True)
             return self.generate_snapshot(other)
         else:
             if not self.path.exists():
-                raise RuntimeError(
-                    f"Snapshot {self.path} does not exist. To generate snapshot run test with --generate-snapshots"
+                raise FileNotFoundError(
+                    f"snapshot {self.path} does not exist. To generate snapshot run test with --generate-snapshots"
                 )
             return self.compare_to_snapshot(other)
 
@@ -52,8 +53,8 @@ class SnapshotFile(Snapshot):
                 dest_file.write(source)
             return True
         # we got something we don't know how to handle
-        self.eq_state = f"unable to generate snapshot from {source}"
-        return False
+        __tracebackhide__ = True
+        raise TypeError(f"cannot generate snapshot from {source}")
 
     def compare_to_snapshot(self, other: object) -> bool:
         with open(self.path, "r") as snapshot_file:
@@ -65,8 +66,8 @@ class SnapshotFile(Snapshot):
         elif isinstance(other, str):
             actual = other
         else:
-            self.eq_state = f"cannot compare snapshot to {other}"
-            return False
+            __tracebackhide__ = True
+            raise TypeError(f"cannot compare snapshot to {other}")
 
         if self.path.suffix == ".ttl":
             self.eq_state = compare_rdf(actual, expected)
@@ -89,16 +90,16 @@ class SnapshotDirectory(Snapshot):
             shutil.copytree(source, self.path)
             return True
         # we got something we don't know how to handle
-        self.eq_state = f"unable to generate snapshot from {source}"
-        return False
+        __tracebackhide__ = True
+        raise TypeError(f"cannot generate snapshot from {source}")
 
     def compare_to_snapshot(self, other: object) -> bool:
         if isinstance(other, Path):
             self.eq_state = are_dir_trees_equal(self.path, other)
             return self.eq_state is None
         else:
-            self.eq_state = f"cannot compare snapshot to {other}"
-            return False
+            __tracebackhide__ = True
+            raise TypeError(f"cannot compare snapshot to {other}")
 
 
 @pytest.fixture
