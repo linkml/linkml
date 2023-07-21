@@ -69,13 +69,15 @@ class SnapshotFile(Snapshot):
             __tracebackhide__ = True
             raise TypeError(f"cannot compare snapshot to {other}")
 
-        if self.path.suffix == ".ttl":
+        if self.path.suffix in (".ttl", ".owl"):
             self.eq_state = compare_rdf(actual, expected)
             return self.eq_state is None
         else:
             is_eq = actual == expected
             if not is_eq:
-                self.eq_state = _diff_text(actual, expected, self.config.getoption("verbose"))
+                self.eq_state = "\n".join(
+                    _diff_text(actual, expected, self.config.getoption("verbose"))
+                )
             return is_eq
 
 
