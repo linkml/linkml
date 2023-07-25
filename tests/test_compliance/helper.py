@@ -67,6 +67,7 @@ def report():
         for k, v in cached_generator_output.items():
             stream.write(f"{k}: {v}\n")
 
+
 atexit.register(report)
 
 

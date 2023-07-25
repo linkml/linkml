@@ -2,8 +2,17 @@ import re
 
 import pytest
 
-from tests.test_compliance.helper import metamodel_schemaview, validated_schema, _check_data, ValidationBehavior, \
-    PYDANTIC_ROOT_CLASS, PYTHON_DATACLASSES_ROOT_CLASS, PYDANTIC, PYTHON_DATACLASSES, JSON_SCHEMA
+from tests.test_compliance.helper import (
+    metamodel_schemaview,
+    validated_schema,
+    _check_data,
+    ValidationBehavior,
+    PYDANTIC_ROOT_CLASS,
+    PYTHON_DATACLASSES_ROOT_CLASS,
+    PYDANTIC,
+    PYTHON_DATACLASSES,
+    JSON_SCHEMA,
+)
 
 CLASS_CONTAINER = "Container"
 CLASS_C = "C"
@@ -18,6 +27,7 @@ EXAMPLE_STRING_VALUE_2 = "bar"
 EXAMPLE_STRING_VALUE_3 = "fuz"
 
 CORE_FRAMEWORKS = [PYTHON_DATACLASSES, PYDANTIC, JSON_SCHEMA]
+
 
 @pytest.mark.parametrize("data", ["flat", "nested"])
 @pytest.mark.parametrize("foreign_key", [0, "FK"])
