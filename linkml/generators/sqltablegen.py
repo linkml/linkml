@@ -118,6 +118,7 @@ class SQLTableGenerator(Generator):
     generatorname = os.path.basename(__file__)
     generatorversion = "0.1.1"
     valid_formats = ["sql"]
+    file_extension = "sql"
     uses_schemaloader = False
 
     # ObjectVars
@@ -128,6 +129,9 @@ class SQLTableGenerator(Generator):
     rename_foreign_keys: bool = field(default_factory=lambda: False)
     direct_mapping: bool = field(default_factory=lambda: False)
     relative_slot_num: bool = field(default_factory=lambda: 0)
+
+    def serialize(self, **kwargs) -> str:
+        return self.generate_ddl(**kwargs)
 
     def generate_ddl(self, naming_policy: SqlNamingPolicy = None, **kwargs) -> str:
         ddl_str = ""
@@ -162,7 +166,7 @@ class SQLTableGenerator(Generator):
                 return ""
             return txt.replace("\n", "")
 
-        # Currently SQLite dialect in SQLA does not generated comments; see
+        # Currently SQLite dialect in SQLA does not generate comments; see
         # https://github.com/sqlalchemy/sqlalchemy/issues/1546#issuecomment-1067389172
         # As a workaround we add these as "--" comments via direct string manipulation
         include_comments = self.dialect == "sqlite"

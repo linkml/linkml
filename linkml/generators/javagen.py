@@ -8,7 +8,6 @@ from jinja2 import Environment, FileSystemLoader, Template
 from linkml_runtime.linkml_model.meta import TypeDefinition
 
 from linkml._version import __version__
-from linkml.generators import JAVA_GEN_VERSION
 from linkml.generators.oocodegen import OOCodeGenerator
 from linkml.utils.generator import shared_arguments
 
@@ -69,7 +68,7 @@ class JavaGenerator(OOCodeGenerator):
 
     # ClassVars
     generatorname = os.path.basename(__file__)
-    generatorversion = JAVA_GEN_VERSION
+    generatorversion = "0.0.1"
     valid_formats = ["java"]
 
     # ObjectVars

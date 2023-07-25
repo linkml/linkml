@@ -26,6 +26,7 @@ class ShaclGenerator(Generator):
     generatorname = os.path.basename(__file__)
     generatorversion = "0.0.1"
     valid_formats = ["ttl"]
+    file_extension = "shacl.ttl"
     visit_all_class_slots = False
     uses_schemaloader = True
 
