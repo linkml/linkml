@@ -149,6 +149,7 @@ class PydanticGenerator(OOCodeGenerator):
     generatorname = os.path.basename(__file__)
     generatorversion = "0.0.1"
     valid_formats = ["pydantic"]
+    file_extension = "py"
 
     # ObjectVars
     template_file: str = None

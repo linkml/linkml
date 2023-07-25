@@ -54,6 +54,7 @@ class PythonGenerator(Generator):
     generatorname = os.path.basename(__file__)
     generatorversion = PYTHON_GEN_VERSION
     valid_formats = ["py"]
+    file_extension = "py"
     visit_all_class_slots = False
     uses_schemaloader = True
 

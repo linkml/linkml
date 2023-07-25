@@ -144,6 +144,7 @@ class JsonSchemaGenerator(Generator):
     generatorversion = "0.0.3"
     valid_formats = ["json"]
     uses_schemaloader = False
+    file_extension = "schema.json"
 
     # @deprecated("Use top_class")
     topClass: Optional[str] = None
