@@ -64,7 +64,7 @@ the core package on schema-automator
 
 ## Additional packages
 
-* [linkml-data-ops](https://github.com/linkml/linkml-dataops) **NEW**
+* [linkml-dataops](https://github.com/linkml/linkml-dataops)
   - extension to runtime to provide:
      - a change/patch API over data
      - a query API over data

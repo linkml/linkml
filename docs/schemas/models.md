@@ -231,7 +231,7 @@ Types in LinkML are scalar data values such as strings, integers, floats, and so
 For example, you may represent chemical formulae as strings in your model, but if you provide an explicit type that maps to string, it makes the intended meaning clearer, and different applications can operate on these differently:
 
 ```yaml
-  chemical formula value:
+  ChemicalFormulaValue:
     uri: xsd:string
     base: str
     description: A chemical formula

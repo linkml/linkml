@@ -18,7 +18,14 @@ _{{ element_description_line }}_
 
 URI: {{ gen.uri_link(element) }}
 
+
+{% if diagram_type == "er_diagram" %}
+```{{ gen.mermaid_directive() }}
+{{ gen.mermaid_diagram([element.name]) }}
+```
+{% else %}
 {% include "class_diagram.md.jinja2" %}
+{% endif %}
 
 {% if schemaview.class_parents(element.name) or schemaview.class_children(element.name, mixins=False) %}
 

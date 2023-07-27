@@ -192,7 +192,7 @@ class TypescriptGenerator(OOCodeGenerator):
 def cli(yamlfile, **args):
     """Generate typescript interfaces and types
 
-    See https://linkml.io/linkml-runtime.js
+    See https://github.com/linkml/linkml-runtime.js
     """
     gen = TypescriptGenerator(yamlfile, **args)
     print(gen.serialize())
