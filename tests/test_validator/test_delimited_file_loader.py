@@ -1,20 +1,7 @@
-import os
-import tempfile
 import unittest
-from contextlib import contextmanager
 
 from linkml.validator.loaders import CsvLoader, TsvLoader
-
-
-@contextmanager
-def data_file(test_data: str):
-    file = tempfile.NamedTemporaryFile(mode="w+", delete=False)
-    file.write(test_data)
-    file.close()
-
-    yield file.name
-
-    os.unlink(file.name)
+from tests.test_validator import data_file
 
 
 class TestDelimitedFileLoader(unittest.TestCase):

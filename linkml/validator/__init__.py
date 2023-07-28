@@ -1,11 +1,35 @@
+import os
 from typing import Any, Optional, Union
 
 from linkml_runtime.linkml_model import SchemaDefinition
 from linkml_runtime.loaders import yaml_loader
 
+from linkml.validator.loaders import CsvLoader, JsonLoader, TsvLoader
 from linkml.validator.plugins import JsonschemaValidationPlugin
 from linkml.validator.report import ValidationReport
 from linkml.validator.validator import Validator
+
+
+def _get_default_validator(
+    schema: Union[str, dict, SchemaDefinition],
+    *,
+    strict: bool = False,
+) -> Validator:
+    try:
+        if isinstance(schema, dict):
+            schema = SchemaDefinition(**schema)
+        elif isinstance(schema, str):
+            schema = yaml_loader.load(schema, target_class=SchemaDefinition)
+
+        if not isinstance(schema, SchemaDefinition):
+            raise ValueError(f"Schema could not be loaded from {schema}")
+    except ValueError as e:
+        raise ValueError(f"Invalid schema: {schema}") from e
+
+    validation_plugins = [JsonschemaValidationPlugin(closed=True, strict=strict)]
+
+    validator = Validator(schema, validation_plugins=validation_plugins)
+    return validator
 
 
 def validate(
@@ -37,25 +61,29 @@ def validate(
     :return: A validation report
     :rtype: ValidationReport
     """
-    try:
-        if isinstance(schema, dict):
-            schema = SchemaDefinition(**schema)
-        elif isinstance(schema, str):
-            schema = yaml_loader.load(schema, target_class=SchemaDefinition)
-
-        if not isinstance(schema, SchemaDefinition):
-            raise ValueError(f"Schema could not be loaded from {schema}")
-    except ValueError as e:
-        raise ValueError(f"Invalid schema: {schema}") from e
-
-    validation_plugins = [JsonschemaValidationPlugin(closed=True, strict=strict)]
-
-    validator = Validator(schema, validation_plugins=validation_plugins)
-
+    validator = _get_default_validator(schema, strict=strict)
     return validator.validate(instance, target_class)
 
 
-# TODO: Add a high-level validate_file function?
+def validate_file(
+    file: Union[str, bytes, os.PathLike],
+    schema: Union[str, dict, SchemaDefinition],
+    target_class: Optional[str] = None,
+    *,
+    strict: bool = False,
+) -> ValidationReport:
+    _, ext = os.path.splitext(file)
+    if ext == ".csv":
+        loader = CsvLoader(file, skip_empty_rows=True)
+    elif ext == ".tsv":
+        loader = TsvLoader(file, skip_empty_rows=True)
+    elif ext == ".json":
+        loader = JsonLoader(file)
+    else:
+        raise ValueError(f"Could not find loader for file: {file}")
+
+    validator = _get_default_validator(schema, strict=strict)
+    return validator.validate_source(loader, target_class)
 
 
-__all__ = ["Validator", "validate"]
+__all__ = ["Validator", "validate", "validate_file"]
