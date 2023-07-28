@@ -136,6 +136,24 @@ When making your decision, you should weigh factors such as the fact that things
 
 See also FAQ entries in [modeling](modeling) which compare some similar constructs.
 
+## Why should I use LinkML over JSON-LD?
+
+JSON-LD is a lightweight way of exchanging RDF data as JSON files. Different groups use JSON-LD
+in different ways. In some cases, JSON-LD contexts are provided as a way to map from developer-friendly
+JSON files to less familiar RDF/Turtle formats. In other cases, the JSON-LD files are operator on
+directly as JSON objects.
+
+Note that JSON-LD doesn't in itself describe how data should be *structured* - e.g. which fields
+are expected, what the expected range is of different fields, etc. Some groups combine a JSON-LD
+specification with either JSON-Schema or with a shape language like SHACL.
+
+One advantage of LinkML is that it provides a "one stop shop", where all aspects of your data
+can be described in one place without duplication, and then have JSON-LD contexts, shapes, and
+JSON schema generated for you.
+
+For more, see [Using JSON-LD](https://linkml.io/linkml/howtos/using-jsonld.html) in the how-tos
+section of this site.
+
 ## Why should I use LinkML over ShEx/SHACL?
 
 ShEx and SHACL are both excellent "shape" languages for providing
