@@ -259,7 +259,7 @@ def test_mixins(framework, description, cls, object, is_valid):
             },
             "_mappings": {
                 PYDANTIC: "class C(MC2, MC1):",
-                PYTHON_DATACLASSES: "@dataclass\nclass C(YAMLRoot):",
+                PYTHON_DATACLASSES: "@dataclass\nclass C(YAMLRoot):",  # DC rolls up
                 JSON_SCHEMA: {"$defs": json_schema_defs},
             },
         },
@@ -310,7 +310,9 @@ def test_mixins(framework, description, cls, object, is_valid):
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
 def test_refine_attributes(framework, description, cls, object, is_valid):
     """
-    Tests refining of attributes.
+    Tests refining of attributes via is_a.
+
+    This test is analogous to test_slot_usage
 
     :param framework:
     :param description:
@@ -346,7 +348,13 @@ def test_refine_attributes(framework, description, cls, object, is_valid):
             },
         },
     }
-    schema = validated_schema(test_refine_attributes, "default", framework, classes=classes)
+    schema = validated_schema(
+        test_refine_attributes,
+        "default",
+        framework,
+        classes=classes,
+        core_elements=["is_a", "attributes"],
+    )
     check_data(
         schema,
         description.replace(" ", "_"),
@@ -430,7 +438,14 @@ def test_slot_usage(framework, description, cls, object, is_valid):
             },
         },
     }
-    schema = validated_schema(test_slot_usage, "default", framework, classes=classes, slots=slots)
+    schema = validated_schema(
+        test_slot_usage,
+        "default",
+        framework,
+        classes=classes,
+        slots=slots,
+        core_elements=["slot_usage", "is_a"],
+    )
     check_data(
         schema,
         description.replace(" ", "_"),
@@ -439,4 +454,85 @@ def test_slot_usage(framework, description, cls, object, is_valid):
         is_valid,
         target_class=cls,
         description="pattern",
+    )
+
+
+@pytest.mark.parametrize(
+    "description,cls,object,is_valid",
+    [
+        ("object may be empty", CLASS_C, {}, True),
+        (
+            "slots are inherited",
+            CLASS_C,
+            {
+                SLOT_S2: {
+                    SLOT_S3: EXAMPLE_STRING_VALUE_3,
+                },
+            },
+            True,
+        ),
+        (
+            "slots are inherited2",
+            CLASS_C,
+            {
+                SLOT_S2: EXAMPLE_STRING_VALUE_2,
+            },
+            False,
+        ),
+    ],
+)
+@pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
+def test_basic_slot_inheritance(
+    framework,
+    description,
+    cls: str,
+    object,
+    is_valid,
+):
+    """
+    Tests behavior of is_a in slot hierarchies.
+
+    :param framework:
+    :param description:
+    :param object:
+    :param is_valid:
+    :return:
+    """
+    slots = {
+        SLOT_S1: {"range": CLASS_X},
+        SLOT_S2: {
+            "is_a": SLOT_S1,
+        },
+    }
+    classes = {
+        CLASS_X: {
+            "attributes": {
+                SLOT_S3: {
+                    "required": True,
+                },
+            }
+        },
+        CLASS_C: {
+            "slots": [SLOT_S2],
+        },
+    }
+
+    expected_behavior = ValidationBehavior.IMPLEMENTS
+    schema = validated_schema(
+        test_basic_slot_inheritance,
+        "default",
+        framework,
+        classes=classes,
+        slots=slots,
+        core_elements=["is_a", "slots"],
+    )
+    check_data(
+        schema,
+        description.replace(" ", "_"),
+        framework,
+        object,
+        is_valid,
+        expected_behavior=expected_behavior,
+        target_class=cls,
+        description=description,
     )

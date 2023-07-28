@@ -1,6 +1,8 @@
 """Inlining tests.
 
 Tests that make use of linkml:inlined and related constructs.
+
+- TODO: dict normalization, SimpleDicts and CompactDicts
 """
 import pytest
 
@@ -24,10 +26,9 @@ from tests.test_compliance.test_compliance import (
     SLOT_S2,
     SLOT_S3,
 )
-from tests.test_compliance.test_core_compliance import test_type_range
 
 
-@pytest.mark.parametrize("data", ["flat", "nested"])
+@pytest.mark.parametrize("data", ["inlined_list", "flat", "nested", "flat_list"])
 @pytest.mark.parametrize("foreign_key", [0, "FK"])
 @pytest.mark.parametrize("multivalued", [0, "MV"])
 @pytest.mark.parametrize("inlined_as_list", [0, "IAL"])
@@ -168,10 +169,17 @@ def test_inlined(framework, inlined, inlined_as_list, multivalued, foreign_key, 
             },
         },
     }
-    schema = validated_schema(test_type_range, schema_name, framework, classes=classes)
+    schema = validated_schema(
+        test_inlined,
+        schema_name,
+        framework,
+        classes=classes,
+        core_elements=["inlined", "inlined_as_list", "multivalued", "identifier"],
+    )
     implementation_status = ValidationBehavior.IMPLEMENTS
     coerced = None
     id_val = "X:1"
+    id_val2 = "X:2"
     if data == "flat":
         inst = {
             SLOT_S1: id_val,
@@ -205,11 +213,35 @@ def test_inlined(framework, inlined, inlined_as_list, multivalued, foreign_key, 
             if inlined and not inlined_as_list and multivalued and foreign_key:
                 # TODO: json-schema generation appears incorrect here
                 implementation_status = ValidationBehavior.INCOMPLETE
+    elif data == "flat_list":
+        inst = {
+            SLOT_S1: [id_val, id_val2],
+        }
+        is_valid = not entailed_inlined and multivalued
+        if framework == SQL_DDL_SQLITE and multivalued and foreign_key:
+            # TODO: bug in SQLA for this case
+            implementation_status = ValidationBehavior.INCOMPLETE
+    elif data == "inlined_list":
+        inst = {
+            SLOT_S1: [
+                {
+                    SLOT_ID: id_val,
+                    SLOT_S2: EXAMPLE_STRING_VALUE_2,
+                    SLOT_S3: EXAMPLE_STRING_VALUE_3,
+                },
+                {
+                    SLOT_ID: id_val2,
+                    SLOT_S2: EXAMPLE_STRING_VALUE_2,
+                    SLOT_S3: EXAMPLE_STRING_VALUE_3,
+                },
+            ],
+        }
+        is_valid = (inlined_as_list or not foreign_key) and multivalued
     else:
         raise AssertionError(f"Unknown data type {data}")
     if not is_valid and framework == PYTHON_DATACLASSES:
         implementation_status = ValidationBehavior.COERCES
-    if framework == SQL_DDL_SQLITE:
+    if framework == SQL_DDL_SQLITE and not is_valid:
         implementation_status = ValidationBehavior.NOT_APPLICABLE
     check_data(
         schema,

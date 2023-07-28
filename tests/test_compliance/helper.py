@@ -91,6 +91,8 @@ class DataCheck(BaseModel):
     data_name: str
     framework: str
     expected_behavior: ValidationBehavior
+    description: str = None
+    notes: str = None
 
 
 class Feature(BaseModel):
@@ -136,13 +138,19 @@ class FeatureSet(BaseModel):
 
 
 cached_generator_output: Dict[Tuple[SCHEMA_NAME, FRAMEWORK], Tuple[Generator, str]] = {}
-"""Cache"""
+"""Cache generators and their outputs to avoid repeated computation."""
 
-all_test_results = []
+all_test_results: List[DataCheck] = []
+"""Result of each data check."""
 
 feature_dict: Dict[str, Feature] = {}
+"""Map from test name to feature."""
 
 schema_name_to_feature: Dict[str, str] = {}
+"""Map from schema name to feature."""
+
+schema_name_to_metamodel_elements: Dict[SCHEMA_NAME, List[str]] = {}
+"""Map from schema name all metamodels used in that schema."""
 
 
 def _as_tsv(rows: List[Dict], path: Union[str, Path]) -> str:
@@ -182,6 +190,15 @@ def report():
         pivoted[key]["data"] = check.data_name
         pivoted[key][check.framework] = check.expected_behavior
     _as_tsv(list(pivoted.values()), f"pivoted{suffix}")
+    elements = set()
+    for v in schema_name_to_metamodel_elements.values():
+        elements.update(v)
+    msv = metamodel_schemaview()
+    all_elts = set([str(k) for k in msv.all_classes()]).union([str(k) for k in msv.all_slots()])
+    coverage = len(elements.intersection(all_elts)) / len(all_elts)
+    with open(OUTPUT_DIR / f"coverage{suffix}.txt", "w", encoding="utf-8") as stream:
+        stream.write(f"Coverage: {coverage}")
+        stream.write("\n".join(sorted(set(elements))))
 
 
 ## atexit.register(report)
@@ -196,11 +213,27 @@ def metamodel_schemaview() -> SchemaView:
     return package_schemaview(meta.__name__)
 
 
+def _get_metamodel_elements(obj: Any) -> Iterator[str]:
+    if isinstance(obj, list):
+        for elt in obj:
+            yield from _get_metamodel_elements(elt)
+    elif isinstance(obj, dict):
+        for k, v in obj.items():
+            yield k
+            yield from _get_metamodel_elements(v)
+    else:
+        pass
+
+
 def _generate_framework_output(
     schema: Dict, framework: str, mappings: List = None
 ) -> Tuple[Generator, str]:
     pair = (schema["name"], framework)
+    if schema["name"] not in schema_name_to_metamodel_elements:
+        schema_name_to_metamodel_elements[schema["name"]] = list(_get_metamodel_elements(schema))
     if pair not in cached_generator_output:
+        if mappings is None:
+            raise AssertionError(f"No mappings for {pair} - called out of order?")
         gen_class = GENERATORS[framework]
         if isinstance(gen_class, tuple):
             gen_class, gen_args = gen_class
@@ -220,12 +253,35 @@ def _generate_framework_output(
                     assert expected in output
                 elif isinstance(expected, dict):
                     output_obj = json.loads(output)
-                    assert expected.items() <= output_obj.items()
+                    assert _obj_within_obj(expected, output_obj)
+                    # assert expected.items() <= output_obj.items()
                 else:
                     raise AssertionError
     else:
         logging.debug(f"Reusing {len(cached_generator_output.items())}")
     return cached_generator_output[pair]
+
+
+def _obj_within_obj(expected: Dict, actual: Dict) -> bool:
+    """
+    Check if the expected object is within the actual object.
+
+    :param expected:
+    :param actual:
+    :return:
+    """
+    if expected.items() <= actual.items():
+        return True
+    for k, v in actual.items():
+        if isinstance(v, dict):
+            if _obj_within_obj(expected, v):
+                return True
+        elif isinstance(v, list):
+            for elt in v:
+                if isinstance(elt, dict):
+                    if _obj_within_obj(expected, elt):
+                        return True
+    return False
 
 
 def _schema_out_path(schema: Dict) -> Path:
@@ -242,6 +298,7 @@ def _make_schema(
     slots: Dict = None,
     types: Dict = None,
     prefixes: Dict = None,
+    core_elements: List = None,
     post_process: Callable = None,
     **kwargs,
 ) -> Tuple[Dict, List]:
@@ -273,6 +330,10 @@ def _make_schema(
         schema[k] = v
     if prefixes:
         schema["prefixes"].update(prefixes)
+    if core_elements:
+        if "keywords" not in schema:
+            schema["keywords"] = []
+        schema["keywords"].extend(core_elements)
     if post_process is not None:
         post_process(schema)
     mappings = list(_extract_mappings(schema))
@@ -286,15 +347,28 @@ def _make_schema(
     return schema, mappings
 
 
-def validated_schema(test: Callable, name: str, framework: str, **kwargs) -> Dict:
+def validated_schema(test: Callable, local_name: str, framework: str, **kwargs) -> Dict:
     """
     Generate a schema and validate it using the given framework.
 
-    Validation is performed using `_mapping` annotations in the schema; these are
-    extracted out before schema compilation.
+    Validation is performed using `_mapping` keys in the schema; these are
+    extracted out before schema compilation, and used to check the schema output.
 
-    :param test:
-    :param name:
+    Note that this function performs in-memory caching of schema outputs, to
+    avoid recomputation. It will also write out the schema and generated outputs to disk.
+    The key for the cache and the base filename are controlled by two arguments:
+
+    - the name of the test function (e.g. test_inlined)
+    - a local name that represents a particular pytest parameter combination.
+
+    The first argument specifies the test function that is calling this function.
+    This is used to extract metadata about the test, including its name and
+    its documentation. When authoring a test you must ensure this is correct, otherwise
+    unexpected behavior may occur, such as saving the yaml files in the wrong place or
+    incorrectly caching the schema generation.
+
+    :param test: calling test function; MUST match name of test
+    :param local_name: name for this particular test combination
     :param framework:
     :param kwargs:
     :return:
@@ -306,13 +380,20 @@ def validated_schema(test: Callable, name: str, framework: str, **kwargs) -> Dic
             description=test.__doc__,
             implementations={},
         )
-    schema, mappings = _make_schema(test, name, **kwargs)
+    schema, mappings = _make_schema(test, local_name, **kwargs)
     schema_name_to_feature[schema["name"]] = test_name
-    _gen, output = _generate_framework_output(schema, framework, mappings=mappings)
+    # ensure this is cached
+    _gen, _output = _generate_framework_output(schema, framework, mappings=mappings)
     return schema
 
 
-def _extract_mappings(schema: Dict) -> Iterator:
+def _extract_mappings(schema: Dict) -> Iterator[Tuple[Dict, List]]:
+    """
+    Extract key-values injected into the schema to represent expected outputs per generator.
+
+    :param schema: dict representation of schema
+    :return: yields
+    """
     if isinstance(schema, dict):
         if "_mappings" in schema:
             mappings = schema["_mappings"]
@@ -369,8 +450,9 @@ def _get_sql_store(schema) -> SQLStore:
     schema_name = schema["name"]
     if schema_name not in _sql_store_cache:
         schema_obj = meta.SchemaDefinition(**schema)
-        db_path = _schema_out_path(schema) / "temp.db"
-        store = SQLStore(schema_obj, database_path=db_path, include_schema_in_database=False)
+        _schema_out_path(schema) / "temp.db"
+        # store = SQLStore(schema_obj, database_path=db_path, include_schema_in_database=False)
+        store = SQLStore(schema_obj, use_memory=True, include_schema_in_database=False)
         _, code = _generate_framework_output(schema, PYTHON_DATACLASSES)
         store.native_module = compile_python(code)
         _sql_store_cache[schema_name] = store
@@ -381,11 +463,13 @@ def _get_sql_store(schema) -> SQLStore:
 def check_data(
     schema: Dict,
     data_name: str,
-    framework: str,
+    framework: FRAMEWORK,
     object_to_validate: Dict,
     valid: bool,
     should_warn: bool = False,
-    expected_behavior: ValidationBehavior = ValidationBehavior.IMPLEMENTS,
+    expected_behavior: Union[
+        ValidationBehavior, Tuple[ValidationBehavior, str]
+    ] = ValidationBehavior.IMPLEMENTS,
     target_class: str = None,
     description: str = None,
     coerced: Dict = None,
@@ -393,16 +477,21 @@ def check_data(
     """
     Validate the given object against the given schema using the given framework.
 
-    :param schema:
-    :param data_name:
-    :param framework:
-    :param object_to_validate:
-    :param valid:
-    :param should_warn:
-    :param expected_behavior:
-    :param target_class:
-    :param description:
-    :param coerced:
+    Note: this will attempt to use cached schema output to avoid repeated computation;
+    it is important to ensure this is called *after* `validated_schema`
+
+    Side effects: this will update various report objects
+
+    :param schema: dict representation of schema to validate against
+    :param data_name: a unique label for this dataset. Should be unix-friendly
+    :param framework: name of framework to check (e.g pydantic)
+    :param object_to_validate: dict representation of object to validate
+    :param valid: is the object expected to be inferred valid
+    :param should_warn: true if the object is valid but fails a recommended or SHOULD NOT case
+    :param expected_behavior: is the framework expected to validate or coerce or ignore this scenario?
+    :param target_class: the type of the object
+    :param description: description of this particular test combination
+    :param coerced: Dict representation of repaired/coerced form of object
     :return:
     """
     out_dir = _schema_out_path(schema)
@@ -416,6 +505,9 @@ def check_data(
     # TODO: avoid repeated rewrites of same object shared across frameworks
     with open(out_dir / f"{data_name}.yaml", "w", encoding="utf-8") as stream:
         yaml.safe_dump(object_to_validate, stream)
+    notes = None
+    if isinstance(expected_behavior, tuple):
+        expected_behavior, notes = expected_behavior
     if expected_behavior is None:
         expected_behavior = ValidationBehavior.IMPLEMENTS
     if expected_behavior in [ValidationBehavior.INCOMPLETE, ValidationBehavior.NOT_APPLICABLE]:
@@ -503,11 +595,14 @@ def check_data(
             logging.warning(f"Unsupported generator {gen}")
             expected_behavior = ValidationBehavior.UNTESTED
     feature.set_framework_behavior(framework, expected_behavior)
-    all_test_results.append(
-        DataCheck(
-            schema_name=schema["name"],
-            data_name=data_name,
-            framework=framework,
-            expected_behavior=expected_behavior,
+    if not valid:
+        all_test_results.append(
+            DataCheck(
+                schema_name=schema["name"],
+                data_name=data_name,
+                framework=framework,
+                expected_behavior=expected_behavior,
+                description=description,
+                notes=notes,
+            )
         )
-    )

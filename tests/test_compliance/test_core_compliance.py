@@ -16,9 +16,7 @@ from tests.test_compliance.helper import (
     validated_schema,
 )
 from tests.test_compliance.test_compliance import (
-    CLASS_ANY,
     CLASS_C,
-    CLASS_D,
     CORE_FRAMEWORKS,
     EXAMPLE_STRING_VALUE_1,
     EXAMPLE_STRING_VALUE_2,
@@ -101,7 +99,9 @@ def test_attributes(framework, description, object, is_valid):
             },
         },
     }
-    schema = validated_schema(test_attributes, "attributes", framework, classes=classes)
+    schema = validated_schema(
+        test_attributes, "attributes", framework, classes=classes, core_elements=["attributes"]
+    )
     check_data(
         schema,
         description.replace(" ", "_"),
@@ -276,73 +276,4 @@ def test_cardinality(framework, multivalued, required, data_name, value):
         target_class=CLASS_C,
         coerced=coerced,
         description="pattern",
-    )
-
-
-@pytest.mark.parametrize("use_default_range", [False, True])
-@pytest.mark.parametrize(
-    "data_name,value,is_valid",
-    [("int", 1, True), ("str", "abc", False), ("obj", {SLOT_S2: "abc"}, True)],
-)
-@pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
-def test_any_of(framework, data_name, value, is_valid, use_default_range):
-    """
-    Tests behavior of any_of.
-
-    :param framework:
-    :param data_name:
-    :param value:
-    :param is_valid:
-    :param use_default_range:
-    :return:
-    """
-    classes = {
-        CLASS_D: {
-            "attributes": {
-                SLOT_S2: {
-                    "range": "string",
-                },
-            },
-        },
-        CLASS_C: {
-            "attributes": {
-                SLOT_S1: {
-                    "any_of": [
-                        {
-                            "range": CLASS_D,
-                        },
-                        {"range": "integer"},
-                    ],
-                    "_mappings": {
-                        PYDANTIC: f"{SLOT_S1}: Optional[Union[D, int]]",
-                    },
-                },
-            },
-        },
-    }
-    if use_default_range:
-        default_range = "string"
-        classes[CLASS_ANY] = {
-            "class_uri": "linkml:Any",
-        }
-        classes[CLASS_C]["attributes"][SLOT_S1]["range"] = CLASS_ANY
-    else:
-        default_range = None
-    schema = validated_schema(
-        test_any_of, f"DR{default_range}", framework, classes=classes, default_range=default_range
-    )
-    expected_behavior = ValidationBehavior.IMPLEMENTS
-    if framework in [PYTHON_DATACLASSES, SQL_DDL_SQLITE]:
-        expected_behavior = ValidationBehavior.INCOMPLETE
-    if framework == JSON_SCHEMA and use_default_range:
-        expected_behavior = ValidationBehavior.INCOMPLETE
-    check_data(
-        schema,
-        data_name,
-        framework,
-        {SLOT_S1: value},
-        is_valid,
-        target_class=CLASS_C,
-        expected_behavior=expected_behavior,
-        description=f"validity {is_valid} check for value {value}",
     )

@@ -12,14 +12,13 @@ from tests.test_compliance.helper import (
     validated_schema,
 )
 from tests.test_compliance.test_compliance import CLASS_C, CORE_FRAMEWORKS, SLOT_S1
-from tests.test_compliance.test_core_compliance import test_type_range
 
 
 # TODO: consider merging into normal type test
 @pytest.mark.parametrize("example_value", ["", None, 1, 1.1, "1", True, False])
 @pytest.mark.parametrize("linkml_type", ["string", "integer", "float", "double", "boolean"])
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
-def test_custom_type_range(framework, linkml_type, example_value):
+def test_typeof(framework, linkml_type, example_value):
     """
     Tests behavior of extended types.
 
@@ -53,7 +52,14 @@ def test_custom_type_range(framework, linkml_type, example_value):
             "typeof": linkml_type,
         }
     }
-    schema = validated_schema(test_type_range, linkml_type, framework, classes=classes, types=types)
+    schema = validated_schema(
+        test_typeof,
+        linkml_type,
+        framework,
+        classes=classes,
+        types=types,
+        core_elements=["typeof"],
+    )
     expected_behavior = None
     v = example_value
     is_valid = isinstance(v, (type_py_cls, type(None)))

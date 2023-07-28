@@ -61,7 +61,8 @@ def test_descriptions(framework):
         _mappings={
             PYDANTIC: "",
             PYTHON_DATACLASSES: schema_description,
-        },  # TODO - add description in pydantic
+        },
+        core_elements=["description"],
     )
     check_data(
         schema,
@@ -112,6 +113,7 @@ def test_deprecated(framework):
         "basic",
         framework,
         classes=classes,
+        core_elements=["deprecated"],
     )
     check_data(
         schema,
@@ -157,6 +159,7 @@ def test_element_uris(framework):
         framework,
         classes=classes,
         prefixes={"schema": "http://schema.org/"},
+        core_elements=["class_uri", "slot_uri"],
     )
     check_data(
         schema,

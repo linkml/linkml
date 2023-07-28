@@ -75,6 +75,7 @@ construct in any framework.
 Note for some frameworks no data validation is performed. This will later be synced with ongoing work
 with the LinkML validator.
 
+
 ## Troubleshooting
 
 If you make a change to a generator then it may cause one of the tests here to fail. E.g. a test may
@@ -83,3 +84,15 @@ happen too frequently for stable generators.
 
 ## Adding Tests
 
+When adding a test for a new schema feature, follow the structure of the existing tests.
+These have two blocks: the first generates the schema (possibly from paramaters), and then
+generates output from that schema using different generators using `validated_schema`.
+
+The second part generates test data, and then runs the tests using `check_data`
+
+Be sure to pass in the correct test name as a first argument to `validated_schema`; this quick check
+can ensure you are not accidentally importing from elsewhere:
+
+```
+grep "from tests.test_compliance.test_compliance_ import" tests/test_compliance/*py
+```

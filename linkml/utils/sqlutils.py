@@ -18,7 +18,7 @@ from linkml_runtime.utils.formatutils import underscore
 from linkml_runtime.utils.introspection import package_schemaview
 from linkml_runtime.utils.yamlutils import YAMLRoot
 from pydantic import BaseModel
-from sqlalchemy import create_engine
+from sqlalchemy import StaticPool, create_engine
 from sqlalchemy.engine import Engine
 from sqlalchemy.ext.associationproxy import _AssociationCollection
 from sqlalchemy.orm import sessionmaker
@@ -61,11 +61,14 @@ class SQLStore:
     schemaview: SchemaView = None
     engine: Engine = None
     database_path: str = None
+    use_memory: bool = False
+    """https://docs.sqlalchemy.org/en/20/dialects/sqlite.html#using-a-memory-database-in-multiple-threads"""
+
     module: ModuleType = None
     native_module: ModuleType = None
     include_schema_in_database: bool = None
 
-    def db_exists(self, create=True, force=False) -> str:
+    def db_exists(self, create=True, force=False) -> Optional[str]:
         """
         check if database exists, optionally create if not present
 
@@ -73,13 +76,21 @@ class SQLStore:
         :param force: recreate database, destroying any content if previously present
         :return: path
         """
-        if not self.database_path:
-            raise ValueError("database_path not set")
-        db_exists = os.path.exists(self.database_path)
+        if self.use_memory:
+            db_exists = False
+        else:
+            if not self.database_path:
+                raise ValueError("database_path not set")
+            db_exists = os.path.exists(self.database_path)
         if force or (create and not db_exists):
-            if force:
-                Path(self.database_path).unlink(missing_ok=True)
-            self.engine = create_engine(f"sqlite:///{self.database_path}")
+            if self.use_memory:
+                self.engine = create_engine(
+                    "sqlite://", connect_args={"check_same_thread": False}, poolclass=StaticPool
+                )
+            else:
+                if force:
+                    Path(self.database_path).unlink(missing_ok=True)
+                self.engine = create_engine(f"sqlite:///{self.database_path}")
             with self.engine.connect() as con:
                 ddl = SQLTableGenerator(self.schema).generate_ddl()
                 con.connection.executescript(ddl)
@@ -87,6 +98,8 @@ class SQLStore:
                     metamodel_sv = package_schemaview(metamodel.__name__)
                     meta_ddl = SQLTableGenerator(metamodel_sv.schema).generate_ddl()
                     con.connection.executescript(meta_ddl)
+        if self.use_memory:
+            return None
         if not os.path.exists(self.database_path):
             raise ValueError(f"No database: {self.database_path}")
         return self.database_path

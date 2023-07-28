@@ -93,6 +93,7 @@ def test_enum(framework, enum_name, enum_desc, pvs, value, include_meaning):
         classes=classes,
         enums=enums,
         prefixes={"schema": "http://schema.org/"},
+        core_elements=["enum_definitions", "permissible_values", "meaning"],
     )
     is_valid = value in [pv[0] for pv in pvs]
     expected_behavior = ValidationBehavior.IMPLEMENTS
