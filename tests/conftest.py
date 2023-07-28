@@ -78,7 +78,7 @@ class SnapshotFile(Snapshot):
                 # TODO: probably better to use something other than this pytest
                 # private method. See https://docs.python.org/3/library/difflib.html
                 self.eq_state = "\n".join(
-                    _diff_text(expected, actual, self.config.getoption("verbose"))
+                    _diff_text(actual, expected, self.config.getoption("verbose"))
                 )
             return is_eq
 
