@@ -105,6 +105,8 @@ class Generator(metaclass=abc.ABCMeta):
     format: Optional[str] = None
     """expected output format"""
 
+    file_extension: ClassVar[str] = None
+
     metadata: bool = field(default_factory=lambda: True)
     """True means include date, generator, etc. information in source header if appropriate"""
 
@@ -188,7 +190,8 @@ class Generator(metaclass=abc.ABCMeta):
         if self.uses_schemaloader:
             self._initialize_using_schemaloader(schema)
         else:
-            self.schemaview = SchemaView(schema)
+            logging.info(f"Using SchemaView with im={self.importmap}")
+            self.schemaview = SchemaView(schema, importmap=self.importmap)
             self.schema = self.schemaview.schema
         self._init_namespaces()
 
