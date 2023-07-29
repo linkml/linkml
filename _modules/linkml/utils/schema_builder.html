@@ -376,6 +376,7 @@
 <span class="sd">        :param slot_usage: slots keyed by slot name</span>
 <span class="sd">        :param replace_if_present: if True, replace existing class if present</span>
 <span class="sd">        :param kwargs: additional ClassDefinition properties</span>
+<span class="sd">        :param use_attributes: if True, add slots as attributes</span>
 <span class="sd">        :return: builder</span>
 <span class="sd">        :raises ValueError: if class already exists and replace_if_present=False</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -390,6 +391,10 @@
             <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">slots</span><span class="p">:</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">SlotDefinition</span><span class="p">):</span>
                     <span class="bp">cls</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">s</span>
+                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                    <span class="bp">cls</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="n">s</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">s</span>
+                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                    <span class="bp">cls</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="n">SlotDefinition</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;If use_attributes=True then slots must be SlotDefinitions&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
