@@ -3,6 +3,12 @@ from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import Callable
 
+# pydantic needs to be imported before freezegun until we switch to pydantic v2
+# See: https://github.com/pydantic/pydantic/issues/4983
+# fmt: off
+# ruff: noqa: I001, F401
+import pydantic
+# fmt: on
 import freezegun
 import pytest
 from _pytest.assertion.util import _diff_text
