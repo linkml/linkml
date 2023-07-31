@@ -2,8 +2,6 @@ from linkml_runtime.utils.compile_python import compile_python
 
 from linkml.generators.pythongen import PythonGenerator
 
-# from tests.test_issues.output.issue_14 import MixinOwner, SubjectRange1, NamedThing
-
 
 def test_inheritance(input_path, snapshot, snapshot_path):
     output = PythonGenerator(input_path("issue_14.yaml")).serialize()
