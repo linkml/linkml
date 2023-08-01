@@ -54,7 +54,8 @@ classes:
       occupation_class:
         range: job_code   ## enumeration
     unique_keys:
-      - description: email is unique
+      primary:
+        description: email is unique
         unique_key_slots:
           - email
 enums:
