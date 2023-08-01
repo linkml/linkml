@@ -54,7 +54,7 @@ rdflib = ">=6.0.0"
 requests = "*"
 prefixmaps = ">=0.1.4"
 curies = ">=0.5.4"
-pydantic = "^1.10.2"
+pydantic = ">=1.10.2"
 
 [tool.poetry.dev-dependencies]
 coverage = "^6.2"
