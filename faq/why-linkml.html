@@ -427,6 +427,21 @@
 <p>When making your decision, you should weigh factors such as the fact that things that can be expressed in one framework may not be expressible in the other.</p>
 <p>See also FAQ entries in <a class="reference internal" href="modeling.html"><span class="doc std std-doc">modeling</span></a> which compare some similar constructs.</p>
 </section>
+<section id="why-should-i-use-linkml-over-json-ld">
+<h2>Why should I use LinkML over JSON-LD?<a class="headerlink" href="#why-should-i-use-linkml-over-json-ld" title="Permalink to this heading">#</a></h2>
+<p>JSON-LD is a lightweight way of exchanging RDF data as JSON files. Different groups use JSON-LD
+in different ways. In some cases, JSON-LD contexts are provided as a way to map from developer-friendly
+JSON files to less familiar RDF/Turtle formats. In other cases, the JSON-LD files are operator on
+directly as JSON objects.</p>
+<p>Note that JSON-LD doesn’t in itself describe how data should be <em>structured</em> - e.g. which fields
+are expected, what the expected range is of different fields, etc. Some groups combine a JSON-LD
+specification with either JSON-Schema or with a shape language like SHACL.</p>
+<p>One advantage of LinkML is that it provides a “one stop shop”, where all aspects of your data
+can be described in one place without duplication, and then have JSON-LD contexts, shapes, and
+JSON schema generated for you.</p>
+<p>For more, see <a class="reference external" href="https://linkml.io/linkml/howtos/using-jsonld.html">Using JSON-LD</a> in the how-tos
+section of this site.</p>
+</section>
 <section id="why-should-i-use-linkml-over-shex-shacl">
 <h2>Why should I use LinkML over ShEx/SHACL?<a class="headerlink" href="#why-should-i-use-linkml-over-shex-shacl" title="Permalink to this heading">#</a></h2>
 <p>ShEx and SHACL are both excellent “shape” languages for providing
@@ -719,6 +734,7 @@ clarifying the connection.</p>
 <li><a class="reference internal" href="#why-should-i-use-linkml-at-all">Why should I use LinkML at all?</a></li>
 <li><a class="reference internal" href="#my-data-is-a-simple-spreadsheet-tsv-why-should-i-use-linkml">My data is a simple spreadsheet/TSV, why should I use LinkML?</a></li>
 <li><a class="reference internal" href="#why-should-i-use-linkml-over-json-schema">Why should I use LinkML over JSON-Schema?</a></li>
+<li><a class="reference internal" href="#why-should-i-use-linkml-over-json-ld">Why should I use LinkML over JSON-LD?</a></li>
 <li><a class="reference internal" href="#why-should-i-use-linkml-over-shex-shacl">Why should I use LinkML over ShEx/SHACL?</a></li>
 <li><a class="reference internal" href="#why-should-i-use-linkml-over-sql-ddl">Why should I use LinkML over SQL DDL?</a></li>
 <li><a class="reference internal" href="#why-should-i-use-linkml-over-uml">Why should I use LinkML over UML?</a></li>
