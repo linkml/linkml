@@ -49,7 +49,7 @@ class SnapshotFile(Snapshot):
             return True
         # if we got a string, use that as the content for the snapshot file
         if isinstance(source, str):
-            with open(self.path, "w") as dest_file:
+            with open(self.path, "w", encoding="utf-8") as dest_file:
                 dest_file.write(source)
             return True
         # we got something we don't know how to handle
@@ -57,11 +57,11 @@ class SnapshotFile(Snapshot):
         raise TypeError(f"cannot generate snapshot from {source}")
 
     def compare_to_snapshot(self, other: object) -> bool:
-        with open(self.path, "r") as snapshot_file:
+        with open(self.path, "r", encoding="utf-8") as snapshot_file:
             expected = snapshot_file.read()
 
         if isinstance(other, Path):
-            with open(other, "r") as compare_file:
+            with open(other, "r", encoding="utf-8") as compare_file:
                 actual = compare_file.read()
         elif isinstance(other, str):
             actual = other
