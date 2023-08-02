@@ -1,4 +1,4 @@
-# Auto generated from issue_260b.yaml by pythongen.py version: 0.9.0
+# Auto generated from issue_260b.yaml by pythongen.py version: 0.0.1
 # Generation date: 2000-01-01T00:00:00
 # Schema: issue_260b
 #

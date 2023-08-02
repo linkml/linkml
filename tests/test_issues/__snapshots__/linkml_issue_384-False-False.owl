@@ -18,12 +18,12 @@
     rdfs:label "GeoObject" ;
     rdfs:subClassOf [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
-            owl:onClass <https://w3id.org/linkml/examples/personinfo/GeoAge> ;
-            owl:onProperty <https://w3id.org/linkml/examples/personinfo/age> ],
-        [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
             owl:onDataRange xsd:string ;
             owl:onProperty <https://w3id.org/linkml/examples/personinfo/aliases> ],
+        [ a owl:Restriction ;
+            owl:maxQualifiedCardinality 1 ;
+            owl:onClass <https://w3id.org/linkml/examples/personinfo/GeoAge> ;
+            owl:onProperty <https://w3id.org/linkml/examples/personinfo/age> ],
         <https://w3id.org/linkml/examples/personinfo/Thing> .
 
 <https://w3id.org/linkml/examples/personinfo/Organization> a owl:Class ;
@@ -44,15 +44,15 @@
             owl:onProperty <https://w3id.org/linkml/examples/personinfo/aliases> ],
         [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
+            owl:onDataRange xsd:integer ;
+            owl:onProperty <https://w3id.org/linkml/examples/personinfo/age> ],
+        [ a owl:Restriction ;
+            owl:maxQualifiedCardinality 1 ;
             owl:onDataRange xsd:string ;
             owl:onProperty <https://w3id.org/linkml/examples/personinfo/phone> ],
         [ a owl:Restriction ;
             owl:allValuesFrom <https://w3id.org/linkml/examples/personinfo/Person> ;
             owl:onProperty <https://w3id.org/linkml/examples/personinfo/parent> ],
-        [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
-            owl:onDataRange xsd:integer ;
-            owl:onProperty <https://w3id.org/linkml/examples/personinfo/age> ],
         <https://w3id.org/linkml/examples/personinfo/Thing> ;
     skos:exactMatch sdo:Person .
 
@@ -76,12 +76,12 @@
     rdfs:label "GeoAge" ;
     rdfs:subClassOf [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
-            owl:onDataRange xsd:string ;
-            owl:onProperty <https://w3id.org/linkml/examples/personinfo/unit> ],
+            owl:onDataRange xsd:float ;
+            owl:onProperty <https://w3id.org/linkml/examples/personinfo/value> ],
         [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
-            owl:onDataRange xsd:float ;
-            owl:onProperty <https://w3id.org/linkml/examples/personinfo/value> ] .
+            owl:onDataRange xsd:string ;
+            owl:onProperty <https://w3id.org/linkml/examples/personinfo/unit> ] .
 
 <https://w3id.org/linkml/examples/personinfo/age> a owl:DatatypeProperty,
         owl:ObjectProperty .

@@ -97,16 +97,16 @@ linkml:topValue a owl:DatatypeProperty ;
             owl:qualifiedCardinality 1 ],
         [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
+            owl:onClass <http://example.org/sample/example1/Unitcode> ;
+            owl:onProperty <http://example.org/sample/example1/unit> ],
+        [ a owl:Restriction ;
+            owl:maxQualifiedCardinality 1 ;
             owl:onClass linkml:String ;
             owl:onProperty <http://example.org/sample/example1/name> ],
         [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
             owl:onClass linkml:Integer ;
-            owl:onProperty <http://example.org/sample/example1/len> ],
-        [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
-            owl:onClass <http://example.org/sample/example1/Unitcode> ;
-            owl:onProperty <http://example.org/sample/example1/unit> ] .
+            owl:onProperty <http://example.org/sample/example1/len> ] .
 
 <http://example.org/sample/example1/C> a owl:Class,
         linkml:ClassDefinition ;
