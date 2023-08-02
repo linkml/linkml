@@ -380,6 +380,6 @@ classes:
     class_uri: linkml:Extensible
 metamodel_version: 1.7.0
 source_file: issue_167b.yaml
-source_file_date: '2022-04-06T12:03:11'
-source_file_size: 818
+source_file_date: '2000-01-01T00:00:00'
+source_file_size: 1
 generation_date: '2000-01-01T00:00:00'

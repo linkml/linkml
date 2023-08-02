@@ -55,6 +55,6 @@ classes:
     class_uri: http://example.org/prefixes/a/b/c/c3
 metamodel_version: 1.7.0
 source_file: curie_prefix_matching.yaml
-source_file_date: '2022-04-06T12:03:11'
-source_file_size: 478
+source_file_date: '2000-01-01T00:00:00'
+source_file_size: 1
 generation_date: '2000-01-01T00:00:00'

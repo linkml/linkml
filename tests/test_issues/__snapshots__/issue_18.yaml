@@ -105,6 +105,6 @@ classes:
     class_uri: http://example.org/tests/issue18/C4
 metamodel_version: 1.7.0
 source_file: issue_18.yaml
-source_file_date: '2022-04-06T12:03:11'
-source_file_size: 671
+source_file_date: '2000-01-01T00:00:00'
+source_file_size: 1
 generation_date: '2000-01-01T00:00:00'

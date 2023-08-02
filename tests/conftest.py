@@ -3,15 +3,9 @@ from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import Callable
 
-# pydantic needs to be imported before freezegun until we switch to pydantic v2
-# See: https://github.com/pydantic/pydantic/issues/4983
-# fmt: off
-# ruff: noqa: I001, F401
-import pydantic
-# fmt: on
-import freezegun
 import pytest
 from _pytest.assertion.util import _diff_text
+from linkml_runtime.linkml_model.meta import SchemaDefinition
 
 from tests.utils.compare_rdf import compare_rdf
 from tests.utils.dirutils import are_dir_trees_equal
@@ -121,7 +115,24 @@ def snapshot_path(request) -> Callable[[str], Path]:
 
 
 @pytest.fixture
-def snapshot(snapshot_path, pytestconfig) -> Callable[[str], Snapshot]:
+def snapshot(snapshot_path, pytestconfig, monkeypatch) -> Callable[[str], Snapshot]:
+    # Patching SchemaDefinition's setter here prevents metadata that can be variable
+    # between systems from entering the snapshot files. This could be part of its own
+    # fixture but it's not clear if it would be useful outside of tests that
+    # compare/produce snapshots
+    locked = {
+        "source_file_date": "2000-01-01T00:00:00",
+        "source_file_size": 1,
+        "generation_date": "2000-01-01T00:00:00",
+    }
+    orig = SchemaDefinition.__setattr__
+
+    def patched(self, name, value):
+        new_value = locked.get(name, value)
+        orig(self, name, new_value)
+
+    monkeypatch.setattr(SchemaDefinition, "__setattr__", patched)
+
     def get_snapshot(relative_path):
         path = snapshot_path(relative_path)
         if not path.suffix:
@@ -138,12 +149,6 @@ def input_path(request) -> Callable[[str], Path]:
         return str(request.path.parent / "input" / filename)
 
     return get_path
-
-
-@pytest.fixture(autouse=True)
-def frozen_time():
-    with freezegun.freeze_time("2000-01-01") as ft:
-        yield ft
 
 
 def pytest_addoption(parser):

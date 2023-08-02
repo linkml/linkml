@@ -93,6 +93,6 @@ classes:
     class_uri: http://example.org/tests/issue167/C2
 metamodel_version: 1.7.0
 source_file: issue_167.yaml
-source_file_date: '2023-07-14T10:43:06'
-source_file_size: 852
+source_file_date: '2000-01-01T00:00:00'
+source_file_size: 1
 generation_date: '2000-01-01T00:00:00'
