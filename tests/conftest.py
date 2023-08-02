@@ -70,7 +70,7 @@ class SnapshotFile(Snapshot):
             raise TypeError(f"cannot compare snapshot to {other}")
 
         if self.path.suffix in (".ttl", ".owl"):
-            self.eq_state = compare_rdf(actual, expected)
+            self.eq_state = compare_rdf(expected, actual)
             return self.eq_state is None
         else:
             is_eq = actual == expected
