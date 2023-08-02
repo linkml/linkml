@@ -1,7 +1,7 @@
 # Subset: {{ gen.name(element) }}
 
 {%- if header -%}
-{{header}}
+{{ header }}
 {%- endif -%}
 
 {% if element.description %}
@@ -13,17 +13,40 @@ _{{ element_description_line }}_
 
 URI: {{ gen.uri_link(element) }}
 
-
 {% include "common_metadata.md.jinja2" %}
 
+{% set classes_in_subset = [] %}
+{% set slots_in_subset = [] %}
+{% set enums_in_subset = [] %}
+
+{# Collect classes, slots, and enumerations in subset #}
+{% for c in gen.all_class_objects()|sort(attribute=sort_by) %}
+    {%- if element.name in c.in_subset %}
+        {% set _ = classes_in_subset.append(c) %}
+    {%- endif %}
+{% endfor %}
+
+{% for s in gen.all_slot_objects()|sort(attribute=sort_by) %}
+    {%- if element.name in s.in_subset %}
+        {% set _ = slots_in_subset.append(s) %}
+    {%- endif %}
+{% endfor %}
+
+{% for e in schemaview.all_enums().values() %}
+    {%- if element.name in e.in_subset %}
+        {% set _ = enums_in_subset.append(e) %}
+    {%- endif %}
+{% endfor %}
+
+{% if classes_in_subset %}
 ## Classes in subset
 
 | Class | Description |
 | --- | --- |
 {% for c in gen.all_class_objects()|sort(attribute=sort_by) -%}
-{%- if element.name in c.in_subset -%}
-| {{gen.link(c)}} | {{c.description|enshorten}} |
-{% endif -%}
+    {%- if element.name in c.in_subset -%}
+        | {{gen.link(c)}} | {{c.description|enshorten}} |
+    {% endif -%}
 {% endfor %}
 
 {% for c in gen.all_class_objects()|sort(attribute=sort_by) -%}
@@ -32,34 +55,46 @@ URI: {{ gen.uri_link(element) }}
 
 {{c.description}}
 
+{% set induced_slots = gen.class_induced_slots(c.name)|sort(attribute=sort_by) %}
+{%- if induced_slots|length > 0 %}
 | Name | Cardinality and Range  | Description  |
 | ---  | ---  | --- |
 {% for s in gen.class_induced_slots(c.name)|sort(attribute=sort_by) -%}
 {% if element.name in s.in_subset or element.name in schemaview.get_slot(s.name).in_subset -%}
 | {{gen.link(s)}} | {{ gen.cardinality(s) }} <br/> {{gen.link(s.range)}}  | {{s.description|enshorten}} {% if s.identifier %}**identifier**{% endif %}  |
-{% endif -%}
+{% endif %}
+{% endfor %}
+{%- endif %}
+
+{% endif %}
 {% endfor %}
 
-{% endif -%}
-{% endfor %}
+{% endif %}
 
+
+{% if slots_in_subset %}
 ## Slots in subset
 
 | Slot | Description |
 | --- | --- |
-{% for s in gen.all_slot_objects()|sort(attribute=sort_by) -%}
-{%- if element.name in s.in_subset -%}
-| {{gen.link(s)}} | {{s.description|enshorten}} |
-{% endif -%}
+{% for s in slots_in_subset|sort(attribute=sort_by) %}
+    {%- if element.name in s.in_subset %}
+        | {{ gen.link(s) }} | {{ s.description|enshorten }} |
+    {%- endif %}
 {% endfor %}
 
+{% endif %}
+
+
+{% if enums_in_subset %}
 ## Enumerations in subset
 
 | Enumeration | Description |
 | --- | --- |
-{% for e in schemaview.all_enums().values()|sort(attribute='name') -%}
-{%- if element.name in e.in_subset -%}
-| {{gen.link(e)}} | {{e.description|enshorten}} |
-{% endif -%}
+{% for e in enums_in_subset|sort(attribute='name') %}
+    {%- if element.name in e.in_subset %}
+        | {{ gen.link(e) }} | {{ e.description|enshorten }} |
+    {%- endif %}
 {% endfor %}
 
+{% endif %}
