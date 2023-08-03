@@ -328,20 +328,16 @@
 </ul>
 </li>
 <li><p>As for new functionality, as directed above, create a test case under any of the existing Python test files if there are tests already scoped with respect to your enhancement. Or if not, then create a new Python test file with your unit test.</p></li>
-<li><p>All tests within this repo are Python <a class="reference external" href="https://docs.python.org/3/library/unittest.html">unittest</a> tests. The unittest module is bundled natively with the latest versions of Python. The tests can be run using either the unittest module, or using the <a class="reference external" href="https://docs.pytest.org/en/6.2.x/">pytest</a> library.</p></li>
+<li><p>The tests in this repo are a mix of Python <a class="reference external" href="https://docs.python.org/3/library/unittest.html">unittest</a> tests and <a class="reference external" href="https://docs.pytest.org/en/">pytest</a> tests. See below for more details on the transition. Because of this mix, tests should always be run using the <code class="docutils literal notranslate"><span class="pre">pytest</span></code> CLI.</p></li>
 <li><p>If you have already activated the poetry virtual environment, then there is no need to use the <code class="docutils literal notranslate"><span class="pre">poetry</span> <span class="pre">run</span></code> prefix.</p></li>
-<li><p>If you want to isolate specific test methods from within your Python unit test file, then you can use the <code class="docutils literal notranslate"><span class="pre">-k</span></code> option for the unittest module. Refer to <a class="reference external" href="https://docs.python.org/3.3/library/unittest.html">unittest</a> module docs for more information on its usage.</p></li>
+<li><p>If you want to isolate specific test functions from within your Python unit test file, then you can use the <a class="reference external" href="https://docs.pytest.org/en/stable/reference/reference.html#command-line-flags"><code class="docutils literal notranslate"><span class="pre">-k</span></code> command line option</a>.</p></li>
 </ul>
-<p>To run your  test using <code class="docutils literal notranslate"><span class="pre">unittest</span></code>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">poetry</span> <span class="n">run</span> <span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">unittest</span> <span class="n">tests</span><span class="o">/</span><span class="n">test_issues</span><span class="o">/</span><span class="n">test_linkml_issue_NNN</span><span class="o">.</span><span class="n">py</span>
-</pre></div>
-</div>
-<p>To run your test using <code class="docutils literal notranslate"><span class="pre">pytest</span></code>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">poetry</span> <span class="n">run</span> <span class="n">pytest</span> <span class="n">tests</span><span class="o">/</span><span class="n">test_issues</span><span class="o">/</span><span class="n">test_linkml_issue_NNN</span><span class="o">.</span><span class="n">py</span>
+<p>To run a single test file using <code class="docutils literal notranslate"><span class="pre">pytest</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">poetry</span> <span class="n">run</span> <span class="n">pytset</span> <span class="n">tests</span><span class="o">/</span><span class="n">test_issues</span><span class="o">/</span><span class="n">test_linkml_issue_NNN</span><span class="o">.</span><span class="n">py</span>
 </pre></div>
 </div>
 <p>You can run the full test suite in the following way:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>poetry<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>-m<span class="w"> </span>unittest<span class="w"> </span>discover
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>poetry<span class="w"> </span>run<span class="w"> </span>pytest
 </pre></div>
 </div>
 <p>or via a shortcut Makefile target:</p>
@@ -353,13 +349,13 @@
 runs the entire test suite with the new test case that you added, on that test case branch too.</p></li>
 </ul>
 <p>Note: You will see a number of issues which are named <code class="docutils literal notranslate"><span class="pre">test_issue_NNN.py</span></code>. The numbers and convention for those
-issues are with reference to the old <em>biolinkml</em> issue numbering convention.</p>
+issues are with reference to the old <a class="reference external" href="https://github.com/biolink/biolinkml">biolinkml</a> issue numbering convention.</p>
 </section>
 <section id="general-tips">
 <h3>General Tips<a class="headerlink" href="#general-tips" title="Permalink to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Always make sure to use <code class="docutils literal notranslate"><span class="pre">assert</span></code> statements to compare the expected value with the actual value, rather than simply printing or logging the expected and actual values.</p></li>
-<li><p>Avoid using <code class="docutils literal notranslate"><span class="pre">print</span></code> statements for logging purposes. Use the <code class="docutils literal notranslate"><span class="pre">logging</span></code> module natively provided by Python approporiately with it’s various logging levels like <code class="docutils literal notranslate"><span class="pre">DEBUG</span></code>, <code class="docutils literal notranslate"><span class="pre">INFO</span></code>, <code class="docutils literal notranslate"><span class="pre">ERROR</span></code>, etc.</p></li>
+<li><p>Avoid using <code class="docutils literal notranslate"><span class="pre">print</span></code> statements for logging purposes. Use the <code class="docutils literal notranslate"><span class="pre">logging</span></code> module natively provided by Python appropriately with its various logging levels like <code class="docutils literal notranslate"><span class="pre">DEBUG</span></code>, <code class="docutils literal notranslate"><span class="pre">INFO</span></code>, <code class="docutils literal notranslate"><span class="pre">ERROR</span></code>, etc.</p></li>
 <li><p>You can create a config file by copying the <a class="reference external" href="https://github.com/linkml/linkml/blob/main/tests/test_config.ini.example">test_config.ini.example</a> to a <code class="docutils literal notranslate"><span class="pre">test_config.ini</span></code> file and making changes, for example, to the logging levels:</p></li>
 </ul>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">test</span><span class="o">.</span><span class="n">settings</span><span class="p">]</span>
@@ -396,6 +392,40 @@ issues are with reference to the old <em>biolinkml</em> issue numbering conventi
 <li><p>Open to Run/Debug</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">+</span></code> to add test</p></li>
 <li><p>Choose “Python tests &gt; unittests”</p></li>
+</ul>
+</section>
+<section id="unittest-to-pytest-conversion">
+<h3>Unittest to pytest conversion<a class="headerlink" href="#unittest-to-pytest-conversion" title="Permalink to this heading">#</a></h3>
+<p>As of August 2023 this project has started converting its test suite from being based on the native <a class="reference external" href="https://docs.python.org/3/library/unittest.html">unittest module</a> to being based on <a class="reference external" href="https://docs.pytest.org/en/stable/index.html">pytest</a>. Because of the presence of both styles of test in the codebase, it is recommended that you always use <code class="docutils literal notranslate"><span class="pre">pytest</span></code> to run tests.</p>
+<p>Currently the following test directories have been entirely converted to pytest:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">tests/test_compliance</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tests/test_issues</span></code></p></li>
+</ul>
+<p>New tests in any directory should be written using pytest.</p>
+</section>
+<section id="custom-pytest-fixtures">
+<h3>Custom pytest fixtures<a class="headerlink" href="#custom-pytest-fixtures" title="Permalink to this heading">#</a></h3>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">input_path</span></code> This fixture provides a factory function to get the path to a file within the <code class="docutils literal notranslate"><span class="pre">input</span></code> directory adjacent to the current test file. So for example with this file structure:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>tests
+└── test_foo
+    ├── input
+    │   └── schema_a.yaml
+    └── test_foo_feature_a.py
+</pre></div>
+</div>
+<p>You would would access <code class="docutils literal notranslate"><span class="pre">schema_a.yaml</span></code> within your test like:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># test_foo_feature_a.py</span>
+<span class="k">def</span> <span class="nf">test_feature_a</span><span class="p">(</span><span class="n">input_path</span><span class="p">):</span>
+  <span class="n">path_to_schema</span> <span class="o">=</span> <span class="n">input_path</span><span class="p">(</span><span class="s2">&quot;schema_a.yaml&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">snapshot</span></code> This fixture provides a way of comparing a string, temporary file, or temporary directory to a known, good artifact. The artifacts are stored in a directory called <code class="docutils literal notranslate"><span class="pre">__snapshots__</span></code> alongside the test.</p>
+<p><strong>Warning</strong>: snapshot testing can be very powerful, but it can also lead to brittle tests. You should <strong>seriously consider alternatives</strong> before writing this type of test.</p>
+<p>If you make a change that intentionally causes some output to not match the saved snapshot file(s), you should update the snapshots by running <code class="docutils literal notranslate"><span class="pre">pytest</span></code> with the <code class="docutils literal notranslate"><span class="pre">--generate-snapshots</span></code> flag. You should try to run only a single or small group of tests with this flag (as opposed to the entire test suite). The updated snapshot files should be checked in to Git alongside your other code changes.</p>
+</li>
 </ul>
 </section>
 </section>
@@ -529,6 +559,8 @@ insight into your work and allows them to provide feedback early on.</p></li>
 <li><a class="reference internal" href="#directions-for-creating-a-unit-test">Directions for creating a unit test</a></li>
 <li><a class="reference internal" href="#general-tips">General Tips</a></li>
 <li><a class="reference internal" href="#ide-tips">IDE Tips</a></li>
+<li><a class="reference internal" href="#unittest-to-pytest-conversion">Unittest to pytest conversion</a></li>
+<li><a class="reference internal" href="#custom-pytest-fixtures">Custom pytest fixtures</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#code-formatting-and-linting">Code formatting and linting</a></li>
