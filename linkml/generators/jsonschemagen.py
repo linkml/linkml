@@ -319,10 +319,11 @@ class JsonSchemaGenerator(Generator):
         enum_schema = JsonSchema(
             {
                 "type": "string",
-                "enum": permissible_values_texts,
                 "description": be(enum.description),
             }
         )
+        if permissible_values_texts:
+            enum_schema["enum"] = permissible_values_texts
         self.top_level_schema.add_def(enum.name, enum_schema)
 
     def get_type_info_for_slot_subschema(
