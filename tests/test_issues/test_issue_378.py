@@ -1,10 +1,6 @@
-import unittest
-
 from jsonasobj2 import loads
 
 from linkml.generators.jsonldcontextgen import ContextGenerator
-from tests.test_issues.environment import env
-from tests.utils.test_environment import TestEnvironmentTestCase
 
 without_default = """
 id: http://example.org/sssom/schema/
@@ -42,22 +38,14 @@ slots:
 """
 
 
-class Issue378TestCase(TestEnvironmentTestCase):
+def test_default_vocab():
     """This test case should (eventually) be used to address some of the questions raised in issue #378.  At the
     moment it just confirms the existing behavior."""
-
-    env = env
-
-    def test_default_vocab(self):
-        json_ld_text = ContextGenerator(without_default).serialize()
-        json_ld = loads(json_ld_text)
-        self.assertEqual("http://example.org/sssom/schema/", json_ld["@context"]["@vocab"])
-        self.assertEqual("http://example.org/sssom/schema/name", json_ld["@context"]["name"]["@id"])
-        json_ld_text2 = ContextGenerator(with_default).serialize()
-        json_ld2 = loads(json_ld_text2)
-        self.assertEqual("https://w3id.org/sssom/", json_ld2["@context"]["@vocab"])
-        self.assertNotIn("name", json_ld2["@context"]["@vocab"])
-
-
-if __name__ == "__main__":
-    unittest.main()
+    json_ld_text = ContextGenerator(without_default).serialize()
+    json_ld = loads(json_ld_text)
+    assert json_ld["@context"]["@vocab"] == "http://example.org/sssom/schema/"
+    assert json_ld["@context"]["name"]["@id"] == "http://example.org/sssom/schema/name"
+    json_ld_text2 = ContextGenerator(with_default).serialize()
+    json_ld2 = loads(json_ld_text2)
+    assert json_ld2["@context"]["@vocab"] == "https://w3id.org/sssom/"
+    assert "name" not in json_ld2["@context"]["@vocab"]

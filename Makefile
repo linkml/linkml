@@ -14,7 +14,7 @@ all-examples-%:  examples/%.py examples/%.schema.json  examples/%.shex  examples
 RUN=poetry run
 
 test:
-	$(RUN) python -m unittest discover
+	$(RUN) pytest
 
 ## Example schema products
 examples/%.py: examples/%.yaml

@@ -138,6 +138,9 @@ sphinx-click = "*"
 sphinx-rtd-theme = "*"
 myst-parser = "*"
 
+[tool.poetry.group.tests.dependencies]
+pytest = "^7.4.0"
+
 [tool.poetry.extras]
 docs = ["Sphinx", "sphinxcontrib-mermaid", "furo"]
 
@@ -163,16 +166,27 @@ force-exclude = '''
   \.direnv|\.eggs|\.git|\.hg|\.ipynb_checkpoints|\.mypy_cache|\.nox|\.pytest_cache|\.ruff_cache|\.tox|\.svn|\.venv|\.vscode|__pypackages__|_build|buck-out|build|dist|venv
   # additional exclude
   | tests.*/output
+  | __snapshots__
   | docs
   | examples
   | notebooks
 )/
 '''
 
+[tool.pytest.ini_options]
+filterwarnings = [
+  # https://github.com/RDFLib/rdflib/issues/1830
+  "ignore:.*_pytestfixturefunction is not defined in namespace:UserWarning"
+]
+markers = [
+  "network: mark tests that make external network requests"
+]
+
 [tool.ruff]
 extend-exclude = [
     "tests/output",
     "tests/**/output",
+    "tests/**/__snapshots__",
     "examples/",
     "docs/",
     "notebooks/"

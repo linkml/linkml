@@ -1,32 +1,11 @@
-import unittest
-
 from linkml.generators.jsonschemagen import JsonSchemaGenerator
 from linkml.generators.pythongen import PythonGenerator
-from tests.test_issues.environment import env
-from tests.utils.python_comparator import compare_python
-from tests.utils.test_environment import TestEnvironmentTestCase
 
 
-class Issue120TestCase(TestEnvironmentTestCase):
-    env = env
+def test_issue_120(input_path, snapshot):
+    """Courses not inlining"""
+    output = PythonGenerator(input_path("issue_120.yaml")).serialize()
+    assert output == snapshot("issue_120.py")
 
-    def test_issue_120(self):
-        """Courses not inlining"""
-        env.generate_single_file(
-            "issue_120.py",
-            lambda: PythonGenerator(env.input_path("issue_120.yaml")).serialize(),
-            value_is_returned=True,
-            comparator=lambda exp, act: compare_python(
-                exp, act, self.env.expected_path("issue_120.py")
-            ),
-        )
-
-        env.generate_single_file(
-            "issue_120.json",
-            lambda: JsonSchemaGenerator(env.input_path("issue_120.yaml")).serialize(),
-            value_is_returned=True,
-        )
-
-
-if __name__ == "__main__":
-    unittest.main()
+    output = JsonSchemaGenerator(input_path("issue_120.yaml")).serialize()
+    assert output == snapshot("issue_120.json")

@@ -1,8 +1,4 @@
-import unittest
-
 from linkml.generators.pydanticgen import PydanticGenerator
-from tests.test_issues.environment import env
-from tests.utils.test_environment import TestEnvironmentTestCase
 
 schema_str = """
 id: http://example.org
@@ -43,17 +39,10 @@ slots:
 """
 
 
-class Issue1094ConstCase(TestEnvironmentTestCase):
-    env = env
+def test_pydanticgen_inline_dict():
+    gen = PydanticGenerator(schema_str)
+    output = gen.serialize()
 
-    def test_pydanticgen_inline_dict(self):
-        gen = PydanticGenerator(schema_str)
-        output = gen.serialize()
-
-        output_subset = [line for line in output.splitlines() if "has_bikes: " in line]
-        assert len(output_subset) == 1
-        assert "has_bikes: Dict[str, Bike] = Field(default_factory=dict)" in output_subset[0]
-
-
-if __name__ == "__main__":
-    unittest.main()
+    output_subset = [line for line in output.splitlines() if "has_bikes: " in line]
+    assert len(output_subset) == 1
+    assert "has_bikes: Dict[str, Bike] = Field(default_factory=dict)" in output_subset[0]
