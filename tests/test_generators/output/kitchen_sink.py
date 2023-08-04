@@ -1,5 +1,5 @@
 # Auto generated from kitchen_sink.yaml by pythongen.py version: 0.0.1
-# Generation date: 2023-08-04T15:24:34
+# Generation date: 2023-08-04T15:38:55
 # Schema: kitchen_sink
 #
 # id: https://w3id.org/linkml/tests/kitchen_sink
@@ -46,6 +46,9 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
 A = CurieNamespace('A', 'http://example.org/activities/')
 BFO = CurieNamespace('BFO', 'http://purl.obolibrary.org/obo/BFO_')
 CODE = CurieNamespace('CODE', 'http://example.org/code/')
+EDAM_TOPIC = CurieNamespace('EDAM_TOPIC', 'http://edamontology.org/topic_')
+NCIT = CurieNamespace('NCIT', 'http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#')
+OBI = CurieNamespace('OBI', 'http://purl.obolibrary.org/obo/OBI_')
 P = CurieNamespace('P', 'http://example.org/person/')
 RO = CurieNamespace('RO', 'http://purl.obolibrary.org/obo/RO_')
 ROR = CurieNamespace('ROR', 'http://example.org/ror/')
@@ -646,6 +649,7 @@ class Dataset(YAMLRoot):
     class_name: ClassVar[str] = "Dataset"
     class_model_uri: ClassVar[URIRef] = KS.Dataset
 
+    method_type: Union[str, "MethodTypeEnum"] = None
     metadata: Optional[Union[dict, "AnyObject"]] = None
     persons: Optional[Union[Dict[Union[str, PersonId], Union[dict, Person]], List[Union[dict, Person]]]] = empty_dict()
     companies: Optional[Union[Dict[Union[str, CompanyId], Union[dict, Company]], List[Union[dict, Company]]]] = empty_dict()
@@ -653,6 +657,11 @@ class Dataset(YAMLRoot):
     code_systems: Optional[Union[Dict[Union[str, CodeSystemId], Union[dict, CodeSystem]], List[Union[dict, CodeSystem]]]] = empty_dict()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self._is_empty(self.method_type):
+            self.MissingRequiredField("method_type")
+        if not isinstance(self.method_type, MethodTypeEnum):
+            self.method_type = MethodTypeEnum(self.method_type)
+
         self._normalize_inlined_as_list(slot_name="persons", slot_type=Person, key_name="id", keyed=True)
 
         self._normalize_inlined_as_list(slot_name="companies", slot_type=Company, key_name="id", keyed=True)
@@ -900,9 +909,38 @@ class CordialnessEnum(EnumDefinitionImpl):
         name="CordialnessEnum",
     )
 
+class MethodTypeEnum(EnumDefinitionImpl):
+    """
+    List of methods used to determine interactions
+    """
+    simulation = PermissibleValue(
+        text="simulation",
+        description="Any type of biological computational model experiments",
+        meaning=EDAM_TOPIC["3524"])
+    microscopy = PermissibleValue(
+        text="microscopy",
+        description="Any type of imaging-related experiments",
+        meaning=EDAM_TOPIC["3382"])
+    cultivation = PermissibleValue(
+        text="cultivation",
+        description="Any laboratory procedure for growing microorganisms",
+        meaning=NCIT.C25300)
+    sample = PermissibleValue(
+        text="sample",
+        description="Any type of experiments based on the analysis of a sample",
+        meaning=OBI["0000659"])
+
+    _defn = EnumDefinition(
+        name="MethodTypeEnum",
+        description="List of methods used to determine interactions",
+    )
+
 # Slots
 class slots:
     pass
+
+slots.method_type = Slot(uri=KS.method_type, name="method_type", curie=KS.curie('method_type'),
+                   model_uri=KS.method_type, domain=None, range=Union[str, "MethodTypeEnum"])
 
 slots.employed_at = Slot(uri=KS.employed_at, name="employed at", curie=KS.curie('employed_at'),
                    model_uri=KS.employed_at, domain=None, range=Optional[Union[str, CompanyId]])

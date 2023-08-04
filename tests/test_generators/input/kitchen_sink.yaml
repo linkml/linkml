@@ -37,6 +37,9 @@ prefixes:
   skos: http://www.w3.org/2004/02/skos/core#
   bizcodes: https://example.org/bizcodes/
   schema: http://schema.org/
+  EDAM_TOPIC: http://edamontology.org/topic_
+  NCIT: http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#
+  OBI: http://purl.obolibrary.org/obo/OBI_
 default_prefix: ks
 default_range: string
 see_also:
