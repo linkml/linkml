@@ -88,4 +88,4 @@ def test_multiline_stuff():
 
 def test_enum_pv_meaning_expansion():
     kitchen_module = make_python(SCHEMA, PYTHON, True)
-    print(kitchen_module.MethodTypeEnum)
+    assert(kitchen_module.MethodTypeEnum.simulation.meaning == "http://edamontology.org/topic_3524")

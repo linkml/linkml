@@ -1,13 +1,20 @@
 import unittest
-
+import json
 import yaml
-
+from tests.test_generators.environment import env
 from linkml.linter.config.datamodel.config import RuleLevel
 from linkml.linter.linter import Linter
 from linkml.utils.schema_builder import SchemaBuilder
+from linkml.generators.jsonschemagen import JsonSchemaGenerator
 
+SCHEMA = env.input_path("kitchen_sink.yaml")
 
 class TestLinter(unittest.TestCase):
+
+    def test_enum_pv_linting(self):
+        with open(SCHEMA, "r") as file:
+            kitchen_schema = yaml.safe_load(file)
+            
     def test_rule_level_error(self):
         config = yaml.safe_load(
             """
@@ -144,3 +151,4 @@ rules:
 
         # this is not in the recommended or custom rules and should come from the default
         self.assertEqual(str(linter.config.rules.tree_root_class.level), RuleLevel.disabled.text)
+
