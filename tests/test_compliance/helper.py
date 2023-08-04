@@ -5,11 +5,13 @@ import json
 import logging
 from collections import defaultdict
 from copy import deepcopy
+from functools import lru_cache
 from pathlib import Path
 from typing import Any, Callable, Dict, Iterator, List, Tuple, Type, Union
 
 import pydantic
 import pytest
+import requests
 import yaml
 from linkml_runtime import SchemaView
 from linkml_runtime.dumpers import yaml_dumper
@@ -290,6 +292,15 @@ def _schema_out_path(schema: Dict) -> Path:
     return out_dir
 
 
+@lru_cache
+def _get_linkml_types():
+    resp = requests.get("https://w3id.org/linkml/types.yaml")
+    resp.raise_for_status()
+
+    body = yaml.safe_load(resp.text)
+    return body
+
+
 def _make_schema(
     test: Callable,
     name: str,
@@ -310,22 +321,28 @@ def _make_schema(
             "description": test.__doc__,
             "prefixes": {
                 "ex": "http://example.org/",
-                "linkml": "https://w3id.org/linkml/",
             },
-            "imports": [
-                "linkml:types",
-            ],
             "default_prefix": "ex",
             "default_range": "string",
+            "classes": {},
+            "slots": {},
+            "types": {},
         }
+        # Fetching the types.yaml file via an import each time this schema is
+        # resolved takes too much time so we fetch it once manually and inline
+        # the relevant parts here
+        linkml_types = _get_linkml_types()
+        schema["prefixes"].update(linkml_types.get("prefixes", {}))
+        schema["types"].update(linkml_types.get("types", {}))
     else:
         schema = deepcopy(schema)
+
     if classes is not None:
-        schema["classes"] = classes
+        schema["classes"].update(classes)
     if slots is not None:
-        schema["slots"] = slots
+        schema["slots"].update(slots)
     if types is not None:
-        schema["types"] = types
+        schema["types"].update(types)
     for k, v in kwargs.items():
         schema[k] = v
     if prefixes:
