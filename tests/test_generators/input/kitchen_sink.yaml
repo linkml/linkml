@@ -269,6 +269,7 @@ classes:
         multivalued: true
     slots:
       - metadata
+      - method_type
 
   FakeClass:
     deprecated: this is not a real class, we are using it to test deprecation
@@ -298,6 +299,9 @@ classes:
     description: Example of unconstrained class
 
 slots:
+  method_type:
+    range: MethodTypeEnum
+    required: true
   employed at:
     range: Company
     in_subset:
@@ -429,3 +433,29 @@ enums:
         description: spiteful
       indifferent:
         description: not overly friendly nor obnoxiously spiteful
+  MethodTypeEnum:
+    description: List of methods used to determine interactions
+    permissible_values:
+      simulation:
+        description: Any type of biological computational model experiments
+        meaning: EDAM_TOPIC:3524
+        examples:
+          - value: generalized Lotka-Volterra model
+          - value: genome-scale metabolic model
+      microscopy:
+        description: Any type of imaging-related experiments
+        meaning: EDAM_TOPIC:3382
+        examples:
+          - value: co-localization with fluorescent markers
+          - value: assisted motility
+      cultivation:
+        description: Any laboratory procedure for growing microorganisms
+        meaning: NCIT:C25300
+        examples:
+          - value: continuous co-culture in bioreactor
+          - value: co-plating on solid media
+      sample:
+          description: Any type of experiments based on the analysis of a sample
+          meaning: OBI:0000659
+          examples:
+            - value: co-occurrences drawn from analyses of abundances obtained from in situ or in vivo sampling

@@ -85,3 +85,7 @@ def test_multiline_stuff():
             "print('DELETING ALL YOUR STUFF. HA HA HA.')"
     )
 
+
+def test_enum_pv_meaning_expansion():
+    kitchen_module = make_python(SCHEMA, PYTHON, True)
+    print(kitchen_module.MethodTypeEnum)
