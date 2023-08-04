@@ -6,23 +6,21 @@ from tests.test_validator import data_file
 
 PERSONINFO_SCHEMA = str(Path(__file__).parent / "input/personinfo.yaml")
 
+CSV_DATA = """id, full_name, phone, age
+id:1,Person A,555-1234,25
+id:2,Person B,555-0101,57
+id:3,Person C,,
+"""
+
 
 class TestValidate(unittest.TestCase):
     def test_valid_csv_file(self):
-        data = """id, full_name, phone, age
-id:1, Person A, 555-1234, 25
-id:2, Person B, 555-0101, 57
-"""
-        with data_file(data, suffix=".csv") as f:
+        with data_file(CSV_DATA, suffix=".csv") as f:
             report = validate_file(f, PERSONINFO_SCHEMA, "Person")
-            self.assertEqual(len(report.results), 0)
+            self.assertEqual(report.results, [])
 
     def test_valid_tsv_file(self):
-        data = """id\t full_name\t phone\t age
-id:1\tPerson A\t555-1234\t25
-id:2\tPerson B\t555-0101\t57
-"""
-        with data_file(data, suffix=".tsv") as f:
+        with data_file(CSV_DATA.replace(",", "\t"), suffix=".tsv") as f:
             report = validate_file(f, PERSONINFO_SCHEMA, "Person")
             self.assertEqual(len(report.results), 0)
 

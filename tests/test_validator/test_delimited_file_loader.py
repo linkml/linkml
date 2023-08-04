@@ -30,7 +30,7 @@ d, e, f
             loader = CsvLoader(csv_file)
             instances = loader.iter_instances()
             self.assertEqual(next(instances), {"one": "a", "two": "b", "three": "c"})
-            self.assertEqual(next(instances), {"one": "", "two": "", "three": ""})
+            self.assertEqual(next(instances), {})
             self.assertEqual(next(instances), {"one": "d", "two": "e", "three": "f"})
             self.assertRaises(StopIteration, lambda: next(instances))
 
@@ -57,4 +57,16 @@ d, e, f
                     ]
                 },
             )
+            self.assertRaises(StopIteration, lambda: next(instances))
+
+    def test_empty_column(self):
+        data = """one, two, three
+a, , c
+d, e, f
+"""
+        with data_file(data) as csv_file:
+            loader = CsvLoader(csv_file)
+            instances = loader.iter_instances()
+            self.assertEqual(next(instances), {"one": "a", "three": "c"})
+            self.assertEqual(next(instances), {"one": "d", "two": "e", "three": "f"})
             self.assertRaises(StopIteration, lambda: next(instances))

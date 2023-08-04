@@ -42,7 +42,7 @@ class _DelimitedFileLoader(Loader, ABC):
             for row in reader:
                 if self.skip_empty_rows and not any(row.values()):
                     continue
-                yield {k: _parse_numeric(v) for k, v in row.items() if k is not None}
+                yield {k: _parse_numeric(v) for k, v in row.items() if k is not None and v != ""}
 
     def iter_instances(self) -> Iterator[dict]:
         if self.index_slot_name is not None:
