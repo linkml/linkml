@@ -1,9 +1,22 @@
 import csv
 import re
 from abc import ABC, abstractmethod
-from typing import Iterable, Optional
+from typing import Iterator, Optional
 
 from linkml.validator.loaders.loader import Loader
+
+
+def _parse_numeric(value: str):
+    if not isinstance(value, str) or not re.search(r"[0-9]", value):
+        return value
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        pass
+    try:
+        return float(value)
+    except (TypeError, ValueError, OverflowError):
+        return value
 
 
 class _DelimitedFileLoader(Loader, ABC):
@@ -21,27 +34,17 @@ class _DelimitedFileLoader(Loader, ABC):
         self.skip_empty_rows = skip_empty_rows
         self.index_slot_name = index_slot_name
 
-    def _parse_numeric(self, value: str):
-        if not isinstance(value, str) or not re.search(r"[0-9]", value):
-            return value
-        try:
-            return int(value)
-        except (TypeError, ValueError):
-            pass
-        try:
-            return float(value)
-        except (TypeError, ValueError, OverflowError):
-            return value
-
-    def _rows(self) -> Iterable[dict]:
+    def _rows(self) -> Iterator[dict]:
         with open(self.source) as file:
-            reader = csv.DictReader(file, delimiter=self.delimiter, skipinitialspace=True)
+            reader: csv.DictReader = csv.DictReader(
+                file, delimiter=self.delimiter, skipinitialspace=True
+            )
             for row in reader:
                 if self.skip_empty_rows and not any(row.values()):
                     continue
-                yield {k: self._parse_numeric(v) for k, v in row.items() if k is not None}
+                yield {k: _parse_numeric(v) for k, v in row.items() if k is not None}
 
-    def iter_instances(self) -> Iterable[dict]:
+    def iter_instances(self) -> Iterator[dict]:
         if self.index_slot_name is not None:
             yield {self.index_slot_name: list(self._rows())}
         else:

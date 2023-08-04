@@ -1,4 +1,4 @@
-from typing import Any, Iterable
+from typing import Any, Iterator
 
 from linkml_runtime.loaders import json_loader
 
@@ -15,14 +15,14 @@ class JsonLoader(Loader):
         """
         super().__init__(source)
 
-    def iter_instances(self) -> Iterable[Any]:
+    def iter_instances(self) -> Iterator[Any]:
         """Lazily yield instance from JSON source.
 
-        If the root of the JSON is an array, yield each element of the array. Otherwise
+        If the root of the JSON is an array, yield each element of the array. Otherwise,
         yield the root element itself.
 
         :return: Iterator over data instances
-        :rtype: Iterable[Any]
+        :rtype: Iterator[Any]
         """
         data = json_loader.load_as_dict(self.source)
         if isinstance(data, list):

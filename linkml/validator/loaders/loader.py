@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any, Iterable
+from typing import Any, Iterator
 
 
 class Loader(ABC):
@@ -16,10 +16,10 @@ class Loader(ABC):
         self.source = source
 
     @abstractmethod
-    def iter_instances(self) -> Iterable[Any]:
+    def iter_instances(self) -> Iterator[Any]:
         """Lazily load data instances from the source
 
         :return: Iterator over data instances
-        :rtype: Iterable[Any]
+        :rtype: Iterator[Any]
         """
         pass

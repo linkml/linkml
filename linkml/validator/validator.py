@@ -1,6 +1,6 @@
 from functools import lru_cache
 from pathlib import Path
-from typing import Any, Iterable, List, Optional, Union
+from typing import Any, Iterator, List, Optional, Union
 
 from linkml_runtime import SchemaView
 from linkml_runtime.linkml_model import SchemaDefinition
@@ -22,7 +22,7 @@ class Validator:
         """Constructor method
 
         :param schema: The schema to validate against. If a string or Path, the schema
-            will be loaded from that location. Otherwise a `SchemaDefinition` is required.
+            will be loaded from that location. Otherwise, a `SchemaDefinition` is required.
         :param validation_plugins: A list of plugins that be used to validate instances
             using the given schema. Each element should be an instance of a subclass of
             `linkml.validator.plugins.ValidationPlugin`. Defaults to None.
@@ -59,7 +59,7 @@ class Validator:
 
     def iter_results(
         self, instance: Any, target_class: Optional[str] = None
-    ) -> Iterable[ValidationResult]:
+    ) -> Iterator[ValidationResult]:
         """Lazily yield validation results for the given instance
 
         :param instance: The instance to validate
@@ -67,7 +67,7 @@ class Validator:
             against. If None, the class will be inferred from the schema by
             looked for a class with `tree_root: true`. Defaults to None.
         :return: Iterator over validation results
-        :rtype: Iterable[ValidationResult]
+        :rtype: Iterator[ValidationResult]
         """
         if not self._validation_plugins:
             return []
@@ -79,7 +79,7 @@ class Validator:
 
     def iter_results_from_source(
         self, loader: Loader, target_class: Optional[str] = None
-    ) -> Iterable[ValidationResult]:
+    ) -> Iterator[ValidationResult]:
         """Lazily yield validation results for the given instance
 
         :param loader: An instance of a subclass of `linkml.validator.loaders.Loader`
@@ -88,7 +88,7 @@ class Validator:
             against. If None, the class will be inferred from the schema by
             looked for a class with `tree_root: true`. Defaults to None.
         :return: Iterator over validation results
-        :rtype: Iterable[ValidationResult]
+        :rtype: Iterator[ValidationResult]
         """
         for instance in loader.iter_instances():
             yield from self.iter_results(instance, target_class)

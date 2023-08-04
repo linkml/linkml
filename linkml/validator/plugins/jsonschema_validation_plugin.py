@@ -1,4 +1,4 @@
-from typing import Any, Iterable
+from typing import Any, Iterator
 
 import jsonschema
 from jsonschema.exceptions import best_match
@@ -22,13 +22,13 @@ class JsonschemaValidationPlugin(ValidationPlugin):
         self.closed = closed
         self.strict = strict
 
-    def process(self, instance: Any, context: ValidationContext) -> Iterable[ValidationResult]:
+    def process(self, instance: Any, context: ValidationContext) -> Iterator[ValidationResult]:
         """Perform JSON Schema validation on the provided instance
 
         :param instance: The instance to validate
         :param context: The validation context which provides a JSON Schema artifact
         :return: Iterator over validation results
-        :rtype: Iterable[ValidationResult]
+        :rtype: Iterator[ValidationResult]
         """
         json_schema = context.json_schema(closed=self.closed)
         validator = jsonschema.Draft7Validator(
