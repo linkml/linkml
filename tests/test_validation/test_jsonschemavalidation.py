@@ -29,10 +29,11 @@ class JsonSchemaValidatorTestCase(unittest.TestCase):
 
     def test_validate_prefixes(self):
         mod = PythonGenerator(ENUM_TEST_SCHEMA).compile_module()
+        print(mod.IntermicrobialInteraction)
         validator = JsonSchemaDataValidator(schema=ENUM_TEST_SCHEMA)
-        obj = yaml_loader.load(source=ENUM_TEST_DATA)
+        obj = yaml_loader.load(source=ENUM_TEST_DATA, target_class=mod.IntermicrobialInteraction)
         result = validator.validate_object(obj, target_class=mod.IntermicrobialInteraction)
-        # TODO: this should not fail, EDAM_TOPIC is parsed incorrectly in pythongen
+
         self.assertIsNone(result)
 
     def test_validate_object(self):

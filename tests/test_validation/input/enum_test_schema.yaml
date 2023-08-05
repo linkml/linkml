@@ -14,7 +14,7 @@ prefixes:
   linkml: https://w3id.org/linkml/
   schema: http://schema.org/
   WIKIDATA_PROPERTY: https://www.wikidata.org/prop/
-  EDAM.TOPIC: http://edamontology.org/topic_
+  EDAM_TOPIC: http://edamontology.org/topic_
   NCIT: http://purl.obolibrary.org/obo/NCIT_
   OBI: http://purl.obolibrary.org/obo/OBI_
 default_prefix: miiid
@@ -114,13 +114,13 @@ enums:
     permissible_values:
       simulation:
         description: Any type of biological computational model experiments
-        meaning: EDAM.TOPIC:3524
+        meaning: EDAM_TOPIC:3524
         examples:
           - value: generalized Lotka-Volterra model
           - value: genome-scale metabolic model
       microscopy:
         description: Any type of imaging-related experiments
-        meaning: EDAM.TOPIC:3382
+        meaning: EDAM_TOPIC:3382
         examples:
           - value: co-localization with fluorescent markers
           - value: assisted motility
