@@ -15,8 +15,10 @@ class TestLinter(unittest.TestCase):
     def test_enum_pv_linting(self):
         linter = Linter(get_named_config(ExtendableConfigs.recommended.text))
         report = list(linter.lint(SCHEMA, validate_schema=True))
-        for message in report:
-            print(message)
+        # not sure if our default schema should lint free of errors or not, but currently there are a few errors
+        # and many warnings.
+        self.assertGreater(len(report), 0)
+
 
     def test_rule_level_error(self):
         config = yaml.safe_load(
