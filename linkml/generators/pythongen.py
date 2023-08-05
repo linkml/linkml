@@ -93,7 +93,6 @@ class PythonGenerator(Generator):
     def visit_schema(self, **kwargs) -> None:
         # Add explicitly declared prefixes
         self.emit_prefixes.update([p.prefix_prefix for p in self.schema.prefixes.values()])
-
         # Add all emit statements
         self.emit_prefixes.update(self.schema.emit_prefixes)
 
@@ -1125,7 +1124,7 @@ class {enum_name}(EnumDefinitionImpl):
             pv_meaning = self.namespaces.curie_for(
                 self.namespaces.uri_for(pv.meaning), default_ok=False, pythonform=True
             )
-            pv_attrs.append(f"{indent_str}meaning={pv_meaning}")
+            pv_attrs.append(f"{indent_str}meaning={pv_meaning.replace('.', '_')}")
 
         return "PermissibleValue(\n" + ",\n".join(pv_attrs) + ")"
 
