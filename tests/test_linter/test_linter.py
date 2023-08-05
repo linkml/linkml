@@ -19,7 +19,6 @@ class TestLinter(unittest.TestCase):
         # and many warnings.
         self.assertGreater(len(report), 0)
 
-
     def test_rule_level_error(self):
         config = yaml.safe_load(
             """

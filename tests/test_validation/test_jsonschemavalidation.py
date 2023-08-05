@@ -12,6 +12,8 @@ from linkml.validators.jsonschemavalidator import (
 )
 from tests.test_validation.environment import env
 
+ENUM_TEST_SCHEMA = env.input_path("enum_test_schema.yaml")
+ENUM_TEST_DATA = env.input_path("enum_test_data.yaml")
 SCHEMA = env.input_path("kitchen_sink.yaml")
 DATASET_1 = env.input_path("Dataset-01.yaml")
 DATASET_2 = env.input_path("Dataset-02.yaml")
@@ -24,6 +26,13 @@ class JsonSchemaValidatorTestCase(unittest.TestCase):
     def setUp(self):
         # Ensure each test runs from a clean state
         _generate_jsonschema.cache_clear()
+
+    def test_validate_prefixes(self):
+        mod = PythonGenerator(ENUM_TEST_SCHEMA).compile_module()
+        validator = JsonSchemaDataValidator(schema=ENUM_TEST_SCHEMA)
+        obj = yaml_loader.load(source=ENUM_TEST_DATA)
+        result = validator.validate_object(obj, target_class=mod.IntermicrobialInteraction)
+        self.assertIsNone(result)
 
     def test_validate_object(self):
         mod = PythonGenerator(SCHEMA).compile_module()
