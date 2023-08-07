@@ -1,11 +1,11 @@
-from functools import lru_cache
 from pathlib import Path
-from typing import Any, Iterator, List, Optional, Union
+from typing import Any, Iterator, List, Optional, TextIO, Union
 
-from linkml_runtime import SchemaView
 from linkml_runtime.linkml_model import SchemaDefinition
+from linkml_runtime.loaders import yaml_loader
 
 from linkml.validator.loaders import Loader
+from linkml.validator.loaders.passthrough_loader import PassthroughLoader
 from linkml.validator.plugins import ValidationPlugin
 from linkml.validator.report import ValidationReport, ValidationResult
 from linkml.validator.validation_context import ValidationContext
@@ -16,7 +16,7 @@ class Validator:
 
     def __init__(
         self,
-        schema: Union[str, Path, SchemaDefinition],
+        schema: Union[str, dict, TextIO, Path, SchemaDefinition],
         validation_plugins: Optional[List[ValidationPlugin]] = None,
     ) -> None:
         """Constructor method
@@ -27,7 +27,12 @@ class Validator:
             using the given schema. Each element should be an instance of a subclass of
             `linkml.validator.plugins.ValidationPlugin`. Defaults to None.
         """
-        self._schema_view = SchemaView(schema)
+        if isinstance(schema, Path):
+            schema = str(schema)
+        if isinstance(schema, SchemaDefinition):
+            self._schema = schema
+        else:
+            self._schema: SchemaDefinition = yaml_loader.load(schema, SchemaDefinition)
         self._validation_plugins = validation_plugins
 
     def validate(self, instance: Any, target_class: Optional[str] = None) -> ValidationReport:
@@ -69,18 +74,13 @@ class Validator:
         :return: Iterator over validation results
         :rtype: Iterator[ValidationResult]
         """
-        if not self._validation_plugins:
-            return []
-
-        target_class = self._get_target_class(target_class)
-        context = ValidationContext(self._schema_view.schema, target_class)
-        for plugin in self._validation_plugins:
-            yield from plugin.process(instance, context)
+        loader = PassthroughLoader(iter([instance]))
+        yield from self.iter_results_from_source(loader, target_class)
 
     def iter_results_from_source(
         self, loader: Loader, target_class: Optional[str] = None
     ) -> Iterator[ValidationResult]:
-        """Lazily yield validation results for the given instance
+        """Lazily yield validation results for the instances provided by a loader
 
         :param loader: An instance of a subclass of `linkml.validator.loaders.Loader`
             which provides the instances to validate
@@ -90,21 +90,17 @@ class Validator:
         :return: Iterator over validation results
         :rtype: Iterator[ValidationResult]
         """
-        for instance in loader.iter_instances():
-            yield from self.iter_results(instance, target_class)
+        if not self._validation_plugins:
+            return []
 
-    @lru_cache
-    def _get_target_class(self, target_class: str) -> str:
-        if target_class is None:
-            roots = [
-                class_name
-                for class_name, class_def in self._schema_view.all_classes().items()
-                if class_def.tree_root
-            ]
-            if len(roots) != 1:
-                raise ValueError(f"Cannot determine tree root: {roots}")
-            return roots[0]
-        else:
-            # strict=True raises ValueError if class is not found in schema
-            class_def = self._schema_view.get_class(target_class, strict=True)
-            return class_def.name
+        context = ValidationContext(self._schema, target_class)
+
+        for plugin in self._validation_plugins:
+            plugin.pre_process(context)
+
+        for instance in loader.iter_instances():
+            for plugin in self._validation_plugins:
+                yield from plugin.process(instance, context)
+
+        for plugin in self._validation_plugins:
+            plugin.post_process(context)
