@@ -42,7 +42,7 @@ def _remove_names(obj: Any, parent: Optional[str]) -> Any:
     :return:
     """
     if isinstance(obj, dict):
-        return {k: _remove_names(v, k) for k, v in obj.items() if k != 'name' or parent is None or parent == 'slots'}
+        return {k: _remove_names(v, k) for k, v in obj.items() if k != 'name' or parent is None or parent in ['slots', 'slot_usage']}
     elif isinstance(obj, list):
         return [_remove_names(x, parent) for x in obj]
     else:
