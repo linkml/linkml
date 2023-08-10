@@ -304,11 +304,11 @@ class JsonSchemaGenerator(Generator):
         # support other pv_formula
 
         def extract_permissible_text(pv):
-            if type(pv) is str:
+            if isinstance(pv, str):
                 return pv
-            if type(pv) is PermissibleValue:
+            if isinstance(pv, PermissibleValue):
                 return pv.text.code
-            if type(pv) is PermissibleValueText:
+            if isinstance(pv, PermissibleValueText):
                 return pv
             raise ValueError(f"Invalid permissible value in enum {enum}: {pv}")
 
