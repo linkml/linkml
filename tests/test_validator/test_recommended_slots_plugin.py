@@ -63,7 +63,7 @@ def test_missing_recommended_on_target_class(validation_context):
     plugin = RecommendedSlotsPlugin()
     instance = {"nonrec": "foo"}
     result_iter = plugin.process(instance, validation_context)
-    assert next(result_iter).message == "Slot 'rec' is recommended on class 'Object' in $"
+    assert next(result_iter).message == "Slot 'rec' is recommended on class 'Object' in /"
     with pytest.raises(StopIteration):
         next(result_iter)
 
@@ -73,7 +73,7 @@ def test_missing_recommended_on_nested_class(validation_context):
     plugin = RecommendedSlotsPlugin()
     instance = {"rec": "foo", "nested": {"nonrec": "foo"}}
     result_iter = plugin.process(instance, validation_context)
-    assert next(result_iter).message == "Slot 'rec' is recommended on class 'Object' in $.nested"
+    assert next(result_iter).message == "Slot 'rec' is recommended on class 'Object' in /nested"
     with pytest.raises(StopIteration):
         next(result_iter)
 
@@ -103,7 +103,7 @@ def test_missing_recommended_inlined(validation_context):
     result_iter = plugin.process(instance, validation_context)
     assert (
         next(result_iter).message
-        == "Slot 'value1' is recommended on class 'Inlined' in $.nested_inline.c"
+        == "Slot 'value1' is recommended on class 'Inlined' in /nested_inline/c"
     )
     with pytest.raises(StopIteration):
         next(result_iter)
@@ -124,7 +124,7 @@ def test_missing_recommended_inlined_as_list(validation_context):
     result_iter = plugin.process(instance, validation_context)
     assert (
         next(result_iter).message
-        == "Slot 'value1' is recommended on class 'Inlined' in $.nested_inline_list[2]"
+        == "Slot 'value1' is recommended on class 'Inlined' in /nested_inline_list/2"
     )
     with pytest.raises(StopIteration):
         next(result_iter)

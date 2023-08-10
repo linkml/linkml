@@ -26,6 +26,7 @@ class ValidationResult(BaseModel):
     severity: Severity
     message: str
     instance: Optional[Any]
+    instance_index: Optional[int]
     instantiates: Optional[str]
 
 

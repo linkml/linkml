@@ -41,7 +41,7 @@ class JsonschemaValidationPlugin(ValidationPlugin):
                 severity=Severity.ERROR,
                 instance=instance,
                 instantiates=context.target_class,
-                message=f"{best_error.message} in {best_error.json_path}",
+                message=f"{best_error.message} in /{'/'.join(str(p) for p in best_error.absolute_path)}",
             )
             if self.strict:
                 return

@@ -98,9 +98,11 @@ class Validator:
         for plugin in self._validation_plugins:
             plugin.pre_process(context)
 
-        for instance in loader.iter_instances():
+        for index, instance in enumerate(loader.iter_instances()):
             for plugin in self._validation_plugins:
-                yield from plugin.process(instance, context)
+                for result in plugin.process(instance, context):
+                    result.instance_index = index
+                    yield result
 
         for plugin in self._validation_plugins:
             plugin.post_process(context)
