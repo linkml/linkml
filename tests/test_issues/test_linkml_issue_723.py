@@ -93,8 +93,8 @@ def test_plain_dataclasses():
     assert p.status.value == StatusEnumDC.ALIVE.value
     assert p.status.value == "ALIVE"
     assert p.status != "ALIVE"
-    assert type(p.status) == StatusEnumDC
-    assert type(p.status.value) == str
+    assert isinstance(p.status, StatusEnumDC)
+    assert isinstance(p.status.value, str)
 
 
 def test_raises(pythongen_module):
