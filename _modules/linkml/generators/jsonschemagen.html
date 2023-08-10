@@ -606,11 +606,11 @@
         <span class="c1"># support other pv_formula</span>
 
         <span class="k">def</span> <span class="nf">extract_permissible_text</span><span class="p">(</span><span class="n">pv</span><span class="p">):</span>
-            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">pv</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pv</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
                 <span class="k">return</span> <span class="n">pv</span>
-            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">pv</span><span class="p">)</span> <span class="ow">is</span> <span class="n">PermissibleValue</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pv</span><span class="p">,</span> <span class="n">PermissibleValue</span><span class="p">):</span>
                 <span class="k">return</span> <span class="n">pv</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">code</span>
-            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">pv</span><span class="p">)</span> <span class="ow">is</span> <span class="n">PermissibleValueText</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pv</span><span class="p">,</span> <span class="n">PermissibleValueText</span><span class="p">):</span>
                 <span class="k">return</span> <span class="n">pv</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid permissible value in enum </span><span class="si">{</span><span class="n">enum</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">pv</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
