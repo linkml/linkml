@@ -68,7 +68,7 @@ class ConfiguredBaseModel(WeakRefShimBaseModel,
                 arbitrary_types_allowed = True,
                 use_enum_values = True):
     pass
-""" 
+"""
     else:
         template += """
 class ConfiguredBaseModel(BaseModel,
@@ -597,7 +597,7 @@ def cli(
 
     if pydantic_version not in ["1", "2"]:
         raise ValueError(f"pydantic_version must be 1 or 2, not {pydantic_version}")
-    
+
     gen = PydanticGenerator(
         yamlfile,
         template_file=template_file,
@@ -608,7 +608,7 @@ def cli(
         gen_slots=slots,
         **args,
     )
-    
+
     print(gen.serialize())
 
 
