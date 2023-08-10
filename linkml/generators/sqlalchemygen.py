@@ -47,7 +47,9 @@ class SQLAlchemyGenerator(Generator):
     generatorname = os.path.basename(__file__)
     generatorversion = "0.1.1"
     valid_formats = ["sqla"]
+    file_extension = "py"
     uses_schemaloader = False
+    template: TemplateEnum = None
 
     # ObjectVars
     original_schema: Union[SchemaDefinition, str] = None
@@ -61,12 +63,16 @@ class SQLAlchemyGenerator(Generator):
         self,
         model_path: str = None,
         no_model_import=False,
-        template: TemplateEnum = TemplateEnum.IMPERATIVE,
+        template: TemplateEnum = None,
         foreign_key_policy: ForeignKeyPolicy = None,
         **kwargs,
     ) -> str:
         # src_sv = SchemaView(self.schema)
         # self.schema = src_sv.schema
+        if template is None:
+            template = self.template
+        if template is None:
+            template = TemplateEnum.IMPERATIVE
         sqltr = RelationalModelTransformer(self.schemaview)
         if foreign_key_policy:
             sqltr.foreign_key_policy = foreign_key_policy
@@ -123,6 +129,9 @@ class SQLAlchemyGenerator(Generator):
             classes=rel_schema_classes_ordered,
         )
         return code
+
+    def serialize(self, **kwargs) -> str:
+        return self.generate_sqla(**kwargs)
 
     def compile_sqla(
         self,

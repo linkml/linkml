@@ -74,6 +74,7 @@ class OwlSchemaGenerator(Generator):
     valid_formats = ["owl", "ttl"] + [
         x.name for x in rdflib_plugins(None, rdflib_Parser) if "/" not in str(x.name)
     ]
+    file_extension = "owl"
     visits_are_sorted = True
     uses_schemaloader = True
     requires_metamodel = True

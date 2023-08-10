@@ -1,0 +1,45 @@
+{
+    "$defs": {
+        "C1": {
+            "additionalProperties": false,
+            "description": "",
+            "properties": {
+                "sa": {
+                    "type": "string"
+                },
+                "sb": {
+                    "type": "integer"
+                }
+            },
+            "title": "C1",
+            "type": "object"
+        },
+        "C2": {
+            "additionalProperties": false,
+            "description": "",
+            "properties": {
+                "sb": {
+                    "type": "integer"
+                }
+            },
+            "title": "C2",
+            "type": "object"
+        }
+    },
+    "$id": "http://example.org/tests/issue177",
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "additionalProperties": true,
+    "description": "",
+    "metamodel_version": "1.7.0",
+    "properties": {
+        "sa": {
+            "type": "string"
+        },
+        "sb": {
+            "type": "integer"
+        }
+    },
+    "title": "issue177",
+    "type": "object",
+    "version": null
+}

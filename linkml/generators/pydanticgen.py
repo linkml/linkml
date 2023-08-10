@@ -149,6 +149,7 @@ class PydanticGenerator(OOCodeGenerator):
     generatorname = os.path.basename(__file__)
     generatorversion = "0.0.1"
     valid_formats = ["pydantic"]
+    file_extension = "py"
 
     # ObjectVars
     template_file: str = None
@@ -486,7 +487,13 @@ class PydanticGenerator(OOCodeGenerator):
                 # Confirm that the original slot range (ignoring the default that comes in from
                 # induced_slot) isn't in addition to setting any_of
                 if len(s.any_of) > 0 and sv.get_slot(sn).range is not None:
-                    raise ValueError("Slot cannot have both range and any_of defined")
+                    base_range_subsumes_any_of = False
+                    base_range = sv.get_slot(sn).range
+                    base_range_cls = sv.get_class(base_range, strict=False)
+                    if base_range_cls is not None and base_range_cls.class_uri == "linkml:Any":
+                        base_range_subsumes_any_of = True
+                    if not base_range_subsumes_any_of:
+                        raise ValueError("Slot cannot have both range and any_of defined")
 
                 if s.any_of is not None and len(s.any_of) > 0:
                     # list comprehension here is pulling ranges from within AnonymousSlotExpression

@@ -33,7 +33,6 @@ from rdflib import URIRef
 
 import linkml
 from linkml._version import __version__
-from linkml.generators import PYTHON_GEN_VERSION
 from linkml.utils.generator import Generator, shared_arguments
 from linkml.utils.ifabsent_functions import (
     default_curie_or_uri,
@@ -52,8 +51,9 @@ class PythonGenerator(Generator):
 
     # ClassVars
     generatorname = os.path.basename(__file__)
-    generatorversion = PYTHON_GEN_VERSION
+    generatorversion = "0.0.1"
     valid_formats = ["py"]
+    file_extension = "py"
     visit_all_class_slots = False
     uses_schemaloader = True
 
