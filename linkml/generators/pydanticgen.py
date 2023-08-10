@@ -579,7 +579,12 @@ class PydanticGenerator(OOCodeGenerator):
 
 @shared_arguments(PydanticGenerator)
 @click.option("--template_file", help="Optional jinja2 template to use for class generation")
-@click.option("--pydantic_version", type=click.Choice(["1", "2"]), default="1", help="Pydantic version to use (1 or 2)")
+@click.option(
+    "--pydantic_version",
+    type=click.Choice(["1", "2"]),
+    default="1",
+    help="Pydantic version to use (1 or 2)",
+)
 @click.version_option(__version__, "-V", "--version")
 @click.command()
 def cli(
