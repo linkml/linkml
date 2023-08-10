@@ -579,7 +579,7 @@ class PydanticGenerator(OOCodeGenerator):
 
 @shared_arguments(PydanticGenerator)
 @click.option("--template_file", help="Optional jinja2 template to use for class generation")
-@click.option("--pydantic_version", help="Pydantic version to use (1 or 2)", default="1")
+@click.option("--pydantic_version", type=click.Choice(["1", "2"]), default="1", help="Pydantic version to use (1 or 2)")
 @click.version_option(__version__, "-V", "--version")
 @click.command()
 def cli(
@@ -594,10 +594,6 @@ def cli(
     **args,
 ):
     """Generate pydantic classes to represent a LinkML model"""
-
-    if pydantic_version not in ["1", "2"]:
-        raise ValueError(f"pydantic_version must be 1 or 2, not {pydantic_version}")
-
     gen = PydanticGenerator(
         yamlfile,
         template_file=template_file,
@@ -608,7 +604,6 @@ def cli(
         gen_slots=slots,
         **args,
     )
-
     print(gen.serialize())
 
 
