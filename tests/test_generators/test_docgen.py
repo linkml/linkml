@@ -218,21 +218,11 @@ class DocGeneratorTestCase(unittest.TestCase):
             followed_by=["## Identifier and Mapping Information", "### Schema Source"],
         )
 
-        assert_mdfile_contains(
-            "SubsetB.md",
-            "## Slots in subset",
-            after="### Schema Source"
-        )
+        assert_mdfile_contains("SubsetB.md", "## Slots in subset", after="### Schema Source")
 
-        assert_mdfile_does_not_contain(
-            "SubsetB.md",
-            "## Classes in subset"
-        )
+        assert_mdfile_does_not_contain("SubsetB.md", "## Classes in subset")
 
-        assert_mdfile_does_not_contain(
-            "SubsetB.md",
-            "## Enumerations in subset"
-        )
+        assert_mdfile_does_not_contain("SubsetB.md", "## Enumerations in subset")
 
         # test internal links
         assert_mdfile_contains("ceo.md", "Range: [Person](Person.md)", after="Properties")
