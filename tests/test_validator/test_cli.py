@@ -3,7 +3,6 @@ import json
 from pathlib import Path
 
 import pytest
-import yaml
 from click.testing import CliRunner
 
 from linkml.validator.cli import cli
@@ -98,15 +97,16 @@ def test_invalid_json(cli_runner, json_data_file):
 def test_custom_plugin_config(tmp_path, cli_runner, csv_data_file):
     """Verify that a custom plugin set can be specified via a config file"""
 
-    config = {
-        "schema": PERSONINFO_SCHEMA,
-        "target_class": "Person",
-        "plugins": {"RecommendedSlotsPlugin": {}},
-    }
+    config_yaml = f"""
+schema: {PERSONINFO_SCHEMA}
+target_class: Person
+plugins:
+  RecommendedSlotsPlugin:
+"""
 
     config_path = tmp_path / "config.yaml"
     with open(config_path, "w") as config_file:
-        yaml.dump(config, config_file)
+        config_file.write(config_yaml)
 
     # This would cause validation error if using the JsonschemaValidationPlugin.
     # But since our config does _not_ include that plugin, we want to verify that
@@ -121,24 +121,30 @@ def test_custom_plugin_config(tmp_path, cli_runner, csv_data_file):
     assert result.exit_code == 0
 
 
-def test_custom_loader_config(tmp_path, cli_runner, csv_data_file):
+def test_custom_loader_config(tmp_path, cli_runner, csv_data_file, json_data_file):
     """Verify that a custom loader can be specified via a config file"""
 
     # With no file extension, attempting to automatically choose a loader would fail. The
     # custom config also sets the `index_slot_name` option so that the data is loaded
     # as an object (instead of individual rows) and validated against the schema's container
     # class.
-    data_path = csv_data_file([VALID_PERSON_1, VALID_PERSON_1], filename="data")
-    config = {
-        "schema": PERSONINFO_SCHEMA,
-        "data_sources": [{"CsvLoader": {"source": data_path, "index_slot_name": "persons"}}],
-    }
+    csv_data_path = csv_data_file([VALID_PERSON_1, VALID_PERSON_1], filename="data")
+    json_data_path = json_data_file({"persons": [VALID_PERSON_1, VALID_PERSON_2]})
+    config_yaml = f"""
+schema: {PERSONINFO_SCHEMA}
+data_sources:
+  - {json_data_path}
+  - CsvLoader:
+      source: {csv_data_path}
+      index_slot_name: persons
+"""
 
     config_path = tmp_path / "config.yaml"
     with open(config_path, "w") as config_file:
-        yaml.dump(config, config_file)
+        config_file.write(config_yaml)
 
     result = cli_runner.invoke(cli, ["--config", str(config_path)])
+    print(str(result.exception))
     assert result.exception is None
     assert result.output == "No issues found!\n"
     assert result.exit_code == 0
