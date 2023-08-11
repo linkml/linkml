@@ -690,7 +690,9 @@ class LogicalModelTransformer(ModelTransformer):
         multivalued = root_slot.multivalued
         s = ""
         if attribute.any_of:
-            union_terms = [self._att_as_python_expression(x, root_slot, stack + [x]) for x in attribute.any_of]
+            union_terms = [
+                self._att_as_python_expression(x, root_slot, stack + [x]) for x in attribute.any_of
+            ]
             s = f"Union[{', '.join(union_terms)}]"
         else:
             if attribute.range:
