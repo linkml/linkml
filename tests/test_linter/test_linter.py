@@ -1,13 +1,24 @@
 import unittest
-
+import json
 import yaml
-
+from tests.test_generators.environment import env
 from linkml.linter.config.datamodel.config import RuleLevel
-from linkml.linter.linter import Linter
+from linkml.linter.linter import Linter, get_named_config
 from linkml.utils.schema_builder import SchemaBuilder
+from linkml.generators.jsonschemagen import JsonSchemaGenerator
+from linkml.linter.config.datamodel.config import ExtendableConfigs, RuleLevel
 
+SCHEMA = env.input_path("kitchen_sink.yaml")
 
 class TestLinter(unittest.TestCase):
+
+    def test_enum_pv_linting(self):
+        linter = Linter(get_named_config(ExtendableConfigs.recommended.text))
+        report = list(linter.lint(SCHEMA, validate_schema=True))
+        # not sure if our default schema should lint free of errors or not, but currently there are a few errors
+        # and many warnings.
+        self.assertGreater(len(report), 0)
+
     def test_rule_level_error(self):
         config = yaml.safe_load(
             """
@@ -144,3 +155,4 @@ rules:
 
         # this is not in the recommended or custom rules and should come from the default
         self.assertEqual(str(linter.config.rules.tree_root_class.level), RuleLevel.disabled.text)
+

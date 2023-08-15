@@ -1,0 +1,137 @@
+---
+id: https://w3id.org/FAIR-MI/miiid-schema
+name: miiid-schema
+title: miiid-schema
+version: 0.1.0
+description: |-
+  Minimal Information about Intermicrobial Interaction Data schema
+license: GNU GPL v3.0
+see_also:
+  - https://FAIR-MI.github.io/miiid-schema
+
+prefixes:
+  miiid: https://w3id.org/FAIR-MI/miiid/
+  linkml: https://w3id.org/linkml/
+  schema: http://schema.org/
+  WIKIDATA_PROPERTY: https://www.wikidata.org/prop/
+  EDAM.TOPIC: http://edamontology.org/topic_
+  NCIT: http://purl.obolibrary.org/obo/NCIT_
+  OBI: http://purl.obolibrary.org/obo/OBI_
+default_prefix: miiid
+default_range: string
+
+imports:
+  - linkml:types
+
+classes:
+
+  NamedThing:
+    description: >-
+      A generic grouping for any identifiable entity
+    slots:
+      - id
+      - name
+      - description
+    class_uri: schema:Thing
+
+  IntermicrobialInteraction:
+    is_a: NamedThing
+    description: >-
+      Represents an interaction between microbial entities
+    slots:
+      - participants
+      - tax_id
+      - evidence_type
+      - method_type
+      - reference
+
+  IntermicrobialInteractionCollection:
+    tree_root: true
+    description: >-
+      A holder for IntermicrobialInteraction objects
+    attributes:
+      entries:
+        range: IntermicrobialInteraction
+        multivalued: true
+        inlined_as_list: true
+        description: >-
+          An IntermicrobialInteraction object
+
+slots:
+  id:
+    identifier: true
+    slot_uri: schema:identifier
+    range: uriorcurie
+    description: A unique identifier for a thing
+  name:
+    slot_uri: schema:name
+    description: A human-readable name for a thing
+  description:
+    slot_uri: schema:description
+    description: A human-readable description for a thing
+  participants:
+    required: true
+    range: string # TODO Create a dedicated Type https://linkml.io/linkml/schemas/models.html#types
+    multivalued: true
+    description: Names of the microbial entities, with descriptions of any genetic manipulations performed.
+  tax_id:
+    required: true
+    range: NCBITaxId
+    multivalued: true
+    description: NCBI Taxonomy identifiers at the relevant taxonomic level. Novel taxa lacking identifiers are denoted by N/A.
+  evidence_type:
+    required: true
+    range: string
+    description: Type of evidence used to determine the interaction using the Evidence and Conclusion Ontology.
+  method_type:
+    recommended: true
+    range: MethodType
+    multivalued: true
+    description: One or several of the types of methods used to determine the interaction.
+  reference:
+    required: true
+    exact_mappings:
+      - schema:url
+    description: Persistent identifier (e.g. DOI or URL) to a resource, script, or article, documenting the method.
+
+
+types:
+  NCBITaxId:
+    description: >-
+      Numeric identifier following the NCBI Taxonomy schema.
+    base: int
+    uri: xsd:integer
+    minimum_value: 2
+    examples:
+      - value: 1043002 # strain level: Aureobasidium pullulans EXF-150
+      - value: 1236 # class level: Gammaproteobacteria
+    exact_mappings:
+      - WIKIDATA_PROPERTY:P685
+
+enums:
+  MethodType:
+    description: List of methods used to determine interactions
+    permissible_values:
+      simulation:
+        description: Any type of biological computational model experiments
+        meaning: EDAM.TOPIC:3524
+        examples:
+          - value: generalized Lotka-Volterra model
+          - value: genome-scale metabolic model
+      microscopy:
+        description: Any type of imaging-related experiments
+        meaning: EDAM.TOPIC:3382
+        examples:
+          - value: co-localization with fluorescent markers
+          - value: assisted motility
+      cultivation:
+        description: Any laboratory procedure for growing microorganisms
+        meaning: NCIT:C25300
+        examples:
+          - value: continuous co-culture in bioreactor
+          - value: co-plating on solid media
+      sample:
+          description: Any type of experiments based on the analysis of a sample
+          meaning: OBI:0000659
+          examples:
+            - value: co-occurrences drawn from analyses of abundances obtained from in situ or in vivo sampling
