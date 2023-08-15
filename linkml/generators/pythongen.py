@@ -1121,9 +1121,15 @@ class {enum_name}(EnumDefinitionImpl):
                 f'{self.process_multiline_string(pv.description, f"{indent_str}description=")}'
             )
         if pv.meaning:
+            # print("first", pv.meaning)
+            uri = self.namespaces.uri_for(pv.meaning)
+
+            #print(uri)
+            #print(self.namespaces.curie_for(uri, default_ok=False, pythonform=True))
             pv_meaning = self.namespaces.curie_for(
                 self.namespaces.uri_for(pv.meaning), default_ok=False, pythonform=True
             )
+            #print("second", pv_meaning)
             pv_attrs.append(f"{indent_str}meaning={pv_meaning.replace('.', '_')}")
 
         return "PermissibleValue(\n" + ",\n".join(pv_attrs) + ")"

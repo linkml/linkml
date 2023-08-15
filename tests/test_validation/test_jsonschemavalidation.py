@@ -28,7 +28,8 @@ class JsonSchemaValidatorTestCase(unittest.TestCase):
         _generate_jsonschema.cache_clear()
 
     def test_validate_prefixes(self):
-        mod = PythonGenerator(SCHEMA).compile_module()
+        mod = PythonGenerator(ENUM_TEST_SCHEMA).compile_module()
+
         pstr = str(PythonGenerator(ENUM_TEST_SCHEMA, mergeimports=True).serialize())
         print(pstr)
         pstr_path = env.expected_path("enum_test_schema.py")
