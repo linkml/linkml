@@ -259,6 +259,26 @@ slots:
 
 See [dynamic enums](https://linkml.io/linkml/schemas/enums.html#dynamic-enums) for more details.
 
+### Are CURIEs used in schema definitions checked for expandability and resolution?  
+
+No, not at this time.  However, linkml_runtime does have methods to help you expand the CURIEs in your data
+using the prefixes in your model (see: linkml_runtime.utils.namespaces.py) into URIs and then checking them is 
+a simple bit of python like [this](https://github.com/biolink/biolink-model/blob/cfd18406cb7b6d2d2e04935b159c03cf5fefdaeb/scripts/verify_infores.py#L16).
+ 
+### Are CURIEs used in data that validates against a given LinkML schema checked for expandability and resolution?
+
+No, not at this time.  However, linkml_runtime does have methods to help you expand the CURIEs in your data
+using the prefixes in your model (see: linkml_runtime.utils.namespaces.py) into URIs.  Specifying a regular expression
+to constrain the CURIEs in your data to a particular pattern is also possible.  
+See the [regular expression](https://w3id.org/linkml/regular_expression) metaslot.  However, validating a CURIE
+that matches the regular expression, but is invalid in some other way (e.g. is an obsolete ontology term) is not 
+currently supported.
+
+### Is it possible for us to import only a subset of an existing LinkML model?
+
+Not yet, but we are working on a tool to this, please check out 
+[linkml-transformer](https://github.com/linkml/linkml-transformer) for more details.
+
 ### Can I combine dynamic enums using boolean expressions
 
 Yes, this is possible.
