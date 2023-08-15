@@ -263,7 +263,7 @@ See [dynamic enums](https://linkml.io/linkml/schemas/enums.html#dynamic-enums) f
 
 No, not at this time.  However, linkml_runtime does have methods to help you expand the CURIEs in your data
 using the prefixes in your model (see: linkml_runtime.utils.namespaces.py) into URIs and then checking them is 
-a simple bit of python like [this](https://github.com/biolink/biolink-model/blob/cfd18406cb7b6d2d2e04935b159c03cf5fefdaeb/scripts/verify_infores.py#L16).
+a simple bit of python like [this](https://github.com/biolink/biolink-model/blob/master/scripts/verify_infores.py).
  
 ### Are CURIEs used in data that validates against a given LinkML schema checked for expandability and resolution?
 
