@@ -1,3 +1,13 @@
+"""
+**Experimental**
+
+The linkml.validator package contains a new LinkML validation framework that is still under
+active development. Eventually it will be the recommended replacement for classes in the
+linkml.validators package. You may use this package in the meantime but the behavior is subject
+to change, even in patch releases.
+
+See: https://github.com/linkml/linkml/issues/1494
+"""
 import os
 from pathlib import Path
 from typing import Any, Optional, Union
