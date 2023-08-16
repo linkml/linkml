@@ -1,0 +1,56 @@
+id: http://example.org/schemaview_is_inlined
+name: schemaview_is_inlined
+description: This schema defines various slots that exercise the SchemaView.is_inlined() method
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+default_range: string
+
+classes:
+  ThingWithId:
+    slots:
+      - id
+      - value
+  ThingWithoutId:
+    slots:
+      - value
+
+slots:
+  id:
+    identifier: true
+  value:
+
+  a_thing_with_id:
+    range: ThingWithId
+
+  inlined_thing_with_id:
+    range: ThingWithId
+    inlined: true
+
+  inlined_as_list_thing_with_id:
+    range: ThingWithId
+    inlined_as_list: true
+
+  a_thing_without_id:
+    range: ThingWithoutId
+
+  inlined_thing_without_id:
+    range: ThingWithoutId
+    inlined: true
+
+  inlined_as_list_thing_without_id:
+    range: ThingWithoutId
+    inlined_as_list: true
+
+  an_integer:
+    range: integer
+  
+  # Pathological cases
+  inlined_integer:
+    range: integer
+    inlined: true
+
+  inlined_as_list_integer:
+    range: integer
+    inlined_as_list: true

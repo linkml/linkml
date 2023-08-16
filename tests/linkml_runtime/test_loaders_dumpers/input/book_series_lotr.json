@@ -1,0 +1,31 @@
+{
+  "id": "S001",
+  "name": "Lord of the Rings",
+  "genres": [
+    "fantasy"
+  ],
+  "creator": {
+    "name": "JRR Tolkein",
+    "from_country": "England"
+  },
+  "books": [
+    {
+      "id": "S001.1",
+      "name": "Fellowship of the Ring",
+      "price": 5.99,
+      "summary": "Hobbits"
+    },
+    {
+      "id": "S001.2",
+      "name": "The Two Towers",
+      "price": 5.99,
+      "summary": "More hobbits"
+    },
+    {
+      "id": "S001.3",
+      "name": "Return of the King",
+      "price": 6.99,
+      "summary": "Yet more hobbits"
+    }
+  ]
+}

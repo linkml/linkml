@@ -1,5 +1,5 @@
 # Auto generated from personinfo.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-12-26T18:13:04
+# Generation date: 2022-10-19T17:57:17
 # Schema: personinfo
 #
 # id: https://w3id.org/linkml/examples/personinfo
@@ -26,6 +26,7 @@ from linkml_runtime.linkml_model.types import Boolean, Date, Decimal, Float, Int
 from linkml_runtime.utils.metamodelcore import Bool, Decimal, URI, URIorCURIE, XSDDate
 
 metamodel_version = "1.7.0"
+version = None
 
 # Overwrite dataclasses _init_fn to add **kwargs in __init__
 dataclasses._init_fn = dataclasses_init_fn_with_kwargs
@@ -169,6 +170,7 @@ class Person(NamedThing):
     current_address: Optional[Union[dict, "Address"]] = None
     has_employment_history: Optional[Union[Union[dict, "EmploymentEvent"], List[Union[dict, "EmploymentEvent"]]]] = empty_list()
     has_familial_relationships: Optional[Union[Union[dict, "FamilialRelationship"], List[Union[dict, "FamilialRelationship"]]]] = empty_list()
+    has_interpersonal_relationships: Optional[Union[Union[dict, "InterPersonalRelationship"], List[Union[dict, "InterPersonalRelationship"]]]] = empty_list()
     has_medical_history: Optional[Union[Union[dict, "MedicalEvent"], List[Union[dict, "MedicalEvent"]]]] = empty_list()
     aliases: Optional[Union[str, List[str]]] = empty_list()
 
@@ -197,7 +199,13 @@ class Person(NamedThing):
             self.has_employment_history = [self.has_employment_history] if self.has_employment_history is not None else []
         self.has_employment_history = [v if isinstance(v, EmploymentEvent) else EmploymentEvent(**as_dict(v)) for v in self.has_employment_history]
 
-        self._normalize_inlined_as_list(slot_name="has_familial_relationships", slot_type=FamilialRelationship, key_name="type", keyed=False)
+        if not isinstance(self.has_familial_relationships, list):
+            self.has_familial_relationships = [self.has_familial_relationships] if self.has_familial_relationships is not None else []
+        self.has_familial_relationships = [v if isinstance(v, FamilialRelationship) else FamilialRelationship(**as_dict(v)) for v in self.has_familial_relationships]
+
+        if not isinstance(self.has_interpersonal_relationships, list):
+            self.has_interpersonal_relationships = [self.has_interpersonal_relationships] if self.has_interpersonal_relationships is not None else []
+        self.has_interpersonal_relationships = [v if isinstance(v, InterPersonalRelationship) else InterPersonalRelationship(**as_dict(v)) for v in self.has_interpersonal_relationships]
 
         if not isinstance(self.has_medical_history, list):
             self.has_medical_history = [self.has_medical_history] if self.has_medical_history is not None else []
@@ -568,6 +576,32 @@ class FamilialRelationship(Relationship):
 
 
 @dataclass
+class InterPersonalRelationship(Relationship):
+    _inherited_slots: ClassVar[List[str]] = []
+
+    class_class_uri: ClassVar[URIRef] = PERSONINFO.InterPersonalRelationship
+    class_class_curie: ClassVar[str] = "personinfo:InterPersonalRelationship"
+    class_name: ClassVar[str] = "InterPersonalRelationship"
+    class_model_uri: ClassVar[URIRef] = PERSONINFO.InterPersonalRelationship
+
+    type: str = None
+    related_to: Union[str, PersonId] = None
+
+    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self._is_empty(self.type):
+            self.MissingRequiredField("type")
+        if not isinstance(self.type, str):
+            self.type = str(self.type)
+
+        if self._is_empty(self.related_to):
+            self.MissingRequiredField("related_to")
+        if not isinstance(self.related_to, PersonId):
+            self.related_to = PersonId(self.related_to)
+
+        super().__post_init__(**kwargs)
+
+
+@dataclass
 class EmploymentEvent(Event):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -667,6 +701,17 @@ class FamilialRelationshipType(EnumDefinitionImpl):
         name="FamilialRelationshipType",
     )
 
+class NonFamilialRelationshipType(EnumDefinitionImpl):
+
+    COWORKER_OF = PermissibleValue(text="COWORKER_OF",
+                                             meaning=FAMREL["70"])
+    ROOMMATE_OF = PermissibleValue(text="ROOMMATE_OF",
+                                             meaning=FAMREL["70"])
+
+    _defn = EnumDefinition(
+        name="NonFamilialRelationshipType",
+    )
+
 class GenderType(EnumDefinitionImpl):
 
     _defn = EnumDefinition(
@@ -762,6 +807,9 @@ slots.has_medical_history = Slot(uri=PERSONINFO.has_medical_history, name="has_m
 
 slots.has_familial_relationships = Slot(uri=PERSONINFO.has_familial_relationships, name="has_familial_relationships", curie=PERSONINFO.curie('has_familial_relationships'),
                    model_uri=PERSONINFO.has_familial_relationships, domain=None, range=Optional[Union[Union[dict, FamilialRelationship], List[Union[dict, FamilialRelationship]]]])
+
+slots.has_interpersonal_relationships = Slot(uri=PERSONINFO.has_interpersonal_relationships, name="has_interpersonal_relationships", curie=PERSONINFO.curie('has_interpersonal_relationships'),
+                   model_uri=PERSONINFO.has_interpersonal_relationships, domain=None, range=Optional[Union[Union[dict, InterPersonalRelationship], List[Union[dict, InterPersonalRelationship]]]])
 
 slots.in_location = Slot(uri=PERSONINFO.in_location, name="in location", curie=PERSONINFO.curie('in_location'),
                    model_uri=PERSONINFO.in_location, domain=None, range=Optional[Union[str, PlaceId]])
@@ -859,3 +907,9 @@ slots.FamilialRelationship_type = Slot(uri=PERSONINFO.type, name="FamilialRelati
 
 slots.FamilialRelationship_related_to = Slot(uri=PERSONINFO.related_to, name="FamilialRelationship_related to", curie=PERSONINFO.curie('related_to'),
                    model_uri=PERSONINFO.FamilialRelationship_related_to, domain=FamilialRelationship, range=Union[str, PersonId])
+
+slots.InterPersonalRelationship_type = Slot(uri=PERSONINFO.type, name="InterPersonalRelationship_type", curie=PERSONINFO.curie('type'),
+                   model_uri=PERSONINFO.InterPersonalRelationship_type, domain=InterPersonalRelationship, range=str)
+
+slots.InterPersonalRelationship_related_to = Slot(uri=PERSONINFO.related_to, name="InterPersonalRelationship_related to", curie=PERSONINFO.curie('related_to'),
+                   model_uri=PERSONINFO.InterPersonalRelationship_related_to, domain=InterPersonalRelationship, range=Union[str, PersonId])

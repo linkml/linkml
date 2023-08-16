@@ -1,6 +1,7 @@
 import json
 from decimal import Decimal
-from typing import Dict
+from typing import Dict, Union
+from pydantic import BaseModel
 
 from deprecated.classic import deprecated
 
@@ -11,9 +12,11 @@ from linkml_runtime.utils.formatutils import remove_empty_items
 from linkml_runtime.utils.yamlutils import YAMLRoot, as_json_object
 from jsonasobj2 import JsonObj
 
+
 class JSONDumper(Dumper):
 
-    def dump(self, element: YAMLRoot, to_file: str, contexts: CONTEXTS_PARAM_TYPE = None, **kwargs) -> None:
+    def dump(self, element: Union[BaseModel, YAMLRoot], to_file: str, contexts: CONTEXTS_PARAM_TYPE = None,
+             **kwargs) -> None:
         """
         Write element as json to to_file
         :param element: LinkML object to be serialized as YAML
@@ -26,9 +29,11 @@ class JSONDumper(Dumper):
             * JSON Object
             * A list containing elements of any type named above
         """
+        if isinstance(element, BaseModel):
+            element = element.dict()
         super().dump(element, to_file, contexts=contexts, **kwargs)
 
-    def dumps(self, element: YAMLRoot, contexts: CONTEXTS_PARAM_TYPE = None, inject_type=True) -> str:
+    def dumps(self, element: Union[BaseModel, YAMLRoot], contexts: CONTEXTS_PARAM_TYPE = None, inject_type=True) -> str:
         """
         Return element as a JSON or a JSON-LD string
         :param element: LinkML object to be emitted
@@ -42,7 +47,10 @@ class JSONDumper(Dumper):
         :param inject_type: if True (default), add a @type at the top level
         :return: JSON Object representing the element
         """
+
         def default(o):
+            if isinstance(o, BaseModel):
+                return remove_empty_items(o.dict(), hide_protected_keys=True)
             if isinstance(o, YAMLRoot):
                 return remove_empty_items(o, hide_protected_keys=True)
             elif isinstance(o, Decimal):
@@ -50,11 +58,12 @@ class JSONDumper(Dumper):
                 return str(o)
             else:
                 return json.JSONDecoder().decode(o)
+        if isinstance(element, BaseModel):
+            element = element.dict()
         return json.dumps(as_json_object(element, contexts, inject_type=inject_type),
                           default=default,
                           ensure_ascii=False,
                           indent='  ')
-
 
     @staticmethod
     @deprecated("Use `utils/formatutils/remove_empty_items` instead")
@@ -66,7 +75,8 @@ class JSONDumper(Dumper):
         """
         return formatutils.remove_empty_items(obj, hide_protected_keys=True)
 
-    def to_json_object(self, element: YAMLRoot, contexts: CONTEXTS_PARAM_TYPE = None, inject_type=True) -> JsonObj:
+    def to_json_object(self, element: Union[BaseModel, YAMLRoot], contexts: CONTEXTS_PARAM_TYPE = None,
+                       inject_type=True) -> JsonObj:
         """
         As dumps(), except returns a JsonObj, not a string
 
@@ -83,7 +93,7 @@ class JSONDumper(Dumper):
         """
         return as_json_object(element, contexts, inject_type=inject_type)
 
-    def to_dict(self, element: YAMLRoot, **kwargs) -> JsonObj:
+    def to_dict(self, element: Union[BaseModel, YAMLRoot], **kwargs) -> JsonObj:
         """
         As dumps(), except returns a JsonObj, not a string
 

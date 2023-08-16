@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import TextIO, Union, Optional, Callable, Dict, Type, Any, List
 
+from pydantic import BaseModel
 from hbreader import FileInfo, hbread
 from jsonasobj2 import as_dict, JsonObj
 
@@ -36,9 +37,9 @@ class Loader(ABC):
     def load_source(self,
                     source: Union[str, dict, TextIO],
                     loader: Callable[[Union[str, Dict], FileInfo], Optional[Union[Dict, List]]],
-                    target_class: Type[YAMLRoot],
+                    target_class: Union[Type[YAMLRoot], Type[BaseModel]],
                     accept_header: Optional[str] = "text/plain, application/yaml;q=0.9",
-                    metadata: Optional[FileInfo] = None) -> Optional[Union[YAMLRoot, List[YAMLRoot]]]:
+                    metadata: Optional[FileInfo] = None) -> Optional[Union[BaseModel, YAMLRoot, List[BaseModel], List[YAMLRoot]]]:
         """ Base loader - convert a file, url, string, open file handle or dictionary into an instance
         of target_class
 
@@ -51,27 +52,12 @@ class Loader(ABC):
         :return: Instance of the target class if loader worked
         """
 
-        # Makes coding easier down the line if we've got this, even if it is strictly internal
-        if metadata is None:
-            metadata = FileInfo()
-        if not isinstance(source, dict):
-            data = hbread(source, metadata, metadata.base_path, accept_header)
-        else:
-            data = source
+        data = self._read_source(source, metadata=metadata, base_dir=metadata.base_path, accept_header=accept_header)
         data_as_dict = loader(data, metadata)
-        if data_as_dict:
-            if isinstance(data_as_dict, list):
-                return [target_class(**as_dict(x)) for x in data_as_dict]
-            elif isinstance(data_as_dict, dict):
-                return target_class(**data_as_dict)
-            elif isinstance(data_as_dict, JsonObj):
-                return [target_class(**as_dict(x)) for x in data_as_dict]
-            else:
-                raise ValueError(f'Unexpected type {data_as_dict}')
-        else:
-            return None
+        return self._construct_target_class(data_as_dict, target_class=target_class)
 
-    def load(self, *args, **kwargs) -> YAMLRoot:
+
+    def load(self, *args, **kwargs) -> Union[BaseModel, YAMLRoot]:
         """
         Load source as an instance of target_class
 
@@ -83,14 +69,17 @@ class Loader(ABC):
         :return: instance of target_class
         """
         results = self.load_any(*args, **kwargs)
-        if isinstance(results, YAMLRoot):
+        if isinstance(results, BaseModel) or isinstance(results, YAMLRoot):
             return results
         else:
-            raise ValueError(f'Result is not an instance of YAMLRoot: {type(results)}')
+            raise ValueError(f'Result is not an instance of BaseModel or YAMLRoot: {type(results)}')
+    
+    def load_as_dict(self, *args, **kwargs) -> Union[dict, List[dict]]:
+        raise NotImplementedError()
 
     @abstractmethod
-    def load_any(self, source: Union[str, dict, TextIO], target_class: Type[YAMLRoot], *, base_dir: Optional[str] = None,
-             metadata: Optional[FileInfo] = None, **_) -> Union[YAMLRoot, List[YAMLRoot]]:
+    def load_any(self, source: Union[str, dict, TextIO], target_class: Type[Union[BaseModel, YAMLRoot]], *, base_dir: Optional[str] = None,
+             metadata: Optional[FileInfo] = None, **_) -> Union[BaseModel, YAMLRoot, List[BaseModel], List[YAMLRoot]]:
         """
         Load source as an instance of target_class, or list of instances of target_class
 
@@ -103,7 +92,7 @@ class Loader(ABC):
         """
         raise NotImplementedError()
 
-    def loads_any(self, source: str, target_class: Type[YAMLRoot], *, metadata: Optional[FileInfo] = None, **_) -> Union[YAMLRoot, List[YAMLRoot]]:
+    def loads_any(self, source: str, target_class: Type[Union[BaseModel, YAMLRoot]], *, metadata: Optional[FileInfo] = None, **_) -> Union[BaseModel, YAMLRoot, List[BaseModel], List[YAMLRoot]]:
         """
         Load source as a string as an instance of target_class, or list of instances of target_class
         @param source: source
@@ -114,7 +103,7 @@ class Loader(ABC):
         """
         return self.load_any(source, target_class, metadata=metadata)
 
-    def loads(self, source: str, target_class: Type[YAMLRoot], *, metadata: Optional[FileInfo] = None, **_) -> YAMLRoot:
+    def loads(self, source: str, target_class: Type[Union[BaseModel, YAMLRoot]], *, metadata: Optional[FileInfo] = None, **_) -> Union[BaseModel, YAMLRoot]:
         """
         Load source as a string
         :param source: source
@@ -124,3 +113,44 @@ class Loader(ABC):
         :return: instance of taarget_class
         """
         return self.load(source, target_class, metadata=metadata)
+
+    def _construct_target_class(self, 
+                                data_as_dict: Union[dict, List[dict]],
+                                target_class: Union[Type[YAMLRoot], Type[BaseModel]]) -> Optional[Union[BaseModel, YAMLRoot, List[BaseModel], List[YAMLRoot]]]:
+        if data_as_dict:
+            if isinstance(data_as_dict, list):
+               if issubclass(target_class, YAMLRoot):
+                   return [target_class(**as_dict(x)) for x in data_as_dict]
+               elif issubclass(target_class, BaseModel):
+                   return [target_class.parse_obj(**as_dict(x)) for x in data_as_dict]
+               else:
+                   raise ValueError(f'Cannot load list of {target_class}')
+            elif isinstance(data_as_dict, dict):
+                if issubclass(target_class, BaseModel):
+                    return target_class.parse_obj(data_as_dict)
+                else:
+                    return target_class(**data_as_dict)
+            elif isinstance(data_as_dict, JsonObj):
+                return [target_class(**as_dict(x)) for x in data_as_dict]
+            else:
+                raise ValueError(f'Unexpected type {data_as_dict}')
+        else:
+            return None
+
+    def _read_source(self,
+                     source: Union[str, dict, TextIO], 
+                     *, 
+                     base_dir: Optional[str] = None, 
+                     metadata: Optional[FileInfo] = None, 
+                     accept_header: Optional[str] = "text/plain, application/yaml;q=0.9") -> Union[dict, str]:
+        if metadata is None:
+            metadata = FileInfo()
+        if base_dir and not metadata.base_path:
+            metadata.base_path = base_dir
+
+        if not isinstance(source, dict):
+            data = hbread(source, metadata, metadata.base_path, accept_header)
+        else:
+            data = source
+
+        return data

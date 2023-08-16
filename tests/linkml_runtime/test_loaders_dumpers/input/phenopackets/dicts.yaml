@@ -1,0 +1,204 @@
+ 
+classes: 
+  Age: 
+    attributes: 
+      iso8601duration: 
+        annotations: 
+          rank: 1
+        description: "The :ref:`ISO 8601<metadata_date_time>` age of this object as ISO8601\nduration or time intervals. e.g. P40Y10M05D)"
+        range: string
+    description: "See http://build.fhir.org/datatypes and http://build.fhir.org/condition-definitions.html#Condition.onset_x_\nIn FHIR this is represented as a UCUM measurement - http://unitsofmeasure.org/trac/"
+  AgeRange: 
+    attributes: 
+      end: 
+        annotations: 
+          rank: 2
+        description: ''
+        range: Age
+      start: 
+        annotations: 
+          rank: 1
+        description: ''
+        range: Age
+    description: ''
+  Evidence: 
+    attributes: 
+      evidenceCode: 
+        annotations: 
+          rank: 1
+        description: "The encoded evidence type using, for example the Evidence & Conclusion Ontology (ECO - http://purl.obolibrary.org/obo/eco.owl)\nFHIR mapping: Condition.evidence.code"
+        range: OntologyClass
+      reference: 
+        annotations: 
+          rank: 2
+        description: "FHIR mapping: Condition.evidence.detail"
+        range: ExternalReference
+    description: "FHIR mapping: Condition.evidence (https://www.hl7.org/fhir/condition-definitions.html#Condition.evidence)"
+  ExternalReference: 
+    attributes: 
+      description: 
+        annotations: 
+          rank: 3
+        description: "Human readable title or display string for the reference\nFHIR mapping: Reference.display"
+        range: string
+      id: 
+        annotations: 
+          rank: 1
+        description: "e.g. ISBN, PMID:123456, DOI:...,\nFHIR mapping: Reference.identifier"
+        range: string
+      reference: 
+        annotations: 
+          rank: 2
+        description: "A full or partial URL pointing to the external reference if no commonly resolvable identifier can be used in the\n`id` field\nFHIR mapping Reference.reference"
+        range: string
+    description: "FHIR mapping: Reference (https://www.hl7.org/fhir/references.html)"
+  File: 
+    attributes: 
+      fileAttributes: 
+        annotations: 
+          rank: 3
+        description: "Map of attributes describing the file. For example the File format or genome assembly would be defied here. For\ngenomic data files there MUST be a 'genomeAssembly' key."
+        range: Dictionary
+      individualToFileIdentifiers: 
+        annotations: 
+          rank: 2
+        description: "A map of identifiers mapping an individual to a sample in the file. The key values must correspond to the\nIndividual::id for the individuals in the message, the values must map to the samples in the file."
+        range: Dictionary
+      uri: 
+        annotations: 
+          rank: 1
+        description: URI for the file e.g. file://data/genomes/file1.vcf.gz or https://opensnp.org/data/60.23andme-exome-vcf.231?1341012444
+        range: string
+    description: ''
+  GestationalAge: 
+    attributes: 
+      days: 
+        annotations: 
+          rank: 2
+        description: ''
+        range: integer
+      weeks: 
+        annotations: 
+          rank: 1
+        description: ''
+        range: integer
+    description: ''
+  OntologyClass: 
+    attributes: 
+      id: 
+        annotations: 
+          rank: 1
+        description: "a CURIE-style identifier e.g. HP:0100024, MP:0001284, UBERON:0001690.\nThis is the primary key for the ontology class\nREQUIRED!"
+        range: string
+        required: 'true'
+      label: 
+        annotations: 
+          rank: 2
+        description: class label, aka name. E.g. "Abnormality of cardiovascular system"
+        range: string
+    description: "A class (aka term, concept) in an ontology.\nFHIR mapping: CodeableConcept (http://www.hl7.org/fhir/datatypes.html#CodeableConcept)\nsee also Coding (http://www.hl7.org/fhir/datatypes.html#Coding)"
+  Procedure: 
+    attributes: 
+      bodySite: 
+        annotations: 
+          rank: 2
+        description: "FHIR mapping: Procedure.bodySite"
+        range: OntologyClass
+      code: 
+        annotations: 
+          rank: 1
+        description: "FHIR mapping: Procedure.code"
+        range: OntologyClass
+      performed: 
+        annotations: 
+          rank: 3
+        description: When the procedure was performed.
+        range: TimeElement
+    description: "A clinical procedure performed on a subject. By preference a single concept to indicate both the procedure and the\nbody site should be used. In cases where this is not possible, the body site should be indicated using a separate\nontology class.\ne.g.\n{\"code\":{\"NCIT:C51585\": \"Biopsy of Soft Palate\"}}\n{\"code\":{\"NCIT:C28743\": \"Punch Biopsy\"}, \"body_site\":{\"UBERON:0003403\": \"skin of forearm\"}} - a punch biopsy of the skin from the forearm\nFHIR mapping: Procedure (https://www.hl7.org/fhir/procedure.html)"
+  TimeElement: 
+    attributes: 
+      age: 
+        annotations: 
+          rank: 1
+        description: ''
+        range: Age
+      ageRange: 
+        annotations: 
+          rank: 2
+        description: ''
+        range: AgeRange
+      gestationalAge: 
+        annotations: 
+          rank: 6
+        description: ''
+        range: GestationalAge
+      interval: 
+        annotations: 
+          rank: 5
+        description: ''
+        range: TimeInterval
+      ontologyClass: 
+        annotations: 
+          rank: 3
+        description: ''
+        range: OntologyClass
+      timestamp: 
+        annotations: 
+          rank: 4
+        description: ''
+        range: Timestamp
+    description: ''
+    rules: 
+      - 
+        postconditions: 
+          exactly_one_of: 
+            - 
+              slot_conditions: 
+                gestationalAge: 
+                  required: 'true'
+            - 
+              slot_conditions: 
+                age: 
+                  required: 'true'
+            - 
+              slot_conditions: 
+                ageRange: 
+                  required: 'true'
+            - 
+              slot_conditions: 
+                ontologyClass: 
+                  required: 'true'
+            - 
+              slot_conditions: 
+                timestamp: 
+                  required: 'true'
+            - 
+              slot_conditions: 
+                interval: 
+                  required: 'true'
+  TimeInterval: 
+    attributes: 
+      end: 
+        annotations: 
+          rank: 2
+        description: ''
+        range: Timestamp
+      start: 
+        annotations: 
+          rank: 1
+        description: ''
+        range: Timestamp
+    description: ''
+default_prefix: base
+enums: {}
+
+id: https://w3id.org/linkml/phenopackets/base
+imports: 
+  - linkml:types
+  - timestamp
+name: base
+prefixes: 
+  base: https://w3id.org/linkml/phenopackets/base/
+  linkml: https://w3id.org/linkml/
+slots: {}
+

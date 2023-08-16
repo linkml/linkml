@@ -27,13 +27,9 @@ linkml:CODE skos:definition "The permissible values are the set of possible code
 
 linkml:CURIE skos:definition "The permissible values are the set of CURIES in the code set" .
 
-linkml:ERROR linkml:meaning sh1:Violation .
-
 linkml:EXACT_SYNONYM linkml:meaning skos:exactMatch .
 
 linkml:FHIR_CODING skos:definition "The permissible values are the set of FHIR coding elements derived from the code set" .
-
-linkml:INFO linkml:meaning sh1:Info .
 
 linkml:NARROW_SYNONYM linkml:meaning skos:narrowerMatch .
 
@@ -53,8 +49,6 @@ linkml:SUBJECT skos:definition "a slot with this role connects a relationship to
     linkml:meaning rdf:subject .
 
 linkml:URI skos:definition "The permissible values are the set of code URIs in the code set" .
-
-linkml:WARNING linkml:meaning sh1:Warning .
 
 linkml:date a linkml:TypeDefinition ;
     skos:definition "a date (year, month and day) in an idealized calendar" ;
@@ -99,11 +93,14 @@ linkml:float a linkml:TypeDefinition ;
     linkml:imported_from "linkml:types" ;
     linkml:uri xsd:float .
 
-linkml:inapplicable_slot skos:definition "Applies when a slot is used in an instance of a class where the slot is not applicable for that class" .
-
-linkml:max_count_violation linkml:meaning sh1:MaxCountConstraintComponent .
-
-linkml:missing_slot_value skos:definition "Applies when an instance of a class has a required slot which is not filled in" .
+linkml:nodeidentifier a linkml:TypeDefinition ;
+    skos:definition "A URI, CURIE or BNODE that represents a node in a model." ;
+    skos:inScheme linkml:types ;
+    linkml:base "NodeIdentifier" ;
+    linkml:definition_uri linkml:Nodeidentifier ;
+    linkml:imported_from "linkml:types" ;
+    linkml:repr "str" ;
+    linkml:uri shex:nonLiteral .
 
 linkml:objectidentifier a linkml:TypeDefinition ;
     skos:definition "A URI or CURIE that represents an object in the model." ;
@@ -115,20 +112,6 @@ linkml:objectidentifier a linkml:TypeDefinition ;
     linkml:repr "str" ;
     linkml:uri shex:iri .
 
-linkml:parsing_error skos:definition "The data could not be parsed" .
-
-linkml:problem_type skos:inScheme linkml:reporting ;
-    linkml:definition_uri linkml:reportProblemType ;
-    linkml:imported_from "linkml:validation" ;
-    linkml:permissible_values linkml:inapplicable_slot,
-        linkml:max_count_violation,
-        linkml:missing_slot_value,
-        linkml:parsing_error,
-        linkml:slot_range_violation,
-        linkml:undeclared_slot .
-
-linkml:slot_range_violation skos:definition "Applies when the value of a slot is inconsistent with the declared range" .
-
 linkml:time a linkml:TypeDefinition ;
     skos:definition "A time object represents a (local) time of day, independent of any particular day" ;
     skos:editorialNote "URI is dateTime because OWL reasoners don't work with straight date or time" ;
@@ -139,8 +122,6 @@ linkml:time a linkml:TypeDefinition ;
     linkml:repr "str" ;
     linkml:uri xsd:dateTime .
 
-linkml:undeclared_slot skos:definition "Applies when a slot is used in data but the slot is undeclared in the datamodel" .
-
 linkml:UnitOfMeasure_exact_mappings a linkml:SlotDefinition ;
     skos:definition "Used to link a unit to equivalent concepts in ontologies such as UO, SNOMED, OEM, OBOE, NCIT" ;
     skos:inScheme linkml:mappings ;
@@ -150,7 +131,7 @@ linkml:UnitOfMeasure_exact_mappings a linkml:SlotDefinition ;
     linkml:definition_uri linkml:exact_mappings ;
     linkml:domain linkml:UnitOfMeasure ;
     linkml:domain_of linkml:UnitOfMeasure ;
-    linkml:imported_from "linkml:mappings" ;
+    linkml:imported_from "linkml:units" ;
     linkml:is_a linkml:exact_mappings ;
     linkml:is_usage_slot true ;
     linkml:multivalued true ;
@@ -265,53 +246,6 @@ linkml:class_definition_union_of a linkml:SlotDefinition ;
     linkml:range linkml:ClassDefinition ;
     linkml:slot_uri linkml:union_of ;
     linkml:usage_slot_name "union_of" .
-
-linkml:info a linkml:SlotDefinition ;
-    skos:inScheme linkml:reporting ;
-    linkml:definition_uri linkml:reportinfo ;
-    linkml:domain_of linkml:ValidationResult ;
-    linkml:imported_from "linkml:validation" ;
-    linkml:owner linkml:ValidationResult ;
-    linkml:range linkml:string ;
-    linkml:slot_uri linkml:reportinfo .
-
-linkml:instantiates a linkml:SlotDefinition ;
-    skos:exactMatch sh1:sourceShape ;
-    skos:inScheme linkml:reporting ;
-    linkml:definition_uri linkml:reportinstantiates ;
-    linkml:domain_of linkml:ValidationResult ;
-    linkml:imported_from "linkml:validation" ;
-    linkml:owner linkml:ValidationResult ;
-    linkml:range linkml:nodeidentifier ;
-    linkml:slot_uri linkml:reportinstantiates .
-
-linkml:node_source a linkml:SlotDefinition ;
-    skos:inScheme linkml:reporting ;
-    linkml:definition_uri linkml:reportnode_source ;
-    linkml:domain_of linkml:ValidationResult ;
-    linkml:imported_from "linkml:validation" ;
-    linkml:owner linkml:ValidationResult ;
-    linkml:range linkml:nodeidentifier ;
-    linkml:slot_uri linkml:reportnode_source .
-
-linkml:object a linkml:SlotDefinition ;
-    skos:inScheme linkml:reporting ;
-    skos:mappingRelation sh1:value ;
-    linkml:definition_uri linkml:reportobject ;
-    linkml:domain_of linkml:ValidationResult ;
-    linkml:imported_from "linkml:validation" ;
-    linkml:owner linkml:ValidationResult ;
-    linkml:range linkml:nodeidentifier ;
-    linkml:slot_uri sh1:value .
-
-linkml:object_str a linkml:SlotDefinition ;
-    skos:inScheme linkml:reporting ;
-    linkml:definition_uri linkml:reportobject_str ;
-    linkml:domain_of linkml:ValidationResult ;
-    linkml:imported_from "linkml:validation" ;
-    linkml:owner linkml:ValidationResult ;
-    linkml:range linkml:string ;
-    linkml:slot_uri linkml:reportobject_str .
 
 linkml:path_expression_all_of a linkml:SlotDefinition ;
     skos:definition "holds if all of the expressions hold" ;
@@ -433,16 +367,6 @@ linkml:permissible_value_mixins a linkml:SlotDefinition ;
     linkml:slot_uri linkml:mixins ;
     linkml:usage_slot_name "mixins" .
 
-linkml:predicate a linkml:SlotDefinition ;
-    skos:inScheme linkml:reporting ;
-    skos:relatedMatch sh1:resultPath ;
-    linkml:definition_uri linkml:reportpredicate ;
-    linkml:domain_of linkml:ValidationResult ;
-    linkml:imported_from "linkml:validation" ;
-    linkml:owner linkml:ValidationResult ;
-    linkml:range linkml:nodeidentifier ;
-    linkml:slot_uri linkml:reportpredicate .
-
 linkml:presence_enum skos:definition "enumeration of conditions by which a slot value should be set" ;
     skos:inScheme linkml:meta ;
     linkml:definition_uri linkml:PresenceEnum ;
@@ -467,10 +391,6 @@ linkml:relational_role_enum skos:definition "enumeration of roles a slot on a re
         linkml:OTHER_ROLE,
         linkml:PREDICATE,
         linkml:SUBJECT .
-
-linkml:results a linkml:SlotDefinition ;
-    linkml:multivalued true ;
-    linkml:range linkml:ValidationResult .
 
 linkml:schema_definition_name a linkml:SlotDefinition ;
     OIO:inSubset linkml:basic,
@@ -497,24 +417,6 @@ linkml:schema_definition_name a linkml:SlotDefinition ;
     linkml:required true ;
     linkml:slot_uri rdfs:label ;
     linkml:usage_slot_name "name" .
-
-linkml:severity a linkml:SlotDefinition ;
-    skos:inScheme linkml:reporting ;
-    linkml:definition_uri linkml:reportseverity ;
-    linkml:domain_of linkml:ValidationResult ;
-    linkml:imported_from "linkml:validation" ;
-    linkml:owner linkml:ValidationResult ;
-    linkml:range linkml:severity_options ;
-    linkml:slot_uri linkml:reportseverity .
-
-linkml:severity_options skos:exactMatch sh1:Severity ;
-    skos:inScheme linkml:reporting ;
-    linkml:definition_uri linkml:reportSeverityOptions ;
-    linkml:imported_from "linkml:validation" ;
-    linkml:permissible_values linkml:ERROR,
-        linkml:FATAL,
-        linkml:INFO,
-        linkml:WARNING .
 
 linkml:slot_definition_apply_to a linkml:SlotDefinition ;
     skos:definition "Used to extend class or slot definitions. For example, if we have a core schema where a gene has two slots for identifier and symbol, and we have a specialized schema for my_organism where we wish to add a slot systematic_name, we can avoid subclassing by defining a class gene_my_organism, adding the slot to this class, and then adding an apply_to pointing to the gene class. The new slot will be 'injected into' the gene class." ;
@@ -620,26 +522,6 @@ linkml:structured_alias_categories a linkml:SlotDefinition ;
     linkml:slot_uri dcterms:subject ;
     linkml:usage_slot_name "categories" .
 
-linkml:subject a linkml:SlotDefinition ;
-    skos:inScheme linkml:reporting ;
-    skos:mappingRelation sh1:focusNode ;
-    linkml:definition_uri linkml:reportsubject ;
-    linkml:domain_of linkml:ValidationResult ;
-    linkml:imported_from "linkml:validation" ;
-    linkml:owner linkml:ValidationResult ;
-    linkml:range linkml:nodeidentifier ;
-    linkml:slot_uri sh1:focusNode .
-
-linkml:type a linkml:SlotDefinition ;
-    skos:inScheme linkml:reporting ;
-    skos:mappingRelation sh1:sourceConstraintComponent ;
-    linkml:definition_uri linkml:reporttype ;
-    linkml:domain_of linkml:ValidationResult ;
-    linkml:imported_from "linkml:validation" ;
-    linkml:owner linkml:ValidationResult ;
-    linkml:range linkml:nodeidentifier ;
-    linkml:slot_uri sh1:sourceConstraintComponent .
-
 linkml:type_definition_union_of a linkml:SlotDefinition ;
     skos:definition "indicates that the domain element consists exactly of the members of the element in the range." ;
     skos:editorialNote "this only applies in the OWL generation" ;
@@ -655,29 +537,6 @@ linkml:type_definition_union_of a linkml:SlotDefinition ;
     linkml:range linkml:TypeDefinition ;
     linkml:slot_uri linkml:union_of ;
     linkml:usage_slot_name "union_of" .
-
-linkml:validationReport__results a linkml:SlotDefinition ;
-    skos:inScheme linkml:meta ;
-    skos:prefLabel "results" ;
-    linkml:domain_of linkml:ValidationReport ;
-    linkml:imported_from "linkml:validation" ;
-    linkml:inlined true ;
-    linkml:multivalued true ;
-    linkml:owner linkml:ValidationReport ;
-    linkml:range linkml:ValidationResult ;
-    linkml:slot_uri linkml:results .
-
-linkml:ValidationReport a linkml:ClassDefinition ;
-    skos:definition "A report object" ;
-    skos:inScheme linkml:reporting ;
-    skos:mappingRelation sh1:ValidationReport ;
-    linkml:attributes linkml:results ;
-    linkml:class_uri sh1:ValidationReport ;
-    linkml:definition_uri linkml:reportValidationReport ;
-    linkml:imported_from "linkml:validation" ;
-    linkml:slot_usage [ ] ;
-    linkml:slots linkml:validationReport__results ;
-    linkml:todos "add prov object" .
 
 linkml:alias a linkml:SlotDefinition ;
     skos:definition "the name used for a slot in the context of its owning class.  If present, this is used instead of the actual slot name." ;
@@ -758,6 +617,7 @@ linkml:has_quantity_kind a linkml:SlotDefinition ;
     skos:note "Potential ontologies include but are not limited to PATO, NCIT, OBOE, qudt.quantityKind" ;
     linkml:definition_uri linkml:has_quantity_kind ;
     linkml:domain_of linkml:UnitOfMeasure ;
+    linkml:imported_from "linkml:units" ;
     linkml:owner linkml:UnitOfMeasure ;
     linkml:range linkml:uriorcurie ;
     linkml:slot_uri qudt:hasQuantityKind .
@@ -1171,6 +1031,7 @@ linkml:derivation a linkml:SlotDefinition ;
     skos:inScheme linkml:units ;
     linkml:definition_uri linkml:derivation ;
     linkml:domain_of linkml:UnitOfMeasure ;
+    linkml:imported_from "linkml:units" ;
     linkml:owner linkml:UnitOfMeasure ;
     linkml:range linkml:string ;
     linkml:slot_uri linkml:derivation .
@@ -1359,6 +1220,7 @@ linkml:iec61360code a linkml:SlotDefinition ;
     skos:mappingRelation qudt:iec61360Code ;
     linkml:definition_uri linkml:iec61360code ;
     linkml:domain_of linkml:UnitOfMeasure ;
+    linkml:imported_from "linkml:units" ;
     linkml:owner linkml:UnitOfMeasure ;
     linkml:range linkml:string ;
     linkml:required true ;
@@ -2095,6 +1957,7 @@ linkml:symbol a linkml:SlotDefinition ;
     skos:mappingRelation qudt:symbol ;
     linkml:definition_uri linkml:symbol ;
     linkml:domain_of linkml:UnitOfMeasure ;
+    linkml:imported_from "linkml:units" ;
     linkml:owner linkml:UnitOfMeasure ;
     linkml:range linkml:string ;
     linkml:required true ;
@@ -2269,6 +2132,7 @@ linkml:ucum_code a linkml:SlotDefinition ;
     linkml:definition_uri linkml:ucum_code ;
     linkml:domain linkml:UnitOfMeasure ;
     linkml:domain_of linkml:UnitOfMeasure ;
+    linkml:imported_from "linkml:units" ;
     linkml:owner linkml:UnitOfMeasure ;
     linkml:range linkml:string ;
     linkml:recommended true ;
@@ -2899,15 +2763,6 @@ linkml:modified_by a linkml:SlotDefinition ;
     linkml:range linkml:uriorcurie ;
     linkml:slot_uri oslc:modifiedBy .
 
-linkml:nodeidentifier a linkml:TypeDefinition ;
-    skos:definition "A URI, CURIE or BNODE that represents a node in a model." ;
-    skos:inScheme linkml:types ;
-    linkml:base "NodeIdentifier" ;
-    linkml:definition_uri linkml:Nodeidentifier ;
-    linkml:imported_from "linkml:types" ;
-    linkml:repr "str" ;
-    linkml:uri shex:nonLiteral .
-
 linkml:range a linkml:SlotDefinition ;
     OIO:inSubset linkml:basic,
         linkml:minimal,
@@ -3240,6 +3095,7 @@ linkml:unit a linkml:SlotDefinition ;
     linkml:domain_of linkml:PermissibleValue,
         linkml:SlotExpression,
         linkml:TypeExpression ;
+    linkml:imported_from "linkml:units" ;
     linkml:inlined true ;
     linkml:owner linkml:PermissibleValue ;
     linkml:range linkml:UnitOfMeasure ;
@@ -3928,15 +3784,16 @@ linkml:UnitOfMeasure a linkml:ClassDefinition ;
     skos:inScheme linkml:units ;
     skos:mappingRelation qudt:Unit ;
     linkml:any_of [ a linkml:AnonymousClassExpression ;
+            linkml:slot_conditions linkml:iec61360code ],
+        [ a linkml:AnonymousClassExpression ;
             linkml:slot_conditions linkml:symbol ],
         [ a linkml:AnonymousClassExpression ;
             linkml:slot_conditions linkml:ucum_code ],
         [ a linkml:AnonymousClassExpression ;
-            linkml:slot_conditions linkml:exact_mappings ],
-        [ a linkml:AnonymousClassExpression ;
-            linkml:slot_conditions linkml:iec61360code ] ;
+            linkml:slot_conditions linkml:exact_mappings ] ;
     linkml:class_uri qudt:Unit ;
     linkml:definition_uri linkml:UnitOfMeasure ;
+    linkml:imported_from "linkml:units" ;
     linkml:slot_usage [ ] ;
     linkml:slots linkml:UnitOfMeasure_exact_mappings,
         linkml:derivation,
@@ -4015,24 +3872,6 @@ linkml:ReachabilityQuery a linkml:ClassDefinition ;
         linkml:source_nodes,
         linkml:source_ontology,
         linkml:traverse_up .
-
-linkml:ValidationResult a linkml:ClassDefinition ;
-    skos:definition "An individual result arising from validation of a data instance using a particular rule" ;
-    skos:inScheme linkml:reporting ;
-    skos:mappingRelation sh1:ValidationResult ;
-    linkml:class_uri sh1:ValidationResult ;
-    linkml:definition_uri linkml:reportValidationResult ;
-    linkml:imported_from "linkml:validation" ;
-    linkml:slot_usage [ ] ;
-    linkml:slots linkml:info,
-        linkml:instantiates,
-        linkml:node_source,
-        linkml:object,
-        linkml:object_str,
-        linkml:predicate,
-        linkml:severity,
-        linkml:subject,
-        linkml:type .
 
 linkml:broad_mappings a linkml:SlotDefinition ;
     skos:definition "A list of terms from different schemas or terminology systems that have broader meaning." ;
@@ -4725,6 +4564,14 @@ linkml:Element a linkml:ClassDefinition ;
         linkml:title,
         linkml:todos .
 
+linkml:string a linkml:TypeDefinition ;
+    skos:definition "A character string" ;
+    skos:inScheme linkml:types ;
+    linkml:base "str" ;
+    linkml:definition_uri linkml:String ;
+    linkml:imported_from "linkml:types" ;
+    linkml:uri xsd:string .
+
 linkml:SlotExpression a linkml:ClassDefinition ;
     bibo:status linkml:testing ;
     skos:definition "an expression that constrains the range of values a slot can take" ;
@@ -4759,14 +4606,6 @@ linkml:SlotExpression a linkml:ClassDefinition ;
         linkml:slot_expression_none_of,
         linkml:structured_pattern,
         linkml:unit .
-
-linkml:string a linkml:TypeDefinition ;
-    skos:definition "A character string" ;
-    skos:inScheme linkml:types ;
-    linkml:base "str" ;
-    linkml:definition_uri linkml:String ;
-    linkml:imported_from "linkml:types" ;
-    linkml:uri xsd:string .
 
 linkml:SchemaDefinition a linkml:ClassDefinition ;
     OIO:inSubset linkml:basic,
@@ -4990,9 +4829,7 @@ refer to the official URI for each construct, e.g.
         linkml:TypeDefinition,
         linkml:TypeExpression,
         linkml:UniqueKey,
-        linkml:UnitOfMeasure,
-        linkml:ValidationReport,
-        linkml:ValidationResult ;
+        linkml:UnitOfMeasure ;
     linkml:default_curi_maps "semweb_context" ;
     linkml:default_prefix "linkml" ;
     linkml:default_range linkml:string ;
@@ -5008,49 +4845,46 @@ refer to the official URI for each construct, e.g.
         "xsd" ;
     linkml:enums linkml:alias_predicate_enum,
         linkml:presence_enum,
-        linkml:problem_type,
         linkml:pv_formula_options,
-        linkml:relational_role_enum,
-        linkml:severity_options ;
-    linkml:generation_date "2022-07-13T02:39:07"^^xsd:dateTime ;
+        linkml:relational_role_enum ;
+    linkml:generation_date "2022-07-13T17:57:34"^^xsd:dateTime ;
     linkml:id linkml:meta ;
     linkml:imports linkml:annotations,
         linkml:extensions,
         linkml:mappings,
         linkml:types,
-        linkml:units,
-        linkml:validation ;
+        linkml:units ;
     linkml:metamodel_version "1.7.0" ;
-    linkml:prefixes [ linkml:prefix_prefix "skosxl" ;
-            linkml:prefix_reference skosxl: ],
-        [ linkml:prefix_prefix "OIO" ;
-            linkml:prefix_reference OIO: ],
-        [ linkml:prefix_prefix "sh" ;
-            linkml:prefix_reference sh1: ],
-        [ linkml:prefix_prefix "qudt" ;
+    linkml:prefixes [ linkml:prefix_prefix "qudt" ;
             linkml:prefix_reference qudt: ],
-        [ linkml:prefix_prefix "NCIT" ;
-            linkml:prefix_reference NCIT: ],
-        [ linkml:prefix_prefix "bibo" ;
-            linkml:prefix_reference bibo: ],
-        [ linkml:prefix_prefix "skos" ;
-            linkml:prefix_reference skos: ],
         [ linkml:prefix_prefix "qb" ;
             linkml:prefix_reference qb: ],
         [ linkml:prefix_prefix "schema" ;
             linkml:prefix_reference schema1: ],
-        [ linkml:prefix_prefix "prov" ;
-            linkml:prefix_reference prov: ],
-        [ linkml:prefix_prefix "swrl" ;
-            linkml:prefix_reference swrl: ],
-        [ linkml:prefix_prefix "vann" ;
-            linkml:prefix_reference vann1: ],
-        [ linkml:prefix_prefix "owl" ;
-            linkml:prefix_reference owl: ],
         [ linkml:prefix_prefix "linkml" ;
             linkml:prefix_reference linkml: ],
+        [ linkml:prefix_prefix "bibo" ;
+            linkml:prefix_reference bibo: ],
+        [ linkml:prefix_prefix "sh" ;
+            linkml:prefix_reference sh1: ],
+        [ linkml:prefix_prefix "swrl" ;
+            linkml:prefix_reference swrl: ],
+        [ linkml:prefix_prefix "NCIT" ;
+            linkml:prefix_reference NCIT: ],
+        [ linkml:prefix_prefix "prov" ;
+            linkml:prefix_reference prov: ],
+        [ linkml:prefix_prefix "owl" ;
+            linkml:prefix_reference owl: ],
         [ linkml:prefix_prefix "oslc" ;
             linkml:prefix_reference oslc: ],
+        [ linkml:prefix_prefix "OIO" ;
+            linkml:prefix_reference OIO: ],
+        [ linkml:prefix_prefix "skos" ;
+            linkml:prefix_reference skos: ],
+        [ linkml:prefix_prefix "skosxl" ;
+            linkml:prefix_reference skosxl: ],
+        [ linkml:prefix_prefix "vann" ;
+            linkml:prefix_reference vann1: ],
         [ linkml:prefix_prefix "pav" ;
             linkml:prefix_reference pav: ] ;
     linkml:slots linkml:UnitOfMeasure_exact_mappings,
@@ -5149,12 +4983,10 @@ refer to the official URI for each construct, e.g.
         linkml:inapplicable,
         linkml:include,
         linkml:include_self,
-        linkml:info,
         linkml:inherited,
         linkml:inherits,
         linkml:inlined,
         linkml:inlined_as_list,
-        linkml:instantiates,
         linkml:interpolated,
         linkml:inverse,
         linkml:irreflexive,
@@ -5190,11 +5022,8 @@ refer to the official URI for each construct, e.g.
         linkml:multivalued,
         linkml:name,
         linkml:narrow_mappings,
-        linkml:node_source,
         linkml:none_of,
         linkml:notes,
-        linkml:object,
-        linkml:object_str,
         linkml:open_world,
         linkml:owned_by,
         linkml:owner,
@@ -5211,7 +5040,6 @@ refer to the official URI for each construct, e.g.
         linkml:permissible_values,
         linkml:postconditions,
         linkml:preconditions,
-        linkml:predicate,
         linkml:prefix_prefix,
         linkml:prefix_reference,
         linkml:prefixes,
@@ -5239,7 +5067,6 @@ refer to the official URI for each construct, e.g.
         linkml:setting_key,
         linkml:setting_value,
         linkml:settings,
-        linkml:severity,
         linkml:shared,
         linkml:singular_name,
         linkml:slot_conditions,
@@ -5271,7 +5098,6 @@ refer to the official URI for each construct, e.g.
         linkml:structured_imports,
         linkml:structured_pattern,
         linkml:subclass_of,
-        linkml:subject,
         linkml:subproperty_of,
         linkml:subsets,
         linkml:symbol,
@@ -5285,7 +5111,6 @@ refer to the official URI for each construct, e.g.
         linkml:traverse,
         linkml:traverse_up,
         linkml:tree_root,
-        linkml:type,
         linkml:type_definition_union_of,
         linkml:type_expression_all_of,
         linkml:type_expression_any_of,
@@ -5301,7 +5126,6 @@ refer to the official URI for each construct, e.g.
         linkml:unique_keys,
         linkml:unit,
         linkml:usage_slot_name,
-        linkml:validationReport__results,
         linkml:value,
         linkml:value_description,
         linkml:value_presence,
@@ -5309,8 +5133,8 @@ refer to the official URI for each construct, e.g.
         linkml:values_from,
         linkml:version ;
     linkml:source_file "meta.yaml" ;
-    linkml:source_file_date "2022-07-13T02:37:17"^^xsd:dateTime ;
-    linkml:source_file_size 71456 ;
+    linkml:source_file_date "2022-07-13T17:52:28"^^xsd:dateTime ;
+    linkml:source_file_size 71464 ;
     linkml:subsets linkml:basic,
         linkml:minimal,
         linkml:object_oriented,

@@ -2,21 +2,22 @@ import json
 import os
 import unittest
 import logging
+from pathlib import Path
 
 from rdflib import Graph, Literal, URIRef
 from rdflib.namespace import RDF, SKOS, XSD
 from rdflib import Namespace
 
 from linkml_runtime import MappingError, DataNotFoundError
-from linkml_runtime.loaders import json_loader
 from linkml_runtime.dumpers import rdflib_dumper, yaml_dumper
 from linkml_runtime.loaders import yaml_loader
 from linkml_runtime.loaders import rdflib_loader
 from linkml_runtime.utils.schemaview import SchemaView
-from linkml_runtime.utils.schemaops import roll_up, roll_down
 from tests.test_loaders_dumpers import INPUT_DIR, OUTPUT_DIR
 from tests.test_loaders_dumpers.models.personinfo import Container, Person, Address, Organization, OrganizationType
 from tests.test_loaders_dumpers.models.node_object import NodeObject, Triple
+from tests.test_loaders_dumpers.models.phenopackets import PhenotypicFeature, OntologyClass, Phenopacket, MetaData, \
+    Resource
 
 SCHEMA = os.path.join(INPUT_DIR, 'personinfo.yaml')
 DATA = os.path.join(INPUT_DIR, 'example_personinfo_data.yaml')
@@ -59,6 +60,29 @@ P:001 a unmapped:Person ;
     sdo:gender <http://purl.obolibrary.org/obo/GSSO_000371> ;
     sdo:name "fred bloggs" ;
     personinfo:age_in_years 33 .
+"""
+
+enum_union_type_test_ttl = """
+@prefix P: <http://example.org/P/> .
+@prefix personinfo: <https://w3id.org/linkml/examples/personinfo/> .
+@prefix sdo: <http://schema.org/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix famrel: <https://example.org/FamilialRelations#> .
+
+P:001 a sdo:Person ;
+    sdo:email "fred.bloggs@example.com" ;
+    sdo:name "fred bloggs" ;
+    personinfo:age_in_years 33 ;
+    personinfo:has_interpersonal_relationships [ 
+      a personinfo:InterpersonalRelationship ;
+      personinfo:type famrel:70 ;
+      personinfo:related_to P:002 
+    ] ,
+    [ 
+      a personinfo:InterpersonalRelationship ;
+      personinfo:type "BEST_FRIEND_OF" ;
+      personinfo:related_to P:003 
+    ] .
 """
 
 blank_node_test_ttl = """
@@ -144,8 +168,6 @@ class RdfLibDumperTestCase(unittest.TestCase):
         org1 = Organization('http://example.org/foo/o1')
         rdflib_dumper.as_rdf_graph(org1, schemaview=view)
 
-
-
     def test_rdflib_loader(self):
         """
         tests loading from an RDF graph
@@ -173,6 +195,27 @@ class RdfLibDumperTestCase(unittest.TestCase):
         self.assertEqual(person.age_in_years, 33)
         self.assertEqual(str(person.gender), "cisgender man")
         yaml_dumper.dump(person, to_file=UNMAPPED_ROUNDTRIP)
+
+
+    def test_any_of_enum(self):
+        """
+        Tests https://github.com/linkml/linkml/issues/1023
+        """
+        view = SchemaView(SCHEMA)
+        # default behavior is to raise error on unmapped predicates
+        person = rdflib_loader.loads(enum_union_type_test_ttl, target_class=Person,
+                                schemaview=view, prefix_map=prefix_map)
+        self.assertEqual(person.id, 'P:001')
+        self.assertEqual(person.age_in_years, 33)
+        yaml_dumper.dump(person, to_file=UNMAPPED_ROUNDTRIP)
+        cases = [
+            ("P:002", "COWORKER_OF"),
+            ("P:003", "BEST_FRIEND_OF"),
+        ]
+        tups = []
+        for r in person.has_interpersonal_relationships:
+            tups.append((r.related_to, r.type))
+        self.assertCountEqual(cases, tups)
 
     def test_unmapped_type(self):
         """
@@ -209,8 +252,6 @@ class RdfLibDumperTestCase(unittest.TestCase):
         self.assertIn((bn, INFO.city, Literal("foo city")), g)
         self.assertIn((bn, INFO.street, Literal("1 foo street")), g)
 
-
-
     def _check_objs(self, view: SchemaView, container: Container):
         persons = container.persons
         orgs = container.organizations.values()
@@ -241,7 +282,6 @@ class RdfLibDumperTestCase(unittest.TestCase):
         self.assertEqual(med.diagnosis.id, 'CODE:D0001')
         self.assertEqual(med.diagnosis.name, 'headache')
         self.assertEqual(med.diagnosis.code_system, 'CODE:D')
-
 
     def test_edge_cases(self):
         """
@@ -303,6 +343,44 @@ class RdfLibDumperTestCase(unittest.TestCase):
                                          allow_unprocessed_triples=True,
                                          prefix_map=taxon_prefix_map)
             logging.error(f'Passed unexpectedly: rdf:object is known to have a mix of literals and nodes')
+
+    def test_phenopackets(self):
+        view = SchemaView(str(Path(INPUT_DIR) / "phenopackets"/ "phenopackets.yaml"))
+        test_label = 'test label'
+        with self.assertRaises(ValueError) as e:
+            c = OntologyClass(id='NO_SUCH_PREFIX:1', label=test_label)
+            rdflib_dumper.dumps(c, view)
+        cases = [
+            ("HP:1", "http://purl.obolibrary.org/obo/HP_1", None),
+            ("FOO:1", "http://example.org/FOO_1", {'FOO': 'http://example.org/FOO_',
+                                                   "@base": "http://example.org/base/"}),
+        ]
+        for id, expected_uri, prefix_map in cases:
+
+            c = OntologyClass(id=id, label=test_label)
+            ttl = rdflib_dumper.dumps(c, view, prefix_map=prefix_map)
+            g = Graph()
+            g.parse(data=ttl, format='ttl')
+            self.assertEqual(len(g), 2)
+            self.assertIn(Literal(test_label), list(g.objects(URIRef(expected_uri))),
+                          f'Expected label {test_label} for {expected_uri} in {ttl}')
+            pf = PhenotypicFeature(type=c)
+            pkt = Phenopacket(id='id with spaces',
+                              metaData=MetaData(resources=[Resource(id='id with spaces')]),
+                              phenotypicFeatures=[pf])
+            ttl = rdflib_dumper.dumps(pkt, view, prefix_map=prefix_map)
+            g = Graph()
+            g.parse(data=ttl, format='ttl')
+            self.assertIn(Literal(test_label), list(g.objects(URIRef(expected_uri))),
+                          f'Expected label {test_label} for {expected_uri} in {ttl}')
+            if prefix_map and "@base" in prefix_map:
+                resource_uri = URIRef(prefix_map["@base"] + "id%20with%20spaces")
+                self.assertEqual(1, len(list(g.objects(resource_uri))))
+
+
+
+
+
 
 
 if __name__ == '__main__':

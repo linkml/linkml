@@ -1,5 +1,5 @@
 import os
-from typing import Callable, Type, Optional, List
+from typing import Callable, Type, Optional, List, Union
 from urllib.parse import urlparse
 
 from hbreader import FileInfo, hbread
@@ -8,6 +8,7 @@ import tests.environment as test_base
 from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.loaders.loader_root import Loader
 from linkml_runtime.utils.yamlutils import YAMLRoot
+from pydantic import BaseModel
 from tests.support.test_environment import TestEnvironment, TestEnvironmentTestCase
 
 
@@ -44,7 +45,7 @@ class LoaderDumperTestCase(TestEnvironmentTestCase):
 
         return self.env.eval_single_file(expected_file, actual, comparator=comparator)
 
-    def loader_test(self, filename: str, model: Type[YAMLRoot], loader: Loader) -> None:
+    def loader_test(self, filename: str, model: Union[Type[YAMLRoot], Type[BaseModel]], loader: Loader) -> None:
         """
         Test the various permutations of the supplied loader using the input file 'filename' -- both load and loads
 
@@ -55,7 +56,12 @@ class LoaderDumperTestCase(TestEnvironmentTestCase):
         metadata = FileInfo()
         name, typ = filename.rsplit('.', 1)
         expected_yaml = self.env.expected_path('load', name + '_' + typ + ".yaml")
-        python_obj: YAMLRoot = loader.load(filename, model, metadata=metadata, base_dir=self.env.indir)
+        if issubclass(model, YAMLRoot):
+            python_obj: YAMLRoot = loader.load(filename, model, metadata=metadata, base_dir=self.env.indir)
+        elif issubclass(model, BaseModel):
+            python_obj: BaseModel = loader.load(filename, model, metadata=metadata, base_dir=self.env.indir)
+        else:
+            raise TypeError(f"Unknown target class: {model}")
         self.env.eval_single_file(expected_yaml, yaml_dumper.dumps(python_obj))
 
         # Make sure metadata gets filled out properly
@@ -75,7 +81,10 @@ class LoaderDumperTestCase(TestEnvironmentTestCase):
 
         # Load from a string
         expected = hbread(filename, base_path=self.env.indir)
-        python_obj: YAMLRoot = loader.loads(expected, model, metadata=metadata.clear())
+        if model == YAMLRoot:
+            python_obj: YAMLRoot = loader.loads(expected, model, metadata=metadata.clear())
+        elif model == BaseModel:
+            python_obj: BaseModel = loader.loads(expected, model, metadata=metadata.clear())
         self.env.eval_single_file(expected_yaml, yaml_dumper.dumps(python_obj))
 
     @staticmethod

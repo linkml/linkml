@@ -25,6 +25,8 @@ linkml:Date xsd:date
 
 linkml:Datetime xsd:dateTime
 
+linkml:DateOrDatetime linkml:DateOrDatetime
+
 linkml:Uriorcurie IRI
 
 linkml:Uri IRI
@@ -49,7 +51,7 @@ reporting:ValidationResult CLOSED {
           reporting:predicate @linkml:Nodeidentifier ? ;
           sh1:value @linkml:Nodeidentifier ? ;
           reporting:object_str @linkml:String ? ;
-          reporting:source @linkml:Nodeidentifier ? ;
+          reporting:node_source @linkml:Nodeidentifier ? ;
           reporting:info @linkml:String ?
        ) ;
        rdf:type [ sh1:ValidationResult ] ?

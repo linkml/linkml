@@ -1,0 +1,169 @@
+ 
+classes: 
+  Diagnosis: 
+    attributes: 
+      disease: 
+        annotations: 
+          rank: 1
+        description: The disease/condition assigned to the diagnosis.Details about this disease may be contained in the `diseases` field in the Phenopacket.
+        inlined: true
+        range: OntologyClass
+      genomicInterpretations: 
+        annotations: 
+          rank: 2
+        description: genomic features containing the status of their contribution towards the diagnosis
+        inlined: true
+        multivalued: true
+        range: GenomicInterpretation
+    description: ''
+  GenomicInterpretation: 
+    attributes: 
+      gene: 
+        annotations: 
+          rank: 3
+        description: ''
+        inlined: true
+        range: GeneDescriptor
+      interpretationStatus: 
+        annotations: 
+          rank: 2
+        description: ''
+        range: InterpretationStatus
+      subjectOrBiosampleId: 
+        annotations: 
+          rank: 1
+        description: identifier for the subject of the interpretation. This MUST be the individual id or a biosample id of the enclosing phenopacket.
+        range: string
+      variantInterpretation: 
+        annotations: 
+          rank: 4
+        description: ''
+        range: VariantInterpretation
+    description: A statement about the contribution of a genomic element towards the observed phenotype. Note that this does not intend to encode any knowledge or results of specific computations.
+    rules: 
+      - 
+        postconditions: 
+          exactly_one_of: 
+            - 
+              slot_conditions: 
+                gene: 
+                  required: true
+            - 
+              slot_conditions: 
+                variantInterpretation: 
+                  required: true
+  Interpretation: 
+    attributes: 
+      diagnosis: 
+        annotations: 
+          rank: 3
+        description: The diagnosis made in this interpretation
+        range: Diagnosis
+      id: 
+        annotations: 
+          percent_encoded: true
+          rank: 1
+        description: id of the interpretation
+        range: string
+      progressStatus: 
+        annotations: 
+          rank: 2
+        description: ''
+        range: ProgressStatus
+      summary: 
+        annotations: 
+          rank: 4
+        description: ''
+        range: string
+    description: ''
+  VariantInterpretation: 
+    attributes: 
+      acmgPathogenicityClassification: 
+        annotations: 
+          rank: 1
+        description: ''
+        range: AcmgPathogenicityClassification
+      therapeuticActionability: 
+        annotations: 
+          rank: 2
+        description: ''
+        range: TherapeuticActionability
+      variationDescriptor: 
+        annotations: 
+          rank: 3
+        description: ''
+        range: VariationDescriptor
+    description: ''
+default_prefix: interpretation
+description: "Automatic translation of phenopackets protobuf to LinkML. Status: EXPERIMENTAL."
+enums: 
+  AcmgPathogenicityClassification: 
+    description: ''
+    permissible_values: 
+      BENIGN: 
+        description: ''
+      LIKELY_BENIGN: 
+        description: ''
+      LIKELY_PATHOGENIC: 
+        description: ''
+      NOT_PROVIDED: 
+        description: ''
+      PATHOGENIC: 
+        description: ''
+      UNCERTAIN_SIGNIFICANCE: 
+        description: ''
+  InterpretationStatus: 
+    description: ''
+    permissible_values: 
+      CANDIDATE: 
+        description: ''
+      CAUSATIVE: 
+        description: ''
+      CONTRIBUTORY: 
+        description: ''
+      REJECTED: 
+        description: ''
+      UNKNOWN_STATUS: 
+        description: ''
+  ProgressStatus: 
+    description: ''
+    permissible_values: 
+      COMPLETED: 
+        description: ''
+      IN_PROGRESS: 
+        description: ''
+      SOLVED: 
+        description: ''
+      UNKNOWN_PROGRESS: 
+        description: ''
+      UNSOLVED: 
+        description: ''
+  TherapeuticActionability: 
+    description: ''
+    permissible_values: 
+      ACTIONABLE: 
+        description: ''
+      NOT_ACTIONABLE: 
+        description: ''
+      UNKNOWN_ACTIONABILITY: 
+        description: ''
+id: https://w3id.org/linkml/phenopackets/interpretation
+imports: 
+  - linkml:types
+  - base
+  - vrsatile
+name: interpretation
+prefixes: 
+  GENO: http://purl.obolibrary.org/obo/GENO_
+  HP: http://purl.obolibrary.org/obo/HP_
+  LOINC: https://loinc.org/
+  MONDO: http://purl.obolibrary.org/obo/MONDO_
+  NCIT: http://purl.obolibrary.org/obo/NCIT_
+  UBERON: http://purl.obolibrary.org/obo/UBERON_
+  UCUM: http://unitsofmeasure.org/
+  UO: http://purl.obolibrary.org/obo/UO_
+  argo: https://docs.icgc-argo.org/dictionary/
+  interpretation: https://w3id.org/linkml/phenopackets/interpretation/
+  linkml: https://w3id.org/linkml/
+slots: {}
+

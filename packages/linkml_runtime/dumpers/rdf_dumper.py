@@ -1,5 +1,6 @@
 import json
-from typing import Optional
+from typing import Optional, Union
+from pydantic import BaseModel
 
 from hbreader import hbread
 from rdflib import Graph
@@ -12,7 +13,7 @@ from linkml_runtime.utils.yamlutils import YAMLRoot
 
 
 class RDFDumper(Dumper):
-    def as_rdf_graph(self, element: YAMLRoot, contexts: CONTEXTS_PARAM_TYPE, namespaces: CONTEXT_TYPE = None) -> Graph:
+    def as_rdf_graph(self, element: Union[BaseModel, YAMLRoot], contexts: CONTEXTS_PARAM_TYPE, namespaces: CONTEXT_TYPE = None) -> Graph:
         """
         Convert element into an RDF graph guided by the context(s) in contexts
         :param element: element to represent in RDF
@@ -63,7 +64,7 @@ class RDFDumper(Dumper):
 
         return g
 
-    def dump(self, element: YAMLRoot, to_file: str, contexts: CONTEXTS_PARAM_TYPE = None, fmt: str = 'turtle') -> None:
+    def dump(self, element: Union[BaseModel, YAMLRoot], to_file: str, contexts: CONTEXTS_PARAM_TYPE = None, fmt: str = 'turtle') -> None:
         """
         Write element as rdf to to_file
         :param element: LinkML object to be emitted
@@ -77,9 +78,11 @@ class RDFDumper(Dumper):
             * A list containing elements of any type named above
         :param fmt: RDF format
         """
+        if isinstance(element, BaseModel):
+            element = element.dict()
         super().dump(element, to_file, contexts=contexts, fmt=fmt)
 
-    def dumps(self, element: YAMLRoot, contexts: CONTEXTS_PARAM_TYPE = None, fmt: Optional[str] = 'turtle') -> str:
+    def dumps(self, element: Union[BaseModel, YAMLRoot], contexts: CONTEXTS_PARAM_TYPE = None, fmt: Optional[str] = 'turtle') -> str:
         """
         Convert element into an RDF graph guided by the context(s) in contexts
         :param element: element to represent in RDF
@@ -87,5 +90,7 @@ class RDFDumper(Dumper):
         :param fmt: rdf format
         :return: rdflib Graph containing element
         """
+        if isinstance(element, BaseModel):
+            element = element.dict()
         return self.as_rdf_graph(remove_empty_items(element, hide_protected_keys=True), contexts).\
             serialize(format=fmt)

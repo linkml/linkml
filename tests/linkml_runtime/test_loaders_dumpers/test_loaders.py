@@ -29,6 +29,16 @@ class LoadersUnitTest(LoaderDumperTestCase):
         """ Load obo_sample.json, emit obo_sample_json.yaml and check the results """
         self.loader_test('obo_sample.json', Package, json_loader)
 
+    def test_json_load_to_dict(self):
+        data = json_loader.load_as_dict('obo_sample.json', base_dir=self.env.indir)
+        assert isinstance(data, dict)
+        assert "system" in data
+
+    def test_yaml_load_to_dict(self):
+        data = yaml_loader.load_as_dict('obo_sample.yaml', base_dir=self.env.indir)
+        assert isinstance(data, dict)
+        assert "system" in data
+
     @unittest.skipIf(True, "This test will not work until https://github.com/digitalbazaar/pyld/issues/149 is fixed")
     def test_rdf_loader(self):
         """ Load obo_sample.ttl, emit obo_sample_ttl.yaml and check the results

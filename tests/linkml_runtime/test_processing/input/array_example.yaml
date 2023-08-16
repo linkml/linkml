@@ -1,0 +1,76 @@
+id: https://example.org/arrays
+name: arrays-example
+prefixes:
+  linkml: https://w3id.org/linkml/
+  wgs84: http://www.w3.org/2003/01/geo/wgs84_pos#
+  example: https://example.org/
+default_prefix: example
+imports:
+  - linkml:types
+
+classes:
+  TemperatureMatrix:
+    tree_root: true
+    implements:
+      - linkml:ThreeDimensionalArray
+      - linkml:ColumnOrderedArray
+    attributes:
+      x:
+        implements:
+          - linkml:axis0
+        range: LatitudeSeries
+      y:
+        implements:
+          - linkml:axis1
+        range: LongitudeSeries
+      time:
+        implements:
+          - linkml:axis2
+        range: DaySeries
+      temperatures:
+        implements:
+          - linkml:elements
+        multivalued: true
+        range: float
+        required: true
+        unit:
+          ucum_code: K
+
+  LatitudeSeries:
+    description: A series whose values represent latitude
+    implements:
+      - linkml:OneDimensionalSeries
+    attributes:
+      values:
+        range: float
+        multivalued: true
+        implements:
+          - linkml:elements
+        unit:
+          ucum_code: deg
+          
+  LongitudeSeries:
+    description: A series whose values represent longitude
+    implements:
+      - linkml:OneDimensionalSeries
+    attributes:
+      values:
+        range: float
+        multivalued: true
+        implements:
+          - linkml:elements
+        unit:
+          ucum_code: deg
+          
+  DaySeries:
+    description: A series whose values represent the days since the start of the measurement period
+    implements:
+      - linkml:OneDimensionalSeries
+    attributes:
+      values:
+        range: float
+        multivalued: true
+        implements:
+          - linkml:elements
+        unit:
+          ucum_code: a
