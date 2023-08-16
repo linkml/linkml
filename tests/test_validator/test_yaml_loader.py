@@ -1,5 +1,6 @@
 import pytest
-from validator.loaders import YamlLoader
+
+from linkml.validator.loaders import YamlLoader
 
 
 def test_single_document_object(tmp_file_factory):
