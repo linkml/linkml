@@ -1,8 +1,6 @@
-import unittest
 from pathlib import Path
 
 from linkml.validator import validate_file
-from tests.test_validator import data_file
 
 PERSONINFO_SCHEMA = str(Path(__file__).parent / "input/personinfo.yaml")
 
@@ -13,19 +11,20 @@ id:3,Person C,,
 """
 
 
-class TestValidate(unittest.TestCase):
-    def test_valid_csv_file(self):
-        with data_file(CSV_DATA, suffix=".csv") as f:
-            report = validate_file(f, PERSONINFO_SCHEMA, "Person")
-            self.assertEqual(report.results, [])
+def test_valid_csv_file(tmp_file_factory):
+    f = tmp_file_factory("data.csv", CSV_DATA)
+    report = validate_file(f, PERSONINFO_SCHEMA, "Person")
+    assert report.results == []
 
-    def test_valid_tsv_file(self):
-        with data_file(CSV_DATA.replace(",", "\t"), suffix=".tsv") as f:
-            report = validate_file(f, PERSONINFO_SCHEMA, "Person")
-            self.assertEqual(len(report.results), 0)
 
-    def test_valid_json_file(self):
-        data = """{
+def test_valid_tsv_file(tmp_file_factory):
+    f = tmp_file_factory("data.tsv", CSV_DATA.replace(",", "\t"))
+    report = validate_file(f, PERSONINFO_SCHEMA, "Person")
+    assert report.results == []
+
+
+def test_valid_json_file(tmp_file_factory):
+    data = """{
     "persons": [
         {
             "id": "id:1",
@@ -37,32 +36,51 @@ class TestValidate(unittest.TestCase):
     ]
 }
 """
-        with data_file(data, suffix=".json") as f:
-            report = validate_file(f, PERSONINFO_SCHEMA)
-            self.assertEqual(len(report.results), 0)
+    f = tmp_file_factory("data.json", data)
+    report = validate_file(f, PERSONINFO_SCHEMA)
+    assert report.results == []
 
-    def test_invalid_csv_file(self):
-        data = """id, full_name, phone, age
+
+def test_valid_yaml_file(tmp_file_factory):
+    data = """
+persons:
+    - id: "id:1"
+      full_name: Person A
+      aliases:
+        - A
+          a
+      phone: 555-1234
+      age: 25
+    """
+    f = tmp_file_factory("data.yaml", data)
+    report = validate_file(f, PERSONINFO_SCHEMA)
+    assert report.results == []
+
+
+def test_invalid_csv_file(tmp_file_factory):
+    data = """id, full_name, phone, age
 id:1, Person A, 555-1234, 25
 id:2, Person B, ABC-0101, 57
 """
-        with data_file(data, suffix=".csv") as f:
-            report = validate_file(f, PERSONINFO_SCHEMA, "Person")
-            self.assertEqual(len(report.results), 1)
-            self.assertIn("ABC", report.results[0].message)
+    f = tmp_file_factory("data.csv", data)
+    report = validate_file(f, PERSONINFO_SCHEMA, "Person")
+    assert len(report.results) == 1
+    assert "ABC" in report.results[0].message
 
-    def test_invalid_tsv_file(self):
-        data = """id\t full_name\t phone\t age
+
+def test_invalid_tsv_file(tmp_file_factory):
+    data = """id\t full_name\t phone\t age
 id:1\tPerson A\t555-1234\ttwenty
 id:2\tPerson B\t555-0101\t57
 """
-        with data_file(data, suffix=".tsv") as f:
-            report = validate_file(f, PERSONINFO_SCHEMA, "Person")
-            self.assertEqual(len(report.results), 1)
-            self.assertIn("twenty", report.results[0].message)
+    f = tmp_file_factory("data.tsv", data)
+    report = validate_file(f, PERSONINFO_SCHEMA, "Person")
+    assert len(report.results) == 1
+    assert "twenty" in report.results[0].message
 
-    def test_invalid_json_file(self):
-        data = """[
+
+def test_invalid_json_file(tmp_file_factory):
+    data = """[
     {
         "id": "id:1",
         "full_name": "Person A",
@@ -78,8 +96,30 @@ id:2\tPerson B\t555-0101\t57
     }
 ]
 """
-        with data_file(data, suffix=".json") as f:
-            report = validate_file(f, PERSONINFO_SCHEMA, "Person")
-            self.assertEqual(len(report.results), 2)
-            self.assertIn("uh-oh", report.results[0].message)
-            self.assertIn("id", report.results[1].message)
+    f = tmp_file_factory("data.json", data)
+    report = validate_file(f, PERSONINFO_SCHEMA, "Person")
+    assert len(report.results) == 2
+    assert "uh-oh" in report.results[0].message
+    assert "id" in report.results[1].message
+
+
+def test_invalid_yaml_file(tmp_file_factory):
+    data = """
+id: "id:1"
+full_name: Person A
+aliases: uh-oh
+phone: 555-1234
+age: 25
+---
+full_name: Person B
+aliases:
+  - B
+    b
+phone: 555-1234
+age: 25
+"""
+    f = tmp_file_factory("data.yaml", data)
+    report = validate_file(f, PERSONINFO_SCHEMA, "Person")
+    assert len(report.results) == 2
+    assert "uh-oh" in report.results[0].message
+    assert "id" in report.results[1].message
