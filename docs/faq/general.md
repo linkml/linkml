@@ -2,7 +2,7 @@
 
 ## Why does this project exist?
 
-LinkML originally grew out of the needs of the [Biolink-Model](https://w3id.org/biolink/) project,
+LinkML originally grew out of the needs of the [Biolink Model](https://w3id.org/biolink/) project,
 which needed a flexible schema representation for biological knowledge
 graphs that was independent of particular database systems
 (relational, triplestore, graph database) and serialization format
@@ -27,7 +27,7 @@ and Go. Some language features may be unsupported in some toolchains.
 
 ## How is LinkML licensed?
 
-All aspects of LinkML, from the core language itself to the toolchain
+All aspects of LinkML, from the core language itself to the toolchain,
 are in the public domain through a CC-0 waiver.
 
 ## Who uses LinkML?
@@ -46,7 +46,7 @@ Users include:
 * The National Microbiome Data Collaborative
 * The Center for Cancer Data Harmonization
 * The Alliance of Genome Resources
-* The Biomedical Data Translator project
+* The NCATS Biomedical Data Translator project
 * The iSamples project
 * The NIH INCLUDE project
 
@@ -64,7 +64,7 @@ For example, some users of LinkML compile their schema down to
 JSON-Schema and then use JSON-Schema toolchains in their language of choice.
 
 And note that there is increasing support for generating object models
-in other languages, with java generators under active development!
+in other languages, with Java generators under active development!
 
 ## Do I need to be a developer to use LinkML?
 
@@ -77,20 +77,20 @@ we will add additional training material for non-modelers giving a
 gentle introduction to these topics.
 
 LinkML schemas are maintained as YAML files, so it helps to have some
-basic understanding of YAML syntax. Many developers will use IDEs for
+basic understanding of YAML syntax. Many developers use IDEs for
 editing YAML, which helps avoid a lot of common pitfalls. You may want
 the advice of a local friendly developer on what a good YAML editing
 environment is for your workflow.
 
 [schemasheets](https://github.com/linkml/schemasheets) is a tool that
-allows schemas to be edited as google sheets or excel files. Currently
-it still takes a little bit of technical expertise to get up and
-running though.
+allows schemas to be edited as Google sheets or Excel files. Currently
+this still takes a little bit of technical expertise to get up and
+running, though.
 
 We recommend managing all of your schema products using GitHub. If you
 have not used GitHub or version control systems before, this may be a
 little daunting. You may need some assistance from someone technical
-to get you set up with a workflow here. There is a lot of expertise
+to get you set up with a workflow. There is a lot of expertise
 here in the [OBO Foundry](https://obofoundry.org) community, where
 many non-technical curators autonomously manage their ontologies in
 GitHub.
@@ -130,10 +130,11 @@ You may also be interested in using metadata-aware high-volume
 frameworks such as [HDMF](https://hdmf.readthedocs.io/) or [NetCDF](https://www.unidata.ucar.edu/software/netcdf/).
 
 The LinkML N-Dimensional Array (NDArr) working group, consisting of
-developers from LinkML and HDMF teams are currently actively working
+developers from LinkML and HDMF teams, is currently actively working
 towards a solution that enables LinkML to be used in conjunction with
 serializations such as HDF5 and Zarr.
 
 ## How do I cite LinkML?
 
-A paper is in progress, for now, cite the GitHub repo
+A paper is in progress. For now, please cite the [Zenodo link for the latest release](https://zenodo.org/record/8253177). 
+
