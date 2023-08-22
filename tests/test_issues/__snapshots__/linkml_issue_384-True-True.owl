@@ -23,12 +23,12 @@ linkml:TypeDefinition a owl:Class .
     rdfs:label "GeoObject" ;
     rdfs:subClassOf [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
-            owl:onClass <https://w3id.org/linkml/examples/personinfo/GeoAge> ;
-            owl:onProperty <https://w3id.org/linkml/examples/personinfo/age> ],
-        [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
             owl:onClass linkml:String ;
             owl:onProperty <https://w3id.org/linkml/examples/personinfo/aliases> ],
+        [ a owl:Restriction ;
+            owl:maxQualifiedCardinality 1 ;
+            owl:onClass <https://w3id.org/linkml/examples/personinfo/GeoAge> ;
+            owl:onProperty <https://w3id.org/linkml/examples/personinfo/age> ],
         <https://w3id.org/linkml/examples/personinfo/Thing> .
 
 linkml:topValue a owl:DatatypeProperty ;
@@ -38,18 +38,24 @@ linkml:topValue a owl:DatatypeProperty ;
         linkml:ClassDefinition ;
     rdfs:label "Organization" ;
     rdfs:subClassOf [ a owl:Restriction ;
+            owl:allValuesFrom <https://w3id.org/linkml/examples/personinfo/Organization> ;
+            owl:onProperty <https://w3id.org/linkml/examples/personinfo/parent> ],
+        [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
             owl:onClass linkml:String ;
             owl:onProperty <https://w3id.org/linkml/examples/personinfo/full_name> ],
-        [ a owl:Restriction ;
-            owl:allValuesFrom <https://w3id.org/linkml/examples/personinfo/Organization> ;
-            owl:onProperty <https://w3id.org/linkml/examples/personinfo/parent> ],
         <https://w3id.org/linkml/examples/personinfo/Thing> .
 
 <https://w3id.org/linkml/examples/personinfo/Person> a owl:Class,
         linkml:ClassDefinition ;
     rdfs:label "Person" ;
     rdfs:subClassOf [ a owl:Restriction ;
+            owl:allValuesFrom <https://w3id.org/linkml/examples/personinfo/Person> ;
+            owl:onProperty <https://w3id.org/linkml/examples/personinfo/parent> ],
+        [ a owl:Restriction ;
+            owl:allValuesFrom linkml:String ;
+            owl:onProperty <https://w3id.org/linkml/examples/personinfo/aliases> ],
+        [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
             owl:onClass linkml:String ;
             owl:onProperty <https://w3id.org/linkml/examples/personinfo/phone> ],
@@ -57,12 +63,6 @@ linkml:topValue a owl:DatatypeProperty ;
             owl:maxQualifiedCardinality 1 ;
             owl:onClass linkml:Integer ;
             owl:onProperty <https://w3id.org/linkml/examples/personinfo/age> ],
-        [ a owl:Restriction ;
-            owl:allValuesFrom <https://w3id.org/linkml/examples/personinfo/Person> ;
-            owl:onProperty <https://w3id.org/linkml/examples/personinfo/parent> ],
-        [ a owl:Restriction ;
-            owl:allValuesFrom linkml:String ;
-            owl:onProperty <https://w3id.org/linkml/examples/personinfo/aliases> ],
         <https://w3id.org/linkml/examples/personinfo/Thing> ;
     skos:exactMatch sdo:Person .
 
