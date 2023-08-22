@@ -1,73 +1,72 @@
 import os
-import unittest
 
+import pytest
 import yaml
 
 from linkml.generators.sssomgen import SSSOMGenerator
-from tests.test_generators.environment import env
-
-SCHEMA = env.input_path("kitchen_sink_sssom.yaml")
-OUTPUT_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)), "output/ks/sssom")
-OUTPUT_FILENAME = "test_sssom.tsv"
-OUTPUT_PATH = os.path.join(OUTPUT_DIR, OUTPUT_FILENAME)
 
 
-class SSSOMGenTestCase(unittest.TestCase):
-    def setUp(self) -> None:
-        gen = SSSOMGenerator(SCHEMA, output=OUTPUT_PATH)
-        gen.serialize()
+@pytest.fixture
+def schema_path(input_path) -> str:
+    return str(input_path("kitchen_sink_sssom.yaml"))
 
-    def test_sssomgen(self):
-        # Test if the generator actually created the output file
-        self.assertTrue(os.path.exists(OUTPUT_PATH))
 
-    def test_sssom_metadata(self):
-        meta = {}
-        curie_map = {}
-        curie_flag = False
-        msdf_as_dict = {}
+@pytest.fixture
+def sssom_path(schema_path, tmp_path) -> str:
+    output_path = str(tmp_path / "test_sssom.tsv")
+    gen = SSSOMGenerator(schema_path, output=output_path)
+    gen.serialize()
+    return output_path
 
-        # Read Input file
-        with open(SCHEMA, "r") as input_yaml:
-            try:
-                input_data = yaml.safe_load(input_yaml)
-            except yaml.YAMLError as exc:
-                print(exc)
 
-        # Read output files
+def test_sssomgen(sssom_path):
+    # Test if the generator actually created the output file
+    assert os.path.exists(sssom_path)
 
-        with open(OUTPUT_PATH) as sssom_file:
-            row_count = -1
-            for ln in sssom_file:
-                if ln.startswith("#"):
-                    if "curie_map" in ln:
-                        curie_flag = True
-                    if not curie_flag:
-                        clean_ln_list = ln.lstrip("#").rstrip("\n").split(": ")
-                        meta[clean_ln_list[0]] = clean_ln_list[1]
-                    else:
-                        if "curie_map" not in ln:
-                            curie_ln = ln.lstrip("#").rstrip("\n").split(": ")
-                            curie_map[curie_ln[0]] = curie_ln[1]
+
+def test_sssom_metadata(schema_path, sssom_path):
+    meta = {}
+    curie_map = {}
+    curie_flag = False
+    msdf_as_dict = {}
+
+    # Read Input file
+    with open(schema_path, "r") as input_yaml:
+        try:
+            input_data = yaml.safe_load(input_yaml)
+        except yaml.YAMLError as exc:
+            print(exc)
+
+    # Read output files
+
+    with open(sssom_path) as sssom_file:
+        row_count = -1
+        for ln in sssom_file:
+            if ln.startswith("#"):
+                if "curie_map" in ln:
+                    curie_flag = True
+                if not curie_flag:
+                    clean_ln_list = ln.lstrip("#").rstrip("\n").split(": ")
+                    meta[clean_ln_list[0]] = clean_ln_list[1]
                 else:
-                    # This is the MappingSetDataFrame
-                    row_count += 1
-                    ln = ln.split("\t")
-                    ln[-1] = ln[-1].strip()
+                    if "curie_map" not in ln:
+                        curie_ln = ln.lstrip("#").rstrip("\n").split(": ")
+                        curie_map[curie_ln[0]] = curie_ln[1]
+            else:
+                # This is the MappingSetDataFrame
+                row_count += 1
+                ln = ln.split("\t")
+                ln[-1] = ln[-1].strip()
 
-                    if row_count == 0:
-                        msdf_columns = ln
-                        for col in msdf_columns:
-                            msdf_as_dict[col] = []
-                    else:
-                        for idx, value in enumerate(msdf_columns):
-                            msdf_as_dict[value].append(ln[idx])
+                if row_count == 0:
+                    msdf_columns = ln
+                    for col in msdf_columns:
+                        msdf_as_dict[col] = []
+                else:
+                    for idx, value in enumerate(msdf_columns):
+                        msdf_as_dict[value].append(ln[idx])
 
-        # Assertions
-        self.assertEqual(len(meta), 5)
-        self.assertEqual(len(curie_map), len(input_data["prefixes"]))
-        self.assertFalse(" " in msdf_as_dict["subject_id"])
-
-
-if __name__ == "__main__":
-    unittest.main()
+    # Assertions
+    assert len(meta) == 5
+    assert len(curie_map) == len(input_data["prefixes"])
+    assert " " not in msdf_as_dict["subject_id"]

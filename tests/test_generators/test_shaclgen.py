@@ -1,15 +1,6 @@
-import unittest
-
 import rdflib
 
 from linkml.generators.shaclgen import ShaclGenerator
-from tests.test_generators.environment import env
-
-SCHEMA = env.input_path("kitchen_sink.yaml")
-DATA = env.input_path("kitchen_sink_inst_01.yaml")
-LOG = env.expected_path("ShaclGen_log.txt")
-OUT = env.expected_path("kitchen_sink.shacl.ttl")
-
 
 EXPECTED = [
     (
@@ -27,19 +18,12 @@ EXPECTED = [
 ]
 
 
-class ShaclTestCase(unittest.TestCase):
-    def test_shacl(self):
-        """tests shacl generation"""
-        shaclstr = ShaclGenerator(SCHEMA, mergeimports=True).serialize()
-        with open(OUT, "w") as stream:
-            stream.write(shaclstr)
-        g = rdflib.Graph()
-        g.parse(OUT)
-        triples = list(g.triples((None, None, None)))
-        for et in EXPECTED:
-            self.assertIn(et, triples)
-        # TODO: test shacl validation; pyshacl requires rdflib6
-
-
-if __name__ == "__main__":
-    unittest.main()
+def test_shacl(kitchen_sink_path):
+    """tests shacl generation"""
+    shaclstr = ShaclGenerator(kitchen_sink_path, mergeimports=True).serialize()
+    g = rdflib.Graph()
+    g.parse(data=shaclstr)
+    triples = list(g.triples((None, None, None)))
+    for et in EXPECTED:
+        assert et in triples
+    # TODO: test shacl validation; pyshacl requires rdflib6
