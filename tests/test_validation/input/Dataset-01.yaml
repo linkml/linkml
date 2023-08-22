@@ -2,8 +2,10 @@ persons:
   - id: P:001
     name: fred bloggs
     age_in_years: 33
+    age_of_aquarius: 2019-01-01
   - id: P:002
     name: joe schmoe
+    age_of_aquarius: 2007-03-01T13:00:00-05:00
     has_employment_history:
       - employed_at: ROR:1
         started_at_time: 2019-01-01

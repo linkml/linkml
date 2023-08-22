@@ -298,6 +298,8 @@ classes:
     description: Example of unconstrained class
 
 slots:
+  time_to_live:
+    range: date_or_datetime
   employed at:
     range: Company
     in_subset:

@@ -68,6 +68,8 @@ class JsonSchemaValidatorTestCase(unittest.TestCase):
         # result in the JsonSchemaGenerator.generate being called once
         obj = yaml_loader.load(source=DATASET_1, target_class=mod.Dataset)
         v.validate_object(obj, target_class=mod.Dataset)
+
+
         generate_mock.assert_called_once()
 
         # Validate against the Dataset class for a second time. The JSON Schema

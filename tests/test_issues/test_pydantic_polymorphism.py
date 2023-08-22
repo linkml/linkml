@@ -5,6 +5,7 @@ from tests.test_issues.environment import env
 from tests.utils.test_environment import TestEnvironmentTestCase
 from linkml_runtime.utils.compile_python import compile_python
 from pydantic import ValidationError
+from pprint import pprint
 type_hierarchy_schema_str = """
 id: http://example.org
 name: inline-dict-test
@@ -21,6 +22,7 @@ classes:
     slots:
       - id
       - category
+      - age_of_aquarius
   Person:
     is_a: NamedThing
 
@@ -31,6 +33,8 @@ types:
       see biolink model
 
 slots:
+  age_of_aquarius:
+    range: date_or_datetime
   id:
     identifier: true
     range: string
@@ -63,6 +67,7 @@ classes:
       - id
       - full_name
       - thingtype
+      - age_of_aquarius
   Person:
     is_a: NamedThing
     class_uri: "http://testbreaker/not-the-uri-you-expect"
@@ -80,6 +85,8 @@ classes:
     slots:
       - persons
 slots:
+  age_of_aquarius:
+    range: date_or_datetime
   id:
     identifier: true
     range: string
@@ -110,13 +117,15 @@ data_str = """
       "id": 1,
       "thingtype": "x:Person",
       "full_name": "phoebe",
-      "height": 10
+      "height": 10,
+      "age_of_aquarius": "2007-03-01T13:00:00-05:00"
     },
     {
       "id": 2,
       "thingtype": "x:Organisation",
       "full_name": "University of Earth",
-      "number_of_employees": 2
+      "number_of_employees": 2,
+      "age_of_aquarius": "2020-01-01 00:00:00"
     }
   ]
 }
@@ -129,7 +138,7 @@ class PydanticPolymorphismTestCase(TestEnvironmentTestCase):
     def test_pydantic_obey_range(self):
         gen = PydanticGenerator(schema_str)
         output = gen.serialize()
-        
+
         self.assertNotRegex(output, "Union\[[a-zA-Z0-9]*\]", "a python Union should always have more than one option")
 
         output_subset = [line for line in output.splitlines() if "thingtype" in line]

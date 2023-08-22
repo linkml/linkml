@@ -74,6 +74,7 @@ classes:
       - age in years
       - addresses
       - has birth event
+      - age_of_aquarius
     slot_usage:
       name:
         pattern: "^\\S+ \\S+"  ## do not do this in a real schema, people have all kinds of names
@@ -184,6 +185,8 @@ classes:
         multivalued: true
 
 slots:
+  age_of_aquarius:
+    range: date_or_datetime
   employed at:
     range: Company
     in_subset:
