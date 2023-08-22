@@ -262,8 +262,10 @@ See [dynamic enums](https://linkml.io/linkml/schemas/enums.html#dynamic-enums) f
 ### Are CURIEs used in schema definitions checked for expandability and resolution?  
 
 No, not at this time.  However, linkml_runtime does have methods to help you expand the CURIEs in your data
-using the prefixes in your model (see: linkml_runtime.utils.namespaces.py) into URIs.  There are many ways to check 
-if a URI is resolvable.  One open source python package to do this is: [LinkChecker](https://pypi.org/project/LinkChecker/).
+using the prefixes in your model (see: linkml_runtime.utils.namespaces.py) into URIs.  In addition, the
+`curies` [python package](https://github.com/cthoyt/curies/) which provides a standalone CURIE expansion service. 
+There are many ways to check if a URI is resolvable.  One open source python package to do this 
+is: [LinkChecker](https://pypi.org/project/LinkChecker/).
  
 ### Are CURIEs used in data that validates against a given LinkML schema checked for expandability and resolution?
 
