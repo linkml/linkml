@@ -519,7 +519,7 @@ such as the following:
 3. Therefore, Homo sapiens is a Genus
 
 Clearly this is wrong. In fact entailment is thankfully not justified
-either via the LinkML or via the RDF/OWL (either punning model or metaclass.
+either via the LinkML or via the RDF/OWL (either punning model or metaclass).
 
 The mistake is confusing the different levels of modeling.
 
