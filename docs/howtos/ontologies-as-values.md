@@ -419,7 +419,7 @@ concepts as true first-class logical citizens in an OWL model, then we need to e
 In practice, punning or metaclasses are not used much in OWL, so let's stick with the rank-free
 model. Formally, concepts like "Homo sapiens" are not in the *domain of discourse*.
 
-Individual organisms like Napolean (Q517 in Wikidata) instantiate the classes in the hierarchy:
+Individual organisms like Napoleon (Q517 in Wikidata) instantiate the classes in the hierarchy:
 
 ```rdf
 wikidata:Q517 rdf:type NCBITaxon:9606 .
