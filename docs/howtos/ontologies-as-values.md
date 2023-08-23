@@ -553,7 +553,7 @@ separate concerns); other ontologies may represent personhood as a
 "role", which complicates things if you want to have straightforward
 connections between concepts like "Person" and "Address"
 
-This gets even more nuanced with biomedical concepts. There there
+This gets even more nuanced with biomedical concepts, where we have to deal with
 multiple interlinked ontological debates about modeling concepts like
 Gene and Allele, and whether these are classes or instances. Most
 bio-ontologies eliminate the concept of "levels" in hierarchies, so
