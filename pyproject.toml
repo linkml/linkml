@@ -140,6 +140,7 @@ myst-parser = "*"
 
 [tool.poetry.group.tests.dependencies]
 pytest = "^7.4.0"
+pytest-subtests = "^0.11.0"
 
 [tool.poetry.extras]
 docs = ["Sphinx", "sphinxcontrib-mermaid", "furo"]

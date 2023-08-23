@@ -1895,6 +1895,21 @@ files = [
 pytest = ">=2.8.1"
 
 [[package]]
+name = "pytest-subtests"
+version = "0.11.0"
+description = "unittest subTest() support and subtests fixture"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "pytest-subtests-0.11.0.tar.gz", hash = "sha256:51865c88457545f51fb72011942f0a3c6901ee9e24cbfb6d1b9dc1348bafbe37"},
+    {file = "pytest_subtests-0.11.0-py3-none-any.whl", hash = "sha256:453389984952eec85ab0ce0c4f026337153df79587048271c7fd0f49119c07e4"},
+]
+
+[package.dependencies]
+attrs = ">=19.2.0"
+pytest = ">=7.0"
+
+[[package]]
 name = "python-dateutil"
 version = "2.8.2"
 description = "Extensions to the standard Python datetime module"
@@ -2966,4 +2981,4 @@ docs = []
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.7.6"
-content-hash = "9623c289d1cbed6735b4b11341dc83b334bce3f03f42b1d5ed1560182e186395"
+content-hash = "dd891ebad123db3301bdc2e813ec9f790ec9041d41b8a0334a913ae0ea0bdfb2"
