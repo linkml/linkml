@@ -112,7 +112,7 @@ classes:
        pattern: "HP:\d+"
 ```
 
-(obviously this constrains the schema so tightly it's can't be used
+(obviously this constrains the schema so tightly it can't be used
 for other phenotype ontologies, which may or may not be what we want).
 
 So far so good. But what if we want to have a data model where we
