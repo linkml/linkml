@@ -185,7 +185,7 @@ Let's add a container class:
 ```
 
 Note that inlining is non-default if a referenced entity has an identifiers. This means
-that the right way to represent an associations is using using references (like foreign
+that the right way to represent associations is using references (like foreign
 keys in a relational database):
 
 ```yaml
