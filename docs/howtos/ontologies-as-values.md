@@ -441,7 +441,7 @@ wikidata:Q517 rdf:type NCBITaxon:9605 .  ## Homo
 
 This is valid (and entailed) but less specific. Note that this would be disallowed
 in the LinkML model, which intentionally forces the data provider to provide a species-level
-taxon node ID rather than any other taxon ID,
+taxon node ID rather than any other taxon ID.
 
 In the RDF model we might even have:
 
