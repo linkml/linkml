@@ -84,7 +84,7 @@ Note that the schema doesn't care that the phenotypes come from an ontology, or 
 come from a standard resource - these are just pieces of data.
 
 However, this isn't quite satisfactory - it allows the data provider to put any free text they like in.
-We want to constrain to identifiers:
+We want to constrain to identifiers.
 
 Let's constrain it a bit more:
 
