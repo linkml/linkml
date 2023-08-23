@@ -17,7 +17,7 @@ the LinkML schema, data, or ontologies are.
 
 Let's say we want to model associations between genes and
 phenotypes. This is a standard use case for biological ontologies -
-creating *annotation* that associate some kind of entity with a descriptor.
+creating *annotations* that associate some kind of entity with a descriptor.
 
 
 In the simplest case, this might be communicated by a two-column file
