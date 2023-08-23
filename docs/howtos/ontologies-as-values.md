@@ -27,7 +27,7 @@ In the simplest case, this might be communicated by a two-column file
 |PEX1|Seizure|
 |PEX1|Hypotonia|
 
-This uses labels which is not best practice, we should instead do this:
+This uses labels, which is not best practice; we should instead do this:
 
 |Gene|Phenotype|
 |---|---|
