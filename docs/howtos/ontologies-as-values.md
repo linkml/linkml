@@ -570,5 +570,5 @@ guide.
 From a modeling perspective, the key points are:
 
 - use the appropriate modeling framework for the problem at hand
-- mirror hierarchies were appropriate
+- mirror hierarchies where appropriate
 - do not assume hierarchies must be mirrored
