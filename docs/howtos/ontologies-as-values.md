@@ -371,7 +371,7 @@ my:Species rdfs:subClassOf my:OrganismTaxonomicConcept
 Again, this should not be such a foreign way of modeling things from a standard database perspective.
 But if you are coming from ontology modeling this could be confusing.
 
-Next, we'll look at an ontologists' way of modeling the same domain. Let's first summarize the LinkML model:
+Next, we'll look at an ontologist's way to model the same domain. Let's first summarize the LinkML model:
 
 - both individuals like Napolean as well as taxonomic concepts like human, cat, are *instances*
 - individuals like Napoleaon instantiate "individual organism", whereas taxonomic concepts instantiate Species, Genus, etc
