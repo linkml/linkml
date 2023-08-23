@@ -373,7 +373,7 @@ But if you are coming from ontology modeling this could be confusing.
 
 Next, we'll look at an ontologist's way to model the same domain. Let's first summarize the LinkML model:
 
-- both individuals like Napolean as well as taxonomic concepts like human, cat, are *instances*
+- Individuals such as Napoleon as well as taxonomic concepts such as human or cat are *instances*
 - individuals like Napoleaon instantiate "individual organism", whereas taxonomic concepts instantiate Species, Genus, etc
 - we can add more properties and constraints on each LinkML class, e.g.
     - make `species` a required field
