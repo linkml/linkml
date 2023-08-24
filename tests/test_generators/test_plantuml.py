@@ -1,11 +1,9 @@
 import os
-
 from xml.dom import minidom
 
 import pytest
 
 from linkml.generators.plantumlgen import PlantumlGenerator
-
 
 MARKDOWN_HEADER = """@startuml
 """
