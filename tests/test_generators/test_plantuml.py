@@ -84,7 +84,7 @@ def test_serialize(kitchen_sink_path):
 
     # check that classes like `MarriageEvent` are present
     # in complete UML class diagram
-    assert "class \"MarriageEvent\"" in plantuml
+    assert 'class "MarriageEvent"' in plantuml
 
 
 def test_generate_svg(tmp_path, kitchen_sink_path):
@@ -101,8 +101,8 @@ def test_generate_svg(tmp_path, kitchen_sink_path):
 
     svg_dom = minidom.parse(os.fspath(tmp_path / "KitchenSink.svg"))
 
-    classes_list = []   # list of all classes in schema
-    relationships_list = [] # list of all links/relationships in schema
+    classes_list = []  # list of all classes in schema
+    relationships_list = []  # list of all links/relationships in schema
     groups = svg_dom.getElementsByTagName("g")
     for group in groups:
         id = group.getAttribute("id")
