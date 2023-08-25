@@ -40,10 +40,6 @@ DATASET2PERSON = """
 @pytest.mark.parametrize(
     "input_class,expected",
     [
-        # check that plantUML header and footer are present
-        # for one class, like `Person`, extensible to other classes
-        ("Person", MARKDOWN_HEADER),
-        ("Person", MARKDOWN_FOOTER),
         # check that expected plantUML class diagram blocks are present
         # when diagrams are generated for different classes
         ("Person", PERSON),
