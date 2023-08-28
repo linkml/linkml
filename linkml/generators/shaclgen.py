@@ -1,7 +1,7 @@
+import click
 import logging
 import os
 
-import click
 from linkml_runtime.utils.formatutils import underscore
 from linkml_runtime.utils.schemaview import SchemaView
 from dataclasses import dataclass, field
