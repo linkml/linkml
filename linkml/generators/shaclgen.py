@@ -21,6 +21,7 @@ LINK_ML_TYPES_DATETIME = URIRef("http://www.w3.org/2001/XMLSchema#dateTime")
 LINK_ML_TYPES_DATE = URIRef("http://www.w3.org/2001/XMLSchema#date")
 LINK_ML_TYPES_TIME = URIRef("http://www.w3.org/2001/XMLSchema#time")
 
+
 @dataclass
 class ShaclGenerator(Generator):
     # ClassVars
@@ -163,7 +164,7 @@ class ShaclGenerator(Generator):
     "--closed/--non-closed",
     default=True,
     show_default=True,
-    help="Use '--closed' to generate closed SHACL shapes. Use '--non-closed' to generate open SHACL shapes."
+    help="Use '--closed' to generate closed SHACL shapes. Use '--non-closed' to generate open SHACL shapes.",
 )
 @click.version_option(__version__, "-V", "--version")
 @click.command()
