@@ -2,15 +2,16 @@ import click
 import logging
 import os
 
+from dataclasses import dataclass, field
+
+from linkml._version import __version__
 from linkml_runtime.utils.formatutils import underscore
 from linkml_runtime.utils.schemaview import SchemaView
-from dataclasses import dataclass, field
+from linkml.utils.generator import Generator, shared_arguments
+
 from rdflib import BNode, Graph, Literal, URIRef
 from rdflib.collection import Collection
 from rdflib.namespace import RDF, SH
-
-from linkml._version import __version__
-from linkml.utils.generator import Generator, shared_arguments
 
 LINK_ML_TYPES_STRING = URIRef("http://www.w3.org/2001/XMLSchema#string")
 LINK_ML_TYPES_BOOL = URIRef("http://www.w3.org/2001/XMLSchema#boolean")
