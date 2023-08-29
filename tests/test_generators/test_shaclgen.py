@@ -33,6 +33,7 @@ def test_shacl(kitchen_sink_path):
     shaclstr = ShaclGenerator(kitchen_sink_path, mergeimports=True).serialize()
     do_test(shaclstr, EXPECTED)
 
+
 def test_shacl_closed(kitchen_sink_path):
     """tests shacl generation"""
     shaclstr = ShaclGenerator(kitchen_sink_path, mergeimports=True, closed=False).serialize()
