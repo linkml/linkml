@@ -73,6 +73,8 @@ class ShaclGenerator(Generator):
                     shape_pv(SH.closed, Literal(False))
                 else:
                     shape_pv(SH.closed, Literal(True))
+            else:
+                shape_pv(SH.closed, Literal(False))
             if c.title is not None:
                 shape_pv(SH.name, Literal(c.title))
             if c.description is not None:

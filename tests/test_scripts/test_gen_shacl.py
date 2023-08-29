@@ -5,7 +5,7 @@ from tests.test_scripts.environment import env
 from tests.utils.clicktestcase import ClickTestCase
 
 
-class GenYUMLTestCase(ClickTestCase):
+class GenShaclTestCase(ClickTestCase):
     testdir = "genshacl"
     click_ep = shaclgen.cli
     prog_name = "gen-shacl"
