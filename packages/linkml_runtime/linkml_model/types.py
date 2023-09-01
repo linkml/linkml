@@ -1,5 +1,5 @@
 # Auto generated from types.yaml by pythongen.py version: 0.9.0
-# Generation date: 2022-05-19T21:54:20
+# Generation date: 2023-09-01T13:21:20
 # Schema: types
 #
 # id: https://w3id.org/linkml/types
@@ -7,7 +7,6 @@
 # license: https://creativecommons.org/publicdomain/zero/1.0/
 
 import dataclasses
-import sys
 import re
 from jsonasobj2 import JsonObj, as_dict
 from typing import Optional, List, Union, Dict, ClassVar, Any
@@ -21,7 +20,7 @@ from linkml_runtime.utils.formatutils import camelcase, underscore, sfx
 from linkml_runtime.utils.enumerations import EnumDefinitionImpl
 from rdflib import Namespace, URIRef
 from linkml_runtime.utils.curienamespace import CurieNamespace
-from linkml_runtime.utils.metamodelcore import Bool, Decimal, ElementIdentifier, NCName, NodeIdentifier, URI, URIorCURIE, XSDDate, XSDDateTime, XSDTime
+from linkml_runtime.utils.metamodelcore import Bool, Curie, Decimal, ElementIdentifier, NCName, NodeIdentifier, URI, URIorCURIE, XSDDate, XSDDateTime, XSDTime
 
 metamodel_version = "1.7.0"
 version = "2.0.0"
@@ -31,6 +30,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
 
 # Namespaces
 LINKML = CurieNamespace('linkml', 'https://w3id.org/linkml/')
+SCHEMA = CurieNamespace('schema', 'http://schema.org/')
 SHEX = CurieNamespace('shex', 'http://www.w3.org/ns/shex#')
 XSD = CurieNamespace('xsd', 'http://www.w3.org/2001/XMLSchema#')
 DEFAULT_ = LINKML
@@ -87,8 +87,8 @@ class Decimal(Decimal):
 
 class Time(XSDTime):
     """ A time object represents a (local) time of day, independent of any particular day """
-    type_class_uri = XSD.dateTime
-    type_class_curie = "xsd:dateTime"
+    type_class_uri = XSD.time
+    type_class_curie = "xsd:time"
     type_name = "time"
     type_model_uri = LINKML.Time
 
@@ -109,12 +109,28 @@ class Datetime(XSDDateTime):
     type_model_uri = LINKML.Datetime
 
 
+class DateOrDatetime(str):
+    """ Either a date or a datetime """
+    type_class_uri = LINKML.DateOrDatetime
+    type_class_curie = "linkml:DateOrDatetime"
+    type_name = "date_or_datetime"
+    type_model_uri = LINKML.DateOrDatetime
+
+
 class Uriorcurie(URIorCURIE):
     """ a URI or a CURIE """
     type_class_uri = XSD.anyURI
     type_class_curie = "xsd:anyURI"
     type_name = "uriorcurie"
     type_model_uri = LINKML.Uriorcurie
+
+
+class Curie(Curie):
+    """ a compact URI """
+    type_class_uri = XSD.string
+    type_class_curie = "xsd:string"
+    type_name = "curie"
+    type_model_uri = LINKML.Curie
 
 
 class Uri(URI):
@@ -149,6 +165,30 @@ class Nodeidentifier(NodeIdentifier):
     type_model_uri = LINKML.Nodeidentifier
 
 
+class Jsonpointer(str):
+    """ A string encoding a JSON Pointer. The value of the string MUST conform to JSON Point syntax and SHOULD dereference to a valid object within the current instance document when encoded in tree form. """
+    type_class_uri = XSD.string
+    type_class_curie = "xsd:string"
+    type_name = "jsonpointer"
+    type_model_uri = LINKML.Jsonpointer
+
+
+class Jsonpath(str):
+    """ A string encoding a JSON Path. The value of the string MUST conform to JSON Point syntax and SHOULD dereference to zero or more valid objects within the current instance document when encoded in tree form. """
+    type_class_uri = XSD.string
+    type_class_curie = "xsd:string"
+    type_name = "jsonpath"
+    type_model_uri = LINKML.Jsonpath
+
+
+class Sparqlpath(str):
+    """ A string encoding a SPARQL Property Path. The value of the string MUST conform to SPARQL syntax and SHOULD dereference to zero or more valid objects within the current instance document when encoded as RDF. """
+    type_class_uri = XSD.string
+    type_class_curie = "xsd:string"
+    type_name = "sparqlpath"
+    type_model_uri = LINKML.Sparqlpath
+
+
 # Class references
 
 
@@ -158,4 +198,7 @@ class Nodeidentifier(NodeIdentifier):
 
 
 # Slots
+class slots:
+    pass
+
 

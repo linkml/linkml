@@ -12,7 +12,7 @@ prefixes:
   IAO: http://purl.obolibrary.org/obo/IAO_
 
 default_curi_maps:
-    - semweb_context
+  - semweb_context
 
 default_prefix: linkml
 default_range: string

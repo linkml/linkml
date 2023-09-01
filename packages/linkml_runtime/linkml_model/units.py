@@ -1,5 +1,5 @@
 # Auto generated from units.yaml by pythongen.py version: 0.9.0
-# Generation date: 2022-06-28T03:39:16
+# Generation date: 2023-09-01T13:21:21
 # Schema: units
 #
 # id: https://w3id.org/linkml/units
@@ -7,7 +7,6 @@
 # license: https://creativecommons.org/publicdomain/zero/1.0/
 
 import dataclasses
-import sys
 import re
 from jsonasobj2 import JsonObj, as_dict
 from typing import Optional, List, Union, Dict, ClassVar, Any
@@ -31,8 +30,14 @@ version = None
 dataclasses._init_fn = dataclasses_init_fn_with_kwargs
 
 # Namespaces
+IAO = CurieNamespace('IAO', 'http://purl.obolibrary.org/obo/IAO_')
+OIO = CurieNamespace('OIO', 'http://www.geneontology.org/formats/oboInOwl#')
 LINKML = CurieNamespace('linkml', 'https://w3id.org/linkml/')
 QUDT = CurieNamespace('qudt', 'http://qudt.org/schema/qudt/')
+RDF = CurieNamespace('rdf', 'http://www.w3.org/1999/02/22-rdf-syntax-ns#')
+RDFS = CurieNamespace('rdfs', 'http://www.w3.org/2000/01/rdf-schema#')
+SKOS = CurieNamespace('skos', 'http://www.w3.org/2004/02/skos/core#')
+XSD = CurieNamespace('xsd', 'http://www.w3.org/2001/XMLSchema#')
 DEFAULT_ = LINKML
 
 
@@ -56,6 +61,8 @@ class UnitOfMeasure(YAMLRoot):
     class_model_uri: ClassVar[URIRef] = LINKML.UnitOfMeasure
 
     symbol: Optional[str] = None
+    abbreviation: Optional[str] = None
+    descriptive_name: Optional[str] = None
     exact_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
     ucum_code: Optional[str] = None
     derivation: Optional[str] = None
@@ -65,6 +72,12 @@ class UnitOfMeasure(YAMLRoot):
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self.symbol is not None and not isinstance(self.symbol, str):
             self.symbol = str(self.symbol)
+
+        if self.abbreviation is not None and not isinstance(self.abbreviation, str):
+            self.abbreviation = str(self.abbreviation)
+
+        if self.descriptive_name is not None and not isinstance(self.descriptive_name, str):
+            self.descriptive_name = str(self.descriptive_name)
 
         if not isinstance(self.exact_mappings, list):
             self.exact_mappings = [self.exact_mappings] if self.exact_mappings is not None else []
@@ -89,4 +102,29 @@ class UnitOfMeasure(YAMLRoot):
 
 
 # Slots
+class slots:
+    pass
 
+slots.unit = Slot(uri=QUDT.unit, name="unit", curie=QUDT.curie('unit'),
+                   model_uri=LINKML.unit, domain=None, range=Optional[Union[dict, UnitOfMeasure]])
+
+slots.ucum_code = Slot(uri=QUDT.ucumCode, name="ucum_code", curie=QUDT.curie('ucumCode'),
+                   model_uri=LINKML.ucum_code, domain=UnitOfMeasure, range=Optional[str])
+
+slots.derivation = Slot(uri=LINKML.derivation, name="derivation", curie=LINKML.curie('derivation'),
+                   model_uri=LINKML.derivation, domain=None, range=Optional[str])
+
+slots.has_quantity_kind = Slot(uri=QUDT.hasQuantityKind, name="has_quantity_kind", curie=QUDT.curie('hasQuantityKind'),
+                   model_uri=LINKML.has_quantity_kind, domain=None, range=Optional[Union[str, URIorCURIE]])
+
+slots.iec61360code = Slot(uri=QUDT.iec61360Code, name="iec61360code", curie=QUDT.curie('iec61360Code'),
+                   model_uri=LINKML.iec61360code, domain=None, range=Optional[str])
+
+slots.symbol = Slot(uri=QUDT.symbol, name="symbol", curie=QUDT.curie('symbol'),
+                   model_uri=LINKML.symbol, domain=None, range=Optional[str])
+
+slots.abbreviation = Slot(uri=QUDT.abbreviation, name="abbreviation", curie=QUDT.curie('abbreviation'),
+                   model_uri=LINKML.abbreviation, domain=None, range=Optional[str])
+
+slots.descriptive_name = Slot(uri=RDFS.label, name="descriptive_name", curie=RDFS.curie('label'),
+                   model_uri=LINKML.descriptive_name, domain=None, range=Optional[str])

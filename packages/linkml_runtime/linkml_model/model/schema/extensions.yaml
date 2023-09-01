@@ -37,9 +37,14 @@ slots:
     domain: extension
     alias: value
     required: true
+    range: AnyValue
 
 
 classes:
+
+  AnyValue:
+    class_uri: linkml:Any
+
   extension:
     description: a tag/value pair used to add non-model information to an entry
     slots:

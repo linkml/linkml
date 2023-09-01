@@ -16,7 +16,7 @@ default_prefix: reporting
 default_range: string
 
 default_curi_maps:
-    - semweb_context
+  - semweb_context
 
 emit_prefixes:
   - linkml
@@ -29,10 +29,9 @@ imports:
   - linkml:types
 
 
-
-#==================================
-# Classes                         #
-#==================================
+# ==================================
+# Classes                          #
+# ==================================
 classes:
   ValidationReport:
     class_uri: sh:ValidationReport
@@ -58,12 +57,12 @@ classes:
       - node_source
       - info
 
-#==================================
-# Slots                           #
-#==================================
+# ==================================
+# Slots                            #
+# ==================================
 slots:
   type:
-    #range: problem_type
+    # range: problem_type
     range: nodeidentifier
     slot_uri: sh:sourceConstraintComponent
   subject:
@@ -90,9 +89,9 @@ slots:
     range: string
 
 
-#==================================
-# Enumerations                    #
-#==================================
+# ==================================
+# Enumerations                     #
+# ==================================
 enums:
   problem_type:
     permissible_values:

@@ -40,7 +40,7 @@ slots:
   has_quantity_kind:
     range: uriorcurie
     slot_uri: qudt:hasQuantityKind
-    description: Concept in a vocabulary or ontology that denotes the kind of quanity being measured, e.g. length
+    description: Concept in a vocabulary or ontology that denotes the kind of quantity being measured, e.g. length
     comments:
       - Potential ontologies include but are not limited to PATO, NCIT, OBOE, qudt.quantityKind
 
@@ -54,7 +54,10 @@ slots:
   abbreviation:
     slot_uri: qudt:abbreviation
     description: >-
-      An abbreviation for a unit is a short ASCII string that is used in place of the full name for the unit in contexts where non-ASCII characters would be problematic, or where using the abbreviation will enhance readability. When a power of a base unit needs to be expressed, such as squares this can be done using abbreviations rather than symbols (source: qudt)
+      An abbreviation for a unit is a short ASCII string that is used in place of the full name for the unit in 
+      contexts where non-ASCII characters would be problematic, or where using the abbreviation will enhance 
+      readability. When a power of a base unit needs to be expressed, such as squares this can be done using 
+      abbreviations rather than symbols (source: qudt)
 
   descriptive_name:
     slot_uri: rdfs:label
@@ -63,7 +66,9 @@ slots:
 classes:
   UnitOfMeasure:
     class_uri: qudt:Unit
-    description: A unit of measure, or unit, is a particular quantity value that has been chosen as a scale for measuring other quantities the same kind (more generally of equivalent dimension).
+    description: >-
+      A unit of measure, or unit, is a particular quantity value that has been chosen as a scale for 
+      measuring other quantities the same kind (more generally of equivalent dimension).
     slots:
       - symbol
       - abbreviation
@@ -91,4 +96,3 @@ classes:
       - slot_conditions:
           exact_mappings:
             required: true
-

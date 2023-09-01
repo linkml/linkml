@@ -281,7 +281,7 @@
       "definition_uri": "https://w3id.org/linkml/Objectidentifier",
       "description": "A URI or CURIE that represents an object in the model.",
       "comments": [
-        "Used for inheritence and type checking"
+        "Used for inheritance and type checking"
       ],
       "from_schema": "https://w3id.org/linkml/types",
       "imported_from": "linkml:types",
@@ -1104,7 +1104,7 @@
       "definition_uri": "https://w3id.org/linkml/mixins",
       "description": "List of definitions to be mixed in. Targets may be any definition of the same type",
       "comments": [
-        "mixins act in the same way as parents (is_a). They allow a model to have a primary strict hierachy, while keeping the benefits of multiple inheritance"
+        "mixins act in the same way as parents (is_a). They allow a model to have a primary strict hierarchy, while keeping the benefits of multiple inheritance"
       ],
       "in_subset": [
         "basic",
@@ -1145,7 +1145,7 @@
     {
       "name": "values_from",
       "definition_uri": "https://w3id.org/linkml/values_from",
-      "description": "The identifier of a \"value set\" -- a set of identifiers that form the possible values for the range of a slot. Note: this is different than 'subproperty_of' in that 'subproperty_of' is intended to be a single ontology term while 'values_from' is the identifier of an entire value set.  Additionally, this is different than an enumeration in that in an enumeration, the values of the enumeration are listed directly in the model itself. Setting this property on a slot does not guarantee an expansion of the ontological hiearchy into an enumerated list of possible values in every serialization of the model.",
+      "description": "The identifier of a \"value set\" -- a set of identifiers that form the possible values for the range of a slot. Note: this is different than 'subproperty_of' in that 'subproperty_of' is intended to be a single ontology term while 'values_from' is the identifier of an entire value set.  Additionally, this is different than an enumeration in that in an enumeration, the values of the enumeration are listed directly in the model itself. Setting this property on a slot does not guarantee an expansion of the ontological hierarchy into an enumerated list of possible values in every serialization of the model.",
       "from_schema": "https://w3id.org/linkml/meta",
       "domain": "Definition",
       "slot_uri": "https://w3id.org/linkml/values_from",
@@ -1839,7 +1839,7 @@
       "from_schema": "https://w3id.org/linkml/meta",
       "domain": "SchemaDefinition",
       "slot_uri": "https://w3id.org/linkml/source_file",
-      "readonly": "suppplied by the schema loader",
+      "readonly": "supplied by the schema loader",
       "owner": "SchemaDefinition",
       "domain_of": [
         "SchemaDefinition"
@@ -2800,7 +2800,7 @@
     {
       "name": "all_members",
       "definition_uri": "https://w3id.org/linkml/all_members",
-      "description": "the value of the multiavlued slot is a list where all elements conform to the specified values.\nthis defines a dynamic class with named slots according to matching constraints\n\nE.g to state that all members of a list are between 1 and 10\n```\nall_members:\n  x:\n    range: integer\n    minimum_value: 10\n    maximum_value: 10\n```",
+      "description": "the value of the multivalued slot is a list where all elements conform to the specified values.\nthis defines a dynamic class with named slots according to matching constraints\n\nE.g to state that all members of a list are between 1 and 10\n```\nall_members:\n  x:\n    range: integer\n    minimum_value: 10\n    maximum_value: 10\n```",
       "from_schema": "https://w3id.org/linkml/meta",
       "is_a": "list_value_specification_constant",
       "status": "testing",
@@ -3155,7 +3155,7 @@
     {
       "name": "subproperty_of",
       "definition_uri": "https://w3id.org/linkml/subproperty_of",
-      "description": "Ontology property which this slot is a subproperty of.  Note: setting this property on a slot does not guarantee an expansion of the ontological hiearchy into an enumerated list of possible values in every serialization of the model.",
+      "description": "Ontology property which this slot is a subproperty of.  Note: setting this property on a slot does not guarantee an expansion of the ontological hierarchy into an enumerated list of possible values in every serialization of the model.",
       "examples": [
         {
           "value": "RO:HOM0000001",
@@ -3574,7 +3574,7 @@
       "description": "python base type that implements this type definition",
       "comments": [
         "every root type must have a base",
-        "the base is inherited by child types but may be overriden.  Base compatibility is not checked."
+        "the base is inherited by child types but may be overridden.  Base compatibility is not checked."
       ],
       "in_subset": [
         "basic"
@@ -4043,7 +4043,7 @@
     {
       "name": "path_rule",
       "definition_uri": "https://w3id.org/linkml/path_rule",
-      "description": "a rule for inferring a slot assignment based on evaluating a path through a sequence of slot assignemnts",
+      "description": "a rule for inferring a slot assignment based on evaluating a path through a sequence of slot assignments",
       "from_schema": "https://w3id.org/linkml/meta",
       "domain": "SlotDefinition",
       "slot_uri": "https://w3id.org/linkml/path_rule",
@@ -4389,7 +4389,7 @@
     {
       "name": "has_quantity_kind",
       "definition_uri": "https://w3id.org/linkml/has_quantity_kind",
-      "description": "Concept in a vocabulary or ontology that denotes the kind of quanity being measured, e.g. length",
+      "description": "Concept in a vocabulary or ontology that denotes the kind of quantity being measured, e.g. length",
       "comments": [
         "Potential ontologies include but are not limited to PATO, NCIT, OBOE, qudt.quantityKind"
       ],
@@ -4857,7 +4857,7 @@
       "definition_uri": "https://w3id.org/linkml/mixins",
       "description": "List of definitions to be mixed in. Targets may be any definition of the same type",
       "comments": [
-        "mixins act in the same way as parents (is_a). They allow a model to have a primary strict hierachy, while keeping the benefits of multiple inheritance"
+        "mixins act in the same way as parents (is_a). They allow a model to have a primary strict hierarchy, while keeping the benefits of multiple inheritance"
       ],
       "in_subset": [
         "basic",
@@ -5064,7 +5064,7 @@
       "definition_uri": "https://w3id.org/linkml/mixins",
       "description": "List of definitions to be mixed in. Targets may be any definition of the same type",
       "comments": [
-        "mixins act in the same way as parents (is_a). They allow a model to have a primary strict hierachy, while keeping the benefits of multiple inheritance"
+        "mixins act in the same way as parents (is_a). They allow a model to have a primary strict hierarchy, while keeping the benefits of multiple inheritance"
       ],
       "in_subset": [
         "basic",
@@ -5202,7 +5202,7 @@
       "definition_uri": "https://w3id.org/linkml/mixins",
       "description": "List of definitions to be mixed in. Targets may be any definition of the same type",
       "comments": [
-        "mixins act in the same way as parents (is_a). They allow a model to have a primary strict hierachy, while keeping the benefits of multiple inheritance"
+        "mixins act in the same way as parents (is_a). They allow a model to have a primary strict hierarchy, while keeping the benefits of multiple inheritance"
       ],
       "in_subset": [
         "basic",

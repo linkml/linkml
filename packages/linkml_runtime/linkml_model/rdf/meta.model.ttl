@@ -105,7 +105,7 @@ linkml:nodeidentifier a linkml:TypeDefinition ;
 linkml:objectidentifier a linkml:TypeDefinition ;
     skos:definition "A URI or CURIE that represents an object in the model." ;
     skos:inScheme linkml:types ;
-    skos:note "Used for inheritence and type checking" ;
+    skos:note "Used for inheritance and type checking" ;
     linkml:base "ElementIdentifier" ;
     linkml:definition_uri linkml:Objectidentifier ;
     linkml:imported_from "linkml:types" ;
@@ -201,7 +201,7 @@ linkml:class_definition_mixins a linkml:SlotDefinition ;
     skos:altLabel "traits" ;
     skos:definition "List of definitions to be mixed in. Targets may be any definition of the same type" ;
     skos:inScheme linkml:meta ;
-    skos:note "mixins act in the same way as parents (is_a). They allow a model to have a primary strict hierachy, while keeping the benefits of multiple inheritance" ;
+    skos:note "mixins act in the same way as parents (is_a). They allow a model to have a primary strict hierarchy, while keeping the benefits of multiple inheritance" ;
     skos:prefLabel "mixins" ;
     linkml:definition_uri linkml:mixins ;
     linkml:domain linkml:ClassDefinition ;
@@ -354,7 +354,7 @@ linkml:permissible_value_mixins a linkml:SlotDefinition ;
     skos:altLabel "traits" ;
     skos:definition "List of definitions to be mixed in. Targets may be any definition of the same type" ;
     skos:inScheme linkml:meta ;
-    skos:note "mixins act in the same way as parents (is_a). They allow a model to have a primary strict hierachy, while keeping the benefits of multiple inheritance" ;
+    skos:note "mixins act in the same way as parents (is_a). They allow a model to have a primary strict hierarchy, while keeping the benefits of multiple inheritance" ;
     skos:prefLabel "mixins" ;
     linkml:definition_uri linkml:mixins ;
     linkml:domain linkml:PermissibleValue ;
@@ -472,7 +472,7 @@ linkml:slot_definition_mixins a linkml:SlotDefinition ;
     skos:altLabel "traits" ;
     skos:definition "List of definitions to be mixed in. Targets may be any definition of the same type" ;
     skos:inScheme linkml:meta ;
-    skos:note "mixins act in the same way as parents (is_a). They allow a model to have a primary strict hierachy, while keeping the benefits of multiple inheritance" ;
+    skos:note "mixins act in the same way as parents (is_a). They allow a model to have a primary strict hierarchy, while keeping the benefits of multiple inheritance" ;
     skos:prefLabel "mixins" ;
     linkml:definition_uri linkml:mixins ;
     linkml:domain linkml:SlotDefinition ;
@@ -611,7 +611,7 @@ linkml:equals_number_in a linkml:SlotDefinition ;
     linkml:slot_uri linkml:equals_number_in .
 
 linkml:has_quantity_kind a linkml:SlotDefinition ;
-    skos:definition "Concept in a vocabulary or ontology that denotes the kind of quanity being measured, e.g. length" ;
+    skos:definition "Concept in a vocabulary or ontology that denotes the kind of quantity being measured, e.g. length" ;
     skos:inScheme linkml:units ;
     skos:mappingRelation qudt:hasQuantityKind ;
     skos:note "Potential ontologies include but are not limited to PATO, NCIT, OBOE, qudt.quantityKind" ;
@@ -740,7 +740,7 @@ linkml:subclass_of a linkml:SlotDefinition ;
     linkml:slot_uri rdfs:subClassOf .
 
 linkml:subproperty_of a linkml:SlotDefinition ;
-    skos:definition "Ontology property which this slot is a subproperty of.  Note: setting this property on a slot does not guarantee an expansion of the ontological hiearchy into an enumerated list of possible values in every serialization of the model." ;
+    skos:definition "Ontology property which this slot is a subproperty of.  Note: setting this property on a slot does not guarantee an expansion of the ontological hierarchy into an enumerated list of possible values in every serialization of the model." ;
     skos:inScheme linkml:meta ;
     skos:mappingRelation rdfs:subPropertyOf ;
     linkml:definition_uri linkml:subproperty_of ;
@@ -847,7 +847,7 @@ linkml:base a linkml:SlotDefinition ;
     skos:definition "python base type that implements this type definition" ;
     skos:inScheme linkml:meta ;
     skos:note "every root type must have a base",
-        "the base is inherited by child types but may be overriden.  Base compatibility is not checked." ;
+        "the base is inherited by child types but may be overridden.  Base compatibility is not checked." ;
     linkml:definition_uri linkml:base ;
     linkml:domain linkml:TypeDefinition ;
     linkml:domain_of linkml:TypeDefinition ;
@@ -1544,7 +1544,7 @@ linkml:partial_match a linkml:SlotDefinition ;
     linkml:slot_uri linkml:partial_match .
 
 linkml:path_rule a linkml:SlotDefinition ;
-    skos:definition "a rule for inferring a slot assignment based on evaluating a path through a sequence of slot assignemnts" ;
+    skos:definition "a rule for inferring a slot assignment based on evaluating a path through a sequence of slot assignments" ;
     skos:inScheme linkml:meta ;
     linkml:definition_uri linkml:path_rule ;
     linkml:domain linkml:SlotDefinition ;
@@ -1886,7 +1886,7 @@ linkml:source_file a linkml:SlotDefinition ;
     linkml:domain_of linkml:SchemaDefinition ;
     linkml:owner linkml:SchemaDefinition ;
     linkml:range linkml:string ;
-    linkml:readonly "suppplied by the schema loader" ;
+    linkml:readonly "supplied by the schema loader" ;
     linkml:slot_uri linkml:source_file .
 
 linkml:source_file_date a linkml:SlotDefinition ;
@@ -2372,7 +2372,7 @@ linkml:Annotation a linkml:ClassDefinition ;
 
 linkml:all_members a linkml:SlotDefinition ;
     bibo:status linkml:testing ;
-    skos:definition """the value of the multiavlued slot is a list where all elements conform to the specified values.
+    skos:definition """the value of the multivalued slot is a list where all elements conform to the specified values.
 this defines a dynamic class with named slots according to matching constraints
 
 E.g to state that all members of a list are between 1 and 10
@@ -2865,7 +2865,7 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
     linkml:slot_uri linkml:string_serialization .
 
 linkml:values_from a linkml:SlotDefinition ;
-    skos:definition "The identifier of a \"value set\" -- a set of identifiers that form the possible values for the range of a slot. Note: this is different than 'subproperty_of' in that 'subproperty_of' is intended to be a single ontology term while 'values_from' is the identifier of an entire value set.  Additionally, this is different than an enumeration in that in an enumeration, the values of the enumeration are listed directly in the model itself. Setting this property on a slot does not guarantee an expansion of the ontological hiearchy into an enumerated list of possible values in every serialization of the model." ;
+    skos:definition "The identifier of a \"value set\" -- a set of identifiers that form the possible values for the range of a slot. Note: this is different than 'subproperty_of' in that 'subproperty_of' is intended to be a single ontology term while 'values_from' is the identifier of an entire value set.  Additionally, this is different than an enumeration in that in an enumeration, the values of the enumeration are listed directly in the model itself. Setting this property on a slot does not guarantee an expansion of the ontological hierarchy into an enumerated list of possible values in every serialization of the model." ;
     skos:inScheme linkml:meta ;
     linkml:definition_uri linkml:values_from ;
     linkml:domain linkml:Definition ;
@@ -3562,7 +3562,7 @@ linkml:mixins a linkml:SlotDefinition ;
     skos:altLabel "traits" ;
     skos:definition "List of definitions to be mixed in. Targets may be any definition of the same type" ;
     skos:inScheme linkml:meta ;
-    skos:note "mixins act in the same way as parents (is_a). They allow a model to have a primary strict hierachy, while keeping the benefits of multiple inheritance" ;
+    skos:note "mixins act in the same way as parents (is_a). They allow a model to have a primary strict hierarchy, while keeping the benefits of multiple inheritance" ;
     linkml:definition_uri linkml:mixins ;
     linkml:domain linkml:Definition ;
     linkml:domain_of linkml:Definition ;
