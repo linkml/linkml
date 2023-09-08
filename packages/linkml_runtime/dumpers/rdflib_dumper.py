@@ -145,10 +145,15 @@ class RDFLibDumper(Dumper):
             graph.add((element_uri, RDF.type, URIRef(schemaview.get_uri(cn, expand=True))))
         return element_uri
 
-    def dump(self, element: Union[BaseModel, YAMLRoot],
-             to_file: str,
-             schemaview: SchemaView = None,
-             fmt: str = 'turtle', prefix_map: Dict[str, str] = None, **args) -> None:
+    def dump(
+        self,
+        element: Union[BaseModel, YAMLRoot],
+        to_file: str,
+        schemaview: SchemaView = None,
+        fmt: str = 'turtle',
+        prefix_map: Union[Dict[str, str], Converter, None] = None,
+        **args,
+    ) -> None:
         """
         Write element as rdf to to_file
 
@@ -161,8 +166,13 @@ class RDFLibDumper(Dumper):
         """
         super().dump(element, to_file, schemaview=schemaview, fmt=fmt, prefix_map=prefix_map)
 
-    def dumps(self, element: Union[BaseModel, YAMLRoot], schemaview: SchemaView = None,
-              fmt: Optional[str] = 'turtle', prefix_map: Dict[str, str] = None) -> str:
+    def dumps(
+        self,
+        element: Union[BaseModel, YAMLRoot],
+        schemaview: SchemaView = None,
+        fmt: Optional[str] = 'turtle',
+        prefix_map: Union[Dict[str, str], Converter, None] = None,
+    ) -> str:
         """
         Convert element into an RDF graph guided by the schema
 

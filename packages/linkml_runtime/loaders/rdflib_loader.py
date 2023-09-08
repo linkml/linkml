@@ -4,6 +4,7 @@ from copy import copy
 from dataclasses import dataclass
 from typing import Optional, Any, Dict, Type, Union, TextIO, List, Tuple, Set
 
+from curies import Converter
 from hbreader import FileInfo
 from rdflib import Graph, URIRef
 from rdflib.term import Node, BNode, Literal
@@ -31,7 +32,7 @@ class RDFLibLoader(Loader):
     Note: this is a more complete replacement for rdf_loader
     """
     def from_rdf_graph(self, graph: Graph, schemaview: SchemaView, target_class: Type[Union[BaseModel, YAMLRoot]],
-                       prefix_map: Dict[str, str] = None,
+                       prefix_map: Union[Dict[str, str], Converter, None] = None,
                        cast_literals: bool = True,
                        allow_unprocessed_triples: bool = True,
                        ignore_unmapped_predicates: bool = False) -> List[Union[BaseModel, YAMLRoot]]:
@@ -58,6 +59,8 @@ class RDFLibLoader(Loader):
                     logging.error(f'Inconsistent URI to class map: {uri} -> {c2.name}, {c.name}')
             uri_to_class_map[uri] = c
         # data prefix map: supplements or overrides existing schema prefix map
+        if isinstance(prefix_map, Converter):
+            prefix_map = prefix_map.bimap
         if prefix_map:
             for k, v in prefix_map.items():
                 namespaces[k] = v
@@ -224,12 +227,16 @@ class RDFLibLoader(Loader):
             return schemaview.namespaces().curie_for(node)
 
 
-    def load(self, source: Union[str, TextIO, Graph], target_class: Type[Union[BaseModel, YAMLRoot]], *,
-             schemaview: SchemaView = None,
-             prefix_map: Dict[str, str] = None,
-             fmt: Optional[str] = 'turtle',
-             metadata: Optional[FileInfo] = None,
-             **kwargs) -> Union[BaseModel, YAMLRoot]:
+    def load(
+        self,
+        source: Union[str, TextIO, Graph],
+        target_class: Type[Union[BaseModel, YAMLRoot]], *,
+        schemaview: SchemaView = None,
+        prefix_map: Union[Dict[str, str], Converter, None] = None,
+        fmt: Optional[str] = 'turtle',
+        metadata: Optional[FileInfo] = None,
+        **kwargs,
+    ) -> Union[BaseModel, YAMLRoot]:
         """
         Load the RDF in source into the python target_class structure
 
