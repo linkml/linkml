@@ -1,9 +1,10 @@
 import configparser
-import logging
+import logging  # noqa: F401
+
 # Global testing control variables
 import os
 
-from tests.utils.test_environment import MismatchAction
+from tests.utils.test_environment import MismatchAction  # noqa: F401
 
 # ---------------------------------------------------------------
 #                DO NOT change this file.

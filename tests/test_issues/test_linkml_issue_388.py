@@ -1,21 +1,14 @@
-import os
-import unittest
-
 from rdflib import Graph, URIRef
-from rdflib.namespace import OWL, RDF, RDFS
+from rdflib.namespace import RDFS
 
 from linkml import METAMODEL_CONTEXT_URI
-from linkml.generators.jsonldcontextgen import ContextGenerator
 from linkml.generators.jsonschemagen import JsonSchemaGenerator
 from linkml.generators.owlgen import OwlSchemaGenerator
 from linkml.generators.rdfgen import RDFGenerator
 from linkml.generators.yamlgen import YAMLGenerator
-from tests.test_issues.environment import env
-from tests.utils.compare_rdf import compare_rdf
-from tests.utils.test_environment import TestEnvironmentTestCase
 
 
-class IssueOWLNamespaceTestCase(TestEnvironmentTestCase):
+def test_attribute_behavior(input_path, snapshot, snapshot_path):
     """
     Tests: https://github.com/linkml/linkml/issues/388
 
@@ -23,52 +16,28 @@ class IssueOWLNamespaceTestCase(TestEnvironmentTestCase):
     generates no errors
     """
 
-    env = env
+    name = "linkml_issue_388"
+    schema = input_path(f"{name}.yaml")
 
-    def test_attribute_behavior(self):
-        name = "linkml_issue_388"
-        infile = env.input_path(f"{name}.yaml")
-        self.env.generate_single_file(
-            f"{name}.yaml",
-            lambda: YAMLGenerator(
-                env.input_path(f"{name}.yaml"), importmap=env.import_map
-            ).serialize(),
-            value_is_returned=True,
-        )
-        self.env.generate_single_file(
-            f"{name}.schema.json",
-            lambda: JsonSchemaGenerator(
-                env.input_path(f"{name}.yaml"), importmap=env.import_map
-            ).serialize(),
-            value_is_returned=True,
-        )
+    output = YAMLGenerator(schema).serialize()
+    assert output == snapshot(f"{name}.yaml")
 
-        self.env.generate_single_file(
-            f"{name}.ttl",
-            lambda: RDFGenerator(
-                env.input_path(f"{name}.yaml"), importmap=env.import_map
-            ).serialize(
-                context=[METAMODEL_CONTEXT_URI],
-            ),
-            value_is_returned=True,
-        )
-        self.env.generate_single_file(
-            f"{name}.owl",
-            lambda: OwlSchemaGenerator(
-                env.input_path(f"{name}.yaml"),
-                metaclasses=False,
-            ).serialize(context=[METAMODEL_CONTEXT_URI]),
-            value_is_returned=True,
-        )
-        g = Graph()
-        g.parse(env.expected_path(f"{name}.owl"), format="turtle")
-        C1 = URIRef("https://example.org/this/C1")
-        this_a = URIRef("https://example.org/this/a")
-        other_a = URIRef("https://example.org/other/a")
-        # slot_uri refers to two attributes, ambiguous, so minimal metadata;
-        assert len(list(g.triples((this_a, None, None)))) == 1
-        self.assertIn((other_a, RDFS.range, C1), g)
+    output = JsonSchemaGenerator(schema).serialize()
+    assert output == snapshot(f"{name}.schema.json")
 
+    output = RDFGenerator(schema).serialize(context=[METAMODEL_CONTEXT_URI])
+    assert output == snapshot(f"{name}.ttl")
 
-if __name__ == "__main__":
-    unittest.main()
+    output = OwlSchemaGenerator(schema, metaclasses=False).serialize(
+        context=[METAMODEL_CONTEXT_URI]
+    )
+    assert output == snapshot(f"{name}.owl")
+
+    g = Graph()
+    g.parse(snapshot_path(f"{name}.owl"), format="turtle")
+    C1 = URIRef("https://example.org/this/C1")
+    this_a = URIRef("https://example.org/this/a")
+    other_a = URIRef("https://example.org/other/a")
+    # slot_uri refers to two attributes, ambiguous, so minimal metadata;
+    assert len(list(g.triples((this_a, None, None)))) == 1
+    assert (other_a, RDFS.range, C1) in g

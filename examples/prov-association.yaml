@@ -23,7 +23,7 @@ classes:
     comments:
     - An instance of prov:Association provides additional descriptions about the binary
       prov:wasAssociatedWith relation from an prov:Activity to some prov:Agent that
-      had some responsiblity for it. For example, prov:baking prov:wasAssociatedWith prov:baker;
+      had some responsibility for it. For example, prov:baking prov:wasAssociatedWith prov:baker;
       prov:qualifiedAssociation [ a prov:Association; prov:agent prov:baker; prov:foo prov:bar
       ].
     description: An activity association is an assignment of responsibility to an

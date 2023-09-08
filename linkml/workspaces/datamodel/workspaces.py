@@ -8,26 +8,17 @@
 # license: https://creativecommons.org/publicdomain/zero/1.0/
 
 import dataclasses
-import re
-import sys
 from dataclasses import dataclass
 from typing import Any, ClassVar, Dict, List, Optional, Union
 
-from jsonasobj2 import JsonObj, as_dict
-from linkml_runtime.linkml_model.meta import (EnumDefinition, PermissibleValue,
-                                              PvFormulaOptions)
-from linkml_runtime.linkml_model.types import Boolean, Datetime, String
+from jsonasobj2 import as_dict
+from linkml_runtime.linkml_model.types import String
 from linkml_runtime.utils.curienamespace import CurieNamespace
-from linkml_runtime.utils.dataclass_extensions_376 import \
-    dataclasses_init_fn_with_kwargs
-from linkml_runtime.utils.enumerations import EnumDefinitionImpl
-from linkml_runtime.utils.formatutils import camelcase, sfx, underscore
-from linkml_runtime.utils.metamodelcore import (Bool, XSDDateTime, bnode,
-                                                empty_dict, empty_list)
+from linkml_runtime.utils.dataclass_extensions_376 import dataclasses_init_fn_with_kwargs
+from linkml_runtime.utils.metamodelcore import Bool, XSDDateTime, empty_dict, empty_list
 from linkml_runtime.utils.slot import Slot
-from linkml_runtime.utils.yamlutils import (YAMLRoot, extended_float,
-                                            extended_int, extended_str)
-from rdflib import Namespace, URIRef
+from linkml_runtime.utils.yamlutils import YAMLRoot, extended_str
+from rdflib import URIRef
 
 metamodel_version = "1.7.0"
 version = None
@@ -41,9 +32,7 @@ DCAT = CurieNamespace("dcat", "http://www.w3.org/ns/dcat#")
 FORMATS = CurieNamespace("formats", "http://www.w3.org/ns/formats/")
 FRICTIONLESS = CurieNamespace("frictionless", "https://specs.frictionlessdata.io/")
 LINKML = CurieNamespace("linkml", "https://w3id.org/linkml/")
-MEDIATYPES = CurieNamespace(
-    "mediatypes", "https://www.iana.org/assignments/media-types/"
-)
+MEDIATYPES = CurieNamespace("mediatypes", "https://www.iana.org/assignments/media-types/")
 OWL = CurieNamespace("owl", "http://www.w3.org/2002/07/owl#")
 PAV = CurieNamespace("pav", "http://purl.org/pav/")
 RDF = CurieNamespace("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#")
@@ -68,7 +57,8 @@ class FileSystemPath(String):
 
 
 class ProjectName(String):
-    """A project name MUST contain no whitespace and SHOULD only contains alphanumeric characters and hyphens (no underscores)"""
+    """A project name MUST contain no whitespace and SHOULD only contains
+    alphanumeric characters and hyphens (no underscores)"""
 
     type_class_uri = XSD.string
     type_class_curie = "xsd:string"
@@ -133,13 +123,9 @@ class Project(YAMLRoot):
         if self.github_organization is not None and not isinstance(
             self.github_organization, GitHubAccount
         ):
-            self.github_organization = GitHubAccount(
-                **as_dict(self.github_organization)
-            )
+            self.github_organization = GitHubAccount(**as_dict(self.github_organization))
 
-        if self.creation_date is not None and not isinstance(
-            self.creation_date, XSDDateTime
-        ):
+        if self.creation_date is not None and not isinstance(self.creation_date, XSDDateTime):
             self.creation_date = XSDDateTime(self.creation_date)
 
         if self.description is not None and not isinstance(self.description, str):
@@ -153,8 +139,7 @@ class Project(YAMLRoot):
         if not isinstance(self.data_files, list):
             self.data_files = [self.data_files] if self.data_files is not None else []
         self.data_files = [
-            v if isinstance(v, FileSystemPath) else FileSystemPath(v)
-            for v in self.data_files
+            v if isinstance(v, FileSystemPath) else FileSystemPath(v) for v in self.data_files
         ]
 
         self._normalize_inlined_as_dict(
@@ -259,9 +244,7 @@ class Workspace(YAMLRoot):
             slot_name="projects", slot_type=Project, key_name="name", keyed=True
         )
 
-        if self.github_account is not None and not isinstance(
-            self.github_account, GitHubAccount
-        ):
+        if self.github_account is not None and not isinstance(self.github_account, GitHubAccount):
             self.github_account = GitHubAccount(**as_dict(self.github_account))
 
         if self.projects_directory is not None and not isinstance(

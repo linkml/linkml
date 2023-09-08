@@ -1,13 +1,13 @@
-import os
-from dataclasses import field, dataclass
-from typing import Optional
-import click
 import importlib.util
+import os
+from dataclasses import dataclass, field
+from typing import Optional
+
+import click
 from jinja2 import Environment, FileSystemLoader, Template
 from linkml_runtime.linkml_model.meta import TypeDefinition
 
 from linkml._version import __version__
-from linkml.generators import JAVA_GEN_VERSION
 from linkml.generators.oocodegen import OOCodeGenerator
 from linkml.utils.generator import shared_arguments
 
@@ -37,7 +37,7 @@ public{% if cls.abstract %} abstract{% endif %} class {{ cls.name }} {% if cls.i
   private {{f.range}} {{ f.name }};
 {%- endfor %}
 
-}"""
+}"""  # noqa: E501
 
 TYPEMAP = {
     "xsd:string": "String",
@@ -52,13 +52,8 @@ TYPEMAP = {
     "xsd:decimal": "BigDecimal",
 }
 
-TYPE_DEFAULTS = {
-    "boolean": "false",
-    "int": "0",
-    "float": "0f",
-    "double": "0d",
-    "String": '""'
-}
+TYPE_DEFAULTS = {"boolean": "false", "int": "0", "float": "0f", "double": "0d", "String": '""'}
+
 
 @dataclass
 class JavaGenerator(OOCodeGenerator):
@@ -73,7 +68,7 @@ class JavaGenerator(OOCodeGenerator):
 
     # ClassVars
     generatorname = os.path.basename(__file__)
-    generatorversion = JAVA_GEN_VERSION
+    generatorversion = "0.0.1"
     valid_formats = ["java"]
 
     # ObjectVars
@@ -143,9 +138,7 @@ class JavaGenerator(OOCodeGenerator):
     help="Output directory for individually generated class files",
 )
 @click.option("--package", help="Package name where relevant for generated class files")
-@click.option(
-    "--template-file", help="Optional jinja2 template to use for class generation"
-)
+@click.option("--template-file", help="Optional jinja2 template to use for class generation")
 @click.option(
     "--generate-records/--no-generate-records",
     default=False,

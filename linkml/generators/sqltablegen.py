@@ -1,22 +1,18 @@
 import logging
 import os
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional, TextIO, Union
+from typing import Optional
 
 import click
 from linkml_runtime.dumpers import yaml_dumper
-from linkml_runtime.linkml_model import (ClassDefinition, SchemaDefinition,
-                                         SlotDefinition)
+from linkml_runtime.linkml_model import SchemaDefinition, SlotDefinition
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.schemaview import SchemaView
-from sqlalchemy import Column, ForeignKey, MetaData, Table, create_mock_engine
-from sqlalchemy.types import (Boolean, Date, DateTime, Enum, Float, Integer,
-                              Text, Time)
+from sqlalchemy import Column, ForeignKey, MetaData, Table, UniqueConstraint, create_mock_engine
+from sqlalchemy.types import Boolean, Date, DateTime, Enum, Float, Integer, Text, Time
 
 from linkml._version import __version__
-from linkml.generators.yamlgen import YAMLGenerator
-from linkml.transformers.relmodel_transformer import (
-    ForeignKeyPolicy, RelationalModelTransformer)
+from linkml.transformers.relmodel_transformer import ForeignKeyPolicy, RelationalModelTransformer
 from linkml.utils.generator import Generator, shared_arguments
 from linkml.utils.schemaloader import SchemaLoader
 
@@ -122,16 +118,20 @@ class SQLTableGenerator(Generator):
     generatorname = os.path.basename(__file__)
     generatorversion = "0.1.1"
     valid_formats = ["sql"]
+    file_extension = "sql"
     uses_schemaloader = False
 
     # ObjectVars
-    use_inherits: bool = False  ## postgresql supports inheritance
+    use_inherits: bool = False  # postgresql supports inheritance
     dialect: str = field(default_factory=lambda: "sqlite")
     inject_primary_keys: bool = field(default_factory=lambda: True)
     use_foreign_keys: bool = field(default_factory=lambda: True)
     rename_foreign_keys: bool = field(default_factory=lambda: False)
     direct_mapping: bool = field(default_factory=lambda: False)
     relative_slot_num: bool = field(default_factory=lambda: 0)
+
+    def serialize(self, **kwargs) -> str:
+        return self.generate_ddl(**kwargs)
 
     def generate_ddl(self, naming_policy: SqlNamingPolicy = None, **kwargs) -> str:
         ddl_str = ""
@@ -140,9 +140,7 @@ class SQLTableGenerator(Generator):
             nonlocal ddl_str
             ddl_str += f"{str(sql.compile(dialect=engine.dialect)).rstrip()};"
 
-        engine = create_mock_engine(
-            f"{self.dialect}://./MyDb", strategy="mock", executor=dump
-        )
+        engine = create_mock_engine(f"{self.dialect}://./MyDb", strategy="mock", executor=dump)
         schema_metadata = MetaData()
         sqltr = RelationalModelTransformer(SchemaView(self.schema))
         if not self.use_foreign_keys:
@@ -168,7 +166,8 @@ class SQLTableGenerator(Generator):
                 return ""
             return txt.replace("\n", "")
 
-        # Currently SQLite dialect in SQLA does not generated comments; see https://github.com/sqlalchemy/sqlalchemy/issues/1546#issuecomment-1067389172
+        # Currently SQLite dialect in SQLA does not generate comments; see
+        # https://github.com/sqlalchemy/sqlalchemy/issues/1546#issuecomment-1067389172
         # As a workaround we add these as "--" comments via direct string manipulation
         include_comments = self.dialect == "sqlite"
         sv = SchemaView(schema)
@@ -197,10 +196,15 @@ class SQLTableGenerator(Generator):
                         nullable=not s.required,
                     )
                     if include_comments:
-                        ddl_str += f"--     * Slot: {sn} Description: {strip_newlines(s.description)}\n"
+                        ddl_str += (
+                            f"--     * Slot: {sn} Description: {strip_newlines(s.description)}\n"
+                        )
                     if s.description:
                         col.comment = s.description
                     cols.append(col)
+                for uc_name, uc in c.unique_keys.items():
+                    sql_uc = UniqueConstraint(*[sql_name(sn) for sn in uc.unique_key_slots])
+                    cols.append(sql_uc)
                 Table(sql_name(cn), schema_metadata, *cols, comment=str(c.description))
         schema_metadata.create_all(engine)
         return ddl_str
@@ -235,9 +239,7 @@ class SQLTableGenerator(Generator):
         if range_base in RANGEMAP:
             return RANGEMAP[range_base]
         else:
-            logging.error(
-                f"UNKNOWN range base: {range_base} for {slot.name} = {slot.range}"
-            )
+            logging.error(f"UNKNOWN range base: {range_base} for {slot.name} = {slot.range}")
             return Text()
 
     def get_foreign_key(self, cn: str, sv: SchemaView) -> str:
@@ -271,9 +273,7 @@ class SQLTableGenerator(Generator):
     "--relmodel-output",
     help="Path to intermediate LinkML YAML of transformed relational model",
 )
-@click.option(
-    "--python-import", help="Python import header for generated sql-alchemy code"
-)
+@click.option("--python-import", help="Python import header for generated sql-alchemy code")
 @click.option(
     "--use-foreign-keys/--no-use-foreign-keys",
     default=True,

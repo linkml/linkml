@@ -1,12 +1,7 @@
-import unittest
-
 from linkml_runtime.linkml_model.meta import LINKML
 from rdflib import Graph, Namespace
 
-from linkml.generators.jsonldgen import JSONLDGenerator
 from linkml.generators.rdfgen import RDFGenerator
-from tests.test_issues.environment import env
-from tests.utils.test_environment import TestEnvironmentTestCase
 
 NS = Namespace("https://example.org/test/")
 
@@ -18,19 +13,8 @@ enums:
 """
 
 
-class Issue381TestCase(TestEnvironmentTestCase):
+def test_non_url_pv():
     """Test URL generation w/ non-mangled values"""
-
-    env = env
-
-    def test_non_url_pv(self):
-        g = Graph()
-        g.parse(data=RDFGenerator(schema).serialize(), format="ttl")
-        self.assertEqual(
-            "https://example.org/test/a%20b",
-            str(g.value(NS.test_enum, LINKML.permissible_values)),
-        )
-
-
-if __name__ == "__main__":
-    unittest.main()
+    g = Graph()
+    g.parse(data=RDFGenerator(schema).serialize(), format="ttl")
+    assert str(g.value(NS.test_enum, LINKML.permissible_values)) == "https://example.org/test/a%20b"

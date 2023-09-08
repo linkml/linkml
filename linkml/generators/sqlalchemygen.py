@@ -3,26 +3,30 @@ import os
 from collections import defaultdict
 from dataclasses import dataclass
 from types import ModuleType
-from typing import Dict, List, TextIO, Union
+from typing import List, Union
 
 import click
 from jinja2 import Template
-from linkml_runtime.linkml_model import (Annotation, ClassDefinition,
-                                         ClassDefinitionName, Prefix,
-                                         SchemaDefinition)
+from linkml_runtime.linkml_model import (
+    Annotation,
+    ClassDefinition,
+    ClassDefinitionName,
+    SchemaDefinition,
+)
 from linkml_runtime.utils.compile_python import compile_python
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.schemaview import SchemaView
-from sqlalchemy import *
+from sqlalchemy import Enum
 
 from linkml._version import __version__
 from linkml.generators.pydanticgen import PydanticGenerator
 from linkml.generators.pythongen import PythonGenerator
-from linkml.generators.sqlalchemy import (sqlalchemy_declarative_template_str,
-                                          sqlalchemy_imperative_template_str)
+from linkml.generators.sqlalchemy import (
+    sqlalchemy_declarative_template_str,
+    sqlalchemy_imperative_template_str,
+)
 from linkml.generators.sqltablegen import SQLTableGenerator
-from linkml.transformers.relmodel_transformer import (
-    ForeignKeyPolicy, RelationalModelTransformer)
+from linkml.transformers.relmodel_transformer import ForeignKeyPolicy, RelationalModelTransformer
 from linkml.utils.generator import Generator, shared_arguments
 
 
@@ -43,7 +47,9 @@ class SQLAlchemyGenerator(Generator):
     generatorname = os.path.basename(__file__)
     generatorversion = "0.1.1"
     valid_formats = ["sqla"]
+    file_extension = "py"
     uses_schemaloader = False
+    template: TemplateEnum = None
 
     # ObjectVars
     original_schema: Union[SchemaDefinition, str] = None
@@ -53,17 +59,20 @@ class SQLAlchemyGenerator(Generator):
         self.schemaview = SchemaView(self.schema)
         super().__post_init__()
 
-
     def generate_sqla(
         self,
         model_path: str = None,
         no_model_import=False,
-        template: TemplateEnum = TemplateEnum.IMPERATIVE,
+        template: TemplateEnum = None,
         foreign_key_policy: ForeignKeyPolicy = None,
         **kwargs,
     ) -> str:
         # src_sv = SchemaView(self.schema)
         # self.schema = src_sv.schema
+        if template is None:
+            template = self.template
+        if template is None:
+            template = TemplateEnum.IMPERATIVE
         sqltr = RelationalModelTransformer(self.schemaview)
         if foreign_key_policy:
             sqltr.foreign_key_policy = foreign_key_policy
@@ -90,7 +99,6 @@ class SQLAlchemyGenerator(Generator):
         backrefs = defaultdict(list)
         for m in tr_result.mappings:
             backrefs[m.source_class].append(m)
-        skip = {}
         # for c in tr_schema.classes.values():
         #    if len(c.attributes) == 0:
         #        skip[c.name] = True
@@ -98,18 +106,13 @@ class SQLAlchemyGenerator(Generator):
         self.add_safe_aliases(tr_schema)
         tr_sv = SchemaView(tr_schema)
         rel_schema_classes_ordered = [
-            tr_sv.get_class(cn, strict=True)
-            for cn in self.order_classes_by_hierarchy(tr_sv)
+            tr_sv.get_class(cn, strict=True) for cn in self.order_classes_by_hierarchy(tr_sv)
         ]
-        rel_schema_classes_ordered = [
-            c for c in rel_schema_classes_ordered if not self.skip(c)
-        ]
+        rel_schema_classes_ordered = [c for c in rel_schema_classes_ordered if not self.skip(c)]
         for c in rel_schema_classes_ordered:
             # For SQLA there needs to be a primary key for each class;
             # autogenerate this as a compound key if none declared
-            has_pk = any(
-                a for a in c.attributes.values() if "primary_key" in a.annotations
-            )
+            has_pk = any(a for a in c.attributes.values() if "primary_key" in a.annotations)
             if not has_pk:
                 for a in c.attributes.values():
                     ann = Annotation("primary_key", "true")
@@ -126,6 +129,9 @@ class SQLAlchemyGenerator(Generator):
             classes=rel_schema_classes_ordered,
         )
         return code
+
+    def serialize(self, **kwargs) -> str:
+        return self.generate_sqla(**kwargs)
 
     def compile_sqla(
         self,
@@ -167,9 +173,7 @@ class SQLAlchemyGenerator(Generator):
             else:
                 pygen = PythonGenerator(self.original_schema)
             dc_code = pygen.serialize()
-            sqla_code = self.generate_sqla(
-                model_path=None, no_model_import=True, **kwargs
-            )
+            sqla_code = self.generate_sqla(model_path=None, no_model_import=True, **kwargs)
             return compile_python(f"{dc_code}\n{sqla_code}", package_path=model_path)
         else:
             code = self.generate_sqla(model_path=model_path, **kwargs)
@@ -231,9 +235,7 @@ class SQLAlchemyGenerator(Generator):
 )
 @click.version_option(__version__, "-V", "--version")
 @click.command()
-def cli(
-    yamlfile, declarative, generate_classes, pydantic, use_foreign_keys=True, **args
-):
+def cli(yamlfile, declarative, generate_classes, pydantic, use_foreign_keys=True, **args):
     """Generate SQL DDL representation"""
     if pydantic:
         pygen = PydanticGenerator(yamlfile)
@@ -249,7 +251,7 @@ def cli(
         foreign_key_policy = ForeignKeyPolicy.NO_FOREIGN_KEYS
     print(gen.generate_sqla(template=t, foreign_key_policy=foreign_key_policy))
     if generate_classes:
-        raise NotImplementedError(f"generate classes not implemented")
+        raise NotImplementedError("generate classes not implemented")
 
 
 if __name__ == "__main__":

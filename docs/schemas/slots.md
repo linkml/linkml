@@ -45,6 +45,7 @@ The range must be one of:
  * A [ClassDefinition](https://w3id.org/linkml/ClassDefinition), when the value of the slot is a complex object
  * A [TypeDefinition](https://w3id.org/linkml/TypeDefinition), when the value of the slot is an atomic object
  * An [EnumDefinition](https://w3id.org/linkml/EnumDefinition), when the value of the slot is a token that represents a vocabulary element
+ * A boolean combination of the above
 
 Examples:
 
@@ -113,7 +114,7 @@ the range of an identifier can be any type, but it is a good idea to have these 
 A class must not have more than one identifier (asserted or derived). `identifier` marks the *primary* identifier.
 
 If you need to mark additional fields as unique, or a collection of slots that when considered as a tuple are unique, use
-`unique_keys` (see the [constraits](constraints.md) section of the docs).
+`unique_keys` (see the [constraints](constraints.md) section of the docs).
 
 ## Type designator
 
@@ -124,6 +125,8 @@ slots:
   category:
     designates_type: true
 ```
+
+See the [type-designators](type-designator.md) section of the docs for more details.
 
 ## Slot cardinality
 
@@ -198,6 +201,10 @@ The `inverse` slot can be used to specify the inverse predicate of a given predi
     is_a: famlially_related_to
     inverse: child_of
 ```
+
+For most purposes, the specification of an inverse acts as additional documentation and doesn't
+affect programming semantics. However, some frameworks like RDF/OWL allow for the inference of
+inverses.
 
 ## logical characteristics
 

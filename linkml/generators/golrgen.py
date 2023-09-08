@@ -8,11 +8,10 @@ See the golr-views directory in this repo for examples
 """
 import os
 from dataclasses import dataclass
-from typing import List, Optional, TextIO, Union
+from typing import List, Optional
 
 import click
-from linkml_runtime.linkml_model.meta import (ClassDefinition,
-                                              SchemaDefinition, SlotDefinition)
+from linkml_runtime.linkml_model.meta import ClassDefinition, SlotDefinition
 from linkml_runtime.utils.formatutils import underscore
 from linkml_runtime.utils.metamodelcore import empty_list
 from linkml_runtime.utils.yamlutils import YAMLRoot, as_yaml
@@ -43,7 +42,6 @@ class GOLRClass(YAMLRoot):
 
 @dataclass
 class GolrSchemaGenerator(Generator):
-
     # ClassVars
     generatorname = os.path.basename(__file__)
     generatorversion = "0.1.1"
@@ -56,7 +54,6 @@ class GolrSchemaGenerator(Generator):
     # ObjectVars
     directory: str = None
     class_obj: Optional[GOLRClass] = None
-
 
     def generate_header(self):
         headers = [f"# metamodel_version: {self.schema.metamodel_version}"]
@@ -106,17 +103,11 @@ class GolrSchemaGenerator(Generator):
 
 @shared_arguments(GolrSchemaGenerator)
 @click.command()
-@click.option(
-    "--dir", "-d", default="golr-views", show_default=True, help="Output directory"
-)
+@click.option("--dir", "-d", default="golr-views", show_default=True, help="Output directory")
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, dir=None, **args):
     """Generate GOLR representation of a LinkML model"""
-    print(
-        GolrSchemaGenerator(yamlfile, directory=dir, **args).serialize(
-            directory=dir, **args
-        )
-    )
+    print(GolrSchemaGenerator(yamlfile, directory=dir, **args).serialize(directory=dir, **args))
 
 
 if __name__ == "__main__":

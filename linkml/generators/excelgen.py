@@ -1,19 +1,18 @@
-import os
 import logging
-
+import os
 from dataclasses import dataclass
 from typing import List
 
 import click
-
 from linkml_runtime.utils.schemaview import SchemaView
-from linkml.utils.generator import Generator, shared_arguments
-from linkml._version import __version__
-from linkml.utils.helpers import convert_to_snake_case
 from openpyxl import Workbook
-from openpyxl.worksheet.worksheet import Worksheet
-from openpyxl.worksheet.datavalidation import DataValidation
 from openpyxl.utils import get_column_letter
+from openpyxl.worksheet.datavalidation import DataValidation
+from openpyxl.worksheet.worksheet import Worksheet
+
+from linkml._version import __version__
+from linkml.utils.generator import Generator, shared_arguments
+from linkml.utils.helpers import convert_to_snake_case
 
 
 @dataclass
@@ -152,22 +151,17 @@ class ExcelGenerator(Generator):
         for cls_name, cls in sv.all_classes(imports=self.mergeimports).items():
             if not cls.mixin and not cls.abstract:
                 slots = [
-                    s.name
-                    for s in sv.class_induced_slots(cls_name, imports=self.mergeimports)
+                    s.name for s in sv.class_induced_slots(cls_name, imports=self.mergeimports)
                 ]
                 self.add_columns_to_worksheet(workbook, cls_name, slots)
 
-        enum_list = [
-            e_name for e_name, _ in sv.all_enums(imports=self.mergeimports).items()
-        ]
+        enum_list = [e_name for e_name, _ in sv.all_enums(imports=self.mergeimports).items()]
         for cls_name, cls in sv.all_classes(imports=self.mergeimports).items():
             if not cls.mixin and not cls.abstract:
                 for s in sv.class_induced_slots(cls_name, imports=self.mergeimports):
                     if s.range in enum_list:
                         pv_list = []
-                        for pv_name, _ in sv.get_enum(
-                            s.range
-                        ).permissible_values.items():
+                        for pv_name, _ in sv.get_enum(s.range).permissible_values.items():
                             pv_list.append(pv_name)
                         self.column_enum_validation(workbook, cls_name, s.name, pv_list)
         self.logger.info(f"The Excel workbook has been written to {self.output}")

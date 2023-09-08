@@ -169,7 +169,7 @@ linkml_runtime.utils.ifabsent_functions.default_library:
      * Range: [Boolean](types/Boolean.md)
      * in subsets: (basic)
  * [path_rule](path_rule.md)  <sub>0..1</sub>
-     * Description: a rule for inferring a slot assignment based on evaluating a path through a sequence of slot assignemnts
+     * Description: a rule for inferring a slot assignment based on evaluating a path through a sequence of slot assignments
      * Range: [PathExpression](PathExpression.md)
  * [slot_definition➞disjoint_with](slot_definition_disjoint_with.md)  <sub>0..\*</sub>
      * Description: Two classes are disjoint if they have no instances in common, two slots are disjoint if they can never hold between the same two instances
@@ -369,7 +369,7 @@ implicitly asserts Y is an instance of C2
 ### Mixed in from slot_expression:
 
  * [all_members](all_members.md)  <sub>0..\*</sub>
-     * Description: the value of the multiavlued slot is a list where all elements conform to the specified values.
+     * Description: the value of the multivalued slot is a list where all elements conform to the specified values.
 this defines a dynamic class with named slots according to matching constraints
 
 E.g to state that all members of a list are between 1 and 10

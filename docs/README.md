@@ -4,7 +4,7 @@ These instructions are for the core developers of the LinkML framework.
 
 Documentation source:
 
- * [sphinx/ folder](https://github.com/linkml/linkml/tree/main/sphinx)
+ * [docs/ folder](https://github.com/linkml/linkml/tree/main/docs)
  * deployed to: [https://linkml.io/linkml/](https://linkml.io/linkml/)
 
 We use the sphinx framework.

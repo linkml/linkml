@@ -77,9 +77,11 @@ jobs:
         uses: ts-graphviz/setup-graphviz@v1
 
       #----------------------------------------------
-      #    Linting
+      #    Linting & code quality
       #----------------------------------------------
-      - name: Lint with black and isort
+      - name: Check common spelling errors
+        run: poetry run tox -e codespell
+      - name: Check with flake8
         run: poetry run tox -e lint
 
       #----------------------------------------------
@@ -87,7 +89,7 @@ jobs:
       #----------------------------------------------
       - name: Generate coverage results
         run: |
-          poetry run coverage run -m unittest discover
+          poetry run coverage run -m pytest
           poetry run coverage xml
           poetry run coverage report -m
         shell: bash
@@ -95,6 +97,7 @@ jobs:
       #           upload coverage results
       #----------------------------------------------
       - name: Upload coverage report
+        if: github.repository == 'linkml/linkml'
         uses: codecov/codecov-action@v3.1.0
         with:
           name: codecov-results-${{ matrix.os }}-${{ matrix.python-version }}

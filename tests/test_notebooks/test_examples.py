@@ -27,14 +27,12 @@ class NotebookTests(unittest.TestCase):
     def test_examples(self):
         self.eval_test("examples.txt", "tests.test_notebooks.input.examples")
 
-    def test_inheritence(self):
-        self.eval_test("inheritence.txt", "tests.test_notebooks.input.inheritence")
+    def test_inheritance(self):
+        self.eval_test("inheritance.txt", "tests.test_notebooks.input.inheritance")
 
     @unittest.skipIf(True, "Re-enable this once online biolink model is fixed")
     def test_distributed_models(self):
-        self.eval_test(
-            "distributedmodels.txt", "tests.test_notebooks.input.distributedmodels"
-        )
+        self.eval_test("distributedmodels.txt", "tests.test_notebooks.input.distributedmodels")
 
 
 if __name__ == "__main__":

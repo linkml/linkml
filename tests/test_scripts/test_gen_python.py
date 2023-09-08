@@ -48,21 +48,15 @@ class GenPythonTestCase(ClickTestCase):
             [],
             "meta.py",
             filtr=metadata_filter,
-            comparator=lambda exp, act: compare_python(
-                exp, act, self.env.expected_path("meta.py")
-            ),
+            comparator=lambda exp, act: compare_python(exp, act, self.env.expected_path("meta.py")),
         )
         self.do_test(
             "-f py",
             "meta.py",
             filtr=metadata_filter,
-            comparator=lambda exp, act: compare_python(
-                exp, act, self.env.expected_path("meta.py")
-            ),
+            comparator=lambda exp, act: compare_python(exp, act, self.env.expected_path("meta.py")),
         )
-        self.do_test(
-            "-f xsv", "meta_error", expected_error=click.exceptions.BadParameter
-        )
+        self.do_test("-f xsv", "meta_error", expected_error=click.exceptions.BadParameter)
 
     def test_head(self):
         """Validate the head/nohead parameter"""
@@ -101,7 +95,7 @@ types:
         """Test an issue with the biolink-model timepoint rendering"""
         self.gen_and_comp_python("timepoint")
 
-    def test_type_inheritence(self):
+    def test_type_inheritance(self):
         """Make sure that typeof's get represented correctly"""
         self.gen_and_comp_python("testtypes")
 
@@ -109,9 +103,7 @@ types:
         self.gen_and_comp_python("inheritedid")
 
     # This still needs to be fixed
-    @unittest.skipIf(
-        False, "This used to fail consistently - may want to find out what happened"
-    )
+    @unittest.skipIf(False, "This used to fail consistently - may want to find out what happened")
     def test_ordering(self):
         self.gen_and_comp_python("ordering")
 

@@ -1,7 +1,5 @@
 import unittest
 
-import click
-
 from linkml import LOCAL_METAMODEL_YAML_FILE
 from linkml.generators import yamlgen
 from tests.test_scripts.environment import env

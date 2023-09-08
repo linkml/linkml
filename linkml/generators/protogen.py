@@ -1,10 +1,8 @@
 import os
 from dataclasses import dataclass, field
-from typing import TextIO, Union
 
 import click
-from linkml_runtime.linkml_model.meta import (ClassDefinition,
-                                              SchemaDefinition, SlotDefinition)
+from linkml_runtime.linkml_model.meta import ClassDefinition, SlotDefinition
 from linkml_runtime.utils.formatutils import camelcase, lcamelcase
 
 from linkml._version import __version__
@@ -33,8 +31,8 @@ class ProtoGenerator(Generator):
         self.generate_header()
 
     def generate_header(self):
-        print(f' syntax="proto3";')
-        print(f" package")
+        print(' syntax="proto3";')
+        print(" package")
         print(f"// metamodel_version: {self.schema.metamodel_version}")
         if self.schema.version:
             print(f"// version: {self.schema.version}")

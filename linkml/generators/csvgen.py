@@ -5,12 +5,10 @@ import os
 import sys
 from csv import DictWriter
 from dataclasses import dataclass
-from typing import List, Optional, Set, TextIO, Union
+from typing import List, Optional, Set
 
 import click
-from linkml_runtime.linkml_model.meta import (ClassDefinition,
-                                              ClassDefinitionName,
-                                              SchemaDefinition)
+from linkml_runtime.linkml_model.meta import ClassDefinition, ClassDefinitionName
 from linkml_runtime.utils.formatutils import be, underscore
 
 from linkml._version import __version__
@@ -37,9 +35,7 @@ class CsvGenerator(Generator):
     sep: Optional[str] = None
     """Separator for columns"""
 
-    closure: Optional[
-        Set[ClassDefinitionName]
-    ] = None
+    closure: Optional[Set[ClassDefinitionName]] = None
     """List of classes to include in output"""
 
     writer: Optional[DictWriter] = None
@@ -69,9 +65,7 @@ class CsvGenerator(Generator):
                 self.closure.update(self.ancestors(self.schema.classes[clsname]))
 
         dialect: str = "excel" if self.format == "csv" else "excel-tab"
-        self.writer = DictWriter(
-            sys.stdout, ["id", "mappings", "description"], dialect=dialect
-        )
+        self.writer = DictWriter(sys.stdout, ["id", "mappings", "description"], dialect=dialect)
         self.writer.writeheader()
 
     def visit_class(self, cls: ClassDefinition) -> bool:

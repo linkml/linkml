@@ -1,36 +1,40 @@
 import logging
 import os
-import logging
 from collections import defaultdict
 from copy import deepcopy
-from dataclasses import field, dataclass
+from dataclasses import dataclass, field
 from types import ModuleType
-from typing import Dict, List, TextIO, Union, Optional, Set
-
-from linkml_runtime.utils.compile_python import compile_python
-
-from linkml.utils.ifabsent_functions import ifabsent_value_declaration
+from typing import Dict, List, Optional, Set
 
 import click
 from jinja2 import Template
+
 # from linkml.generators import pydantic_GEN_VERSION
-from linkml_runtime.linkml_model.meta import (Annotation,
-                                              AnonymousSlotExpression,
-                                              ClassDefinition, EnumDefinition,
-                                              EnumDefinitionName,
-                                              SchemaDefinition, SlotDefinition,
-                                              TypeDefinition)
+from linkml_runtime.linkml_model.meta import (
+    Annotation,
+    ClassDefinition,
+    SchemaDefinition,
+    SlotDefinition,
+    TypeDefinition,
+)
+from linkml_runtime.utils.compile_python import compile_python
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.schemaview import SchemaView
 
 from linkml._version import __version__
 from linkml.generators.common.type_designators import (
-    get_accepted_type_designator_values, get_type_designator_value)
+    get_accepted_type_designator_values,
+    get_type_designator_value,
+)
 from linkml.generators.oocodegen import OOCodeGenerator
 from linkml.utils.generator import shared_arguments
 from linkml.utils.ifabsent_functions import ifabsent_value_declaration
 
-default_template = """
+
+def default_template(pydantic_ver: str = "1") -> str:
+    """Constructs a default template for pydantic classes based on the version of pydantic"""
+    ### HEADER ###
+    template = """
 {#-
 
   Jinja2 Template for a pydantic classes
@@ -38,13 +42,21 @@ default_template = """
 from __future__ import annotations
 from datetime import datetime, date
 from enum import Enum
-from typing import List, Dict, Optional, Any, Union, Literal
+from typing import List, Dict, Optional, Any, Union
 from pydantic import BaseModel as BaseModel, Field
-from linkml_runtime.linkml_model import Decimal
+import sys
+if sys.version_info >= (3, 8):
+    from typing import Literal
+else:
+    from typing_extensions import Literal
+
 
 metamodel_version = "{{metamodel_version}}"
 version = "{{version if version else None}}"
-
+"""
+    ### BASE MODEL ###
+    if pydantic_ver == "1":
+        template += """
 class WeakRefShimBaseModel(BaseModel):
    __slots__ = '__weakref__'
 
@@ -56,7 +68,19 @@ class ConfiguredBaseModel(WeakRefShimBaseModel,
                 arbitrary_types_allowed = True,
                 use_enum_values = True):
     pass
-
+"""
+    else:
+        template += """
+class ConfiguredBaseModel(BaseModel,
+                validate_assignment = True,
+                validate_default = True,
+                extra = {% if allow_extra %}'allow'{% else %}'forbid'{% endif %},
+                arbitrary_types_allowed = True,
+                use_enum_values = True):
+    pass
+"""
+    ### ENUMS ###
+    template += """
 {% for e in enums.values() %}
 class {{ e.name }}(str, Enum):
     {% if e.description -%}
@@ -64,14 +88,19 @@ class {{ e.name }}(str, Enum):
     {{ e.description }}
     \"\"\"
     {%- endif %}
-    {% for label, value in e['values'].items() -%}
-    {{label}} = "{{value}}"
+    {% for _, pv in e['values'].items() -%}
+    {% if pv.description -%}
+    # {{pv.description}}
+    {%- endif %}
+    {{pv.label}} = "{{pv.value}}"
     {% endfor %}
     {% if not e['values'] -%}
     dummy = "dummy"
     {% endif %}
 {% endfor %}
-
+"""
+    ### CLASSES ###
+    template += """
 {%- for c in schema.classes.values() %}
 class {{ c.name }}
     {%- if class_isa_plus_mixins[c.name] -%}
@@ -102,15 +131,26 @@ class {{ c.name }}
     {% else -%}
     None
     {% endfor %}
-
 {% endfor %}
-
+"""
+    ### FWD REFS / REBUILD MODEL ###
+    if pydantic_ver == "1":
+        template += """
 # Update forward refs
 # see https://pydantic-docs.helpmanual.io/usage/postponed_annotations/
 {% for c in schema.classes.values() -%}
 {{ c.name }}.update_forward_refs()
 {% endfor %}
 """
+    else:
+        template += """
+# Model rebuild
+# see https://pydantic-docs.helpmanual.io/usage/models/#rebuilding-a-model
+{% for c in schema.classes.values() -%}
+{{ c.name }}.model_rebuild()
+{% endfor %}    
+"""
+    return template
 
 
 def _get_pyrange(t: TypeDefinition, sv: SchemaView) -> str:
@@ -124,7 +164,7 @@ def _get_pyrange(t: TypeDefinition, sv: SchemaView) -> str:
     if pyrange is None and t.typeof is not None:
         pyrange = _get_pyrange(sv.get_type(t.typeof), sv)
     if pyrange is None:
-        raise Exception(f"No python type for range: {s.range} // {t}")
+        raise Exception(f"No python type for range: {t.name} // {t}")
     return pyrange
 
 
@@ -138,10 +178,12 @@ class PydanticGenerator(OOCodeGenerator):
 
     # ClassVar overrides
     generatorname = os.path.basename(__file__)
-    generatorversion = "0.0.1"
+    generatorversion = "0.0.2"
     valid_formats = ["pydantic"]
+    file_extension = "py"
 
     # ObjectVars
+    pydantic_version: str = field(default_factory=lambda: "1")
     template_file: str = None
     allow_extra: bool = field(default_factory=lambda: False)
     gen_mixin_inheritance: bool = field(default_factory=lambda: True)
@@ -164,22 +206,6 @@ class PydanticGenerator(OOCodeGenerator):
             logging.error(f"Code:\n{pycode}")
             logging.error(f"Error compiling generated python code: {e}")
             raise e
-
-    def generate_enums(
-        self, all_enums: Dict[EnumDefinitionName, EnumDefinition]
-    ) -> Dict[str, dict]:
-        # TODO: make an explicit class to represent how an enum is passed to the template
-        enums = {}
-        for enum_name, enum_original in all_enums.items():
-            enum = {"name": camelcase(enum_name), "values": {}}
-
-            for pv in enum_original.permissible_values.values():
-                label = self.generate_enum_label(pv.text)
-                enum["values"][label] = pv.text.replace('"', '\\"')
-
-            enums[enum_name] = enum
-
-        return enums
 
     def sort_classes(self, clist: List[ClassDefinition]) -> List[ClassDefinition]:
         """
@@ -226,22 +252,16 @@ class PydanticGenerator(OOCodeGenerator):
                 slot = sv.induced_slot(slot_name, class_def.name)
                 if slot.designates_type:
                     target_value = get_type_designator_value(sv, slot, class_def)
-                    slot_values[camelcase(class_def.name)][
-                        slot.name
-                    ] = f'"{target_value}"'
+                    slot_values[camelcase(class_def.name)][slot.name] = f'"{target_value}"'
                     if slot.multivalued:
                         slot_values[camelcase(class_def.name)][slot.name] = (
-                            "["
-                            + slot_values[camelcase(class_def.name)][slot.name]
-                            + "]"
+                            "[" + slot_values[camelcase(class_def.name)][slot.name] + "]"
                         )
                     slot_values[camelcase(class_def.name)][slot.name] = slot_values[
                         camelcase(class_def.name)
                     ][slot.name]
                 elif slot.ifabsent is not None:
-                    value = ifabsent_value_declaration(
-                        slot.ifabsent, sv, class_def, slot
-                    )
+                    value = ifabsent_value_declaration(slot.ifabsent, sv, class_def, slot)
                     slot_values[camelcase(class_def.name)][slot.name] = value
                 # Multivalued slots that are either not inlined (just an identifier) or are
                 # inlined as lists should get default_factory list, if they're inlined but
@@ -249,18 +269,10 @@ class PydanticGenerator(OOCodeGenerator):
                 elif slot.multivalued:
                     has_identifier_slot = self.range_class_has_identifier_slot(slot)
 
-                    if (
-                        slot.inlined
-                        and not slot.inlined_as_list
-                        and has_identifier_slot
-                    ):
-                        slot_values[camelcase(class_def.name)][
-                            slot.name
-                        ] = "default_factory=dict"
+                    if slot.inlined and not slot.inlined_as_list and has_identifier_slot:
+                        slot_values[camelcase(class_def.name)][slot.name] = "default_factory=dict"
                     else:
-                        slot_values[camelcase(class_def.name)][
-                            slot.name
-                        ] = "default_factory=list"
+                        slot_values[camelcase(class_def.name)][slot.name] = "default_factory=list"
 
         return slot_values
 
@@ -326,9 +338,7 @@ class PydanticGenerator(OOCodeGenerator):
         else:
             return f"Union[{'.'.join(id_ranges)}]"
 
-    def get_class_slot_range(
-        self, slot_range: str, inlined: bool, inlined_as_list: bool
-    ) -> str:
+    def get_class_slot_range(self, slot_range: str, inlined: bool, inlined_as_list: bool) -> str:
         sv = self.schemaview
         range_cls = sv.get_class(slot_range)
 
@@ -347,14 +357,11 @@ class PydanticGenerator(OOCodeGenerator):
             )
         ):
             if (
-                len(
-                    [x for x in sv.class_induced_slots(slot_range) if x.designates_type]
-                )
-                > 0
+                len([x for x in sv.class_induced_slots(slot_range) if x.designates_type]) > 0
                 and len(sv.class_descendants(slot_range)) > 1
             ):
                 return (
-                    f"Union["
+                    "Union["
                     + ",".join([camelcase(c) for c in sv.class_descendants(slot_range)])
                     + "]"
                 )
@@ -397,9 +404,7 @@ class PydanticGenerator(OOCodeGenerator):
                 + ",".join(
                     [
                         '"' + x + '"'
-                        for x in get_accepted_type_designator_values(
-                            sv, slot_def, class_def
-                        )
+                        for x in get_accepted_type_designator_values(sv, slot_def, class_def)
                     ]
                 )
                 + "]"
@@ -453,9 +458,7 @@ class PydanticGenerator(OOCodeGenerator):
             identifier_slot = self.schemaview.get_identifier_slot(slot_range, use_key=True)
             if identifier_slot is not None:
                 collection_keys.add(
-                    self.generate_python_range(
-                        identifier_slot.range, slot_def, class_def
-                    )
+                    self.generate_python_range(identifier_slot.range, slot_def, class_def)
                 )
         if len(collection_keys) > 1:
             raise Exception(
@@ -466,13 +469,11 @@ class PydanticGenerator(OOCodeGenerator):
         return None
 
     def serialize(self) -> str:
-        sv = self.schemaview
-
         if self.template_file is not None:
             with open(self.template_file) as template_file:
                 template_obj = Template(template_file.read())
         else:
-            template_obj = Template(default_template)
+            template_obj = Template(default_template(self.pydantic_version))
 
         sv: SchemaView
         sv = self.schemaview
@@ -480,9 +481,7 @@ class PydanticGenerator(OOCodeGenerator):
         pyschema = SchemaDefinition(
             id=schema.id,
             name=schema.name,
-            description=schema.description.replace('"', '\\"')
-            if schema.description
-            else None,
+            description=schema.description.replace('"', '\\"') if schema.description else None,
         )
         enums = self.generate_enums(sv.all_enums())
 
@@ -517,8 +516,16 @@ class PydanticGenerator(OOCodeGenerator):
 
                 slot_ranges: List[str] = []
 
-                if len(s.any_of) > 0 and s.range is not None:
-                    raise ValueError("Slot cannot have both range and any_of defined")
+                # Confirm that the original slot range (ignoring the default that comes in from
+                # induced_slot) isn't in addition to setting any_of
+                if len(s.any_of) > 0 and sv.get_slot(sn).range is not None:
+                    base_range_subsumes_any_of = False
+                    base_range = sv.get_slot(sn).range
+                    base_range_cls = sv.get_class(base_range, strict=False)
+                    if base_range_cls is not None and base_range_cls.class_uri == "linkml:Any":
+                        base_range_subsumes_any_of = True
+                    if not base_range_subsumes_any_of:
+                        raise ValueError("Slot cannot have both range and any_of defined")
 
                 if s.any_of is not None and len(s.any_of) > 0:
                     # list comprehension here is pulling ranges from within AnonymousSlotExpression
@@ -539,22 +546,14 @@ class PydanticGenerator(OOCodeGenerator):
                 elif len(pyranges) > 1:
                     pyrange = f"Union[{', '.join(pyranges)}]"
                 else:
-                    raise Exception(
-                        f"Could not generate python range for {class_name}.{s.name}"
-                    )
+                    raise Exception(f"Could not generate python range for {class_name}.{s.name}")
 
                 if s.multivalued:
                     if s.inlined or s.inlined_as_list:
-                        collection_key = self.generate_collection_key(
-                            slot_ranges, s, class_def
-                        )
+                        collection_key = self.generate_collection_key(slot_ranges, s, class_def)
                     else:
                         collection_key = None
-                    if (
-                        s.inlined == False
-                        or collection_key is None
-                        or s.inlined_as_list == True
-                    ):
+                    if s.inlined is False or collection_key is None or s.inlined_as_list is True:
                         pyrange = f"List[{pyrange}]"
                     else:
                         pyrange = f"Dict[{collection_key}, {pyrange}]"
@@ -579,8 +578,12 @@ class PydanticGenerator(OOCodeGenerator):
 
 
 @shared_arguments(PydanticGenerator)
+@click.option("--template_file", help="Optional jinja2 template to use for class generation")
 @click.option(
-    "--template_file", help="Optional jinja2 template to use for class generation"
+    "--pydantic_version",
+    type=click.Choice(["1", "2"]),
+    default="1",
+    help="Pydantic version to use (1 or 2)",
 )
 @click.version_option(__version__, "-V", "--version")
 @click.command()
@@ -592,12 +595,14 @@ def cli(
     genmeta=False,
     classvars=True,
     slots=True,
+    pydantic_version="1",
     **args,
 ):
     """Generate pydantic classes to represent a LinkML model"""
     gen = PydanticGenerator(
         yamlfile,
         template_file=template_file,
+        pydantic_version=pydantic_version,
         emit_metadata=head,
         genmeta=genmeta,
         gen_classvars=classvars,

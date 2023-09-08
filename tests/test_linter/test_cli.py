@@ -26,7 +26,7 @@ classes:
     description: a person
     slots:
       - age_in_years
-  
+
   Adult:
     is_a: person
     slot_usage:
@@ -73,9 +73,7 @@ class TestLinterCli(unittest.TestCase):
                 "error    Slot 'age_in_yeas' not found on class 'Adult'  (no_invalid_slot_usage)",
                 result.stdout,
             )
-            self.assertIn(
-                "warning  Class has name 'person'  (standard_naming)", result.stdout
-            )
+            self.assertIn("warning  Class has name 'person'  (standard_naming)", result.stdout)
 
     def test_implicit_config_file(self):
         with self.runner.isolated_filesystem():
@@ -116,17 +114,13 @@ class TestLinterCli(unittest.TestCase):
                 "error    Schema does not have class with `tree_root: true`  (tree_root_class)",
                 result.stdout,
             )
-            self.assertIn(
-                "warning  Class has name 'person'  (standard_naming)", result.stdout
-            )
+            self.assertIn("warning  Class has name 'person'  (standard_naming)", result.stdout)
 
     def test_warning_exit_code(self):
         config_file = "config.yaml"
         with self.runner.isolated_filesystem():
             write_schema_file()
-            write_config_file(
-                config_file, extends_recommended=False, tree_root_level="warning"
-            )
+            write_config_file(config_file, extends_recommended=False, tree_root_level="warning")
 
             result = self.runner.invoke(main, ["--config", config_file, SCHEMA_FILE])
             self.assertEqual(result.exit_code, 1)
@@ -139,9 +133,7 @@ class TestLinterCli(unittest.TestCase):
         config_file = "config.yaml"
         with self.runner.isolated_filesystem():
             write_schema_file()
-            write_config_file(
-                config_file, extends_recommended=False, tree_root_level="warning"
-            )
+            write_config_file(config_file, extends_recommended=False, tree_root_level="warning")
 
             result = self.runner.invoke(
                 main, ["--config", config_file, "--ignore-warnings", SCHEMA_FILE]
@@ -156,9 +148,7 @@ class TestLinterCli(unittest.TestCase):
         config_file = "config.yaml"
         with self.runner.isolated_filesystem():
             write_schema_file()
-            write_config_file(
-                config_file, extends_recommended=False, tree_root_level="warning"
-            )
+            write_config_file(config_file, extends_recommended=False, tree_root_level="warning")
 
             result = self.runner.invoke(
                 main, ["--config", config_file, "--max-warnings", 1, SCHEMA_FILE]
@@ -173,9 +163,7 @@ class TestLinterCli(unittest.TestCase):
         config_file = "config.yaml"
         with self.runner.isolated_filesystem():
             write_schema_file()
-            write_config_file(
-                config_file, extends_recommended=False, tree_root_level="warning"
-            )
+            write_config_file(config_file, extends_recommended=False, tree_root_level="warning")
 
             result = self.runner.invoke(
                 main, ["--config", config_file, "--max-warnings", 0, SCHEMA_FILE]
@@ -240,14 +228,16 @@ slots:
     def test_validate_schema(self):
         with self.runner.isolated_filesystem():
             with open(SCHEMA_FILE, "w") as f:
-                f.write("""
+                f.write(
+                    """
 id: http://example.org/test
 classes:
     person:
         description: a person
-""")
+"""
+                )
 
-            result = self.runner.invoke(main, ['--validate', SCHEMA_FILE])
+            result = self.runner.invoke(main, ["--validate", SCHEMA_FILE])
             self.assertEqual(result.exit_code, 2)
             self.assertIn(
                 "error    In <root>: 'name' is a required property  (valid-schema)",
@@ -261,14 +251,16 @@ classes:
     def test_validate_schema_only(self):
         with self.runner.isolated_filesystem():
             with open(SCHEMA_FILE, "w") as f:
-                f.write("""
+                f.write(
+                    """
 id: http://example.org/test
 classes:
     person:
         description: a person
-""")
+"""
+                )
 
-            result = self.runner.invoke(main, ['--validate-only', SCHEMA_FILE])
+            result = self.runner.invoke(main, ["--validate-only", SCHEMA_FILE])
             self.assertEqual(result.exit_code, 2)
             self.assertIn(
                 "error    In <root>: 'name' is a required property  (valid-schema)",

@@ -10,6 +10,6 @@ These notebooks illustrate different aspects of the linkml ecosystem:
 
 ## linkml-runtime Notebooks
 
-Currently the only notebooks here demonstrate [schema views](manipulating-schemas.html). More will be added later.
+Currently the only notebooks here demonstrate [schema views](manipulating-schemas). More will be added later.
 
 [github.com/linkml/linkml-runtime/tree/main/notebooks](https://github.com/linkml/linkml/tree/main/notebooks)
