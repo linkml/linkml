@@ -4,6 +4,7 @@ from abc import abstractmethod
 from typing import Optional, Any, Dict, Union
 from pydantic import BaseModel
 
+from curies import Converter
 from rdflib import Graph, URIRef, XSD
 from rdflib.term import Node, BNode, Literal
 from rdflib.namespace import RDF
@@ -24,7 +25,12 @@ class RDFLibDumper(Dumper):
     This requires a SchemaView object
 
     """
-    def as_rdf_graph(self, element: Union[BaseModel, YAMLRoot], schemaview: SchemaView, prefix_map: Dict[str, str] = None) -> Graph:
+    def as_rdf_graph(
+        self,
+        element: Union[BaseModel, YAMLRoot],
+        schemaview: SchemaView,
+        prefix_map: Union[Dict[str, str], Converter, None] = None,
+    ) -> Graph:
         """
         Dumps from element to an rdflib Graph,
         following a schema
@@ -35,6 +41,8 @@ class RDFLibDumper(Dumper):
         :return:
         """
         g = Graph()
+        if isinstance(prefix_map, Converter):
+            prefix_map = prefix_map.bimap
         logging.debug(f'PREFIXMAP={prefix_map}')
         if prefix_map:
             for k, v in prefix_map.items():
