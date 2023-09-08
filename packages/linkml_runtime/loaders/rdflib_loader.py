@@ -31,11 +31,15 @@ class RDFLibLoader(Loader):
 
     Note: this is a more complete replacement for rdf_loader
     """
-    def from_rdf_graph(self, graph: Graph, schemaview: SchemaView, target_class: Type[Union[BaseModel, YAMLRoot]],
-                       prefix_map: Union[Dict[str, str], Converter, None] = None,
-                       cast_literals: bool = True,
-                       allow_unprocessed_triples: bool = True,
-                       ignore_unmapped_predicates: bool = False) -> List[Union[BaseModel, YAMLRoot]]:
+    def from_rdf_graph(
+        self, graph: Graph,
+        schemaview: SchemaView,
+        target_class: Type[Union[BaseModel, YAMLRoot]],
+        prefix_map: Union[Dict[str, str], Converter, None] = None,
+        cast_literals: bool = True,
+        allow_unprocessed_triples: bool = True,
+        ignore_unmapped_predicates: bool = False,
+    ) -> List[Union[BaseModel, YAMLRoot]]:
         """
         Loads objects from graph into lists of the python target_class structure,
         recursively walking RDF graph from instances of target_class.
