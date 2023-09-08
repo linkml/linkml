@@ -144,6 +144,7 @@ class JsonSchemaGenerator(Generator):
     generatorversion = "0.0.3"
     valid_formats = ["json"]
     uses_schemaloader = False
+    file_extension = "schema.json"
 
     # @deprecated("Use top_class")
     topClass: Optional[str] = None
@@ -303,11 +304,11 @@ class JsonSchemaGenerator(Generator):
         # support other pv_formula
 
         def extract_permissible_text(pv):
-            if type(pv) is str:
+            if isinstance(pv, str):
                 return pv
-            if type(pv) is PermissibleValue:
+            if isinstance(pv, PermissibleValue):
                 return pv.text.code
-            if type(pv) is PermissibleValueText:
+            if isinstance(pv, PermissibleValueText):
                 return pv
             raise ValueError(f"Invalid permissible value in enum {enum}: {pv}")
 
@@ -318,10 +319,11 @@ class JsonSchemaGenerator(Generator):
         enum_schema = JsonSchema(
             {
                 "type": "string",
-                "enum": permissible_values_texts,
                 "description": be(enum.description),
             }
         )
+        if permissible_values_texts:
+            enum_schema["enum"] = permissible_values_texts
         self.top_level_schema.add_def(enum.name, enum_schema)
 
     def get_type_info_for_slot_subschema(

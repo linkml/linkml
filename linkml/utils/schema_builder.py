@@ -74,6 +74,7 @@ class SchemaBuilder:
         :param slot_usage: slots keyed by slot name
         :param replace_if_present: if True, replace existing class if present
         :param kwargs: additional ClassDefinition properties
+        :param use_attributes: if True, add slots as attributes
         :return: builder
         :raises ValueError: if class already exists and replace_if_present=False
         """
@@ -88,6 +89,10 @@ class SchemaBuilder:
             for s in slots:
                 if isinstance(s, SlotDefinition):
                     cls.attributes[s.name] = s
+                elif isinstance(s, dict):
+                    cls.attributes[s["name"]] = s
+                elif isinstance(s, str):
+                    cls.attributes[s] = SlotDefinition(s)
                 else:
                     raise ValueError("If use_attributes=True then slots must be SlotDefinitions")
         else:

@@ -1,24 +1,17 @@
 import sys
-import unittest
 
+import pytest
 from linkml_runtime.dumpers import json_dumper, rdf_dumper
 from linkml_runtime.loaders import yaml_loader
 from pyshex.evaluate import evaluate
 
 from linkml.generators.jsonldcontextgen import ContextGenerator
 from linkml.generators.shexgen import ShExGenerator
-from tests.test_generators.environment import env
 from tests.test_generators.test_pythongen import make_python
 
-SCHEMA = env.input_path("kitchen_sink.yaml")
-PYTHON = env.expected_path("kitchen_sink.py")
-DATA = env.input_path("kitchen_sink_inst_01.yaml")
-SHEXLOG = env.expected_path("shexgen_log.txt")
-
-
-class ShExTestCase(unittest.TestCase):
-    unittest.skipIf(sys.version_info < (3, 8), "ShEx has issues with python 3.7 at the moment")
-
+@pytest.mark.skipif(
+    sys.version_info < (3, 8), reason="ShEx has issues with python 3.7 at the moment"
+)
     def test_shex(self):
         """tests generation of shex and subsequent evaluation"""
         kitchen_module = make_python(SCHEMA, PYTHON, False)
@@ -52,8 +45,4 @@ class ShExTestCase(unittest.TestCase):
 
                 log.write(f"Eval {node} = {r}\n")
                 #               start="http://example.org/model/FriendlyPerson",
-                #            focus="http://example.org/people/42")
-
-
-if __name__ == "__main__":
-    unittest.main()
+                #            focus="http://example.org/people/42"

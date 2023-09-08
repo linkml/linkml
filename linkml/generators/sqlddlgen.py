@@ -1,3 +1,4 @@
+"""DEPRECATED: Use SQLTableGenerator instead"""
 import logging
 import os
 from contextlib import redirect_stdout
@@ -429,7 +430,7 @@ class SQLDDLGenerator(Generator):
     def write_sqla_python_imperative(self, model_path: str) -> str:
         """
         imperative mapping:
-        https://docs.sqlalchemy.org/en/14/orm/mapping_styles.html#imperative-mapping-with-dataclasses-and-attrs
+        https://docs.sqlalchemy.org/en/14/orm/dataclasses.html#mapping-dataclasses-using-imperative-mapping
 
         maps to the python classes generated using PythonGenerator
 

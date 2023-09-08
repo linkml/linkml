@@ -166,6 +166,7 @@ class DocGenerator(Generator):
         if self.example_directory:
             self.example_runner = ExampleRunner(input_directory=Path(self.example_directory))
         super().__post_init__()
+        self.logger = logging.getLogger(__name__)
         self.schemaview = SchemaView(self.schema, merge_imports=self.mergeimports)
 
     def serialize(self, directory: str = None) -> None:
@@ -581,8 +582,8 @@ class DocGenerator(Generator):
                 return erdgen.serialize_classes(class_names, follow_references=True, max_hops=2)
             else:
                 return erdgen.serialize()
-        elif self.diagram_type == DiagramType.uml_class_diagram:
-            raise NotImplementedError("This is currently handled in the jinja templates")
+        elif self.diagram_type.value == DiagramType.uml_class_diagram.value:
+            self.logger.info("This is currently handled in the jinja templates")
         else:
             raise NotImplementedError(f"Diagram type {self.diagram_type} not implemented")
 
@@ -854,13 +855,13 @@ class DocGenerator(Generator):
 @click.option(
     "--diagram-type",
     type=click.Choice([e.value for e in DiagramType]),
-    help="er_diagram is an experimental feature.",
+    help="Type of UML diagram to be rendered on class documentation pages.",
 )
 @click.option(
     "--include-top-level-diagram/--no-include-top-level-diagram",
     default=False,
     show_default=True,
-    help="EXPERIMENTAL: (ER diagram only) Include a diagram of the whole schema.",
+    help="Include ER diagram of the entire schema on index page.",
 )
 @click.option(
     "--sort-by",

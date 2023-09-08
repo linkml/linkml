@@ -54,7 +54,7 @@ from the LinkML community meeting.
 
 ### Semantic DSL
 
- - [semdsl](https://github.com/linkml/semdsl) allows for grammars to be embedded in LinkML models
+ - [semdsl](https://github.com/linkml/semantic-dsl) allows for grammars to be embedded in LinkML models
 
 ### SOLR
 
@@ -70,7 +70,4 @@ from the LinkML community meeting.
 
 ### SSSOM-py
 
- - [sssom-py](https://github.com/mapping-commons/sssom-py) is a toolkit for managing mappings and is driven by a linkml schema 
-
-
-
+ - [sssom-py](https://github.com/mapping-commons/sssom-py) is a toolkit for managing mappings and is driven by a linkml schema

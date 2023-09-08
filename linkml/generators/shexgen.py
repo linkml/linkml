@@ -35,6 +35,7 @@ class ShExGenerator(Generator):
     generatorname = os.path.basename(__file__)
     generatorversion = "0.0.2"
     valid_formats = ["shex", "json", "rdf"]
+    file_extension = "shex.rdf"
     visit_all_class_slots = False
     uses_schemaloader = True
 

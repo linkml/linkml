@@ -200,6 +200,7 @@ class RelationalModelTransformer:
                 tree_root=c.tree_root,
                 abstract=c.abstract,
                 description=c.description,
+                unique_keys=c.unique_keys,
             )
             for slot in source_sv.class_induced_slots(cn):
                 tgt_slot = copy(slot)

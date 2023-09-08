@@ -12,7 +12,7 @@ over the linkml metamodel, for example:
   schemas (see   `this draft <https://docs.google.com/document/d/1jOLRF_doeSomVxZD5H8Ig_WujQ-2sNxhvWBmojZos3o/edit>`_
 - Schema editors for LinkML itself
 
-  
+
 .. note:: This guide is *not* intended for developers of *specific*
           applications that are built for any one particular
           schema. For example, if I am building an application geared
@@ -33,7 +33,7 @@ Another example is `DataHarmonizer
 <https://github.com/cidgoh/DataHarmonizer>`_ which provides a
 spreadsheet-like data entry interface for any "flat" LinkML schema.
 
-          
+
 General Considerations
 ----------------------
 
@@ -52,7 +52,7 @@ Another challenge is working with schemas themselves. The native
 syntax for LinkML is YAML, and YAML parsers are provided with all
 major languages. However, you will likely need to do more than parse
 the model. There is a lot of "business logic" associated with a
-model. For example, the rules that govern 
+model. For example, the rules that govern
 :doc:`inheritance and refinement of slots <schemas/inheritance>`.
 
 For Python applications, the SchemaView library provides this business
@@ -162,7 +162,7 @@ which can help bootstrap efforts to make domain logical libraries.
 Materializing imports and inferences
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The `linkml generator <../generators/linkml.html>`_ can be used to
+The :doc:`linkml generator <../generators/linkml>` can be used to
 materialize imports closure and to materialize inferred/induced slots
 as attributes. This frees the client logic from needing to implement
 this logic locally.
@@ -206,17 +206,17 @@ LinkML metamodel.
 - In a data entry application, a slot that is multivalued and has a
   range of an enum may be implemented as a multi-select.
 - Enums that take exactly two possible permissible values may be
-  displayed as toggles  
+  displayed as toggles
 - Applications may choose to use standard ontology browsers such as
   OLS or BioPortal, or standard query endpoints to obtain more
-  information on enums. See below.  
+  information on enums. See below.
 
 
 Slots that may potentially be added to provide applications with
 hints:
 
 - precedence order
-- grouping categories  
+- grouping categories
 
 
 
@@ -278,7 +278,7 @@ example, you could define two types:
 .. code-block:: yaml
 
   types:
-  
+
     NameString:
       typeof: string
       pattern: "^[^\\n]$"
@@ -287,13 +287,13 @@ example, you could define two types:
        - This is designed to support different styles of names from
          multiple languages, but certain characters such as newlines are
          never in names
-  
+
     FormattedString:
       typeof: string
       description: >-
         A string in which characters such as newlines are
         permitted and used for formatting
-  
+
   slots:
     full_name:
       range: NameString
@@ -308,22 +308,22 @@ A more flexible approach would be instead to use annotations on the
 types:
 
 .. code-block:: yaml
-                
+
   types:
-  
+
     NameString:
       typeof: string
       pattern: "^[^\\n]$"
       description: ...
       annotations:
         dash.singleLine: true
-  
+
     FormattedString:
       typeof: string
       description: ...
       annotations:
         dash.singleLine: false
-  
+
 
 
 This is better as you can reuse the same vocabulary on different
@@ -348,7 +348,7 @@ slots:
   prefixes:
     wgs: http://www.w3.org/2003/01/geo/wgs84_pos#
     schema: http://schema.org/
-  
+
   slots:
     latitude:
       domain: geolocation value
@@ -358,7 +358,7 @@ slots:
       slot_uri: wgs:lat
       exact_mappings:
         - schema:latitude
-  
+
     longitude:
       domain: geolocation value
       range: decimal degree

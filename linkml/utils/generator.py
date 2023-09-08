@@ -21,6 +21,7 @@ import re
 import sys
 from contextlib import redirect_stdout
 from dataclasses import dataclass, field
+from functools import lru_cache
 from io import StringIO
 from pathlib import Path
 from typing import Callable, ClassVar, Dict, List, Mapping, Optional, Set, TextIO, Type, Union, cast
@@ -56,6 +57,23 @@ from linkml.utils.typereferences import References
 
 DEFAULT_LOG_LEVEL: str = "WARNING"
 DEFAULT_LOG_LEVEL_INT: int = logging.WARNING
+
+
+@lru_cache
+def _resolved_metamodel(mergeimports):
+    if not os.path.exists(LOCAL_METAMODEL_YAML_FILE):
+        raise AssertionError(f"{LOCAL_METAMODEL_YAML_FILE} not found")
+
+    base_dir = str(Path(str(LOCAL_METAMODEL_YAML_FILE)).parent)
+    logging.debug(f"BASE={base_dir}")
+    metamodel = SchemaLoader(
+        LOCAL_METAMODEL_YAML_FILE,
+        importmap={"linkml": base_dir},
+        base_dir=base_dir,
+        mergeimports=mergeimports,
+    )
+    metamodel.resolve()
+    return metamodel
 
 
 @dataclass
@@ -104,6 +122,8 @@ class Generator(metaclass=abc.ABCMeta):
 
     format: Optional[str] = None
     """expected output format"""
+
+    file_extension: ClassVar[str] = None
 
     metadata: bool = field(default_factory=lambda: True)
     """True means include date, generator, etc. information in source header if appropriate"""
@@ -170,25 +190,15 @@ class Generator(metaclass=abc.ABCMeta):
             self.source_file_date = None
             self.source_file_size = None
         if self.requires_metamodel:
-            if os.path.exists(LOCAL_METAMODEL_YAML_FILE):
-                base_dir = str(Path(str(LOCAL_METAMODEL_YAML_FILE)).parent)
-                logging.debug(f"BASE={base_dir}")
-                self.metamodel = SchemaLoader(
-                    LOCAL_METAMODEL_YAML_FILE,
-                    importmap={"linkml": base_dir},
-                    base_dir=base_dir,
-                    mergeimports=self.mergeimports,
-                )
-            else:
-                raise AssertionError(f"{LOCAL_METAMODEL_YAML_FILE} not found")
-            self.metamodel.resolve()
+            self.metamodel = _resolved_metamodel(self.mergeimports)
         schema = self.schema
         # TODO: remove aliasing
         self.emit_metadata = self.metadata
         if self.uses_schemaloader:
             self._initialize_using_schemaloader(schema)
         else:
-            self.schemaview = SchemaView(schema)
+            logging.info(f"Using SchemaView with im={self.importmap}")
+            self.schemaview = SchemaView(schema, importmap=self.importmap)
             self.schema = self.schemaview.schema
         self._init_namespaces()
 

@@ -32,7 +32,7 @@ are in the public domain through a CC-0 waiver.
 
 ## Who uses LinkML?
 
-A subset of groups using LinkML can be found via the 
+A subset of groups using LinkML can be found via the
 [linkml-registry](https://linkml.io/linkml-registry/registry/).
 However, we do not have the resources to track all uses,
 and the registry only scratches the surface of current usage.
@@ -106,7 +106,7 @@ metadata, recognizing that "metadata" is often defined in relative
 terms.
 
 Our position is nicely summarized by [this
-paper](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5819722/) on the
+paper](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5819722) on the
 Immune Epitope Database (IEDB):
 
 _Several of the FAIR principles make a distinction between data and metadata. This distinction makes immediate sense for knowledge repositories that store raw data in a standardized format, such as sequence reads in FASTQ format in the Sequence Read Archive (SRA) or Flow Cytometry Standard files in FlowRepository. Such ‘data’ must be accompanied with ‘metadata’ on how the data were generated. For example, in the case of an SRA deposition, information on what sample was being sequenced would be considered ‘metadata’, and specific sequence reads would be considered ‘data’. However, in the case of the information stored in the IEDB, there is no separation between data and metadata. Arguably, the IEDB stores only metadata, and the raw data can be found in the original journal article, typically in the form of figures or tables that follow no specific convention._
@@ -137,4 +137,3 @@ serializations such as HDF5 and Zarr.
 ## How do I cite LinkML?
 
 A paper is in progress, for now, cite the GitHub repo
-

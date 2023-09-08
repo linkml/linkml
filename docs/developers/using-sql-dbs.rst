@@ -9,5 +9,5 @@ See:
 - :doc:`/generators/sqlalchemy` for generating SQL Alchemy code
 - :doc:`/generators/sqlddl` for generating SQL DDL
 
-The `SQLStore <./sqlstore>`_ class provides a convenient wrapper around these
+The :doc:`SQLStore <sqlstore>` class provides a convenient wrapper around these
 generators for working with SQL Data

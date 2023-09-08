@@ -17,7 +17,7 @@ if your schema has a certain "shape" and you provide sufficient hints.
 
 ### Container objects
 
-See [part 2 of the tutorial](../intro/tutorial02.html) for more on container objects.
+See [part 2 of the tutorial](../intro/tutorial02) for more on container objects.
 
 To serialize your data objects as TSVs, it's assumed that you have a
 class in your schema that serves the role of *container*. It can be
