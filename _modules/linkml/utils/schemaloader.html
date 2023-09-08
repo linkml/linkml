@@ -407,16 +407,6 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="p">[</span><span class="n">prefix</span><span class="o">.</span><span class="n">prefix_prefix</span><span class="p">]</span> <span class="o">=</span> <span class="n">prefix</span><span class="o">.</span><span class="n">prefix_reference</span>
         <span class="k">for</span> <span class="n">cmap</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">default_curi_maps</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">add_prefixmap</span><span class="p">(</span><span class="n">cmap</span><span class="p">,</span> <span class="n">include_defaults</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">_default</span><span class="p">:</span>
-            <span class="k">if</span> <span class="s2">&quot;://&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">default_prefix</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">_default</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">default_prefix</span>
-            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">default_prefix</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">_default</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">default_prefix</span><span class="p">]</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">raise_value_error</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Default prefix: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">default_prefix</span><span class="si">}</span><span class="s2"> is not defined&quot;</span><span class="p">,</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">default_prefix</span><span class="p">,</span>
-                <span class="p">)</span>
 
         <span class="c1"># Process imports</span>
         <span class="k">for</span> <span class="n">imp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">imports</span><span class="p">:</span>
@@ -469,6 +459,17 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">schema_defaults</span><span class="p">[</span>
                     <span class="n">import_schemadefinition</span><span class="o">.</span><span class="n">id</span>
                 <span class="p">]</span> <span class="o">=</span> <span class="n">import_schemadefinition</span><span class="o">.</span><span class="n">default_prefix</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">_default</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s2">&quot;://&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">default_prefix</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">_default</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">default_prefix</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">default_prefix</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">_default</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">default_prefix</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">raise_value_error</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Default prefix: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">default_prefix</span><span class="si">}</span><span class="s2"> is not defined&quot;</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">default_prefix</span><span class="p">,</span>
+                <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">_base</span> <span class="o">=</span> <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">default_prefix</span>
