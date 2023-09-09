@@ -383,8 +383,8 @@ class RdfLibDumperTestCase(unittest.TestCase):
 
 
 
-class RDFlibConverterDumperTestCase(RdfLibDumperTestCase):
-    """A test case that uses a :class:`curies.Converter` for testing loading and dumping with RDFlib."""
+class RDFLibConverterDumperTestCase(RdfLibDumperTestCase):
+    """A test case that uses a :class:`curies.Converter` for testing loading and dumping with RDFLib."""
 
     def setUp(self) -> None:
         """Set up the test case using a :class:`curies.Converter` instead of a simple prefix map."""
