@@ -385,6 +385,7 @@ class RdfLibDumperTestCase(unittest.TestCase):
 
 class RDFlibConverterDumperTestCase(RdfLibDumperTestCase):
     """A test case that uses a :class:`curies.Converter` for testing loading and dumping with RDFlib."""
+
     def setUp(self) -> None:
         """Set up the test case using a :class:`curies.Converter` instead of a simple prefix map."""
         self.prefix_map = Converter.from_prefix_map(PREFIX_MAP)
