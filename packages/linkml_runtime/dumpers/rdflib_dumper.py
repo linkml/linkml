@@ -42,7 +42,8 @@ class RDFLibDumper(Dumper):
         """
         g = Graph()
         if isinstance(prefix_map, Converter):
-            prefix_map = prefix_map.bimap
+            # TODO replace with `prefix_map = prefix_map.bimap` after making minimum requirement on python 3.8
+            prefix_map = {record.prefix: record.uri_prefix for record in prefix_map.records}
         logging.debug(f'PREFIXMAP={prefix_map}')
         if prefix_map:
             for k, v in prefix_map.items():

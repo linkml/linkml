@@ -64,7 +64,8 @@ class RDFLibLoader(Loader):
             uri_to_class_map[uri] = c
         # data prefix map: supplements or overrides existing schema prefix map
         if isinstance(prefix_map, Converter):
-            prefix_map = prefix_map.bimap
+            # TODO replace with `prefix_map = prefix_map.bimap` after making minimum requirement on python 3.8
+            prefix_map = {record.prefix: record.uri_prefix for record in prefix_map.records}
         if prefix_map:
             for k, v in prefix_map.items():
                 namespaces[k] = v
