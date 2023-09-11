@@ -323,6 +323,7 @@
 <span class="kn">from</span> <span class="nn">linkml_runtime.utils.formatutils</span> <span class="kn">import</span> <span class="n">be</span><span class="p">,</span> <span class="n">camelcase</span><span class="p">,</span> <span class="n">underscore</span>
 
 <span class="kn">from</span> <span class="nn">linkml._version</span> <span class="kn">import</span> <span class="n">__version__</span>
+<span class="kn">from</span> <span class="nn">linkml.generators.common.type_designators</span> <span class="kn">import</span> <span class="n">get_type_designator_value</span>
 <span class="kn">from</span> <span class="nn">linkml.utils.generator</span> <span class="kn">import</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">shared_arguments</span>
 
 <span class="c1"># Map from underlying python data type to json equivalent</span>
@@ -461,6 +462,9 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Class instantiated by the root node of the document tree&quot;&quot;&quot;</span>
 
     <span class="n">include_range_class_descendants</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="kc">False</span><span class="p">)</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;If set, use an open world assumption and allow the range of a slot to be any descendant of the declared range.</span>
+<span class="sd">    Note that if the range of a slot has a type designator, descendants will always be included.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">top_level_schema</span><span class="p">:</span> <span class="n">JsonSchema</span> <span class="o">=</span> <span class="kc">None</span>
 
@@ -651,7 +655,12 @@
                     <span class="k">for</span> <span class="n">desc</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">class_descendants</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="p">)</span>
                     <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">get_class</span><span class="p">(</span><span class="n">desc</span><span class="p">)</span><span class="o">.</span><span class="n">abstract</span>
                 <span class="p">]</span>
-                <span class="k">if</span> <span class="n">descendants</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">include_range_class_descendants</span><span class="p">:</span>
+                <span class="c1"># Always include class descendants if the range class has a type designator</span>
+                <span class="n">include_range_class_descendants</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">include_range_class_descendants</span>
+                    <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">get_type_designator_slot</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                <span class="p">)</span>
+                <span class="k">if</span> <span class="n">descendants</span> <span class="ow">and</span> <span class="n">include_range_class_descendants</span><span class="p">:</span>
                     <span class="n">reference</span> <span class="o">=</span> <span class="n">descendants</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">reference</span> <span class="o">=</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span>
@@ -788,7 +797,11 @@
 
         <span class="n">aliased_slot_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">aliased_slot_name</span><span class="p">(</span><span class="n">slot</span><span class="p">)</span>
         <span class="n">prop</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_subschema_for_slot</span><span class="p">(</span><span class="n">slot</span><span class="p">)</span>
-        <span class="n">subschema</span><span class="o">.</span><span class="n">add_property</span><span class="p">(</span><span class="n">aliased_slot_name</span><span class="p">,</span> <span class="n">prop</span><span class="p">,</span> <span class="n">slot_is_required</span><span class="p">)</span></div>
+        <span class="n">subschema</span><span class="o">.</span><span class="n">add_property</span><span class="p">(</span><span class="n">aliased_slot_name</span><span class="p">,</span> <span class="n">prop</span><span class="p">,</span> <span class="n">slot_is_required</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">designates_type</span><span class="p">:</span>
+            <span class="n">type_value</span> <span class="o">=</span> <span class="n">get_type_designator_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="p">,</span> <span class="n">slot</span><span class="p">,</span> <span class="bp">cls</span><span class="p">)</span>
+            <span class="n">prop</span><span class="p">[</span><span class="s2">&quot;enum&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">type_value</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="JsonSchemaGenerator.generate"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.jsonschemagen.JsonSchemaGenerator.generate">[docs]</a>    <span class="k">def</span> <span class="nf">generate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">start_schema</span><span class="p">()</span>

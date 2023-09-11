@@ -420,7 +420,7 @@
 <span class="s2">    {{attr.name}}: {{ attr.annotations[&#39;python_range&#39;].value }} = Field(</span>
 <span class="s2">    {</span><span class="si">%- i</span><span class="s2">f predefined_slot_values[c.name][attr.name] -%}</span>
 <span class="s2">        {{ predefined_slot_values[c.name][attr.name] }}</span>
-<span class="s2">    {</span><span class="si">%- e</span><span class="s2">lif attr.required -%}</span>
+<span class="s2">    {</span><span class="si">%- e</span><span class="s2">lif (attr.required or attr.identifier or attr.key) -%}</span>
 <span class="s2">        ...</span>
 <span class="s2">    {</span><span class="si">%- e</span><span class="s2">lse -%}</span>
 <span class="s2">        None</span>
@@ -859,7 +859,7 @@
                         <span class="n">pyrange</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;List[</span><span class="si">{</span><span class="n">pyrange</span><span class="si">}</span><span class="s2">]&quot;</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="n">pyrange</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Dict[</span><span class="si">{</span><span class="n">collection_key</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">pyrange</span><span class="si">}</span><span class="s2">]&quot;</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">s</span><span class="o">.</span><span class="n">required</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">s</span><span class="o">.</span><span class="n">designates_type</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">required</span> <span class="ow">or</span> <span class="n">s</span><span class="o">.</span><span class="n">identifier</span> <span class="ow">or</span> <span class="n">s</span><span class="o">.</span><span class="n">key</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">s</span><span class="o">.</span><span class="n">designates_type</span><span class="p">:</span>
                     <span class="n">pyrange</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Optional[</span><span class="si">{</span><span class="n">pyrange</span><span class="si">}</span><span class="s2">]&quot;</span>
                 <span class="n">ann</span> <span class="o">=</span> <span class="n">Annotation</span><span class="p">(</span><span class="s2">&quot;python_range&quot;</span><span class="p">,</span> <span class="n">pyrange</span><span class="p">)</span>
                 <span class="n">s</span><span class="o">.</span><span class="n">annotations</span><span class="p">[</span><span class="n">ann</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span> <span class="o">=</span> <span class="n">ann</span>
