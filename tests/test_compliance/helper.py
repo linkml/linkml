@@ -159,8 +159,11 @@ def _as_tsv(rows: List[Dict], path: Union[str, Path]) -> str:
     logging.info(f"Writing report to {path}")
     fn = f"{path}.tsv"
     if rows:
+        fieldnames = []
+        for row in rows:
+            fieldnames.extend([k for k in row.keys() if k not in fieldnames])
         with open(OUTPUT_DIR / fn, "w", encoding="utf-8") as stream:
-            writer = csv.DictWriter(stream, fieldnames=rows[0].keys(), delimiter="\t")
+            writer = csv.DictWriter(stream, fieldnames=fieldnames, delimiter="\t")
             writer.writeheader()
             writer.writerows(rows)
 
