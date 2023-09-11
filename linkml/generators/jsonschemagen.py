@@ -21,6 +21,7 @@ from linkml_runtime.linkml_model.meta import (
 from linkml_runtime.utils.formatutils import be, camelcase, underscore
 
 from linkml._version import __version__
+from linkml.generators.common.type_designators import get_type_designator_value
 from linkml.utils.generator import Generator, shared_arguments
 
 # Map from underlying python data type to json equivalent
@@ -159,6 +160,9 @@ class JsonSchemaGenerator(Generator):
     """Class instantiated by the root node of the document tree"""
 
     include_range_class_descendants: bool = field(default_factory=lambda: False)
+    """If set, use an open world assumption and allow the range of a slot to be any descendant of the declared range.
+    Note that if the range of a slot has a type designator, descendants will always be included.
+    """
 
     top_level_schema: JsonSchema = None
 
@@ -349,7 +353,12 @@ class JsonSchemaGenerator(Generator):
                     for desc in self.schemaview.class_descendants(slot.range)
                     if not self.schemaview.get_class(desc).abstract
                 ]
-                if descendants and self.include_range_class_descendants:
+                # Always include class descendants if the range class has a type designator
+                include_range_class_descendants = (
+                    self.include_range_class_descendants
+                    or self.schemaview.get_type_designator_slot(slot.range) is not None
+                )
+                if descendants and include_range_class_descendants:
                     reference = descendants
                 else:
                     reference = slot.range
@@ -487,6 +496,10 @@ class JsonSchemaGenerator(Generator):
         aliased_slot_name = self.aliased_slot_name(slot)
         prop = self.get_subschema_for_slot(slot)
         subschema.add_property(aliased_slot_name, prop, slot_is_required)
+
+        if slot.designates_type:
+            type_value = get_type_designator_value(self.schemaview, slot, cls)
+            prop["enum"] = [type_value]
 
     def generate(self) -> dict:
         self.start_schema()

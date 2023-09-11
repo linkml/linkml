@@ -22,6 +22,9 @@ def test_typeof(framework, linkml_type, example_value):
     """
     Tests behavior of extended types.
 
+    An extended type is a user defined type that inherits
+    from a base type using type_of
+
     :param framework: all should support built-in types
     :param linkml_type: from the linkml metamodel
     :param example_value: value to check

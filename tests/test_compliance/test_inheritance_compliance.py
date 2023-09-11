@@ -396,6 +396,9 @@ def test_slot_usage(framework, description, cls, object, is_valid):
     """
     Tests slot usage inheritance.
 
+    * C is_a D, and refines s1 from Y to X
+    * X is_a Y
+
     :param framework:
     :param description:
     :param object:

@@ -45,7 +45,7 @@ def test_any_of(framework, data_name, value, is_valid, use_default_range):
     :param data_name:
     :param value:
     :param is_valid:
-    :param use_default_range:
+    :param use_default_range: if True, the default range will be included in addition to any_of.
     :return:
     """
     expected_json_schema = {
@@ -457,6 +457,7 @@ def test_preconditions(framework, s1, s2, is_valid):
     )
     expected_behavior = ValidationBehavior.IMPLEMENTS
     if framework != JSON_SCHEMA:
+        # only JSON Schema supports rules
         expected_behavior = ValidationBehavior.INCOMPLETE
     check_data(
         schema,

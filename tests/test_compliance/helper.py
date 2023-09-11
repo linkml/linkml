@@ -7,11 +7,12 @@ from collections import defaultdict
 from copy import deepcopy
 from functools import lru_cache
 from pathlib import Path
-from typing import Any, Callable, Dict, Iterator, List, Tuple, Type, Union
+from typing import Any, Callable, Dict, Iterator, List, Optional, Set, Tuple, Type, Union
 
+import linkml_runtime
 import pydantic
 import pytest
-import requests
+import rdflib
 import yaml
 from linkml_runtime import SchemaView
 from linkml_runtime.dumpers import yaml_dumper
@@ -113,7 +114,6 @@ class Feature(BaseModel):
     def set_framework_behavior(
         self, framework: FRAMEWORK, behavior: ValidationBehavior
     ) -> ValidationBehavior:
-        print(f"SET {framework} {behavior}")
         if framework not in self.implementations:
             self.implementations[framework] = behavior
             return behavior
@@ -158,10 +158,11 @@ schema_name_to_metamodel_elements: Dict[SCHEMA_NAME, List[str]] = {}
 def _as_tsv(rows: List[Dict], path: Union[str, Path]) -> str:
     logging.info(f"Writing report to {path}")
     fn = f"{path}.tsv"
-    with open(OUTPUT_DIR / fn, "w", encoding="utf-8") as stream:
-        writer = csv.DictWriter(stream, fieldnames=rows[0].keys(), delimiter="\t")
-        writer.writeheader()
-        writer.writerows(rows)
+    if rows:
+        with open(OUTPUT_DIR / fn, "w", encoding="utf-8") as stream:
+            writer = csv.DictWriter(stream, fieldnames=rows[0].keys(), delimiter="\t")
+            writer.writeheader()
+            writer.writerows(rows)
 
 
 def report():
@@ -177,6 +178,10 @@ def report():
     fset = FeatureSet(features=list(feature_dict.values()))
     suffix = "" if len(fset.features) > 5 else "_partial"
     summary_base_name = f"summary{suffix}"
+    with open(OUTPUT_DIR / f"{summary_base_name}.md", "w", encoding="utf-8") as stream:
+        stream.write(f"# {summary_base_name}\n\n")
+        stream.write("# Description\n\n")
+        # stream.write(fset.description)
     path = OUTPUT_DIR / f"{summary_base_name}.yaml"
     with open(path, "w", encoding="utf-8") as stream:
         yaml.dump(fset.dict(), stream, sort_keys=False)
@@ -252,7 +257,14 @@ def _generate_framework_output(
             if framework in impdict:
                 expected = impdict[framework]
                 if isinstance(expected, str):
-                    assert expected in output
+                    if framework in [SHACL]:
+                        assert compare_rdf(expected, output) == set()
+                    else:
+                        if "".join(expected.split()) not in "".join(output.split()):
+                            pytest.fail(
+                                f"Not a substring when ignoring whitespace:\n'{expected}'\n'{output}'"
+                            )
+                        # assert expected in output
                 elif isinstance(expected, dict):
                     output_obj = json.loads(output)
                     assert _obj_within_obj(expected, output_obj)
@@ -262,6 +274,22 @@ def _generate_framework_output(
     else:
         logging.debug(f"Reusing {len(cached_generator_output.items())}")
     return cached_generator_output[pair]
+
+
+def compare_rdf(expected: str, actual: str) -> Optional[Set]:
+    g_expected = rdflib.Graph()
+    g_expected.parse(data=expected, format="turtle")
+    g_actual = rdflib.Graph()
+    g_actual.parse(data=actual, format="turtle")
+
+    def _triple_minus_bnode(*elts):
+        return tuple([x if not isinstance(x, rdflib.BNode) else None for x in elts])
+
+    triples_expected = {_triple_minus_bnode(*t) for t in g_expected}
+    triples_actual = {_triple_minus_bnode(*t) for t in g_actual}
+    return triples_expected.union(triples_actual).difference(
+        triples_expected.intersection(triples_actual)
+    )
 
 
 def _obj_within_obj(expected: Dict, actual: Dict) -> bool:
@@ -294,11 +322,7 @@ def _schema_out_path(schema: Dict) -> Path:
 
 @lru_cache
 def _get_linkml_types():
-    resp = requests.get("https://w3id.org/linkml/types.yaml")
-    resp.raise_for_status()
-
-    body = yaml.safe_load(resp.text)
-    return body
+    return yaml.safe_load(open(linkml_runtime.SCHEMA_DIRECTORY / "types.yaml"))
 
 
 def _make_schema(
@@ -355,6 +379,13 @@ def _make_schema(
         post_process(schema)
     mappings = list(_extract_mappings(schema))
     out_dir = _schema_out_path(schema)
+    with open(out_dir / "README.md", "w", encoding="utf-8") as stream:
+        dlines = [x.strip() for x in schema["description"].split("\n")]
+        dlines = [x for x in dlines if not x.startswith(":")]
+        desc = "\n".join(dlines)
+        stream.write(f"# {schema_name.replace('test_', '')}\n\n")
+        stream.write(f"{desc}\n\n")
+        stream.write("* Schema: [schema.yaml](schema.yaml)\n")
     with open(out_dir / "schema.yaml", "w", encoding="utf-8") as stream:
         yaml.safe_dump(schema, stream, sort_keys=False)
     with open(out_dir / "mappings.txt", "w", encoding="utf-8") as stream:
@@ -527,11 +558,18 @@ def check_data(
         expected_behavior, notes = expected_behavior
     if expected_behavior is None:
         expected_behavior = ValidationBehavior.IMPLEMENTS
-    if expected_behavior in [ValidationBehavior.INCOMPLETE, ValidationBehavior.NOT_APPLICABLE]:
+    if expected_behavior in [
+        ValidationBehavior.INCOMPLETE,
+        ValidationBehavior.NOT_APPLICABLE,
+        ValidationBehavior.FALSE_POSITIVE,
+    ]:
         logging.warning(f"Skipping test for {expected_behavior}")
     else:
         gen, output = _generate_framework_output(schema, framework)
         if isinstance(gen, (PydanticGenerator, PythonGenerator)):
+            # Note: this duplicates some code with PydanticValidationPlugin;
+            # but currently the validation framework doesn't support explicit
+            # coercion detection and output of repaired objects
             mod = compile_python(output)
             py_cls = getattr(mod, target_class)
             logging.info(
