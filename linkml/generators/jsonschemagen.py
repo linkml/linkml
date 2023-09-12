@@ -15,6 +15,7 @@ from linkml_runtime.linkml_model.meta import (
     EnumDefinition,
     PermissibleValue,
     PermissibleValueText,
+    PresenceEnum,
     SlotDefinition,
     metamodel_version,
 )
@@ -275,7 +276,18 @@ class JsonSchemaGenerator(Generator):
         subschema = JsonSchema()
         for slot in cls.slot_conditions.values():
             prop = self.get_subschema_for_slot(slot, omit_type=True)
-            subschema.add_property(self.aliased_slot_name(slot), prop, properties_required)
+            if slot.value_presence:
+                if slot.value_presence == PresenceEnum(PresenceEnum.PRESENT):
+                    this_properties_required = True
+                elif slot.value_presence == PresenceEnum(PresenceEnum.ABSENT):
+                    this_properties_required = False
+                    # make the slot unsatisfiable
+                    prop["enum"] = []
+                else:
+                    this_properties_required = False
+            else:
+                this_properties_required = properties_required
+            subschema.add_property(self.aliased_slot_name(slot), prop, this_properties_required)
 
         if cls.any_of is not None and len(cls.any_of) > 0:
             subschema["anyOf"] = [
@@ -380,6 +392,11 @@ class JsonSchemaGenerator(Generator):
         constraints.add_keyword("maximum", slot.maximum_value)
         constraints.add_keyword("const", slot.equals_string)
         constraints.add_keyword("const", slot.equals_number)
+        if slot.value_presence:
+            if slot.value_presence == PresenceEnum(PresenceEnum.PRESENT):
+                constraints.add_keyword("required", True)
+            elif slot.value_presence == PresenceEnum(PresenceEnum.ABSENT):
+                constraints.add_keyword("enum", [])
         return constraints
 
     def get_subschema_for_slot(self, slot: SlotDefinition, omit_type: bool = False) -> JsonSchema:
