@@ -2,6 +2,7 @@ import keyword
 import logging
 import os
 import re
+from copy import copy
 from dataclasses import dataclass, field
 from types import ModuleType
 from typing import Callable, Dict, Iterator, List, Optional, Set, Tuple, Union
@@ -419,7 +420,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
         if self.is_class_unconstrained(cls):
             return f"\n{self.class_or_type_name(cls.name)} = Any"
 
-        return (
+        cd_str = (
             ("\n@dataclass" if slotdefs else "")
             + f"\nclass {self.class_or_type_name(cls.name)}{parentref}:{wrapped_description}"
             + f"{self.gen_inherited_slots(cls)}"
@@ -428,6 +429,8 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
             + (f"\n{postinits}" if postinits else "")
             + (f"\n{constructor}" if constructor else "")
         )
+
+        return cd_str
 
     def gen_inherited_slots(self, cls: ClassDefinition) -> str:
         if not self.gen_classvars:
@@ -734,7 +737,6 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
         {post_inits_pre_super_line}{post_inits_line}
         super().__post_init__(**kwargs)
         {post_inits_post_super_line}"""
-                + "\n"
             )
             if post_inits_line or post_inits_pre_super_line or post_inits_post_super_line
             else ""
@@ -832,7 +834,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
 """
                 )
 
-        if rlines:
+        if rlines and copy(rlines[-1]).strip() != "":
             rlines.append("")
         return ("\n\t" if len(rlines) > 0 else "") + "\n\t".join(rlines)
 
@@ -948,8 +950,9 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
                 f"{sn} = [v if isinstance(v, {base_type_name}) "
                 f"else {base_type_name}(v) for v in {sn}]"
             )
-        if rlines:
-            rlines.append("")
+        while rlines and copy(rlines[-1]).strip() == "":
+            rlines.pop()
+        rlines.append("")
         return "\n\t\t".join(rlines)
 
     def _slot_iter(
