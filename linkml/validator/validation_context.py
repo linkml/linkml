@@ -13,6 +13,7 @@ class ValidationContext:
         self.schema = schema
         self.schema_view = SchemaView(self.schema)
         self.target_class = self._get_target_class(target_class)
+        self.cached_artefacts = {}
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, ValidationContext):
