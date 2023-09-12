@@ -874,7 +874,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
                     raise ValueError(f"Unsupported type designator range: {slot_range}")
                 rlines.append(f"self.{aliased_slot_name} = str(self.{td_value_classvar})")
             elif (
-                # A really wierd case -- a class that has no properties
+                # A really weird case -- a class that has no properties
                 slot.range in self.schema.classes
                 and not self.schema.classes[slot.range].slots
             ):
