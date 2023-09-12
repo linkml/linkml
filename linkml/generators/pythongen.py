@@ -827,7 +827,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
                     f"""
             if target_cls is None:
                 raise ValueError(f"Wrong type designator value: class {{cls.__name__}} "
-                                 f"has no subclass with {lookup_by_props}='{{kwargs[type_designator]}}'"))
+                                 f"has no subclass with {lookup_by_props}='{{kwargs[type_designator]}}'")
             return super().__new__(target_cls,*args,**kwargs)
 """
                 )
