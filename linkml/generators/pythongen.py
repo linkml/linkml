@@ -164,7 +164,7 @@ from linkml_runtime.utils.dataclass_extensions_376 import dataclasses_init_fn_wi
 from linkml_runtime.utils.formatutils import camelcase, underscore, sfx
 {handlerimport}
 from rdflib import Namespace, URIRef
-from linkml_runtime.utils.curienamespace import CurieNamespace, CurieNamespaceCatalog
+from linkml_runtime.utils.curienamespace import CurieNamespace
 {self.gen_imports()}
 
 metamodel_version = "{self.schema.metamodel_version}"
@@ -323,7 +323,8 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
         )
         
         curienamespace_vars = ",".join([x['variable'] for x in curienamespace_defs])
-        catalog_declaration = f"\nnamespace_catalog = CurieNamespaceCatalog.create({curienamespace_vars})\n"
+        #catalog_declaration = f"\nnamespace_catalog = CurieNamespaceCatalog.create({curienamespace_vars})\n"
+        catalog_declaration = ""
 
         return curienamespace_declarations + catalog_declaration
 
@@ -773,6 +774,12 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
                 return len(rng.slots) - len(pkeys) == 1
         return False
 
+    def _roll_up_type(self, typ_name: str) -> str:
+        if typ_name in self.schemaview.all_types():
+            t = self.schemaview.get_type(typ_name)
+            if t.typeof:
+                return self._roll_up_type(t.typeof)
+        return typ_name
 
 
     def gen_constructor(self, cls: ClassDefinition) -> Optional[str]:
@@ -785,33 +792,35 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
                 aliased_slot_name = self.slot_name(
                     slot.name
                 )
+                slot_range = self._roll_up_type(slot.range)
+
                 rlines.append("def __new__(cls, *args, **kwargs):")
-                if slot.range == "string":
-                    rlines.append(f"""
-        type_designator = "{aliased_slot_name}"
-        if not type_designator in kwargs:
-            return super().__new__(cls,*args,**kwargs)
-        else:
-            target_cls = cls._class_for("class_name", kwargs[type_designator])
-            if target_cls is None:
-                raise ValueError(f"Wrong type designator value: class {{cls.__name__}} has no subclass with class_name='{{kwargs[type_designator]}}'")
-            return super().__new__(target_cls,*args,**kwargs)
-""")
+                td_val_expression = "kwargs[type_designator]"
+                if slot_range == "string":
+                    lookup_by_props = ["class_name"]
+                elif slot_range == "uri":
+                    lookup_by_props = ["class_class_uri", "class_model_uri"]
+                    td_val_expression = f"URIRef({td_val_expression}) if isinstance({td_val_expression}, str) else {td_val_expression}"
+                elif slot_range == "uriorcurie":
+                    lookup_by_props = ["class_class_curie", "class_class_uri", "class_model_uri"]
                 else:
-                    rlines.append(f"""
+                    raise ValueError(f"Unsupported type designator range: {slot.range}")
+                rlines.append(f"""
         type_designator = "{aliased_slot_name}"
         if not type_designator in kwargs:
             return super().__new__(cls,*args,**kwargs)
         else:
-            td_value = kwargs[type_designator]
-            expanded_td_value = namespace_catalog.to_uri(td_value)
-            if expanded_td_value is None:
-                expanded_td_value = td_value
-            target_cls = cls._class_for_uri(expanded_td_value)
+            type_designator_value = {td_val_expression}
+            target_cls = cls._class_for("{lookup_by_props[0]}", type_designator_value)
+""")
+                for prop in lookup_by_props[1:]:
+                    rlines.append(f"""
             if target_cls is None:
-                target_cls = cls._class_for_uri(expanded_td_value, True)
+                target_cls = cls._class_for("{prop}", type_designator_value)
+""")
+                rlines.append(f"""
             if target_cls is None:
-                raise ValueError(f"Wrong type designator value: class {{cls.__name__}} has no subclass with uri='{{expanded_td_value}}'")
+                raise ValueError(f"Wrong type designator value: class {{cls.__name__}} has no subclass with {lookup_by_props}='{{kwargs[type_designator]}}'")
             return super().__new__(target_cls,*args,**kwargs)
 """)
 
@@ -838,7 +847,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
             rlines.append(f"if self._is_empty(self.{aliased_slot_name}):")
             rlines.append(f'\tself.MissingRequiredField("{aliased_slot_name}")')
 
-        # Generate the type co-orcion for the various types.
+        # Generate the type co-ercion for the various types.
         # NOTE: if you set this to true, we will cast all types.   This may be what we really want
         if not slot.multivalued:
             if slot.designates_type:
@@ -853,18 +862,17 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
                     f"not isinstance(self.{aliased_slot_name}, {base_type_name}):"
                 )
             if slot.designates_type:
-                
-                td_value_classvar = "class_class_uri"
-                if slot.range == "string":
+
+                slot_range = self._roll_up_type(slot.range)
+                if slot_range == "string":
                     td_value_classvar = "class_name"
-                compress = False
-                if "curie" in slot.range:
-                    compress = True
-                if not compress:
-                    rlines.append(f"self.{aliased_slot_name} = str(self.{td_value_classvar})")
+                elif slot_range == "uri":
+                    td_value_classvar = "class_model_uri"
+                elif slot_range == "uriorcurie":
+                    td_value_classvar = "class_class_curie"
                 else:
-                    rlines.append(f"compressed_value = namespace_catalog.to_curie(str(self.{td_value_classvar}))")
-                    rlines.append(f"self.{aliased_slot_name} = compressed_value if compressed_value is not None else str(self.{td_value_classvar})")
+                    raise ValueError(f"Unsupported type designator range: {slot_range}")
+                rlines.append(f"self.{aliased_slot_name} = str(self.{td_value_classvar})")
             elif (
                 # A really wierd case -- a class that has no properties
                 slot.range in self.schema.classes
