@@ -112,6 +112,7 @@ slots:
     range: float
 """
 
+
 @pytest.fixture
 def data_str():
     return """

@@ -3,9 +3,10 @@ import pytest
 from tests.test_compliance.helper import (
     JSON_SCHEMA,
     PYDANTIC,
+    PYTHON_DATACLASSES,
     ValidationBehavior,
     check_data,
-    validated_schema, PYTHON_DATACLASSES,
+    validated_schema,
 )
 from tests.test_compliance.test_compliance import (
     CLASS_C1,

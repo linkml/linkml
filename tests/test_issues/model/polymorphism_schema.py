@@ -1,7 +1,8 @@
 import json
 
+
 def gen_person_and_organisation_schema(type_descriptor_range: str = "uriorcurie") -> str:
-  return f"""
+    return f"""
 id: http://example.org
 name: inline-dict-test
 imports:
@@ -76,30 +77,25 @@ def gen_person_and_organisation_example_data(type_descriptor_range: str = "urior
     elif type_descriptor_range == "uri":
         pfx = "http://example.org/"
 
-    
-    data = { "things" : [
-        {
-            "id": "1",
-            "thingtype": f"{person_td}",
-            "full_name": "phoebe",
-            "height": 10
-        },
-        {
-            "id": "2",
-            "thingtype": f"{pfx}Organisation",
-            "full_name": "University of Earth",
-            "number_of_employees": 2
-        },
-        {
-            "id": "3",
-            "thingtype": f"{pfx}ForProfit",
-            "full_name": "Company",
-            "target_profit_margin": 0.1
-        }
-    ]}
+    data = {
+        "things": [
+            {"id": "1", "thingtype": f"{person_td}", "full_name": "phoebe", "height": 10},
+            {
+                "id": "2",
+                "thingtype": f"{pfx}Organisation",
+                "full_name": "University of Earth",
+                "number_of_employees": 2,
+            },
+            {
+                "id": "3",
+                "thingtype": f"{pfx}ForProfit",
+                "full_name": "Company",
+                "target_profit_margin": 0.1,
+            },
+        ]
+    }
 
     return json.dumps(data)
-
 
 
 def gen_type_hierarchy_example_schema(type_descriptor_range: str = "uriorcurie") -> str:
