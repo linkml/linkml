@@ -21,11 +21,9 @@ def test_pythongenerator_loads_poly(schema_str, data_str):
 def test_type_hierarchy(type_hierarchy_schema_str):
     gen_range_not_specified = PythonGenerator(type_hierarchy_schema_str)
     output = gen_range_not_specified.serialize()
-    with open("/tmp/python-dataclass-out.py", "w", encoding="utf-8") as f:
-        f.write(output)
     mod = compile_python(output, "testschema")
     _ = mod.Person(id=1)
-    # TODO: support polymorphism
+    # TODO: support URI vs CURIE polymorphism
     # _ = mod.Person(id=2,category='http://example.org/Person')
     _ = mod.Person(id=3, category="x:Person")
     pytest.raises(ValueError, lambda: mod.Person(id=4, category="x:NamedThing"))
