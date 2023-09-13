@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 
 from linkml_runtime.linkml_model import (
     ClassDefinition,
@@ -60,8 +60,8 @@ class SchemaBuilder:
     def add_class(
         self,
         cls: Union[ClassDefinition, Dict, str],
-        slots: List[Union[str, SlotDefinition]] = None,
-        slot_usage: Dict[str, SlotDefinition] = None,
+        slots: Union[Dict, List[Union[str, SlotDefinition]]] = None,
+        slot_usage: Union[Dict[str, SlotDefinition], Dict[str, Any], List[SlotDefinition]] = None,
         replace_if_present=False,
         use_attributes=False,
         **kwargs,
@@ -97,6 +97,10 @@ class SchemaBuilder:
                     raise ValueError("If use_attributes=True then slots must be SlotDefinitions")
         else:
             if slots is not None:
+                if isinstance(slots, dict):
+                    for k, v in slots.items():
+                        cls.slots.append(k)
+                        self.add_slot(SlotDefinition(k, **v), replace_if_present=replace_if_present)
                 for s in slots:
                     cls.slots.append(s.name if isinstance(s, SlotDefinition) else s)
                     if isinstance(s, str) and s in self.schema.slots:
@@ -104,8 +108,18 @@ class SchemaBuilder:
                         continue
                     self.add_slot(s, replace_if_present=replace_if_present)
             if slot_usage:
-                for k, v in slot_usage.items():
-                    cls.slot_usage[k] = v
+                if isinstance(slot_usage, dict):
+                    for k, v in slot_usage.items():
+                        if isinstance(v, dict):
+                            v = SlotDefinition(k, **v)
+                        cls.slot_usage[k] = v
+                elif isinstance(slot_usage, list):
+                    for s in slot_usage:
+                        cls.slot_usage[s.name] = s
+                else:
+                    raise ValueError(
+                        f"slot_usage {slot_usage} must be a dict or list of SlotDefinitions"
+                    )
         for k, v in kwargs.items():
             setattr(cls, k, v)
         return self
