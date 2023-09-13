@@ -28,3 +28,4 @@ classes:
 
 slots:
   personal_number:
+    identifier: true
