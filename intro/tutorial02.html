@@ -343,6 +343,7 @@ single person instance.</p>
 <span class="w">      </span><span class="nt">aliases</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">phone</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">age</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">integer</span>
 <span class="w">  </span><span class="nt">Container</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">tree_root</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class="w">    </span><span class="nt">attributes</span><span class="p">:</span>
@@ -352,6 +353,8 @@ single person instance.</p>
 <span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Person</span>
 </pre></div>
 </div>
+<p>This time we are modeling age as an integer. We use the construct
+<code class="docutils literal notranslate"><span class="pre">range</span></code> to state that the values of <code class="docutils literal notranslate"><span class="pre">age</span></code> must be integers.</p>
 <p>We introduce a class called <code class="docutils literal notranslate"><span class="pre">Container</span></code>. This doesn’t necessarily
 reflect a “real world” entity in our domain, it’s just a convenient
 holder for our data.</p>

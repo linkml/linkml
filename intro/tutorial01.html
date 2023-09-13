@@ -399,10 +399,12 @@ pip<span class="w"> </span>install<span class="w"> </span>linkml
 <p>data.yaml:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ORCID:1234</span>
 <span class="nt">full_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Clark Kent</span>
-<span class="nt">age</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">32</span>
+<span class="nt">age</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;32&quot;</span>
 <span class="nt">phone</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">555-555-5555</span>
 </pre></div>
 </div>
+<p>note the values of all these fields are strings, even age; we will later return
+to this example and show how we could model this more naturally as a number.</p>
 <p>Validate:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>linkml-validate<span class="w"> </span>-s<span class="w"> </span>personinfo.yaml<span class="w"> </span>data.yaml<span class="w"> </span>
 </pre></div>
@@ -412,7 +414,7 @@ pip<span class="w"> </span>install<span class="w"> </span>linkml
 <p>bad-data.yaml:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ORCID:1234</span>
 <span class="nt">full_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Clark Kent</span>
-<span class="nt">age</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">32</span>
+<span class="nt">age</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;32&quot;</span>
 <span class="nt">phone</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">555-555-5555</span>
 <span class="nt">made_up_field</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hello</span>
 </pre></div>
@@ -437,7 +439,7 @@ pip<span class="w"> </span>install<span class="w"> </span>linkml
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
 <span class="w"> </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ORCID:1234&quot;</span><span class="p">,</span>
 <span class="w"> </span><span class="nt">&quot;full_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Clark Kent&quot;</span><span class="p">,</span>
-<span class="w"> </span><span class="nt">&quot;age&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">32</span><span class="p">,</span>
+<span class="w"> </span><span class="nt">&quot;age&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;32&quot;</span><span class="p">,</span>
 <span class="w"> </span><span class="nt">&quot;phone&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;555-555-5555&quot;</span>
 <span class="p">}</span>
 </pre></div>
