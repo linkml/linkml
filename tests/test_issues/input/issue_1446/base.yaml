@@ -1,0 +1,25 @@
+# base.yaml
+id: https://example.org/base
+prefixes:
+  linkml: https://w3id.org/linkml/
+  base: https://example.org/base/
+imports:
+  - linkml:types
+default_prefix: base
+
+classes:
+  Animal:
+    slots:
+      - identifiers
+  Human:
+    is_a: Animal
+  Identifier:
+    slots:
+      - identifier_value
+
+slots:
+  identifier_value:
+    identifier: true
+  identifiers:
+    range: Identifier
+    multivalued: true
