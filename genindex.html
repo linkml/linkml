@@ -352,6 +352,8 @@
         <ul>
           <li><a href="generators/json-schema.html#cmdoption-gen-json-schema-not-closed">gen-json-schema command line option</a>
 </li>
+          <li><a href="generators/shacl.html#cmdoption-gen-shacl-closed">gen-shacl command line option</a>
+</li>
         </ul></li>
         <li>
     --config-file
@@ -1124,6 +1126,13 @@
 
         <ul>
           <li><a href="generators/markdown.html#cmdoption-gen-markdown-noimages">gen-markdown command line option</a>
+</li>
+        </ul></li>
+        <li>
+    --non-closed
+
+        <ul>
+          <li><a href="generators/shacl.html#cmdoption-gen-shacl-closed">gen-shacl command line option</a>
 </li>
         </ul></li>
         <li>
@@ -2180,6 +2189,12 @@
         </ul></li>
         <li><a href="linkml.generators.html#linkml.generators.summarygen.SummaryGenerator.classtab">classtab (linkml.generators.summarygen.SummaryGenerator attribute)</a>
 </li>
+        <li><a href="linkml.generators.html#linkml.generators.shaclgen.ShaclGenerator.closed">closed (linkml.generators.shaclgen.ShaclGenerator attribute)</a>
+
+        <ul>
+          <li><a href="linkml.generators.html#linkml.generators.ShaclGenerator.closed">(linkml.generators.ShaclGenerator attribute)</a>
+</li>
+        </ul></li>
         <li><a href="linkml.generators.html#linkml.generators.csvgen.CsvGenerator.closure">closure (linkml.generators.csvgen.CsvGenerator attribute)</a>
 </li>
         <li><a href="linkml.generators.html#linkml.generators.dotgen.DotGenerator.cls_obj">cls_obj (linkml.generators.dotgen.DotGenerator attribute)</a>
@@ -2444,8 +2459,6 @@
           <li><a href="linkml.generators.html#linkml.generators.PydanticGenerator.emit_prefixes">(linkml.generators.PydanticGenerator attribute)</a>
 </li>
           <li><a href="linkml.generators.html#linkml.generators.PythonGenerator.emit_prefixes">(linkml.generators.PythonGenerator attribute)</a>
-</li>
-          <li><a href="linkml.generators.html#linkml.generators.shaclgen.ShaclGenerator.emit_prefixes">(linkml.generators.shaclgen.ShaclGenerator attribute)</a>
 </li>
           <li><a href="linkml.generators.html#linkml.generators.ShaclGenerator.emit_prefixes">(linkml.generators.ShaclGenerator attribute)</a>
 </li>
@@ -3303,6 +3316,8 @@
     gen-shacl command line option
 
         <ul>
+          <li><a href="generators/shacl.html#cmdoption-gen-shacl-closed">--closed</a>
+</li>
           <li><a href="generators/shacl.html#cmdoption-gen-shacl-f">--format</a>
 </li>
           <li><a href="generators/shacl.html#cmdoption-gen-shacl-im">--importmap</a>
@@ -3320,6 +3335,8 @@
           <li><a href="generators/shacl.html#cmdoption-gen-shacl-metadata">--no-metadata</a>
 </li>
           <li><a href="generators/shacl.html#cmdoption-gen-shacl-stacktrace">--no-stacktrace</a>
+</li>
+          <li><a href="generators/shacl.html#cmdoption-gen-shacl-closed">--non-closed</a>
 </li>
           <li><a href="generators/shacl.html#cmdoption-gen-shacl-stacktrace">--stacktrace</a>
 </li>
@@ -4919,8 +4936,6 @@
 </li>
           <li><a href="linkml.generators.html#linkml.generators.PythonGenerator.mergeimports">(linkml.generators.PythonGenerator attribute)</a>
 </li>
-          <li><a href="linkml.generators.html#linkml.generators.shaclgen.ShaclGenerator.mergeimports">(linkml.generators.shaclgen.ShaclGenerator attribute)</a>
-</li>
           <li><a href="linkml.generators.html#linkml.generators.ShaclGenerator.mergeimports">(linkml.generators.ShaclGenerator attribute)</a>
 </li>
           <li><a href="linkml.generators.html#linkml.generators.ShExGenerator.mergeimports">(linkml.generators.ShExGenerator attribute)</a>
@@ -4949,8 +4964,6 @@
 </li>
           <li><a href="linkml.generators.html#linkml.generators.PythonGenerator.metadata">(linkml.generators.PythonGenerator attribute)</a>
 </li>
-          <li><a href="linkml.generators.html#linkml.generators.shaclgen.ShaclGenerator.metadata">(linkml.generators.shaclgen.ShaclGenerator attribute)</a>
-</li>
           <li><a href="linkml.generators.html#linkml.generators.ShaclGenerator.metadata">(linkml.generators.ShaclGenerator attribute)</a>
 </li>
           <li><a href="linkml.generators.html#linkml.generators.ShExGenerator.metadata">(linkml.generators.ShExGenerator attribute)</a>
@@ -4966,10 +4979,10 @@
         </ul></li>
         <li><a href="linkml.generators.html#linkml.generators.owlgen.MetadataProfile">MetadataProfile (class in linkml.generators.owlgen)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="linkml.utils.html#linkml.utils.generator.Generator.metamodel">metamodel (linkml.utils.generator.Generator attribute)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="linkml.utils.html#linkml.utils.generator.Generator.metamodel_name_map">metamodel_name_map (linkml.utils.generator.Generator attribute)</a>
 </li>
         <li><a href="linkml.generators.html#linkml.generators.oocodegen.OOClass.mixin">mixin (linkml.generators.oocodegen.OOClass attribute)</a>
@@ -5453,8 +5466,6 @@
           <li><a href="linkml.generators.html#linkml.generators.PydanticGenerator.schema">(linkml.generators.PydanticGenerator attribute)</a>
 </li>
           <li><a href="linkml.generators.html#linkml.generators.PythonGenerator.schema">(linkml.generators.PythonGenerator attribute)</a>
-</li>
-          <li><a href="linkml.generators.html#linkml.generators.shaclgen.ShaclGenerator.schema">(linkml.generators.shaclgen.ShaclGenerator attribute)</a>
 </li>
           <li><a href="linkml.generators.html#linkml.generators.ShaclGenerator.schema">(linkml.generators.ShaclGenerator attribute)</a>
 </li>
