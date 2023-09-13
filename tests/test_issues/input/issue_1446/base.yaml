@@ -14,12 +14,8 @@ classes:
   Human:
     is_a: Animal
   Identifier:
-    slots:
-      - identifier_value
 
 slots:
-  identifier_value:
-    identifier: true
   identifiers:
     range: Identifier
     multivalued: true
