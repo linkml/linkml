@@ -387,6 +387,14 @@ class JsonSchemaGenerator(Generator):
             return JsonSchema()
 
         constraints = JsonSchema()
+        if slot.range in self.schemaview.all_types().keys():
+            # types take lower priority
+            schema_type = self.schemaview.induced_type(slot.range)
+            constraints.add_keyword("pattern", schema_type.pattern)
+            constraints.add_keyword("minimum", schema_type.minimum_value)
+            constraints.add_keyword("maximum", schema_type.maximum_value)
+            constraints.add_keyword("const", schema_type.equals_string)
+            constraints.add_keyword("const", schema_type.equals_number)
         constraints.add_keyword("pattern", slot.pattern)
         constraints.add_keyword("minimum", slot.minimum_value)
         constraints.add_keyword("maximum", slot.maximum_value)
