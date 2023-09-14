@@ -8,7 +8,7 @@ from unittest import TestCase
 
 from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.linkml_model.meta import SchemaDefinition, ClassDefinition, SlotDefinitionName, SlotDefinition, \
-    ClassDefinitionName
+    ClassDefinitionName, Prefix
 from linkml_runtime.loaders.yaml_loader import YAMLLoader
 from linkml_runtime.utils.introspection import package_schemaview
 from linkml_runtime.utils.schemaview import SchemaView, SchemaUsage, OrderedBy
@@ -532,6 +532,41 @@ class SchemaViewTestCase(unittest.TestCase):
         sv = SchemaView(schema_str)
         self.assertGreater(len(sv.all_classes()), 20)
         self.assertCountEqual(all_classes, sv.all_classes())
+
+    def test_non_linkml_remote_import(self):
+        """
+        Test that a remote import _not_ using the linkml prefix works
+
+        See: https://github.com/linkml/linkml/issues/1627
+        """
+        schema = SchemaDefinition(
+            id='test_non_linkml_remote_import',
+            name='test_non_linkml_remote_import',
+            prefixes=[
+                Prefix(
+                    prefix_prefix="foo",
+                    prefix_reference="https://w3id.org/linkml/"
+                )
+            ],
+            imports=[
+                "foo:types"
+            ],
+            slots=[
+                SlotDefinition(
+                    name="an_int",
+                    range="integer"
+                )
+            ],
+            classes=[
+                ClassDefinition(
+                    name="AClass",
+                    slots=["an_int"]
+                )
+            ]
+        )
+        sv = SchemaView(schema)
+        slots = sv.class_induced_slots("AClass", imports=True)
+        self.assertEqual(len(slots), 1)
 
 
     def test_traversal(self):

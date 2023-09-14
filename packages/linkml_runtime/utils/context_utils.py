@@ -66,11 +66,12 @@ def map_import(importmap: Dict[str, str], namespaces: Callable[[None], "Namespac
         # the importmap may contain mappings for prefixes
         prefix, lname = sname.split(':', 1)
         prefix += ':'
-        expanded_prefix = importmap.get(prefix, prefix)
-        if expanded_prefix.startswith("http"):
-            sname = expanded_prefix + lname
-        else:
-            sname = os.path.join(expanded_prefix, lname)
+        expanded_prefix = importmap.get(prefix)
+        if expanded_prefix is not None:
+            if expanded_prefix.startswith("http"):
+                sname = expanded_prefix + lname
+            else:
+                sname = os.path.join(expanded_prefix, lname)
     sname = importmap.get(sname, sname)  # Import map may use CURIE
     sname = str(namespaces().uri_for(sname)) if ':' in sname else sname
     return importmap.get(sname, sname)  # It may also use URI or other forms
