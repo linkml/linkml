@@ -512,7 +512,6 @@
         <span class="c1"># See https://github.com/linkml/linkml/issues/923 for discussion on how</span>
         <span class="c1"># to simplify the overall framework</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="n">Generator</span><span class="p">):</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Instantiating generator with another generator is deprecated&quot;</span><span class="p">)</span>
             <span class="n">gen</span> <span class="o">=</span> <span class="n">schema</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">schema</span> <span class="o">=</span> <span class="n">gen</span><span class="o">.</span><span class="n">schema</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">synopsis</span> <span class="o">=</span> <span class="n">gen</span><span class="o">.</span><span class="n">synopsis</span>
