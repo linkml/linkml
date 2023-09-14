@@ -545,7 +545,7 @@ class SchemaViewTestCase(unittest.TestCase):
             prefixes=[
                 Prefix(
                     prefix_prefix="foo",
-                    prefix_reference="https://w3id.org/linkml"
+                    prefix_reference="https://w3id.org/linkml/"
                 )
             ],
             imports=[
