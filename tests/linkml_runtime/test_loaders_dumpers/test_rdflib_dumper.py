@@ -361,7 +361,7 @@ class RdfLibDumperTestCase(unittest.TestCase):
         for id, expected_uri, prefix_map in cases:
 
             c = OntologyClass(id=id, label=test_label)
-            ttl = rdflib_dumper.dumps(c, view, prefix_map=self.prefix_map)
+            ttl = rdflib_dumper.dumps(c, view, prefix_map=prefix_map)
             g = Graph()
             g.parse(data=ttl, format='ttl')
             self.assertEqual(len(g), 2)
