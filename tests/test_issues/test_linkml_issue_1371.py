@@ -5,6 +5,7 @@ from linkml.generators import JsonSchemaGenerator
 
 SCHEMA = str(Path(__file__).parent / "input" / "issue_1371" / "test.schema.yaml")
 
+
 def test_json_schema():
     jschema = json.loads(JsonSchemaGenerator(SCHEMA).serialize())
     props = jschema["$defs"]["Test"]["properties"]
