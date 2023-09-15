@@ -1,0 +1,36 @@
+id: https://example.org/descendants
+name: Test_descendants
+imports:
+  - linkml:types
+prefixes:
+  linkml: https://w3id.org/linkml/
+classes:
+  Animal:
+    slots:
+      - animal_family
+    attributes:
+      max_age:
+        range: string
+  Dog:
+    is_a: Animal
+    slots:
+      - animal_family
+      - breed
+  Ant:
+    is_a: Animal
+    slots:
+      - animal_family
+      - venom
+  Container:
+    attributes:
+      animals:
+        multivalued: true
+        range: Animal
+slots:
+  animal_family:
+    range: string
+    designates_type: true
+  breed:
+    range: string
+  venom:
+    range: boolean
