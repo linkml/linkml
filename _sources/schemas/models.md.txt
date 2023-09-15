@@ -171,7 +171,7 @@ slots:
     range: Address
 ```
 
-You can then re-use these in your class definitions. For example, if your `Person` class has a `name` slot, just list it:
+You can then reuse these in your class definitions. For example, if your `Person` class has a `name` slot, just list it:
 
 ```yaml
 classes:

@@ -10,7 +10,7 @@ All data follows some kind of schema or data model, whether it is explicitly art
  * you have a knowledge graph in Neo4J
  * you are working with linked data in RDF
 
-LinkML is designed to be flexible enough to cover all these use cases, allowing for lighweight semantic data dictionaries for tabular data, through rich interlinked schemas for knowledge graphs and triplestores
+LinkML is designed to be flexible enough to cover all these use cases, allowing for lightweight semantic data dictionaries for tabular data, through rich interlinked schemas for knowledge graphs and triplestores
 
 ## My data is a simple spreadsheet/TSV, why should I use LinkML?
 
