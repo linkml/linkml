@@ -113,10 +113,12 @@ data.yaml:
 ```yaml
 id: ORCID:1234
 full_name: Clark Kent
-age: 32
+age: "32"
 phone: 555-555-5555
-
 ```
+
+note the values of all these fields are strings, even age; we will later return
+to this example and show how we could model this more naturally as a number.
 
 Validate:
 
@@ -133,7 +135,7 @@ bad-data.yaml:
 ```yaml
 id: ORCID:1234
 full_name: Clark Kent
-age: 32
+age: "32"
 phone: 555-555-5555
 made_up_field: hello
 ```
@@ -162,7 +164,7 @@ data.json:
 {
  "id": "ORCID:1234",
  "full_name": "Clark Kent",
- "age": 32,
+ "age": "32",
  "phone": "555-555-5555"
 }
 ```

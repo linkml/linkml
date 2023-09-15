@@ -210,7 +210,6 @@ class Generator(metaclass=abc.ABCMeta):
         # See https://github.com/linkml/linkml/issues/923 for discussion on how
         # to simplify the overall framework
         if isinstance(schema, Generator):
-            logging.info("Instantiating generator with another generator is deprecated")
             gen = schema
             self.schema = gen.schema
             self.synopsis = gen.synopsis

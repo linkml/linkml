@@ -15,12 +15,14 @@ from linkml_runtime.linkml_model.meta import (
     EnumDefinition,
     PermissibleValue,
     PermissibleValueText,
+    PresenceEnum,
     SlotDefinition,
     metamodel_version,
 )
 from linkml_runtime.utils.formatutils import be, camelcase, underscore
 
 from linkml._version import __version__
+from linkml.generators.common.type_designators import get_type_designator_value
 from linkml.utils.generator import Generator, shared_arguments
 
 # Map from underlying python data type to json equivalent
@@ -159,6 +161,9 @@ class JsonSchemaGenerator(Generator):
     """Class instantiated by the root node of the document tree"""
 
     include_range_class_descendants: bool = field(default_factory=lambda: False)
+    """If set, use an open world assumption and allow the range of a slot to be any descendant of the declared range.
+    Note that if the range of a slot has a type designator, descendants will always be included.
+    """
 
     top_level_schema: JsonSchema = None
 
@@ -271,7 +276,18 @@ class JsonSchemaGenerator(Generator):
         subschema = JsonSchema()
         for slot in cls.slot_conditions.values():
             prop = self.get_subschema_for_slot(slot, omit_type=True)
-            subschema.add_property(self.aliased_slot_name(slot), prop, properties_required)
+            if slot.value_presence:
+                if slot.value_presence == PresenceEnum(PresenceEnum.PRESENT):
+                    this_properties_required = True
+                elif slot.value_presence == PresenceEnum(PresenceEnum.ABSENT):
+                    this_properties_required = False
+                    # make the slot unsatisfiable
+                    prop["enum"] = []
+                else:
+                    this_properties_required = False
+            else:
+                this_properties_required = properties_required
+            subschema.add_property(self.aliased_slot_name(slot), prop, this_properties_required)
 
         if cls.any_of is not None and len(cls.any_of) > 0:
             subschema["anyOf"] = [
@@ -349,7 +365,12 @@ class JsonSchemaGenerator(Generator):
                     for desc in self.schemaview.class_descendants(slot.range)
                     if not self.schemaview.get_class(desc).abstract
                 ]
-                if descendants and self.include_range_class_descendants:
+                # Always include class descendants if the range class has a type designator
+                include_range_class_descendants = (
+                    self.include_range_class_descendants
+                    or self.schemaview.get_type_designator_slot(slot.range) is not None
+                )
+                if descendants and include_range_class_descendants:
                     reference = descendants
                 else:
                     reference = slot.range
@@ -366,11 +387,24 @@ class JsonSchemaGenerator(Generator):
             return JsonSchema()
 
         constraints = JsonSchema()
+        if slot.range in self.schemaview.all_types().keys():
+            # types take lower priority
+            schema_type = self.schemaview.induced_type(slot.range)
+            constraints.add_keyword("pattern", schema_type.pattern)
+            constraints.add_keyword("minimum", schema_type.minimum_value)
+            constraints.add_keyword("maximum", schema_type.maximum_value)
+            constraints.add_keyword("const", schema_type.equals_string)
+            constraints.add_keyword("const", schema_type.equals_number)
         constraints.add_keyword("pattern", slot.pattern)
         constraints.add_keyword("minimum", slot.minimum_value)
         constraints.add_keyword("maximum", slot.maximum_value)
         constraints.add_keyword("const", slot.equals_string)
         constraints.add_keyword("const", slot.equals_number)
+        if slot.value_presence:
+            if slot.value_presence == PresenceEnum(PresenceEnum.PRESENT):
+                constraints.add_keyword("required", True)
+            elif slot.value_presence == PresenceEnum(PresenceEnum.ABSENT):
+                constraints.add_keyword("enum", [])
         return constraints
 
     def get_subschema_for_slot(self, slot: SlotDefinition, omit_type: bool = False) -> JsonSchema:
@@ -487,6 +521,10 @@ class JsonSchemaGenerator(Generator):
         aliased_slot_name = self.aliased_slot_name(slot)
         prop = self.get_subschema_for_slot(slot)
         subschema.add_property(aliased_slot_name, prop, slot_is_required)
+
+        if slot.designates_type:
+            type_value = get_type_designator_value(self.schemaview, slot, cls)
+            prop["enum"] = [type_value]
 
     def generate(self) -> dict:
         self.start_schema()
