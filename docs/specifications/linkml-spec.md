@@ -6,7 +6,7 @@ The LinkML specification has a permanent URL:
 
 Note the specification is hosted on the [linkml-model](https://github.com/linkml/linkml-model) repository.
 
-This specification is aimed at implementors of LinkML tools rather
+This specification is aimed at implementers of LinkML tools rather
 than general users. It is more formal in its language than this main LinkML guide.
 
 The specification is in the following parts:
