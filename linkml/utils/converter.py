@@ -67,6 +67,14 @@ from linkml.utils.datautils import (
     help="Infer missing slot values",
 )
 @click.option("--context", "-c", multiple=True, help="path to JSON-LD context file")
+@click.option(
+    "--include-range-class-descendants/--no-range-class-descendants",
+    default=False,
+    show_default=False,
+    help="""
+When handling range constraints, include all descendants of the range class instead of just the range class
+""",
+)
 @click.version_option(__version__, "-V", "--version")
 @click.argument("input")
 def cli(
@@ -83,6 +91,7 @@ def cli(
     validate=None,
     infer=None,
     index_slot=None,
+    include_range_class_descendants=False,
 ) -> None:
     """
     Converts instance data to and from different LinkML Runtime serialization formats.
@@ -151,7 +160,9 @@ def cli(
                 "--schema must be passed in order to validate. Suppress with --no-validate"
             )
         # TODO: use validator framework
-        validation.validate_object(obj, schema)
+        validation.validate_object(
+            obj, schema, include_range_class_descendants=include_range_class_descendants
+        )
 
     output_format = _get_format(output, output_format, default="json")
     if output_format == "json-ld":
