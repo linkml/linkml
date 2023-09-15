@@ -26,7 +26,7 @@ There are two cases you need to consider while writing your unit test. The first
 To run a single test file using `pytest`:
 
 ```python
-poetry run pytset tests/test_issues/test_linkml_issue_NNN.py
+poetry run pytest tests/test_issues/test_linkml_issue_NNN.py
 ```
 
 You can run the full test suite in the following way:
