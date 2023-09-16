@@ -19,7 +19,7 @@ To run:
 
 .. code:: bash
 
-   gen-json-schema personinfo.yaml > personinfo.schema.json
+   gen-json-schema personinfo.json > personinfo.schema.json
 
 To use this in combination with the standard python jsonschema
 validator (bundled with linkml):
