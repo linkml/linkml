@@ -84,7 +84,7 @@ types:
     description: A symbol is a string used as a shorthand identifier that is restricted to a subset of characters
 ```
 
-Some applications may choose to interpret this in particular ways. E.g. you may want to define all narrative text fields as being amenable to spellchecking, or machine learning natual language processing, or special kinds of indexing in ElasticSearch/Solr
+Some applications may choose to interpret this in particular ways. E.g. you may want to define all narrative text fields as being amenable to spellchecking, or machine learning natural language processing, or special kinds of indexing in ElasticSearch/Solr
 
 ## Why would I want to use enums over strings?
 
@@ -103,7 +103,7 @@ There are a variety of ways of tackling this in LinkML.
 The fundamental question is whether you want to either:
 
 1. define a fixed set of terms in the schema in advance
-2. specify the set of terms via a query (e.g. a particular ontology brannch)
+2. specify the set of terms via a query (e.g. a particular ontology branch)
 
 See the two questions below for answers to each
 
@@ -340,7 +340,7 @@ Note in the RDF/OWL representation, separate `rdfs:label` triples will be genera
 
 This has the advantage of keeping human-friendly nomenclature in the appropriate places without specifying redundant computer names and human names
 
-However, the autotmatic translation can be confusing, so some schemas opt to follow standard naming conventions in the schema:
+However, the automatic translation can be confusing, so some schemas opt to follow standard naming conventions in the schema:
 
 ```yaml
 default_prefix: my_schema
