@@ -6,7 +6,7 @@
 @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-<http://example.org/example163c> a linkml:SchemaDefinition ;
+<http://example.org/example163d> a linkml:SchemaDefinition ;
     dcterms:license "https://creativecommons.org/publicdomain/zero/1.0/" ;
     sh:declare [ sh:namespace linkml: ;
             sh:prefix "linkml" ],
@@ -15,12 +15,12 @@
     linkml:classes <http://example.org/C1> ;
     linkml:default_prefix "ex" ;
     linkml:default_range <http://example.org/string> ;
-    linkml:generation_date "2023-09-21T06:28:58"^^xsd:dateTime ;
-    linkml:id <http://example.org/sample/example163c> ;
+    linkml:generation_date "2023-09-21T07:30:23"^^xsd:dateTime ;
+    linkml:id <http://example.org/sample/example163d> ;
     linkml:imports linkml:types ;
     linkml:metamodel_version "1.7.0" ;
     linkml:source_file "issue_163d.yaml" ;
-    linkml:source_file_date "2023-09-21T05:38:21"^^xsd:dateTime ;
+    linkml:source_file_date "2023-09-21T06:49:28"^^xsd:dateTime ;
     linkml:source_file_size 239 ;
     linkml:types <http://example.org/boolean>,
         <http://example.org/curie>,
@@ -250,7 +250,7 @@
 
 <http://example.org/C1> a linkml:ClassDefinition ;
     skos:exactMatch <http://example.org/mapping1> ;
-    skos:inScheme <http://example.org/sample/example163c> ;
+    skos:inScheme <http://example.org/sample/example163d> ;
     linkml:class_uri <http://example.org/C1> ;
     linkml:definition_uri <http://example.org/C1> ;
     linkml:slot_usage [ ] .
