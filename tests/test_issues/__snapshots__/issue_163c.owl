@@ -1,45 +1,36 @@
-@prefix IAO: <http://purl.obolibrary.org/obo/IAO_> .
 @prefix ex: <http://example.org/> .
 @prefix linkml: <https://w3id.org/linkml/> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-
-<http://example.org/sample/example163c> a owl:Ontology ;
-    rdfs:label "example163c" ;
-    IAO:0000700 ex:C1,
-        ex:C2 ;
-    linkml:id "http://example.org/sample/example163c" ;
-    linkml:imports "linkml:types" .
-
-linkml:SubsetDefinition a owl:Class .
-
-linkml:TypeDefinition a owl:Class .
-
-linkml:topValue a owl:DatatypeProperty ;
-    rdfs:label "value" .
 
 ex:C1 a owl:Class,
         linkml:ClassDefinition ;
     rdfs:label "c1" ;
-    rdfs:subClassOf [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
-            owl:onClass linkml:String ;
-            owl:onProperty ex:source ] .
+    skos:inScheme <http://example.org/sample/example163c> .
 
 ex:C2 a owl:Class,
         linkml:ClassDefinition ;
     rdfs:label "c2" ;
-    rdfs:subClassOf [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
-            owl:onClass linkml:Uriorcurie ;
-            owl:onProperty ex:source ] .
+    skos:inScheme <http://example.org/sample/example163c> .
 
-linkml:SlotDefinition a owl:Class .
+ex:s1 a owl:ObjectProperty,
+        linkml:SlotDefinition ;
+    rdfs:label "s1" ;
+    rdfs:range xsd:string ;
+    skos:definition "This is a slot used in one context whose range is a description" ;
+    skos:inScheme <http://example.org/sample/example163c> ;
+    skos:prefLabel "source" .
 
-ex:source a owl:ObjectProperty,
-        linkml:SlotDefinition .
+ex:s2 a owl:ObjectProperty,
+        linkml:SlotDefinition ;
+    rdfs:label "s2" ;
+    rdfs:range xsd:anyURI ;
+    skos:definition "A second slot which wishes to be called \"source\", but is a URI" ;
+    skos:inScheme <http://example.org/sample/example163c> ;
+    skos:prefLabel "source" .
 
-linkml:ClassDefinition a owl:Class .
-
+<http://example.org/sample/example163c> a owl:Ontology ;
+    rdfs:label "example163c" .
 
