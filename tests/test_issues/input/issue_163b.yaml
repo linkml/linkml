@@ -2,8 +2,10 @@ id: http://example.org/sample/example1
 
 prefixes:
   linkml: https://w3id.org/linkml/
+  ex: http://example.org/sample/example1/
 
 default_range: string
+default_prefix: ex
 
 imports:
   - linkml:types
