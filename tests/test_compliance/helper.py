@@ -15,7 +15,7 @@ import pytest
 import rdflib
 import yaml
 from linkml_runtime import SchemaView
-from linkml_runtime.dumpers import yaml_dumper, rdflib_dumper
+from linkml_runtime.dumpers import rdflib_dumper, yaml_dumper
 from linkml_runtime.linkml_model import meta as meta
 from linkml_runtime.utils.compile_python import compile_python
 from linkml_runtime.utils.introspection import package_schemaview
@@ -25,11 +25,12 @@ from pydantic import BaseModel
 from linkml import generators as generators
 from linkml.generators import (
     JsonSchemaGenerator,
+    OwlSchemaGenerator,
     PydanticGenerator,
     PythonGenerator,
     ShaclGenerator,
     ShExGenerator,
-    sqlalchemygen, OwlSchemaGenerator,
+    sqlalchemygen,
 )
 from linkml.utils.generator import Generator
 from linkml.utils.sqlutils import SQLStore
@@ -279,7 +280,7 @@ def _generate_framework_output(
     return cached_generator_output[pair]
 
 
-def compare_rdf(expected: str, actual: str, subsumes: bool=False) -> Optional[Set]:
+def compare_rdf(expected: str, actual: str, subsumes: bool = False) -> Optional[Set]:
     """
     Compares two rdf serializations.
 

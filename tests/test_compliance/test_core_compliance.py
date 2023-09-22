@@ -7,6 +7,7 @@ from linkml_runtime.utils.formatutils import underscore
 
 from tests.test_compliance.helper import (
     JSON_SCHEMA,
+    OWL,
     PYDANTIC,
     PYDANTIC_ROOT_CLASS,
     PYTHON_DATACLASSES,
@@ -18,7 +19,7 @@ from tests.test_compliance.helper import (
     ValidationBehavior,
     check_data,
     metamodel_schemaview,
-    validated_schema, OWL,
+    validated_schema,
 )
 from tests.test_compliance.test_compliance import (
     CLASS_C,
@@ -410,7 +411,11 @@ def test_cardinality(framework, multivalued, required, data_name, value):
         "  )"
         "}"
     )
-    owl_mv = "" if multivalued else "[ a owl:Restriction ; owl:maxCardinality 1 ; owl:onProperty ex:s1 ],"
+    owl_mv = (
+        ""
+        if multivalued
+        else "[ a owl:Restriction ; owl:maxCardinality 1 ; owl:onProperty ex:s1 ],"
+    )
     owl = (
         "@prefix ex: <http://example.org/> ."
         "@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> ."
@@ -675,7 +680,9 @@ def test_non_standard_num_names(framework, enum_name, pv_name):
         },
     }
     name = ensafeify(f"EN{enum_name}_PV{pv_name}")
-    schema = validated_schema(test_non_standard_num_names, name, framework, classes=classes, enums=enums)
+    schema = validated_schema(
+        test_non_standard_num_names, name, framework, classes=classes, enums=enums
+    )
     expected_behavior = ValidationBehavior.IMPLEMENTS
     instance = {
         SLOT_S1: pv_name,

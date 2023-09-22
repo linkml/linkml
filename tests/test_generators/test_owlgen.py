@@ -12,9 +12,11 @@ KS = Namespace("https://w3id.org/linkml/tests/kitchen_sink/")
 LINKML = Namespace("https://w3id.org/linkml/")
 BIZ = Namespace("https://example.org/bizcodes/")
 
+
 @pytest.fixture
 def kitchen_sink_output():
     return "output/kitchen_sink.owl"
+
 
 def test_owlgen(kitchen_sink_path, kitchen_sink_output):
     """tests generation of owl schema-style ontologies"""
