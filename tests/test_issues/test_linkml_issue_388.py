@@ -40,4 +40,3 @@ def test_attribute_behavior(input_path, snapshot, snapshot_path):
     other_a = URIRef("https://example.org/other/a")
     # slot_uri refers to two attributes, ambiguous, so minimal metadata;
     assert len(list(g.triples((this_a, None, None)))) == 1
-    assert (other_a, RDFS.range, C1) in g

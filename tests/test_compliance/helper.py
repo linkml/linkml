@@ -15,7 +15,7 @@ import pytest
 import rdflib
 import yaml
 from linkml_runtime import SchemaView
-from linkml_runtime.dumpers import yaml_dumper
+from linkml_runtime.dumpers import yaml_dumper, rdflib_dumper
 from linkml_runtime.linkml_model import meta as meta
 from linkml_runtime.utils.compile_python import compile_python
 from linkml_runtime.utils.introspection import package_schemaview
@@ -29,7 +29,7 @@ from linkml.generators import (
     PythonGenerator,
     ShaclGenerator,
     ShExGenerator,
-    sqlalchemygen,
+    sqlalchemygen, OwlSchemaGenerator,
 )
 from linkml.utils.generator import Generator
 from linkml.utils.sqlutils import SQLStore
@@ -260,8 +260,8 @@ def _generate_framework_output(
             if framework in impdict:
                 expected = impdict[framework]
                 if isinstance(expected, str):
-                    if framework in [SHACL]:
-                        assert compare_rdf(expected, output) == set()
+                    if framework in [SHACL, OWL]:
+                        assert compare_rdf(expected, output, subsumes=framework in [OWL]) == set()
                     else:
                         if "".join(expected.split()) not in "".join(output.split()):
                             pytest.fail(
@@ -279,7 +279,17 @@ def _generate_framework_output(
     return cached_generator_output[pair]
 
 
-def compare_rdf(expected: str, actual: str) -> Optional[Set]:
+def compare_rdf(expected: str, actual: str, subsumes: bool=False) -> Optional[Set]:
+    """
+    Compares two rdf serializations.
+
+    Note: comparison is incomplete, blank nodes are ignored
+
+    :param expected:
+    :param actual:
+    :param subsumes: subsumption rather than equivalence check
+    :return:
+    """
     g_expected = rdflib.Graph()
     g_expected.parse(data=expected, format="turtle")
     g_actual = rdflib.Graph()
@@ -290,9 +300,12 @@ def compare_rdf(expected: str, actual: str) -> Optional[Set]:
 
     triples_expected = {_triple_minus_bnode(*t) for t in g_expected}
     triples_actual = {_triple_minus_bnode(*t) for t in g_actual}
-    return triples_expected.union(triples_actual).difference(
-        triples_expected.intersection(triples_actual)
-    )
+    if subsumes:
+        return triples_expected.difference(triples_actual)
+    else:
+        return triples_expected.union(triples_actual).difference(
+            triples_expected.intersection(triples_actual)
+        )
 
 
 def _obj_within_obj(expected: Dict, actual: Dict) -> bool:
@@ -608,9 +621,26 @@ def check_data(
             if py_inst is not None:
                 yaml.safe_load(yaml_dumper.dumps(py_inst))
                 # assert roundtripped.items() == object_to_validate.items()
+                if valid:
+                    if isinstance(gen, PythonGenerator):
+                        schemaview = SchemaView(yaml.dump(schema))
+                        g = rdflib_dumper.as_rdf_graph(
+                            py_inst,
+                            schemaview=schemaview,
+                            prefix_map={
+                                "_base": "http://example.org/",
+                                "X": "http://example.org/X/",
+                                "P": "http://example.org/P/",
+                            },
+                        )
+                        ttl_path = out_dir / f"{data_name}.ttl"
+                        g.serialize(ttl_path, format="turtle")
+                        g = rdflib.Graph()
+                        g.parse(ttl_path, format="turtle")
             logging.info(
                 f"fwk: {framework}, cls: {target_class}, inst: {object_to_validate}, valid: {valid}"
             )
+
         elif isinstance(gen, JsonSchemaGenerator):
             validator = JsonSchemaDataValidator(schema=yaml.dump(schema))
             errors = list(
@@ -632,6 +662,9 @@ def check_data(
                     assert errors != [], "Expected errors in json schema validation, but none found"
             if should_warn:
                 logging.warning("TODO: check for warnings")
+        elif isinstance(gen, OwlSchemaGenerator):
+            # TODO: use reasoner
+            expected_behavior = ValidationBehavior.UNTESTED
         elif isinstance(gen, ShaclGenerator):
             # TODO: use pyshacl
             expected_behavior = ValidationBehavior.UNTESTED

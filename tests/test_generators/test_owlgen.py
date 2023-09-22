@@ -1,3 +1,4 @@
+import pytest
 from linkml_runtime.linkml_model import SlotDefinition
 from rdflib import RDFS, SKOS, Graph, Literal, Namespace, URIRef
 from rdflib.collection import Collection
@@ -6,22 +7,16 @@ from rdflib.namespace import OWL, RDF
 from linkml.generators.owlgen import MetadataProfile, OwlSchemaGenerator
 from linkml.utils.schema_builder import SchemaBuilder
 
-# from tests.test_generators.environment import env
-
-# SCHEMA = env.input_path("kitchen_sink.yaml")
-# DATA = env.input_path("kitchen_sink_inst_01.yaml")
-# SHEXLOG = env.expected_path("owl_log.txt")
-# OWL_OUTPUT = env.expected_path("kitchen_sink.owl.ttl")
-# OWL_OUTPUT_RDFS = env.expected_path("kitchen_sink.rdfs-profile.owl.ttl")
-# OWL_OUTPUT_TMP = env.expected_path("tmp.owl.ttl")
-
 SYMP = Namespace("http://purl.obolibrary.org/obo/SYMP_")
 KS = Namespace("https://w3id.org/linkml/tests/kitchen_sink/")
 LINKML = Namespace("https://w3id.org/linkml/")
 BIZ = Namespace("https://example.org/bizcodes/")
 
+@pytest.fixture
+def kitchen_sink_output():
+    return "output/kitchen_sink.owl"
 
-def test_owlgen(kitchen_sink_path):
+def test_owlgen(kitchen_sink_path, kitchen_sink_output):
     """tests generation of owl schema-style ontologies"""
     owl = OwlSchemaGenerator(
         kitchen_sink_path,
@@ -31,6 +26,8 @@ def test_owlgen(kitchen_sink_path):
         ontology_uri_suffix=".owl.ttl",
     ).serialize()
     g = Graph()
+    with open(kitchen_sink_output, "w", encoding="utf-8") as file:
+        file.write(owl)
     g.parse(data=owl, format="turtle")
     owl_classes = list(g.subjects(RDF.type, OWL.Class))
     assert len(owl_classes) > 10
