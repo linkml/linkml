@@ -546,7 +546,6 @@ class OwlSchemaGenerator(Generator):
         # global properties
 
         slot_uri = self._prop_uri(slot)
-        logging.error(f"A{attribute} {slot_uri}")
 
         # Slots may be modeled as Object or Datatype Properties
         # if type_objects is True, then ALL slots are ObjectProperties
@@ -784,9 +783,19 @@ class OwlSchemaGenerator(Generator):
             raise ValueError(f"No such slot or attribute: {pn}")
         return URIRef(self.schemaview.get_uri(p, expand=True, native=False))
 
-    def _type_uri(self, tn: TypeDefinitionName) -> URIRef:
+    def _type_uri(self, tn: TypeDefinitionName, native: bool = None) -> URIRef:
+        if native is None:
+            native = self.type_objects
+        if native:
+            # UGLY HACK: Currently schemaview does not camelcase types
+            e = self.schemaview.get_element(tn, imports=True)
+            if e.from_schema is not None:
+                schema = next(sc for sc in self.schemaview.schema_map.values() if sc.id == e.from_schema)
+                pfx = schema.default_prefix
+                if pfx == "linkml":
+                    return URIRef(self.schemaview.expand_curie(f"{pfx}:{camelcase(tn)}"))
         t = self.schemaview.get_type(tn)
-        return URIRef(self.schemaview.get_uri(t, expand=True, native=True))
+        return URIRef(self.schemaview.get_uri(t, expand=True, native=native))
 
     def _add_metamodel_class(self, cname: str) -> None:
         metac = self.metamodel.schema.classes[cname]
