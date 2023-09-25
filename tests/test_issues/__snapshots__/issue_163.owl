@@ -43,19 +43,19 @@ ex:id a owl:ObjectProperty,
 ex:len a owl:ObjectProperty,
         linkml:SlotDefinition ;
     rdfs:label "len" ;
-    rdfs:range xsd:integer ;
+    rdfs:range linkml:Integer ;
     skos:inScheme <http://example.org/sample/example1> .
 
 ex:name a owl:ObjectProperty,
         linkml:SlotDefinition ;
     rdfs:label "name" ;
-    rdfs:range xsd:string ;
+    rdfs:range linkml:String ;
     skos:inScheme <http://example.org/sample/example1> .
 
 ex:unit a owl:ObjectProperty,
         linkml:SlotDefinition ;
     rdfs:label "unit" ;
-    rdfs:range xsd:string ;
+    rdfs:range ex:unitcode ;
     skos:inScheme <http://example.org/sample/example1> .
 
 ex:D1 a owl:Class,
@@ -78,19 +78,18 @@ ex:B a owl:Class,
     rdfs:subClassOf ex:A ;
     skos:inScheme <http://example.org/sample/example1> .
 
+ex:unitcode a owl:Class,
+        linkml:TypeDefinition ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:onDataRange ex:unitcode ;
+            owl:onProperty linkml:topValue ;
+            owl:qualifiedCardinality 1 ] .
+
 ex:C a owl:Class,
         linkml:ClassDefinition ;
     rdfs:label "c" ;
     rdfs:subClassOf ex:B ;
     skos:inScheme <http://example.org/sample/example1> .
-
-xsd:string a owl:Class,
-        linkml:TypeDefinition ;
-    rdfs:label "unitcode" ;
-    rdfs:subClassOf [ a owl:Restriction ;
-            owl:onDataRange xsd:string ;
-            owl:onProperty linkml:topValue ;
-            owl:qualifiedCardinality 1 ] .
 
 <http://example.org/sample/example1> a owl:Ontology ;
     rdfs:label "example1" .

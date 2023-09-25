@@ -8,10 +8,10 @@
             sh:prefix "this" ],
         [ sh:namespace <https://example.org/other/> ;
             sh:prefix "other" ],
-        [ sh:namespace xsd: ;
-            sh:prefix "xsd" ],
         [ sh:namespace linkml: ;
-            sh:prefix "linkml" ] ;
+            sh:prefix "linkml" ],
+        [ sh:namespace xsd: ;
+            sh:prefix "xsd" ] ;
     linkml:classes <https://example.org/this/C1>,
         <https://example.org/this/C2>,
         <https://example.org/this/C3> ;

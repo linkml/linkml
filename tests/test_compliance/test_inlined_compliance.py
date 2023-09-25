@@ -253,4 +253,5 @@ def test_inlined(framework, inlined, inlined_as_list, multivalued, foreign_key, 
         expected_behavior=implementation_status,
         target_class=CLASS_C,
         description=f"testing data shape {data} against schema",
+        exclude_rdf=not is_valid,
     )

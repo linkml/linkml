@@ -3,7 +3,6 @@
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
-@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 ex:C1 a owl:Class,
         linkml:ClassDefinition ;
@@ -18,7 +17,7 @@ ex:C2 a owl:Class,
 ex:s1 a owl:ObjectProperty,
         linkml:SlotDefinition ;
     rdfs:label "s1" ;
-    rdfs:range xsd:string ;
+    rdfs:range linkml:String ;
     skos:definition "This is a slot used in one context whose range is a description" ;
     skos:inScheme <http://example.org/sample/example163c> ;
     skos:prefLabel "source" .
@@ -26,7 +25,7 @@ ex:s1 a owl:ObjectProperty,
 ex:s2 a owl:ObjectProperty,
         linkml:SlotDefinition ;
     rdfs:label "s2" ;
-    rdfs:range xsd:anyURI ;
+    rdfs:range linkml:Uriorcurie ;
     skos:definition "A second slot which wishes to be called \"source\", but is a URI" ;
     skos:inScheme <http://example.org/sample/example163c> ;
     skos:prefLabel "source" .

@@ -1,5 +1,4 @@
 @prefix linkml: <https://w3id.org/linkml/> .
-@prefix other: <https://example.org/other/> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
@@ -9,10 +8,10 @@
 this:C2 a owl:Class ;
     rdfs:label "C2" ;
     rdfs:subClassOf [ a owl:Restriction ;
-            owl:allValuesFrom this:my_int ;
+            owl:maxCardinality 1 ;
             owl:onProperty this:a ],
         [ a owl:Restriction ;
-            owl:maxCardinality 1 ;
+            owl:allValuesFrom this:my_int ;
             owl:onProperty this:a ],
         [ a owl:Restriction ;
             owl:minCardinality 0 ;
@@ -22,26 +21,26 @@ this:C2 a owl:Class ;
 this:C3 a owl:Class ;
     rdfs:label "C3" ;
     rdfs:subClassOf [ a owl:Restriction ;
-            owl:minCardinality 0 ;
-            owl:onProperty other:a ],
-        [ a owl:Restriction ;
             owl:maxCardinality 1 ;
-            owl:onProperty other:a ],
+            owl:onProperty this:a ],
+        [ a owl:Restriction ;
+            owl:minCardinality 0 ;
+            owl:onProperty this:a ],
         [ a owl:Restriction ;
             owl:allValuesFrom this:C1 ;
-            owl:onProperty other:a ] ;
+            owl:onProperty this:a ] ;
     skos:inScheme <https://w3id.org/linkml/examples/personinfo> .
 
 this:C1 a owl:Class ;
     rdfs:label "C1" ;
     rdfs:subClassOf [ a owl:Restriction ;
-            owl:maxCardinality 1 ;
-            owl:onProperty this:a ],
-        [ a owl:Restriction ;
             owl:minCardinality 0 ;
             owl:onProperty this:a ],
         [ a owl:Restriction ;
             owl:allValuesFrom this:my_str ;
+            owl:onProperty this:a ],
+        [ a owl:Restriction ;
+            owl:maxCardinality 1 ;
             owl:onProperty this:a ] ;
     skos:inScheme <https://w3id.org/linkml/examples/personinfo> .
 
@@ -59,11 +58,6 @@ this:my_str a owl:Class ;
 
 linkml:topValue a owl:DatatypeProperty ;
     rdfs:label "value" .
-
-other:a a owl:ObjectProperty ;
-    rdfs:label "a" ;
-    skos:definition "other-a in the context of C3" ;
-    skos:inScheme <https://w3id.org/linkml/examples/personinfo> .
 
 <https://w3id.org/linkml/examples/personinfo> a owl:Ontology ;
     rdfs:label "personinfo" .

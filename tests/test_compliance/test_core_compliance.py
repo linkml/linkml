@@ -195,6 +195,10 @@ def test_type_range(framework, linkml_type, example_value):
             elif framework == JSON_SCHEMA:
                 if linkml_type in ["float", "double"] and isinstance(v, int):
                     expected_behavior = ValidationBehavior.ACCEPTS
+            elif framework == OWL:
+                # OWL validation currently depends on python dataclasses to make instances;
+                # this coerces
+                expected_behavior = ValidationBehavior.INCOMPLETE
     if framework == SQL_DDL_SQLITE:
         if not is_valid:
             # SQLite effectively coerces everything and has no type checking
@@ -339,6 +343,14 @@ def test_date_types(framework, linkml_type, example_value, is_valid):
             expected_behavior = ValidationBehavior.FALSE_POSITIVE
     if ("+" in example_value or "Z" in example_value) and is_valid:
         if framework in [PYDANTIC, PYTHON_DATACLASSES]:
+            expected_behavior = ValidationBehavior.FALSE_POSITIVE
+    if framework == OWL:
+        # OWL validation currently depends on python dataclasses to make instances;
+        # this coerces;
+        if not is_valid:
+            expected_behavior = ValidationBehavior.INCOMPLETE
+        else:
+            # TODO: investigate this, hermit issue?
             expected_behavior = ValidationBehavior.FALSE_POSITIVE
     check_data(
         schema,
@@ -497,6 +509,10 @@ def test_cardinality(framework, multivalued, required, data_name, value):
         if not is_valid:
             # SQLite effectively coerces everything and has no type checking
             expected_behavior = ValidationBehavior.INCOMPLETE
+    if framework == OWL:
+        if not is_valid:
+            # OWL is open world
+            expected_behavior = ValidationBehavior.INCOMPLETE
     check_data(
         schema,
         data_name,
@@ -622,9 +638,11 @@ def test_non_standard_names(
     instance = {
         safe_slot_name: "x",
     }
+    exclude_rdf = False
     if slot_name.startswith("1"):
         if framework in [PYTHON_DATACLASSES, PYDANTIC, SQL_DDL_SQLITE]:
             expected_behavior = ValidationBehavior.INCOMPLETE
+        exclude_rdf = True
     check_data(
         schema,
         "test",
@@ -635,6 +653,7 @@ def test_non_standard_names(
         target_class=safe_class_name,
         # coerced=coerced,
         description="nom-standard names are allowed",
+        exclude_rdf=exclude_rdf,
     )
 
 
@@ -687,9 +706,11 @@ def test_non_standard_num_names(framework, enum_name, pv_name):
     instance = {
         SLOT_S1: pv_name,
     }
-    if "[" in enum_name and framework in [PYDANTIC, SQL_DDL_SQLITE, PYTHON_DATACLASSES]:
+    exclude_rdf = False
+    if "[" in enum_name and framework in [PYDANTIC, SQL_DDL_SQLITE, PYTHON_DATACLASSES, OWL]:
         # TODO: need to escape []s
         expected_behavior = ValidationBehavior.INCOMPLETE
+        exclude_rdf = True
     if pv_name == " " and framework == PYDANTIC:
         expected_behavior = ValidationBehavior.INCOMPLETE
     check_data(
@@ -702,4 +723,5 @@ def test_non_standard_num_names(framework, enum_name, pv_name):
         target_class=CLASS_C,
         # coerced=coerced,
         description="nom-standard enum/pv names are allowed",
+        exclude_rdf=exclude_rdf,
     )

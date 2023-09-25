@@ -103,6 +103,7 @@ def test_any_of(framework, data_name, value, is_valid, use_default_range):
         expected_behavior = ValidationBehavior.INCOMPLETE
     if framework == JSON_SCHEMA and use_default_range:
         expected_behavior = ValidationBehavior.INCOMPLETE
+    # TODO: rdflib transformer has issues around ranges
     check_data(
         schema,
         data_name,
@@ -112,6 +113,7 @@ def test_any_of(framework, data_name, value, is_valid, use_default_range):
         target_class=CLASS_C,
         expected_behavior=expected_behavior,
         description=f"validity {is_valid} check for value {value}",
+        exclude_rdf=True
     )
 
 
@@ -394,21 +396,21 @@ def test_min_max(framework, min_val, max_val, value):
     Tests behavior of minimum and maximum value.
 
     :param framework:
-    :param data_name:
-    :param value:
-    :param is_valid:
-    :param use_default_range:
+    :param min_val: minimum value for slot in schema
+    :param max_val: maximum value for slot in schema
+    :param value: value of slot in data to test with
     :return:
     """
     classes = {
         CLASS_C: {
             "attributes": {
                 SLOT_S1: {
+                    "required": True,
                     "range": "integer",
                     "minimum_value": min_val,
                     "maximum_value": max_val,
                     "_mappings": {
-                        PYDANTIC: f"{SLOT_S1}: Optional[int] = Field(None, ge={min_val}, le={max_val})",
+                        PYDANTIC: f"{SLOT_S1}: int = Field(..., ge={min_val}, le={max_val})",
                     },
                 },
             },

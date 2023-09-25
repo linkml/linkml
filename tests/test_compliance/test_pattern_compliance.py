@@ -12,7 +12,7 @@ from tests.test_compliance.helper import (
     SQL_DDL_SQLITE,
     ValidationBehavior,
     check_data,
-    validated_schema,
+    validated_schema, OWL,
 )
 from tests.test_compliance.test_compliance import CLASS_C, CORE_FRAMEWORKS, SLOT_ID, SLOT_S1
 
@@ -58,6 +58,8 @@ def test_pattern(framework, schema_name, pattern, data_name, value):
     if framework in [PYDANTIC, PYTHON_DATACLASSES, SQL_DDL_SQLITE]:
         if not is_valid:
             implementation_status = ValidationBehavior.INCOMPLETE
+    if framework == OWL:
+        pytest.skip("Hermit reasoning over xsd regular expressions is broken")
     check_data(
         schema,
         data_name,

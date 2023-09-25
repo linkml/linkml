@@ -9,7 +9,7 @@ from tests.test_compliance.helper import (
     ValidationBehavior,
     check_data,
     metamodel_schemaview,
-    validated_schema,
+    validated_schema, OWL,
 )
 from tests.test_compliance.test_compliance import CLASS_C, CORE_FRAMEWORKS, SLOT_S1
 
@@ -91,6 +91,10 @@ def test_typeof(framework, linkml_type, example_value):
         if not is_valid:
             # SQLite effectively coerces everything and has no type checking
             expected_behavior = ValidationBehavior.INCOMPLETE
+    if framework == OWL:
+        # OWL validation currently depends on python dataclasses to make instances;
+        # this coerces
+        expected_behavior = ValidationBehavior.INCOMPLETE
     check_data(
         schema,
         f"{type(example_value).__name__}-{example_value}",
