@@ -7,12 +7,13 @@ import re
 import pytest
 
 from tests.test_compliance.helper import (
+    OWL,
     PYDANTIC,
     PYTHON_DATACLASSES,
     SQL_DDL_SQLITE,
     ValidationBehavior,
     check_data,
-    validated_schema, OWL,
+    validated_schema,
 )
 from tests.test_compliance.test_compliance import CLASS_C, CORE_FRAMEWORKS, SLOT_ID, SLOT_S1
 

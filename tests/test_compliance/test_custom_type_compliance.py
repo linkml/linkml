@@ -3,13 +3,14 @@ from linkml_runtime.utils.formatutils import camelcase
 
 from tests.test_compliance.helper import (
     JSON_SCHEMA,
+    OWL,
     PYDANTIC,
     PYTHON_DATACLASSES,
     SQL_DDL_SQLITE,
     ValidationBehavior,
     check_data,
     metamodel_schemaview,
-    validated_schema, OWL,
+    validated_schema,
 )
 from tests.test_compliance.test_compliance import CLASS_C, CORE_FRAMEWORKS, SLOT_S1
 

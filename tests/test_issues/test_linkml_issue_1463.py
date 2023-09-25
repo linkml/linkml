@@ -1,6 +1,6 @@
 import pytest
 from linkml_runtime import LINKML
-from rdflib import OWL, RDF, RDFS, SKOS, XSD, Literal, Namespace, URIRef
+from rdflib import OWL, RDF, RDFS, SKOS, Literal, Namespace, URIRef
 
 from linkml.generators.owlgen import OwlSchemaGenerator
 
@@ -8,13 +8,7 @@ PERSONINFO = Namespace("https://w3id.org/linkml/examples/personinfo/")
 SCHEMA_HTTP = Namespace("http://schema.org/")
 
 
-@pytest.mark.parametrize(
-    "type_objects,metaclasses",
-    [
-        (True, True),
-        (False, False)
-    ]
-)
+@pytest.mark.parametrize("type_objects,metaclasses", [(True, True), (False, False)])
 def test_owlgen_personinfo(input_path, type_objects, metaclasses):
     """
     Test for https://github.com/linkml/linkml/issues/1463
@@ -49,14 +43,14 @@ def test_owlgen_personinfo(input_path, type_objects, metaclasses):
         expected.extend(
             [
                 (PERSONINFO.age_in_years, RDF.type, OWL.ObjectProperty),
-                #(PERSONINFO.age_in_years, RDFS.range, LINKML.Integer),
+                # (PERSONINFO.age_in_years, RDFS.range, LINKML.Integer),
             ]
         )
     else:
         expected.extend(
             [
                 (PERSONINFO.age_in_years, RDF.type, OWL.DatatypeProperty),
-                #(PERSONINFO.age_in_years, RDFS.range, XSD.integer),
+                # (PERSONINFO.age_in_years, RDFS.range, XSD.integer),
             ]
         )
     for t in expected:

@@ -113,7 +113,7 @@ def test_any_of(framework, data_name, value, is_valid, use_default_range):
         target_class=CLASS_C,
         expected_behavior=expected_behavior,
         description=f"validity {is_valid} check for value {value}",
-        exclude_rdf=True
+        exclude_rdf=True,
     )
 
 

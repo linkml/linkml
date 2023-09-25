@@ -7,24 +7,23 @@ import os
 from collections import defaultdict
 from dataclasses import dataclass, field
 from enum import Enum, unique
-from typing import List, Mapping, Optional, Set, Union, Tuple
+from typing import List, Mapping, Optional, Set, Tuple, Union
 
 import click
 from linkml_runtime import SchemaView
 from linkml_runtime.linkml_model.meta import (
     AnonymousClassExpression,
     AnonymousSlotExpression,
+    AnonymousTypeExpression,
     ClassDefinition,
     ClassDefinitionName,
     Definition,
-    Element,
-    ElementName,
     EnumDefinition,
     EnumDefinitionName,
     SlotDefinition,
     SlotDefinitionName,
     TypeDefinition,
-    TypeDefinitionName, AnonymousTypeExpression,
+    TypeDefinitionName,
 )
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.introspection import package_schemaview
@@ -395,7 +394,6 @@ class OwlSchemaGenerator(Generator):
             main_slot = slot
 
         owl_exprs = []
-        graph = self.graph
 
         if slot.any_of:
             owl_exprs.append(
@@ -497,7 +495,12 @@ class OwlSchemaGenerator(Generator):
         self.node_owltypes[this_expr].update(self._get_owltypes(owl_types, owl_exprs))
         return this_expr
 
-    def add_constraints(self, element: Union[SlotDefinition, AnonymousSlotExpression, TypeDefinition, AnonymousTypeExpression]) -> Tuple[List[BNode], Set[OWL_TYPE]]:
+    def add_constraints(
+        self,
+        element: Union[
+            SlotDefinition, AnonymousSlotExpression, TypeDefinition, AnonymousTypeExpression
+        ],
+    ) -> Tuple[List[BNode], Set[OWL_TYPE]]:
         owl_types = set()
         owl_exprs = []
         graph = self.graph
@@ -524,7 +527,6 @@ class OwlSchemaGenerator(Generator):
                 graph.add((x, constraint_prop, Literal(constraint_val)))
                 owl_exprs.append(dr)
         return owl_exprs, owl_types
-
 
     def add_slot(self, slot: SlotDefinition, attribute=False) -> None:
         # determine if this is a slot that has been induced by slot_usage; if so
@@ -622,14 +624,14 @@ class OwlSchemaGenerator(Generator):
             self.graph.add((type_uri, RDF.type, RDFS.Datatype))
             eq_conjunctions = []
             if typ.typeof and type_uri != self._type_uri(typ.typeof):
-                #self.graph.add((type_uri, OWL.equivalentClass, self._type_uri(typ.typeof)))
+                # self.graph.add((type_uri, OWL.equivalentClass, self._type_uri(typ.typeof)))
                 eq_conjunctions.append(self._type_uri(typ.typeof))
-                #self.graph.add((type_uri, RDFS.subClassOf, self._type_uri(typ.typeof)))
+                # self.graph.add((type_uri, RDFS.subClassOf, self._type_uri(typ.typeof)))
             if typ.uri and type_uri != URIRef(self.schemaview.expand_curie(typ.uri)):
                 eq_conjunctions.append(URIRef(self.schemaview.expand_curie(typ.uri)))
-                #self.graph.add(
+                # self.graph.add(
                 #    (type_uri, OWL.equivalentClass, URIRef(self.schemaview.expand_curie(typ.uri)))
-                #)
+                # )
             constraints_exprs, _ = self.add_constraints(typ)
             eq_conjunctions.extend(constraints_exprs)
             ixn = self._intersection_of(eq_conjunctions)
@@ -685,7 +687,9 @@ class OwlSchemaGenerator(Generator):
             return True
         return profile in self.metadata_profiles or profile == self.metadata_profile
 
-    def _get_owltypes(self, current: Set[OWL_TYPE], exprs: List[Union[BNode, URIRef]]) -> Set[OWL_TYPE]:
+    def _get_owltypes(
+        self, current: Set[OWL_TYPE], exprs: List[Union[BNode, URIRef]]
+    ) -> Set[OWL_TYPE]:
         """
         Gets the OWL types of specified expressions plus current owl types.
 
@@ -755,7 +759,11 @@ class OwlSchemaGenerator(Generator):
         return self._union_of(sub_exprs)
 
     def _boolean_expression(
-        self, exprs: List[Union[BNode, URIRef]], predicate: URIRef, node: Optional[URIRef] = None, owl_types: Set[OWL_TYPE] = None,
+        self,
+        exprs: List[Union[BNode, URIRef]],
+        predicate: URIRef,
+        node: Optional[URIRef] = None,
+        owl_types: Set[OWL_TYPE] = None,
     ) -> Optional[Union[BNode, URIRef]]:
         graph = self.graph
         if len(exprs) == 0:
@@ -817,7 +825,7 @@ class OwlSchemaGenerator(Generator):
             raise ValueError(f"No such slot or attribute: {pn}")
         try:
             return URIRef(self.schemaview.get_uri(p, expand=True, native=self.use_native_uris))
-        except (KeyError, ValueError) as e:
+        except (KeyError, ValueError):
             # TODO: fix this upstream in schemaview
             default_prefix = self.schemaview.schema.default_prefix or ""
             return URIRef(self.schemaview.expand_curie(f"{default_prefix}:{underscore(p.name)}"))
@@ -829,7 +837,9 @@ class OwlSchemaGenerator(Generator):
             # UGLY HACK: Currently schemaview does not camelcase types
             e = self.schemaview.get_element(tn, imports=True)
             if e.from_schema is not None:
-                schema = next(sc for sc in self.schemaview.schema_map.values() if sc.id == e.from_schema)
+                schema = next(
+                    sc for sc in self.schemaview.schema_map.values() if sc.id == e.from_schema
+                )
                 pfx = schema.default_prefix
                 if pfx == "linkml":
                     return URIRef(self.schemaview.expand_curie(f"{pfx}:{camelcase(tn)}"))

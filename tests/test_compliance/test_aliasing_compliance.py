@@ -6,7 +6,6 @@ Aliases include:
 - the ``alias`` metaslot
 - uri aliases for RDF translation: class_uri, slot_uri
 """
-import re
 
 import pytest
 import rdflib
@@ -14,15 +13,22 @@ from rdflib import URIRef
 
 from linkml.reporting.model import RDF, RDFS
 from tests.test_compliance.helper import (
+    OWL,
     PYDANTIC,
     PYTHON_DATACLASSES,
-    SQL_DDL_POSTGRES,
-    SQL_DDL_SQLITE,
     ValidationBehavior,
     check_data,
-    validated_schema, OWL,
+    validated_schema,
 )
-from tests.test_compliance.test_compliance import CLASS_C, CORE_FRAMEWORKS, SLOT_S1, TYPE_T, ENUM_E, PV_1, PV_2
+from tests.test_compliance.test_compliance import (
+    CLASS_C,
+    CORE_FRAMEWORKS,
+    ENUM_E,
+    PV_1,
+    PV_2,
+    SLOT_S1,
+    TYPE_T,
+)
 
 SDO_C = "schema:C"
 SDO_S1 = "schema:s1"
@@ -119,7 +125,7 @@ def test_alias(framework, class_uri, slot_uri, slot_alias, type_uri, data_name, 
         target_class=CLASS_C,
         expected_behavior=expected_behavior,
         description="alias",
-        exclude_rdf=slot_alias is not None
+        exclude_rdf=slot_alias is not None,
     )
 
 
@@ -161,14 +167,13 @@ def test_enum_alias(framework, enum_uri, pv_meaning, data_name, instance, is_val
                 PV_1: {
                     "meaning": pv_meaning,
                 },
-                PV_2: {
-
-                }
+                PV_2: {},
             },
             "_mappings": {
-                OWL: [(enum_uriref, RDF.type, OWLNS.Class),
-                      (pv_uriref, RDF.type, OWLNS.Class), # May change
-                      ],
+                OWL: [
+                    (enum_uriref, RDF.type, OWLNS.Class),
+                    (pv_uriref, RDF.type, OWLNS.Class),  # May change
+                ],
             },
         }
     }
@@ -193,6 +198,5 @@ def test_enum_alias(framework, enum_uri, pv_meaning, data_name, instance, is_val
         target_class=CLASS_C,
         expected_behavior=expected_behavior,
         description="alias_enum",
-        #exclude_rdf=pv_meaning is not None, ## TODO
+        # exclude_rdf=pv_meaning is not None, ## TODO
     )
-

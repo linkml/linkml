@@ -79,11 +79,12 @@ GENERATORS: Dict[FRAMEWORK, Union[Type[Generator], Tuple[Type[Generator], Dict[s
     SQL_DDL_POSTGRES: (generators.SQLTableGenerator, {"dialect": "postgresql"}),
     OWL: (
         generators.OwlSchemaGenerator,
-        {"metaclasses": False,
-         "type_objects": False,
-         "use_native_uris": False,
-         },
-    )
+        {
+            "metaclasses": False,
+            "type_objects": False,
+            "use_native_uris": False,
+        },
+    ),
 }
 
 
@@ -303,7 +304,10 @@ def _generate_framework_output(
 
 TRIPLE = Tuple[rdflib.URIRef, rdflib.URIRef, Union[rdflib.URIRef, rdflib.Literal]]
 
-def compare_rdf(expected: Union[str, List[TRIPLE]], actual: str, subsumes: bool = False) -> Optional[Set]:
+
+def compare_rdf(
+    expected: Union[str, List[TRIPLE]], actual: str, subsumes: bool = False
+) -> Optional[Set]:
     """
     Compares two rdf serializations.
 
@@ -581,7 +585,7 @@ def check_data(
     target_class: str = None,
     description: str = None,
     coerced: Dict = None,
-    exclude_rdf = False,
+    exclude_rdf=False,
 ):
     """
     Validate the given object against the given schema using the given framework.
@@ -699,7 +703,9 @@ def check_data(
             if not exclude_rdf:
                 ttl_path = out_dir / f"{data_name}.ttl"
                 _convert_data_to_rdf(schema, object_to_validate, target_class, ttl_path)
-                coherent = robot_check_coherency(ttl_path, output_path, str(ttl_path) + ".reasoned.owl")
+                coherent = robot_check_coherency(
+                    ttl_path, output_path, str(ttl_path) + ".reasoned.owl"
+                )
                 if coherent is not None:
                     if valid:
                         assert coherent, f"Coherency check failed for {ttl_path}"
@@ -742,7 +748,10 @@ def check_data(
             )
         )
 
-def _convert_data_to_rdf(schema: dict, instance: dict, target_class: str, ttl_path: str) -> Optional[rdflib.Graph]:
+
+def _convert_data_to_rdf(
+    schema: dict, instance: dict, target_class: str, ttl_path: str
+) -> Optional[rdflib.Graph]:
     ttl_path = str(ttl_path)
     gen, output, _ = _generate_framework_output(schema, PYTHON_DATACLASSES)
     mod = compile_python(output)
@@ -750,6 +759,7 @@ def _convert_data_to_rdf(schema: dict, instance: dict, target_class: str, ttl_pa
     try:
         py_inst = py_cls(**instance)
     except Exception as e:
+        logging.info(f"Could not instantiate {py_cls} from {instance}; exception: {e}")
         return None
     schemaview = SchemaView(yaml.dump(schema))
     g = rdflib_dumper.as_rdf_graph(
@@ -768,11 +778,15 @@ def _convert_data_to_rdf(schema: dict, instance: dict, target_class: str, ttl_pa
     yaml_dumper.dump(roundtripped, to_file=ttl_path + ".yaml")
     return g
 
+
 @lru_cache
 def robot_is_on_path():
     return shutil.which("robot") is not None
 
-def robot_check_coherency(data_path: str, ontology_path: str, output_path: str = None) -> Optional[bool]:
+
+def robot_check_coherency(
+    data_path: str, ontology_path: str, output_path: str = None
+) -> Optional[bool]:
     """
     Check the data validates using an OWL reasoner, executed by robot.
 
@@ -787,9 +801,22 @@ def robot_check_coherency(data_path: str, ontology_path: str, output_path: str =
     if not robot_is_on_path():
         return None
     merged = str(data_path) + ".merged.owl"
-    cmd = ["robot", "merge", "-i", data_path, "-i", ontology_path, "-o", merged,
-           "merge", "-i", merged,
-           "reason", "-r", "hermit"]
+    cmd = [
+        "robot",
+        "merge",
+        "-i",
+        data_path,
+        "-i",
+        ontology_path,
+        "-o",
+        merged,
+        "merge",
+        "-i",
+        merged,
+        "reason",
+        "-r",
+        "hermit",
+    ]
     if output_path:
         cmd.extend(["-o", output_path])
     try:
@@ -799,4 +826,5 @@ def robot_check_coherency(data_path: str, ontology_path: str, output_path: str =
         logging.info(result.stdout)
         return True
     except subprocess.CalledProcessError as e:
+        logging.info(f"Robot call failed, likely unsatisfiable: {e}")
         return False

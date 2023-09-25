@@ -1,5 +1,5 @@
 from rdflib import Graph, Literal, URIRef
-from rdflib.namespace import OWL, RDF, RDFS, XSD
+from rdflib.namespace import OWL, RDF, RDFS
 
 from linkml.generators.owlgen import OwlSchemaGenerator
 
@@ -39,4 +39,4 @@ def test_name_mangling(input_path, snapshot):
     sv = gen.schemaview
     my_str = sv.get_type("my_str")
     assert my_str.uri == "xsd:string"
-    #assert my_str.definition_uri == "https://w3id.org/linkml/examples/test/MyStr"
+    # assert my_str.definition_uri == "https://w3id.org/linkml/examples/test/MyStr"
