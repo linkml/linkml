@@ -2,7 +2,7 @@
 # Slot: path_rule
 
 
-a rule for inferring a slot assignment based on evaluating a path through a sequence of slot assignments
+a rule for inferring a slot assignment based on evaluating a path through a sequence of slot assignemnts
 
 URI: [linkml:path_rule](https://w3id.org/linkml/path_rule)
 

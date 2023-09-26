@@ -1,7 +1,4 @@
-"""Generate OWL ontology corresponding to information model
-
-model classes are translated to OWL classes, slots to OWL properties.
-"""
+"""Generate OWL ontology representation of a LinkML schema."""
 import logging
 import os
 from collections import defaultdict
@@ -81,9 +78,15 @@ class OwlSchemaGenerator(Generator):
 
     `OWL Generator Docs <https://linkml.io/linkml/generators/owl>`_
 
-    Attributes:
-        type_objects    if True, represent TypeDefinitions as objects; if False, as literals
-        metaclasses     if True, include OWL representations of ClassDefinition, SlotDefinition, etc. Introduces punning
+    .
+
+    - LinkML ClassDefinitions are translated to OWL Classes
+    - LinkML SlotDefinitions are translated to OWL Properties
+    - LinkML Enumerations are translated to OWL Classes
+    - LinkML TypeDefinitions are translated to OWL Datatypes
+
+    The translation aims to be as faithful as possible. But note that OWL is open-world,
+    whereas LinkML is closed-world
     """
 
     # ClassVars
@@ -98,17 +101,36 @@ class OwlSchemaGenerator(Generator):
     # ObjectVars
     metadata_profile: MetadataProfile = None
     """Deprecated - use metadata_profiles."""
+
     metadata_profiles: List[MetadataProfile] = field(default_factory=lambda: [])
-    ontology_uri_suffix: str = None
+    """By default, use the linkml metadata profile,
+    this allows for overrides."""
+
     metaclasses: bool = field(default_factory=lambda: True)
+    """if True, include OWL representations of ClassDefinition, SlotDefinition, etc. Introduces punning"""
+
     add_ols_annotations: bool = field(default_factory=lambda: True)
     graph: Optional[Graph] = None
+    """Mutable graph that is being built up during OWL generation."""
+
     top_value_uri: Optional[URIRef] = None
+    """If metaclasses=True, then this property is used to connect object shadows to literals"""
+
     type_objects: bool = field(default_factory=lambda: True)
+    """if True, represent TypeDefinitions as objects; if False, as literals"""
+
     assert_equivalent_classes: bool = field(default_factory=lambda: False)
+    """If True, assert equivalence between definition_uris and class_uris"""
+
     use_native_uris: bool = field(default_factory=lambda: True)
+    """If True, use the definition_uris, otherwise use class_uris."""
+
     mixins_as_expressions: bool = None
+    """EXPERIMENTAL: If True, use OWL existential restrictions to represent mixins"""
+
     slot_is_literal_map: Mapping[str, Set[bool]] = field(default_factory=lambda: defaultdict(set))
+    """DEPRECATED: use node_owltypes"""
+
     node_owltypes: Mapping[Union[BNode, URIRef], Set[OWL_TYPE]] = field(
         default_factory=lambda: defaultdict(set)
     )
@@ -118,6 +140,7 @@ class OwlSchemaGenerator(Generator):
     """Reduce complex expressions to simpler forms"""
 
     target_profile: OWLProfile = field(default_factory=lambda: OWLProfile.dl)
+    """Target OWL profile. Currently the only distinction is between DL and Full"""
 
     metamodel_schemaview: SchemaView = field(
         default_factory=lambda: package_schemaview("linkml_runtime.linkml_model.meta")
@@ -133,8 +156,6 @@ class OwlSchemaGenerator(Generator):
         schema = sv.schema
         owl_id = schema.id
         mergeimports = self.mergeimports
-        if self.ontology_uri_suffix:
-            owl_id = f"{owl_id}{self.ontology_uri_suffix}"
         base = URIRef(owl_id)
         graph = Graph(identifier=base)
         self.graph = graph
