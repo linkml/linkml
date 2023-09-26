@@ -106,7 +106,7 @@ class DataCheck(BaseModel):
     framework: str
     expected_behavior: ValidationBehavior
     description: str = None
-    notes: str = None
+    notes: Optional[str] = None
 
 
 class Feature(BaseModel):
@@ -744,7 +744,7 @@ def check_data(
                 framework=framework,
                 expected_behavior=expected_behavior,
                 description=description,
-                notes=notes,
+                notes=str(notes),
             )
         )
 

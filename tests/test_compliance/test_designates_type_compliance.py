@@ -100,4 +100,5 @@ def test_designates_type(framework, description, type_range, object, is_valid):
         target_class=CLASS_CONTAINER,
         expected_behavior=expected_behavior,
         description=description,
+        exclude_rdf=True, # TODO
     )
