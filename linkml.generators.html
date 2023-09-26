@@ -2849,6 +2849,11 @@ Note that apply_to classes are transformed to mixins</p>
 <dd></dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="linkml.generators.pythongen.PythonGenerator.gen_constructor">
+<span class="sig-name descname"><span class="pre">gen_constructor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.ClassDefinition" title="linkml_runtime.linkml_model.meta.ClassDefinition"><span class="pre">ClassDefinition</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/linkml/generators/pythongen.html#PythonGenerator.gen_constructor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.pythongen.PythonGenerator.gen_constructor" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="linkml.generators.pythongen.PythonGenerator.gen_enum">
 <span class="sig-name descname"><span class="pre">gen_enum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">enum</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">EnumDefinition</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/linkml/generators/pythongen.html#PythonGenerator.gen_enum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.pythongen.PythonGenerator.gen_enum" title="Permalink to this definition">#</a></dt>
 <dd><p>Generate an enum class
@@ -4909,6 +4914,11 @@ Note that apply_to classes are transformed to mixins</p>
 <dd></dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="linkml.generators.PythonGenerator.gen_constructor">
+<span class="sig-name descname"><span class="pre">gen_constructor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.ClassDefinition" title="linkml_runtime.linkml_model.meta.ClassDefinition"><span class="pre">ClassDefinition</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/linkml/generators/pythongen.html#PythonGenerator.gen_constructor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.PythonGenerator.gen_constructor" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="linkml.generators.PythonGenerator.gen_enum">
 <span class="sig-name descname"><span class="pre">gen_enum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">enum</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">EnumDefinition</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/linkml/generators/pythongen.html#PythonGenerator.gen_enum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.PythonGenerator.gen_enum" title="Permalink to this definition">#</a></dt>
 <dd><p>Generate an enum class
@@ -6250,6 +6260,7 @@ open file or a pre-parsed schema</p>
 <li><a class="reference internal" href="#linkml.generators.pythongen.PythonGenerator.gen_classdef"><code class="docutils literal notranslate"><span class="pre">PythonGenerator.gen_classdef()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.pythongen.PythonGenerator.gen_classdefs"><code class="docutils literal notranslate"><span class="pre">PythonGenerator.gen_classdefs()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.pythongen.PythonGenerator.gen_classvars"><code class="docutils literal notranslate"><span class="pre">PythonGenerator.gen_classvars</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.pythongen.PythonGenerator.gen_constructor"><code class="docutils literal notranslate"><span class="pre">PythonGenerator.gen_constructor()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.pythongen.PythonGenerator.gen_enum"><code class="docutils literal notranslate"><span class="pre">PythonGenerator.gen_enum()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.pythongen.PythonGenerator.gen_enum_comment"><code class="docutils literal notranslate"><span class="pre">PythonGenerator.gen_enum_comment()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.pythongen.PythonGenerator.gen_enum_definition"><code class="docutils literal notranslate"><span class="pre">PythonGenerator.gen_enum_definition()</span></code></a></li>
@@ -6609,6 +6620,7 @@ open file or a pre-parsed schema</p>
 <li><a class="reference internal" href="#linkml.generators.PythonGenerator.gen_classdef"><code class="docutils literal notranslate"><span class="pre">PythonGenerator.gen_classdef()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.PythonGenerator.gen_classdefs"><code class="docutils literal notranslate"><span class="pre">PythonGenerator.gen_classdefs()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.PythonGenerator.gen_classvars"><code class="docutils literal notranslate"><span class="pre">PythonGenerator.gen_classvars</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.PythonGenerator.gen_constructor"><code class="docutils literal notranslate"><span class="pre">PythonGenerator.gen_constructor()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.PythonGenerator.gen_enum"><code class="docutils literal notranslate"><span class="pre">PythonGenerator.gen_enum()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.PythonGenerator.gen_enum_comment"><code class="docutils literal notranslate"><span class="pre">PythonGenerator.gen_enum_comment()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.PythonGenerator.gen_enum_definition"><code class="docutils literal notranslate"><span class="pre">PythonGenerator.gen_enum_definition()</span></code></a></li>
