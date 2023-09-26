@@ -2,11 +2,13 @@ import keyword
 import logging
 import os
 import re
+from copy import copy
 from dataclasses import dataclass, field
 from types import ModuleType
 from typing import Callable, Dict, Iterator, List, Optional, Set, Tuple, Union
 
 import click
+from linkml_runtime import SchemaView
 from linkml_runtime.linkml_model import linkml_files
 from linkml_runtime.linkml_model.meta import (
     ClassDefinition,
@@ -65,6 +67,7 @@ class PythonGenerator(Generator):
 
     def __post_init__(self) -> None:
         self.sourcefile = self.schema
+        self.schemaview = SchemaView(self.schema)
         super().__post_init__()
         if self.format is None:
             self.format = self.valid_formats[0]
@@ -307,14 +310,24 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
             if ":/" in dflt_prefix
             else dflt_prefix.upper()
         )
-        return "\n".join(
-            [
-                f"{pfx.upper().replace('.', '_').replace('-', '_')} = CurieNamespace('{pfx.replace('.', '_')}', '{self.namespaces[pfx]}')"  # noqa: E501
-                for pfx in sorted(self.emit_prefixes)
-                if pfx in self.namespaces
-            ]
+        curienamespace_defs = [
+            {
+                "variable": f"{pfx.upper().replace('.', '_').replace('-', '_')}",
+                "value": f"CurieNamespace('{pfx.replace('.', '_')}', '{self.namespaces[pfx]}')",
+            }
+            for pfx in sorted(self.emit_prefixes)
+            if pfx in self.namespaces
+        ]
+        curienamespace_declarations = "\n".join(
+            [f"{ns['variable']} = {ns['value']}" for ns in curienamespace_defs]
             + [f"DEFAULT_ = {dflt}"]
         )
+
+        ",".join([x["variable"] for x in curienamespace_defs])
+        # catalog_declaration = f"\nnamespace_catalog = CurieNamespaceCatalog.create({curienamespace_vars})\n"
+        catalog_declaration = ""
+
+        return curienamespace_declarations + catalog_declaration
 
     def gen_references(self) -> str:
         """Generate python type declarations for all identifiers (primary keys)"""
@@ -396,6 +409,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
         parentref = f'({self.formatted_element_name(cls.is_a, True) if cls.is_a else "YAMLRoot"})'
         slotdefs = self.gen_class_variables(cls)
         postinits = self.gen_postinits(cls)
+        constructor = self.gen_constructor(cls)
 
         wrapped_description = (
             f'\n\t"""\n\t{wrapped_annotation(be(cls.description))}\n\t"""'
@@ -406,14 +420,17 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
         if self.is_class_unconstrained(cls):
             return f"\n{self.class_or_type_name(cls.name)} = Any"
 
-        return (
+        cd_str = (
             ("\n@dataclass" if slotdefs else "")
             + f"\nclass {self.class_or_type_name(cls.name)}{parentref}:{wrapped_description}"
             + f"{self.gen_inherited_slots(cls)}"
             + f"{self.gen_class_meta(cls)}"
             + (f"\n\t{slotdefs}" if slotdefs else "")
             + (f"\n{postinits}" if postinits else "")
+            + (f"\n{constructor}" if constructor else "")
         )
+
+        return cd_str
 
     def gen_inherited_slots(self, cls: ClassDefinition) -> str:
         if not self.gen_classvars:
@@ -648,7 +665,6 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
         prox_type_name = rangelist[-1]
 
         # Quote forward references - note that enums always gen at the end
-        logging.info(f"CHECK: {slot.name} => {slot.range} ")
         if slot.range in self.schema.enums or (
             cls
             and slot.inlined
@@ -699,20 +715,30 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
                 # TODO: Remove the bypass whenever we get default_range fixed
                 if slot.name not in pkeys and (not slot.ifabsent or True):
                     post_inits.append(self.gen_postinit(cls, slot))
+        post_inits_designators = []
+
+        domain_slot_names = [s.name for s in self.domain_slots(cls)]
+        for slot in self.schemaview.class_induced_slots(cls.name):
+            # This is for all type designators that were defined at a parent class
+            # We need to treat them specially: the initialisation should come
+            # AFTER the call to super() because we want to override the super behaviour
+            if slot.name not in domain_slot_names and slot.designates_type:
+                post_inits_designators.append(self.gen_postinit(cls, slot))
 
         post_inits_pre_super_line = "\n\t\t".join([p for p in post_inits_pre_super if p]) + (
             "\n\t\t" if post_inits_pre_super else ""
         )
+        post_inits_post_super_line = "\n\t\t".join(post_inits_designators)
         post_inits_line = "\n\t\t".join([p for p in post_inits if p])
         return (
             (
                 f"""
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         {post_inits_pre_super_line}{post_inits_line}
-        super().__post_init__(**kwargs)"""
-                + "\n"
+        super().__post_init__(**kwargs)
+        {post_inits_post_super_line}"""
             )
-            if post_inits_line or post_inits_pre_super_line
+            if post_inits_line or post_inits_pre_super_line or post_inits_post_super_line
             else ""
         )
 
@@ -751,6 +777,67 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
                 return len(rng.slots) - len(pkeys) == 1
         return False
 
+    def _roll_up_type(self, typ_name: str) -> str:
+        if typ_name in self.schemaview.all_types():
+            t = self.schemaview.get_type(typ_name)
+            if t.typeof:
+                return self._roll_up_type(t.typeof)
+        return typ_name
+
+    def gen_constructor(self, cls: ClassDefinition) -> Optional[str]:
+        rlines: List[str] = []
+        designators = [x for x in self.domain_slots(cls) if x.designates_type]
+        if len(designators) > 0:
+            descendants = self.schemaview.class_descendants(cls.name)
+            if len(descendants) > 1:
+                slot = designators[0]
+                aliased_slot_name = self.slot_name(slot.name)
+                slot_range = self._roll_up_type(slot.range)
+
+                rlines.append("def __new__(cls, *args, **kwargs):")
+                td_val_expression = "kwargs[type_designator]"
+                if slot_range == "string":
+                    lookup_by_props = ["class_name"]
+                elif slot_range == "uri":
+                    lookup_by_props = ["class_class_uri", "class_model_uri"]
+                    td_val_expression = (
+                        f"URIRef({td_val_expression}) if "
+                        f"isinstance({td_val_expression}, str) else {td_val_expression}"
+                    )
+                elif slot_range == "uriorcurie":
+                    lookup_by_props = ["class_class_curie", "class_class_uri", "class_model_uri"]
+                else:
+                    raise ValueError(f"Unsupported type designator range: {slot.range}")
+                rlines.append(
+                    f"""
+        type_designator = "{aliased_slot_name}"
+        if not type_designator in kwargs:
+            return super().__new__(cls,*args,**kwargs)
+        else:
+            type_designator_value = {td_val_expression}
+            target_cls = cls._class_for("{lookup_by_props[0]}", type_designator_value)
+"""
+                )
+                for prop in lookup_by_props[1:]:
+                    rlines.append(
+                        f"""
+            if target_cls is None:
+                target_cls = cls._class_for("{prop}", type_designator_value)
+"""
+                    )
+                rlines.append(
+                    f"""
+            if target_cls is None:
+                raise ValueError(f"Wrong type designator value: class {{cls.__name__}} "
+                                 f"has no subclass with {lookup_by_props}='{{kwargs[type_designator]}}'")
+            return super().__new__(target_cls,*args,**kwargs)
+"""
+                )
+
+        if rlines and copy(rlines[-1]).strip() != "":
+            rlines.append("")
+        return ("\n\t" if len(rlines) > 0 else "") + "\n\t".join(rlines)
+
     def gen_postinit(self, cls: ClassDefinition, slot: SlotDefinition) -> Optional[str]:
         """Generate python post init rules for slot in class"""
         rlines: List[str] = []
@@ -770,18 +857,34 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
             rlines.append(f"if self._is_empty(self.{aliased_slot_name}):")
             rlines.append(f'\tself.MissingRequiredField("{aliased_slot_name}")')
 
-        # Generate the type co-orcion for the various types.
+        # Generate the type co-ercion for the various types.
         # NOTE: if you set this to true, we will cast all types.   This may be what we really want
         if not slot.multivalued:
-            if slot.required:
+            if slot.designates_type:
+                pass
+            elif slot.required:
                 rlines.append(f"if not isinstance(self.{aliased_slot_name}, {base_type_name}):")
             else:
                 rlines.append(
                     f"if self.{aliased_slot_name} is not None and "
                     f"not isinstance(self.{aliased_slot_name}, {base_type_name}):"
                 )
-            # A really weird case -- a class that has no properties
-            if slot.range in self.schema.classes and not self.schema.classes[slot.range].slots:
+            if slot.designates_type:
+                slot_range = self._roll_up_type(slot.range)
+                if slot_range == "string":
+                    td_value_classvar = "class_name"
+                elif slot_range == "uri":
+                    td_value_classvar = "class_model_uri"
+                elif slot_range == "uriorcurie":
+                    td_value_classvar = "class_class_curie"
+                else:
+                    raise ValueError(f"Unsupported type designator range: {slot_range}")
+                rlines.append(f"self.{aliased_slot_name} = str(self.{td_value_classvar})")
+            elif (
+                # A really weird case -- a class that has no properties
+                slot.range in self.schema.classes
+                and not self.schema.classes[slot.range].slots
+            ):
                 rlines.append(f"\tself.{aliased_slot_name} = {base_type_name}()")
             else:
                 if (
@@ -847,8 +950,9 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
                 f"{sn} = [v if isinstance(v, {base_type_name}) "
                 f"else {base_type_name}(v) for v in {sn}]"
             )
-        if rlines:
-            rlines.append("")
+        while rlines and copy(rlines[-1]).strip() == "":
+            rlines.pop()
+        rlines.append("")
         return "\n\t\t".join(rlines)
 
     def _slot_iter(
