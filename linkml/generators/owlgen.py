@@ -98,6 +98,9 @@ class OwlSchemaGenerator(Generator):
     file_extension = "owl"
     uses_schemaloader = False
 
+    ontology_uri_suffix: str = None
+    """Suffix to add to the schema name to create the ontology URI, e.g. .owl.ttl"""
+
     # ObjectVars
     metadata_profile: MetadataProfile = None
     """Deprecated - use metadata_profiles."""
@@ -155,6 +158,8 @@ class OwlSchemaGenerator(Generator):
         sv = self.schemaview
         schema = sv.schema
         owl_id = schema.id
+        if self.ontology_uri_suffix:
+            owl_id = f"{owl_id}{self.ontology_uri_suffix}"
         mergeimports = self.mergeimports
         base = URIRef(owl_id)
         graph = Graph(identifier=base)
