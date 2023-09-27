@@ -2099,8 +2099,7 @@ building</p>
 </section>
 <section id="module-linkml.generators.owlgen">
 <span id="linkml-generators-owlgen-module"></span><h2>linkml.generators.owlgen module<a class="headerlink" href="#module-linkml.generators.owlgen" title="Permalink to this heading">#</a></h2>
-<p>Generate OWL ontology corresponding to information model</p>
-<p>model classes are translated to OWL classes, slots to OWL properties.</p>
+<p>Generate OWL ontology representation of a LinkML schema.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="linkml.generators.owlgen.ElementDefinition">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linkml.generators.owlgen.</span></span><span class="sig-name descname"><span class="pre">ElementDefinition</span></span><a class="reference internal" href="_modules/linkml/generators/owlgen.html#ElementDefinition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.owlgen.ElementDefinition" title="Permalink to this definition">#</a></dt>
@@ -2124,6 +2123,11 @@ metadata of generated OWL elements</p>
 <dd></dd></dl>
 
 <dl class="py attribute">
+<dt class="sig sig-object py" id="linkml.generators.owlgen.MetadataProfile.ols">
+<span class="sig-name descname"><span class="pre">ols</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'ols'</span></em><a class="headerlink" href="#linkml.generators.owlgen.MetadataProfile.ols" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="linkml.generators.owlgen.MetadataProfile.rdfs">
 <span class="sig-name descname"><span class="pre">rdfs</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'rdfs'</span></em><a class="headerlink" href="#linkml.generators.owlgen.MetadataProfile.rdfs" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
@@ -2131,20 +2135,75 @@ metadata of generated OWL elements</p>
 </dd></dl>
 
 <dl class="py class">
+<dt class="sig sig-object py" id="linkml.generators.owlgen.OWLProfile">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linkml.generators.owlgen.</span></span><span class="sig-name descname"><span class="pre">OWLProfile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/linkml/generators/owlgen.html#OWLProfile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.owlgen.OWLProfile" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<p>An enumeration of OWL Profiles</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="linkml.generators.owlgen.OWLProfile.dl">
+<span class="sig-name descname"><span class="pre">dl</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'dl'</span></em><a class="headerlink" href="#linkml.generators.owlgen.OWLProfile.dl" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="linkml.generators.owlgen.OWLProfile.full">
+<span class="sig-name descname"><span class="pre">full</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'full'</span></em><a class="headerlink" href="#linkml.generators.owlgen.OWLProfile.full" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml.generators.owlgen.OWLProfile.list">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/linkml/generators/owlgen.html#OWLProfile.list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.owlgen.OWLProfile.list" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="linkml.generators.owlgen.OwlSchemaGenerator">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linkml.generators.owlgen.</span></span><span class="sig-name descname"><span class="pre">OwlSchemaGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema:</span> <span class="pre">~typing.Optional[~typing.Union[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">~typing.TextIO</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">~linkml_runtime.linkml_model.meta.SchemaDefinition]]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schemaview:</span> <span class="pre">~typing.Optional[~linkml_runtime.utils.schemaview.SchemaView]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format:</span> <span class="pre">~typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">useuris:</span> <span class="pre">~typing.Optional[bool]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_level:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mergeimports:</span> <span class="pre">~typing.Optional[bool]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_file_date:</span> <span class="pre">~typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_file_size:</span> <span class="pre">~typing.Optional[int]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger:</span> <span class="pre">~typing.Optional[~logging.Logger]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose:</span> <span class="pre">~typing.Optional[bool]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output:</span> <span class="pre">~typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">namespaces:</span> <span class="pre">~typing.Optional[~linkml_runtime.utils.namespaces.Namespaces]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">directory_output:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_dir:</span> <span class="pre">~typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metamodel_name_map:</span> <span class="pre">~typing.Optional[~typing.Dict[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">str]]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">importmap:</span> <span class="pre">~typing.Optional[~typing.Union[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">~typing.Mapping[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">str]]]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">emit_prefixes:</span> <span class="pre">~typing.Set[str]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metamodel:</span> <span class="pre">~typing.Optional[~linkml.utils.schemaloader.SchemaLoader]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stacktrace:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata_profile:</span> <span class="pre">~typing.Optional[~linkml.generators.owlgen.MetadataProfile]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ontology_uri_suffix:</span> <span class="pre">~typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metaclasses:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">add_ols_annotations:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graph:</span> <span class="pre">~typing.Optional[~rdflib.graph.Graph]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_value_uri:</span> <span class="pre">~typing.Optional[~rdflib.term.URIRef]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type_objects:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">assert_equivalent_classes:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**_kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/linkml/generators/owlgen.html#OwlSchemaGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.owlgen.OwlSchemaGenerator" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linkml.generators.owlgen.</span></span><span class="sig-name descname"><span class="pre">OwlSchemaGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">schema:</span> <span class="pre">~typing.Union[str,</span> <span class="pre">~typing.TextIO,</span> <span class="pre">~linkml_runtime.linkml_model.meta.SchemaDefinition,</span> <span class="pre">~linkml.utils.generator.Generator],</span> <span class="pre">schemaview:</span> <span class="pre">~typing.Optional[~linkml_runtime.utils.schemaview.SchemaView]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">format:</span> <span class="pre">~typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">metadata:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">useuris:</span> <span class="pre">~typing.Optional[bool]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">log_level:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">30,</span> <span class="pre">mergeimports:</span> <span class="pre">~typing.Optional[bool]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">source_file_date:</span> <span class="pre">~typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">source_file_size:</span> <span class="pre">~typing.Optional[int]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">logger:</span> <span class="pre">~typing.Optional[~logging.Logger]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">verbose:</span> <span class="pre">~typing.Optional[bool]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">output:</span> <span class="pre">~typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">namespaces:</span> <span class="pre">~typing.Optional[~linkml_runtime.utils.namespaces.Namespaces]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">directory_output:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False,</span> <span class="pre">base_dir:</span> <span class="pre">~typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">metamodel_name_map:</span> <span class="pre">~typing.Optional[~typing.Dict[str,</span> <span class="pre">str]]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">importmap:</span> <span class="pre">~typing.Optional[~typing.Union[str,</span> <span class="pre">~typing.Mapping[str,</span> <span class="pre">str]]]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">emit_prefixes:</span> <span class="pre">~typing.Set[str]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">metamodel:</span> <span class="pre">~typing.Optional[~linkml.utils.schemaloader.SchemaLoader]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">stacktrace:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False,</span> <span class="pre">ontology_uri_suffix:</span> <span class="pre">~typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">metadata_profile:</span> <span class="pre">~typing.Optional[~linkml.generators.owlgen.MetadataProfile]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">metadata_profiles:</span> <span class="pre">~typing.List[~linkml.generators.owlgen.MetadataProfile]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">metaclasses:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">add_ols_annotations:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">graph:</span> <span class="pre">~typing.Optional[~rdflib.graph.Graph]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">top_value_uri:</span> <span class="pre">~typing.Optional[~rdflib.term.URIRef]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">type_objects:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">assert_equivalent_classes:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">use_native_uris:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">mixins_as_expressions:</span> <span class="pre">~typing.Optional[bool]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">slot_is_literal_map:</span> <span class="pre">~typing.Mapping[str,</span> <span class="pre">~typing.Set[bool]]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">node_owltypes:</span> <span class="pre">~typing.Mapping[~typing.Union[~rdflib.term.BNode,</span> <span class="pre">~rdflib.term.URIRef],</span> <span class="pre">~typing.Set[~rdflib.term.URIRef]]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">simplify:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">target_profile:</span> <span class="pre">~linkml.generators.owlgen.OWLProfile</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">metamodel_schemaview:</span> <span class="pre">~linkml_runtime.utils.schemaview.SchemaView</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">**_kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/linkml/generators/owlgen.html#OwlSchemaGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.owlgen.OwlSchemaGenerator" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="linkml.utils.html#linkml.utils.generator.Generator" title="linkml.utils.generator.Generator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generator</span></code></a></p>
 <p>Generates a schema-oriented OWL representation of a LinkML model</p>
 <p><a class="reference external" href="https://linkml.io/linkml/generators/owl">OWL Generator Docs</a></p>
-<dl class="simple">
-<dt>Attributes:</dt><dd><p>type_objects    if True, represent TypeDefinitions as objects; if False, as literals
-metaclasses     if True, include OWL representations of ClassDefinition, SlotDefinition, etc. Introduces punning</p>
+<p>.</p>
+<ul class="simple">
+<li><p>LinkML ClassDefinitions are translated to OWL Classes</p></li>
+<li><p>LinkML SlotDefinitions are translated to OWL Properties</p></li>
+<li><p>LinkML Enumerations are translated to OWL Classes</p></li>
+<li><p>LinkML TypeDefinitions are translated to OWL Datatypes</p></li>
+</ul>
+<p>The translation aims to be as faithful as possible. But note that OWL is open-world,
+whereas LinkML is closed-world</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml.generators.owlgen.OwlSchemaGenerator.add_class">
+<span class="sig-name descname"><span class="pre">add_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.ClassDefinition" title="linkml_runtime.linkml_model.meta.ClassDefinition"><span class="pre">ClassDefinition</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/linkml/generators/owlgen.html#OwlSchemaGenerator.add_class"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.owlgen.OwlSchemaGenerator.add_class" title="Permalink to this definition">#</a></dt>
+<dd><p>Each ClassDefinition is represented as an OWL class</p>
+<ul class="simple">
+<li><p>the OWL Class will instantiate ClassDefinition, if schema.metaclasses is true</p></li>
+<li><p>the OWL Class will be annotated using the same properties as the source ClassDefinition</p></li>
+<li><p>induced slots and their ranges added as OWL restrictions; note this will be under the Open World Assumption</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>cls</strong> – </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p></p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml.generators.owlgen.OwlSchemaGenerator.add_constraints">
+<span class="sig-name descname"><span class="pre">add_constraints</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.SlotDefinition" title="linkml_runtime.linkml_model.meta.SlotDefinition"><span class="pre">SlotDefinition</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">AnonymousSlotExpression</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">TypeDefinition</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">AnonymousTypeExpression</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">BNode</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">URIRef</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/linkml/generators/owlgen.html#OwlSchemaGenerator.add_constraints"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.owlgen.OwlSchemaGenerator.add_constraints" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml.generators.owlgen.OwlSchemaGenerator.add_enum">
+<span class="sig-name descname"><span class="pre">add_enum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">e</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">EnumDefinition</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/linkml/generators/owlgen.html#OwlSchemaGenerator.add_enum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.owlgen.OwlSchemaGenerator.add_enum" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="linkml.generators.owlgen.OwlSchemaGenerator.add_metadata">
 <span class="sig-name descname"><span class="pre">add_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">e</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Definition</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uri</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">URIRef</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/linkml/generators/owlgen.html#OwlSchemaGenerator.add_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.owlgen.OwlSchemaGenerator.add_metadata" title="Permalink to this definition">#</a></dt>
-<dd><p>Add generic annotation properties</p>
+<dd><p>Add generic annotation properties.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -2163,16 +2222,31 @@ metaclasses     if True, include OWL representations of ClassDefinition, SlotDef
 <span class="sig-name descname"><span class="pre">add_ols_annotations</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#linkml.generators.owlgen.OwlSchemaGenerator.add_ols_annotations" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.generators.owlgen.OwlSchemaGenerator.assert_equivalent_classes">
-<span class="sig-name descname"><span class="pre">assert_equivalent_classes</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#linkml.generators.owlgen.OwlSchemaGenerator.assert_equivalent_classes" title="Permalink to this definition">#</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml.generators.owlgen.OwlSchemaGenerator.add_slot">
+<span class="sig-name descname"><span class="pre">add_slot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slot</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.SlotDefinition" title="linkml_runtime.linkml_model.meta.SlotDefinition"><span class="pre">SlotDefinition</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">attribute</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/linkml/generators/owlgen.html#OwlSchemaGenerator.add_slot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.owlgen.OwlSchemaGenerator.add_slot" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="linkml.generators.owlgen.OwlSchemaGenerator.end_schema">
-<span class="sig-name descname"><span class="pre">end_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">_</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/linkml/generators/owlgen.html#OwlSchemaGenerator.end_schema"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.owlgen.OwlSchemaGenerator.end_schema" title="Permalink to this definition">#</a></dt>
-<dd><p>Visited once at the end of generation</p>
-<p>&#64;param kwargs: Arguments passed through from CLI – implementation dependent</p>
+<dt class="sig sig-object py" id="linkml.generators.owlgen.OwlSchemaGenerator.add_type">
+<span class="sig-name descname"><span class="pre">add_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">typ</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TypeDefinition</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/linkml/generators/owlgen.html#OwlSchemaGenerator.add_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.owlgen.OwlSchemaGenerator.add_type" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml.generators.owlgen.OwlSchemaGenerator.as_graph">
+<span class="sig-name descname"><span class="pre">as_graph</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Graph</span></span></span><a class="reference internal" href="_modules/linkml/generators/owlgen.html#OwlSchemaGenerator.as_graph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.owlgen.OwlSchemaGenerator.as_graph" title="Permalink to this definition">#</a></dt>
+<dd><p>Generate an rdflib Graph from the schema</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="linkml.generators.owlgen.OwlSchemaGenerator.assert_equivalent_classes">
+<span class="sig-name descname"><span class="pre">assert_equivalent_classes</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#linkml.generators.owlgen.OwlSchemaGenerator.assert_equivalent_classes" title="Permalink to this definition">#</a></dt>
+<dd><p>If True, assert equivalence between definition_uris and class_uris</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -2195,39 +2269,92 @@ metaclasses     if True, include OWL representations of ClassDefinition, SlotDef
 <dl class="py attribute">
 <dt class="sig sig-object py" id="linkml.generators.owlgen.OwlSchemaGenerator.graph">
 <span class="sig-name descname"><span class="pre">graph</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Graph</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#linkml.generators.owlgen.OwlSchemaGenerator.graph" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>Mutable graph that is being built up during OWL generation.</p>
+</dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="linkml.generators.owlgen.OwlSchemaGenerator.is_slot_object_property">
-<span class="sig-name descname"><span class="pre">is_slot_object_property</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slot</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.SlotDefinition" title="linkml_runtime.linkml_model.meta.SlotDefinition"><span class="pre">SlotDefinition</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/linkml/generators/owlgen.html#OwlSchemaGenerator.is_slot_object_property"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.owlgen.OwlSchemaGenerator.is_slot_object_property" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="linkml.generators.owlgen.OwlSchemaGenerator.has_profile">
+<span class="sig-name descname"><span class="pre">has_profile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">profile</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#linkml.generators.owlgen.MetadataProfile" title="linkml.generators.owlgen.MetadataProfile"><span class="pre">MetadataProfile</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/linkml/generators/owlgen.html#OwlSchemaGenerator.has_profile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.owlgen.OwlSchemaGenerator.has_profile" title="Permalink to this definition">#</a></dt>
+<dd><p>Determine if a metadata profile is active.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>profile</strong> – profile to check</p></li>
+<li><p><strong>default</strong> – True if the configured profiles include the specified profile</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="linkml.generators.owlgen.OwlSchemaGenerator.metaclasses">
 <span class="sig-name descname"><span class="pre">metaclasses</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#linkml.generators.owlgen.OwlSchemaGenerator.metaclasses" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>if True, include OWL representations of ClassDefinition, SlotDefinition, etc. Introduces punning</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="linkml.generators.owlgen.OwlSchemaGenerator.metadata_profile">
 <span class="sig-name descname"><span class="pre">metadata_profile</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#linkml.generators.owlgen.MetadataProfile" title="linkml.generators.owlgen.MetadataProfile"><span class="pre">MetadataProfile</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#linkml.generators.owlgen.OwlSchemaGenerator.metadata_profile" title="Permalink to this definition">#</a></dt>
+<dd><p>Deprecated - use metadata_profiles.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="linkml.generators.owlgen.OwlSchemaGenerator.metadata_profiles">
+<span class="sig-name descname"><span class="pre">metadata_profiles</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#linkml.generators.owlgen.MetadataProfile" title="linkml.generators.owlgen.MetadataProfile"><span class="pre">MetadataProfile</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#linkml.generators.owlgen.OwlSchemaGenerator.metadata_profiles" title="Permalink to this definition">#</a></dt>
+<dd><p>By default, use the linkml metadata profile,
+this allows for overrides.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="linkml.generators.owlgen.OwlSchemaGenerator.metamodel_schemaview">
+<span class="sig-name descname"><span class="pre">metamodel_schemaview</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView" title="linkml_runtime.utils.schemaview.SchemaView"><span class="pre">SchemaView</span></a></em><a class="headerlink" href="#linkml.generators.owlgen.OwlSchemaGenerator.metamodel_schemaview" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="linkml.generators.owlgen.OwlSchemaGenerator.mixins_as_expressions">
+<span class="sig-name descname"><span class="pre">mixins_as_expressions</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#linkml.generators.owlgen.OwlSchemaGenerator.mixins_as_expressions" title="Permalink to this definition">#</a></dt>
+<dd><p>EXPERIMENTAL: If True, use OWL existential restrictions to represent mixins</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="linkml.generators.owlgen.OwlSchemaGenerator.node_owltypes">
+<span class="sig-name descname"><span class="pre">node_owltypes</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">BNode</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">URIRef</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">URIRef</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#linkml.generators.owlgen.OwlSchemaGenerator.node_owltypes" title="Permalink to this definition">#</a></dt>
+<dd><p>rdfs:Datatype, owl:Thing</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="linkml.generators.owlgen.OwlSchemaGenerator.ontology_uri_suffix">
 <span class="sig-name descname"><span class="pre">ontology_uri_suffix</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#linkml.generators.owlgen.OwlSchemaGenerator.ontology_uri_suffix" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>Suffix to add to the schema name to create the ontology URI, e.g. .owl.ttl</p>
+</dd></dl>
 
-<dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.generators.owlgen.OwlSchemaGenerator.requires_metamodel">
-<span class="sig-name descname"><span class="pre">requires_metamodel</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#linkml.generators.owlgen.OwlSchemaGenerator.requires_metamodel" title="Permalink to this definition">#</a></dt>
-<dd><p>Generator queries an instance of the metamodel</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml.generators.owlgen.OwlSchemaGenerator.serialize">
+<span class="sig-name descname"><span class="pre">serialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/linkml/generators/owlgen.html#OwlSchemaGenerator.serialize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.owlgen.OwlSchemaGenerator.serialize" title="Permalink to this definition">#</a></dt>
+<dd><p>Generate output in the required format</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>kwargs</strong> – Generator specific parameters</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Generated output</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.generators.owlgen.OwlSchemaGenerator.schema">
-<span class="sig-name descname"><span class="pre">schema</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">TextIO</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.SchemaDefinition" title="linkml_runtime.linkml_model.meta.SchemaDefinition"><span class="pre">SchemaDefinition</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#linkml.generators.owlgen.OwlSchemaGenerator.schema" title="Permalink to this definition">#</a></dt>
-<dd><p>metamodel compliant schema.  Can be URI, file name, actual schema, another generator, an
-open file or a pre-parsed schema</p>
+<dt class="sig sig-object py" id="linkml.generators.owlgen.OwlSchemaGenerator.simplify">
+<span class="sig-name descname"><span class="pre">simplify</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#linkml.generators.owlgen.OwlSchemaGenerator.simplify" title="Permalink to this definition">#</a></dt>
+<dd><p>Reduce complex expressions to simpler forms</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="linkml.generators.owlgen.OwlSchemaGenerator.slot_is_literal_map">
+<span class="sig-name descname"><span class="pre">slot_is_literal_map</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#linkml.generators.owlgen.OwlSchemaGenerator.slot_is_literal_map" title="Permalink to this definition">#</a></dt>
+<dd><p>DEPRECATED: use node_owltypes</p>
 </dd></dl>
 
 <dl class="py method">
@@ -2236,39 +2363,33 @@ open file or a pre-parsed schema</p>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.generators.owlgen.OwlSchemaGenerator.top_value_uri">
-<span class="sig-name descname"><span class="pre">top_value_uri</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">URIRef</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#linkml.generators.owlgen.OwlSchemaGenerator.top_value_uri" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.generators.owlgen.OwlSchemaGenerator.type_objects">
-<span class="sig-name descname"><span class="pre">type_objects</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#linkml.generators.owlgen.OwlSchemaGenerator.type_objects" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.generators.owlgen.OwlSchemaGenerator.uses_schemaloader">
-<span class="sig-name descname"><span class="pre">uses_schemaloader</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#linkml.generators.owlgen.OwlSchemaGenerator.uses_schemaloader" title="Permalink to this definition">#</a></dt>
-<dd><p>Old-style generator that uses the SchemaLoader and visitor pattern</p>
+<dt class="sig sig-object py" id="linkml.generators.owlgen.OwlSchemaGenerator.target_profile">
+<span class="sig-name descname"><span class="pre">target_profile</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#linkml.generators.owlgen.OWLProfile" title="linkml.generators.owlgen.OWLProfile"><span class="pre">OWLProfile</span></a></em><a class="headerlink" href="#linkml.generators.owlgen.OwlSchemaGenerator.target_profile" title="Permalink to this definition">#</a></dt>
+<dd><p>Target OWL profile. Currently the only distinction is between DL and Full</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.generators.owlgen.OwlSchemaGenerator.valid_formats">
-<span class="sig-name descname"><span class="pre">valid_formats</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['owl',</span> <span class="pre">'ttl',</span> <span class="pre">'json-ld',</span> <span class="pre">'xml',</span> <span class="pre">'n3',</span> <span class="pre">'turtle',</span> <span class="pre">'ttl',</span> <span class="pre">'ntriples',</span> <span class="pre">'nt',</span> <span class="pre">'nt11',</span> <span class="pre">'nquads',</span> <span class="pre">'trix',</span> <span class="pre">'trig',</span> <span class="pre">'hext']</span></em><a class="headerlink" href="#linkml.generators.owlgen.OwlSchemaGenerator.valid_formats" title="Permalink to this definition">#</a></dt>
-<dd><p>Allowed formats - first format is default</p>
+<dt class="sig sig-object py" id="linkml.generators.owlgen.OwlSchemaGenerator.top_value_uri">
+<span class="sig-name descname"><span class="pre">top_value_uri</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">URIRef</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#linkml.generators.owlgen.OwlSchemaGenerator.top_value_uri" title="Permalink to this definition">#</a></dt>
+<dd><p>If metaclasses=True, then this property is used to connect object shadows to literals</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="linkml.generators.owlgen.OwlSchemaGenerator.visit_class">
-<span class="sig-name descname"><span class="pre">visit_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.ClassDefinition" title="linkml_runtime.linkml_model.meta.ClassDefinition"><span class="pre">ClassDefinition</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/linkml/generators/owlgen.html#OwlSchemaGenerator.visit_class"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.owlgen.OwlSchemaGenerator.visit_class" title="Permalink to this definition">#</a></dt>
-<dd><p>Each ClassDefinition is represented as an OWL class</p>
-<ul class="simple">
-<li><p>the OWL Class will instantiate ClassDefinition, if schema.metaclasses is true</p></li>
-<li><p>the OWL Class will be annotated using the same properties as the source ClassDefinition</p></li>
-<li><p>induced slots and their ranges added as OWL restrictions; note this will be under the Open World Assumption</p></li>
-</ul>
+<dt class="sig sig-object py" id="linkml.generators.owlgen.OwlSchemaGenerator.transform_class_expression">
+<span class="sig-name descname"><span class="pre">transform_class_expression</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.ClassDefinition" title="linkml_runtime.linkml_model.meta.ClassDefinition"><span class="pre">ClassDefinition</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">AnonymousClassExpression</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">BNode</span></span></span><a class="reference internal" href="_modules/linkml/generators/owlgen.html#OwlSchemaGenerator.transform_class_expression"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.owlgen.OwlSchemaGenerator.transform_class_expression" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml.generators.owlgen.OwlSchemaGenerator.transform_class_slot_expression">
+<span class="sig-name descname"><span class="pre">transform_class_slot_expression</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.ClassDefinition" title="linkml_runtime.linkml_model.meta.ClassDefinition"><span class="pre">ClassDefinition</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">AnonymousClassExpression</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slot</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.SlotDefinition" title="linkml_runtime.linkml_model.meta.SlotDefinition"><span class="pre">SlotDefinition</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">AnonymousSlotExpression</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">main_slot</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.SlotDefinition" title="linkml_runtime.linkml_model.meta.SlotDefinition"><span class="pre">SlotDefinition</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">BNode</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">URIRef</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/linkml/generators/owlgen.html#OwlSchemaGenerator.transform_class_slot_expression"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.owlgen.OwlSchemaGenerator.transform_class_slot_expression" title="Permalink to this definition">#</a></dt>
+<dd><p>Take a ClassExpression and SlotExpression combination and transform to a node.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>cls</strong> – </p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cls</strong> – </p></li>
+<li><p><strong>slot</strong> – </p></li>
+<li><p><strong>main_slot</strong> – </p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p></p>
@@ -2276,43 +2397,32 @@ open file or a pre-parsed schema</p>
 </dl>
 </dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="linkml.generators.owlgen.OwlSchemaGenerator.visit_enum">
-<span class="sig-name descname"><span class="pre">visit_enum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">e</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">EnumDefinition</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/linkml/generators/owlgen.html#OwlSchemaGenerator.visit_enum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.owlgen.OwlSchemaGenerator.visit_enum" title="Permalink to this definition">#</a></dt>
-<dd><p>Visited once for every enum definition in the schema</p>
-<p>&#64;param enum: Enum definition</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="linkml.generators.owlgen.OwlSchemaGenerator.visit_schema">
-<span class="sig-name descname"><span class="pre">visit_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">_</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/linkml/generators/owlgen.html#OwlSchemaGenerator.visit_schema"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.owlgen.OwlSchemaGenerator.visit_schema" title="Permalink to this definition">#</a></dt>
-<dd><p>Visited once at the beginning of generation</p>
-<p>&#64;param kwargs: Arguments passed through from CLI – implementation dependent</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="linkml.generators.owlgen.OwlSchemaGenerator.visit_slot">
-<span class="sig-name descname"><span class="pre">visit_slot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slot_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slot</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.SlotDefinition" title="linkml_runtime.linkml_model.meta.SlotDefinition"><span class="pre">SlotDefinition</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/linkml/generators/owlgen.html#OwlSchemaGenerator.visit_slot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.owlgen.OwlSchemaGenerator.visit_slot" title="Permalink to this definition">#</a></dt>
-<dd><p>Add a slot definition per slot</p>
-<p>Note: visit_slot may be called multiple times for the same slot_uri, as the same slot_uri can be used:
-* when the schema declares <cite>attributes</cite>
-* when <cite>slot_usage</cite> induces additional slots</p>
-<p>&#64;param slot_name:
-&#64;param slot:
-&#64;return:</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="linkml.generators.owlgen.OwlSchemaGenerator.visit_type">
-<span class="sig-name descname"><span class="pre">visit_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">typ</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TypeDefinition</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/linkml/generators/owlgen.html#OwlSchemaGenerator.visit_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.owlgen.OwlSchemaGenerator.visit_type" title="Permalink to this definition">#</a></dt>
-<dd><p>Visited once for every type definition in the schema</p>
-<p>&#64;param typ: Type definition</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="linkml.generators.owlgen.OwlSchemaGenerator.type_objects">
+<span class="sig-name descname"><span class="pre">type_objects</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#linkml.generators.owlgen.OwlSchemaGenerator.type_objects" title="Permalink to this definition">#</a></dt>
+<dd><p>if True, represents types as classes (and thus all slots are object properties);
+typed object classes effectively shadow the main xsd literal types.
+The purpose of this is to allow a uniform ObjectProperty representation for all slots,
+without having to commit to being either Data or Object property (OWL-DL does not
+allow a property to be both.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.generators.owlgen.OwlSchemaGenerator.visits_are_sorted">
-<span class="sig-name descname"><span class="pre">visits_are_sorted</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#linkml.generators.owlgen.OwlSchemaGenerator.visits_are_sorted" title="Permalink to this definition">#</a></dt>
-<dd><p>Visitor ClassVar: True means visit basic types in alphabetial order, false in entry</p>
+<dt class="sig sig-object py" id="linkml.generators.owlgen.OwlSchemaGenerator.use_native_uris">
+<span class="sig-name descname"><span class="pre">use_native_uris</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#linkml.generators.owlgen.OwlSchemaGenerator.use_native_uris" title="Permalink to this definition">#</a></dt>
+<dd><p>If True, use the definition_uris, otherwise use class_uris.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="linkml.generators.owlgen.OwlSchemaGenerator.uses_schemaloader">
+<span class="sig-name descname"><span class="pre">uses_schemaloader</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#linkml.generators.owlgen.OwlSchemaGenerator.uses_schemaloader" title="Permalink to this definition">#</a></dt>
+<dd><p>Old-style generator that uses the SchemaLoader and visitor pattern</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="linkml.generators.owlgen.OwlSchemaGenerator.valid_formats">
+<span class="sig-name descname"><span class="pre">valid_formats</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['owl',</span> <span class="pre">'ttl',</span> <span class="pre">'json-ld',</span> <span class="pre">'xml',</span> <span class="pre">'n3',</span> <span class="pre">'turtle',</span> <span class="pre">'ttl',</span> <span class="pre">'ntriples',</span> <span class="pre">'nt',</span> <span class="pre">'nt11',</span> <span class="pre">'nquads',</span> <span class="pre">'trix',</span> <span class="pre">'trig',</span> <span class="pre">'hext']</span></em><a class="headerlink" href="#linkml.generators.owlgen.OwlSchemaGenerator.valid_formats" title="Permalink to this definition">#</a></dt>
+<dd><p>Allowed formats - first format is default</p>
 </dd></dl>
 
 </dd></dl>
@@ -4384,19 +4494,52 @@ open file or a pre-parsed schema</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="linkml.generators.OwlSchemaGenerator">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linkml.generators.</span></span><span class="sig-name descname"><span class="pre">OwlSchemaGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema:</span> <span class="pre">~typing.Optional[~typing.Union[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">~typing.TextIO</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">~linkml_runtime.linkml_model.meta.SchemaDefinition]]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schemaview:</span> <span class="pre">~typing.Optional[~linkml_runtime.utils.schemaview.SchemaView]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format:</span> <span class="pre">~typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">useuris:</span> <span class="pre">~typing.Optional[bool]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_level:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mergeimports:</span> <span class="pre">~typing.Optional[bool]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_file_date:</span> <span class="pre">~typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_file_size:</span> <span class="pre">~typing.Optional[int]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger:</span> <span class="pre">~typing.Optional[~logging.Logger]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose:</span> <span class="pre">~typing.Optional[bool]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output:</span> <span class="pre">~typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">namespaces:</span> <span class="pre">~typing.Optional[~linkml_runtime.utils.namespaces.Namespaces]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">directory_output:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_dir:</span> <span class="pre">~typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metamodel_name_map:</span> <span class="pre">~typing.Optional[~typing.Dict[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">str]]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">importmap:</span> <span class="pre">~typing.Optional[~typing.Union[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">~typing.Mapping[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">str]]]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">emit_prefixes:</span> <span class="pre">~typing.Set[str]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metamodel:</span> <span class="pre">~typing.Optional[~linkml.utils.schemaloader.SchemaLoader]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stacktrace:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata_profile:</span> <span class="pre">~typing.Optional[~linkml.generators.owlgen.MetadataProfile]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ontology_uri_suffix:</span> <span class="pre">~typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metaclasses:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">add_ols_annotations:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graph:</span> <span class="pre">~typing.Optional[~rdflib.graph.Graph]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_value_uri:</span> <span class="pre">~typing.Optional[~rdflib.term.URIRef]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type_objects:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">assert_equivalent_classes:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**_kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/linkml/generators/owlgen.html#OwlSchemaGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.OwlSchemaGenerator" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linkml.generators.</span></span><span class="sig-name descname"><span class="pre">OwlSchemaGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">schema:</span> <span class="pre">~typing.Union[str,</span> <span class="pre">~typing.TextIO,</span> <span class="pre">~linkml_runtime.linkml_model.meta.SchemaDefinition,</span> <span class="pre">~linkml.utils.generator.Generator],</span> <span class="pre">schemaview:</span> <span class="pre">~typing.Optional[~linkml_runtime.utils.schemaview.SchemaView]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">format:</span> <span class="pre">~typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">metadata:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">useuris:</span> <span class="pre">~typing.Optional[bool]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">log_level:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">30,</span> <span class="pre">mergeimports:</span> <span class="pre">~typing.Optional[bool]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">source_file_date:</span> <span class="pre">~typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">source_file_size:</span> <span class="pre">~typing.Optional[int]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">logger:</span> <span class="pre">~typing.Optional[~logging.Logger]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">verbose:</span> <span class="pre">~typing.Optional[bool]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">output:</span> <span class="pre">~typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">namespaces:</span> <span class="pre">~typing.Optional[~linkml_runtime.utils.namespaces.Namespaces]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">directory_output:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False,</span> <span class="pre">base_dir:</span> <span class="pre">~typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">metamodel_name_map:</span> <span class="pre">~typing.Optional[~typing.Dict[str,</span> <span class="pre">str]]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">importmap:</span> <span class="pre">~typing.Optional[~typing.Union[str,</span> <span class="pre">~typing.Mapping[str,</span> <span class="pre">str]]]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">emit_prefixes:</span> <span class="pre">~typing.Set[str]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">metamodel:</span> <span class="pre">~typing.Optional[~linkml.utils.schemaloader.SchemaLoader]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">stacktrace:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False,</span> <span class="pre">ontology_uri_suffix:</span> <span class="pre">~typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">metadata_profile:</span> <span class="pre">~typing.Optional[~linkml.generators.owlgen.MetadataProfile]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">metadata_profiles:</span> <span class="pre">~typing.List[~linkml.generators.owlgen.MetadataProfile]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">metaclasses:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">add_ols_annotations:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">graph:</span> <span class="pre">~typing.Optional[~rdflib.graph.Graph]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">top_value_uri:</span> <span class="pre">~typing.Optional[~rdflib.term.URIRef]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">type_objects:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">assert_equivalent_classes:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">use_native_uris:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">mixins_as_expressions:</span> <span class="pre">~typing.Optional[bool]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">slot_is_literal_map:</span> <span class="pre">~typing.Mapping[str,</span> <span class="pre">~typing.Set[bool]]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">node_owltypes:</span> <span class="pre">~typing.Mapping[~typing.Union[~rdflib.term.BNode,</span> <span class="pre">~rdflib.term.URIRef],</span> <span class="pre">~typing.Set[~rdflib.term.URIRef]]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">simplify:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">target_profile:</span> <span class="pre">~linkml.generators.owlgen.OWLProfile</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">metamodel_schemaview:</span> <span class="pre">~linkml_runtime.utils.schemaview.SchemaView</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">**_kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/linkml/generators/owlgen.html#OwlSchemaGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.OwlSchemaGenerator" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="linkml.utils.html#linkml.utils.generator.Generator" title="linkml.utils.generator.Generator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generator</span></code></a></p>
 <p>Generates a schema-oriented OWL representation of a LinkML model</p>
 <p><a class="reference external" href="https://linkml.io/linkml/generators/owl">OWL Generator Docs</a></p>
-<dl class="simple">
-<dt>Attributes:</dt><dd><p>type_objects    if True, represent TypeDefinitions as objects; if False, as literals
-metaclasses     if True, include OWL representations of ClassDefinition, SlotDefinition, etc. Introduces punning</p>
+<p>.</p>
+<ul class="simple">
+<li><p>LinkML ClassDefinitions are translated to OWL Classes</p></li>
+<li><p>LinkML SlotDefinitions are translated to OWL Properties</p></li>
+<li><p>LinkML Enumerations are translated to OWL Classes</p></li>
+<li><p>LinkML TypeDefinitions are translated to OWL Datatypes</p></li>
+</ul>
+<p>The translation aims to be as faithful as possible. But note that OWL is open-world,
+whereas LinkML is closed-world</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml.generators.OwlSchemaGenerator.add_class">
+<span class="sig-name descname"><span class="pre">add_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.ClassDefinition" title="linkml_runtime.linkml_model.meta.ClassDefinition"><span class="pre">ClassDefinition</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/linkml/generators/owlgen.html#OwlSchemaGenerator.add_class"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.OwlSchemaGenerator.add_class" title="Permalink to this definition">#</a></dt>
+<dd><p>Each ClassDefinition is represented as an OWL class</p>
+<ul class="simple">
+<li><p>the OWL Class will instantiate ClassDefinition, if schema.metaclasses is true</p></li>
+<li><p>the OWL Class will be annotated using the same properties as the source ClassDefinition</p></li>
+<li><p>induced slots and their ranges added as OWL restrictions; note this will be under the Open World Assumption</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>cls</strong> – </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p></p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml.generators.OwlSchemaGenerator.add_constraints">
+<span class="sig-name descname"><span class="pre">add_constraints</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.SlotDefinition" title="linkml_runtime.linkml_model.meta.SlotDefinition"><span class="pre">SlotDefinition</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">AnonymousSlotExpression</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">TypeDefinition</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">AnonymousTypeExpression</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">BNode</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">URIRef</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/linkml/generators/owlgen.html#OwlSchemaGenerator.add_constraints"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.OwlSchemaGenerator.add_constraints" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml.generators.OwlSchemaGenerator.add_enum">
+<span class="sig-name descname"><span class="pre">add_enum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">e</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">EnumDefinition</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/linkml/generators/owlgen.html#OwlSchemaGenerator.add_enum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.OwlSchemaGenerator.add_enum" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="linkml.generators.OwlSchemaGenerator.add_metadata">
 <span class="sig-name descname"><span class="pre">add_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">e</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Definition</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uri</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">URIRef</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/linkml/generators/owlgen.html#OwlSchemaGenerator.add_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.OwlSchemaGenerator.add_metadata" title="Permalink to this definition">#</a></dt>
-<dd><p>Add generic annotation properties</p>
+<dd><p>Add generic annotation properties.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -4415,22 +4558,37 @@ metaclasses     if True, include OWL representations of ClassDefinition, SlotDef
 <span class="sig-name descname"><span class="pre">add_ols_annotations</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#linkml.generators.OwlSchemaGenerator.add_ols_annotations" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml.generators.OwlSchemaGenerator.add_slot">
+<span class="sig-name descname"><span class="pre">add_slot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slot</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.SlotDefinition" title="linkml_runtime.linkml_model.meta.SlotDefinition"><span class="pre">SlotDefinition</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">attribute</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/linkml/generators/owlgen.html#OwlSchemaGenerator.add_slot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.OwlSchemaGenerator.add_slot" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml.generators.OwlSchemaGenerator.add_type">
+<span class="sig-name descname"><span class="pre">add_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">typ</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TypeDefinition</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/linkml/generators/owlgen.html#OwlSchemaGenerator.add_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.OwlSchemaGenerator.add_type" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml.generators.OwlSchemaGenerator.as_graph">
+<span class="sig-name descname"><span class="pre">as_graph</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Graph</span></span></span><a class="reference internal" href="_modules/linkml/generators/owlgen.html#OwlSchemaGenerator.as_graph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.OwlSchemaGenerator.as_graph" title="Permalink to this definition">#</a></dt>
+<dd><p>Generate an rdflib Graph from the schema</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="linkml.generators.OwlSchemaGenerator.assert_equivalent_classes">
-<span class="sig-name descname"><span class="pre">assert_equivalent_classes</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#linkml.generators.OwlSchemaGenerator.assert_equivalent_classes" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">assert_equivalent_classes</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#linkml.generators.OwlSchemaGenerator.assert_equivalent_classes" title="Permalink to this definition">#</a></dt>
+<dd><p>If True, assert equivalence between definition_uris and class_uris</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="linkml.generators.OwlSchemaGenerator.emit_prefixes">
 <span class="sig-name descname"><span class="pre">emit_prefixes</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#linkml.generators.OwlSchemaGenerator.emit_prefixes" title="Permalink to this definition">#</a></dt>
 <dd><p>Prefixes to emit, for RDF-based generators</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="linkml.generators.OwlSchemaGenerator.end_schema">
-<span class="sig-name descname"><span class="pre">end_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">_</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/linkml/generators/owlgen.html#OwlSchemaGenerator.end_schema"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.OwlSchemaGenerator.end_schema" title="Permalink to this definition">#</a></dt>
-<dd><p>Visited once at the end of generation</p>
-<p>&#64;param kwargs: Arguments passed through from CLI – implementation dependent</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -4453,12 +4611,25 @@ metaclasses     if True, include OWL representations of ClassDefinition, SlotDef
 <dl class="py attribute">
 <dt class="sig sig-object py" id="linkml.generators.OwlSchemaGenerator.graph">
 <span class="sig-name descname"><span class="pre">graph</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Graph</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#linkml.generators.OwlSchemaGenerator.graph" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>Mutable graph that is being built up during OWL generation.</p>
+</dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="linkml.generators.OwlSchemaGenerator.is_slot_object_property">
-<span class="sig-name descname"><span class="pre">is_slot_object_property</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slot</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.SlotDefinition" title="linkml_runtime.linkml_model.meta.SlotDefinition"><span class="pre">SlotDefinition</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/linkml/generators/owlgen.html#OwlSchemaGenerator.is_slot_object_property"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.OwlSchemaGenerator.is_slot_object_property" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="linkml.generators.OwlSchemaGenerator.has_profile">
+<span class="sig-name descname"><span class="pre">has_profile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">profile</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#linkml.generators.owlgen.MetadataProfile" title="linkml.generators.owlgen.MetadataProfile"><span class="pre">MetadataProfile</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/linkml/generators/owlgen.html#OwlSchemaGenerator.has_profile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.OwlSchemaGenerator.has_profile" title="Permalink to this definition">#</a></dt>
+<dd><p>Determine if a metadata profile is active.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>profile</strong> – profile to check</p></li>
+<li><p><strong>default</strong> – True if the configured profiles include the specified profile</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="linkml.generators.OwlSchemaGenerator.mergeimports">
@@ -4469,7 +4640,8 @@ metaclasses     if True, include OWL representations of ClassDefinition, SlotDef
 <dl class="py attribute">
 <dt class="sig sig-object py" id="linkml.generators.OwlSchemaGenerator.metaclasses">
 <span class="sig-name descname"><span class="pre">metaclasses</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#linkml.generators.OwlSchemaGenerator.metaclasses" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>if True, include OWL representations of ClassDefinition, SlotDefinition, etc. Introduces punning</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="linkml.generators.OwlSchemaGenerator.metadata">
@@ -4480,24 +4652,70 @@ metaclasses     if True, include OWL representations of ClassDefinition, SlotDef
 <dl class="py attribute">
 <dt class="sig sig-object py" id="linkml.generators.OwlSchemaGenerator.metadata_profile">
 <span class="sig-name descname"><span class="pre">metadata_profile</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#linkml.generators.owlgen.MetadataProfile" title="linkml.generators.owlgen.MetadataProfile"><span class="pre">MetadataProfile</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#linkml.generators.OwlSchemaGenerator.metadata_profile" title="Permalink to this definition">#</a></dt>
+<dd><p>Deprecated - use metadata_profiles.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="linkml.generators.OwlSchemaGenerator.metadata_profiles">
+<span class="sig-name descname"><span class="pre">metadata_profiles</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#linkml.generators.owlgen.MetadataProfile" title="linkml.generators.owlgen.MetadataProfile"><span class="pre">MetadataProfile</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#linkml.generators.OwlSchemaGenerator.metadata_profiles" title="Permalink to this definition">#</a></dt>
+<dd><p>By default, use the linkml metadata profile,
+this allows for overrides.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="linkml.generators.OwlSchemaGenerator.metamodel_schemaview">
+<span class="sig-name descname"><span class="pre">metamodel_schemaview</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView" title="linkml_runtime.utils.schemaview.SchemaView"><span class="pre">SchemaView</span></a></em><a class="headerlink" href="#linkml.generators.OwlSchemaGenerator.metamodel_schemaview" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="linkml.generators.OwlSchemaGenerator.mixins_as_expressions">
+<span class="sig-name descname"><span class="pre">mixins_as_expressions</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#linkml.generators.OwlSchemaGenerator.mixins_as_expressions" title="Permalink to this definition">#</a></dt>
+<dd><p>EXPERIMENTAL: If True, use OWL existential restrictions to represent mixins</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="linkml.generators.OwlSchemaGenerator.node_owltypes">
+<span class="sig-name descname"><span class="pre">node_owltypes</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">BNode</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">URIRef</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">URIRef</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#linkml.generators.OwlSchemaGenerator.node_owltypes" title="Permalink to this definition">#</a></dt>
+<dd><p>rdfs:Datatype, owl:Thing</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="linkml.generators.OwlSchemaGenerator.ontology_uri_suffix">
 <span class="sig-name descname"><span class="pre">ontology_uri_suffix</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#linkml.generators.OwlSchemaGenerator.ontology_uri_suffix" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.generators.OwlSchemaGenerator.requires_metamodel">
-<span class="sig-name descname"><span class="pre">requires_metamodel</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#linkml.generators.OwlSchemaGenerator.requires_metamodel" title="Permalink to this definition">#</a></dt>
-<dd><p>Generator queries an instance of the metamodel</p>
+<dd><p>Suffix to add to the schema name to create the ontology URI, e.g. .owl.ttl</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="linkml.generators.OwlSchemaGenerator.schema">
-<span class="sig-name descname"><span class="pre">schema</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">TextIO</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.SchemaDefinition" title="linkml_runtime.linkml_model.meta.SchemaDefinition"><span class="pre">SchemaDefinition</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#linkml.generators.OwlSchemaGenerator.schema" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">schema</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">TextIO</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.SchemaDefinition" title="linkml_runtime.linkml_model.meta.SchemaDefinition"><span class="pre">SchemaDefinition</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'Generator'</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#linkml.generators.OwlSchemaGenerator.schema" title="Permalink to this definition">#</a></dt>
 <dd><p>metamodel compliant schema.  Can be URI, file name, actual schema, another generator, an
 open file or a pre-parsed schema</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml.generators.OwlSchemaGenerator.serialize">
+<span class="sig-name descname"><span class="pre">serialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/linkml/generators/owlgen.html#OwlSchemaGenerator.serialize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.OwlSchemaGenerator.serialize" title="Permalink to this definition">#</a></dt>
+<dd><p>Generate output in the required format</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>kwargs</strong> – Generator specific parameters</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Generated output</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="linkml.generators.OwlSchemaGenerator.simplify">
+<span class="sig-name descname"><span class="pre">simplify</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#linkml.generators.OwlSchemaGenerator.simplify" title="Permalink to this definition">#</a></dt>
+<dd><p>Reduce complex expressions to simpler forms</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="linkml.generators.OwlSchemaGenerator.slot_is_literal_map">
+<span class="sig-name descname"><span class="pre">slot_is_literal_map</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#linkml.generators.OwlSchemaGenerator.slot_is_literal_map" title="Permalink to this definition">#</a></dt>
+<dd><p>DEPRECATED: use node_owltypes</p>
 </dd></dl>
 
 <dl class="py method">
@@ -4506,39 +4724,33 @@ open file or a pre-parsed schema</p>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.generators.OwlSchemaGenerator.top_value_uri">
-<span class="sig-name descname"><span class="pre">top_value_uri</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">URIRef</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#linkml.generators.OwlSchemaGenerator.top_value_uri" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.generators.OwlSchemaGenerator.type_objects">
-<span class="sig-name descname"><span class="pre">type_objects</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#linkml.generators.OwlSchemaGenerator.type_objects" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.generators.OwlSchemaGenerator.uses_schemaloader">
-<span class="sig-name descname"><span class="pre">uses_schemaloader</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#linkml.generators.OwlSchemaGenerator.uses_schemaloader" title="Permalink to this definition">#</a></dt>
-<dd><p>Old-style generator that uses the SchemaLoader and visitor pattern</p>
+<dt class="sig sig-object py" id="linkml.generators.OwlSchemaGenerator.target_profile">
+<span class="sig-name descname"><span class="pre">target_profile</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#linkml.generators.owlgen.OWLProfile" title="linkml.generators.owlgen.OWLProfile"><span class="pre">OWLProfile</span></a></em><a class="headerlink" href="#linkml.generators.OwlSchemaGenerator.target_profile" title="Permalink to this definition">#</a></dt>
+<dd><p>Target OWL profile. Currently the only distinction is between DL and Full</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.generators.OwlSchemaGenerator.valid_formats">
-<span class="sig-name descname"><span class="pre">valid_formats</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['owl',</span> <span class="pre">'ttl',</span> <span class="pre">'json-ld',</span> <span class="pre">'xml',</span> <span class="pre">'n3',</span> <span class="pre">'turtle',</span> <span class="pre">'ttl',</span> <span class="pre">'ntriples',</span> <span class="pre">'nt',</span> <span class="pre">'nt11',</span> <span class="pre">'nquads',</span> <span class="pre">'trix',</span> <span class="pre">'trig',</span> <span class="pre">'hext']</span></em><a class="headerlink" href="#linkml.generators.OwlSchemaGenerator.valid_formats" title="Permalink to this definition">#</a></dt>
-<dd><p>Allowed formats - first format is default</p>
+<dt class="sig sig-object py" id="linkml.generators.OwlSchemaGenerator.top_value_uri">
+<span class="sig-name descname"><span class="pre">top_value_uri</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">URIRef</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#linkml.generators.OwlSchemaGenerator.top_value_uri" title="Permalink to this definition">#</a></dt>
+<dd><p>If metaclasses=True, then this property is used to connect object shadows to literals</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="linkml.generators.OwlSchemaGenerator.visit_class">
-<span class="sig-name descname"><span class="pre">visit_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.ClassDefinition" title="linkml_runtime.linkml_model.meta.ClassDefinition"><span class="pre">ClassDefinition</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/linkml/generators/owlgen.html#OwlSchemaGenerator.visit_class"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.OwlSchemaGenerator.visit_class" title="Permalink to this definition">#</a></dt>
-<dd><p>Each ClassDefinition is represented as an OWL class</p>
-<ul class="simple">
-<li><p>the OWL Class will instantiate ClassDefinition, if schema.metaclasses is true</p></li>
-<li><p>the OWL Class will be annotated using the same properties as the source ClassDefinition</p></li>
-<li><p>induced slots and their ranges added as OWL restrictions; note this will be under the Open World Assumption</p></li>
-</ul>
+<dt class="sig sig-object py" id="linkml.generators.OwlSchemaGenerator.transform_class_expression">
+<span class="sig-name descname"><span class="pre">transform_class_expression</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.ClassDefinition" title="linkml_runtime.linkml_model.meta.ClassDefinition"><span class="pre">ClassDefinition</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">AnonymousClassExpression</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">BNode</span></span></span><a class="reference internal" href="_modules/linkml/generators/owlgen.html#OwlSchemaGenerator.transform_class_expression"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.OwlSchemaGenerator.transform_class_expression" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml.generators.OwlSchemaGenerator.transform_class_slot_expression">
+<span class="sig-name descname"><span class="pre">transform_class_slot_expression</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.ClassDefinition" title="linkml_runtime.linkml_model.meta.ClassDefinition"><span class="pre">ClassDefinition</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">AnonymousClassExpression</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slot</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.SlotDefinition" title="linkml_runtime.linkml_model.meta.SlotDefinition"><span class="pre">SlotDefinition</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">AnonymousSlotExpression</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">main_slot</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.SlotDefinition" title="linkml_runtime.linkml_model.meta.SlotDefinition"><span class="pre">SlotDefinition</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">BNode</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">URIRef</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/linkml/generators/owlgen.html#OwlSchemaGenerator.transform_class_slot_expression"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.OwlSchemaGenerator.transform_class_slot_expression" title="Permalink to this definition">#</a></dt>
+<dd><p>Take a ClassExpression and SlotExpression combination and transform to a node.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>cls</strong> – </p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cls</strong> – </p></li>
+<li><p><strong>slot</strong> – </p></li>
+<li><p><strong>main_slot</strong> – </p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p></p>
@@ -4546,43 +4758,32 @@ open file or a pre-parsed schema</p>
 </dl>
 </dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="linkml.generators.OwlSchemaGenerator.visit_enum">
-<span class="sig-name descname"><span class="pre">visit_enum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">e</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">EnumDefinition</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/linkml/generators/owlgen.html#OwlSchemaGenerator.visit_enum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.OwlSchemaGenerator.visit_enum" title="Permalink to this definition">#</a></dt>
-<dd><p>Visited once for every enum definition in the schema</p>
-<p>&#64;param enum: Enum definition</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="linkml.generators.OwlSchemaGenerator.visit_schema">
-<span class="sig-name descname"><span class="pre">visit_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">_</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/linkml/generators/owlgen.html#OwlSchemaGenerator.visit_schema"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.OwlSchemaGenerator.visit_schema" title="Permalink to this definition">#</a></dt>
-<dd><p>Visited once at the beginning of generation</p>
-<p>&#64;param kwargs: Arguments passed through from CLI – implementation dependent</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="linkml.generators.OwlSchemaGenerator.visit_slot">
-<span class="sig-name descname"><span class="pre">visit_slot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slot_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slot</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.SlotDefinition" title="linkml_runtime.linkml_model.meta.SlotDefinition"><span class="pre">SlotDefinition</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/linkml/generators/owlgen.html#OwlSchemaGenerator.visit_slot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.OwlSchemaGenerator.visit_slot" title="Permalink to this definition">#</a></dt>
-<dd><p>Add a slot definition per slot</p>
-<p>Note: visit_slot may be called multiple times for the same slot_uri, as the same slot_uri can be used:
-* when the schema declares <cite>attributes</cite>
-* when <cite>slot_usage</cite> induces additional slots</p>
-<p>&#64;param slot_name:
-&#64;param slot:
-&#64;return:</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="linkml.generators.OwlSchemaGenerator.visit_type">
-<span class="sig-name descname"><span class="pre">visit_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">typ</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TypeDefinition</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/linkml/generators/owlgen.html#OwlSchemaGenerator.visit_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.OwlSchemaGenerator.visit_type" title="Permalink to this definition">#</a></dt>
-<dd><p>Visited once for every type definition in the schema</p>
-<p>&#64;param typ: Type definition</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="linkml.generators.OwlSchemaGenerator.type_objects">
+<span class="sig-name descname"><span class="pre">type_objects</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#linkml.generators.OwlSchemaGenerator.type_objects" title="Permalink to this definition">#</a></dt>
+<dd><p>if True, represents types as classes (and thus all slots are object properties);
+typed object classes effectively shadow the main xsd literal types.
+The purpose of this is to allow a uniform ObjectProperty representation for all slots,
+without having to commit to being either Data or Object property (OWL-DL does not
+allow a property to be both.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.generators.OwlSchemaGenerator.visits_are_sorted">
-<span class="sig-name descname"><span class="pre">visits_are_sorted</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#linkml.generators.OwlSchemaGenerator.visits_are_sorted" title="Permalink to this definition">#</a></dt>
-<dd><p>Visitor ClassVar: True means visit basic types in alphabetial order, false in entry</p>
+<dt class="sig sig-object py" id="linkml.generators.OwlSchemaGenerator.use_native_uris">
+<span class="sig-name descname"><span class="pre">use_native_uris</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#linkml.generators.OwlSchemaGenerator.use_native_uris" title="Permalink to this definition">#</a></dt>
+<dd><p>If True, use the definition_uris, otherwise use class_uris.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="linkml.generators.OwlSchemaGenerator.uses_schemaloader">
+<span class="sig-name descname"><span class="pre">uses_schemaloader</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#linkml.generators.OwlSchemaGenerator.uses_schemaloader" title="Permalink to this definition">#</a></dt>
+<dd><p>Old-style generator that uses the SchemaLoader and visitor pattern</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="linkml.generators.OwlSchemaGenerator.valid_formats">
+<span class="sig-name descname"><span class="pre">valid_formats</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['owl',</span> <span class="pre">'ttl',</span> <span class="pre">'json-ld',</span> <span class="pre">'xml',</span> <span class="pre">'n3',</span> <span class="pre">'turtle',</span> <span class="pre">'ttl',</span> <span class="pre">'ntriples',</span> <span class="pre">'nt',</span> <span class="pre">'nt11',</span> <span class="pre">'nquads',</span> <span class="pre">'trix',</span> <span class="pre">'trig',</span> <span class="pre">'hext']</span></em><a class="headerlink" href="#linkml.generators.OwlSchemaGenerator.valid_formats" title="Permalink to this definition">#</a></dt>
+<dd><p>Allowed formats - first format is default</p>
 </dd></dl>
 
 </dd></dl>
@@ -6130,35 +6331,50 @@ open file or a pre-parsed schema</p>
 <li><a class="reference internal" href="#linkml.generators.owlgen.MetadataProfile"><code class="docutils literal notranslate"><span class="pre">MetadataProfile</span></code></a><ul>
 <li><a class="reference internal" href="#linkml.generators.owlgen.MetadataProfile.linkml"><code class="docutils literal notranslate"><span class="pre">MetadataProfile.linkml</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.owlgen.MetadataProfile.list"><code class="docutils literal notranslate"><span class="pre">MetadataProfile.list()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.owlgen.MetadataProfile.ols"><code class="docutils literal notranslate"><span class="pre">MetadataProfile.ols</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.owlgen.MetadataProfile.rdfs"><code class="docutils literal notranslate"><span class="pre">MetadataProfile.rdfs</span></code></a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#linkml.generators.owlgen.OWLProfile"><code class="docutils literal notranslate"><span class="pre">OWLProfile</span></code></a><ul>
+<li><a class="reference internal" href="#linkml.generators.owlgen.OWLProfile.dl"><code class="docutils literal notranslate"><span class="pre">OWLProfile.dl</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.owlgen.OWLProfile.full"><code class="docutils literal notranslate"><span class="pre">OWLProfile.full</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.owlgen.OWLProfile.list"><code class="docutils literal notranslate"><span class="pre">OWLProfile.list()</span></code></a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#linkml.generators.owlgen.OwlSchemaGenerator"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator</span></code></a><ul>
+<li><a class="reference internal" href="#linkml.generators.owlgen.OwlSchemaGenerator.add_class"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.add_class()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.owlgen.OwlSchemaGenerator.add_constraints"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.add_constraints()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.owlgen.OwlSchemaGenerator.add_enum"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.add_enum()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.owlgen.OwlSchemaGenerator.add_metadata"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.add_metadata()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.owlgen.OwlSchemaGenerator.add_ols_annotations"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.add_ols_annotations</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.owlgen.OwlSchemaGenerator.add_slot"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.add_slot()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.owlgen.OwlSchemaGenerator.add_type"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.add_type()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.owlgen.OwlSchemaGenerator.as_graph"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.as_graph()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.owlgen.OwlSchemaGenerator.assert_equivalent_classes"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.assert_equivalent_classes</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.owlgen.OwlSchemaGenerator.end_schema"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.end_schema()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.owlgen.OwlSchemaGenerator.file_extension"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.file_extension</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.owlgen.OwlSchemaGenerator.generatorname"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.generatorname</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.owlgen.OwlSchemaGenerator.generatorversion"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.generatorversion</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.owlgen.OwlSchemaGenerator.graph"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.graph</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.owlgen.OwlSchemaGenerator.is_slot_object_property"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.is_slot_object_property()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.owlgen.OwlSchemaGenerator.has_profile"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.has_profile()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.owlgen.OwlSchemaGenerator.metaclasses"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.metaclasses</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.owlgen.OwlSchemaGenerator.metadata_profile"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.metadata_profile</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.owlgen.OwlSchemaGenerator.metadata_profiles"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.metadata_profiles</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.owlgen.OwlSchemaGenerator.metamodel_schemaview"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.metamodel_schemaview</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.owlgen.OwlSchemaGenerator.mixins_as_expressions"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.mixins_as_expressions</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.owlgen.OwlSchemaGenerator.node_owltypes"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.node_owltypes</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.owlgen.OwlSchemaGenerator.ontology_uri_suffix"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.ontology_uri_suffix</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.owlgen.OwlSchemaGenerator.requires_metamodel"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.requires_metamodel</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.owlgen.OwlSchemaGenerator.schema"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.schema</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.owlgen.OwlSchemaGenerator.serialize"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.serialize()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.owlgen.OwlSchemaGenerator.simplify"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.simplify</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.owlgen.OwlSchemaGenerator.slot_is_literal_map"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.slot_is_literal_map</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.owlgen.OwlSchemaGenerator.slot_owl_type"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.slot_owl_type()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.owlgen.OwlSchemaGenerator.target_profile"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.target_profile</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.owlgen.OwlSchemaGenerator.top_value_uri"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.top_value_uri</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.owlgen.OwlSchemaGenerator.transform_class_expression"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.transform_class_expression()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.owlgen.OwlSchemaGenerator.transform_class_slot_expression"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.transform_class_slot_expression()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.owlgen.OwlSchemaGenerator.type_objects"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.type_objects</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.owlgen.OwlSchemaGenerator.use_native_uris"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.use_native_uris</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.owlgen.OwlSchemaGenerator.uses_schemaloader"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.uses_schemaloader</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.owlgen.OwlSchemaGenerator.valid_formats"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.valid_formats</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.owlgen.OwlSchemaGenerator.visit_class"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.visit_class()</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.owlgen.OwlSchemaGenerator.visit_enum"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.visit_enum()</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.owlgen.OwlSchemaGenerator.visit_schema"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.visit_schema()</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.owlgen.OwlSchemaGenerator.visit_slot"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.visit_slot()</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.owlgen.OwlSchemaGenerator.visit_type"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.visit_type()</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.owlgen.OwlSchemaGenerator.visits_are_sorted"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.visits_are_sorted</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -6545,34 +6761,43 @@ open file or a pre-parsed schema</p>
 </ul>
 </li>
 <li><a class="reference internal" href="#linkml.generators.OwlSchemaGenerator"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator</span></code></a><ul>
+<li><a class="reference internal" href="#linkml.generators.OwlSchemaGenerator.add_class"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.add_class()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.OwlSchemaGenerator.add_constraints"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.add_constraints()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.OwlSchemaGenerator.add_enum"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.add_enum()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.OwlSchemaGenerator.add_metadata"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.add_metadata()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.OwlSchemaGenerator.add_ols_annotations"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.add_ols_annotations</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.OwlSchemaGenerator.add_slot"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.add_slot()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.OwlSchemaGenerator.add_type"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.add_type()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.OwlSchemaGenerator.as_graph"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.as_graph()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.OwlSchemaGenerator.assert_equivalent_classes"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.assert_equivalent_classes</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.OwlSchemaGenerator.emit_prefixes"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.emit_prefixes</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.OwlSchemaGenerator.end_schema"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.end_schema()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.OwlSchemaGenerator.file_extension"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.file_extension</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.OwlSchemaGenerator.generatorname"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.generatorname</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.OwlSchemaGenerator.generatorversion"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.generatorversion</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.OwlSchemaGenerator.graph"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.graph</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.OwlSchemaGenerator.is_slot_object_property"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.is_slot_object_property()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.OwlSchemaGenerator.has_profile"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.has_profile()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.OwlSchemaGenerator.mergeimports"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.mergeimports</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.OwlSchemaGenerator.metaclasses"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.metaclasses</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.OwlSchemaGenerator.metadata"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.metadata</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.OwlSchemaGenerator.metadata_profile"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.metadata_profile</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.OwlSchemaGenerator.metadata_profiles"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.metadata_profiles</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.OwlSchemaGenerator.metamodel_schemaview"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.metamodel_schemaview</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.OwlSchemaGenerator.mixins_as_expressions"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.mixins_as_expressions</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.OwlSchemaGenerator.node_owltypes"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.node_owltypes</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.OwlSchemaGenerator.ontology_uri_suffix"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.ontology_uri_suffix</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.OwlSchemaGenerator.requires_metamodel"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.requires_metamodel</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.OwlSchemaGenerator.schema"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.schema</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.OwlSchemaGenerator.serialize"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.serialize()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.OwlSchemaGenerator.simplify"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.simplify</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.OwlSchemaGenerator.slot_is_literal_map"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.slot_is_literal_map</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.OwlSchemaGenerator.slot_owl_type"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.slot_owl_type()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.OwlSchemaGenerator.target_profile"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.target_profile</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.OwlSchemaGenerator.top_value_uri"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.top_value_uri</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.OwlSchemaGenerator.transform_class_expression"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.transform_class_expression()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.OwlSchemaGenerator.transform_class_slot_expression"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.transform_class_slot_expression()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.OwlSchemaGenerator.type_objects"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.type_objects</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.OwlSchemaGenerator.use_native_uris"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.use_native_uris</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.OwlSchemaGenerator.uses_schemaloader"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.uses_schemaloader</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.OwlSchemaGenerator.valid_formats"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.valid_formats</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.OwlSchemaGenerator.visit_class"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.visit_class()</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.OwlSchemaGenerator.visit_enum"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.visit_enum()</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.OwlSchemaGenerator.visit_schema"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.visit_schema()</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.OwlSchemaGenerator.visit_slot"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.visit_slot()</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.OwlSchemaGenerator.visit_type"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.visit_type()</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.OwlSchemaGenerator.visits_are_sorted"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.visits_are_sorted</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#linkml.generators.PydanticGenerator"><code class="docutils literal notranslate"><span class="pre">PydanticGenerator</span></code></a><ul>
