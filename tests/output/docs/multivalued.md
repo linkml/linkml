@@ -2,7 +2,7 @@
 # Slot: multivalued
 
 
-true means that slot can have more than one value
+true means that slot can have more than one value and should be represented using a list or collection structure.
 
 URI: [linkml:multivalued](https://w3id.org/linkml/multivalued)
 
@@ -25,7 +25,8 @@ URI: [linkml:multivalued](https://w3id.org/linkml/multivalued)
 
 |  |  |  |
 | --- | --- | --- |
-| **In Subsets:** | | minimal |
-|  | | basic |
-|  | | object_oriented |
+| **In Subsets:** | | SpecificationSubset |
+|  | | MinimalSubset |
+|  | | BasicSubset |
+|  | | ObjectOrientedProfile |
 

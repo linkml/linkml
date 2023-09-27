@@ -27,4 +27,5 @@ slot_definition &#8594;  <sub>0..1</sub> boolean
 | --- | --- | --- |
 | **Aliases:** | | inverse functional |
 |  | | many to one or many |
+| **In Subsets:** | | SpecificationSubset |
 

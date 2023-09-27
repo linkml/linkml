@@ -22,6 +22,15 @@ URI: [linkml:Setting](https://w3id.org/linkml/Setting)
  * [setting_key](setting_key.md)  <sub>1..1</sub>
      * Description: the variable name for a setting
      * Range: [Ncname](types/Ncname.md)
+     * in subsets: (SpecificationSubset)
  * [setting_value](setting_value.md)  <sub>1..1</sub>
      * Description: The value assigned for a setting
      * Range: [String](types/String.md)
+     * in subsets: (SpecificationSubset)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **In Subsets:** | | SpecificationSubset |
+

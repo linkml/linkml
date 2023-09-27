@@ -26,3 +26,10 @@ None &#8594;  <sub>0..1</sub> [String](String.md)
  * [SlotExpression](SlotExpression.md)
  * [TypeDefinition](TypeDefinition.md)
  * [TypeExpression](TypeExpression.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **In Subsets:** | | SpecificationSubset |
+

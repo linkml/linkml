@@ -19,17 +19,18 @@ URI: [linkml:Prefix](https://w3id.org/linkml/Prefix)
 ### Own
 
  * [prefix_prefix](prefix_prefix.md)  <sub>1..1</sub>
-     * Description: the nsname (sans ':' for a given prefix)
+     * Description: The prefix components of a prefix expansions. This is the part that appears before the colon in a CURIE.
      * Range: [Ncname](types/Ncname.md)
-     * in subsets: (basic)
+     * in subsets: (SpecificationSubset,BasicSubset)
  * [prefix_reference](prefix_reference.md)  <sub>1..1</sub>
-     * Description: A URI associated with a given prefix
+     * Description: The namespace to which a prefix expands to.
      * Range: [Uri](types/Uri.md)
-     * in subsets: (basic)
+     * in subsets: (SpecificationSubset,BasicSubset)
 
 ## Other properties
 
 |  |  |  |
 | --- | --- | --- |
-| **In Subsets:** | | basic |
+| **In Subsets:** | | SpecificationSubset |
+|  | | BasicSubset |
 

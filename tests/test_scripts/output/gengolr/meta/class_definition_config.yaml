@@ -1,6 +1,7 @@
 # metamodel_version: 1.7.0# version: 2.0.0id: class_definition
 schema_generating: true
-description: the definition of a class or interface
+description: an element whose instances are complex objects that may have slot-value
+  assignments
 display_name: class_definition
 document_category: class_definition
 weight: 20
@@ -11,12 +12,13 @@ fields:
     target class.
   display_name: name
 - id: id_prefixes
-  description: the identifier of this class or slot must begin with the URIs referenced
-    by this prefix
+  description: An allowed list of prefixes for which identifiers must conform. The
+    identifier of this class or slot must begin with the URIs referenced by this prefix
   display_name: id_prefixes
   cardinality: multi
 - id: definition_uri
-  description: the "native" URI of the element
+  description: The native URI of the element. This is always within the namespace
+    of the containing schema. Contrast with the assigned URI, via class_uri or slot_uri
   display_name: definition_uri
 - id: local_names
   display_name: local_names
@@ -24,6 +26,12 @@ fields:
 - id: conforms_to
   description: An established standard to which the element conforms.
   display_name: conforms_to
+- id: implements
+  description: An element in another schema which this element conforms to. The referenced
+    element is not imported into the schema for the implementing element. However,
+    the referenced schema may be used to check conformance of the implementing element.
+  display_name: implements
+  cardinality: multi
 - id: extensions
   description: a tag/text tuple attached to an arbitrary element
   display_name: extensions
@@ -33,27 +41,30 @@ fields:
   display_name: annotations
   cardinality: multi
 - id: description
-  description: a description of the element's purpose and use
+  description: a textual description of the element's purpose and use
   display_name: description
 - id: alt_descriptions
+  description: A sourced alternative description for an element
   display_name: alt_descriptions
   cardinality: multi
 - id: title
-  description: the official title of the element
+  description: A concise human-readable display label for the element. The title should
+    mirror the name, and should use ordinary textual punctuation.
   display_name: title
 - id: deprecated
   description: Description of why and when this element will no longer be used
   display_name: deprecated
 - id: todos
-  description: Outstanding issue that needs resolution
+  description: Outstanding issues that needs resolution
   display_name: todos
   cardinality: multi
 - id: notes
-  description: editorial notes about an element intended for internal consumption
+  description: editorial notes about an element intended primarily for internal consumption
   display_name: notes
   cardinality: multi
 - id: comments
-  description: notes and comments about an element intended for external consumption
+  description: notes and comments about an element intended primarily for external
+    consumption
   display_name: comments
   cardinality: multi
 - id: examples
@@ -62,8 +73,7 @@ fields:
   cardinality: multi
 - id: in_subset
   description: used to indicate membership of a term in a defined subset of terms
-    used for a particular domain or application (e.g. the translator_minimal subset
-    holding the minimal set of predicates used in a translator knowledge graph)
+    used for a particular domain or application.
   display_name: in_subset
   cardinality: multi
 - id: from_schema
@@ -77,9 +87,10 @@ fields:
   description: A related resource from which the element is derived.
   display_name: source
 - id: in_language
+  description: the primary language used in the sources
   display_name: in_language
 - id: see_also
-  description: a reference
+  description: A list of related entities or URLs that may be of relevance
   display_name: see_also
   cardinality: multi
 - id: deprecated_element_has_exact_replacement
@@ -91,10 +102,13 @@ fields:
     uri or curie
   display_name: deprecated element has possible replacement
 - id: aliases
+  description: Alternate names/labels for the element. These do not alter the semantics
+    of the schema, but may be useful to support search and alignment.
   display_name: aliases
   cardinality: multi
 - id: structured_aliases
-  description: A list of structured_alias objects.
+  description: A list of structured_alias objects, used to provide aliases in conjunction
+    with additional metadata.
   display_name: structured_aliases
   cardinality: multi
 - id: mappings
@@ -129,22 +143,6 @@ fields:
     have broader meaning.
   display_name: broad mappings
   cardinality: multi
-- id: rank
-  description: the relative order in which the element occurs, lower values are given
-    precedence
-  display_name: rank
-- id: abstract
-  description: an abstract class is a high level class or slot that is typically used
-    to group common slots together and cannot be directly instantiated.
-  display_name: abstract
-- id: mixin
-  description: this slot or class can only be used as a mixin.
-  display_name: mixin
-- id: values_from
-  description: the identifier of a "value set" -- a set of identifiers that form the
-    possible values for the range of a slot
-  display_name: values_from
-  cardinality: multi
 - id: created_by
   description: agent that created the element
   display_name: created_by
@@ -160,6 +158,30 @@ fields:
 - id: status
   description: status of the element
   display_name: status
+- id: rank
+  description: the relative order in which the element occurs, lower values are given
+    precedence
+  display_name: rank
+- id: abstract
+  description: Indicates the class or slot cannot be directly instantiated and is
+    intended for grouping purposes.
+  display_name: abstract
+- id: mixin
+  description: Indicates the class or slot is intended to be inherited from without
+    being an is_a parent. mixins should not be inherited from using is_a, except by
+    other mixins.
+  display_name: mixin
+- id: values_from
+  description: 'The identifier of a "value set" -- a set of identifiers that form
+    the possible values for the range of a slot. Note: this is different than ''subproperty_of''
+    in that ''subproperty_of'' is intended to be a single ontology term while ''values_from''
+    is the identifier of an entire value set.  Additionally, this is different than
+    an enumeration in that in an enumeration, the values of the enumeration are listed
+    directly in the model itself. Setting this property on a slot does not guarantee
+    an expansion of the ontological hiearchy into an enumerated list of possible values
+    in every serialization of the model.'
+  display_name: values_from
+  cardinality: multi
 - id: string_serialization
   description: 'Used on a slot that stores the string serialization of the containing
     object. The syntax follows python formatted strings, with slot names enclosed
@@ -178,11 +200,11 @@ fields:
     if unit=cm and value=2, the value of string_value shouldd be 2cm'
   display_name: string_serialization
 - id: slots
-  description: list of slot names that are applicable to a class
+  description: collection of slot names that are applicable to a class
   display_name: slots
   cardinality: multi
 - id: slot_usage
-  description: the redefinition of a slot in the context of the containing class definition.
+  description: the refinement of a slot in the context of the containing class definition.
   display_name: slot_usage
   cardinality: multi
 - id: attributes
@@ -190,15 +212,17 @@ fields:
   display_name: attributes
   cardinality: multi
 - id: class_uri
-  description: URI of the class in an RDF environment
+  description: URI of the class that provides a semantic interpretation of the element
+    in a linked data context. The URI may come from any namespace and may be shared
+    between schemas
   display_name: class_uri
 - id: subclass_of
-  description: rdfs:subClassOf to be emitted in OWL generation
+  description: DEPRECATED -- rdfs:subClassOf to be emitted in OWL generation
   display_name: subclass_of
 - id: union_of
-  description: indicates that the domain class consists exactly of the members of
-    the classes in the range
-  display_name: union_of
+  description: indicates that the domain element consists exactly of the members of
+    the element in the range.
+  display_name: class_definition_union_of
   cardinality: multi
 - id: defining_slots
   description: The combination of is a plus defining slots form a genus-differentia
@@ -207,10 +231,12 @@ fields:
   display_name: defining_slots
   cardinality: multi
 - id: tree_root
-  description: indicator that this is the root class in tree structures
+  description: Indicates that this is the Container class which forms the root of
+    the serialized document structure in tree serializations
   display_name: tree_root
 - id: unique_keys
-  description: Set of unique keys for this slot
+  description: A collection of named unique keys for this class. Unique keys may be
+    singular or compound.
   display_name: unique_keys
   cardinality: multi
 - id: rules
@@ -218,8 +244,9 @@ fields:
   display_name: class_definition_rules
   cardinality: multi
 - id: classification_rules
-  description: the collection of classification rules that apply to all members of
-    this class
+  description: The collection of classification rules that apply to all members of
+    this class. Classification rules allow for automatically assigning the instantiated
+    type of an instance.
   display_name: classification_rules
   cardinality: multi
 - id: slot_names_unique
@@ -239,17 +266,11 @@ fields:
     no instances in common
   display_name: children_are_mutually_disjoint
 - id: is_a
-  description: specifies single-inheritance between classes or slots. While multiple
-    inheritance is not allowed, mixins can be provided effectively providing the same
-    thing. The semantics are the same when translated to formalisms that allow MI
-    (e.g. RDFS/OWL). When translating to a SI framework (e.g. java classes, python
-    classes) then is a is used. When translating a framework without polymorphism
-    (e.g. json-schema, solr document schema) then is a and mixins are recursively
-    unfolded
+  description: A primary parent class from which inheritable metaslots are propagated
   display_name: class_definition_is_a
 - id: mixins
-  description: List of definitions to be mixed in. Targets may be any definition of
-    the same type
+  description: A collection of secondary parent mixin classes from which inheritable
+    metaslots are propagated
   display_name: class_definition_mixins
   cardinality: multi
 - id: apply_to
@@ -278,6 +299,6 @@ fields:
   display_name: class_expression_all_of
   cardinality: multi
 - id: slot_conditions
-  description: the redefinition of a slot in the context of the containing class definition.
+  description: expresses constraints on a group of slots for a class expression
   display_name: slot_conditions
   cardinality: multi

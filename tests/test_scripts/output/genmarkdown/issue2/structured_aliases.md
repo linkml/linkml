@@ -2,7 +2,7 @@
 # Slot: structured_aliases
 
 
-A list of structured_alias objects.
+A list of structured_alias objects, used to provide aliases in conjunction with additional metadata.
 
 URI: [linkml:structured_aliases](https://w3id.org/linkml/structured_aliases)
 
@@ -44,4 +44,5 @@ None &#8594;  <sub>0..\*</sub> structured_alias
 |  |  |  |
 | --- | --- | --- |
 | **Mappings:** | | skosxl:altLabel |
+| **See also:** | | [linkml:aliases](linkml:aliases) |
 

@@ -20,3 +20,10 @@ URI: [linkml:domain_of](https://w3id.org/linkml/domain_of)
 ## Used by
 
  * [SlotDefinition](SlotDefinition.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **Exact Mappings:** | | schema:domainIncludes |
+

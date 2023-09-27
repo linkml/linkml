@@ -20,3 +20,10 @@ pattern_expression &#8594;  <sub>0..1</sub> boolean
 ## Used by
 
  * pattern_expression
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **In Subsets:** | | SpecificationSubset |
+

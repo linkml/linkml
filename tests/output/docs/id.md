@@ -25,6 +25,8 @@ URI: [linkml:id](https://w3id.org/linkml/id)
 
 |  |  |  |
 | --- | --- | --- |
-| **In Subsets:** | | minimal |
-|  | | basic |
+| **In Subsets:** | | SpecificationSubset |
+|  | | MinimalSubset |
+|  | | BasicSubset |
+|  | | OwlProfile |
 

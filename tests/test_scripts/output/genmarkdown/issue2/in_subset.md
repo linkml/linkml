@@ -2,7 +2,7 @@
 # Slot: in_subset
 
 
-used to indicate membership of a term in a defined subset of terms used for a particular domain or application (e.g. the translator_minimal subset holding the minimal set of predicates used in a translator knowledge graph)
+used to indicate membership of a term in a defined subset of terms used for a particular domain or application.
 
 URI: [linkml:in_subset](https://w3id.org/linkml/in_subset)
 
@@ -44,5 +44,6 @@ URI: [linkml:in_subset](https://w3id.org/linkml/in_subset)
 |  |  |  |
 | --- | --- | --- |
 | **Mappings:** | | OIO:inSubset |
-| **In Subsets:** | | basic |
+| **Comments:** | | an example of use in the translator_minimal subset in the biolink model, holding the minimal set of predicates used in a translator knowledge graph |
+| **In Subsets:** | | BasicSubset |
 

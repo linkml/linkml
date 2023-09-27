@@ -120,7 +120,11 @@ class OwlSchemaGenerator(Generator):
     """If metaclasses=True, then this property is used to connect object shadows to literals"""
 
     type_objects: bool = field(default_factory=lambda: True)
-    """if True, represent TypeDefinitions as objects; if False, as literals"""
+    """if True, represents types as classes (and thus all slots are object properties);
+    typed object classes effectively shadow the main xsd literal types.
+    The purpose of this is to allow a uniform ObjectProperty representation for all slots,
+    without having to commit to being either Data or Object property (OWL-DL does not
+    allow a property to be both."""
 
     assert_equivalent_classes: bool = field(default_factory=lambda: False)
     """If True, assert equivalence between definition_uris and class_uris"""
@@ -371,8 +375,13 @@ class OwlSchemaGenerator(Generator):
                 if range:
                     if range in sv.all_types():
                         x = self._type_uri(range)
+                    elif range in sv.all_enums():
+                        x = self._enum_uri(range)
+                    elif range in sv.all_classes():
+                        x = self._enum_uri(range)
                     else:
-                        x = self._class_uri(range)
+                        raise ValueError(f"Unknown range {range}")
+                        #x = self._class_uri(range)
                 else:
                     x = OWL.Thing
             slot_uri = self._prop_uri(slot)
@@ -858,6 +867,7 @@ class OwlSchemaGenerator(Generator):
 
     def _type_uri(self, tn: TypeDefinitionName, native: bool = None) -> URIRef:
         if native is None:
+            # never use native unless type shadowing with objects is enabled
             native = self.type_objects
         if native:
             # UGLY HACK: Currently schemaview does not camelcase types
@@ -870,7 +880,11 @@ class OwlSchemaGenerator(Generator):
                 if pfx == "linkml":
                     return URIRef(self.schemaview.expand_curie(f"{pfx}:{camelcase(tn)}"))
         t = self.schemaview.get_type(tn)
-        return URIRef(self.schemaview.get_uri(t, expand=True, native=native))
+        expanded = self.schemaview.get_uri(t, expand=True, native=native)
+        if expanded.startswith("xsd:"):
+            # TODO: fix upstream in schemaview; default_curi_maps is different on windows
+            return XSD[expanded[4:]]
+        return URIRef(expanded)
 
     def _add_metamodel_class(self, cname: str) -> None:
         metac = self.metamodel.schema.classes[cname]

@@ -28,3 +28,10 @@ URI: [linkml:domain](https://w3id.org/linkml/domain)
 ## Used by
 
  * [SlotDefinition](SlotDefinition.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **In Subsets:** | | SpecificationSubset |
+

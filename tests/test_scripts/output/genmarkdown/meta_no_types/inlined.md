@@ -28,5 +28,8 @@ URI: [linkml:inlined](https://w3id.org/linkml/inlined)
 |  |  |  |
 | --- | --- | --- |
 | **Comments:** | | classes without keys or identifiers are necessarily inlined as lists |
-| **In Subsets:** | | basic |
+|  | | only applicable in tree-like serializations, e.g json, yaml |
+| **In Subsets:** | | SpecificationSubset |
+|  | | BasicSubset |
+| **See also:** | | [https://w3id.org/linkml/docs/specification/06mapping/#collection-forms](https://w3id.org/linkml/docs/specification/06mapping/#collection-forms) |
 

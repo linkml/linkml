@@ -26,4 +26,5 @@ slot_definition &#8594;  <sub>0..1</sub> slot_definition
 |  |  |  |
 | --- | --- | --- |
 | **Mappings:** | | owl:inverseOf |
+| **In Subsets:** | | SpecificationSubset |
 

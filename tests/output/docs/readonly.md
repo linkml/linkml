@@ -20,3 +20,10 @@ URI: [linkml:readonly](https://w3id.org/linkml/readonly)
 ## Used by
 
  * [SlotDefinition](SlotDefinition.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **Comments:** | | the slot is to be used for defining *metamodels* only |
+

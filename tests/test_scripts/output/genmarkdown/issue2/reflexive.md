@@ -27,5 +27,6 @@ slot_definition &#8594;  <sub>0..1</sub> boolean
 |  |  |  |
 | --- | --- | --- |
 | **Comments:** | | it is rare for a property to be reflexive, this characteristic is added for completeness, consider instead locally_reflexive |
+| **In Subsets:** | | SpecificationSubset |
 | **Close Mappings:** | | owl:ReflexiveProperty |
 

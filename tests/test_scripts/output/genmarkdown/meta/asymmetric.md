@@ -27,5 +27,6 @@ URI: [linkml:asymmetric](https://w3id.org/linkml/asymmetric)
 |  |  |  |
 | --- | --- | --- |
 | **Comments:** | | asymmetry is the combination of antisymmetry and irreflexivity |
+| **In Subsets:** | | SpecificationSubset |
 | **Close Mappings:** | | owl:AsymmetricProperty |
 

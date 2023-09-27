@@ -1,4 +1,4 @@
-# metamodel_version: 1.7.0# version: 1.8.2id: complex_chemical_exposure
+# metamodel_version: 1.7.0# version: 3.1.2id: complex_chemical_exposure
 schema_generating: true
 description: A complex chemical exposure is an intake of a chemical mixture (e.g.
   gasoline), other than a drug.
@@ -10,31 +10,24 @@ fields:
   description: A unique identifier for an entity. Must be either a CURIE shorthand
     for a URI or a complete URI
   display_name: id
-- id: iri
-  description: An IRI for an entity. This is determined by the id using expansion
-    rules.
-  display_name: iri
 - id: type
   display_name: type
-- id: name
-  description: A human-readable name for an attribute or entity.
-  display_name: name
 - id: description
   description: a human-readable description of an entity
   display_name: description
-- id: source
-  description: a lightweight analog to the association class 'has provider' slot,
-    which is the string name, or the authoritative (i.e. database) namespace, designating
-    the origin of the entity to which the slot belongs.
-  display_name: source
-- id: provided_by
-  description: connects an association to the agent (person, organization or group)
-    that provided it
-  display_name: provided by
-  cardinality: multi
 - id: has_attribute
   description: connects any entity to an attribute
   display_name: has attribute
+  cardinality: multi
+- id: provided_by
+  description: The value in this node property represents the knowledge provider that
+    created or assembled the node and all of its attributes.  Used internally to represent
+    how a particular node made its way into a knowledge provider or graph.
+  display_name: provided by
+  cardinality: multi
+- id: xref
+  description: Alternate CURIEs for a thing
+  display_name: xref
   cardinality: multi
 - id: category
   description: "Name of the high level ontology class in which this entity is categorized.\
@@ -51,18 +44,23 @@ fields:
     \ biolink:NamedThing}"
   display_name: named thing_category
   cardinality: multi
-- id: in_taxon
-  description: connects an entity to its taxonomic classification. Only certain kinds
-    of entities can be taxonomically classified; see 'thing with taxon'
-  display_name: in taxon
+- id: name
+  description: The human-readable 'attribute name' can be set to a string which reflects
+    its context of interpretation, e.g. SEPIO evidence/provenance/confidence annotation
+    or it can default to the name associated with the 'has attribute type' slot ontology
+    term.
+  display_name: attribute_name
+- id: has_attribute_type
+  description: connects an attribute to a class that describes it
+  display_name: has attribute type
+- id: has_quantitative_value
+  description: connects an attribute to a value
+  display_name: has quantitative value
   cardinality: multi
-- id: is_metabolite
-  description: indicates whether a chemical substance is a metabolite
-  display_name: is metabolite
-- id: timepoint
-  description: a point in time
-  display_name: timepoint
-- id: has_constituent
-  description: one or more chemical substances within a mixture
-  display_name: has constituent
-  cardinality: multi
+- id: has_qualitative_value
+  description: connects an attribute to a value
+  display_name: has qualitative value
+- id: iri
+  description: An IRI for an entity. This is determined by the id using expansion
+    rules.
+  display_name: iri

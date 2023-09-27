@@ -9,7 +9,7 @@ URI: [linkml:permissible_values](https://w3id.org/linkml/permissible_values)
 
 ## Domain and Range
 
-[EnumDefinition](EnumDefinition.md) &#8594;  <sub>0..\*</sub> [PermissibleValue](PermissibleValue.md)
+[EnumExpression](EnumExpression.md) &#8594;  <sub>0..\*</sub> [PermissibleValue](PermissibleValue.md)
 
 ## Parents
 
@@ -19,11 +19,15 @@ URI: [linkml:permissible_values](https://w3id.org/linkml/permissible_values)
 
 ## Used by
 
+ * [AnonymousEnumExpression](AnonymousEnumExpression.md)
  * [EnumDefinition](EnumDefinition.md)
+ * [EnumExpression](EnumExpression.md)
 
 ## Other properties
 
 |  |  |  |
 | --- | --- | --- |
-| **In Subsets:** | | basic |
+| **Aliases:** | | coded values |
+| **In Subsets:** | | SpecificationSubset |
+|  | | BasicSubset |
 
