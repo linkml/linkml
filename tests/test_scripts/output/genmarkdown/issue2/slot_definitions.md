@@ -2,7 +2,7 @@
 # Slot: slots
 
 
-slot definitions
+An index to the collection of all slot definitions in the schema
 
 URI: [linkml:slot_definitions](https://w3id.org/linkml/slot_definitions)
 
@@ -25,5 +25,8 @@ schema_definition &#8594;  <sub>0..\*</sub> slot_definition
 
 |  |  |  |
 | --- | --- | --- |
-| **In Subsets:** | | basic |
+| **Comments:** | | note the formal name of this element is slot_definitions, but it has alias slots, which is the canonical form used in yaml/json serializes of schemas. |
+| **In Subsets:** | | SpecificationSubset |
+|  | | BasicSubset |
+|  | | OwlProfile |
 

@@ -2,7 +2,7 @@
 # Slot: description
 
 
-a description of the element's purpose and use
+a textual description of the element's purpose and use
 
 URI: [linkml:description](https://w3id.org/linkml/description)
 
@@ -45,7 +45,7 @@ URI: [linkml:description](https://w3id.org/linkml/description)
 | --- | --- | --- |
 | **Aliases:** | | definition |
 | **Mappings:** | | skos:definition |
-| **In Subsets:** | | basic |
+| **In Subsets:** | | BasicSubset |
 | **Exact Mappings:** | | dcterms:description |
 |  | | schema:description |
 

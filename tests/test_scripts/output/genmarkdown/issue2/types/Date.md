@@ -10,3 +10,10 @@ URI: [linkml:Date](https://w3id.org/linkml/Date)
 | --- | --- | --- |
 | Root (builtin) type | | **XSDDate** |
 | Representation | | str |
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **Exact Mappings:** | | schema:Date |
+

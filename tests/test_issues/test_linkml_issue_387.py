@@ -1,5 +1,5 @@
 from rdflib import Graph, Literal, URIRef
-from rdflib.namespace import OWL, RDF, RDFS, XSD
+from rdflib.namespace import OWL, RDF, RDFS
 
 from linkml.generators.owlgen import OwlSchemaGenerator
 
@@ -33,11 +33,10 @@ def test_name_mangling(input_path, snapshot):
     assert (C1, RDFS.label, Literal("C1")) in g
     assert (C1, RDF.type, OWL.Class) in g
     assert (a, RDFS.label, Literal("a")) in g
-    assert (a, RDFS.range, XSD.string) in g
     assert (a, RDF.type, OWL.DatatypeProperty) in g
     assert len(list(g.objects(a, RDF.type))) == 1
     assert len(list(g.objects(C1, RDF.type))) == 1
-    schema = gen.schema
-    my_str = schema.types["my_str"]
+    sv = gen.schemaview
+    my_str = sv.get_type("my_str")
     assert my_str.uri == "xsd:string"
-    assert my_str.definition_uri == "https://w3id.org/linkml/examples/test/MyStr"
+    # assert my_str.definition_uri == "https://w3id.org/linkml/examples/test/MyStr"

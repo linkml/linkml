@@ -25,3 +25,11 @@ definition &#8594;  <sub>0..1</sub> pattern_expression
  * slot_expression
  * type_definition
  * type_expression
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **In Subsets:** | | SpecificationSubset |
+| **See also:** | | [https://linkml.io/linkml/schemas/constraints.html#structured-patterns](https://linkml.io/linkml/schemas/constraints.html#structured-patterns) |
+

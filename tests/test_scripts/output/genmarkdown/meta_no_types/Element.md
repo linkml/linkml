@@ -2,12 +2,12 @@
 # Class: element
 
 
-a named element in the model
+A named element in the model
 
 URI: [linkml:Element](https://w3id.org/linkml/Element)
 
 
-[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[TypeDefinition],[SubsetDefinition],[StructuredAlias],[SlotDefinition],[SchemaDefinition],[LocalName],[Extension],[Extensible],[Example],[EnumDefinition],[LocalName]<local_names%200..*-++[Element&#124;name:string;id_prefixes:ncname%20*;definition_uri:uriorcurie%20%3F;conforms_to:string%20%3F;description:string%20%3F;title:string%20%3F;deprecated:string%20%3F;todos:string%20*;notes:string%20*;comments:string%20*;from_schema:uri%20%3F;imported_from:string%20%3F;source:uriorcurie%20%3F;in_language:string%20%3F;see_also:uriorcurie%20*;deprecated_element_has_exact_replacement:uriorcurie%20%3F;deprecated_element_has_possible_replacement:uriorcurie%20%3F;aliases:string%20*;mappings:uriorcurie%20*;exact_mappings:uriorcurie%20*;close_mappings:uriorcurie%20*;related_mappings:uriorcurie%20*;narrow_mappings:uriorcurie%20*;broad_mappings:uriorcurie%20*;rank:integer%20%3F],[SlotExpression]-%20range%200..1>[Element],[Element]uses%20-.->[Extensible],[Element]uses%20-.->[Annotatable],[Element]uses%20-.->[CommonMetadata],[Element]^-[TypeDefinition],[Element]^-[SubsetDefinition],[Element]^-[SchemaDefinition],[Element]^-[EnumDefinition],[Element]^-[Definition],[SlotExpression],[Definition],[CommonMetadata],[Annotation],[Annotatable],[AltDescription])](https://yuml.me/diagram/nofunky;dir:TB/class/[TypeDefinition],[SubsetDefinition],[StructuredAlias],[SlotDefinition],[SchemaDefinition],[LocalName],[Extension],[Extensible],[Example],[EnumDefinition],[LocalName]<local_names%200..*-++[Element&#124;name:string;id_prefixes:ncname%20*;definition_uri:uriorcurie%20%3F;conforms_to:string%20%3F;description:string%20%3F;title:string%20%3F;deprecated:string%20%3F;todos:string%20*;notes:string%20*;comments:string%20*;from_schema:uri%20%3F;imported_from:string%20%3F;source:uriorcurie%20%3F;in_language:string%20%3F;see_also:uriorcurie%20*;deprecated_element_has_exact_replacement:uriorcurie%20%3F;deprecated_element_has_possible_replacement:uriorcurie%20%3F;aliases:string%20*;mappings:uriorcurie%20*;exact_mappings:uriorcurie%20*;close_mappings:uriorcurie%20*;related_mappings:uriorcurie%20*;narrow_mappings:uriorcurie%20*;broad_mappings:uriorcurie%20*;rank:integer%20%3F],[SlotExpression]-%20range%200..1>[Element],[Element]uses%20-.->[Extensible],[Element]uses%20-.->[Annotatable],[Element]uses%20-.->[CommonMetadata],[Element]^-[TypeDefinition],[Element]^-[SubsetDefinition],[Element]^-[SchemaDefinition],[Element]^-[EnumDefinition],[Element]^-[Definition],[SlotExpression],[Definition],[CommonMetadata],[Annotation],[Annotatable],[AltDescription])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[TypeDefinition],[SubsetDefinition],[StructuredAlias],[SlotDefinition],[SchemaDefinition],[LocalName],[Extension],[Extensible],[Example],[LocalName]<local_names%200..*-++[Element&#124;name:string;id_prefixes:ncname%20*;definition_uri:uriorcurie%20%3F;conforms_to:string%20%3F;implements:uriorcurie%20*;description:string%20%3F;title:string%20%3F;deprecated:string%20%3F;todos:string%20*;notes:string%20*;comments:string%20*;from_schema:uri%20%3F;imported_from:string%20%3F;source:uriorcurie%20%3F;in_language:string%20%3F;see_also:uriorcurie%20*;deprecated_element_has_exact_replacement:uriorcurie%20%3F;deprecated_element_has_possible_replacement:uriorcurie%20%3F;aliases:string%20*;mappings:uriorcurie%20*;exact_mappings:uriorcurie%20*;close_mappings:uriorcurie%20*;related_mappings:uriorcurie%20*;narrow_mappings:uriorcurie%20*;broad_mappings:uriorcurie%20*;created_by:uriorcurie%20%3F;created_on:datetime%20%3F;last_updated_on:datetime%20%3F;modified_by:uriorcurie%20%3F;status:uriorcurie%20%3F;rank:integer%20%3F],[SlotExpression]-%20range%200..1>[Element],[TypeDefinition]-%20union_of(i)%200..*>[Element],[SlotDefinition]-%20union_of(i)%200..*>[Element],[ClassDefinition]-%20union_of(i)%200..*>[Element],[Element]uses%20-.->[Extensible],[Element]uses%20-.->[Annotatable],[Element]uses%20-.->[CommonMetadata],[Element]^-[TypeDefinition],[Element]^-[SubsetDefinition],[Element]^-[SchemaDefinition],[Element]^-[Definition],[SlotExpression],[Definition],[CommonMetadata],[ClassDefinition],[Annotation],[Annotatable],[AltDescription])](https://yuml.me/diagram/nofunky;dir:TB/class/[TypeDefinition],[SubsetDefinition],[StructuredAlias],[SlotDefinition],[SchemaDefinition],[LocalName],[Extension],[Extensible],[Example],[LocalName]<local_names%200..*-++[Element&#124;name:string;id_prefixes:ncname%20*;definition_uri:uriorcurie%20%3F;conforms_to:string%20%3F;implements:uriorcurie%20*;description:string%20%3F;title:string%20%3F;deprecated:string%20%3F;todos:string%20*;notes:string%20*;comments:string%20*;from_schema:uri%20%3F;imported_from:string%20%3F;source:uriorcurie%20%3F;in_language:string%20%3F;see_also:uriorcurie%20*;deprecated_element_has_exact_replacement:uriorcurie%20%3F;deprecated_element_has_possible_replacement:uriorcurie%20%3F;aliases:string%20*;mappings:uriorcurie%20*;exact_mappings:uriorcurie%20*;close_mappings:uriorcurie%20*;related_mappings:uriorcurie%20*;narrow_mappings:uriorcurie%20*;broad_mappings:uriorcurie%20*;created_by:uriorcurie%20%3F;created_on:datetime%20%3F;last_updated_on:datetime%20%3F;modified_by:uriorcurie%20%3F;status:uriorcurie%20%3F;rank:integer%20%3F],[SlotExpression]-%20range%200..1>[Element],[TypeDefinition]-%20union_of(i)%200..*>[Element],[SlotDefinition]-%20union_of(i)%200..*>[Element],[ClassDefinition]-%20union_of(i)%200..*>[Element],[Element]uses%20-.->[Extensible],[Element]uses%20-.->[Annotatable],[Element]uses%20-.->[CommonMetadata],[Element]^-[TypeDefinition],[Element]^-[SubsetDefinition],[Element]^-[SchemaDefinition],[Element]^-[Definition],[SlotExpression],[Definition],[CommonMetadata],[ClassDefinition],[Annotation],[Annotatable],[AltDescription])
 
 ## Uses Mixin
 
@@ -17,15 +17,15 @@ URI: [linkml:Element](https://w3id.org/linkml/Element)
 
 ## Children
 
- * [Definition](Definition.md) - base class for definitions
- * [EnumDefinition](EnumDefinition.md) - List of values that constrain the range of a slot
- * [SchemaDefinition](SchemaDefinition.md) - a collection of subset, type, slot and class definitions
- * [SubsetDefinition](SubsetDefinition.md) - the name and description of a subset
- * [TypeDefinition](TypeDefinition.md) - A data type definition.
+ * [Definition](Definition.md) - abstract base class for core metaclasses
+ * [SchemaDefinition](SchemaDefinition.md) - A collection of definitions that make up a schema or a data model.
+ * [SubsetDefinition](SubsetDefinition.md) - an element that can be used to group other metamodel elements
+ * [TypeDefinition](TypeDefinition.md) - an element that whose instances are atomic scalar values that can be mapped to primitive types
 
 ## Referenced by Class
 
  *  **[SlotDefinition](SlotDefinition.md)** *[range](range.md)*  <sub>0..1</sub>  **[Element](Element.md)**
+ *  **[Element](Element.md)** *[union_of](union_of.md)*  <sub>0..\*</sub>  **[Element](Element.md)**
 
 ## Attributes
 
@@ -35,20 +35,23 @@ URI: [linkml:Element](https://w3id.org/linkml/Element)
  * [name](name.md)  <sub>1..1</sub>
      * Description: the unique name of the element within the context of the schema.  Name is combined with the default prefix to form the globally unique subject of the target class.
      * Range: [String](String.md)
-     * in subsets: (owl,minimal,basic,relational_model,object_oriented)
+     * in subsets: (SpecificationSubset,OwlProfile,MinimalSubset,BasicSubset,RelationalModelProfile,ObjectOrientedProfile)
  * [id_prefixes](id_prefixes.md)  <sub>0..\*</sub>
-     * Description: the identifier of this class or slot must begin with the URIs referenced by this prefix
+     * Description: An allowed list of prefixes for which identifiers must conform. The identifier of this class or slot must begin with the URIs referenced by this prefix
      * Range: [Ncname](Ncname.md)
-     * in subsets: (basic)
+     * in subsets: (SpecificationSubset,BasicSubset)
  * [definition_uri](definition_uri.md)  <sub>0..1</sub>
-     * Description: the "native" URI of the element
+     * Description: The native URI of the element. This is always within the namespace of the containing schema. Contrast with the assigned URI, via class_uri or slot_uri
      * Range: [Uriorcurie](Uriorcurie.md)
  * [local_names](local_names.md)  <sub>0..\*</sub>
      * Range: [LocalName](LocalName.md)
  * [conforms_to](conforms_to.md)  <sub>0..1</sub>
      * Description: An established standard to which the element conforms.
      * Range: [String](String.md)
-     * in subsets: (owl,basic)
+     * in subsets: (BasicSubset)
+ * [implements](implements.md)  <sub>0..\*</sub>
+     * Description: An element in another schema which this element conforms to. The referenced element is not imported into the schema for the implementing element. However, the referenced schema may be used to check conformance of the implementing element.
+     * Range: [Uriorcurie](Uriorcurie.md)
 
 ### Mixed in from extensible:
 
@@ -65,70 +68,72 @@ URI: [linkml:Element](https://w3id.org/linkml/Element)
 ### Mixed in from common_metadata:
 
  * [description](description.md)  <sub>0..1</sub>
-     * Description: a description of the element's purpose and use
+     * Description: a textual description of the element's purpose and use
      * Range: [String](String.md)
-     * in subsets: (basic)
+     * in subsets: (BasicSubset)
 
 ### Mixed in from common_metadata:
 
  * [alt_descriptions](alt_descriptions.md)  <sub>0..\*</sub>
+     * Description: A sourced alternative description for an element
      * Range: [AltDescription](AltDescription.md)
-     * in subsets: (basic)
+     * in subsets: (BasicSubset)
 
 ### Mixed in from common_metadata:
 
  * [title](title.md)  <sub>0..1</sub>
-     * Description: the official title of the element
+     * Description: A concise human-readable display label for the element. The title should mirror the name, and should use ordinary textual punctuation.
      * Range: [String](String.md)
-     * in subsets: (owl,basic)
+     * in subsets: (BasicSubset)
 
 ### Mixed in from common_metadata:
 
  * [deprecated](deprecated.md)  <sub>0..1</sub>
      * Description: Description of why and when this element will no longer be used
      * Range: [String](String.md)
-     * in subsets: (basic)
+     * in subsets: (BasicSubset)
 
 ### Mixed in from common_metadata:
 
  * [todos](todos.md)  <sub>0..\*</sub>
-     * Description: Outstanding issue that needs resolution
+     * Description: Outstanding issues that needs resolution
      * Range: [String](String.md)
-     * in subsets: (basic)
+     * in subsets: (BasicSubset)
 
 ### Mixed in from common_metadata:
 
  * [notes](notes.md)  <sub>0..\*</sub>
-     * Description: editorial notes about an element intended for internal consumption
+     * Description: editorial notes about an element intended primarily for internal consumption
      * Range: [String](String.md)
-     * in subsets: (owl,basic)
+     * in subsets: (BasicSubset)
 
 ### Mixed in from common_metadata:
 
  * [comments](comments.md)  <sub>0..\*</sub>
-     * Description: notes and comments about an element intended for external consumption
+     * Description: notes and comments about an element intended primarily for external consumption
      * Range: [String](String.md)
-     * in subsets: (owl,basic)
+     * in subsets: (BasicSubset)
 
 ### Mixed in from common_metadata:
 
  * [examples](examples.md)  <sub>0..\*</sub>
      * Description: example usages of an element
      * Range: [Example](Example.md)
-     * in subsets: (owl,basic)
+     * in subsets: (BasicSubset)
 
 ### Mixed in from common_metadata:
 
  * [in_subset](in_subset.md)  <sub>0..\*</sub>
-     * Description: used to indicate membership of a term in a defined subset of terms used for a particular domain or application (e.g. the translator_minimal subset holding the minimal set of predicates used in a translator knowledge graph)
+     * Description: used to indicate membership of a term in a defined subset of terms used for a particular domain or application.
      * Range: [SubsetDefinition](SubsetDefinition.md)
-     * in subsets: (basic)
+     * in subsets: (BasicSubset)
 
 ### Mixed in from common_metadata:
 
  * [from_schema](from_schema.md)  <sub>0..1</sub>
      * Description: id of the schema that defined the element
      * Range: [Uri](Uri.md)
+     * in subsets: (SpecificationSubset)
 
 ### Mixed in from common_metadata:
 
@@ -141,19 +146,20 @@ URI: [linkml:Element](https://w3id.org/linkml/Element)
  * [source](source.md)  <sub>0..1</sub>
      * Description: A related resource from which the element is derived.
      * Range: [Uriorcurie](Uriorcurie.md)
-     * in subsets: (basic)
+     * in subsets: (BasicSubset)
 
 ### Mixed in from common_metadata:
 
  * [in_language](in_language.md)  <sub>0..1</sub>
+     * Description: the primary language used in the sources
      * Range: [String](String.md)
 
 ### Mixed in from common_metadata:
 
  * [see_also](see_also.md)  <sub>0..\*</sub>
-     * Description: a reference
+     * Description: A list of related entities or URLs that may be of relevance
      * Range: [Uriorcurie](Uriorcurie.md)
-     * in subsets: (owl,basic)
+     * in subsets: (BasicSubset)
 
 ### Mixed in from common_metadata:
 
@@ -170,13 +176,14 @@ URI: [linkml:Element](https://w3id.org/linkml/Element)
 ### Mixed in from common_metadata:
 
  * [aliases](aliases.md)  <sub>0..\*</sub>
+     * Description: Alternate names/labels for the element. These do not alter the semantics of the schema, but may be useful to support search and alignment.
      * Range: [String](String.md)
-     * in subsets: (basic)
+     * in subsets: (BasicSubset)
 
 ### Mixed in from common_metadata:
 
  * [structured_aliases](structured_aliases.md)  <sub>0..\*</sub>
-     * Description: A list of structured_alias objects.
+     * Description: A list of structured_alias objects, used to provide aliases in conjunction with additional metadata.
      * Range: [StructuredAlias](StructuredAlias.md)
 
 ### Mixed in from common_metadata:
@@ -217,10 +224,46 @@ URI: [linkml:Element](https://w3id.org/linkml/Element)
 
 ### Mixed in from common_metadata:
 
+ * [created_by](created_by.md)  <sub>0..1</sub>
+     * Description: agent that created the element
+     * Range: [Uriorcurie](Uriorcurie.md)
+     * in subsets: (BasicSubset)
+
+### Mixed in from common_metadata:
+
+ * [created_on](created_on.md)  <sub>0..1</sub>
+     * Description: time at which the element was created
+     * Range: [Datetime](Datetime.md)
+     * in subsets: (BasicSubset)
+
+### Mixed in from common_metadata:
+
+ * [last_updated_on](last_updated_on.md)  <sub>0..1</sub>
+     * Description: time at which the element was last updated
+     * Range: [Datetime](Datetime.md)
+     * in subsets: (BasicSubset)
+
+### Mixed in from common_metadata:
+
+ * [modified_by](modified_by.md)  <sub>0..1</sub>
+     * Description: agent that modified the element
+     * Range: [Uriorcurie](Uriorcurie.md)
+     * in subsets: (BasicSubset)
+
+### Mixed in from common_metadata:
+
+ * [status](status.md)  <sub>0..1</sub>
+     * Description: status of the element
+     * Range: [Uriorcurie](Uriorcurie.md)
+     * Example: bibo:draft None
+     * in subsets: (BasicSubset)
+
+### Mixed in from common_metadata:
+
  * [rank](rank.md)  <sub>0..1</sub>
      * Description: the relative order in which the element occurs, lower values are given precedence
      * Range: [Integer](Integer.md)
-     * in subsets: (basic)
+     * in subsets: (SpecificationSubset,BasicSubset)
 
 ## Other properties
 
@@ -228,6 +271,6 @@ URI: [linkml:Element](https://w3id.org/linkml/Element)
 | --- | --- | --- |
 | **Aliases:** | | data element |
 |  | | object |
-| **In Subsets:** | | basic |
+| **In Subsets:** | | BasicSubset |
 | **See also:** | | [https://en.wikipedia.org/wiki/Data_element](https://en.wikipedia.org/wiki/Data_element) |
 

@@ -6,15 +6,6 @@ from rdflib.namespace import OWL, RDF
 from linkml.generators.owlgen import MetadataProfile, OwlSchemaGenerator
 from linkml.utils.schema_builder import SchemaBuilder
 
-# from tests.test_generators.environment import env
-
-# SCHEMA = env.input_path("kitchen_sink.yaml")
-# DATA = env.input_path("kitchen_sink_inst_01.yaml")
-# SHEXLOG = env.expected_path("owl_log.txt")
-# OWL_OUTPUT = env.expected_path("kitchen_sink.owl.ttl")
-# OWL_OUTPUT_RDFS = env.expected_path("kitchen_sink.rdfs-profile.owl.ttl")
-# OWL_OUTPUT_TMP = env.expected_path("tmp.owl.ttl")
-
 SYMP = Namespace("http://purl.obolibrary.org/obo/SYMP_")
 KS = Namespace("https://w3id.org/linkml/tests/kitchen_sink/")
 LINKML = Namespace("https://w3id.org/linkml/")

@@ -25,5 +25,5 @@ URI: [linkml:value_description](https://w3id.org/linkml/value_description)
 
 |  |  |  |
 | --- | --- | --- |
-| **In Subsets:** | | basic |
+| **In Subsets:** | | BasicSubset |
 

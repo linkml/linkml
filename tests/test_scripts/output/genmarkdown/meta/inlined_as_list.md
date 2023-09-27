@@ -32,5 +32,7 @@ representation and output. |
 |  | | A keyed or identified class with one additional slot can be input in a third form, a dictionary whose key
 is the key or identifier and whose value is the one additional element.  This form is still stored according
 to the inlined_as_list setting. |
-| **In Subsets:** | | basic |
+| **In Subsets:** | | SpecificationSubset |
+|  | | BasicSubset |
+| **See also:** | | [https://w3id.org/linkml/docs/specification/06mapping/#collection-forms](https://w3id.org/linkml/docs/specification/06mapping/#collection-forms) |
 

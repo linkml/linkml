@@ -23,3 +23,10 @@ None &#8594;  <sub>0..1</sub> [Integer](Integer.md)
  * [AnonymousSlotExpression](AnonymousSlotExpression.md)
  * [SlotDefinition](SlotDefinition.md)
  * [SlotExpression](SlotExpression.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **In Subsets:** | | SpecificationSubset |
+

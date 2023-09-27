@@ -29,4 +29,5 @@ slot_expression &#8594;  <sub>0..1</sub> anonymous_class_expression
 |  |  |  |
 | --- | --- | --- |
 | **Comments:** | | one use for this is being able to describe a range using any_of expressions, for example to combine two enums |
+| **In Subsets:** | | SpecificationSubset |
 

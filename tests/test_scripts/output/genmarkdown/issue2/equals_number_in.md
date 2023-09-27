@@ -20,3 +20,10 @@ None &#8594;  <sub>0..\*</sub> integer
 
 ## Used by
 
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **In Subsets:** | | SpecificationSubset |
+

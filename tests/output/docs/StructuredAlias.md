@@ -26,16 +26,16 @@ URI: [linkml:StructuredAlias](https://w3id.org/linkml/StructuredAlias)
 ### Own
 
  * [literal_form](literal_form.md)  <sub>1..1</sub>
-     * Description: The literal lexical form of a structured alias
+     * Description: The literal lexical form of a structured alias; i.e the actual alias value.
      * Range: [String](types/String.md)
  * [structured_alias➞predicate](alias_predicate.md)  <sub>0..1</sub>
-     * Description: The relationship between an element and its alias 
+     * Description: The relationship between an element and its alias.
      * Range: [alias_predicate_enum](alias_predicate_enum.md)
  * [structured_alias➞categories](structured_alias_categories.md)  <sub>0..\*</sub>
      * Description: The category or categories of an alias. This can be drawn from any relevant vocabulary
      * Range: [Uriorcurie](types/Uriorcurie.md)
      * Example: https://w3id.org/mod#acronym An acronym
-     * in subsets: (basic)
+     * in subsets: (BasicSubset)
 
 ### Mixed in from extensible:
 
@@ -52,70 +52,72 @@ URI: [linkml:StructuredAlias](https://w3id.org/linkml/StructuredAlias)
 ### Mixed in from common_metadata:
 
  * [description](description.md)  <sub>0..1</sub>
-     * Description: a description of the element's purpose and use
+     * Description: a textual description of the element's purpose and use
      * Range: [String](types/String.md)
-     * in subsets: (basic)
+     * in subsets: (BasicSubset)
 
 ### Mixed in from common_metadata:
 
  * [alt_descriptions](alt_descriptions.md)  <sub>0..\*</sub>
+     * Description: A sourced alternative description for an element
      * Range: [AltDescription](AltDescription.md)
-     * in subsets: (basic)
+     * in subsets: (BasicSubset)
 
 ### Mixed in from common_metadata:
 
  * [title](title.md)  <sub>0..1</sub>
-     * Description: the official title of the element
+     * Description: A concise human-readable display label for the element. The title should mirror the name, and should use ordinary textual punctuation.
      * Range: [String](types/String.md)
-     * in subsets: (owl,basic)
+     * in subsets: (BasicSubset)
 
 ### Mixed in from common_metadata:
 
  * [deprecated](deprecated.md)  <sub>0..1</sub>
      * Description: Description of why and when this element will no longer be used
      * Range: [String](types/String.md)
-     * in subsets: (basic)
+     * in subsets: (BasicSubset)
 
 ### Mixed in from common_metadata:
 
  * [todos](todos.md)  <sub>0..\*</sub>
-     * Description: Outstanding issue that needs resolution
+     * Description: Outstanding issues that needs resolution
      * Range: [String](types/String.md)
-     * in subsets: (basic)
+     * in subsets: (BasicSubset)
 
 ### Mixed in from common_metadata:
 
  * [notes](notes.md)  <sub>0..\*</sub>
-     * Description: editorial notes about an element intended for internal consumption
+     * Description: editorial notes about an element intended primarily for internal consumption
      * Range: [String](types/String.md)
-     * in subsets: (owl,basic)
+     * in subsets: (BasicSubset)
 
 ### Mixed in from common_metadata:
 
  * [comments](comments.md)  <sub>0..\*</sub>
-     * Description: notes and comments about an element intended for external consumption
+     * Description: notes and comments about an element intended primarily for external consumption
      * Range: [String](types/String.md)
-     * in subsets: (owl,basic)
+     * in subsets: (BasicSubset)
 
 ### Mixed in from common_metadata:
 
  * [examples](examples.md)  <sub>0..\*</sub>
      * Description: example usages of an element
      * Range: [Example](Example.md)
-     * in subsets: (owl,basic)
+     * in subsets: (BasicSubset)
 
 ### Mixed in from common_metadata:
 
  * [in_subset](in_subset.md)  <sub>0..\*</sub>
-     * Description: used to indicate membership of a term in a defined subset of terms used for a particular domain or application (e.g. the translator_minimal subset holding the minimal set of predicates used in a translator knowledge graph)
+     * Description: used to indicate membership of a term in a defined subset of terms used for a particular domain or application.
      * Range: [SubsetDefinition](SubsetDefinition.md)
-     * in subsets: (basic)
+     * in subsets: (BasicSubset)
 
 ### Mixed in from common_metadata:
 
  * [from_schema](from_schema.md)  <sub>0..1</sub>
      * Description: id of the schema that defined the element
      * Range: [Uri](types/Uri.md)
+     * in subsets: (SpecificationSubset)
 
 ### Mixed in from common_metadata:
 
@@ -128,19 +130,20 @@ URI: [linkml:StructuredAlias](https://w3id.org/linkml/StructuredAlias)
  * [source](source.md)  <sub>0..1</sub>
      * Description: A related resource from which the element is derived.
      * Range: [Uriorcurie](types/Uriorcurie.md)
-     * in subsets: (basic)
+     * in subsets: (BasicSubset)
 
 ### Mixed in from common_metadata:
 
  * [in_language](in_language.md)  <sub>0..1</sub>
+     * Description: the primary language used in the sources
      * Range: [String](types/String.md)
 
 ### Mixed in from common_metadata:
 
  * [see_also](see_also.md)  <sub>0..\*</sub>
-     * Description: a reference
+     * Description: A list of related entities or URLs that may be of relevance
      * Range: [Uriorcurie](types/Uriorcurie.md)
-     * in subsets: (owl,basic)
+     * in subsets: (BasicSubset)
 
 ### Mixed in from common_metadata:
 
@@ -157,13 +160,14 @@ URI: [linkml:StructuredAlias](https://w3id.org/linkml/StructuredAlias)
 ### Mixed in from common_metadata:
 
  * [aliases](aliases.md)  <sub>0..\*</sub>
+     * Description: Alternate names/labels for the element. These do not alter the semantics of the schema, but may be useful to support search and alignment.
      * Range: [String](types/String.md)
-     * in subsets: (basic)
+     * in subsets: (BasicSubset)
 
 ### Mixed in from common_metadata:
 
  * [structured_aliases](structured_aliases.md)  <sub>0..\*</sub>
-     * Description: A list of structured_alias objects.
+     * Description: A list of structured_alias objects, used to provide aliases in conjunction with additional metadata.
      * Range: [StructuredAlias](StructuredAlias.md)
 
 ### Mixed in from common_metadata:
@@ -204,10 +208,46 @@ URI: [linkml:StructuredAlias](https://w3id.org/linkml/StructuredAlias)
 
 ### Mixed in from common_metadata:
 
+ * [created_by](created_by.md)  <sub>0..1</sub>
+     * Description: agent that created the element
+     * Range: [Uriorcurie](types/Uriorcurie.md)
+     * in subsets: (BasicSubset)
+
+### Mixed in from common_metadata:
+
+ * [created_on](created_on.md)  <sub>0..1</sub>
+     * Description: time at which the element was created
+     * Range: [Datetime](types/Datetime.md)
+     * in subsets: (BasicSubset)
+
+### Mixed in from common_metadata:
+
+ * [last_updated_on](last_updated_on.md)  <sub>0..1</sub>
+     * Description: time at which the element was last updated
+     * Range: [Datetime](types/Datetime.md)
+     * in subsets: (BasicSubset)
+
+### Mixed in from common_metadata:
+
+ * [modified_by](modified_by.md)  <sub>0..1</sub>
+     * Description: agent that modified the element
+     * Range: [Uriorcurie](types/Uriorcurie.md)
+     * in subsets: (BasicSubset)
+
+### Mixed in from common_metadata:
+
+ * [status](status.md)  <sub>0..1</sub>
+     * Description: status of the element
+     * Range: [Uriorcurie](types/Uriorcurie.md)
+     * Example: bibo:draft None
+     * in subsets: (BasicSubset)
+
+### Mixed in from common_metadata:
+
  * [rank](rank.md)  <sub>0..1</sub>
      * Description: the relative order in which the element occurs, lower values are given precedence
      * Range: [Integer](types/Integer.md)
-     * in subsets: (basic)
+     * in subsets: (SpecificationSubset,BasicSubset)
 
 ## Other properties
 

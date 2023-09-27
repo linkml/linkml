@@ -20,3 +20,10 @@ None &#8594;  <sub>0..1</sub> boolean
 ## Used by
 
  * class_rule
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **In Subsets:** | | SpecificationSubset |
+

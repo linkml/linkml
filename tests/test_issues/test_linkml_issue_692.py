@@ -12,6 +12,9 @@ name: descriptionexport
 imports:
   - https://w3id.org/linkml/types
 default_range: string
+default_prefix: ex
+prefixes:
+  ex: http://example.org/description-export/
 
 classes:
   Person:
@@ -44,6 +47,7 @@ def test_owlgen_rdfs_profile():
         format="ttl",
     )
     output = gen.serialize()
+    print(output)
 
     # load back via rdflib
     graph = Graph(base="http://example.org/description-export")

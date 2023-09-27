@@ -28,3 +28,10 @@ slot_definition &#8594;  <sub>0..1</sub> class_definition
 ## Used by
 
  * slot_definition
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **In Subsets:** | | SpecificationSubset |
+

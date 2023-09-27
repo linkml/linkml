@@ -27,4 +27,5 @@ None &#8594;  <sub>0..1</sub> [Boolean](Boolean.md)
 | --- | --- | --- |
 | **Aliases:** | | iff |
 |  | | if and only if |
+| **In Subsets:** | | SpecificationSubset |
 

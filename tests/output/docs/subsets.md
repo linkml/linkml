@@ -2,7 +2,7 @@
 # Slot: subsets
 
 
-list of subsets referenced in this model
+An index to the collection of all subset definitions in the schema
 
 URI: [linkml:subsets](https://w3id.org/linkml/subsets)
 
@@ -25,6 +25,7 @@ URI: [linkml:subsets](https://w3id.org/linkml/subsets)
 
 |  |  |  |
 | --- | --- | --- |
-| **In Subsets:** | | basic |
+| **In Subsets:** | | SpecificationSubset |
+|  | | BasicSubset |
 | **Exact Mappings:** | | OIO:hasSubset |
 

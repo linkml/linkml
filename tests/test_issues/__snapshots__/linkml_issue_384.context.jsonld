@@ -5,51 +5,21 @@
       "source": "linkml_issue_384.yaml"
    },
    "@context": {
+      "ex": "https://w3id.org/linkml/examples/personinfo/",
       "linkml": "https://w3id.org/linkml/",
-      "personinfo": "https://w3id.org/linkml/examples/personinfo/",
       "sdo": "http://schema.org/",
       "@vocab": "https://w3id.org/linkml/examples/personinfo/",
-      "full_name": {
-         "@id": "https://w3id.org/linkml/examples/personinfo/full_name"
-      },
-      "unit": {
-         "@id": "https://w3id.org/linkml/examples/personinfo/unit"
-      },
       "value": {
-         "@type": "xsd:float",
-         "@id": "https://w3id.org/linkml/examples/personinfo/value"
+         "@type": "xsd:float"
       },
       "age": {
-         "@type": "xsd:integer",
-         "@id": "https://w3id.org/linkml/examples/personinfo/age"
-      },
-      "aliases": {
-         "@id": "https://w3id.org/linkml/examples/personinfo/aliases"
-      },
-      "id": {
-         "@id": "https://w3id.org/linkml/examples/personinfo/id"
+         "@type": "xsd:integer"
       },
       "parent": {
-         "@type": "@id",
-         "@id": "https://w3id.org/linkml/examples/personinfo/parent"
-      },
-      "phone": {
-         "@id": "https://w3id.org/linkml/examples/personinfo/phone"
-      },
-      "GeoAge": {
-         "@id": "https://w3id.org/linkml/examples/personinfo/GeoAge"
-      },
-      "GeoObject": {
-         "@id": "https://w3id.org/linkml/examples/personinfo/GeoObject"
-      },
-      "Organization": {
-         "@id": "https://w3id.org/linkml/examples/personinfo/Organization"
+         "@type": "@id"
       },
       "Person": {
          "@id": "sdo:Person"
-      },
-      "Thing": {
-         "@id": "https://w3id.org/linkml/examples/personinfo/Thing"
       }
    }
 }

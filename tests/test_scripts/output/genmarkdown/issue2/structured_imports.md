@@ -2,7 +2,7 @@
 # Slot: structured_imports
 
 
-other schemas that are included in this schema
+A list of specifications for how to import elements from external schemas
 
 URI: [linkml:structured_imports](https://w3id.org/linkml/structured_imports)
 

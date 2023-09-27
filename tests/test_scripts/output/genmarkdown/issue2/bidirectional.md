@@ -27,4 +27,5 @@ None &#8594;  <sub>0..1</sub> boolean
 | --- | --- | --- |
 | **Aliases:** | | iff |
 |  | | if and only if |
+| **In Subsets:** | | SpecificationSubset |
 

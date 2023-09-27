@@ -30,5 +30,6 @@ URI: [linkml:pattern](https://w3id.org/linkml/pattern)
 
 |  |  |  |
 | --- | --- | --- |
-| **In Subsets:** | | basic |
+| **In Subsets:** | | SpecificationSubset |
+|  | | BasicSubset |
 

@@ -25,5 +25,7 @@ slot_definition &#8594;  <sub>0..1</sub> boolean
 
 |  |  |  |
 | --- | --- | --- |
-| **Comments:** | | Inherited applies to slot values.  Parent *slots* are always inherited by subclasses |
+| **Comments:** | | the slot is to be used for defining *metamodels* only |
+|  | | Inherited applies to slot values.  Parent *slots* are always inherited by subclasses |
+| **In Subsets:** | | SpecificationSubset |
 

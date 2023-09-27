@@ -26,4 +26,5 @@ URI: [linkml:rules](https://w3id.org/linkml/rules)
 |  |  |  |
 | --- | --- | --- |
 | **Mappings:** | | sh:rule |
+| **In Subsets:** | | SpecificationSubset |
 

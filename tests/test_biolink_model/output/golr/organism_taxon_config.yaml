@@ -1,4 +1,4 @@
-# metamodel_version: 1.7.0# version: 1.8.2id: organism_taxon
+# metamodel_version: 1.7.0# version: 3.1.2id: organism_taxon
 schema_generating: true
 description: 'A classification of a set of organisms. Example instances: NCBITaxon:9606
   (Homo sapiens), NCBITaxon:2 (Bacteria). Can also be used to represent strains or
@@ -23,19 +23,19 @@ fields:
 - id: description
   description: a human-readable description of an entity
   display_name: description
-- id: source
-  description: a lightweight analog to the association class 'has provider' slot,
-    which is the string name, or the authoritative (i.e. database) namespace, designating
-    the origin of the entity to which the slot belongs.
-  display_name: source
-- id: provided_by
-  description: connects an association to the agent (person, organization or group)
-    that provided it
-  display_name: provided by
-  cardinality: multi
 - id: has_attribute
   description: connects any entity to an attribute
   display_name: has attribute
+  cardinality: multi
+- id: provided_by
+  description: The value in this node property represents the knowledge provider that
+    created or assembled the node and all of its attributes.  Used internally to represent
+    how a particular node made its way into a knowledge provider or graph.
+  display_name: provided by
+  cardinality: multi
+- id: xref
+  description: Alternate CURIEs for a thing
+  display_name: xref
   cardinality: multi
 - id: category
   description: "Name of the high level ontology class in which this entity is categorized.\
@@ -54,7 +54,3 @@ fields:
   cardinality: multi
 - id: has_taxonomic_rank
   display_name: organism taxon_has taxonomic rank
-- id: subclass_of
-  description: subclass of holds between two taxa, e.g. human subclass of mammal
-  display_name: organism taxon_subclass of
-  cardinality: multi

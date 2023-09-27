@@ -2,7 +2,7 @@
 # Slot: prefixes
 
 
-prefix / URI definitions to be added to the context beyond those fetched from prefixcommons in id prefixes
+A collection of prefix expansions that specify how CURIEs can be expanded to URIs
 
 URI: [linkml:prefixes](https://w3id.org/linkml/prefixes)
 
@@ -25,5 +25,7 @@ URI: [linkml:prefixes](https://w3id.org/linkml/prefixes)
 
 |  |  |  |
 | --- | --- | --- |
-| **In Subsets:** | | basic |
+| **Mappings:** | | sh:declare |
+| **In Subsets:** | | SpecificationSubset |
+|  | | BasicSubset |
 
