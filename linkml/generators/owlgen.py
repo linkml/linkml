@@ -381,7 +381,7 @@ class OwlSchemaGenerator(Generator):
                         x = self._enum_uri(range)
                     else:
                         raise ValueError(f"Unknown range {range}")
-                        #x = self._class_uri(range)
+                        # x = self._class_uri(range)
                 else:
                     x = OWL.Thing
             slot_uri = self._prop_uri(slot)
