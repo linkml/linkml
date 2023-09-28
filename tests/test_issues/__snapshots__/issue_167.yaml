@@ -59,7 +59,7 @@ slots:
         extensions:
           http://semantics.r.us/c1:
             tag: http://semantics.r.us/c1
-            value: '143'
+            value: 143
     from_schema: http://example.org/tests/issue167
     slot_uri: http://example.org/tests/issue167/sb
     owner: c2
