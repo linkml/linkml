@@ -1198,14 +1198,14 @@ linkml-runtime = ">=1.1.6"
 
 [[package]]
 name = "linkml-runtime"
-version = "1.6.0rc2"
+version = "1.6.0rc3"
 description = "Runtime environment for LinkML, the Linked open data modeling language"
 category = "main"
 optional = false
 python-versions = ">=3.7.6,<4.0.0"
 files = [
-    {file = "linkml_runtime-1.6.0rc2-py3-none-any.whl", hash = "sha256:3e623f8d7823c968feaab1ff578ef3577a05008266e36fd30d52ec3608431fd2"},
-    {file = "linkml_runtime-1.6.0rc2.tar.gz", hash = "sha256:82827db19c9ce7f91391ea63a0ed0f4876957c6ac1491e14d5ae513de90b02f9"},
+    {file = "linkml_runtime-1.6.0rc3-py3-none-any.whl", hash = "sha256:c3b293d293f06f5eb2151306fe63d947255134fb68f6a039a4c7c287b96cf4d5"},
+    {file = "linkml_runtime-1.6.0rc3.tar.gz", hash = "sha256:95433fb27bf8715ec5dc56cc6cc2e02ebd0e9b53fbe665f002ea36b48ae9284a"},
 ]
 
 [package.dependencies]
@@ -3131,4 +3131,4 @@ docs = []
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.7.6"
-content-hash = "7e877065fde4c2b961e693536a47e25925a53c625311b9fd0995c3042be265bf"
+content-hash = "acf91bd1e695834341eb1891f06279d3ce068d70871b61fa3364768a630b6bcc"
