@@ -72,7 +72,7 @@ XSD_OR_BASE_TO_PYTHON = {
     "xsd:decimal": Decimal,
     "xsd:dateTime": (str, datetime.datetime, datetime.time, XSDTime),
     "xsd:date": (str, datetime.date, XSDDate),
-    "xsd:time": XSDTime,
+    "xsd:time": (str, datetime.time, XSDTime),
 }
 
 

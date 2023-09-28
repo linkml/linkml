@@ -1,5 +1,5 @@
 # Auto generated from validation.yaml by pythongen.py version: 0.9.0
-# Generation date: 2023-06-29T10:29:33
+# Generation date: 2023-09-01T13:21:24
 # Schema: reporting
 #
 # id: https://w3id.org/linkml/reporting
@@ -11,7 +11,6 @@ import re
 from jsonasobj2 import JsonObj, as_dict
 from typing import Optional, List, Union, Dict, ClassVar, Any
 from dataclasses import dataclass
-from linkml_runtime.linkml_model.meta import EnumDefinition, PermissibleValue, PvFormulaOptions
 
 from linkml_runtime.utils.slot import Slot
 from linkml_runtime.utils.metamodelcore import empty_list, empty_dict, bnode
@@ -21,7 +20,7 @@ from linkml_runtime.utils.formatutils import camelcase, underscore, sfx
 from linkml_runtime.utils.enumerations import EnumDefinitionImpl
 from rdflib import Namespace, URIRef
 from linkml_runtime.utils.curienamespace import CurieNamespace
-from linkml_runtime.linkml_model.types import Nodeidentifier, String
+from .types import Nodeidentifier, String
 from linkml_runtime.utils.metamodelcore import NodeIdentifier
 
 metamodel_version = "1.7.0"

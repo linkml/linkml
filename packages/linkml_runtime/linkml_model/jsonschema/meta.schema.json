@@ -137,7 +137,15 @@
                 },
                 "alt_descriptions": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/AltDescription__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/AltDescription__identifier_optional"
+                            },
+                            {
+                                "description": "text of an attributed description",
+                                "type": "string"
+                            }
+                        ]
                     },
                     "description": "A sourced alternative description for an element",
                     "type": "object"
@@ -163,6 +171,13 @@
                     },
                     "type": "array"
                 },
+                "categories": {
+                    "description": "Controlled terms used to categorize an element.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
                 "close_mappings": {
                     "description": "A list of terms from different schemas or terminology systems that have close meaning.",
                     "items": {
@@ -172,6 +187,13 @@
                 },
                 "comments": {
                     "description": "notes and comments about an element intended primarily for external consumption",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "contributors": {
+                    "description": "agent that contributed to the element",
                     "items": {
                         "type": "string"
                     },
@@ -253,6 +275,13 @@
                     "description": "A primary parent class or slot from which inheritable metaslots are propagated from. While multiple inheritance is not allowed, mixins can be provided effectively providing the same thing. The semantics are the same when translated to formalisms that allow MI (e.g. RDFS/OWL). When translating to a SI framework (e.g. java classes, python classes) then is a is used. When translating a framework without polymorphism (e.g. json-schema, solr document schema) then is a and mixins are recursively unfolded",
                     "type": "string"
                 },
+                "keywords": {
+                    "description": "Keywords or tags used to describe the element",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
                 "last_updated_on": {
                     "description": "time at which the element was last updated",
                     "format": "date-time",
@@ -310,7 +339,14 @@
                 },
                 "slot_conditions": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/SlotDefinition__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/SlotDefinition__identifier_optional"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
                     },
                     "description": "expresses constraints on a group of slots for a class expression",
                     "type": "object"
@@ -395,7 +431,14 @@
                 },
                 "permissible_values": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/PermissibleValue__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/PermissibleValue__identifier_optional"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
                     },
                     "description": "A list of possible values for a slot range",
                     "type": "object"
@@ -436,7 +479,15 @@
                 },
                 "alt_descriptions": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/AltDescription__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/AltDescription__identifier_optional"
+                            },
+                            {
+                                "description": "text of an attributed description",
+                                "type": "string"
+                            }
+                        ]
                     },
                     "description": "A sourced alternative description for an element",
                     "type": "object"
@@ -462,6 +513,13 @@
                     },
                     "type": "array"
                 },
+                "categories": {
+                    "description": "Controlled terms used to categorize an element.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
                 "close_mappings": {
                     "description": "A list of terms from different schemas or terminology systems that have close meaning.",
                     "items": {
@@ -471,6 +529,13 @@
                 },
                 "comments": {
                     "description": "notes and comments about an element intended primarily for external consumption",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "contributors": {
+                    "description": "agent that contributed to the element",
                     "items": {
                         "type": "string"
                     },
@@ -586,6 +651,13 @@
                 "inlined_as_list": {
                     "description": "True means that an inlined slot is represented as a list of range instances.  False means that an inlined slot is represented as a dictionary, whose key is the slot key or identifier and whose value is the range instance.",
                     "type": "boolean"
+                },
+                "keywords": {
+                    "description": "Keywords or tags used to describe the element",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
                 },
                 "last_updated_on": {
                     "description": "time at which the element was last updated",
@@ -825,7 +897,15 @@
                 },
                 "alt_descriptions": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/AltDescription__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/AltDescription__identifier_optional"
+                            },
+                            {
+                                "description": "text of an attributed description",
+                                "type": "string"
+                            }
+                        ]
                     },
                     "description": "A sourced alternative description for an element",
                     "type": "object"
@@ -853,13 +933,27 @@
                 },
                 "attributes": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/SlotDefinition__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/SlotDefinition__identifier_optional"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
                     },
                     "description": "Inline definition of slots",
                     "type": "object"
                 },
                 "broad_mappings": {
                     "description": "A list of terms from different schemas or terminology systems that have broader meaning.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "categories": {
+                    "description": "Controlled terms used to categorize an element.",
                     "items": {
                         "type": "string"
                     },
@@ -897,6 +991,13 @@
                 "conforms_to": {
                     "description": "An established standard to which the element conforms.",
                     "type": "string"
+                },
+                "contributors": {
+                    "description": "agent that contributed to the element",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
                 },
                 "created_by": {
                     "description": "agent that created the element",
@@ -1002,9 +1103,23 @@
                     },
                     "type": "array"
                 },
+                "instantiates": {
+                    "description": "An element in another schema which this element instantiates.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
                 "is_a": {
                     "description": "A primary parent class from which inheritable metaslots are propagated",
                     "type": "string"
+                },
+                "keywords": {
+                    "description": "Keywords or tags used to describe the element",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
                 },
                 "last_updated_on": {
                     "description": "time at which the element was last updated",
@@ -1013,7 +1128,15 @@
                 },
                 "local_names": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/LocalName__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/LocalName__identifier_optional"
+                            },
+                            {
+                                "description": "a name assigned to an element in a given ontology",
+                                "type": "string"
+                            }
+                        ]
                     },
                     "type": "object"
                 },
@@ -1095,7 +1218,14 @@
                 },
                 "slot_conditions": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/SlotDefinition__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/SlotDefinition__identifier_optional"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
                     },
                     "description": "expresses constraints on a group of slots for a class expression",
                     "type": "object"
@@ -1106,7 +1236,14 @@
                 },
                 "slot_usage": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/SlotDefinition__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/SlotDefinition__identifier_optional"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
                     },
                     "description": "the refinement of a slot in the context of the containing class definition.",
                     "type": "object"
@@ -1171,7 +1308,7 @@
                     "type": "object"
                 },
                 "values_from": {
-                    "description": "The identifier of a \"value set\" -- a set of identifiers that form the possible values for the range of a slot. Note: this is different than 'subproperty_of' in that 'subproperty_of' is intended to be a single ontology term while 'values_from' is the identifier of an entire value set.  Additionally, this is different than an enumeration in that in an enumeration, the values of the enumeration are listed directly in the model itself. Setting this property on a slot does not guarantee an expansion of the ontological hiearchy into an enumerated list of possible values in every serialization of the model.",
+                    "description": "The identifier of a \"value set\" -- a set of identifiers that form the possible values for the range of a slot. Note: this is different than 'subproperty_of' in that 'subproperty_of' is intended to be a single ontology term while 'values_from' is the identifier of an entire value set.  Additionally, this is different than an enumeration in that in an enumeration, the values of the enumeration are listed directly in the model itself. Setting this property on a slot does not guarantee an expansion of the ontological hierarchy into an enumerated list of possible values in every serialization of the model.",
                     "items": {
                         "type": "string"
                     },
@@ -1208,7 +1345,15 @@
                 },
                 "alt_descriptions": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/AltDescription__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/AltDescription__identifier_optional"
+                            },
+                            {
+                                "description": "text of an attributed description",
+                                "type": "string"
+                            }
+                        ]
                     },
                     "description": "A sourced alternative description for an element",
                     "type": "object"
@@ -1236,13 +1381,27 @@
                 },
                 "attributes": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/SlotDefinition__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/SlotDefinition__identifier_optional"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
                     },
                     "description": "Inline definition of slots",
                     "type": "object"
                 },
                 "broad_mappings": {
                     "description": "A list of terms from different schemas or terminology systems that have broader meaning.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "categories": {
+                    "description": "Controlled terms used to categorize an element.",
                     "items": {
                         "type": "string"
                     },
@@ -1280,6 +1439,13 @@
                 "conforms_to": {
                     "description": "An established standard to which the element conforms.",
                     "type": "string"
+                },
+                "contributors": {
+                    "description": "agent that contributed to the element",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
                 },
                 "created_by": {
                     "description": "agent that created the element",
@@ -1385,9 +1551,23 @@
                     },
                     "type": "array"
                 },
+                "instantiates": {
+                    "description": "An element in another schema which this element instantiates.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
                 "is_a": {
                     "description": "A primary parent class from which inheritable metaslots are propagated",
                     "type": "string"
+                },
+                "keywords": {
+                    "description": "Keywords or tags used to describe the element",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
                 },
                 "last_updated_on": {
                     "description": "time at which the element was last updated",
@@ -1396,7 +1576,15 @@
                 },
                 "local_names": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/LocalName__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/LocalName__identifier_optional"
+                            },
+                            {
+                                "description": "a name assigned to an element in a given ontology",
+                                "type": "string"
+                            }
+                        ]
                     },
                     "type": "object"
                 },
@@ -1478,7 +1666,14 @@
                 },
                 "slot_conditions": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/SlotDefinition__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/SlotDefinition__identifier_optional"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
                     },
                     "description": "expresses constraints on a group of slots for a class expression",
                     "type": "object"
@@ -1489,7 +1684,14 @@
                 },
                 "slot_usage": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/SlotDefinition__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/SlotDefinition__identifier_optional"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
                     },
                     "description": "the refinement of a slot in the context of the containing class definition.",
                     "type": "object"
@@ -1554,7 +1756,7 @@
                     "type": "object"
                 },
                 "values_from": {
-                    "description": "The identifier of a \"value set\" -- a set of identifiers that form the possible values for the range of a slot. Note: this is different than 'subproperty_of' in that 'subproperty_of' is intended to be a single ontology term while 'values_from' is the identifier of an entire value set.  Additionally, this is different than an enumeration in that in an enumeration, the values of the enumeration are listed directly in the model itself. Setting this property on a slot does not guarantee an expansion of the ontological hiearchy into an enumerated list of possible values in every serialization of the model.",
+                    "description": "The identifier of a \"value set\" -- a set of identifiers that form the possible values for the range of a slot. Note: this is different than 'subproperty_of' in that 'subproperty_of' is intended to be a single ontology term while 'values_from' is the identifier of an entire value set.  Additionally, this is different than an enumeration in that in an enumeration, the values of the enumeration are listed directly in the model itself. Setting this property on a slot does not guarantee an expansion of the ontological hierarchy into an enumerated list of possible values in every serialization of the model.",
                     "items": {
                         "type": "string"
                     },
@@ -1578,7 +1780,15 @@
                 },
                 "alt_descriptions": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/AltDescription__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/AltDescription__identifier_optional"
+                            },
+                            {
+                                "description": "text of an attributed description",
+                                "type": "string"
+                            }
+                        ]
                     },
                     "description": "A sourced alternative description for an element",
                     "type": "object"
@@ -1601,6 +1811,13 @@
                     },
                     "type": "array"
                 },
+                "categories": {
+                    "description": "Controlled terms used to categorize an element.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
                 "close_mappings": {
                     "description": "A list of terms from different schemas or terminology systems that have close meaning.",
                     "items": {
@@ -1610,6 +1827,13 @@
                 },
                 "comments": {
                     "description": "notes and comments about an element intended primarily for external consumption",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "contributors": {
+                    "description": "agent that contributed to the element",
                     "items": {
                         "type": "string"
                     },
@@ -1683,6 +1907,13 @@
                 },
                 "in_subset": {
                     "description": "used to indicate membership of a term in a defined subset of terms used for a particular domain or application.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "keywords": {
+                    "description": "Keywords or tags used to describe the element",
                     "items": {
                         "type": "string"
                     },
@@ -1795,7 +2026,15 @@
                 },
                 "alt_descriptions": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/AltDescription__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/AltDescription__identifier_optional"
+                            },
+                            {
+                                "description": "text of an attributed description",
+                                "type": "string"
+                            }
+                        ]
                     },
                     "description": "A sourced alternative description for an element",
                     "type": "object"
@@ -1816,6 +2055,13 @@
                 },
                 "broad_mappings": {
                     "description": "A list of terms from different schemas or terminology systems that have broader meaning.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "categories": {
+                    "description": "Controlled terms used to categorize an element.",
                     "items": {
                         "type": "string"
                     },
@@ -1857,6 +2103,13 @@
                 "conforms_to": {
                     "description": "An established standard to which the element conforms.",
                     "type": "string"
+                },
+                "contributors": {
+                    "description": "agent that contributed to the element",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
                 },
                 "created_by": {
                     "description": "agent that created the element",
@@ -1959,9 +2212,23 @@
                     },
                     "type": "array"
                 },
+                "instantiates": {
+                    "description": "An element in another schema which this element instantiates.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
                 "is_a": {
                     "description": "A primary parent class or slot from which inheritable metaslots are propagated from. While multiple inheritance is not allowed, mixins can be provided effectively providing the same thing. The semantics are the same when translated to formalisms that allow MI (e.g. RDFS/OWL). When translating to a SI framework (e.g. java classes, python classes) then is a is used. When translating a framework without polymorphism (e.g. json-schema, solr document schema) then is a and mixins are recursively unfolded",
                     "type": "string"
+                },
+                "keywords": {
+                    "description": "Keywords or tags used to describe the element",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
                 },
                 "last_updated_on": {
                     "description": "time at which the element was last updated",
@@ -1970,7 +2237,15 @@
                 },
                 "local_names": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/LocalName__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/LocalName__identifier_optional"
+                            },
+                            {
+                                "description": "a name assigned to an element in a given ontology",
+                                "type": "string"
+                            }
+                        ]
                     },
                     "type": "object"
                 },
@@ -2027,7 +2302,14 @@
                 },
                 "permissible_values": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/PermissibleValue__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/PermissibleValue__identifier_optional"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
                     },
                     "description": "A list of possible values for a slot range",
                     "type": "object"
@@ -2089,7 +2371,7 @@
                     "type": "array"
                 },
                 "values_from": {
-                    "description": "The identifier of a \"value set\" -- a set of identifiers that form the possible values for the range of a slot. Note: this is different than 'subproperty_of' in that 'subproperty_of' is intended to be a single ontology term while 'values_from' is the identifier of an entire value set.  Additionally, this is different than an enumeration in that in an enumeration, the values of the enumeration are listed directly in the model itself. Setting this property on a slot does not guarantee an expansion of the ontological hiearchy into an enumerated list of possible values in every serialization of the model.",
+                    "description": "The identifier of a \"value set\" -- a set of identifiers that form the possible values for the range of a slot. Note: this is different than 'subproperty_of' in that 'subproperty_of' is intended to be a single ontology term while 'values_from' is the identifier of an entire value set.  Additionally, this is different than an enumeration in that in an enumeration, the values of the enumeration are listed directly in the model itself. Setting this property on a slot does not guarantee an expansion of the ontological hierarchy into an enumerated list of possible values in every serialization of the model.",
                     "items": {
                         "type": "string"
                     },
@@ -2119,7 +2401,15 @@
                 },
                 "alt_descriptions": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/AltDescription__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/AltDescription__identifier_optional"
+                            },
+                            {
+                                "description": "text of an attributed description",
+                                "type": "string"
+                            }
+                        ]
                     },
                     "description": "A sourced alternative description for an element",
                     "type": "object"
@@ -2140,6 +2430,13 @@
                 },
                 "broad_mappings": {
                     "description": "A list of terms from different schemas or terminology systems that have broader meaning.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "categories": {
+                    "description": "Controlled terms used to categorize an element.",
                     "items": {
                         "type": "string"
                     },
@@ -2181,6 +2478,13 @@
                 "conforms_to": {
                     "description": "An established standard to which the element conforms.",
                     "type": "string"
+                },
+                "contributors": {
+                    "description": "agent that contributed to the element",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
                 },
                 "created_by": {
                     "description": "agent that created the element",
@@ -2283,9 +2587,23 @@
                     },
                     "type": "array"
                 },
+                "instantiates": {
+                    "description": "An element in another schema which this element instantiates.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
                 "is_a": {
                     "description": "A primary parent class or slot from which inheritable metaslots are propagated from. While multiple inheritance is not allowed, mixins can be provided effectively providing the same thing. The semantics are the same when translated to formalisms that allow MI (e.g. RDFS/OWL). When translating to a SI framework (e.g. java classes, python classes) then is a is used. When translating a framework without polymorphism (e.g. json-schema, solr document schema) then is a and mixins are recursively unfolded",
                     "type": "string"
+                },
+                "keywords": {
+                    "description": "Keywords or tags used to describe the element",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
                 },
                 "last_updated_on": {
                     "description": "time at which the element was last updated",
@@ -2294,7 +2612,15 @@
                 },
                 "local_names": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/LocalName__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/LocalName__identifier_optional"
+                            },
+                            {
+                                "description": "a name assigned to an element in a given ontology",
+                                "type": "string"
+                            }
+                        ]
                     },
                     "type": "object"
                 },
@@ -2351,7 +2677,14 @@
                 },
                 "permissible_values": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/PermissibleValue__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/PermissibleValue__identifier_optional"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
                     },
                     "description": "A list of possible values for a slot range",
                     "type": "object"
@@ -2413,7 +2746,7 @@
                     "type": "array"
                 },
                 "values_from": {
-                    "description": "The identifier of a \"value set\" -- a set of identifiers that form the possible values for the range of a slot. Note: this is different than 'subproperty_of' in that 'subproperty_of' is intended to be a single ontology term while 'values_from' is the identifier of an entire value set.  Additionally, this is different than an enumeration in that in an enumeration, the values of the enumeration are listed directly in the model itself. Setting this property on a slot does not guarantee an expansion of the ontological hiearchy into an enumerated list of possible values in every serialization of the model.",
+                    "description": "The identifier of a \"value set\" -- a set of identifiers that form the possible values for the range of a slot. Note: this is different than 'subproperty_of' in that 'subproperty_of' is intended to be a single ontology term while 'values_from' is the identifier of an entire value set.  Additionally, this is different than an enumeration in that in an enumeration, the values of the enumeration are listed directly in the model itself. Setting this property on a slot does not guarantee an expansion of the ontological hierarchy into an enumerated list of possible values in every serialization of the model.",
                     "items": {
                         "type": "string"
                     },
@@ -2474,7 +2807,14 @@
                 },
                 "permissible_values": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/PermissibleValue__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/PermissibleValue__identifier_optional"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
                     },
                     "description": "A list of possible values for a slot range",
                     "type": "object"
@@ -2577,7 +2917,15 @@
                 },
                 "alt_descriptions": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/AltDescription__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/AltDescription__identifier_optional"
+                            },
+                            {
+                                "description": "text of an attributed description",
+                                "type": "string"
+                            }
+                        ]
                     },
                     "description": "A sourced alternative description for an element",
                     "type": "object"
@@ -2596,6 +2944,13 @@
                     },
                     "type": "array"
                 },
+                "categories": {
+                    "description": "Controlled terms used to categorize an element.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
                 "close_mappings": {
                     "description": "A list of terms from different schemas or terminology systems that have close meaning.",
                     "items": {
@@ -2605,6 +2960,13 @@
                 },
                 "comments": {
                     "description": "notes and comments about an element intended primarily for external consumption",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "contributors": {
+                    "description": "agent that contributed to the element",
                     "items": {
                         "type": "string"
                     },
@@ -2668,7 +3030,15 @@
                 },
                 "import_map": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/Setting__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Setting__identifier_optional"
+                            },
+                            {
+                                "description": "The value assigned for a setting",
+                                "type": "string"
+                            }
+                        ]
                     },
                     "type": "object"
                 },
@@ -2682,6 +3052,13 @@
                 },
                 "in_subset": {
                     "description": "used to indicate membership of a term in a defined subset of terms used for a particular domain or application.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "keywords": {
+                    "description": "Keywords or tags used to describe the element",
                     "items": {
                         "type": "string"
                     },
@@ -2809,7 +3186,7 @@
         },
         "MatchQuery": {
             "additionalProperties": false,
-            "description": "A query that is used on an enum expression to dynamically obtain a set of permissivle values via a query that matches on properties of the external concepts",
+            "description": "A query that is used on an enum expression to dynamically obtain a set of permissivle values via a query that  matches on properties of the external concepts.",
             "properties": {
                 "identifier_pattern": {
                     "description": "A regular expression that is used to obtain a set of identifiers from a source_ontology to construct a set of permissible values",
@@ -2843,7 +3220,15 @@
                 },
                 "alt_descriptions": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/AltDescription__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/AltDescription__identifier_optional"
+                            },
+                            {
+                                "description": "text of an attributed description",
+                                "type": "string"
+                            }
+                        ]
                     },
                     "description": "A sourced alternative description for an element",
                     "type": "object"
@@ -2869,6 +3254,13 @@
                     },
                     "type": "array"
                 },
+                "categories": {
+                    "description": "Controlled terms used to categorize an element.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
                 "close_mappings": {
                     "description": "A list of terms from different schemas or terminology systems that have close meaning.",
                     "items": {
@@ -2878,6 +3270,13 @@
                 },
                 "comments": {
                     "description": "notes and comments about an element intended primarily for external consumption",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "contributors": {
+                    "description": "agent that contributed to the element",
                     "items": {
                         "type": "string"
                     },
@@ -2954,6 +3353,13 @@
                 },
                 "in_subset": {
                     "description": "used to indicate membership of a term in a defined subset of terms used for a particular domain or application.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "keywords": {
+                    "description": "Keywords or tags used to describe the element",
                     "items": {
                         "type": "string"
                     },
@@ -3069,7 +3475,15 @@
                 },
                 "alt_descriptions": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/AltDescription__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/AltDescription__identifier_optional"
+                            },
+                            {
+                                "description": "text of an attributed description",
+                                "type": "string"
+                            }
+                        ]
                     },
                     "description": "A sourced alternative description for an element",
                     "type": "object"
@@ -3088,6 +3502,13 @@
                     },
                     "type": "array"
                 },
+                "categories": {
+                    "description": "Controlled terms used to categorize an element.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
                 "close_mappings": {
                     "description": "A list of terms from different schemas or terminology systems that have close meaning.",
                     "items": {
@@ -3097,6 +3518,13 @@
                 },
                 "comments": {
                     "description": "notes and comments about an element intended primarily for external consumption",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "contributors": {
+                    "description": "agent that contributed to the element",
                     "items": {
                         "type": "string"
                     },
@@ -3171,6 +3599,13 @@
                     "description": "if true then the pattern is first string interpolated",
                     "type": "boolean"
                 },
+                "keywords": {
+                    "description": "Keywords or tags used to describe the element",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
                 "last_updated_on": {
                     "description": "time at which the element was last updated",
                     "format": "date-time",
@@ -3202,7 +3637,7 @@
                     "type": "array"
                 },
                 "partial_match": {
-                    "description": "if true then the pattern must match the whole string, as if enclosed in ^...$",
+                    "description": "if not true then the pattern must match the whole string, as if enclosed in ^...$",
                     "type": "boolean"
                 },
                 "rank": {
@@ -3270,7 +3705,15 @@
                 },
                 "alt_descriptions": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/AltDescription__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/AltDescription__identifier_optional"
+                            },
+                            {
+                                "description": "text of an attributed description",
+                                "type": "string"
+                            }
+                        ]
                     },
                     "description": "A sourced alternative description for an element",
                     "type": "object"
@@ -3289,6 +3732,13 @@
                     },
                     "type": "array"
                 },
+                "categories": {
+                    "description": "Controlled terms used to categorize an element.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
                 "close_mappings": {
                     "description": "A list of terms from different schemas or terminology systems that have close meaning.",
                     "items": {
@@ -3298,6 +3748,13 @@
                 },
                 "comments": {
                     "description": "notes and comments about an element intended primarily for external consumption",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "contributors": {
+                    "description": "agent that contributed to the element",
                     "items": {
                         "type": "string"
                     },
@@ -3363,6 +3820,13 @@
                 },
                 "in_subset": {
                     "description": "used to indicate membership of a term in a defined subset of terms used for a particular domain or application.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "keywords": {
+                    "description": "Keywords or tags used to describe the element",
                     "items": {
                         "type": "string"
                     },
@@ -3474,7 +3938,15 @@
                 },
                 "alt_descriptions": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/AltDescription__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/AltDescription__identifier_optional"
+                            },
+                            {
+                                "description": "text of an attributed description",
+                                "type": "string"
+                            }
+                        ]
                     },
                     "description": "A sourced alternative description for an element",
                     "type": "object"
@@ -3493,6 +3965,13 @@
                     },
                     "type": "array"
                 },
+                "categories": {
+                    "description": "Controlled terms used to categorize an element.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
                 "close_mappings": {
                     "description": "A list of terms from different schemas or terminology systems that have close meaning.",
                     "items": {
@@ -3502,6 +3981,13 @@
                 },
                 "comments": {
                     "description": "notes and comments about an element intended primarily for external consumption",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "contributors": {
+                    "description": "agent that contributed to the element",
                     "items": {
                         "type": "string"
                     },
@@ -3567,6 +4053,13 @@
                 },
                 "in_subset": {
                     "description": "used to indicate membership of a term in a defined subset of terms used for a particular domain or application.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "keywords": {
+                    "description": "Keywords or tags used to describe the element",
                     "items": {
                         "type": "string"
                     },
@@ -3725,7 +4218,7 @@
         },
         "ReachabilityQuery": {
             "additionalProperties": false,
-            "description": "A query that is used on an enum expression to dynamically obtain a set of permissible values via walking from a set of source nodes to a set of descendants or ancestors over a set of relationship types",
+            "description": "A query that is used on an enum expression to dynamically obtain a set of permissible values via walking from a  set of source nodes to a set of descendants or ancestors over a set of relationship types.",
             "properties": {
                 "include_self": {
                     "description": "True if the query is reflexive",
@@ -3786,7 +4279,15 @@
                 },
                 "alt_descriptions": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/AltDescription__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/AltDescription__identifier_optional"
+                            },
+                            {
+                                "description": "text of an attributed description",
+                                "type": "string"
+                            }
+                        ]
                     },
                     "description": "A sourced alternative description for an element",
                     "type": "object"
@@ -3814,7 +4315,14 @@
                 },
                 "classes": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/ClassDefinition__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/ClassDefinition__identifier_optional"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
                     },
                     "description": "An index to the collection of all class definitions in the schema",
                     "type": "object"
@@ -3836,6 +4344,13 @@
                 "conforms_to": {
                     "description": "An established standard to which the element conforms.",
                     "type": "string"
+                },
+                "contributors": {
+                    "description": "agent that contributed to the element",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
                 },
                 "created_by": {
                     "description": "agent that created the element",
@@ -3890,7 +4405,14 @@
                 },
                 "enums": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/EnumDefinition__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/EnumDefinition__identifier_optional"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
                     },
                     "description": "An index to the collection of all enum definitions in the schema",
                     "type": "object"
@@ -3965,6 +4487,13 @@
                     },
                     "type": "array"
                 },
+                "instantiates": {
+                    "description": "An element in another schema which this element instantiates.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
                 "keywords": {
                     "description": "Keywords or tags used to describe the element",
                     "items": {
@@ -3983,7 +4512,15 @@
                 },
                 "local_names": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/LocalName__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/LocalName__identifier_optional"
+                            },
+                            {
+                                "description": "a name assigned to an element in a given ontology",
+                                "type": "string"
+                            }
+                        ]
                     },
                     "type": "object"
                 },
@@ -4022,7 +4559,15 @@
                 },
                 "prefixes": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/Prefix__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Prefix__identifier_optional"
+                            },
+                            {
+                                "description": "The namespace to which a prefix expands to.",
+                                "type": "string"
+                            }
+                        ]
                     },
                     "description": "A collection of prefix expansions that specify how CURIEs can be expanded to URIs",
                     "type": "object"
@@ -4047,7 +4592,15 @@
                 },
                 "settings": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/Setting__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Setting__identifier_optional"
+                            },
+                            {
+                                "description": "The value assigned for a setting",
+                                "type": "string"
+                            }
+                        ]
                     },
                     "description": "A collection of global variable settings",
                     "type": "object"
@@ -4058,7 +4611,14 @@
                 },
                 "slots": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/SlotDefinition__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/SlotDefinition__identifier_optional"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
                     },
                     "description": "An index to the collection of all slot definitions in the schema",
                     "type": "object"
@@ -4093,7 +4653,14 @@
                 },
                 "subsets": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/SubsetDefinition__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/SubsetDefinition__identifier_optional"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
                     },
                     "description": "An index to the collection of all subset definitions in the schema",
                     "type": "object"
@@ -4111,7 +4678,14 @@
                 },
                 "types": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/TypeDefinition__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/TypeDefinition__identifier_optional"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
                     },
                     "description": "An index to the collection of all type definitions in the schema",
                     "type": "object"
@@ -4199,7 +4773,15 @@
                 },
                 "alt_descriptions": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/AltDescription__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/AltDescription__identifier_optional"
+                            },
+                            {
+                                "description": "text of an attributed description",
+                                "type": "string"
+                            }
+                        ]
                     },
                     "description": "A sourced alternative description for an element",
                     "type": "object"
@@ -4236,6 +4818,13 @@
                     },
                     "type": "array"
                 },
+                "categories": {
+                    "description": "Controlled terms used to categorize an element.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
                 "children_are_mutually_disjoint": {
                     "description": "If true then all direct is_a children are mutually disjoint and share no instances in common",
                     "type": "boolean"
@@ -4257,6 +4846,13 @@
                 "conforms_to": {
                     "description": "An established standard to which the element conforms.",
                     "type": "string"
+                },
+                "contributors": {
+                    "description": "agent that contributed to the element",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
                 },
                 "created_by": {
                     "description": "agent that created the element",
@@ -4380,7 +4976,7 @@
                     "type": "boolean"
                 },
                 "ifabsent": {
-                    "description": "function that provides a default value for the slot.  Possible values for this slot are defined in\nlinkml.utils.ifabsent_functions.default_library:\n  * [Tt]rue -- boolean True\n  * [Ff]alse -- boolean False\n  * bnode -- blank node identifier\n  * class_curie -- CURIE for the containing class\n  * class_uri -- URI for the containing class\n  * default_ns -- schema default namespace\n  * default_range -- schema default range\n  * int(value) -- integer value\n  * slot_uri -- URI for the slot\n  * slot_curie -- CURIE for the slot\n  * string(value) -- string value",
+                    "description": "function that provides a default value for the slot.  Possible values for this slot are defined in linkml.utils.ifabsent_functions.default_library:\n  * [Tt]rue -- boolean True\n  * [Ff]alse -- boolean False\n  * bnode -- blank node identifier\n  * class_curie -- CURIE for the containing class\n  * class_uri -- URI for the containing class\n  * default_ns -- schema default namespace\n  * default_range -- schema default range\n  * int(value) -- integer value\n  * slot_uri -- URI for the slot\n  * slot_curie -- CURIE for the slot\n  * string(value) -- string value",
                     "type": "string"
                 },
                 "implements": {
@@ -4421,6 +5017,13 @@
                     "description": "True means that an inlined slot is represented as a list of range instances.  False means that an inlined slot is represented as a dictionary, whose key is the slot key or identifier and whose value is the range instance.",
                     "type": "boolean"
                 },
+                "instantiates": {
+                    "description": "An element in another schema which this element instantiates.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
                 "inverse": {
                     "description": "indicates that any instance of d s r implies that there is also an instance of r s' d",
                     "type": "string"
@@ -4449,6 +5052,13 @@
                     "description": "True means that the key slot(s) uniquely identify the elements within a single container",
                     "type": "boolean"
                 },
+                "keywords": {
+                    "description": "Keywords or tags used to describe the element",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
                 "last_updated_on": {
                     "description": "time at which the element was last updated",
                     "format": "date-time",
@@ -4464,7 +5074,15 @@
                 },
                 "local_names": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/LocalName__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/LocalName__identifier_optional"
+                            },
+                            {
+                                "description": "a name assigned to an element in a given ontology",
+                                "type": "string"
+                            }
+                        ]
                     },
                     "type": "object"
                 },
@@ -4545,7 +5163,7 @@
                 },
                 "path_rule": {
                     "$ref": "#/$defs/PathExpression",
-                    "description": "a rule for inferring a slot assignment based on evaluating a path through a sequence of slot assignemnts"
+                    "description": "a rule for inferring a slot assignment based on evaluating a path through a sequence of slot assignments"
                 },
                 "pattern": {
                     "description": "the string value of the slot must conform to this regular expression expressed in the string",
@@ -4645,7 +5263,7 @@
                     "description": "the string value of the slot must conform to the regular expression in the pattern expression"
                 },
                 "subproperty_of": {
-                    "description": "Ontology property which this slot is a subproperty of.  Note: setting this property on a slot does not guarantee an expansion of the ontological hiearchy into an enumerated list of possible values in every serialization of the model.",
+                    "description": "Ontology property which this slot is a subproperty of.  Note: setting this property on a slot does not guarantee an expansion of the ontological hierarchy into an enumerated list of possible values in every serialization of the model.",
                     "type": "string"
                 },
                 "symmetric": {
@@ -4691,7 +5309,7 @@
                     "description": "if true then a value must be present (for lists there must be at least one value). If false then a value must be absent (for lists, must be empty)"
                 },
                 "values_from": {
-                    "description": "The identifier of a \"value set\" -- a set of identifiers that form the possible values for the range of a slot. Note: this is different than 'subproperty_of' in that 'subproperty_of' is intended to be a single ontology term while 'values_from' is the identifier of an entire value set.  Additionally, this is different than an enumeration in that in an enumeration, the values of the enumeration are listed directly in the model itself. Setting this property on a slot does not guarantee an expansion of the ontological hiearchy into an enumerated list of possible values in every serialization of the model.",
+                    "description": "The identifier of a \"value set\" -- a set of identifiers that form the possible values for the range of a slot. Note: this is different than 'subproperty_of' in that 'subproperty_of' is intended to be a single ontology term while 'values_from' is the identifier of an entire value set.  Additionally, this is different than an enumeration in that in an enumeration, the values of the enumeration are listed directly in the model itself. Setting this property on a slot does not guarantee an expansion of the ontological hierarchy into an enumerated list of possible values in every serialization of the model.",
                     "items": {
                         "type": "string"
                     },
@@ -4736,7 +5354,15 @@
                 },
                 "alt_descriptions": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/AltDescription__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/AltDescription__identifier_optional"
+                            },
+                            {
+                                "description": "text of an attributed description",
+                                "type": "string"
+                            }
+                        ]
                     },
                     "description": "A sourced alternative description for an element",
                     "type": "object"
@@ -4773,6 +5399,13 @@
                     },
                     "type": "array"
                 },
+                "categories": {
+                    "description": "Controlled terms used to categorize an element.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
                 "children_are_mutually_disjoint": {
                     "description": "If true then all direct is_a children are mutually disjoint and share no instances in common",
                     "type": "boolean"
@@ -4794,6 +5427,13 @@
                 "conforms_to": {
                     "description": "An established standard to which the element conforms.",
                     "type": "string"
+                },
+                "contributors": {
+                    "description": "agent that contributed to the element",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
                 },
                 "created_by": {
                     "description": "agent that created the element",
@@ -4917,7 +5557,7 @@
                     "type": "boolean"
                 },
                 "ifabsent": {
-                    "description": "function that provides a default value for the slot.  Possible values for this slot are defined in\nlinkml.utils.ifabsent_functions.default_library:\n  * [Tt]rue -- boolean True\n  * [Ff]alse -- boolean False\n  * bnode -- blank node identifier\n  * class_curie -- CURIE for the containing class\n  * class_uri -- URI for the containing class\n  * default_ns -- schema default namespace\n  * default_range -- schema default range\n  * int(value) -- integer value\n  * slot_uri -- URI for the slot\n  * slot_curie -- CURIE for the slot\n  * string(value) -- string value",
+                    "description": "function that provides a default value for the slot.  Possible values for this slot are defined in linkml.utils.ifabsent_functions.default_library:\n  * [Tt]rue -- boolean True\n  * [Ff]alse -- boolean False\n  * bnode -- blank node identifier\n  * class_curie -- CURIE for the containing class\n  * class_uri -- URI for the containing class\n  * default_ns -- schema default namespace\n  * default_range -- schema default range\n  * int(value) -- integer value\n  * slot_uri -- URI for the slot\n  * slot_curie -- CURIE for the slot\n  * string(value) -- string value",
                     "type": "string"
                 },
                 "implements": {
@@ -4958,6 +5598,13 @@
                     "description": "True means that an inlined slot is represented as a list of range instances.  False means that an inlined slot is represented as a dictionary, whose key is the slot key or identifier and whose value is the range instance.",
                     "type": "boolean"
                 },
+                "instantiates": {
+                    "description": "An element in another schema which this element instantiates.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
                 "inverse": {
                     "description": "indicates that any instance of d s r implies that there is also an instance of r s' d",
                     "type": "string"
@@ -4986,6 +5633,13 @@
                     "description": "True means that the key slot(s) uniquely identify the elements within a single container",
                     "type": "boolean"
                 },
+                "keywords": {
+                    "description": "Keywords or tags used to describe the element",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
                 "last_updated_on": {
                     "description": "time at which the element was last updated",
                     "format": "date-time",
@@ -5001,7 +5655,15 @@
                 },
                 "local_names": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/LocalName__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/LocalName__identifier_optional"
+                            },
+                            {
+                                "description": "a name assigned to an element in a given ontology",
+                                "type": "string"
+                            }
+                        ]
                     },
                     "type": "object"
                 },
@@ -5082,7 +5744,7 @@
                 },
                 "path_rule": {
                     "$ref": "#/$defs/PathExpression",
-                    "description": "a rule for inferring a slot assignment based on evaluating a path through a sequence of slot assignemnts"
+                    "description": "a rule for inferring a slot assignment based on evaluating a path through a sequence of slot assignments"
                 },
                 "pattern": {
                     "description": "the string value of the slot must conform to this regular expression expressed in the string",
@@ -5182,7 +5844,7 @@
                     "description": "the string value of the slot must conform to the regular expression in the pattern expression"
                 },
                 "subproperty_of": {
-                    "description": "Ontology property which this slot is a subproperty of.  Note: setting this property on a slot does not guarantee an expansion of the ontological hiearchy into an enumerated list of possible values in every serialization of the model.",
+                    "description": "Ontology property which this slot is a subproperty of.  Note: setting this property on a slot does not guarantee an expansion of the ontological hierarchy into an enumerated list of possible values in every serialization of the model.",
                     "type": "string"
                 },
                 "symmetric": {
@@ -5228,7 +5890,7 @@
                     "description": "if true then a value must be present (for lists there must be at least one value). If false then a value must be absent (for lists, must be empty)"
                 },
                 "values_from": {
-                    "description": "The identifier of a \"value set\" -- a set of identifiers that form the possible values for the range of a slot. Note: this is different than 'subproperty_of' in that 'subproperty_of' is intended to be a single ontology term while 'values_from' is the identifier of an entire value set.  Additionally, this is different than an enumeration in that in an enumeration, the values of the enumeration are listed directly in the model itself. Setting this property on a slot does not guarantee an expansion of the ontological hiearchy into an enumerated list of possible values in every serialization of the model.",
+                    "description": "The identifier of a \"value set\" -- a set of identifiers that form the possible values for the range of a slot. Note: this is different than 'subproperty_of' in that 'subproperty_of' is intended to be a single ontology term while 'values_from' is the identifier of an entire value set.  Additionally, this is different than an enumeration in that in an enumeration, the values of the enumeration are listed directly in the model itself. Setting this property on a slot does not guarantee an expansion of the ontological hierarchy into an enumerated list of possible values in every serialization of the model.",
                     "items": {
                         "type": "string"
                     },
@@ -5252,7 +5914,15 @@
                 },
                 "alt_descriptions": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/AltDescription__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/AltDescription__identifier_optional"
+                            },
+                            {
+                                "description": "text of an attributed description",
+                                "type": "string"
+                            }
+                        ]
                     },
                     "description": "A sourced alternative description for an element",
                     "type": "object"
@@ -5287,6 +5957,13 @@
                 },
                 "comments": {
                     "description": "notes and comments about an element intended primarily for external consumption",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "contributors": {
+                    "description": "agent that contributed to the element",
                     "items": {
                         "type": "string"
                     },
@@ -5352,6 +6029,13 @@
                 },
                 "in_subset": {
                     "description": "used to indicate membership of a term in a defined subset of terms used for a particular domain or application.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "keywords": {
+                    "description": "Keywords or tags used to describe the element",
                     "items": {
                         "type": "string"
                     },
@@ -5459,7 +6143,15 @@
                 },
                 "alt_descriptions": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/AltDescription__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/AltDescription__identifier_optional"
+                            },
+                            {
+                                "description": "text of an attributed description",
+                                "type": "string"
+                            }
+                        ]
                     },
                     "description": "A sourced alternative description for an element",
                     "type": "object"
@@ -5473,6 +6165,13 @@
                 },
                 "broad_mappings": {
                     "description": "A list of terms from different schemas or terminology systems that have broader meaning.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "categories": {
+                    "description": "Controlled terms used to categorize an element.",
                     "items": {
                         "type": "string"
                     },
@@ -5495,6 +6194,13 @@
                 "conforms_to": {
                     "description": "An established standard to which the element conforms.",
                     "type": "string"
+                },
+                "contributors": {
+                    "description": "agent that contributed to the element",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
                 },
                 "created_by": {
                     "description": "agent that created the element",
@@ -5579,6 +6285,20 @@
                     },
                     "type": "array"
                 },
+                "instantiates": {
+                    "description": "An element in another schema which this element instantiates.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "keywords": {
+                    "description": "Keywords or tags used to describe the element",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
                 "last_updated_on": {
                     "description": "time at which the element was last updated",
                     "format": "date-time",
@@ -5586,7 +6306,15 @@
                 },
                 "local_names": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/LocalName__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/LocalName__identifier_optional"
+                            },
+                            {
+                                "description": "a name assigned to an element in a given ontology",
+                                "type": "string"
+                            }
+                        ]
                     },
                     "type": "object"
                 },
@@ -5683,7 +6411,15 @@
                 },
                 "alt_descriptions": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/AltDescription__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/AltDescription__identifier_optional"
+                            },
+                            {
+                                "description": "text of an attributed description",
+                                "type": "string"
+                            }
+                        ]
                     },
                     "description": "A sourced alternative description for an element",
                     "type": "object"
@@ -5697,6 +6433,13 @@
                 },
                 "broad_mappings": {
                     "description": "A list of terms from different schemas or terminology systems that have broader meaning.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "categories": {
+                    "description": "Controlled terms used to categorize an element.",
                     "items": {
                         "type": "string"
                     },
@@ -5719,6 +6462,13 @@
                 "conforms_to": {
                     "description": "An established standard to which the element conforms.",
                     "type": "string"
+                },
+                "contributors": {
+                    "description": "agent that contributed to the element",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
                 },
                 "created_by": {
                     "description": "agent that created the element",
@@ -5803,6 +6553,20 @@
                     },
                     "type": "array"
                 },
+                "instantiates": {
+                    "description": "An element in another schema which this element instantiates.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "keywords": {
+                    "description": "Keywords or tags used to describe the element",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
                 "last_updated_on": {
                     "description": "time at which the element was last updated",
                     "format": "date-time",
@@ -5810,7 +6574,15 @@
                 },
                 "local_names": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/LocalName__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/LocalName__identifier_optional"
+                            },
+                            {
+                                "description": "a name assigned to an element in a given ontology",
+                                "type": "string"
+                            }
+                        ]
                     },
                     "type": "object"
                 },
@@ -5912,7 +6684,15 @@
                 },
                 "alt_descriptions": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/AltDescription__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/AltDescription__identifier_optional"
+                            },
+                            {
+                                "description": "text of an attributed description",
+                                "type": "string"
+                            }
+                        ]
                     },
                     "description": "A sourced alternative description for an element",
                     "type": "object"
@@ -5942,6 +6722,13 @@
                     },
                     "type": "array"
                 },
+                "categories": {
+                    "description": "Controlled terms used to categorize an element.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
                 "close_mappings": {
                     "description": "A list of terms from different schemas or terminology systems that have close meaning.",
                     "items": {
@@ -5959,6 +6746,13 @@
                 "conforms_to": {
                     "description": "An established standard to which the element conforms.",
                     "type": "string"
+                },
+                "contributors": {
+                    "description": "agent that contributed to the element",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
                 },
                 "created_by": {
                     "description": "agent that created the element",
@@ -6069,6 +6863,20 @@
                     },
                     "type": "array"
                 },
+                "instantiates": {
+                    "description": "An element in another schema which this element instantiates.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "keywords": {
+                    "description": "Keywords or tags used to describe the element",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
                 "last_updated_on": {
                     "description": "time at which the element was last updated",
                     "format": "date-time",
@@ -6076,7 +6884,15 @@
                 },
                 "local_names": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/LocalName__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/LocalName__identifier_optional"
+                            },
+                            {
+                                "description": "a name assigned to an element in a given ontology",
+                                "type": "string"
+                            }
+                        ]
                     },
                     "type": "object"
                 },
@@ -6226,7 +7042,15 @@
                 },
                 "alt_descriptions": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/AltDescription__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/AltDescription__identifier_optional"
+                            },
+                            {
+                                "description": "text of an attributed description",
+                                "type": "string"
+                            }
+                        ]
                     },
                     "description": "A sourced alternative description for an element",
                     "type": "object"
@@ -6256,6 +7080,13 @@
                     },
                     "type": "array"
                 },
+                "categories": {
+                    "description": "Controlled terms used to categorize an element.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
                 "close_mappings": {
                     "description": "A list of terms from different schemas or terminology systems that have close meaning.",
                     "items": {
@@ -6273,6 +7104,13 @@
                 "conforms_to": {
                     "description": "An established standard to which the element conforms.",
                     "type": "string"
+                },
+                "contributors": {
+                    "description": "agent that contributed to the element",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
                 },
                 "created_by": {
                     "description": "agent that created the element",
@@ -6383,6 +7221,20 @@
                     },
                     "type": "array"
                 },
+                "instantiates": {
+                    "description": "An element in another schema which this element instantiates.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "keywords": {
+                    "description": "Keywords or tags used to describe the element",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
                 "last_updated_on": {
                     "description": "time at which the element was last updated",
                     "format": "date-time",
@@ -6390,7 +7242,15 @@
                 },
                 "local_names": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/LocalName__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/LocalName__identifier_optional"
+                            },
+                            {
+                                "description": "a name assigned to an element in a given ontology",
+                                "type": "string"
+                            }
+                        ]
                     },
                     "type": "object"
                 },
@@ -6531,7 +7391,15 @@
                 },
                 "alt_descriptions": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/AltDescription__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/AltDescription__identifier_optional"
+                            },
+                            {
+                                "description": "text of an attributed description",
+                                "type": "string"
+                            }
+                        ]
                     },
                     "description": "A sourced alternative description for an element",
                     "type": "object"
@@ -6545,6 +7413,13 @@
                 },
                 "broad_mappings": {
                     "description": "A list of terms from different schemas or terminology systems that have broader meaning.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "categories": {
+                    "description": "Controlled terms used to categorize an element.",
                     "items": {
                         "type": "string"
                     },
@@ -6567,6 +7442,13 @@
                 "consider_nulls_inequal": {
                     "description": "By default, None values are considered equal for the purposes of comparisons in determining uniqueness. Set this to true to treat missing values as per ANSI-SQL NULLs, i.e NULL=NULL is always False.",
                     "type": "boolean"
+                },
+                "contributors": {
+                    "description": "agent that contributed to the element",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
                 },
                 "created_by": {
                     "description": "agent that created the element",
@@ -6628,6 +7510,13 @@
                 },
                 "in_subset": {
                     "description": "used to indicate membership of a term in a defined subset of terms used for a particular domain or application.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "keywords": {
+                    "description": "Keywords or tags used to describe the element",
                     "items": {
                         "type": "string"
                     },
@@ -6739,7 +7628,15 @@
                 },
                 "alt_descriptions": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/AltDescription__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/AltDescription__identifier_optional"
+                            },
+                            {
+                                "description": "text of an attributed description",
+                                "type": "string"
+                            }
+                        ]
                     },
                     "description": "A sourced alternative description for an element",
                     "type": "object"
@@ -6753,6 +7650,13 @@
                 },
                 "broad_mappings": {
                     "description": "A list of terms from different schemas or terminology systems that have broader meaning.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "categories": {
+                    "description": "Controlled terms used to categorize an element.",
                     "items": {
                         "type": "string"
                     },
@@ -6775,6 +7679,13 @@
                 "consider_nulls_inequal": {
                     "description": "By default, None values are considered equal for the purposes of comparisons in determining uniqueness. Set this to true to treat missing values as per ANSI-SQL NULLs, i.e NULL=NULL is always False.",
                     "type": "boolean"
+                },
+                "contributors": {
+                    "description": "agent that contributed to the element",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
                 },
                 "created_by": {
                     "description": "agent that created the element",
@@ -6836,6 +7747,13 @@
                 },
                 "in_subset": {
                     "description": "used to indicate membership of a term in a defined subset of terms used for a particular domain or application.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "keywords": {
+                    "description": "Keywords or tags used to describe the element",
                     "items": {
                         "type": "string"
                     },
@@ -6937,8 +7855,16 @@
             "additionalProperties": false,
             "description": "A unit of measure, or unit, is a particular quantity value that has been chosen as a scale for measuring other quantities the same kind (more generally of equivalent dimension).",
             "properties": {
+                "abbreviation": {
+                    "description": "An abbreviation for a unit is a short ASCII string that is used in place of the full name for the unit in contexts where non-ASCII characters would be problematic, or where using the abbreviation will enhance readability. When a power of a base unit needs to be expressed, such as squares this can be done using abbreviations rather than symbols (source: qudt)",
+                    "type": "string"
+                },
                 "derivation": {
                     "description": "Expression for deriving this unit from other units",
+                    "type": "string"
+                },
+                "descriptive_name": {
+                    "description": "the spelled out name of the unit, for example, meter",
                     "type": "string"
                 },
                 "exact_mappings": {
@@ -6971,6 +7897,7 @@
     "$id": "https://w3id.org/linkml/meta",
     "$schema": "http://json-schema.org/draft-07/schema#",
     "additionalProperties": true,
+    "description": "A collection of definitions that make up a schema or a data model.",
     "metamodel_version": "1.7.0",
     "properties": {
         "aliases": {
@@ -6982,7 +7909,15 @@
         },
         "alt_descriptions": {
             "additionalProperties": {
-                "$ref": "#/$defs/AltDescription__identifier_optional"
+                "anyOf": [
+                    {
+                        "$ref": "#/$defs/AltDescription__identifier_optional"
+                    },
+                    {
+                        "description": "text of an attributed description",
+                        "type": "string"
+                    }
+                ]
             },
             "description": "A sourced alternative description for an element",
             "type": "object"
@@ -7010,7 +7945,14 @@
         },
         "classes": {
             "additionalProperties": {
-                "$ref": "#/$defs/ClassDefinition__identifier_optional"
+                "anyOf": [
+                    {
+                        "$ref": "#/$defs/ClassDefinition__identifier_optional"
+                    },
+                    {
+                        "type": "null"
+                    }
+                ]
             },
             "description": "An index to the collection of all class definitions in the schema",
             "type": "object"
@@ -7032,6 +7974,13 @@
         "conforms_to": {
             "description": "An established standard to which the element conforms.",
             "type": "string"
+        },
+        "contributors": {
+            "description": "agent that contributed to the element",
+            "items": {
+                "type": "string"
+            },
+            "type": "array"
         },
         "created_by": {
             "description": "agent that created the element",
@@ -7086,7 +8035,14 @@
         },
         "enums": {
             "additionalProperties": {
-                "$ref": "#/$defs/EnumDefinition__identifier_optional"
+                "anyOf": [
+                    {
+                        "$ref": "#/$defs/EnumDefinition__identifier_optional"
+                    },
+                    {
+                        "type": "null"
+                    }
+                ]
             },
             "description": "An index to the collection of all enum definitions in the schema",
             "type": "object"
@@ -7161,6 +8117,13 @@
             },
             "type": "array"
         },
+        "instantiates": {
+            "description": "An element in another schema which this element instantiates.",
+            "items": {
+                "type": "string"
+            },
+            "type": "array"
+        },
         "keywords": {
             "description": "Keywords or tags used to describe the element",
             "items": {
@@ -7179,7 +8142,15 @@
         },
         "local_names": {
             "additionalProperties": {
-                "$ref": "#/$defs/LocalName__identifier_optional"
+                "anyOf": [
+                    {
+                        "$ref": "#/$defs/LocalName__identifier_optional"
+                    },
+                    {
+                        "description": "a name assigned to an element in a given ontology",
+                        "type": "string"
+                    }
+                ]
             },
             "type": "object"
         },
@@ -7218,7 +8189,15 @@
         },
         "prefixes": {
             "additionalProperties": {
-                "$ref": "#/$defs/Prefix__identifier_optional"
+                "anyOf": [
+                    {
+                        "$ref": "#/$defs/Prefix__identifier_optional"
+                    },
+                    {
+                        "description": "The namespace to which a prefix expands to.",
+                        "type": "string"
+                    }
+                ]
             },
             "description": "A collection of prefix expansions that specify how CURIEs can be expanded to URIs",
             "type": "object"
@@ -7243,7 +8222,15 @@
         },
         "settings": {
             "additionalProperties": {
-                "$ref": "#/$defs/Setting__identifier_optional"
+                "anyOf": [
+                    {
+                        "$ref": "#/$defs/Setting__identifier_optional"
+                    },
+                    {
+                        "description": "The value assigned for a setting",
+                        "type": "string"
+                    }
+                ]
             },
             "description": "A collection of global variable settings",
             "type": "object"
@@ -7254,7 +8241,14 @@
         },
         "slots": {
             "additionalProperties": {
-                "$ref": "#/$defs/SlotDefinition__identifier_optional"
+                "anyOf": [
+                    {
+                        "$ref": "#/$defs/SlotDefinition__identifier_optional"
+                    },
+                    {
+                        "type": "null"
+                    }
+                ]
             },
             "description": "An index to the collection of all slot definitions in the schema",
             "type": "object"
@@ -7289,7 +8283,14 @@
         },
         "subsets": {
             "additionalProperties": {
-                "$ref": "#/$defs/SubsetDefinition__identifier_optional"
+                "anyOf": [
+                    {
+                        "$ref": "#/$defs/SubsetDefinition__identifier_optional"
+                    },
+                    {
+                        "type": "null"
+                    }
+                ]
             },
             "description": "An index to the collection of all subset definitions in the schema",
             "type": "object"
@@ -7307,7 +8308,14 @@
         },
         "types": {
             "additionalProperties": {
-                "$ref": "#/$defs/TypeDefinition__identifier_optional"
+                "anyOf": [
+                    {
+                        "$ref": "#/$defs/TypeDefinition__identifier_optional"
+                    },
+                    {
+                        "type": "null"
+                    }
+                ]
             },
             "description": "An index to the collection of all type definitions in the schema",
             "type": "object"

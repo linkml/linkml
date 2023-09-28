@@ -1,0 +1,1171 @@
+{
+  "name": "datasets",
+  "description": "A datamodel for datasets",
+  "title": "LinkML Datasets Datamodel",
+  "see_also": [
+    "https://specs.frictionlessdata.io/data-resource",
+    "https://www.w3.org/TR/void/",
+    "https://www.w3.org/TR/hcls-dataset/"
+  ],
+  "id": "https://w3id.org/linkml/datasets",
+  "imports": [
+    "linkml:types"
+  ],
+  "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+  "prefixes": [
+    {
+      "prefix_prefix": "linkml",
+      "prefix_reference": "https://w3id.org/linkml/"
+    },
+    {
+      "prefix_prefix": "datasets",
+      "prefix_reference": "https://w3id.org/linkml/report"
+    },
+    {
+      "prefix_prefix": "skos",
+      "prefix_reference": "http://www.w3.org/2004/02/skos/core#"
+    },
+    {
+      "prefix_prefix": "pav",
+      "prefix_reference": "http://purl.org/pav/"
+    },
+    {
+      "prefix_prefix": "schema",
+      "prefix_reference": "http://schema.org/"
+    },
+    {
+      "prefix_prefix": "sh",
+      "prefix_reference": "https://w3id.org/shacl/"
+    },
+    {
+      "prefix_prefix": "void",
+      "prefix_reference": "http://rdfs.org/ns/void#"
+    },
+    {
+      "prefix_prefix": "frictionless",
+      "prefix_reference": "https://specs.frictionlessdata.io/"
+    },
+    {
+      "prefix_prefix": "formats",
+      "prefix_reference": "http://www.w3.org/ns/formats/"
+    },
+    {
+      "prefix_prefix": "csvw",
+      "prefix_reference": "http://www.w3.org/ns/csvw#"
+    },
+    {
+      "prefix_prefix": "dcat",
+      "prefix_reference": "http://www.w3.org/ns/dcat#"
+    },
+    {
+      "prefix_prefix": "mediatypes",
+      "prefix_reference": "https://www.iana.org/assignments/media-types/"
+    }
+  ],
+  "emit_prefixes": [
+    "linkml",
+    "rdf",
+    "rdfs",
+    "xsd",
+    "owl"
+  ],
+  "default_curi_maps": [
+    "semweb_context"
+  ],
+  "default_prefix": "datasets",
+  "default_range": "string",
+  "types": [
+    {
+      "name": "string",
+      "definition_uri": "https://w3id.org/linkml/String",
+      "description": "A character string",
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "str",
+      "uri": "http://www.w3.org/2001/XMLSchema#string",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "integer",
+      "definition_uri": "https://w3id.org/linkml/Integer",
+      "description": "An integer",
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "int",
+      "uri": "http://www.w3.org/2001/XMLSchema#integer",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "boolean",
+      "definition_uri": "https://w3id.org/linkml/Boolean",
+      "description": "A binary (true or false) value",
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "Bool",
+      "uri": "http://www.w3.org/2001/XMLSchema#boolean",
+      "repr": "bool",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "float",
+      "definition_uri": "https://w3id.org/linkml/Float",
+      "description": "A real number that conforms to the xsd:float specification",
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "float",
+      "uri": "http://www.w3.org/2001/XMLSchema#float",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "double",
+      "definition_uri": "https://w3id.org/linkml/Double",
+      "description": "A real number that conforms to the xsd:double specification",
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "float",
+      "uri": "http://www.w3.org/2001/XMLSchema#double",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "decimal",
+      "definition_uri": "https://w3id.org/linkml/Decimal",
+      "description": "A real number with arbitrary precision that conforms to the xsd:decimal specification",
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "Decimal",
+      "uri": "http://www.w3.org/2001/XMLSchema#decimal",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "time",
+      "definition_uri": "https://w3id.org/linkml/Time",
+      "description": "A time object represents a (local) time of day, independent of any particular day",
+      "notes": [
+        "URI is dateTime because OWL reasoners don't work with straight date or time"
+      ],
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "XSDTime",
+      "uri": "http://www.w3.org/2001/XMLSchema#dateTime",
+      "repr": "str",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "date",
+      "definition_uri": "https://w3id.org/linkml/Date",
+      "description": "a date (year, month and day) in an idealized calendar",
+      "notes": [
+        "URI is dateTime because OWL reasoners don't work with straight date or time"
+      ],
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "XSDDate",
+      "uri": "http://www.w3.org/2001/XMLSchema#date",
+      "repr": "str",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "datetime",
+      "definition_uri": "https://w3id.org/linkml/Datetime",
+      "description": "The combination of a date and time",
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "XSDDateTime",
+      "uri": "http://www.w3.org/2001/XMLSchema#dateTime",
+      "repr": "str",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "date_or_datetime",
+      "definition_uri": "https://w3id.org/linkml/DateOrDatetime",
+      "description": "Either a date or a datetime",
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "str",
+      "uri": "https://w3id.org/linkml/DateOrDatetime",
+      "repr": "str",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "uriorcurie",
+      "definition_uri": "https://w3id.org/linkml/Uriorcurie",
+      "description": "a URI or a CURIE",
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "URIorCURIE",
+      "uri": "http://www.w3.org/2001/XMLSchema#anyURI",
+      "repr": "str",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "uri",
+      "definition_uri": "https://w3id.org/linkml/Uri",
+      "description": "a complete URI",
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "URI",
+      "uri": "http://www.w3.org/2001/XMLSchema#anyURI",
+      "repr": "str",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "ncname",
+      "definition_uri": "https://w3id.org/linkml/Ncname",
+      "description": "Prefix part of CURIE",
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "NCName",
+      "uri": "http://www.w3.org/2001/XMLSchema#string",
+      "repr": "str",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "objectidentifier",
+      "definition_uri": "https://w3id.org/linkml/Objectidentifier",
+      "description": "A URI or CURIE that represents an object in the model.",
+      "comments": [
+        "Used for inheritance and type checking"
+      ],
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "ElementIdentifier",
+      "uri": "http://www.w3.org/ns/shex#iri",
+      "repr": "str",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "nodeidentifier",
+      "definition_uri": "https://w3id.org/linkml/Nodeidentifier",
+      "description": "A URI, CURIE or BNODE that represents a node in a model.",
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "NodeIdentifier",
+      "uri": "http://www.w3.org/ns/shex#nonLiteral",
+      "repr": "str",
+      "@type": "TypeDefinition"
+    }
+  ],
+  "enums": [
+    {
+      "name": "TestRole",
+      "definition_uri": "https://w3id.org/linkml/reportTestRole",
+      "from_schema": "https://w3id.org/linkml/datasets",
+      "permissible_values": [
+        {
+          "text": "Example"
+        },
+        {
+          "text": "CounterExample"
+        }
+      ]
+    },
+    {
+      "name": "MediaTypeEnum",
+      "definition_uri": "https://w3id.org/linkml/reportMediaTypeEnum",
+      "from_schema": "https://w3id.org/linkml/datasets",
+      "exact_mappings": [
+        "dcterms:MediaType"
+      ],
+      "permissible_values": [
+        {
+          "text": "csv",
+          "meaning": "mediatypes:text/csv"
+        },
+        {
+          "text": "rdf-xml",
+          "meaning": "mediatypes:application/rdf+xml"
+        }
+      ]
+    },
+    {
+      "name": "FormatEnum",
+      "definition_uri": "https://w3id.org/linkml/reportFormatEnum",
+      "from_schema": "https://w3id.org/linkml/datasets",
+      "permissible_values": [
+        {
+          "text": "JSON-LD",
+          "meaning": "formats:JSON-LD"
+        },
+        {
+          "text": "N3",
+          "meaning": "formats:N3"
+        },
+        {
+          "text": "N-Triples",
+          "meaning": "formats:N-Triples"
+        },
+        {
+          "text": "N-Quads",
+          "meaning": "formats:N-Quads"
+        },
+        {
+          "text": "LD Patch",
+          "meaning": "formats:LD_Patch"
+        },
+        {
+          "text": "Microdata",
+          "meaning": "formats:microdata"
+        },
+        {
+          "text": "OWL XML Serialization",
+          "meaning": "formats:OWL_XML"
+        },
+        {
+          "text": "OWL Functional Syntax",
+          "meaning": "formats:OWL_Functional"
+        },
+        {
+          "text": "OWL Manchester Syntax",
+          "meaning": "formats:OWL_Manchester"
+        },
+        {
+          "text": "POWDER",
+          "meaning": "formats:POWDER"
+        },
+        {
+          "text": "POWDER-S",
+          "meaning": "formats:POWDER-S"
+        },
+        {
+          "text": "PROV-N",
+          "meaning": "formats:PROV-N"
+        },
+        {
+          "text": "PROV-XML",
+          "meaning": "formats:PROV-XML"
+        },
+        {
+          "text": "RDFa",
+          "meaning": "formats:RDFa"
+        },
+        {
+          "text": "RDF/JSON",
+          "meaning": "formats:RDF_JSON"
+        },
+        {
+          "text": "RDF/XML",
+          "meaning": "formats:RDF_XML"
+        },
+        {
+          "text": "RIF XML Syntax",
+          "meaning": "formats:RIF_XML"
+        },
+        {
+          "text": "SPARQL Results in XML",
+          "meaning": "formats:SPARQL_Results_XML"
+        },
+        {
+          "text": "SPARQL Results in JSON",
+          "meaning": "formats:SPARQL_Results_JSON"
+        },
+        {
+          "text": "SPARQL Results in CSV",
+          "meaning": "formats:SPARQL_Results_CSV"
+        },
+        {
+          "text": "SPARQL Results in TSV",
+          "meaning": "formats:SPARQL_Results_TSV"
+        },
+        {
+          "text": "Turtle",
+          "meaning": "formats:Turtle"
+        },
+        {
+          "text": "TriG",
+          "meaning": "formats:TriG"
+        },
+        {
+          "text": "YAML"
+        },
+        {
+          "text": "JSON"
+        }
+      ]
+    }
+  ],
+  "slots": [
+    {
+      "name": "id",
+      "definition_uri": "https://w3id.org/linkml/reportid",
+      "description": "the unique name of th dataset",
+      "from_schema": "https://w3id.org/linkml/datasets",
+      "mappings": [
+        "http://purl.org/dc/terms/identifier"
+      ],
+      "exact_mappings": [
+        "http://schema.org/name"
+      ],
+      "slot_uri": "http://purl.org/dc/terms/identifier",
+      "identifier": true,
+      "owner": "Information",
+      "domain_of": [
+        "Information"
+      ],
+      "range": "string",
+      "required": true,
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "title",
+      "definition_uri": "https://w3id.org/linkml/reporttitle",
+      "description": "the official title of the element",
+      "from_schema": "https://w3id.org/linkml/datasets",
+      "mappings": [
+        "http://purl.org/dc/terms/title"
+      ],
+      "slot_uri": "http://purl.org/dc/terms/title",
+      "owner": "DataResource",
+      "domain_of": [
+        "Information",
+        "DataResource"
+      ],
+      "range": "string",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "description",
+      "definition_uri": "https://w3id.org/linkml/reportdescription",
+      "description": "human readable description of the information",
+      "from_schema": "https://w3id.org/linkml/datasets",
+      "mappings": [
+        "http://purl.org/dc/terms/description"
+      ],
+      "slot_uri": "http://purl.org/dc/terms/description",
+      "owner": "DataResource",
+      "domain_of": [
+        "Information",
+        "DataResource"
+      ],
+      "range": "string",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "language",
+      "definition_uri": "https://w3id.org/linkml/reportlanguage",
+      "description": "language in which the information is expressed",
+      "from_schema": "https://w3id.org/linkml/datasets",
+      "slot_uri": "https://w3id.org/linkml/reportlanguage",
+      "owner": "Information",
+      "domain_of": [
+        "Information"
+      ],
+      "range": "string",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "publisher",
+      "definition_uri": "https://w3id.org/linkml/reportpublisher",
+      "from_schema": "https://w3id.org/linkml/datasets",
+      "mappings": [
+        "http://purl.org/dc/terms/publisher"
+      ],
+      "slot_uri": "http://purl.org/dc/terms/publisher",
+      "owner": "Information",
+      "domain_of": [
+        "Information"
+      ],
+      "range": "uriorcurie",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "issued",
+      "definition_uri": "https://w3id.org/linkml/reportissued",
+      "from_schema": "https://w3id.org/linkml/datasets",
+      "mappings": [
+        "http://purl.org/dc/terms/issued"
+      ],
+      "slot_uri": "http://purl.org/dc/terms/issued",
+      "owner": "Information",
+      "domain_of": [
+        "Information"
+      ],
+      "range": "datetime",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "page",
+      "definition_uri": "https://w3id.org/linkml/reportpage",
+      "from_schema": "https://w3id.org/linkml/datasets",
+      "mappings": [
+        "http://www.w3.org/ns/dcat#landingPage"
+      ],
+      "slot_uri": "http://www.w3.org/ns/dcat#landingPage",
+      "owner": "Information",
+      "domain_of": [
+        "Information"
+      ],
+      "range": "string",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "dialect",
+      "definition_uri": "https://w3id.org/linkml/reportdialect",
+      "from_schema": "https://w3id.org/linkml/datasets",
+      "mappings": [
+        "http://www.w3.org/ns/csvw#dialect"
+      ],
+      "slot_uri": "http://www.w3.org/ns/csvw#dialect",
+      "owner": "DataResource",
+      "domain_of": [
+        "DataResource"
+      ],
+      "range": "string",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "bytes",
+      "definition_uri": "https://w3id.org/linkml/reportbytes",
+      "from_schema": "https://w3id.org/linkml/datasets",
+      "mappings": [
+        "http://www.w3.org/ns/dcat#byteSize"
+      ],
+      "slot_uri": "http://www.w3.org/ns/dcat#byteSize",
+      "owner": "DataResource",
+      "domain_of": [
+        "DataResource"
+      ],
+      "range": "integer",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "path",
+      "definition_uri": "https://w3id.org/linkml/reportpath",
+      "from_schema": "https://w3id.org/linkml/datasets",
+      "close_mappings": [
+        "https://specs.frictionlessdata.io/path"
+      ],
+      "slot_uri": "https://w3id.org/linkml/reportpath",
+      "owner": "DataResource",
+      "domain_of": [
+        "DataResource"
+      ],
+      "range": "string",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "download_url",
+      "definition_uri": "https://w3id.org/linkml/reportdownload_url",
+      "from_schema": "https://w3id.org/linkml/datasets",
+      "mappings": [
+        "http://www.w3.org/ns/dcat#downloadURL"
+      ],
+      "exact_mappings": [
+        "http://schema.org/url"
+      ],
+      "close_mappings": [
+        "https://specs.frictionlessdata.io/path"
+      ],
+      "slot_uri": "http://www.w3.org/ns/dcat#downloadURL",
+      "owner": "Information",
+      "domain_of": [
+        "Information"
+      ],
+      "range": "uri",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "format",
+      "definition_uri": "https://w3id.org/linkml/reportformat",
+      "from_schema": "https://w3id.org/linkml/datasets",
+      "mappings": [
+        "http://purl.org/dc/terms/format"
+      ],
+      "slot_uri": "http://purl.org/dc/terms/format",
+      "owner": "DataResource",
+      "domain_of": [
+        "DataResource"
+      ],
+      "range": "FormatEnum",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "compression",
+      "definition_uri": "https://w3id.org/linkml/reportcompression",
+      "from_schema": "https://w3id.org/linkml/datasets",
+      "slot_uri": "https://w3id.org/linkml/reportcompression",
+      "owner": "Information",
+      "domain_of": [
+        "Information"
+      ],
+      "range": "string",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "encoding",
+      "definition_uri": "https://w3id.org/linkml/reportencoding",
+      "from_schema": "https://w3id.org/linkml/datasets",
+      "slot_uri": "https://w3id.org/linkml/reportencoding",
+      "owner": "DataResource",
+      "domain_of": [
+        "DataResource"
+      ],
+      "range": "string",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "hash",
+      "definition_uri": "https://w3id.org/linkml/reporthash",
+      "notes": [
+        "we recommend using a more specific slot such as sha256 or md5"
+      ],
+      "from_schema": "https://w3id.org/linkml/datasets",
+      "slot_uri": "https://w3id.org/linkml/reporthash",
+      "owner": "DataResource",
+      "domain_of": [
+        "DataResource"
+      ],
+      "range": "string",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "sha256",
+      "definition_uri": "https://w3id.org/linkml/reportsha256",
+      "from_schema": "https://w3id.org/linkml/datasets",
+      "is_a": "hash",
+      "slot_uri": "https://w3id.org/linkml/reportsha256",
+      "owner": "DataResource",
+      "domain_of": [
+        "DataResource"
+      ],
+      "range": "string",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "md5",
+      "definition_uri": "https://w3id.org/linkml/reportmd5",
+      "from_schema": "https://w3id.org/linkml/datasets",
+      "is_a": "hash",
+      "slot_uri": "https://w3id.org/linkml/reportmd5",
+      "owner": "DataResource",
+      "domain_of": [
+        "DataResource"
+      ],
+      "range": "string",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "media_type",
+      "definition_uri": "https://w3id.org/linkml/reportmedia_type",
+      "examples": [
+        {
+          "value": "text/csv",
+          "@type": "Example"
+        },
+        {
+          "value": "application/json",
+          "@type": "Example"
+        }
+      ],
+      "from_schema": "https://w3id.org/linkml/datasets",
+      "mappings": [
+        "http://www.w3.org/ns/dcat#mediaType"
+      ],
+      "exact_mappings": [
+        "https://specs.frictionlessdata.io/mediatype",
+        "http://schema.org/encodingFormat"
+      ],
+      "slot_uri": "http://www.w3.org/ns/dcat#mediaType",
+      "owner": "DataResource",
+      "domain_of": [
+        "DataResource"
+      ],
+      "range": "string",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "conforms_to",
+      "definition_uri": "https://w3id.org/linkml/reportconforms_to",
+      "from_schema": "https://w3id.org/linkml/datasets",
+      "mappings": [
+        "http://purl.org/dc/terms/conformsTo"
+      ],
+      "slot_uri": "http://purl.org/dc/terms/conformsTo",
+      "owner": "Information",
+      "domain_of": [
+        "Information"
+      ],
+      "range": "uriorcurie",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "conforms_to_schema",
+      "definition_uri": "https://w3id.org/linkml/reportconforms_to_schema",
+      "from_schema": "https://w3id.org/linkml/datasets",
+      "exact_mappings": [
+        "https://specs.frictionlessdata.io/schema"
+      ],
+      "is_a": "conforms_to",
+      "slot_uri": "https://w3id.org/linkml/reportconforms_to_schema",
+      "owner": "Information",
+      "domain_of": [
+        "Information"
+      ],
+      "range": "uriorcurie",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "conforms_to_class",
+      "definition_uri": "https://w3id.org/linkml/reportconforms_to_class",
+      "description": "class in schema which the data object instantiates",
+      "from_schema": "https://w3id.org/linkml/datasets",
+      "is_a": "conforms_to",
+      "slot_uri": "https://w3id.org/linkml/reportconforms_to_class",
+      "owner": "Information",
+      "domain_of": [
+        "Information"
+      ],
+      "range": "uriorcurie",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "profile",
+      "definition_uri": "https://w3id.org/linkml/reportprofile",
+      "from_schema": "https://w3id.org/linkml/datasets",
+      "exact_mappings": [
+        "https://specs.frictionlessdata.io/profiles"
+      ],
+      "slot_uri": "https://w3id.org/linkml/reportprofile",
+      "range": "uriorcurie",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "keywords",
+      "definition_uri": "https://w3id.org/linkml/reportkeywords",
+      "from_schema": "https://w3id.org/linkml/datasets",
+      "mappings": [
+        "http://www.w3.org/ns/dcat#keyword"
+      ],
+      "exact_mappings": [
+        "http://schema.org/keywords"
+      ],
+      "singular_name": "keyword",
+      "slot_uri": "http://www.w3.org/ns/dcat#keyword",
+      "multivalued": true,
+      "owner": "Information",
+      "domain_of": [
+        "Information"
+      ],
+      "range": "string",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "themes",
+      "definition_uri": "https://w3id.org/linkml/reportthemes",
+      "from_schema": "https://w3id.org/linkml/datasets",
+      "mappings": [
+        "http://www.w3.org/ns/dcat#theme"
+      ],
+      "singular_name": "theme",
+      "slot_uri": "http://www.w3.org/ns/dcat#theme",
+      "multivalued": true,
+      "range": "uriorcurie",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "resources",
+      "definition_uri": "https://w3id.org/linkml/reportresources",
+      "from_schema": "https://w3id.org/linkml/datasets",
+      "mappings": [
+        "http://www.w3.org/ns/dcat#distribution"
+      ],
+      "exact_mappings": [
+        "http://schema.org/distribution"
+      ],
+      "slot_uri": "http://www.w3.org/ns/dcat#distribution",
+      "multivalued": true,
+      "owner": "DataPackage",
+      "domain_of": [
+        "DataPackage"
+      ],
+      "range": "DataResource",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "test_roles",
+      "definition_uri": "https://w3id.org/linkml/reporttest_roles",
+      "from_schema": "https://w3id.org/linkml/datasets",
+      "slot_uri": "https://w3id.org/linkml/reporttest_roles",
+      "multivalued": true,
+      "owner": "Information",
+      "domain_of": [
+        "Information"
+      ],
+      "range": "TestRole",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "created_by",
+      "definition_uri": "https://w3id.org/linkml/reportcreated_by",
+      "description": "agent that created the element",
+      "from_schema": "https://w3id.org/linkml/datasets",
+      "mappings": [
+        "http://purl.org/pav/createdBy"
+      ],
+      "slot_uri": "http://purl.org/pav/createdBy",
+      "owner": "Information",
+      "domain_of": [
+        "Information"
+      ],
+      "range": "uriorcurie",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "created_on",
+      "definition_uri": "https://w3id.org/linkml/reportcreated_on",
+      "description": "time at which the element was created",
+      "from_schema": "https://w3id.org/linkml/datasets",
+      "mappings": [
+        "http://purl.org/pav/createdOn"
+      ],
+      "slot_uri": "http://purl.org/pav/createdOn",
+      "owner": "Information",
+      "domain_of": [
+        "Information"
+      ],
+      "range": "datetime",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "last_updated_on",
+      "definition_uri": "https://w3id.org/linkml/reportlast_updated_on",
+      "description": "time at which the element was last updated",
+      "from_schema": "https://w3id.org/linkml/datasets",
+      "mappings": [
+        "http://purl.org/pav/lastUpdatedOn"
+      ],
+      "slot_uri": "http://purl.org/pav/lastUpdatedOn",
+      "range": "datetime",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "modified_by",
+      "definition_uri": "https://w3id.org/linkml/reportmodified_by",
+      "description": "agent that modified the element",
+      "from_schema": "https://w3id.org/linkml/datasets",
+      "mappings": [
+        "http://example.org/UNKNOWN/oslc/modifiedBy"
+      ],
+      "slot_uri": "http://example.org/UNKNOWN/oslc/modifiedBy",
+      "range": "uriorcurie",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "status",
+      "definition_uri": "https://w3id.org/linkml/reportstatus",
+      "description": "status of the element",
+      "examples": [
+        {
+          "value": "bibo:draft",
+          "@type": "Example"
+        }
+      ],
+      "from_schema": "https://w3id.org/linkml/datasets",
+      "mappings": [
+        "http://example.org/UNKNOWN/bibo/status"
+      ],
+      "slot_uri": "http://example.org/UNKNOWN/bibo/status",
+      "range": "uriorcurie",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "license",
+      "definition_uri": "https://w3id.org/linkml/reportlicense",
+      "description": "license for the data",
+      "from_schema": "https://w3id.org/linkml/datasets",
+      "mappings": [
+        "http://purl.org/dc/terms/license"
+      ],
+      "exact_mappings": [
+        "https://specs.frictionlessdata.io/licenses"
+      ],
+      "slot_uri": "http://purl.org/dc/terms/license",
+      "owner": "Information",
+      "domain_of": [
+        "Information"
+      ],
+      "range": "string",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "version",
+      "definition_uri": "https://w3id.org/linkml/reportversion",
+      "description": "particular version of schema",
+      "from_schema": "https://w3id.org/linkml/datasets",
+      "mappings": [
+        "http://purl.org/pav/version"
+      ],
+      "exact_mappings": [
+        "http://schema.org/version",
+        "http://purl.org/dc/terms/hasVersion"
+      ],
+      "slot_uri": "http://purl.org/pav/version",
+      "owner": "Information",
+      "domain_of": [
+        "Information"
+      ],
+      "range": "string",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "was_derived_from",
+      "definition_uri": "https://w3id.org/linkml/reportwas_derived_from",
+      "description": "A derivation is a transformation of an entity into another, an update of an entity resulting in a new one, or the construction of a new entity based on a pre-existing entity.@en",
+      "from_schema": "https://w3id.org/linkml/datasets",
+      "mappings": [
+        "http://www.w3.org/ns/prov#wasDerivedFrom"
+      ],
+      "slot_uri": "http://www.w3.org/ns/prov#wasDerivedFrom",
+      "owner": "Information",
+      "domain_of": [
+        "Information"
+      ],
+      "range": "string",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "formatDialect__comment_prefix",
+      "from_schema": "https://w3id.org/linkml/datasets",
+      "slot_uri": "https://w3id.org/linkml/reportcomment_prefix",
+      "alias": "comment_prefix",
+      "owner": "FormatDialect",
+      "domain_of": [
+        "FormatDialect"
+      ],
+      "range": "string",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "formatDialect__delimiter",
+      "from_schema": "https://w3id.org/linkml/datasets",
+      "slot_uri": "https://w3id.org/linkml/reportdelimiter",
+      "alias": "delimiter",
+      "owner": "FormatDialect",
+      "domain_of": [
+        "FormatDialect"
+      ],
+      "range": "string",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "formatDialect__double_quote",
+      "from_schema": "https://w3id.org/linkml/datasets",
+      "slot_uri": "https://w3id.org/linkml/reportdouble_quote",
+      "alias": "double_quote",
+      "owner": "FormatDialect",
+      "domain_of": [
+        "FormatDialect"
+      ],
+      "range": "string",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "formatDialect__header",
+      "from_schema": "https://w3id.org/linkml/datasets",
+      "slot_uri": "https://w3id.org/linkml/reportheader",
+      "alias": "header",
+      "owner": "FormatDialect",
+      "domain_of": [
+        "FormatDialect"
+      ],
+      "range": "string",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "formatDialect__quote_char",
+      "from_schema": "https://w3id.org/linkml/datasets",
+      "slot_uri": "https://w3id.org/linkml/reportquote_char",
+      "alias": "quote_char",
+      "owner": "FormatDialect",
+      "domain_of": [
+        "FormatDialect"
+      ],
+      "range": "string",
+      "@type": "SlotDefinition"
+    }
+  ],
+  "classes": [
+    {
+      "name": "Information",
+      "definition_uri": "https://w3id.org/linkml/reportInformation",
+      "description": "Grouping for datasets and data files",
+      "from_schema": "https://w3id.org/linkml/datasets",
+      "close_mappings": [
+        "schema:CreativeWork"
+      ],
+      "abstract": true,
+      "slots": [
+        "id",
+        "download_url",
+        "license",
+        "title",
+        "description",
+        "conforms_to",
+        "conforms_to_schema",
+        "conforms_to_class",
+        "version",
+        "language",
+        "publisher",
+        "keywords",
+        "issued",
+        "created_by",
+        "created_on",
+        "compression",
+        "was_derived_from",
+        "page",
+        "test_roles"
+      ],
+      "slot_usage": {},
+      "class_uri": "https://w3id.org/linkml/reportInformation",
+      "@type": "ClassDefinition"
+    },
+    {
+      "name": "DataPackage",
+      "definition_uri": "https://w3id.org/linkml/reportDataPackage",
+      "description": "A collection of data resources",
+      "from_schema": "https://w3id.org/linkml/datasets",
+      "see_also": [
+        "https://specs.frictionlessdata.io/data-package"
+      ],
+      "aliases": [
+        "dataset",
+        "file collection",
+        "data resource collection"
+      ],
+      "mappings": [
+        "void:Dataset"
+      ],
+      "exact_mappings": [
+        "dcat:Dataset"
+      ],
+      "close_mappings": [
+        "dcat:Catalog"
+      ],
+      "is_a": "Information",
+      "slots": [
+        "id",
+        "download_url",
+        "license",
+        "title",
+        "description",
+        "conforms_to",
+        "conforms_to_schema",
+        "conforms_to_class",
+        "version",
+        "language",
+        "publisher",
+        "keywords",
+        "issued",
+        "created_by",
+        "created_on",
+        "compression",
+        "was_derived_from",
+        "page",
+        "test_roles",
+        "resources"
+      ],
+      "slot_usage": {},
+      "class_uri": "http://rdfs.org/ns/void#Dataset",
+      "@type": "ClassDefinition"
+    },
+    {
+      "name": "DataResource",
+      "definition_uri": "https://w3id.org/linkml/reportDataResource",
+      "description": "An individual file or table",
+      "from_schema": "https://w3id.org/linkml/datasets",
+      "see_also": [
+        "https://specs.frictionlessdata.io/data-resource"
+      ],
+      "mappings": [
+        "dcat:Distribution"
+      ],
+      "exact_mappings": [
+        "schema:DataDownload"
+      ],
+      "is_a": "Information",
+      "slots": [
+        "id",
+        "download_url",
+        "license",
+        "conforms_to",
+        "conforms_to_schema",
+        "conforms_to_class",
+        "version",
+        "language",
+        "publisher",
+        "keywords",
+        "issued",
+        "created_by",
+        "created_on",
+        "compression",
+        "was_derived_from",
+        "page",
+        "test_roles",
+        "path",
+        "title",
+        "description",
+        "format",
+        "media_type",
+        "encoding",
+        "bytes",
+        "hash",
+        "md5",
+        "sha256",
+        "dialect"
+      ],
+      "slot_usage": {},
+      "class_uri": "http://www.w3.org/ns/dcat#Distribution",
+      "@type": "ClassDefinition"
+    },
+    {
+      "name": "FormatDialect",
+      "definition_uri": "https://w3id.org/linkml/reportFormatDialect",
+      "description": "Additional format information for a file",
+      "from_schema": "https://w3id.org/linkml/datasets",
+      "slots": [
+        "formatDialect__comment_prefix",
+        "formatDialect__delimiter",
+        "formatDialect__double_quote",
+        "formatDialect__header",
+        "formatDialect__quote_char"
+      ],
+      "slot_usage": {},
+      "attributes": [
+        {
+          "name": "comment_prefix",
+          "@type": "SlotDefinition"
+        },
+        {
+          "name": "delimiter",
+          "@type": "SlotDefinition"
+        },
+        {
+          "name": "double_quote",
+          "@type": "SlotDefinition"
+        },
+        {
+          "name": "header",
+          "@type": "SlotDefinition"
+        },
+        {
+          "name": "quote_char",
+          "@type": "SlotDefinition"
+        }
+      ],
+      "class_uri": "https://w3id.org/linkml/reportFormatDialect",
+      "@type": "ClassDefinition"
+    }
+  ],
+  "metamodel_version": "1.7.0",
+  "source_file": "datasets.yaml",
+  "source_file_date": "2022-07-14T00:55:10",
+  "source_file_size": 7804,
+  "generation_date": "2022-07-14T00:56:05",
+  "@type": "SchemaDefinition",
+  "@context": [
+    "https://w3id.org/linkml/types.context.jsonld",
+    {
+      "@base": "https://w3id.org/linkml/report"
+    }
+  ]
+}
+

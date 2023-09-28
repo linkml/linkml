@@ -12,7 +12,7 @@ interface Annotatable
 type Annotation implements Annotatable
   {
     tag: Uriorcurie!
-    value: String!
+    value: AnyValue!
     extensions: [Extension]
     annotations: [Annotation]
   }
@@ -46,11 +46,14 @@ type AnonymousClassExpression implements ClassExpression
     narrowMappings: [Uriorcurie]
     broadMappings: [Uriorcurie]
     createdBy: Uriorcurie
+    contributors: [Uriorcurie]
     createdOn: Datetime
     lastUpdatedOn: Datetime
     modifiedBy: Uriorcurie
     status: Uriorcurie
     rank: Integer
+    categories: [Uriorcurie]
+    keywords: [String]
     isA: Definition
     anyOf: [AnonymousClassExpression]
     exactlyOneOf: [AnonymousClassExpression]
@@ -103,11 +106,14 @@ type AnonymousExpression implements Expression, Extensible, Annotatable, CommonM
     narrowMappings: [Uriorcurie]
     broadMappings: [Uriorcurie]
     createdBy: Uriorcurie
+    contributors: [Uriorcurie]
     createdOn: Datetime
     lastUpdatedOn: Datetime
     modifiedBy: Uriorcurie
     status: Uriorcurie
     rank: Integer
+    categories: [Uriorcurie]
+    keywords: [String]
   }
 
 type AnonymousSlotExpression implements SlotExpression
@@ -139,11 +145,14 @@ type AnonymousSlotExpression implements SlotExpression
     narrowMappings: [Uriorcurie]
     broadMappings: [Uriorcurie]
     createdBy: Uriorcurie
+    contributors: [Uriorcurie]
     createdOn: Datetime
     lastUpdatedOn: Datetime
     modifiedBy: Uriorcurie
     status: Uriorcurie
     rank: Integer
+    categories: [Uriorcurie]
+    keywords: [String]
     range: Element
     rangeExpression: AnonymousClassExpression
     enumRange: EnumExpression
@@ -193,6 +202,10 @@ type Anything
   {
   }
 
+type AnyValue
+  {
+  }
+
 type ClassDefinition implements ClassExpression
   {
     name: String!
@@ -201,6 +214,7 @@ type ClassDefinition implements ClassExpression
     localNames: [LocalName]
     conformsTo: String
     implements: [Uriorcurie]
+    instantiates: [Uriorcurie]
     extensions: [Extension]
     annotations: [Annotation]
     description: String
@@ -228,11 +242,14 @@ type ClassDefinition implements ClassExpression
     narrowMappings: [Uriorcurie]
     broadMappings: [Uriorcurie]
     createdBy: Uriorcurie
+    contributors: [Uriorcurie]
     createdOn: Datetime
     lastUpdatedOn: Datetime
     modifiedBy: Uriorcurie
     status: Uriorcurie
     rank: Integer
+    categories: [Uriorcurie]
+    keywords: [String]
     abstract: Boolean
     mixin: Boolean
     valuesFrom: [Uriorcurie]
@@ -311,10 +328,13 @@ type ClassRule implements Extensible, Annotatable, CommonMetadata
     narrowMappings: [Uriorcurie]
     broadMappings: [Uriorcurie]
     createdBy: Uriorcurie
+    contributors: [Uriorcurie]
     createdOn: Datetime
     lastUpdatedOn: Datetime
     modifiedBy: Uriorcurie
     status: Uriorcurie
+    categories: [Uriorcurie]
+    keywords: [String]
   }
 
 interface CommonMetadata
@@ -344,11 +364,14 @@ interface CommonMetadata
     narrowMappings: [Uriorcurie]
     broadMappings: [Uriorcurie]
     createdBy: Uriorcurie
+    contributors: [Uriorcurie]
     createdOn: Datetime
     lastUpdatedOn: Datetime
     modifiedBy: Uriorcurie
     status: Uriorcurie
     rank: Integer
+    categories: [Uriorcurie]
+    keywords: [String]
   }
 
 interface Definition
@@ -359,6 +382,7 @@ interface Definition
     localNames: [LocalName]
     conformsTo: String
     implements: [Uriorcurie]
+    instantiates: [Uriorcurie]
     extensions: [Extension]
     annotations: [Annotation]
     description: String
@@ -386,11 +410,14 @@ interface Definition
     narrowMappings: [Uriorcurie]
     broadMappings: [Uriorcurie]
     createdBy: Uriorcurie
+    contributors: [Uriorcurie]
     createdOn: Datetime
     lastUpdatedOn: Datetime
     modifiedBy: Uriorcurie
     status: Uriorcurie
     rank: Integer
+    categories: [Uriorcurie]
+    keywords: [String]
     isA: Definition
     abstract: Boolean
     mixin: Boolean
@@ -408,6 +435,7 @@ type Element implements Extensible, Annotatable, CommonMetadata
     localNames: [LocalName]
     conformsTo: String
     implements: [Uriorcurie]
+    instantiates: [Uriorcurie]
     extensions: [Extension]
     annotations: [Annotation]
     description: String
@@ -435,11 +463,14 @@ type Element implements Extensible, Annotatable, CommonMetadata
     narrowMappings: [Uriorcurie]
     broadMappings: [Uriorcurie]
     createdBy: Uriorcurie
+    contributors: [Uriorcurie]
     createdOn: Datetime
     lastUpdatedOn: Datetime
     modifiedBy: Uriorcurie
     status: Uriorcurie
     rank: Integer
+    categories: [Uriorcurie]
+    keywords: [String]
   }
 
 type EnumDefinition implements EnumExpression
@@ -450,6 +481,7 @@ type EnumDefinition implements EnumExpression
     localNames: [LocalName]
     conformsTo: String
     implements: [Uriorcurie]
+    instantiates: [Uriorcurie]
     extensions: [Extension]
     annotations: [Annotation]
     description: String
@@ -477,11 +509,14 @@ type EnumDefinition implements EnumExpression
     narrowMappings: [Uriorcurie]
     broadMappings: [Uriorcurie]
     createdBy: Uriorcurie
+    contributors: [Uriorcurie]
     createdOn: Datetime
     lastUpdatedOn: Datetime
     modifiedBy: Uriorcurie
     status: Uriorcurie
     rank: Integer
+    categories: [Uriorcurie]
+    keywords: [String]
     isA: Definition
     abstract: Boolean
     mixin: Boolean
@@ -537,7 +572,7 @@ interface Extensible
 type Extension
   {
     tag: Uriorcurie!
-    value: String!
+    value: AnyValue!
     extensions: [Extension]
   }
 
@@ -573,11 +608,14 @@ type ImportExpression implements Extensible, Annotatable, CommonMetadata
     narrowMappings: [Uriorcurie]
     broadMappings: [Uriorcurie]
     createdBy: Uriorcurie
+    contributors: [Uriorcurie]
     createdOn: Datetime
     lastUpdatedOn: Datetime
     modifiedBy: Uriorcurie
     status: Uriorcurie
     rank: Integer
+    categories: [Uriorcurie]
+    keywords: [String]
   }
 
 type LocalName
@@ -629,11 +667,14 @@ type PathExpression implements Expression, Extensible, Annotatable, CommonMetada
     narrowMappings: [Uriorcurie]
     broadMappings: [Uriorcurie]
     createdBy: Uriorcurie
+    contributors: [Uriorcurie]
     createdOn: Datetime
     lastUpdatedOn: Datetime
     modifiedBy: Uriorcurie
     status: Uriorcurie
     rank: Integer
+    categories: [Uriorcurie]
+    keywords: [String]
   }
 
 type PatternExpression implements Extensible, Annotatable, CommonMetadata
@@ -668,11 +709,14 @@ type PatternExpression implements Extensible, Annotatable, CommonMetadata
     narrowMappings: [Uriorcurie]
     broadMappings: [Uriorcurie]
     createdBy: Uriorcurie
+    contributors: [Uriorcurie]
     createdOn: Datetime
     lastUpdatedOn: Datetime
     modifiedBy: Uriorcurie
     status: Uriorcurie
     rank: Integer
+    categories: [Uriorcurie]
+    keywords: [String]
   }
 
 type PermissibleValue implements Extensible, Annotatable, CommonMetadata
@@ -709,11 +753,14 @@ type PermissibleValue implements Extensible, Annotatable, CommonMetadata
     narrowMappings: [Uriorcurie]
     broadMappings: [Uriorcurie]
     createdBy: Uriorcurie
+    contributors: [Uriorcurie]
     createdOn: Datetime
     lastUpdatedOn: Datetime
     modifiedBy: Uriorcurie
     status: Uriorcurie
     rank: Integer
+    categories: [Uriorcurie]
+    keywords: [String]
   }
 
 type Prefix
@@ -739,6 +786,7 @@ type SchemaDefinition
     localNames: [LocalName]
     conformsTo: String
     implements: [Uriorcurie]
+    instantiates: [Uriorcurie]
     extensions: [Extension]
     annotations: [Annotation]
     description: String
@@ -766,11 +814,14 @@ type SchemaDefinition
     narrowMappings: [Uriorcurie]
     broadMappings: [Uriorcurie]
     createdBy: Uriorcurie
+    contributors: [Uriorcurie]
     createdOn: Datetime
     lastUpdatedOn: Datetime
     modifiedBy: Uriorcurie
     status: Uriorcurie
     rank: Integer
+    categories: [Uriorcurie]
+    keywords: [String]
     id: Uri!
     version: String
     imports: [Uriorcurie]
@@ -792,8 +843,6 @@ type SchemaDefinition
     generationDate: Datetime
     slotNamesUnique: Boolean
     settings: [Setting]
-    categories: [Uriorcurie]
-    keywords: [String]
     name: Ncname!
   }
 
@@ -811,6 +860,7 @@ type SlotDefinition implements SlotExpression
     localNames: [LocalName]
     conformsTo: String
     implements: [Uriorcurie]
+    instantiates: [Uriorcurie]
     extensions: [Extension]
     annotations: [Annotation]
     description: String
@@ -838,11 +888,14 @@ type SlotDefinition implements SlotExpression
     narrowMappings: [Uriorcurie]
     broadMappings: [Uriorcurie]
     createdBy: Uriorcurie
+    contributors: [Uriorcurie]
     createdOn: Datetime
     lastUpdatedOn: Datetime
     modifiedBy: Uriorcurie
     status: Uriorcurie
     rank: Integer
+    categories: [Uriorcurie]
+    keywords: [String]
     abstract: Boolean
     mixin: Boolean
     valuesFrom: [Uriorcurie]
@@ -977,11 +1030,13 @@ type StructuredAlias implements Expression, Extensible, Annotatable, CommonMetad
     narrowMappings: [Uriorcurie]
     broadMappings: [Uriorcurie]
     createdBy: Uriorcurie
+    contributors: [Uriorcurie]
     createdOn: Datetime
     lastUpdatedOn: Datetime
     modifiedBy: Uriorcurie
     status: Uriorcurie
     rank: Integer
+    keywords: [String]
   }
 
 type SubsetDefinition
@@ -992,6 +1047,7 @@ type SubsetDefinition
     localNames: [LocalName]
     conformsTo: String
     implements: [Uriorcurie]
+    instantiates: [Uriorcurie]
     extensions: [Extension]
     annotations: [Annotation]
     description: String
@@ -1019,11 +1075,14 @@ type SubsetDefinition
     narrowMappings: [Uriorcurie]
     broadMappings: [Uriorcurie]
     createdBy: Uriorcurie
+    contributors: [Uriorcurie]
     createdOn: Datetime
     lastUpdatedOn: Datetime
     modifiedBy: Uriorcurie
     status: Uriorcurie
     rank: Integer
+    categories: [Uriorcurie]
+    keywords: [String]
   }
 
 type TypeDefinition implements TypeExpression
@@ -1034,6 +1093,7 @@ type TypeDefinition implements TypeExpression
     localNames: [LocalName]
     conformsTo: String
     implements: [Uriorcurie]
+    instantiates: [Uriorcurie]
     extensions: [Extension]
     annotations: [Annotation]
     description: String
@@ -1061,11 +1121,14 @@ type TypeDefinition implements TypeExpression
     narrowMappings: [Uriorcurie]
     broadMappings: [Uriorcurie]
     createdBy: Uriorcurie
+    contributors: [Uriorcurie]
     createdOn: Datetime
     lastUpdatedOn: Datetime
     modifiedBy: Uriorcurie
     status: Uriorcurie
     rank: Integer
+    categories: [Uriorcurie]
+    keywords: [String]
     typeof: TypeDefinition
     base: String
     uri: Uriorcurie
@@ -1135,11 +1198,14 @@ type UniqueKey implements Extensible, Annotatable, CommonMetadata
     narrowMappings: [Uriorcurie]
     broadMappings: [Uriorcurie]
     createdBy: Uriorcurie
+    contributors: [Uriorcurie]
     createdOn: Datetime
     lastUpdatedOn: Datetime
     modifiedBy: Uriorcurie
     status: Uriorcurie
     rank: Integer
+    categories: [Uriorcurie]
+    keywords: [String]
   }
 
 type UnitOfMeasure

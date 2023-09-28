@@ -49,6 +49,7 @@ prefixes:
   prov: http://www.w3.org/ns/prov#
   vann: https://vocab.org/vann/
   qudt: http://qudt.org/schema/qudt/
+  cdisc: http://rdf.cdisc.org/mms#
 
 default_prefix: linkml
 default_range: string
@@ -124,9 +125,9 @@ subsets:
     description: |-
       A profile that includes all the metamodel elements whose semantics can be expressed in OWL
 
-#==================================
-# Slots                           #
-#==================================
+# ==================================
+# Slots                            #
+# ==================================
 slots:
 
   # -----------------------------------
@@ -184,6 +185,13 @@ slots:
       An element in another schema which this element conforms to. The referenced element is not imported
       into the schema for the implementing element. However, the referenced schema may be used to check
       conformance of the implementing element.
+    multivalued: true
+
+  instantiates:
+    domain: element
+    range: uriorcurie
+    description: >-
+      An element in another schema which this element instantiates.
     multivalued: true
       
   categories:
@@ -456,7 +464,7 @@ slots:
     description: >-
       the primary language used in the sources
     comments:
-      -  Recommended to use a string from IETF BCP 47
+      - Recommended to use a string from IETF BCP 47
     conforms_to: https://www.rfc-editor.org/rfc/bcp/bcp47.txt
 
   source:
@@ -538,7 +546,7 @@ slots:
     description: >-
       A collection of secondary parent classes or slots from which inheritable metaslots are propagated from.
     comments:
-      - mixins act in the same way as parents (is_a). They allow a model to have a primary strict hierachy, while keeping the benefits of multiple inheritance
+      - mixins act in the same way as parents (is_a). They allow a model to have a primary strict hierarchy, while keeping the benefits of multiple inheritance
     see_also:
       - https://en.wikipedia.org/wiki/Mixin
     in_subset:
@@ -567,7 +575,7 @@ slots:
       Note: this is different than 'subproperty_of' in that 'subproperty_of' is intended to be a single ontology term
       while 'values_from' is the identifier of an entire value set.  Additionally, this is different than an enumeration
       in that in an enumeration, the values of the enumeration are listed directly in the model itself.
-      Setting this property on a slot does not guarantee an expansion of the ontological hiearchy into an
+      Setting this property on a slot does not guarantee an expansion of the ontological hierarchy into an
       enumerated list of possible values in every serialization of the model.
     status: testing
 
@@ -627,6 +635,8 @@ slots:
     in_subset:
       - SpecificationSubset
       - BasicSubset
+    exact_mappings:
+      - cdisc:PermissibleValue
 
   enum_uri:
     aliases:
@@ -953,7 +963,7 @@ slots:
 
   source_file:
     domain: schema_definition
-    readonly: suppplied by the schema loader
+    readonly: supplied by the schema loader
     description: name, uri or description of the source of the schema
     in_subset:
       - BasicSubset
@@ -1432,7 +1442,7 @@ slots:
     domain: slot_definition
     range: string
     inherited: true
-    description:  |-
+    description: >-
       function that provides a default value for the slot.  Possible values for this slot are defined in
       linkml.utils.ifabsent_functions.default_library:
         * [Tt]rue -- boolean True
@@ -1515,7 +1525,6 @@ slots:
     range: integer
     inherited: true
     description: the minimum number of entries for a multivalued slot
-    status: testing
     in_subset:
       - SpecificationSubset
 
@@ -1524,7 +1533,6 @@ slots:
     range: integer
     inherited: true
     description: the maximum number of entries for a multivalued slot
-    status: testing
     in_subset:
       - SpecificationSubset
 
@@ -1807,7 +1815,7 @@ slots:
     range: slot_definition
     description: >-
       Ontology property which this slot is a subproperty of.  Note: setting this property on a slot
-      does not guarantee an expansion of the ontological hiearchy into an enumerated list of possible values
+      does not guarantee an expansion of the ontological hierarchy into an enumerated list of possible values
       in every serialization of the model.
     examples:
       - value: RO:HOM0000001
@@ -1955,7 +1963,7 @@ slots:
   partial_match:
     domain: pattern_expression
     range: boolean
-    description: if true then the pattern must match the whole string, as if enclosed in ^...$
+    description: if not true then the pattern must match the whole string, as if enclosed in ^...$
     in_subset:
       - SpecificationSubset
 
@@ -2036,7 +2044,7 @@ slots:
     inherited: true
     comments:
       - every root type must have a base
-      - the base is inherited by child types but may be overriden.  Base compatibility is not checked.
+      - the base is inherited by child types but may be overridden.  Base compatibility is not checked.
     in_subset:
       - SpecificationSubset
       - BasicSubset
@@ -2288,7 +2296,7 @@ slots:
     description: the slot to traverse
     range: slot_definition
   path_rule:
-    description: a rule for inferring a slot assignment based on evaluating a path through a sequence of slot assignemnts
+    description: a rule for inferring a slot assignment based on evaluating a path through a sequence of slot assignments
     domain: slot_definition
     range: path_expression
 
@@ -2325,9 +2333,9 @@ slots:
       - in the context of property graphs, this should be used on edge classes to indicate which slots represent the input and output nodes
 
 
-#==================================
-# Classes                         #
-#==================================
+# ==================================
+# Classes                          #
+# ==================================
 classes:
 
   Anything:
@@ -2362,11 +2370,14 @@ classes:
       - narrow mappings
       - broad mappings
       - created_by
+      - contributors
       - created_on
       - last_updated_on
       - modified_by
       - status
       - rank
+      - categories
+      - keywords
     in_subset:
       - BasicSubset
 
@@ -2388,6 +2399,7 @@ classes:
       - local_names
       - conforms_to
       - implements
+      - instantiates
     see_also:
       - https://en.wikipedia.org/wiki/Data_element
     in_subset:
@@ -2428,8 +2440,6 @@ classes:
       - generation_date
       - slot_names_unique
       - settings
-      - categories
-      - keywords
     see_also:
       - https://en.wikipedia.org/wiki/Data_dictionary
     close_mappings:
@@ -2560,6 +2570,7 @@ classes:
       - concept set
       - Terminology Value Set
       - answer list
+      - value domain
     description: an element whose instances must be drawn from a specified set of permissible values
     is_a: definition
     mixins:
@@ -2567,6 +2578,7 @@ classes:
     exact_mappings:
       - qb:HierarchicalCodeList
       - NCIT:C113497
+      - cdisc:ValueDomain
     close_mappings:
       - skos:ConceptScheme
     in_subset:
@@ -2579,7 +2591,9 @@ classes:
       - enum_uri
 
   match_query:
-    description: A query that is used on an enum expression to dynamically obtain a set of permissivle values via a query that matches on properties of the external concepts
+    description: >-
+      A query that is used on an enum expression to dynamically obtain a set of permissivle values via a query that 
+      matches on properties of the external concepts.
     slots:
       - identifier_pattern
       - source_ontology
@@ -2587,7 +2601,9 @@ classes:
       - SpecificationSubset
 
   reachability_query:
-    description: A query that is used on an enum expression to dynamically obtain a set of permissible values via walking from a set of source nodes to a set of descendants or ancestors over a set of relationship types
+    description: >-
+      A query that is used on an enum expression to dynamically obtain a set of permissible values via walking from a 
+      set of source nodes to a set of descendants or ancestors over a set of relationship types.
     slots:
       - source_ontology
       - source_nodes
@@ -2997,9 +3013,9 @@ classes:
       - BasicSubset
       - RelationalModelProfile
 
-#==================================
-# Enumerations                    #
-#==================================
+# ==================================
+# Enumerations                     #
+# ==================================
 enums:
   pv_formula_options:
     rank: 1

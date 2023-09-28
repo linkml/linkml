@@ -1,25 +1,37 @@
 # Auto generated from meta.yaml by pythongen.py version: 0.9.0
-# Generation date: 2023-03-16T10:58:36
+# Generation date: 2023-09-01T13:21:17
 # Schema: meta
 #
 # id: https://w3id.org/linkml/meta
-# description: The metamodel for schemas defined using the Linked Data Modeling Language framework. For more
-#              information on LinkML: * [linkml.io](https://linkml.io) main website *
-#              [specification](https://w3id.org/linkml/docs/specification/) LinkML is self-describing. Every
-#              LinkML schema consists of elements that instantiate classes in this metamodel. Core metaclasses: *
-#              [SchemaDefinition](https://w3id.org/linkml/SchemaDefinition) *
-#              [ClassDefinition](https://w3id.org/linkml/ClassDefinition) *
-#              [SlotDefinition](https://w3id.org/linkml/SlotDefinition) *
-#              [TypeDefinition](https://w3id.org/linkml/TypeDefinition) There are many subsets of *profiles* of
-#              the metamodel, for different purposes: * [MinimalSubset](https://w3id.org/linkml/MinimalSubset) *
-#              [BasicSubset](https://w3id.org/linkml/BasicSubset) *
-#              [BasicSubset](https://w3id.org/linkml/BasicSubset) For canonical reference documentation on any
-#              metamodel construct, refer to the official URI for each construct, e.g.
-#              [https://w3id.org/linkml/is_a](https://w3id.org/linkml/is_a)
+# description: The metamodel for schemas defined using the Linked Data Modeling Language framework.
+#
+#   For more information on LinkML:
+#
+#   * [linkml.io](https://linkml.io) main website
+#   * [specification](https://w3id.org/linkml/docs/specification/)
+#
+#   LinkML is self-describing. Every LinkML schema consists of elements
+#   that instantiate classes in this metamodel.
+#
+#   Core metaclasses:
+#
+#   * [SchemaDefinition](https://w3id.org/linkml/SchemaDefinition)
+#   * [ClassDefinition](https://w3id.org/linkml/ClassDefinition)
+#   * [SlotDefinition](https://w3id.org/linkml/SlotDefinition)
+#   * [TypeDefinition](https://w3id.org/linkml/TypeDefinition)
+#
+#   There are many subsets of *profiles* of the metamodel, for different purposes:
+#
+#   * [MinimalSubset](https://w3id.org/linkml/MinimalSubset)
+#   * [BasicSubset](https://w3id.org/linkml/BasicSubset)
+#   * [BasicSubset](https://w3id.org/linkml/BasicSubset)
+#
+#   For canonical reference documentation on any metamodel construct,
+#   refer to the official URI for each construct, e.g.
+#   [https://w3id.org/linkml/is_a](https://w3id.org/linkml/is_a)
 # license: https://creativecommons.org/publicdomain/zero/1.0/
 
 import dataclasses
-import sys
 import re
 from jsonasobj2 import JsonObj, as_dict
 from typing import Optional, List, Union, Dict, ClassVar, Any
@@ -46,9 +58,11 @@ version = "2.0.0"
 dataclasses._init_fn = dataclasses_init_fn_with_kwargs
 
 # Namespaces
+IAO = CurieNamespace('IAO', 'http://purl.obolibrary.org/obo/IAO_')
 NCIT = CurieNamespace('NCIT', 'http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#')
 OIO = CurieNamespace('OIO', 'http://www.geneontology.org/formats/oboInOwl#')
 BIBO = CurieNamespace('bibo', 'http://purl.org/ontology/bibo/')
+CDISC = CurieNamespace('cdisc', 'http://rdf.cdisc.org/mms#')
 DCTERMS = CurieNamespace('dcterms', 'http://purl.org/dc/terms/')
 LINKML = CurieNamespace('linkml', 'https://w3id.org/linkml/')
 OSLC = CurieNamespace('oslc', 'http://open-services.net/ns/core#')
@@ -167,11 +181,14 @@ class CommonMetadata(YAMLRoot):
     narrow_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
     broad_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
     created_by: Optional[Union[str, URIorCURIE]] = None
+    contributors: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
     created_on: Optional[Union[str, XSDDateTime]] = None
     last_updated_on: Optional[Union[str, XSDDateTime]] = None
     modified_by: Optional[Union[str, URIorCURIE]] = None
     status: Optional[Union[str, URIorCURIE]] = None
     rank: Optional[int] = None
+    categories: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    keywords: Optional[Union[str, List[str]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self.description is not None and not isinstance(self.description, str):
@@ -260,6 +277,10 @@ class CommonMetadata(YAMLRoot):
         if self.created_by is not None and not isinstance(self.created_by, URIorCURIE):
             self.created_by = URIorCURIE(self.created_by)
 
+        if not isinstance(self.contributors, list):
+            self.contributors = [self.contributors] if self.contributors is not None else []
+        self.contributors = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.contributors]
+
         if self.created_on is not None and not isinstance(self.created_on, XSDDateTime):
             self.created_on = XSDDateTime(self.created_on)
 
@@ -274,6 +295,14 @@ class CommonMetadata(YAMLRoot):
 
         if self.rank is not None and not isinstance(self.rank, int):
             self.rank = int(self.rank)
+
+        if not isinstance(self.categories, list):
+            self.categories = [self.categories] if self.categories is not None else []
+        self.categories = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.categories]
+
+        if not isinstance(self.keywords, list):
+            self.keywords = [self.keywords] if self.keywords is not None else []
+        self.keywords = [v if isinstance(v, str) else str(v) for v in self.keywords]
 
         super().__post_init__(**kwargs)
 
@@ -296,6 +325,7 @@ class Element(YAMLRoot):
     local_names: Optional[Union[Dict[Union[str, LocalNameLocalNameSource], Union[dict, "LocalName"]], List[Union[dict, "LocalName"]]]] = empty_dict()
     conforms_to: Optional[str] = None
     implements: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    instantiates: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
     extensions: Optional[Union[Dict[Union[str, ExtensionTag], Union[dict, Extension]], List[Union[dict, Extension]]]] = empty_dict()
     annotations: Optional[Union[Dict[Union[str, AnnotationTag], Union[dict, Annotation]], List[Union[dict, Annotation]]]] = empty_dict()
     description: Optional[str] = None
@@ -323,11 +353,14 @@ class Element(YAMLRoot):
     narrow_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
     broad_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
     created_by: Optional[Union[str, URIorCURIE]] = None
+    contributors: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
     created_on: Optional[Union[str, XSDDateTime]] = None
     last_updated_on: Optional[Union[str, XSDDateTime]] = None
     modified_by: Optional[Union[str, URIorCURIE]] = None
     status: Optional[Union[str, URIorCURIE]] = None
     rank: Optional[int] = None
+    categories: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    keywords: Optional[Union[str, List[str]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.name):
@@ -350,6 +383,10 @@ class Element(YAMLRoot):
         if not isinstance(self.implements, list):
             self.implements = [self.implements] if self.implements is not None else []
         self.implements = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.implements]
+
+        if not isinstance(self.instantiates, list):
+            self.instantiates = [self.instantiates] if self.instantiates is not None else []
+        self.instantiates = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.instantiates]
 
         self._normalize_inlined_as_dict(slot_name="extensions", slot_type=Extension, key_name="tag", keyed=True)
 
@@ -441,6 +478,10 @@ class Element(YAMLRoot):
         if self.created_by is not None and not isinstance(self.created_by, URIorCURIE):
             self.created_by = URIorCURIE(self.created_by)
 
+        if not isinstance(self.contributors, list):
+            self.contributors = [self.contributors] if self.contributors is not None else []
+        self.contributors = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.contributors]
+
         if self.created_on is not None and not isinstance(self.created_on, XSDDateTime):
             self.created_on = XSDDateTime(self.created_on)
 
@@ -455,6 +496,14 @@ class Element(YAMLRoot):
 
         if self.rank is not None and not isinstance(self.rank, int):
             self.rank = int(self.rank)
+
+        if not isinstance(self.categories, list):
+            self.categories = [self.categories] if self.categories is not None else []
+        self.categories = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.categories]
+
+        if not isinstance(self.keywords, list):
+            self.keywords = [self.keywords] if self.keywords is not None else []
+        self.keywords = [v if isinstance(v, str) else str(v) for v in self.keywords]
 
         super().__post_init__(**kwargs)
 
@@ -493,8 +542,6 @@ class SchemaDefinition(Element):
     generation_date: Optional[Union[str, XSDDateTime]] = None
     slot_names_unique: Optional[Union[bool, Bool]] = None
     settings: Optional[Union[Dict[Union[str, SettingSettingKey], Union[dict, "Setting"]], List[Union[dict, "Setting"]]]] = empty_dict()
-    categories: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
-    keywords: Optional[Union[str, List[str]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self.default_prefix is None:
@@ -564,14 +611,6 @@ class SchemaDefinition(Element):
             self.slot_names_unique = Bool(self.slot_names_unique)
 
         self._normalize_inlined_as_dict(slot_name="settings", slot_type=Setting, key_name="setting_key", keyed=True)
-
-        if not isinstance(self.categories, list):
-            self.categories = [self.categories] if self.categories is not None else []
-        self.categories = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.categories]
-
-        if not isinstance(self.keywords, list):
-            self.keywords = [self.keywords] if self.keywords is not None else []
-        self.keywords = [v if isinstance(v, str) else str(v) for v in self.keywords]
 
         super().__post_init__(**kwargs)
 
@@ -965,7 +1004,7 @@ class EnumDefinition(Definition):
 class MatchQuery(YAMLRoot):
     """
     A query that is used on an enum expression to dynamically obtain a set of permissivle values via a query that
-    matches on properties of the external concepts
+    matches on properties of the external concepts.
     """
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -991,7 +1030,7 @@ class MatchQuery(YAMLRoot):
 class ReachabilityQuery(YAMLRoot):
     """
     A query that is used on an enum expression to dynamically obtain a set of permissible values via walking from a
-    set of source nodes to a set of descendants or ancestors over a set of relationship types
+    set of source nodes to a set of descendants or ancestors over a set of relationship types.
     """
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -1074,11 +1113,13 @@ class StructuredAlias(YAMLRoot):
     narrow_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
     broad_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
     created_by: Optional[Union[str, URIorCURIE]] = None
+    contributors: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
     created_on: Optional[Union[str, XSDDateTime]] = None
     last_updated_on: Optional[Union[str, XSDDateTime]] = None
     modified_by: Optional[Union[str, URIorCURIE]] = None
     status: Optional[Union[str, URIorCURIE]] = None
     rank: Optional[int] = None
+    keywords: Optional[Union[str, List[str]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.literal_form):
@@ -1183,6 +1224,10 @@ class StructuredAlias(YAMLRoot):
         if self.created_by is not None and not isinstance(self.created_by, URIorCURIE):
             self.created_by = URIorCURIE(self.created_by)
 
+        if not isinstance(self.contributors, list):
+            self.contributors = [self.contributors] if self.contributors is not None else []
+        self.contributors = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.contributors]
+
         if self.created_on is not None and not isinstance(self.created_on, XSDDateTime):
             self.created_on = XSDDateTime(self.created_on)
 
@@ -1197,6 +1242,10 @@ class StructuredAlias(YAMLRoot):
 
         if self.rank is not None and not isinstance(self.rank, int):
             self.rank = int(self.rank)
+
+        if not isinstance(self.keywords, list):
+            self.keywords = [self.keywords] if self.keywords is not None else []
+        self.keywords = [v if isinstance(v, str) else str(v) for v in self.keywords]
 
         super().__post_init__(**kwargs)
 
@@ -1390,11 +1439,14 @@ class AnonymousExpression(YAMLRoot):
     narrow_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
     broad_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
     created_by: Optional[Union[str, URIorCURIE]] = None
+    contributors: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
     created_on: Optional[Union[str, XSDDateTime]] = None
     last_updated_on: Optional[Union[str, XSDDateTime]] = None
     modified_by: Optional[Union[str, URIorCURIE]] = None
     status: Optional[Union[str, URIorCURIE]] = None
     rank: Optional[int] = None
+    categories: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    keywords: Optional[Union[str, List[str]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         self._normalize_inlined_as_dict(slot_name="extensions", slot_type=Extension, key_name="tag", keyed=True)
@@ -1487,6 +1539,10 @@ class AnonymousExpression(YAMLRoot):
         if self.created_by is not None and not isinstance(self.created_by, URIorCURIE):
             self.created_by = URIorCURIE(self.created_by)
 
+        if not isinstance(self.contributors, list):
+            self.contributors = [self.contributors] if self.contributors is not None else []
+        self.contributors = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.contributors]
+
         if self.created_on is not None and not isinstance(self.created_on, XSDDateTime):
             self.created_on = XSDDateTime(self.created_on)
 
@@ -1501,6 +1557,14 @@ class AnonymousExpression(YAMLRoot):
 
         if self.rank is not None and not isinstance(self.rank, int):
             self.rank = int(self.rank)
+
+        if not isinstance(self.categories, list):
+            self.categories = [self.categories] if self.categories is not None else []
+        self.categories = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.categories]
+
+        if not isinstance(self.keywords, list):
+            self.keywords = [self.keywords] if self.keywords is not None else []
+        self.keywords = [v if isinstance(v, str) else str(v) for v in self.keywords]
 
         super().__post_init__(**kwargs)
 
@@ -1552,11 +1616,14 @@ class PathExpression(YAMLRoot):
     narrow_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
     broad_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
     created_by: Optional[Union[str, URIorCURIE]] = None
+    contributors: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
     created_on: Optional[Union[str, XSDDateTime]] = None
     last_updated_on: Optional[Union[str, XSDDateTime]] = None
     modified_by: Optional[Union[str, URIorCURIE]] = None
     status: Optional[Union[str, URIorCURIE]] = None
     rank: Optional[int] = None
+    categories: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    keywords: Optional[Union[str, List[str]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self.followed_by is not None and not isinstance(self.followed_by, PathExpression):
@@ -1677,6 +1744,10 @@ class PathExpression(YAMLRoot):
         if self.created_by is not None and not isinstance(self.created_by, URIorCURIE):
             self.created_by = URIorCURIE(self.created_by)
 
+        if not isinstance(self.contributors, list):
+            self.contributors = [self.contributors] if self.contributors is not None else []
+        self.contributors = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.contributors]
+
         if self.created_on is not None and not isinstance(self.created_on, XSDDateTime):
             self.created_on = XSDDateTime(self.created_on)
 
@@ -1691,6 +1762,14 @@ class PathExpression(YAMLRoot):
 
         if self.rank is not None and not isinstance(self.rank, int):
             self.rank = int(self.rank)
+
+        if not isinstance(self.categories, list):
+            self.categories = [self.categories] if self.categories is not None else []
+        self.categories = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.categories]
+
+        if not isinstance(self.keywords, list):
+            self.keywords = [self.keywords] if self.keywords is not None else []
+        self.keywords = [v if isinstance(v, str) else str(v) for v in self.keywords]
 
         super().__post_init__(**kwargs)
 
@@ -2503,10 +2582,13 @@ class ClassRule(ClassLevelRule):
     narrow_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
     broad_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
     created_by: Optional[Union[str, URIorCURIE]] = None
+    contributors: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
     created_on: Optional[Union[str, XSDDateTime]] = None
     last_updated_on: Optional[Union[str, XSDDateTime]] = None
     modified_by: Optional[Union[str, URIorCURIE]] = None
     status: Optional[Union[str, URIorCURIE]] = None
+    categories: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    keywords: Optional[Union[str, List[str]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self.preconditions is not None and not isinstance(self.preconditions, AnonymousClassExpression):
@@ -2620,6 +2702,10 @@ class ClassRule(ClassLevelRule):
         if self.created_by is not None and not isinstance(self.created_by, URIorCURIE):
             self.created_by = URIorCURIE(self.created_by)
 
+        if not isinstance(self.contributors, list):
+            self.contributors = [self.contributors] if self.contributors is not None else []
+        self.contributors = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.contributors]
+
         if self.created_on is not None and not isinstance(self.created_on, XSDDateTime):
             self.created_on = XSDDateTime(self.created_on)
 
@@ -2631,6 +2717,14 @@ class ClassRule(ClassLevelRule):
 
         if self.status is not None and not isinstance(self.status, URIorCURIE):
             self.status = URIorCURIE(self.status)
+
+        if not isinstance(self.categories, list):
+            self.categories = [self.categories] if self.categories is not None else []
+        self.categories = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.categories]
+
+        if not isinstance(self.keywords, list):
+            self.keywords = [self.keywords] if self.keywords is not None else []
+        self.keywords = [v if isinstance(v, str) else str(v) for v in self.keywords]
 
         super().__post_init__(**kwargs)
 
@@ -2677,11 +2771,14 @@ class PatternExpression(YAMLRoot):
     narrow_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
     broad_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
     created_by: Optional[Union[str, URIorCURIE]] = None
+    contributors: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
     created_on: Optional[Union[str, XSDDateTime]] = None
     last_updated_on: Optional[Union[str, XSDDateTime]] = None
     modified_by: Optional[Union[str, URIorCURIE]] = None
     status: Optional[Union[str, URIorCURIE]] = None
     rank: Optional[int] = None
+    categories: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    keywords: Optional[Union[str, List[str]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self.syntax is not None and not isinstance(self.syntax, str):
@@ -2783,6 +2880,10 @@ class PatternExpression(YAMLRoot):
         if self.created_by is not None and not isinstance(self.created_by, URIorCURIE):
             self.created_by = URIorCURIE(self.created_by)
 
+        if not isinstance(self.contributors, list):
+            self.contributors = [self.contributors] if self.contributors is not None else []
+        self.contributors = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.contributors]
+
         if self.created_on is not None and not isinstance(self.created_on, XSDDateTime):
             self.created_on = XSDDateTime(self.created_on)
 
@@ -2797,6 +2898,14 @@ class PatternExpression(YAMLRoot):
 
         if self.rank is not None and not isinstance(self.rank, int):
             self.rank = int(self.rank)
+
+        if not isinstance(self.categories, list):
+            self.categories = [self.categories] if self.categories is not None else []
+        self.categories = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.categories]
+
+        if not isinstance(self.keywords, list):
+            self.keywords = [self.keywords] if self.keywords is not None else []
+        self.keywords = [v if isinstance(v, str) else str(v) for v in self.keywords]
 
         super().__post_init__(**kwargs)
 
@@ -2843,11 +2952,14 @@ class ImportExpression(YAMLRoot):
     narrow_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
     broad_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
     created_by: Optional[Union[str, URIorCURIE]] = None
+    contributors: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
     created_on: Optional[Union[str, XSDDateTime]] = None
     last_updated_on: Optional[Union[str, XSDDateTime]] = None
     modified_by: Optional[Union[str, URIorCURIE]] = None
     status: Optional[Union[str, URIorCURIE]] = None
     rank: Optional[int] = None
+    categories: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    keywords: Optional[Union[str, List[str]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.import_from):
@@ -2950,6 +3062,10 @@ class ImportExpression(YAMLRoot):
         if self.created_by is not None and not isinstance(self.created_by, URIorCURIE):
             self.created_by = URIorCURIE(self.created_by)
 
+        if not isinstance(self.contributors, list):
+            self.contributors = [self.contributors] if self.contributors is not None else []
+        self.contributors = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.contributors]
+
         if self.created_on is not None and not isinstance(self.created_on, XSDDateTime):
             self.created_on = XSDDateTime(self.created_on)
 
@@ -2964,6 +3080,14 @@ class ImportExpression(YAMLRoot):
 
         if self.rank is not None and not isinstance(self.rank, int):
             self.rank = int(self.rank)
+
+        if not isinstance(self.categories, list):
+            self.categories = [self.categories] if self.categories is not None else []
+        self.categories = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.categories]
+
+        if not isinstance(self.keywords, list):
+            self.keywords = [self.keywords] if self.keywords is not None else []
+        self.keywords = [v if isinstance(v, str) else str(v) for v in self.keywords]
 
         super().__post_init__(**kwargs)
 
@@ -3154,11 +3278,14 @@ class PermissibleValue(YAMLRoot):
     narrow_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
     broad_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
     created_by: Optional[Union[str, URIorCURIE]] = None
+    contributors: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
     created_on: Optional[Union[str, XSDDateTime]] = None
     last_updated_on: Optional[Union[str, XSDDateTime]] = None
     modified_by: Optional[Union[str, URIorCURIE]] = None
     status: Optional[Union[str, URIorCURIE]] = None
     rank: Optional[int] = None
+    categories: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    keywords: Optional[Union[str, List[str]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.text):
@@ -3269,6 +3396,10 @@ class PermissibleValue(YAMLRoot):
         if self.created_by is not None and not isinstance(self.created_by, URIorCURIE):
             self.created_by = URIorCURIE(self.created_by)
 
+        if not isinstance(self.contributors, list):
+            self.contributors = [self.contributors] if self.contributors is not None else []
+        self.contributors = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.contributors]
+
         if self.created_on is not None and not isinstance(self.created_on, XSDDateTime):
             self.created_on = XSDDateTime(self.created_on)
 
@@ -3283,6 +3414,14 @@ class PermissibleValue(YAMLRoot):
 
         if self.rank is not None and not isinstance(self.rank, int):
             self.rank = int(self.rank)
+
+        if not isinstance(self.categories, list):
+            self.categories = [self.categories] if self.categories is not None else []
+        self.categories = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.categories]
+
+        if not isinstance(self.keywords, list):
+            self.keywords = [self.keywords] if self.keywords is not None else []
+        self.keywords = [v if isinstance(v, str) else str(v) for v in self.keywords]
 
         super().__post_init__(**kwargs)
 
@@ -3329,11 +3468,14 @@ class UniqueKey(YAMLRoot):
     narrow_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
     broad_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
     created_by: Optional[Union[str, URIorCURIE]] = None
+    contributors: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
     created_on: Optional[Union[str, XSDDateTime]] = None
     last_updated_on: Optional[Union[str, XSDDateTime]] = None
     modified_by: Optional[Union[str, URIorCURIE]] = None
     status: Optional[Union[str, URIorCURIE]] = None
     rank: Optional[int] = None
+    categories: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    keywords: Optional[Union[str, List[str]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.unique_key_name):
@@ -3440,6 +3582,10 @@ class UniqueKey(YAMLRoot):
         if self.created_by is not None and not isinstance(self.created_by, URIorCURIE):
             self.created_by = URIorCURIE(self.created_by)
 
+        if not isinstance(self.contributors, list):
+            self.contributors = [self.contributors] if self.contributors is not None else []
+        self.contributors = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.contributors]
+
         if self.created_on is not None and not isinstance(self.created_on, XSDDateTime):
             self.created_on = XSDDateTime(self.created_on)
 
@@ -3455,6 +3601,14 @@ class UniqueKey(YAMLRoot):
         if self.rank is not None and not isinstance(self.rank, int):
             self.rank = int(self.rank)
 
+        if not isinstance(self.categories, list):
+            self.categories = [self.categories] if self.categories is not None else []
+        self.categories = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.categories]
+
+        if not isinstance(self.keywords, list):
+            self.keywords = [self.keywords] if self.keywords is not None else []
+        self.keywords = [v if isinstance(v, str) else str(v) for v in self.keywords]
+
         super().__post_init__(**kwargs)
 
 
@@ -3463,14 +3617,18 @@ class PvFormulaOptions(EnumDefinitionImpl):
     """
     The formula used to generate the set of permissible values from the code_set values
     """
-    CODE = PermissibleValue(text="CODE",
-                               description="The permissible values are the set of possible codes in the code set")
-    CURIE = PermissibleValue(text="CURIE",
-                                 description="The permissible values are the set of CURIES in the code set")
-    URI = PermissibleValue(text="URI",
-                             description="The permissible values are the set of code URIs in the code set")
-    FHIR_CODING = PermissibleValue(text="FHIR_CODING",
-                                             description="The permissible values are the set of FHIR coding elements derived from the code set")
+    CODE = PermissibleValue(
+        text="CODE",
+        description="The permissible values are the set of possible codes in the code set")
+    CURIE = PermissibleValue(
+        text="CURIE",
+        description="The permissible values are the set of CURIES in the code set")
+    URI = PermissibleValue(
+        text="URI",
+        description="The permissible values are the set of code URIs in the code set")
+    FHIR_CODING = PermissibleValue(
+        text="FHIR_CODING",
+        description="The permissible values are the set of FHIR coding elements derived from the code set")
 
     _defn = EnumDefinition(
         name="PvFormulaOptions",
@@ -3494,19 +3652,24 @@ class RelationalRoleEnum(EnumDefinitionImpl):
     """
     enumeration of roles a slot on a relationship class can play
     """
-    SUBJECT = PermissibleValue(text="SUBJECT",
-                                     description="a slot with this role connects a relationship to its subject/source node",
-                                     meaning=RDF.subject)
-    OBJECT = PermissibleValue(text="OBJECT",
-                                   description="a slot with this role connects a relationship to its object/target node",
-                                   meaning=RDF.object)
-    PREDICATE = PermissibleValue(text="PREDICATE",
-                                         description="a slot with this role connects a relationship to its predicate/property",
-                                         meaning=RDF.predicate)
-    NODE = PermissibleValue(text="NODE",
-                               description="a slot with this role connects a symmetric relationship to a node that represents either subject or object node")
-    OTHER_ROLE = PermissibleValue(text="OTHER_ROLE",
-                                           description="a slot with this role connects a relationship to a node that is not subject/object/predicate")
+    SUBJECT = PermissibleValue(
+        text="SUBJECT",
+        description="a slot with this role connects a relationship to its subject/source node",
+        meaning=RDF.subject)
+    OBJECT = PermissibleValue(
+        text="OBJECT",
+        description="a slot with this role connects a relationship to its object/target node",
+        meaning=RDF.object)
+    PREDICATE = PermissibleValue(
+        text="PREDICATE",
+        description="a slot with this role connects a relationship to its predicate/property",
+        meaning=RDF.predicate)
+    NODE = PermissibleValue(
+        text="NODE",
+        description="""a slot with this role connects a symmetric relationship to a node that represents either subject or object node""")
+    OTHER_ROLE = PermissibleValue(
+        text="OTHER_ROLE",
+        description="a slot with this role connects a relationship to a node that is not subject/object/predicate")
 
     _defn = EnumDefinition(
         name="RelationalRoleEnum",
@@ -3517,14 +3680,18 @@ class AliasPredicateEnum(EnumDefinitionImpl):
     """
     permissible values for the relationship between an element and an alias
     """
-    EXACT_SYNONYM = PermissibleValue(text="EXACT_SYNONYM",
-                                                 meaning=SKOS.exactMatch)
-    RELATED_SYNONYM = PermissibleValue(text="RELATED_SYNONYM",
-                                                     meaning=SKOS.relatedMatch)
-    BROAD_SYNONYM = PermissibleValue(text="BROAD_SYNONYM",
-                                                 meaning=SKOS.broaderMatch)
-    NARROW_SYNONYM = PermissibleValue(text="NARROW_SYNONYM",
-                                                   meaning=SKOS.narrowerMatch)
+    EXACT_SYNONYM = PermissibleValue(
+        text="EXACT_SYNONYM",
+        meaning=SKOS.exactMatch)
+    RELATED_SYNONYM = PermissibleValue(
+        text="RELATED_SYNONYM",
+        meaning=SKOS.relatedMatch)
+    BROAD_SYNONYM = PermissibleValue(
+        text="BROAD_SYNONYM",
+        meaning=SKOS.broaderMatch)
+    NARROW_SYNONYM = PermissibleValue(
+        text="NARROW_SYNONYM",
+        meaning=SKOS.narrowerMatch)
 
     _defn = EnumDefinition(
         name="AliasPredicateEnum",
@@ -3546,6 +3713,9 @@ slots.conforms_to = Slot(uri=DCTERMS.conformsTo, name="conforms_to", curie=DCTER
 
 slots.implements = Slot(uri=LINKML.implements, name="implements", curie=LINKML.curie('implements'),
                    model_uri=LINKML.implements, domain=Element, range=Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]])
+
+slots.instantiates = Slot(uri=LINKML.instantiates, name="instantiates", curie=LINKML.curie('instantiates'),
+                   model_uri=LINKML.instantiates, domain=Element, range=Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]])
 
 slots.categories = Slot(uri=DCTERMS.subject, name="categories", curie=DCTERMS.curie('subject'),
                    model_uri=LINKML.categories, domain=None, range=Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]])

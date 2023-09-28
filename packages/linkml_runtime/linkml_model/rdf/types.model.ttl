@@ -102,7 +102,7 @@
             linkml:uri "http://www.w3.org/2001/XMLSchema#decimal" ],
         [ a linkml:TypeDefinition ;
             linkml:base "ElementIdentifier" ;
-            linkml:comments "Used for inheritence and type checking" ;
+            linkml:comments "Used for inheritance and type checking" ;
             linkml:definition_uri "https://w3id.org/linkml/Objectidentifier" ;
             linkml:description "A URI or CURIE that represents an object in the model." ;
             linkml:from_schema "https://w3id.org/linkml/types" ;
