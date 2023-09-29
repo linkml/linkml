@@ -42,7 +42,7 @@ def test_annotation(framework):
                 "annotations": {},
             },
             "annotations": {},
-            "implements": ["MetaclassM"],
+            "instantiates": ["MetaclassM"],
         },
     }
 
