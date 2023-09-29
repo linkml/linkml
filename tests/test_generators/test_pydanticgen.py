@@ -349,86 +349,85 @@ def test_pydantic_arrays():
 id: https://example.org/arrays
 name: arrays-example
 prefixes:
-linkml: https://w3id.org/linkml/
-wgs84: http://www.w3.org/2003/01/geo/wgs84_pos#
-example: https://example.org/
-default_prefix: example
+  linkml: https://w3id.org/linkml/
+  example: https://example.org/
+  default_prefix: example
 imports:
 - linkml:types
 
 classes:
-TemperatureMatrix:
-tree_root: true
-implements:
-  - linkml:ThreeDimensionalArray
-  - linkml:RowOrderedArray
-attributes:
-  x:
+  TemperatureMatrix:
+    tree_root: true
     implements:
-      - linkml:axis0
-    range: LatitudeSeries
-    required: true
-  y:
-    implements:
-      - linkml:axis1
-    range: LongitudeSeries
-    required: true
-  time:
-    implements:
-      - linkml:axis2
-    range: DaySeries
-    required: true
-  temperatures:
-    implements:
-      - linkml:elements
-    multivalued: true
-    range: float
-    required: true
-    unit:
-      ucum_code: K
+      - linkml:ThreeDimensionalArray
+      - linkml:RowOrderedArray
+    attributes:
+      x:
+        implements:
+          - linkml:axis0
+        range: LatitudeSeries
+        required: true
+      y:
+        implements:
+          - linkml:axis1
+        range: LongitudeSeries
+        required: true
+      time:
+        implements:
+          - linkml:axis2
+        range: DaySeries
+        required: true
+      temperatures:
+        implements:
+          - linkml:elements
+        multivalued: true
+        range: float
+        required: true
+        unit:
+          ucum_code: K
 
-LatitudeSeries:
-description: A series whose values represent latitude
-implements:
-  - linkml:OneDimensionalSeries
-attributes:
-  values:
-    range: float
-    multivalued: true
+  LatitudeSeries:
+    description: A series whose values represent latitude
     implements:
-      - linkml:elements
-    required: true
-    unit:
-      ucum_code: deg
+      - linkml:OneDimensionalSeries
+    attributes:
+      values:
+        range: float
+        multivalued: true
+        implements:
+          - linkml:elements
+        required: true
+        unit:
+          ucum_code: deg
 
-LongitudeSeries:
-description: A series whose values represent longitude
-implements:
-  - linkml:OneDimensionalSeries
-attributes:
-  values:
-    range: float
-    multivalued: true
+  LongitudeSeries:
+    description: A series whose values represent longitude
     implements:
-      - linkml:elements
-    required: true
-    unit:
-      ucum_code: deg
+      - linkml:OneDimensionalSeries
+    attributes:
+      values:
+        range: float
+        multivalued: true
+        implements:
+          - linkml:elements
+        required: true
+        unit:
+          ucum_code: deg
 
-DaySeries:
-description: A series whose values represent the days since the start of the measurement period
-implements:
-  - linkml:OneDimensionalSeries
-attributes:
-  values:
-    range: float
-    multivalued: true
+  DaySeries:
+    description: A series whose values represent the days since the start of the measurement period
     implements:
-      - linkml:elements
-    required: true
-    unit:
-      ucum_code: d
-"""
+      - linkml:OneDimensionalSeries
+    attributes:
+      values:
+        range: float
+        multivalued: true
+        implements:
+          - linkml:elements
+        required: true
+        unit:
+            ucum_code: d
+  """
 
     gen = PydanticGenerator(schema=unit_test_schema)
 
@@ -461,64 +460,63 @@ def test_column_ordered_array_not_supported():
 id: https://example.org/arrays
 name: arrays-example
 prefixes:
-linkml: https://w3id.org/linkml/
-example: https://example.org/
-default_prefix: example
+  linkml: https://w3id.org/linkml/
+  example: https://example.org/
+  default_prefix: example
 imports:
 - linkml:types
 
 classes:
-TemperatureMatrix:
-tree_root: true
-implements:
-  - linkml:TwoDimensionalArray
-  - linkml:ColumnOrderedArray
-attributes:
-  x:
+  TemperatureMatrix:
+    tree_root: true
     implements:
-      - linkml:axis0
-    range: LatitudeSeries
-    required: true
-  y:
-    implements:
-      - linkml:axis1
-    range: LongitudeSeries
-    required: true
-  temperatures:
-    implements:
-      - linkml:elements
-    multivalued: true
-    range: float
-    required: true
-    unit:
-      ucum_code: K
+      - linkml:TwoDimensionalArray
+      - linkml:ColumnOrderedArray
+    attributes:
+      x:
+        implements:
+          - linkml:axis0
+        range: LatitudeSeries
+        required: true
+      y:
+        implements:
+          - linkml:axis1
+        range: LongitudeSeries
+        required: true
+      temperatures:
+        implements:
+          - linkml:elements
+        multivalued: true
+        range: float
+        required: true
+        unit:
+          ucum_code: K
 
-LatitudeSeries:
-description: A series whose values represent latitude
-implements:
-  - linkml:OneDimensionalSeries
-attributes:
-  values:
-    range: float
-    multivalued: true
+  LatitudeSeries:
+    description: A series whose values represent latitude
     implements:
-      - linkml:elements
-    required: true
+      - linkml:OneDimensionalSeries
+    attributes:
+      values:
+        range: float
+        multivalued: true
+        implements:
+          - linkml:elements
+        required: true
 
-LongitudeSeries:
-description: A series whose values represent longitude
-implements:
-  - linkml:OneDimensionalSeries
-attributes:
-  values:
-    range: float
-    multivalued: true
+  LongitudeSeries:
+    description: A series whose values represent longitude
     implements:
-      - linkml:elements
-    required: true
-
+      - linkml:OneDimensionalSeries
+    attributes:
+      values:
+        range: float
+        multivalued: true
+        implements:
+          - linkml:elements
+        required: true
 """
 
     gen = PydanticGenerator(schema=unit_test_schema)
-    with pytest.assertRaises(NotImplementedError):
+    with pytest.raises(NotImplementedError):
         gen.serialize()
