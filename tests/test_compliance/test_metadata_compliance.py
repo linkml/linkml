@@ -5,19 +5,28 @@ These typically do not include meaningful instance tests since metadata does not
 
 - TODO: license slot
 """
-from copy import copy, deepcopy
+from copy import deepcopy
 
 import pytest
 
 from tests.test_compliance.helper import (
+    OWL,
     PYDANTIC,
     PYTHON_DATACLASSES,
     SQL_DDL_POSTGRES,
     check_data,
-    validated_schema, OWL,
+    validated_schema,
 )
-from tests.test_compliance.test_compliance import CLASS_C, CORE_FRAMEWORKS, SLOT_S1, ENUM_E, PV_1, SLOT_S2, TYPE_T, \
-    SUBSET_SS
+from tests.test_compliance.test_compliance import (
+    CLASS_C,
+    CORE_FRAMEWORKS,
+    ENUM_E,
+    PV_1,
+    SLOT_S1,
+    SLOT_S2,
+    SUBSET_SS,
+    TYPE_T,
+)
 
 
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
@@ -183,20 +192,24 @@ def test_common_metadata(framework):
     :param framework:
     :return:
     """
-    def triples(subject: str,):
-        header = ("@prefix dcterms: <http://purl.org/dc/terms/> ."
-                  "@prefix ex: <http://example.org/> ."
-                  "@prefix linkml: <https://w3id.org/linkml/> ."
-                  "@prefix ns1: <http://purl.org/ontology/bibo/> ."
-                    "@prefix orcid: <https://orcid.org/> ."
-                "@prefix owl: <http://www.w3.org/2002/07/owl#> ."
-                "@prefix pav: <http://purl.org/pav/> ."
-                "@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> ."
-                "@prefix schema: <http://schema.org/> ."
-                "@prefix shex: <http://www.w3.org/ns/shex#> ."
-                "@prefix skos: <http://www.w3.org/2004/02/skos/core#> ."
-                "@prefix xsd: <http://www.w3.org/2001/XMLSchema#> ."
-                )
+
+    def triples(
+        subject: str,
+    ):
+        header = (
+            "@prefix dcterms: <http://purl.org/dc/terms/> ."
+            "@prefix ex: <http://example.org/> ."
+            "@prefix linkml: <https://w3id.org/linkml/> ."
+            "@prefix ns1: <http://purl.org/ontology/bibo/> ."
+            "@prefix orcid: <https://orcid.org/> ."
+            "@prefix owl: <http://www.w3.org/2002/07/owl#> ."
+            "@prefix pav: <http://purl.org/pav/> ."
+            "@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> ."
+            "@prefix schema: <http://schema.org/> ."
+            "@prefix shex: <http://www.w3.org/ns/shex#> ."
+            "@prefix skos: <http://www.w3.org/2004/02/skos/core#> ."
+            "@prefix xsd: <http://www.w3.org/2001/XMLSchema#> ."
+        )
         body = [
             "dcterms:contributor orcid:0000-0000-0000-0000",
             'schema:keywords "a keyword"',
@@ -205,6 +218,7 @@ def test_common_metadata(framework):
             "dcterms:contributor orcid:0000-0000-0000-0000",
         ]
         return "\n".join([header] + list([f"{subject} {t} ." for t in body]))
+
     common = {
         "title": "a title",
         "description": "a description",
@@ -235,22 +249,16 @@ def test_common_metadata(framework):
             "attributes": {
                 SLOT_S1: {
                     **deepcopy(common),
-                    "_mappings": {
-                        OWL: triples("ex:s1")
-                    },
+                    "_mappings": {OWL: triples("ex:s1")},
                 }
             },
-            "_mappings": {
-                OWL: triples("ex:C")
-            },
+            "_mappings": {OWL: triples("ex:C")},
         },
     }
     slots = {
         SLOT_S2: {
             **deepcopy(common),
-            "_mappings": {
-                OWL: triples("ex:s2")
-            },
+            "_mappings": {OWL: triples("ex:s2")},
         },
     }
     types = {
@@ -258,7 +266,7 @@ def test_common_metadata(framework):
             "typeof": "string",
             **deepcopy(common),
             "_mappings": {
-                #OWL: triples("ex:T")
+                # OWL: triples("ex:T")
             },
         },
     }
@@ -271,7 +279,7 @@ def test_common_metadata(framework):
             },
             **deepcopy(common),
             "_mappings": {
-                #OWL: triples("ex:E")
+                # OWL: triples("ex:E")
             },
         }
     }
@@ -290,11 +298,12 @@ def test_common_metadata(framework):
         slots=slots,
         types=types,
         subsets=subsets,
-        prefixes={"schema": "http://schema.org/",
-                  "pav": "http://purl.org/pav",
-                  "orcid": "https://orcid.org/"},
+        prefixes={
+            "schema": "http://schema.org/",
+            "pav": "http://purl.org/pav",
+            "orcid": "https://orcid.org/",
+        },
         core_elements=["common_metadata"],
         license="https://creativecommons.org/publicdomain/zero/1.0/",
         **deepcopy(common),
     )
-
