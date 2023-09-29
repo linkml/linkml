@@ -8,7 +8,7 @@ create a schema in order to model your data.
 
 Note that the formal specification for LinkML can be found at
 `<https://w3id.org/linkml/specification>`_. This formal specification
-is aimed at implementors and not users. General users of LinkML should
+is aimed at implementers and not users. General users of LinkML should
 use the guide below.
 
 .. toctree::
@@ -23,12 +23,14 @@ use the guide below.
    enums
    inlining
    constraints
+   type-designators
    subsets
    imports
    advanced
    generators
    linter
    derived-models
+   annotations
    metamodel
 
 .. seealso:: `Programmatic example in a Jupyter Notebook <https://github.com/linkml/linkml/blob/main/notebooks/examples.ipynb>`_

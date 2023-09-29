@@ -78,5 +78,5 @@ Loading:
 >>> p1 = json_loader.load('person_data.json')
 ```
 
-For more developer documentations, see the [loaders-and-dumpers](/developers/loaders-and-dumpers.html) section of the developer docs
+For more developer documentations, see the [loaders-and-dumpers](../developers/loaders-and-dumpers.html) section of the developer docs
 

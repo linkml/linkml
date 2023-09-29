@@ -27,6 +27,7 @@ structured_alias &#8594;  <sub>0..\*</sub> uriorcurie
 |  |  |  |
 | --- | --- | --- |
 | **Mappings:** | | dcterms:subject |
-| **Examples:** | | Example(value='https://w3id.org/mod#acronym', description='An acronym') |
-| **In Subsets:** | | basic |
+| **Comments:** | | if you wish to use uncontrolled terms or terms that lack identifiers then use the keywords element |
+| **Examples:** | | Example(value='https://w3id.org/mod#acronym', description='An acronym', object=None) |
+| **In Subsets:** | | BasicSubset |
 

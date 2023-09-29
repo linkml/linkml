@@ -26,8 +26,10 @@ class_definition &#8594;  <sub>0..\*</sub> slot_definition
 |  |  |  |
 | --- | --- | --- |
 | **Comments:** | | attributes are an alternative way of defining new slots.  An attribute adds a slot to the global space in the form <class_name>__<slot_name> (lower case, double underscores).  Attributes can be specialized via slot_usage. |
-| **In Subsets:** | | minimal |
-|  | | basic |
-|  | | relational_model |
-|  | | object_oriented |
+| **In Subsets:** | | SpecificationSubset |
+|  | | MinimalSubset |
+|  | | BasicSubset |
+|  | | RelationalModelProfile |
+|  | | ObjectOrientedProfile |
+|  | | OwlProfile |
 

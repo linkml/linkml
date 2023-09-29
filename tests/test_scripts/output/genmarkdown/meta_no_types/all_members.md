@@ -2,24 +2,14 @@
 # Slot: all_members
 
 
-the value of the multivalued slot is a list where all elements conform to the specified values.
-this defines a dynamic class with named slots according to matching constraints
-
-E.g to state that all members of a list are between 1 and 10
-```
-all_members:
-  x:
-    range: integer
-    minimum_value: 10
-    maximum_value: 10
-```
+the value of the slot is multivalued with all members satisfying the condition
 
 URI: [linkml:all_members](https://w3id.org/linkml/all_members)
 
 
 ## Domain and Range
 
-None &#8594;  <sub>0..\*</sub> [SlotDefinition](SlotDefinition.md)
+None &#8594;  <sub>0..1</sub> [AnonymousSlotExpression](AnonymousSlotExpression.md)
 
 ## Parents
 
@@ -33,3 +23,10 @@ None &#8594;  <sub>0..\*</sub> [SlotDefinition](SlotDefinition.md)
  * [AnonymousSlotExpression](AnonymousSlotExpression.md)
  * [SlotDefinition](SlotDefinition.md)
  * [SlotExpression](SlotExpression.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **In Subsets:** | | SpecificationSubset |
+

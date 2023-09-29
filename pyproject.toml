@@ -46,7 +46,7 @@ enable = true
 vcs = "git"
 style = "pep440"
 
-[tool.poetry.scripts]    
+[tool.poetry.scripts]
 gen-jsonld-context = "linkml.generators.jsonldcontextgen:cli"
 gen-prefix-map = "linkml.generators.prefixmapgen:cli"
 gen-csv = "linkml.generators.csvgen:cli"
@@ -62,6 +62,7 @@ gen-doc = "linkml.generators.docgen:cli"
 gen-prolog = "linkml.generators.lpgen:cli"
 gen-namespaces = "linkml.generators.namespacegen:cli"
 gen-owl = "linkml.generators.owlgen:cli"
+gen-plantuml = "linkml.generators.plantumlgen:cli"
 gen-proto = "linkml.generators.protogen:cli"
 gen-py-classes = "linkml.generators.pythongen:cli"
 gen-python = "linkml.generators.pythongen:cli"
@@ -95,7 +96,7 @@ gen-linkml = "linkml.generators.linkmlgen:cli"
 linkml-schema-fixer = "linkml.utils.schema_fixer:main"
 
 [tool.poetry.dependencies]
-python = "^3.8.0"
+python = "^3.8"
 antlr4-python3-runtime = "<4.10,==4.*,>=4.9.0"
 click = ">=7.0"
 graphviz = ">=0.10.1"
@@ -105,7 +106,7 @@ jinja2 = ">= 3.1.0"
 jsonasobj2 = "==1.*,>=1.0.0,>=1.0.3"
 jsonschema = {extras = ["format"], version = ">=4.0.0"}
 linkml-dataops = "*"
-linkml-runtime = ">=1.5.4"
+linkml-runtime = ">=1.6.0"
 openpyxl = "*"
 parse = "*"
 prefixcommons = ">=0.1.7"
@@ -130,13 +131,17 @@ ipython-genutils = "*"
 nbconvert = "*"
 nbformat = "*"
 coverage = "^6.4.1"
-tox = "^3.25.1"
+tox = "^4"
 furo = {version = "^2023.03.27", extras = ["docs"]}
 sphinxcontrib-mermaid = {version = "^0.7.1", extras = ["docs"]}
 sphinx = "*"
 sphinx-click = "*"
 sphinx-rtd-theme = "*"
 myst-parser = "*"
+
+[tool.poetry.group.tests.dependencies]
+pytest = "^7.4.0"
+pytest-subtests = "^0.11.0"
 
 [tool.poetry.extras]
 docs = ["Sphinx", "sphinxcontrib-mermaid", "furo"]
@@ -147,9 +152,62 @@ build-backend = "poetry_dynamic_versioning.backend"
 
 [tool.codespell]
 # TODO: bring in tests in too
-skip = '.git,*.pdf,*.svg,tests,pyproject.toml,*.dill'
+skip = '.git,*.pdf,*.svg,./tests,pyproject.toml,*.dill'
 # Ignore table where words could be split across rows
 # Ignore shortcut specifications like [Ff]alse
 ignore-regex = '(\|.*\|.*\|.*\||\[[A-Z][a-z]\][a-z][a-z])'
-#
 ignore-words-list = 'mater,connexion,infarction'
+quiet-level = 3
+
+[tool.black]
+line-length = 100
+target-versions = ["py38", "py39", "py310", "py311"]
+force-exclude = '''
+/(
+  # default exclude
+  \.direnv|\.eggs|\.git|\.hg|\.ipynb_checkpoints|\.mypy_cache|\.nox|\.pytest_cache|\.ruff_cache|\.tox|\.svn|\.venv|\.vscode|__pypackages__|_build|buck-out|build|dist|venv
+  # additional exclude
+  | tests.*/output
+  | __snapshots__
+  | docs
+  | examples
+  | notebooks
+)/
+'''
+
+[tool.pytest.ini_options]
+filterwarnings = [
+  # https://github.com/RDFLib/rdflib/issues/1830
+  "ignore:.*_pytestfixturefunction is not defined in namespace:UserWarning"
+]
+markers = [
+  "network: mark tests that make external network requests"
+]
+
+[tool.ruff]
+extend-exclude = [
+    "tests/output",
+    "tests/**/output",
+    "tests/**/__snapshots__",
+    "examples/",
+    "docs/",
+    "notebooks/"
+]
+force-exclude = true
+line-length = 120
+extend-ignore = ["E203"]
+select = [
+  "E",  # pycodestyle errors
+  "F",  # Pyflakes
+  "I",  # isort
+]
+# Assume Python 3.8
+target-version = "py38"
+
+[tool.ruff.per-file-ignores]
+# These templates can have long lines
+"linkml/generators/sqlalchemy/sqlalchemy_declarative_template.py" = ["E501"]
+"linkml/generators/sqlalchemy/sqlalchemy_imperative_template.py" = ["E501"]
+
+# Notebooks can have unsorted imports
+"tests/test_notebooks/input/*" = ["E402"]

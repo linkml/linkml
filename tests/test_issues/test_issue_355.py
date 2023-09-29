@@ -1,67 +1,55 @@
-import os
-import unittest
-
-from jsonasobj2 import as_json
+from linkml_runtime.utils.compile_python import compile_python
 from linkml_runtime.utils.yamlutils import YAMLRoot, as_yaml
 
 from linkml.generators.pythongen import PythonGenerator
-from tests.test_issues.environment import env
-from tests.utils.python_comparator import compare_python, compile_python
-from tests.utils.test_environment import TestEnvironmentTestCase
 
 
-class ContainedObjectTestCase(TestEnvironmentTestCase):
-    env = env
+def test_contained_constructor(input_path, snapshot):
+    """Make sure that types are generated as part of the output"""
+    test_name = "issue_355"
 
-    def test_contained_constructor(self):
-        test_name = "issue_355"
-        """ Make sure that types are generated as part of the output """
-        env.generate_single_file(
-            f"{test_name}.py",
-            lambda: PythonGenerator(env.input_path(f"{test_name}.yaml")).serialize(),
-            comparator=lambda exp, act: compare_python(
-                exp, act, self.env.expected_path(f"{test_name}.py")
-            ),
-            value_is_returned=True,
-        )
-        module = compile_python(env.expected_path(f"{test_name}.py"))
-        c = module.Container(module.Containee("11111", "Glaubner's disease"))
-        self.assertEqual(
-            """entry:
+    output = PythonGenerator(input_path(f"{test_name}.yaml")).serialize()
+    assert output == snapshot(f"{test_name}.py")
+
+    module = compile_python(output)
+    c = module.Container(module.Containee("11111", "Glaubner's disease"))
+    assert (
+        as_yaml(c)
+        == """entry:
   '11111':
     id: '11111'
-    value: Glaubner's disease""",
-            as_yaml(c).strip(),
-        )
+    value: Glaubner's disease
+"""
+    )
 
-        c = module.Container({"22222": dict(id="22222", value="Phrenooscopy")})
-        self.assertEqual(
-            """entry:
+    c = module.Container({"22222": dict(id="22222", value="Phrenooscopy")})
+    assert (
+        as_yaml(c)
+        == """entry:
   '22222':
     id: '22222'
-    value: Phrenooscopy""",
-            as_yaml(c).strip(),
-        )
-        alt_object = YAMLRoot()
-        alt_object.id = "33333"
-        alt_object.value = "test"
-        c = module.Container(alt_object)
-        self.assertEqual(
-            """entry:
+    value: Phrenooscopy
+"""
+    )
+    alt_object = YAMLRoot()
+    alt_object.id = "33333"
+    alt_object.value = "test"
+    c = module.Container(alt_object)
+    assert (
+        as_yaml(c)
+        == """entry:
   '33333':
     id: '33333'
-    value: test""",
-            as_yaml(c).strip(),
-        )
-        c = module.Container([dict(id="44444", value="Gracken's curse")])
-        self.assertEqual(
-            """entry:
+    value: test
+"""
+    )
+
+    c = module.Container([dict(id="44444", value="Gracken's curse")])
+    assert (
+        as_yaml(c)
+        == """entry:
   '44444':
     id: '44444'
-    value: Gracken's curse""",
-            as_yaml(c).strip(),
-        )
-
-
-if __name__ == "__main__":
-    unittest.main()
+    value: Gracken's curse
+"""
+    )

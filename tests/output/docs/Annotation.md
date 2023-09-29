@@ -37,7 +37,7 @@ URI: [linkml:Annotation](https://w3id.org/linkml/Annotation)
      * Range: [Uriorcurie](types/Uriorcurie.md)
  * [extension➞value](extension_value.md)  <sub>1..1</sub>
      * Description: the actual annotation
-     * Range: [String](types/String.md)
+     * Range: [AnyValue](AnyValue.md)
  * [extensions](extensions.md)  <sub>0..\*</sub>
      * Description: a tag/text tuple attached to an arbitrary element
      * Range: [Extension](Extension.md)

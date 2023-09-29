@@ -1,7 +1,7 @@
 import os
 import unittest
 
-from jsonasobj2 import JsonObj, as_dict, as_json, load
+from jsonasobj2 import as_dict, as_json, load
 
 from linkml.utils.schemaloader import SchemaLoader
 from tests.test_utils.environment import env

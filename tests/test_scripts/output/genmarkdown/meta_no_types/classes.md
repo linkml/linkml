@@ -2,7 +2,7 @@
 # Slot: classes
 
 
-class definitions
+An index to the collection of all class definitions in the schema
 
 URI: [linkml:classes](https://w3id.org/linkml/classes)
 
@@ -25,8 +25,10 @@ URI: [linkml:classes](https://w3id.org/linkml/classes)
 
 |  |  |  |
 | --- | --- | --- |
-| **In Subsets:** | | minimal |
-|  | | basic |
-|  | | relational_model |
-|  | | object_oriented |
+| **In Subsets:** | | SpecificationSubset |
+|  | | MinimalSubset |
+|  | | BasicSubset |
+|  | | RelationalModelProfile |
+|  | | ObjectOrientedProfile |
+|  | | OwlProfile |
 

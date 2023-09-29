@@ -1,0 +1,33 @@
+name: Check Sphinx external links
+on:
+  pull_request:
+  schedule:
+    - cron: '0 5 * * 1'  # at 05:00 UTC every Monday
+  workflow_dispatch:
+
+jobs:
+  check-external-links:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3.1.0
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python 3.
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.9
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: 1.3.2
+
+      - name: install
+        run: poetry install -E docs
+
+      - name: Build documentation.
+        run: |
+          cd docs/
+          poetry run sphinx-build -b linkcheck . _build | grep "broken"

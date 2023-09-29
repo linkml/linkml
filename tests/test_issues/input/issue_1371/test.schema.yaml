@@ -1,0 +1,26 @@
+# test.schema.yaml
+id: http://example.org/pattern
+name: pattern
+
+imports:
+  - https://w3id.org/linkml/types
+
+slots:
+  us_phone_number:
+    range: string
+    pattern: \d{3} \d{3} \d{4}
+  de_phone_number:
+    range: DePhoneNumber
+
+classes:
+  Test:
+    tree_root: true
+    slots:
+      - us_phone_number
+      - de_phone_number
+
+types:
+  DePhoneNumber:
+    uri: xsd:String
+    base: str
+    pattern: 0\d{3}-\d{8}

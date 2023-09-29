@@ -2,14 +2,14 @@
 # Slot: slot_conditions
 
 
-the redefinition of a slot in the context of the containing class definition.
+expresses constraints on a group of slots for a class expression
 
 URI: [linkml:slot_conditions](https://w3id.org/linkml/slot_conditions)
 
 
 ## Domain and Range
 
-None &#8594;  <sub>0..\*</sub> [SlotDefinition](SlotDefinition.md)
+[ClassExpression](ClassExpression.md) &#8594;  <sub>0..\*</sub> [SlotDefinition](SlotDefinition.md)
 
 ## Parents
 
@@ -22,3 +22,10 @@ None &#8594;  <sub>0..\*</sub> [SlotDefinition](SlotDefinition.md)
  * [AnonymousClassExpression](AnonymousClassExpression.md)
  * [ClassDefinition](ClassDefinition.md)
  * [ClassExpression](ClassExpression.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **In Subsets:** | | SpecificationSubset |
+

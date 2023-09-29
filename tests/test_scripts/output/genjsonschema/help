@@ -35,5 +35,5 @@ Options:
                                   Merge imports into source file
                                   (default=mergeimports)
   --stacktrace / --no-stacktrace  Print a stack trace when an error occurs
-                                  (default=stacktrace)
+                                  [default: no-stacktrace]
   --help                          Show this message and exit.

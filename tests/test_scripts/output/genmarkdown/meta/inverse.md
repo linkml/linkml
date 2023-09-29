@@ -26,4 +26,5 @@ URI: [linkml:inverse](https://w3id.org/linkml/inverse)
 |  |  |  |
 | --- | --- | --- |
 | **Mappings:** | | owl:inverseOf |
+| **In Subsets:** | | SpecificationSubset |
 

@@ -2,7 +2,7 @@
 # Slot: todos
 
 
-Outstanding issue that needs resolution
+Outstanding issues that needs resolution
 
 URI: [linkml:todos](https://w3id.org/linkml/todos)
 
@@ -43,5 +43,5 @@ URI: [linkml:todos](https://w3id.org/linkml/todos)
 
 |  |  |  |
 | --- | --- | --- |
-| **In Subsets:** | | basic |
+| **In Subsets:** | | BasicSubset |
 

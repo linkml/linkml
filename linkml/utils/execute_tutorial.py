@@ -10,15 +10,15 @@ import click
 
 from linkml._version import __version__
 
-re_decl = re.compile("^(\\S+):$")
-re_start_yaml = re.compile("^```(\w+)$")
-re_end_yaml = re.compile("^```$")
-re_html_comment = re.compile("^<!-- (.+) -->")
+re_decl = re.compile(r"^(\S+):$")
+re_start_yaml = re.compile(r"^```(\w+)$")
+re_end_yaml = re.compile(r"^```$")
+re_html_comment = re.compile(r"^<!-- (.+) -->")
 
 
 @dataclass
 class Block:
-    category: str = None  ## yaml, bash, python, ...
+    category: str = None  # yaml, bash, python, ...
     title: str = None
     content: str = None
     output: str = None
@@ -71,9 +71,7 @@ def execute_blocks(directory: str, blocks: List[Block]) -> List[str]:
                 outpath = cmd[pos + 1 :]
                 cmd = cmd[0:pos]
                 if len(outpath) > 1:
-                    raise Exception(
-                        f"Maximum 1 token after > in {block.content}. Got: {outpath}"
-                    )
+                    raise Exception(f"Maximum 1 token after > in {block.content}. Got: {outpath}")
                 outpath = str(Path(directory, *outpath))
                 logging.info(f"OUTPATH = {outpath}")
             else:
@@ -91,7 +89,7 @@ def execute_blocks(directory: str, blocks: List[Block]) -> List[str]:
                 if r.returncode == 0:
                     err(f"Command unexpectedly succeeded: {cmd}")
                 else:
-                    logging.info(f"Failed as expected")
+                    logging.info("Failed as expected")
                 if block.error:
                     logging.info(f"ERR [sample] = ...{block.error[-200:]}")
             else:
@@ -100,7 +98,7 @@ def execute_blocks(directory: str, blocks: List[Block]) -> List[str]:
                 if r.returncode != 0:
                     err(f"Command failed: {cmd}")
                 else:
-                    logging.info(f"Success!")
+                    logging.info("Success!")
         elif block.is_stdout():
             if "compare_rdf" in block.annotations:
                 logging.warning(
@@ -110,7 +108,7 @@ def execute_blocks(directory: str, blocks: List[Block]) -> List[str]:
                 if last_block.output.strip() != block.content.strip():
                     err(f"Mismatch: {str(last_block.output)} != {block.content}")
                 else:
-                    logging.info(f"Hurray! Contents match!")
+                    logging.info("Hurray! Contents match!")
             else:
                 logging.info("No comparison performed")
         else:
@@ -197,7 +195,7 @@ def cli(inputs, directory):
     Example:
 
         export PYTHONPATH=`pwd`
-        python -m linkml.utils.execute_tutorial -d /tmp/tutorial/ sphinx/intro/tutorial01.md
+        python -m linkml.utils.execute_tutorial -d /tmp/tutorial/ docs/intro/tutorial01.md
 
     """
     logging.basicConfig(level=logging.INFO)

@@ -21,3 +21,10 @@ URI: [linkml:class_definition_disjoint_with](https://w3id.org/linkml/class_defin
 ## Used by
 
  * [ClassDefinition](ClassDefinition.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **In Subsets:** | | SpecificationSubset |
+

@@ -156,24 +156,6 @@ Specifying the unit doesn't affect the behavior of the slot or type, but it's a 
 formally specifying the intended use of a slot, and provides a potential hook for interoperation
 and automated data model mapping.
 
-## Arbitrary annotations
-
-You can use the [annotations](https://w3id.org/linkml/annotations) element to provide
-arbitrary key-value pairs for any of your schema elements. This can be
-used for when none of the existing metamodel slots are appropriate.
-
-One use case is providing various tooltips, display hints, or UI hints for
-deta elements. These can then be used by applications such as UIs to drive behavior.
-
-```yaml
-slots:
-  name:
-    annotations:
-      entry_hint: make sure you enter the FULL name here
-      color: green
-      tooltip: name of person
-```
-
 ## Other metadata slots
 
 See [CommonMetadata](https://w3id.org/linkml/CommonMetadata) for other slots

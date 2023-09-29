@@ -25,6 +25,7 @@ slot_definition &#8594;  <sub>0..1</sub> boolean
 
 |  |  |  |
 | --- | --- | --- |
-| **In Subsets:** | | basic |
+| **In Subsets:** | | SpecificationSubset |
+|  | | BasicSubset |
 | **Close Mappings:** | | sh:PropertyGroup |
 

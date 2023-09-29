@@ -26,4 +26,5 @@ slot_definition &#8594;  <sub>0..1</sub> boolean
 |  |  |  |
 | --- | --- | --- |
 | **Comments:** | | should only be used with multivalued slots |
+| **In Subsets:** | | SpecificationSubset |
 

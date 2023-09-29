@@ -1,15 +1,21 @@
 import logging
 import re
-from copy import deepcopy, copy
+from copy import copy
 from dataclasses import dataclass
-from typing import Callable, List, Dict, Any, Union
+from typing import Any, Callable, Dict, List, Union
 
 import click
 import yaml
 from linkml_runtime import SchemaView
-from linkml_runtime.dumpers import json_dumper, yaml_dumper
-from linkml_runtime.linkml_model import (ClassDefinition, ClassDefinitionName,
-                                         SchemaDefinition, SlotDefinition, EnumDefinition, TypeDefinition)
+from linkml_runtime.dumpers import json_dumper
+from linkml_runtime.linkml_model import (
+    ClassDefinition,
+    ClassDefinitionName,
+    EnumDefinition,
+    SchemaDefinition,
+    SlotDefinition,
+    TypeDefinition,
+)
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.yamlutils import YAMLRoot
 
@@ -87,7 +93,7 @@ class SchemaFixer:
         tree_roots = [c for c in sv.all_classes().values() if c.tree_root]
         if len(tree_roots) > 0:
             if force:
-                logging.info(f"Forcing addition of containers")
+                logging.info("Forcing addition of containers")
             else:
                 raise ValueError(f"Schema already has containers: {tree_roots}")
         container = ClassDefinition(class_name, tree_root=True)
@@ -122,15 +128,11 @@ class SchemaFixer:
             for s in sv.class_induced_slots(cn):
                 ranges.add(s.range)
         top_level_classes = [
-            c
-            for c in sv.all_classes().values()
-            if not c.tree_root and c.name not in ranges
+            c for c in sv.all_classes().values() if not c.tree_root and c.name not in ranges
         ]
         if must_have_identifier:
             top_level_classes = [
-                c
-                for c in top_level_classes
-                if sv.get_identifier_slot(c.name) is not None
+                c for c in top_level_classes if sv.get_identifier_slot(c.name) is not None
             ]
         index_slots = []
         for c in top_level_classes:
@@ -290,7 +292,13 @@ class SchemaFixer:
             self.history = []
         self.history.append(txt)
 
-    def fix_element_names(self, schema: SchemaDefinition, schema_dict: Dict[str, Any] = None, rules: Dict[str, Callable] = None, imports=False) -> Union[YAMLRoot, Dict]:
+    def fix_element_names(
+        self,
+        schema: SchemaDefinition,
+        schema_dict: Dict[str, Any] = None,
+        rules: Dict[str, Callable] = None,
+        imports=False,
+    ) -> Union[YAMLRoot, Dict]:
         """
         Changes element names to conform to naming conventions.
 
@@ -341,10 +349,12 @@ def main(verbose: int, quiet: bool):
 
 @main.command()
 @click.argument("input_schema")
-@click.option("--imports/--no-imports",
-              default=False,
-              show_default=True,
-              help="Apply fix to referenced elements from modules")
+@click.option(
+    "--imports/--no-imports",
+    default=False,
+    show_default=True,
+    help="Apply fix to referenced elements from modules",
+)
 def fix_name(input_schema, **kwargs):
     """Fix element names to conform to naming conventions"""
     with open(input_schema) as f:

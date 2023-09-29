@@ -47,7 +47,7 @@ URI: [linkml:source](https://w3id.org/linkml/source)
 |  | | derived from |
 | **Mappings:** | | dcterms:source |
 | **Comments:** | | The described resource may be derived from the related resource in whole or in part |
-| **In Subsets:** | | basic |
+| **In Subsets:** | | BasicSubset |
 | **Close Mappings:** | | prov:wasDerivedFrom |
 |  | | schema:isBasedOn |
 

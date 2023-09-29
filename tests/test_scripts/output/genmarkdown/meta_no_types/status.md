@@ -19,9 +19,25 @@ URI: [linkml:status](https://w3id.org/linkml/status)
 
 ## Used by
 
+ * [AnonymousClassExpression](AnonymousClassExpression.md)
+ * [AnonymousExpression](AnonymousExpression.md)
+ * [AnonymousSlotExpression](AnonymousSlotExpression.md)
  * [ClassDefinition](ClassDefinition.md)
+ * [ClassRule](ClassRule.md)
+ * [CommonMetadata](CommonMetadata.md)
  * [Definition](Definition.md)
+ * [Element](Element.md)
+ * [EnumDefinition](EnumDefinition.md)
+ * [ImportExpression](ImportExpression.md)
+ * [PathExpression](PathExpression.md)
+ * [PatternExpression](PatternExpression.md)
+ * [PermissibleValue](PermissibleValue.md)
+ * [SchemaDefinition](SchemaDefinition.md)
  * [SlotDefinition](SlotDefinition.md)
+ * [StructuredAlias](StructuredAlias.md)
+ * [SubsetDefinition](SubsetDefinition.md)
+ * [TypeDefinition](TypeDefinition.md)
+ * [UniqueKey](UniqueKey.md)
 
 ## Other properties
 
@@ -29,8 +45,8 @@ URI: [linkml:status](https://w3id.org/linkml/status)
 | --- | --- | --- |
 | **Aliases:** | | workflow status |
 | **Mappings:** | | bibo:status |
-| **Examples:** | | Example(value='bibo:draft', description=None) |
-| **In Subsets:** | | basic |
+| **Examples:** | | Example(value='bibo:draft', description=None, object=None) |
+| **In Subsets:** | | BasicSubset |
 | **See also:** | | [https://www.hl7.org/fhir/valueset-publication-status.html](https://www.hl7.org/fhir/valueset-publication-status.html) |
 |  | | [https://www.hl7.org/fhir/versions.html#std-process](https://www.hl7.org/fhir/versions.html#std-process) |
 

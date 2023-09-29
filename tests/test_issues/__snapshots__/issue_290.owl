@@ -1,0 +1,28 @@
+@prefix ex: <http://example.org/> .
+@prefix linkml: <https://w3id.org/linkml/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+
+ex:s a owl:ObjectProperty,
+        owl:SymmetricProperty,
+        linkml:SlotDefinition ;
+    rdfs:label "s" ;
+    rdfs:range ex:C ;
+    owl:inverseOf ex:t ;
+    skos:inScheme <http://example.org> .
+
+ex:t a owl:ObjectProperty,
+        linkml:SlotDefinition ;
+    rdfs:label "t" ;
+    rdfs:range ex:C ;
+    skos:inScheme <http://example.org> .
+
+ex:C a owl:Class,
+        linkml:ClassDefinition ;
+    rdfs:label "c" ;
+    skos:inScheme <http://example.org> .
+
+<http://example.org> a owl:Ontology ;
+    rdfs:label "example.org" .
+

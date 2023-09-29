@@ -2,7 +2,7 @@
 # Slot: is_a
 
 
-specifies single-inheritance between classes or slots. While multiple inheritance is not allowed, mixins can be provided effectively providing the same thing. The semantics are the same when translated to formalisms that allow MI (e.g. RDFS/OWL). When translating to a SI framework (e.g. java classes, python classes) then is a is used. When translating a framework without polymorphism (e.g. json-schema, solr document schema) then is a and mixins are recursively unfolded
+A primary parent class or slot from which inheritable metaslots are propagated from. While multiple inheritance is not allowed, mixins can be provided effectively providing the same thing. The semantics are the same when translated to formalisms that allow MI (e.g. RDFS/OWL). When translating to a SI framework (e.g. java classes, python classes) then is a is used. When translating a framework without polymorphism (e.g. json-schema, solr document schema) then is a and mixins are recursively unfolded
 
 URI: [linkml:is_a](https://w3id.org/linkml/is_a)
 
@@ -24,11 +24,14 @@ URI: [linkml:is_a](https://w3id.org/linkml/is_a)
 
  * [AnonymousClassExpression](AnonymousClassExpression.md)
  * [Definition](Definition.md)
+ * [EnumDefinition](EnumDefinition.md)
 
 ## Other properties
 
 |  |  |  |
 | --- | --- | --- |
-| **In Subsets:** | | basic |
-|  | | object_oriented |
+| **In Subsets:** | | SpecificationSubset |
+|  | | BasicSubset |
+|  | | ObjectOrientedProfile |
+|  | | OwlProfile |
 

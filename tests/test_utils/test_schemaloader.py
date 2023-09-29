@@ -1,11 +1,9 @@
 import logging
-import os
 import unittest
 from io import StringIO
 from typing import Optional
 
-import jsonasobj
-from jsonasobj2 import as_json, load
+from jsonasobj2 import as_json
 
 from linkml.utils.schemaloader import SchemaLoader
 from tests.test_utils.environment import env
@@ -22,9 +20,7 @@ class SchemaLoaderTestCase(TestEnvironmentTestCase):
         logger: Optional[logging.Logger] = None,
         source: Optional[str] = None,
     ) -> None:
-        loader = SchemaLoader(
-            source or self.env.input_path(base_name + ".yaml"), logger=logger
-        )
+        loader = SchemaLoader(source or self.env.input_path(base_name + ".yaml"), logger=logger)
         self.env.generate_single_file(
             base_name + ".json",
             lambda: as_json(loader.resolve()),
@@ -49,9 +45,7 @@ class SchemaLoaderTestCase(TestEnvironmentTestCase):
         logger.addHandler(logging.StreamHandler(logstream))
         logger.setLevel(logging.INFO)
         self.eval_loader("merge1", logger=logger)
-        self.assertIn(
-            "Overlapping subset and slot names: s1, s2", logstream.getvalue().strip()
-        )
+        self.assertIn("Overlapping subset and slot names: s1, s2", logstream.getvalue().strip())
 
     @unittest.skip("Disabled until we get SchemaDefinitionList implemented")
     def test_mergeerror1(self):
@@ -84,9 +78,7 @@ class SchemaLoaderTestCase(TestEnvironmentTestCase):
         fn = env.input_path("loadererror2a.yaml")
         with self.assertRaises(ValueError, msg="Optional key slot should fail") as e:
             SchemaLoader(fn).resolve()
-        self.assertIn(
-            "slot: s1 - key and identifier slots cannot be optional", str(e.exception)
-        )
+        self.assertIn("slot: s1 - key and identifier slots cannot be optional", str(e.exception))
 
         fn = env.input_path("loadertest1.yaml")
         schema = SchemaLoader(fn).resolve()
@@ -108,9 +100,7 @@ class SchemaLoaderTestCase(TestEnvironmentTestCase):
     def test_multi_key(self):
         """Multiple keys are not supported"""
         fn = env.input_path("loadererror6.yaml")
-        with self.assertRaises(
-            ValueError, msg="Multiple keys/identifiers not allowed"
-        ) as e:
+        with self.assertRaises(ValueError, msg="Multiple keys/identifiers not allowed") as e:
             _ = SchemaLoader(fn).resolve()
         self.assertIn("multiple keys/identifiers not allowed", str(e.exception))
 
@@ -122,9 +112,7 @@ class SchemaLoaderTestCase(TestEnvironmentTestCase):
     def test_key_and_id(self):
         """A slot cannot be both a key and an identifier"""
         fn = env.input_path("loadererror8.yaml")
-        with self.assertRaises(
-            ValueError, msg="A slot cannot be both a key and identifier"
-        ) as e:
+        with self.assertRaises(ValueError, msg="A slot cannot be both a key and identifier") as e:
             _ = SchemaLoader(fn).resolve()
         self.assertIn(
             "A slot cannot be both a key and identifier at the same time",
@@ -132,9 +120,7 @@ class SchemaLoaderTestCase(TestEnvironmentTestCase):
         )
 
         fn = env.input_path("loadererror9.yaml")
-        with self.assertRaises(
-            ValueError, msg="A slot cannot be both a key and identifier"
-        ) as e:
+        with self.assertRaises(ValueError, msg="A slot cannot be both a key and identifier") as e:
             _ = SchemaLoader(fn).resolve()
         self.assertIn(
             "A slot cannot be both a key and identifier at the same time",
@@ -145,9 +131,7 @@ class SchemaLoaderTestCase(TestEnvironmentTestCase):
     def test_missing_type_uri(self):
         """A type with neither a typeof or uri is an error"""
         fn = env.input_path("loadererror10.yaml")
-        with self.assertRaises(
-            ValueError, msg="A non-typeof type has to have a URI"
-        ) as e:
+        with self.assertRaises(ValueError, msg="A non-typeof type has to have a URI") as e:
             _ = SchemaLoader(fn).resolve()
         self.assertIn('loadererror10.yaml", line 12, col 3', str(e.exception))
         fn = env.input_path("loaderpass11.yaml")

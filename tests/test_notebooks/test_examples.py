@@ -32,9 +32,7 @@ class NotebookTests(unittest.TestCase):
 
     @unittest.skipIf(True, "Re-enable this once online biolink model is fixed")
     def test_distributed_models(self):
-        self.eval_test(
-            "distributedmodels.txt", "tests.test_notebooks.input.distributedmodels"
-        )
+        self.eval_test("distributedmodels.txt", "tests.test_notebooks.input.distributedmodels")
 
 
 if __name__ == "__main__":

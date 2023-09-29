@@ -2,8 +2,12 @@ import io
 import unittest
 
 from linkml.linter.config.datamodel.config import RuleLevel
-from linkml.linter.formatters import (JsonFormatter, MarkdownFormatter,
-                                      TerminalFormatter, TsvFormatter)
+from linkml.linter.formatters import (
+    JsonFormatter,
+    MarkdownFormatter,
+    TerminalFormatter,
+    TsvFormatter,
+)
 from linkml.linter.linter import LinterProblem
 
 
@@ -71,7 +75,7 @@ b.yaml
         output = io.StringIO()
         formatter = TerminalFormatter(file=output, verbose=True)
         populate_report(formatter)
-        
+
         expected = """
 a.yaml
   error    this is an error  (rule_1)
@@ -85,7 +89,6 @@ b.yaml
 ✖ Found 3 problems in 2 schemas
 """
         self.assertEqual(output.getvalue().strip(), expected.strip())
-
 
     def test_markdown_formatter(self):
         output = io.StringIO()

@@ -13,6 +13,7 @@
          "@id": "linkml:tag"
       },
       "value": {
+         "@type": "@id",
          "@id": "linkml:value"
       },
       "extensions": {
@@ -21,6 +22,9 @@
       },
       "state": {
          "@id": "foo:state"
+      },
+      "AnyValue": {
+         "@id": "linkml:Any"
       },
       "Extensible": {
          "@id": "linkml:Extensible"

@@ -1,4 +1,4 @@
-# metamodel_version: 1.7.0# version: 1.8.2id: chemical_to_chemical_derivation_association
+# metamodel_version: 1.7.0# version: 3.1.2id: chemical_to_chemical_derivation_association
 schema_generating: true
 description: "A causal relationship between two chemical entities, where the subject\
   \ represents the upstream entity and the object represents the downstream. For any\
@@ -23,25 +23,10 @@ fields:
 - id: description
   description: a human-readable description of an entity
   display_name: description
-- id: source
-  description: a lightweight analog to the association class 'has provider' slot,
-    which is the string name, or the authoritative (i.e. database) namespace, designating
-    the origin of the entity to which the slot belongs.
-  display_name: source
-- id: provided_by
-  description: connects an association to the agent (person, organization or group)
-    that provided it
-  display_name: provided by
-  cardinality: multi
 - id: has_attribute
   description: connects any entity to an attribute
   display_name: has attribute
   cardinality: multi
-- id: relation
-  description: The relation which describes an association between a subject and an
-    object in a more granular manner. Usually this is a term from Relation Ontology,
-    but it can be any edge CURIE.
-  display_name: relation
 - id: negated
   description: if set to true, then the association is negated i.e. is not true
   display_name: negated
@@ -51,9 +36,51 @@ fields:
   display_name: qualifiers
   cardinality: multi
 - id: publications
-  description: connects an association to publications supporting the association
+  description: One or more publications that report the statement expressed in an
+    Association, or provide information used as  evidence supporting this statement.
   display_name: publications
   cardinality: multi
+- id: has_evidence
+  description: connects an association to an instance of supporting evidence
+  display_name: has evidence
+  cardinality: multi
+- id: knowledge_source
+  description: An Information Resource from which the knowledge expressed in an Association
+    was retrieved, directly or indirectly. This can be any resource through which
+    the knowledge passed on its way to its currently serialized form. In practice,
+    implementers should use one of the more specific subtypes of this generic property.
+  display_name: knowledge source
+- id: primary_knowledge_source
+  description: The most upstream source of the knowledge expressed in an Association
+    that an implementer can identify.  Performing a rigorous analysis of upstream
+    data providers is expected; every effort is made to catalog the most upstream
+    source of data in this property.  Only one data source should be declared primary
+    in any association.  "aggregator knowledge source" can be used to caputre non-primary
+    sources.
+  display_name: primary knowledge source
+- id: aggregator_knowledge_source
+  description: An intermediate aggregator resource from which knowledge expressed
+    in an Association was retrieved downstream of the original source, on its path
+    to its current serialized form.
+  display_name: aggregator knowledge source
+  cardinality: multi
+- id: timepoint
+  description: a point in time
+  display_name: timepoint
+- id: original_subject
+  description: used to hold the original subject of a relation (or predicate) that
+    an external knowledge source uses before transformation to match the biolink-model
+    specification.
+  display_name: original subject
+- id: original_predicate
+  description: used to hold the original relation/predicate that an external knowledge
+    source uses before transformation to match the biolink-model specification.
+  display_name: original predicate
+- id: original_object
+  description: used to hold the original object of a relation (or predicate) that
+    an external knowledge source uses before transformation to match the biolink-model
+    specification.
+  display_name: original object
 - id: type
   description: rdf:type of biolink:Association should be fixed at rdf:Statement
   display_name: association_type
@@ -73,7 +100,7 @@ fields:
   display_name: association_category
   cardinality: multi
 - id: catalyst_qualifier
-  description: this connects the derivation edge to the molecular entity that catalyzes
+  description: this connects the derivation edge to the chemical entity that catalyzes
     the reaction that causes the subject chemical to transform into the object chemical.
   display_name: chemical to chemical derivation association_catalyst qualifier
   cardinality: multi

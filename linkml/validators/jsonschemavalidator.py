@@ -21,21 +21,27 @@ from linkml.utils.datavalidator import DataValidator
 
 
 class HashableSchemaDefinition(SchemaDefinition):
-
     def __hash__(self) -> int:
         return hash(self.id)
 
 
 @lru_cache(maxsize=None)
-def _generate_jsonschema(schema, top_class, closed):
-    logging.debug(f"Generating JSON Schema")
+def _generate_jsonschema(schema, top_class, closed, include_range_class_descendants):
+    logging.debug("Generating JSON Schema")
     not_closed = not closed
     return JsonSchemaGenerator(
         schema=schema,
         mergeimports=True,
         top_class=top_class,
         not_closed=not_closed,
+        include_range_class_descendants=include_range_class_descendants,
     ).generate()
+
+
+class JsonSchemaDataValidatorError(Exception):
+    def __init__(self, validation_messages: List[str]) -> None:
+        super().__init__("\n".join(validation_messages))
+        self.validation_messages = validation_messages
 
 
 @dataclass
@@ -44,23 +50,24 @@ class JsonSchemaDataValidator(DataValidator):
     Implementation of DataValidator that wraps jsonschema validation
     """
 
+    include_range_class_descendants: bool = False
     _hashable_schema: Union[str, HashableSchemaDefinition] = field(init=False, repr=False)
 
     def __setattr__(self, __name: str, __value: Any) -> None:
-        if (__name == 'schema'):
+        if __name == "schema":
             if isinstance(__value, SchemaDefinition):
                 self._hashable_schema = HashableSchemaDefinition(**asdict(__value))
             else:
                 self._hashable_schema = __value
         return super().__setattr__(__name, __value)
-        
 
     def validate_file(self, input: str, format: str = "json", **kwargs):
-        return self.validate_object(obj)
+        # return self.validate_object(obj)
+        pass
 
     def validate_object(
         self, data: YAMLRoot, target_class: Type[YAMLRoot] = None, closed: bool = True
-    ) -> List[str]:
+    ) -> None:
         """
         validates instance data against a schema
 
@@ -72,11 +79,11 @@ class JsonSchemaDataValidator(DataValidator):
         if target_class is None:
             target_class = type(data)
         inst_dict = as_simple_dict(data)
-        return self.validate_dict(inst_dict, target_class.class_name, closed)
+        self.validate_dict(inst_dict, target_class.class_name, closed)
 
     def validate_dict(
         self, data: dict, target_class: ClassDefinitionName = None, closed: bool = True
-    ) -> List[str]:
+    ) -> None:
         """
         validates instance data against a schema
 
@@ -86,19 +93,22 @@ class JsonSchemaDataValidator(DataValidator):
         :return:
         """
         results = list(self.iter_validate_dict(data, target_class, closed))
-        return results or None
+        if results:
+            raise JsonSchemaDataValidatorError(results)
 
     def iter_validate_dict(
-        self, data: dict, target_class: ClassDefinitionName = None, closed: bool = True
+        self, data: dict, target_class_name: ClassDefinitionName = None, closed: bool = True
     ) -> Iterable[str]:
         if self.schema is None:
-            raise ValueError(f"schema object must be set")
-        if target_class is None:
+            raise ValueError("schema object must be set")
+        if target_class_name is None:
             roots = [c.name for c in self.schema.classes.values() if c.tree_root]
             if len(roots) != 1:
                 raise ValueError(f"Cannot determine tree root: {roots}")
-            target_class = roots[0]
-        jsonschema_obj = _generate_jsonschema(self._hashable_schema, target_class, closed)
+            target_class_name = roots[0]
+        jsonschema_obj = _generate_jsonschema(
+            self._hashable_schema, target_class_name, closed, self.include_range_class_descendants
+        )
         validator = jsonschema.Draft7Validator(
             jsonschema_obj, format_checker=jsonschema.Draft7Validator.FORMAT_CHECKER
         )
@@ -111,7 +121,6 @@ class JsonSchemaDataValidator(DataValidator):
 
 @click.command()
 @click.option("--module", "-m", help="Path to python datamodel module")
-@click.option("--output", "-o", help="Path to output file")
 @click.option(
     "--input-format",
     "-f",
@@ -123,20 +132,32 @@ class JsonSchemaDataValidator(DataValidator):
     "-C",
     help="name of class in datamodel that the root node instantiates",
 )
-@click.option(
-    "--index-slot", "-S", help="top level slot. Required for CSV dumping/loading"
-)
+@click.option("--index-slot", "-S", help="top level slot. Required for CSV dumping/loading")
 @click.option("--schema", "-s", help="Path to schema specified as LinkML yaml")
+@click.option(
+    "--exit-on-first-failure/--no-exit-on-first-failure",
+    default=False,
+    help="Exit after the first validation failure is found. If not specified all validation failures are reported.",
+)
+@click.option(
+    "--include-range-class-descendants/--no-range-class-descendants",
+    default=False,
+    show_default=False,
+    help="""
+When handling range constraints, include all descendants of the range class instead of just the range class
+""",
+)
 @click.argument("input")
 @click.version_option(__version__, "-V", "--version")
 def cli(
     input,
     module,
     target_class,
-    output=None,
     input_format=None,
     schema=None,
     index_slot=None,
+    exit_on_first_failure=False,
+    include_range_class_descendants=False,
 ) -> None:
     """
     Validates instance data
@@ -153,13 +174,12 @@ def cli(
     if target_class is None:
         target_class = datautils.infer_root_class(sv)
     if target_class is None:
-        raise Exception(f"target class not specified and could not be inferred")
+        raise Exception("target class not specified and could not be inferred")
     py_target_class = python_module.__dict__[target_class]
     input_format = datautils._get_format(input, input_format)
     loader = datautils.get_loader(input_format)
 
     inargs = {}
-    outargs = {}
     if datautils._is_xsv(input_format):
         if index_slot is None:
             index_slot = datautils.infer_index_slot(sv, target_class)
@@ -179,20 +199,24 @@ def cli(
 
     # Validation
     if schema is None:
-        raise Exception(
-            "--schema must be passed in order to validate. Suppress with --no-validate"
-        )
+        raise Exception("--schema must be passed in order to validate. Suppress with --no-validate")
 
-    validator = JsonSchemaDataValidator(schema)
+    validator = JsonSchemaDataValidator(
+        schema, include_range_class_descendants=include_range_class_descendants
+    )
     error_count = 0
     for error in validator.iter_validate_dict(
-        data_as_dict, target_class=py_target_class
+        data_as_dict, target_class_name=py_target_class.class_name
     ):
         error_count += 1
         click.echo(click.style("\u2717 ", fg="red") + error)
+        if exit_on_first_failure:
+            sys.exit(1)
 
     if not error_count:
         click.echo(click.style("\u2713 ", fg="green") + "No problems found")
+
+    sys.exit(0 if error_count == 0 else 1)
 
 
 if __name__ == "__main__":

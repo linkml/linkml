@@ -19,7 +19,7 @@ class GolrViewTestCase(ClickTestCase):
     def test_meta(self):
         self.do_test([], "meta", is_directory=True)
         self.do_test(
-            f"-f xsv",
+            "-f xsv",
             "error",
             is_directory=True,
             expected_error=click.exceptions.BadParameter,

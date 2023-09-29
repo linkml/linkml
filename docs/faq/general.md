@@ -2,28 +2,28 @@
 
 ## Why does this project exist?
 
-LinkML originally grew out of the needs of the Biolink Model project,
+LinkML originally grew out of the needs of the [Biolink-Model](https://w3id.org/biolink/) project,
 which needed a flexible schema representation for biological knowledge
 graphs that was independent of particular database systems
 (relational, triplestore, graph database) and serialization format
 (TSV, JSON, RDF, RDFStar).
 
-Recognizing similar needs elsewhere, Harold Solbrig took the original
-Biolink metamodel and generalized it to create the BiolinkML framework. This was later named LinkML.
+Recognizing similar needs elsewhere, [Harold Solbrig](https://github.com/hsolbrig) took the original
+Biolink metamodel and generalized it to create the original BiolinkML framework.
+This was later named LinkML.
 
 ## Is LinkML stable?
 
 The features of the core LinkML model are stable, you can use this to
-describe your datamodel without fear of breaking changes.
+describe your data model without fear of breaking changes.
 
 The language is being continually extended to meet the needs of a
-growing community.
+growing community. New language features are always added to be
+backwards compatible with existing schemas.
 
-Similarly, the LinkML toolchain is also growing.
-
-Mappings between LinkML and other formalisms such as JSON-Schema and
-ShEx may be currently incomplete, and these are continually being
-improved, with plans to create new generators (e.g. for SHACL, and XSD)
+Similarly, the LinkML toolchain is also growing. The core toolchain
+is in Python, but efforts are underway to build tooling in Java, Typescript,
+and Go. Some language features may be unsupported in some toolchains.
 
 ## How is LinkML licensed?
 
@@ -32,8 +32,10 @@ are in the public domain through a CC-0 waiver.
 
 ## Who uses LinkML?
 
-A subset of groups using LinkML can be found via the 
-[linkml-registry](https://linkml.io/linkml-registry/registry/)
+A subset of groups using LinkML can be found via the
+[linkml-registry](https://linkml.io/linkml-registry/registry/).
+However, we do not have the resources to track all uses,
+and the registry only scratches the surface of current usage.
 
 LinkML is used in a number of major database resource projects. Many
 of these are centered around genomics and managing complex biological
@@ -104,7 +106,7 @@ metadata, recognizing that "metadata" is often defined in relative
 terms.
 
 Our position is nicely summarized by [this
-paper](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5819722/) on the
+paper](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5819722) on the
 Immune Epitope Database (IEDB):
 
 _Several of the FAIR principles make a distinction between data and metadata. This distinction makes immediate sense for knowledge repositories that store raw data in a standardized format, such as sequence reads in FASTQ format in the Sequence Read Archive (SRA) or Flow Cytometry Standard files in FlowRepository. Such ‘data’ must be accompanied with ‘metadata’ on how the data were generated. For example, in the case of an SRA deposition, information on what sample was being sequenced would be considered ‘metadata’, and specific sequence reads would be considered ‘data’. However, in the case of the information stored in the IEDB, there is no separation between data and metadata. Arguably, the IEDB stores only metadata, and the raw data can be found in the original journal article, typically in the form of figures or tables that follow no specific convention._
@@ -135,4 +137,3 @@ serializations such as HDF5 and Zarr.
 ## How do I cite LinkML?
 
 A paper is in progress, for now, cite the GitHub repo
-

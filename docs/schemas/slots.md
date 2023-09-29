@@ -45,6 +45,7 @@ The range must be one of:
  * A [ClassDefinition](https://w3id.org/linkml/ClassDefinition), when the value of the slot is a complex object
  * A [TypeDefinition](https://w3id.org/linkml/TypeDefinition), when the value of the slot is an atomic object
  * An [EnumDefinition](https://w3id.org/linkml/EnumDefinition), when the value of the slot is a token that represents a vocabulary element
+ * A boolean combination of the above
 
 Examples:
 
@@ -125,6 +126,8 @@ slots:
     designates_type: true
 ```
 
+See the [type-designators](type-designator.md) section of the docs for more details.
+
 ## Slot cardinality
 
 The cardinality of a slot is indicative of two properties on a slot. It tells us about whether a slot is *required* or not, and also about how many values it is allowed to have, i.e., whether it is *single-valued* or *multi-valued*.
@@ -198,6 +201,10 @@ The `inverse` slot can be used to specify the inverse predicate of a given predi
     is_a: famlially_related_to
     inverse: child_of
 ```
+
+For most purposes, the specification of an inverse acts as additional documentation and doesn't
+affect programming semantics. However, some frameworks like RDF/OWL allow for the inference of
+inverses.
 
 ## logical characteristics
 

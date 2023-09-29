@@ -37,7 +37,7 @@ class GenShExTestCase(ClickTestCase):
         self.do_test("-f rdf", "metashex.ttl")
         self.do_test("-f shex", "metashex.shex")
         self.do_test(
-            env.meta_yaml + f" -f xsv",
+            env.meta_yaml + " -f xsv",
             "meta_error",
             expected_error=click.exceptions.BadParameter,
         )
@@ -53,9 +53,7 @@ class GenShExTestCase(ClickTestCase):
             f.write(json_str)
 
         context_file = os.path.join(test_dir, "metacontext.jsonld")
-        ContextGenerator(env.meta_yaml, importmap=env.import_map).serialize(
-            output=context_file
-        )
+        ContextGenerator(env.meta_yaml, importmap=env.import_map).serialize(output=context_file)
         self.assertTrue(os.path.exists(context_file))
 
         rdf_file = os.path.join(test_dir, "meta.ttl")

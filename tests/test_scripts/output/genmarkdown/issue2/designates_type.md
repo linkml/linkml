@@ -26,4 +26,6 @@ slot_definition &#8594;  <sub>0..1</sub> boolean
 |  |  |  |
 | --- | --- | --- |
 | **Aliases:** | | type designator |
+| **In Subsets:** | | SpecificationSubset |
+| **See also:** | | [https://linkml.io/linkml/schemas/type-designators.html](https://linkml.io/linkml/schemas/type-designators.html) |
 

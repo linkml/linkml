@@ -25,6 +25,7 @@ URI: [linkml:singular_name](https://w3id.org/linkml/singular_name)
 
 |  |  |  |
 | --- | --- | --- |
-| **Mappings:** | | skos:altLabel |
-| **In Subsets:** | | basic |
+| **Comments:** | | this may be used in some schema translations where use of a singular form is idiomatic, for example RDF |
+| **In Subsets:** | | BasicSubset |
+| **Close Mappings:** | | skos:altLabel |
 

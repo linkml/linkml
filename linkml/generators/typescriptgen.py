@@ -1,22 +1,15 @@
 import logging
 import os
-from copy import deepcopy
 from dataclasses import dataclass
-from pathlib import Path
-from typing import (Callable, Dict, Iterator, List, Optional, Set, TextIO,
-                    Tuple, Union)
+from typing import List, Optional
 
 import click
-from jinja2 import Environment, FileSystemLoader, Template
-from linkml_runtime.dumpers import yaml_dumper
+from jinja2 import Template
 from linkml_runtime.linkml_model.meta import (
-    Annotation, ClassDefinition,
-    ClassDefinitionName, Definition,
-    DefinitionName, Element,
-    EnumDefinition, SchemaDefinition,
+    ClassDefinition,
+    ClassDefinitionName,
+    Element,
     SlotDefinition,
-    SlotDefinitionName,
-    TypeDefinition
 )
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.schemaview import SchemaView
@@ -55,7 +48,7 @@ export enum {{e.name}} {
     {% if pv.description -%}
     /** {{pv.description}} */
     {% endif -%}
-    {{pv.label}} = "{{pv.value}}",    
+    {{pv.label}} = "{{pv.value}}",
     {%- endfor %}
 };
 {% endfor %}
@@ -65,7 +58,7 @@ export enum {{e.name}} {
 /**
  * {{c.description}}
  */
-{%- endif -%} 
+{%- endif -%}
 {% set parents = gen.parents(c) %}
 export interface {{gen.name(c)}} {%- if parents %} extends {{parents|join(', ')}} {%- endif %} {
     {%- for sn in view.class_slots(c.name, direct=False) %}
@@ -137,9 +130,7 @@ class TypescriptGenerator(OOCodeGenerator):
         else:
             return None
 
-    def get_identifier_or_key_slot(
-        self, cn: ClassDefinitionName
-    ) -> Optional[SlotDefinition]:
+    def get_identifier_or_key_slot(self, cn: ClassDefinitionName) -> Optional[SlotDefinition]:
         sv = self.schemaview
         id_slot = sv.get_identifier_slot(cn)
         if id_slot:
@@ -194,13 +185,14 @@ class TypescriptGenerator(OOCodeGenerator):
     def default_value_for_type(self, typ: str) -> str:
         pass
 
+
 @shared_arguments(TypescriptGenerator)
 @click.version_option(__version__, "-V", "--version")
 @click.command()
 def cli(yamlfile, **args):
     """Generate typescript interfaces and types
 
-    See https://linkml.io/linkml-runtime.js
+    See https://github.com/linkml/linkml-runtime.js
     """
     gen = TypescriptGenerator(yamlfile, **args)
     print(gen.serialize())

@@ -21,3 +21,10 @@ URI: [linkml:slot_definition_disjoint_with](https://w3id.org/linkml/slot_definit
 ## Used by
 
  * [SlotDefinition](SlotDefinition.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **In Subsets:** | | SpecificationSubset |
+

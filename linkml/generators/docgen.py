@@ -1,23 +1,28 @@
+import importlib.util
 import logging
 import os
 from copy import deepcopy
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
-from typing import (Callable, Dict, Iterable, Iterator, List, Optional, Set,
-                    TextIO, Tuple, TypeVar, Union)
+from typing import Dict, Iterable, Iterator, List, Optional, Tuple, Union
 
 import click
-import importlib.util
 from jinja2 import Environment, FileSystemLoader, Template
 from linkml_runtime.dumpers import yaml_dumper
-from linkml_runtime.linkml_model.meta import (Annotation, ClassDefinition,
-                                              ClassDefinitionName, Definition,
-                                              DefinitionName, Element,
-                                              EnumDefinition, SchemaDefinition,
-                                              SlotDefinition,
-                                              SlotDefinitionName,
-                                              SubsetDefinition, TypeDefinition, TypeDefinitionName)
+from linkml_runtime.linkml_model.meta import (
+    ClassDefinition,
+    ClassDefinitionName,
+    Definition,
+    DefinitionName,
+    Element,
+    EnumDefinition,
+    SlotDefinition,
+    SlotDefinitionName,
+    SubsetDefinition,
+    TypeDefinition,
+    TypeDefinitionName,
+)
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.schemaview import SchemaView
 
@@ -28,13 +33,14 @@ from linkml.workspaces.example_runner import ExampleRunner
 
 
 class MarkdownDialect(Enum):
-    python = "python"  ## https://python-markdown.github.io/ -- used by mkdocs
-    myst = "myst"  ## https://myst-parser.readthedocs.io/en/latest/ -- used by sphinx
+    python = "python"  # https://python-markdown.github.io/ -- used by mkdocs
+    myst = "myst"  # https://myst-parser.readthedocs.io/en/latest/ -- used by sphinx
 
 
 class DiagramType(Enum):
     uml_class_diagram = "uml_class_diagram"
     er_diagram = "er_diagram"
+
 
 # In future this may become a Union statement, but for now we only have dialects for markdown
 DIALECT = MarkdownDialect
@@ -77,14 +83,15 @@ class DocGenerator(Generator):
 
     Note: this is a replacement for MarkdownGenerator
 
-    Documents can be generated using either provided Jinja2 templates, or by providing your own
+    Documents can be generated using either provided Jinja2 templates, or by
+    providing your own
 
-    Currently the provided templates are for markdown but this framework allows direct generation
-    to rst, html, etc
+    Currently the provided templates are for markdown but this framework allows
+    direct generation to rst, html, etc
 
-    This works via jinja2 templates (found in docgen/ folder). By default, only markdown templates
-    are provided. You can either override these, or you can create entirely different templates
-    e.g. for html, latex, etc
+    This works via jinja2 templates (found in docgen/ folder). By default, only
+    markdown templates are provided. You can either override these, or you can
+    create entirely different templates e.g. for html, latex, etc
 
     The template folder is expected to have files:
 
@@ -96,8 +103,9 @@ class DocGenerator(Generator):
         - subset.FMT.jinja2
         - index.FMT.jinja2
 
-    Most of these accept a jinja2 variable `element`, except index, schema, which accept `schema`. See docgen for examples
-    This will generate a single document for every
+    Most of these accept a jinja2 variable `element`, except index, schema,
+    which accept `schema`. See docgen for examples This will generate a single
+    document for every
 
     - class, enum, type, slot
     - subset
@@ -141,7 +149,6 @@ class DocGenerator(Generator):
     use_slot_uris: bool = field(default_factory=lambda: False)
     hierarchical_class_view: bool = field(default_factory=lambda: False)
 
-
     def __post_init__(self):
         dialect = self.dialect
         if dialect is not None:
@@ -152,13 +159,14 @@ class DocGenerator(Generator):
                 elif dialect == MarkdownDialect.python.value:
                     dialect = MarkdownDialect.python
                 else:
-                    raise NotImplemented(f"{dialect} not supported")
+                    raise NotImplementedError(f"{dialect} not supported")
             self.dialect = dialect
         if isinstance(self.diagram_type, str):
             self.diagram_type = DiagramType[self.diagram_type]
         if self.example_directory:
             self.example_runner = ExampleRunner(input_directory=Path(self.example_directory))
         super().__post_init__()
+        self.logger = logging.getLogger(__name__)
         self.schemaview = SchemaView(self.schema, merge_imports=self.mergeimports)
 
     def serialize(self, directory: str = None) -> None:
@@ -172,19 +180,17 @@ class DocGenerator(Generator):
         if directory is None:
             directory = self.directory
         if directory is None:
-            raise ValueError(f"Directory must be provided")
-        template_vars = {"sort_by": self.sort_by,
-                         "diagram_type": self.diagram_type.value if self.diagram_type else None,
-                         "include_top_level_diagram": self.include_top_level_diagram}
+            raise ValueError("Directory must be provided")
+        template_vars = {
+            "sort_by": self.sort_by,
+            "diagram_type": self.diagram_type.value if self.diagram_type else None,
+            "include_top_level_diagram": self.include_top_level_diagram,
+        }
         template = self._get_template("index")
-        out_str = template.render(
-            gen=self, schema=sv.schema, schemaview=sv, **template_vars
-        )
-        self._write(out_str, directory, "index")  ## TODO: make configurable
+        out_str = template.render(gen=self, schema=sv.schema, schemaview=sv, **template_vars)
+        self._write(out_str, directory, "index")  # TODO: make configurable
         if self._is_single_file_format(self.format):
-            logging.info(
-                f"{self.format} is a single-page format, skipping non-index elements"
-            )
+            logging.info(f"{self.format} is a single-page format, skipping non-index elements")
             return
         template = self._get_template("schema")
         for schema_name in sv.imports_closure():
@@ -198,9 +204,7 @@ class DocGenerator(Generator):
             if self._is_external(c):
                 continue
             n = self.name(c)
-            out_str = template.render(
-                gen=self, element=c, schemaview=sv, **template_vars
-            )
+            out_str = template.render(gen=self, element=c, schemaview=sv, **template_vars)
             self._write(out_str, directory, n)
         template = self._get_template("slot")
         for sn, s in sv.all_slots().items():
@@ -208,18 +212,14 @@ class DocGenerator(Generator):
                 continue
             n = self.name(s)
             s = sv.induced_slot(sn)
-            out_str = template.render(
-                gen=self, element=s, schemaview=sv, **template_vars
-            )
+            out_str = template.render(gen=self, element=s, schemaview=sv, **template_vars)
             self._write(out_str, directory, n)
         template = self._get_template("enum")
         for en, e in sv.all_enums().items():
             if self._is_external(e):
                 continue
             n = self.name(e)
-            out_str = template.render(
-                gen=self, element=e, schemaview=sv, **template_vars
-            )
+            out_str = template.render(gen=self, element=e, schemaview=sv, **template_vars)
             self._write(out_str, directory, n)
         template = self._get_template("type")
         for tn, t in sv.all_types().items():
@@ -227,18 +227,14 @@ class DocGenerator(Generator):
                 continue
             n = self.name(t)
             t = sv.induced_type(tn)
-            out_str = template.render(
-                gen=self, element=t, schemaview=sv, **template_vars
-            )
+            out_str = template.render(gen=self, element=t, schemaview=sv, **template_vars)
             self._write(out_str, directory, n)
         template = self._get_template("subset")
         for _, s in sv.all_subsets().items():
             if self._is_external(c):
                 continue
             n = self.name(s)
-            out_str = template.render(
-                gen=self, element=s, schemaview=sv, **template_vars
-            )
+            out_str = template.render(gen=self, element=s, schemaview=sv, **template_vars)
             self._write(out_str, directory, n)
 
     def _write(self, out_str: str, directory: str, name: str) -> None:
@@ -328,13 +324,10 @@ class DocGenerator(Generator):
         slot_uri
         """
         if type(element).class_name == "slot_definition":
-
             if self.use_slot_uris:
                 curie = self.schemaview.get_uri(element)
-                if curie is not None:
+                if curie:
                     return curie.split(":")[1]
-                else:
-                    return underscore(element.name)
 
             return underscore(element.name)
         else:
@@ -364,7 +357,6 @@ class DocGenerator(Generator):
 
         uri = self.uri(element)
         curie = self.uri(element, expand=False)
-        sc = element.from_schema
         return f"[{curie}]({uri})"
 
     def link(self, e: Union[Definition, DefinitionName]) -> str:
@@ -396,7 +388,7 @@ class DocGenerator(Generator):
             return self._markdown_link(camelcase(e.name))
         else:
             return e.name
-        
+
     def links(self, e_list: List[DefinitionName]) -> List[str]:
         """Render list of element documentation pages as hyperlinks.
 
@@ -429,9 +421,7 @@ class DocGenerator(Generator):
 
         return f"[{n}]({rel_path}.md)"
 
-    def inheritance_tree(
-        self, element: Definition, children: bool = True, **kwargs
-    ) -> str:
+    def inheritance_tree(self, element: Definition, children: bool = True, **kwargs) -> str:
         """
         Show an element in the context of its is-a hierarchy
 
@@ -472,9 +462,7 @@ class DocGenerator(Generator):
         else:
             pre, depth = "", 0
         s = pre
-        s += self._tree_info(
-            element, depth, mixins=mixins, descriptions=descriptions, focus=focus
-        )
+        s += self._tree_info(element, depth, mixins=mixins, descriptions=descriptions, focus=focus)
         return s, depth
 
     def _tree_info(
@@ -486,7 +474,7 @@ class DocGenerator(Generator):
         focus: DefinitionName = None,
     ) -> str:
         indent = " " * depth * 4
-        
+
         if self.use_slot_uris:
             name = self.schemaview.get_element(element).name
         else:
@@ -594,8 +582,8 @@ class DocGenerator(Generator):
                 return erdgen.serialize_classes(class_names, follow_references=True, max_hops=2)
             else:
                 return erdgen.serialize()
-        elif self.diagram_type == DiagramType.uml_class_diagram:
-            raise NotImplementedError("This is currently handled in the jinja templates")
+        elif self.diagram_type.value == DiagramType.uml_class_diagram.value:
+            self.logger.info("This is currently handled in the jinja templates")
         else:
             raise NotImplementedError(f"Diagram type {self.diagram_type} not implemented")
 
@@ -635,9 +623,7 @@ class DocGenerator(Generator):
             c.slots = []
             return yaml_dumper.dumps(c)
 
-    def class_induced_slots(
-        self, class_name: ClassDefinitionName
-    ) -> Iterator[SlotDefinition]:
+    def class_induced_slots(self, class_name: ClassDefinitionName) -> Iterator[SlotDefinition]:
         """
         Yields all induced slots for a class
 
@@ -786,16 +772,19 @@ class DocGenerator(Generator):
         return cls.slots + list(cls.attributes.keys())
 
     def get_direct_slots(self, cls: ClassDefinition) -> List[SlotDefinition]:
-        """Fetch list of all own attributes of a class, i.e., 
+        """Fetch list of all own attributes of a class, i.e.,
         all slots that belong to the domain of a class.
 
         :param cls: class for which we want to determine the attributes
         :return: list of all own attributes of a class
         """
-        return [self.inject_slot_info(self.schemaview.induced_slot(sn, cls.name)) for sn in self.get_direct_slot_names(cls)]
+        return [
+            self.inject_slot_info(self.schemaview.induced_slot(sn, cls.name))
+            for sn in self.get_direct_slot_names(cls)
+        ]
 
     def get_indirect_slots(self, cls: ClassDefinition) -> List[SlotDefinition]:
-        """Fetch list of all inherited attributes of a class, i.e., 
+        """Fetch list of all inherited attributes of a class, i.e.,
         all slots that belong to the domain of a class.
 
         :param cls: class for which we want to determine the attributes
@@ -803,9 +792,15 @@ class DocGenerator(Generator):
         """
         sv = self.schemaview
         direct_slot_names = self.get_direct_slot_names(cls)
-        return [self.inject_slot_info(slot) for slot in sv.class_induced_slots(cls.name) if slot.name not in direct_slot_names]
+        return [
+            self.inject_slot_info(slot)
+            for slot in sv.class_induced_slots(cls.name)
+            if slot.name not in direct_slot_names
+        ]
 
-    def get_slot_inherited_from(self, class_name: ClassDefinitionName, slot_name: SlotDefinitionName) -> List[ClassDefinitionName]:
+    def get_slot_inherited_from(
+        self, class_name: ClassDefinitionName, slot_name: SlotDefinitionName
+    ) -> List[ClassDefinitionName]:
         """Get the name of the class that a given slot is inherited from.
 
         :param class_name: name of the class whose slot we are checking
@@ -816,7 +811,7 @@ class DocGenerator(Generator):
         induced_slot = sv.induced_slot(slot_name, class_name)
         ancestors = sv.class_ancestors(class_name)
         return list(set(induced_slot.domain_of).intersection(ancestors))
-    
+
     def get_mixin_inherited_slots(self, cls: ClassDefinition) -> Dict[str, List[str]]:
         """Fetch list of all slots acquired through mixing.
 
@@ -829,7 +824,7 @@ class DocGenerator(Generator):
         mixins = sv.class_parents(class_name=cls.name, mixins=True, is_a=False)
         for c in mixins:
             mixed_in_slots[c] = sv.class_slots(c)
-            
+
         return mixed_in_slots
 
     def example_object_blobs(self, class_name: str) -> List[Tuple[str, str]]:
@@ -849,7 +844,6 @@ class DocGenerator(Generator):
         return objs
 
 
-
 @shared_arguments(DocGenerator)
 @click.option(
     "--directory",
@@ -858,13 +852,17 @@ class DocGenerator(Generator):
     help="Folder to which document files are written",
 )
 @click.option("--dialect", help="Dialect or 'flavor' of Markdown used.")
-@click.option("--diagram-type",
-              type=click.Choice([e.value for e in DiagramType]),
-              help="er_diagram is an experimental feature.")
-@click.option("--include-top-level-diagram/--no-include-top-level-diagram",
-              default=False,
-              show_default=True,
-              help="EXPERIMENTAL: (ER diagram only) Include a diagram of the whole schema.")
+@click.option(
+    "--diagram-type",
+    type=click.Choice([e.value for e in DiagramType]),
+    help="Type of UML diagram to be rendered on class documentation pages.",
+)
+@click.option(
+    "--include-top-level-diagram/--no-include-top-level-diagram",
+    default=False,
+    show_default=True,
+    help="Include ER diagram of the entire schema on index page.",
+)
 @click.option(
     "--sort-by",
     default="name",
@@ -890,21 +888,25 @@ class DocGenerator(Generator):
 )
 @click.option(
     "--example-directory",
-    help="Folder in which example files are found. These are used to make inline examples"
+    help="Folder in which example files are found. These are used to make inline examples",
 )
 @click.version_option(__version__, "-V", "--version")
 @click.command()
-def cli(yamlfile, directory, dialect, template_directory, use_slot_uris, hierarchical_class_view, **args):
+def cli(
+    yamlfile, directory, dialect, template_directory, use_slot_uris, hierarchical_class_view, **args
+):
     """Generate documentation folder from a LinkML YAML schema
 
-    Currently a default set of templates for markdown is provided (see the folder linkml/generators/docgen/)
+    Currently a default set of templates for markdown is provided (see the
+    folder linkml/generators/docgen/)
 
-    If you specify another format (e.g. html) then you need to provide a template_directory argument, with a template for
-    each type of entity inside.
+    If you specify another format (e.g. html) then you need to provide a
+    template_directory argument, with a template for each type of entity inside.
 
-    Examples can optionally be integrated into the documentation; to enable this, pass in the
-    --example-directory argument.  The example directory should contain one file per example,
-    following the naming convention <ClassName>-<ExampleName>.<extension>.
+    Examples can optionally be integrated into the documentation; to enable
+    this, pass in the --example-directory argument.  The example directory
+    should contain one file per example, following the naming convention
+    <ClassName>-<ExampleName>.<extension>.
 
     For example, to include examples on the page for Person, include examples
 

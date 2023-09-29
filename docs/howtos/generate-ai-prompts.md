@@ -311,7 +311,7 @@ Additionally, there are aspects of current LLMs that go against certain parts of
 The examples in this tutorial require subscription access to use proprietary models, with inscrutable training
 data. On top of that there are environmental costs in training them and running them.
 
-If this *isn't* your reaction, then we encourage reading the [Stochastic Parrots](https://dl.acm.org/doi/10.1145/3442188.3445922)
+If this *isn't* your reaction, then we encourage reading the Stochastic Parrots: https://dl.acm.org/doi/10.1145/3442188.3445922 
 paper which goes into these issues in more detail.
 
 If it *is* your reaction, then rest assured that LLMs will not be a part of the core LinkML framework (although

@@ -2,7 +2,7 @@
 # Slot: types
 
 
-data types used in the model
+An index to the collection of all type definitions in the schema
 
 URI: [linkml:types](https://w3id.org/linkml/types)
 
@@ -25,6 +25,7 @@ URI: [linkml:types](https://w3id.org/linkml/types)
 
 |  |  |  |
 | --- | --- | --- |
-| **In Subsets:** | | basic |
-|  | | object_oriented |
+| **In Subsets:** | | BasicSubset |
+|  | | ObjectOrientedProfile |
+|  | | OwlProfile |
 

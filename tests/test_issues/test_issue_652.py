@@ -1,53 +1,35 @@
 import json
-import os
-import unittest
 
 from linkml.generators.jsonschemagen import JsonSchemaGenerator
-from tests.test_issues.environment import env
-from tests.utils.test_environment import TestEnvironmentTestCase
 
 
-class Issue652TestCase(TestEnvironmentTestCase):
-    env = env
+def test_issue_652_scenario1(input_path):
+    """
+    Generate JSON Schema in default mode, where range class
+    descendants are not included
+    """
+    output = JsonSchemaGenerator(
+        input_path("issue_652.yaml"), include_range_class_descendants=False
+    ).serialize()
 
-    def test_issue_652_scenario1(self):
-        """
-        Generate JSON Schema in default mode, where range class
-        descendants are not included
-        """
-        x = env.generate_single_file(
-            "issue_652_scenario1.schema.json",
-            lambda: JsonSchemaGenerator(
-                env.input_path("issue_652.yaml"), include_range_class_descendants=False
-            ).serialize(),
-            value_is_returned=True,
-        )
-        with open(os.path.join(env.outdir, "issue_652_scenario1.schema.json")) as f:
-            issue_jsonschema = json.load(f)
-        prop4_def = issue_jsonschema["$defs"]["NamedThing"]["properties"]["prop4"]
-        self.assertEqual(prop4_def["$ref"], "#/$defs/C1")
-
-    def test_issue_652_scenario2(self):
-        """
-        Generate JSON Schema where descendants of range class
-        are included for the type of a property
-        """
-        x = env.generate_single_file(
-            "issue_652_scenario2.schema.json",
-            lambda: JsonSchemaGenerator(
-                env.input_path("issue_652.yaml"), include_range_class_descendants=True
-            ).serialize(),
-            value_is_returned=True,
-        )
-        with open(os.path.join(env.outdir, "issue_652_scenario2.schema.json")) as f:
-            issue_jsonschema = json.load(f)
-        prop4_def = issue_jsonschema["$defs"]["NamedThing"]["properties"]["prop4"]
-        self.assertIn("anyOf", prop4_def)
-        self.assertEqual(len(prop4_def["anyOf"]), 3)
-        self.assertIn({"$ref": "#/$defs/C1"}, prop4_def["anyOf"])
-        self.assertIn({"$ref": "#/$defs/C2"}, prop4_def["anyOf"])
-        self.assertIn({"$ref": "#/$defs/C3"}, prop4_def["anyOf"])
+    issue_jsonschema = json.loads(output)
+    prop4_def = issue_jsonschema["$defs"]["NamedThing"]["properties"]["prop4"]
+    assert prop4_def["$ref"] == "#/$defs/C1"
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_issue_652_scenario2(input_path):
+    """
+    Generate JSON Schema where descendants of range class
+    are included for the type of a property
+    """
+    output = JsonSchemaGenerator(
+        input_path("issue_652.yaml"), include_range_class_descendants=True
+    ).serialize()
+
+    issue_jsonschema = json.loads(output)
+    prop4_def = issue_jsonschema["$defs"]["NamedThing"]["properties"]["prop4"]
+    assert "anyOf" in prop4_def
+    assert len(prop4_def["anyOf"]) == 3
+    assert {"$ref": "#/$defs/C1"} in prop4_def["anyOf"]
+    assert {"$ref": "#/$defs/C2"} in prop4_def["anyOf"]
+    assert {"$ref": "#/$defs/C3"} in prop4_def["anyOf"]

@@ -20,9 +20,7 @@ class GenYUMLTestCase(ClickTestCase):
         self.temp_file_path("meta.yuml")
         self.do_test([], "meta.yuml")
         self.do_test("-f yuml", "meta.yuml")
-        self.do_test(
-            "-f xsv", "meta_error", expected_error=click.exceptions.BadParameter
-        )
+        self.do_test("-f xsv", "meta_error", expected_error=click.exceptions.BadParameter)
         self.do_test("-c definition", "definition.yuml")
         self.do_test("-c definition -c element", "definition_element.yuml")
         self.do_test("-c noclass", "definition.yuml", expected_error=ValueError)
@@ -43,6 +41,7 @@ class GenYUMLTestCase(ClickTestCase):
     def test_specified_diagram_name(self):
         self.temp_file_path("specified_name.svg")
         self.do_test(["--diagram-name", "specified_name"], "specified_name_dir", is_directory=True)
+
 
 if __name__ == "__main__":
     unittest.main()

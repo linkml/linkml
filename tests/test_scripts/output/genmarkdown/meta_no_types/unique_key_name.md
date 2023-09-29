@@ -25,6 +25,7 @@ URI: [linkml:unique_key_name](https://w3id.org/linkml/unique_key_name)
 
 |  |  |  |
 | --- | --- | --- |
-| **In Subsets:** | | basic |
-|  | | relational_model |
+| **In Subsets:** | | SpecificationSubset |
+|  | | BasicSubset |
+|  | | RelationalModelProfile |
 
