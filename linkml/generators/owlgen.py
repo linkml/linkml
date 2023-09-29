@@ -471,13 +471,15 @@ class OwlSchemaGenerator(Generator):
                     owl_exprs.append(self._type_uri(typ.name))
                 else:
                     owl_exprs.append(self._type_uri(typ.name))
-            elif range in self.schema.enums:
+            elif range in sv.all_enums(imports=True):
                 # TODO: enums fill this in
                 owl_exprs.append(self._enum_uri(EnumDefinitionName(range)))
-            else:
+            elif range in sv.all_classes(imports=True):
                 owl_types.add(OWL.Thing)
                 self.slot_is_literal_map[main_slot.name].add(False)
                 owl_exprs.append(self._class_uri(ClassDefinitionName(range)))
+            else:
+                raise ValueError(f"Unknown range {range}")
         constraints_exprs, constraints_owltypes = self.add_constraints(slot)
         owl_types.update(constraints_owltypes)
         owl_exprs.extend(constraints_exprs)

@@ -44,6 +44,7 @@ TYPE_T = "T"
 ENUM_E = "E"
 PV_1 = "pv1"
 PV_2 = "pv2"
+SUBSET_SS = "Subset1"
 
 CORE_FRAMEWORKS = [
     PYTHON_DATACLASSES,
