@@ -559,7 +559,9 @@ class PydanticGenerator(OOCodeGenerator):
                     # TODO add support for xarray
                     pyrange = "np.ndarray"
                     if "linkml:ColumnOrderedArray" in class_def.implements:
-                        raise NotImplementedError("Cannot generate Pydantic code for ColumnOrderedArrays.")
+                        raise NotImplementedError(
+                            "Cannot generate Pydantic code for ColumnOrderedArrays."
+                        )
                     uses_numpy = True
                 elif s.multivalued:
                     if s.inlined or s.inlined_as_list:
