@@ -198,8 +198,8 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
         )
 
     def gen_imports(self) -> str:
-        listents = [f"from {k} import {', '.join(v)}" for k, v in self.gen_import_list().items()]
-        return "\n".join(listents)
+        list_ents = [f"from {k} import {', '.join(v)}" for k, v in self.gen_import_list().items()]
+        return "\n".join(list_ents)
 
     def gen_import_list(self) -> Dict[str, List[str]]:
         """
