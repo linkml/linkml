@@ -21,10 +21,12 @@ def test_heterogeneous_collection():
     # compile the YAML to python, in a string
     python_source_text = pg.serialize()
     # write the generated python string to a file
-    with open(schema_python_source_file_path, 'w') as f:
+    with open(schema_python_source_file_path, "w") as f:
         f.write(python_source_text)
     # dynamically import the generated python module into this namespace
-    database_class = getattr(importlib.import_module("tests.test_issues.model.linkml_issue_1608_schema"), "Database")
+    database_class = getattr(
+        importlib.import_module("tests.test_issues.model.linkml_issue_1608_schema"), "Database"
+    )
 
     # read a YAML data file and instantiate it against the dynamically loaded Database class
     # this performs SOME validation
