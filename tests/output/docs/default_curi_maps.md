@@ -25,5 +25,5 @@ URI: [linkml:default_curi_maps](https://w3id.org/linkml/default_curi_maps)
 
 |  |  |  |
 | --- | --- | --- |
-| **In Subsets:** | | basic |
+| **In Subsets:** | | BasicSubset |
 

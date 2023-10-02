@@ -9,7 +9,7 @@ URI: [linkml:code_set](https://w3id.org/linkml/code_set)
 
 ## Domain and Range
 
-[EnumDefinition](EnumDefinition.md) &#8594;  <sub>0..1</sub> [Uriorcurie](Uriorcurie.md)
+[EnumExpression](EnumExpression.md) &#8594;  <sub>0..1</sub> [Uriorcurie](Uriorcurie.md)
 
 ## Parents
 
@@ -19,11 +19,14 @@ URI: [linkml:code_set](https://w3id.org/linkml/code_set)
 
 ## Used by
 
+ * [AnonymousEnumExpression](AnonymousEnumExpression.md)
  * [EnumDefinition](EnumDefinition.md)
+ * [EnumExpression](EnumExpression.md)
 
 ## Other properties
 
 |  |  |  |
 | --- | --- | --- |
-| **In Subsets:** | | basic |
+| **In Subsets:** | | SpecificationSubset |
+|  | | BasicSubset |
 

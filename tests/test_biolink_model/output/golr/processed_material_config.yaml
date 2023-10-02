@@ -1,7 +1,8 @@
-# metamodel_version: 1.7.0# version: 1.8.2id: processed_material
+# metamodel_version: 1.7.0# version: 3.1.2id: processed_material
 schema_generating: true
-description: A chemical substance (often a mixture) processed for consumption for
-  nutritional, medical or technical use.
+description: A chemical entity (often a mixture) processed for consumption for nutritional,
+  medical or technical use. Is a material entity that is created or changed during
+  material processing.
 display_name: processed material
 document_category: processed material
 weight: 20
@@ -22,19 +23,19 @@ fields:
 - id: description
   description: a human-readable description of an entity
   display_name: description
-- id: source
-  description: a lightweight analog to the association class 'has provider' slot,
-    which is the string name, or the authoritative (i.e. database) namespace, designating
-    the origin of the entity to which the slot belongs.
-  display_name: source
-- id: provided_by
-  description: connects an association to the agent (person, organization or group)
-    that provided it
-  display_name: provided by
-  cardinality: multi
 - id: has_attribute
   description: connects any entity to an attribute
   display_name: has attribute
+  cardinality: multi
+- id: provided_by
+  description: The value in this node property represents the knowledge provider that
+    created or assembled the node and all of its attributes.  Used internally to represent
+    how a particular node made its way into a knowledge provider or graph.
+  display_name: provided by
+  cardinality: multi
+- id: xref
+  description: Alternate CURIEs for a thing
+  display_name: xref
   cardinality: multi
 - id: category
   description: "Name of the high level ontology class in which this entity is categorized.\
@@ -51,15 +52,41 @@ fields:
     \ biolink:NamedThing}"
   display_name: named thing_category
   cardinality: multi
-- id: in_taxon
-  description: connects an entity to its taxonomic classification. Only certain kinds
-    of entities can be taxonomically classified; see 'thing with taxon'
-  display_name: in taxon
+- id: trade_name
+  description: ''
+  display_name: trade name
+- id: available_from
+  description: ''
+  display_name: available from
   cardinality: multi
-- id: is_metabolite
-  description: indicates whether a chemical substance is a metabolite
-  display_name: is metabolite
-- id: has_constituent
-  description: one or more chemical substances within a mixture
-  display_name: has constituent
+- id: max_tolerated_dose
+  description: The highest dose of a drug or treatment that does not cause unacceptable
+    side effects. The maximum tolerated dose is determined in clinical trials by testing
+    increasing doses on different groups of people until the highest dose with acceptable
+    side effects is found. Also called MTD.
+  display_name: max tolerated dose
+- id: is_toxic
+  description: ''
+  display_name: is toxic
+- id: has_chemical_role
+  description: A role is particular behaviour which a chemical entity may exhibit.
+  display_name: has chemical role
+  cardinality: multi
+- id: is_supplement
+  description: ''
+  display_name: is supplement
+- id: highest_FDA_approval_status
+  description: Should be the highest level of FDA approval this chemical entity or
+    device has, regardless of which disease, condition or phenotype it is currently
+    being reviewed to treat.  For specific levels of FDA approval for a specific condition,
+    disease, phenotype, etc., see the association slot, 'FDA approval status.'
+  display_name: highest FDA approval status
+- id: drug_regulatory_status_world_wide
+  description: An agglomeration of drug regulatory status worldwide. Not specific
+    to FDA.
+  display_name: drug regulatory status world wide
+- id: routes_of_delivery
+  description: the method or process of administering a pharmaceutical compound to
+    achieve a therapeutic effect in humans or animals.
+  display_name: routes of delivery
   cardinality: multi

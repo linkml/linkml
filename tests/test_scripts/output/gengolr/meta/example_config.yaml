@@ -11,3 +11,6 @@ fields:
 - id: description
   description: description of what the value is doing
   display_name: value_description
+- id: object
+  description: direct object representation of the example
+  display_name: value_object

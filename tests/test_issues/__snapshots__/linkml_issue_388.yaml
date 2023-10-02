@@ -10,6 +10,9 @@ prefixes:
   other:
     prefix_prefix: other
     prefix_reference: https://example.org/other/
+  xsd:
+    prefix_prefix: xsd
+    prefix_reference: http://www.w3.org/2001/XMLSchema#
 default_prefix: this
 default_range: my_str
 types:

@@ -10,6 +10,8 @@
     dcterms:license "https://creativecommons.org/publicdomain/zero/1.0/" ;
     sh:declare [ sh:namespace linkml: ;
             sh:prefix "linkml" ],
+        [ sh:namespace <https://w3id.org/linkml/examples/personinfo/> ;
+            sh:prefix "ex" ],
         [ sh:namespace schema: ;
             sh:prefix "sdo" ] ;
     linkml:classes <https://w3id.org/linkml/examples/personinfo/GeoAge>,
@@ -17,7 +19,7 @@
         <https://w3id.org/linkml/examples/personinfo/Organization>,
         <https://w3id.org/linkml/examples/personinfo/Person>,
         <https://w3id.org/linkml/examples/personinfo/Thing> ;
-    linkml:default_prefix "https://w3id.org/linkml/examples/personinfo/" ;
+    linkml:default_prefix "ex" ;
     linkml:default_range <https://w3id.org/linkml/examples/personinfo/string> ;
     linkml:generation_date "2000-01-01T00:00:00"^^xsd:dateTime ;
     linkml:id <https://w3id.org/linkml/examples/personinfo> ;

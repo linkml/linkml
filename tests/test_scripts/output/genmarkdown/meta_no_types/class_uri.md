@@ -2,7 +2,7 @@
 # Slot: class_uri
 
 
-URI of the class in an RDF environment
+URI of the class that provides a semantic interpretation of the element in a linked data context. The URI may come from any namespace and may be shared between schemas
 
 URI: [linkml:class_uri](https://w3id.org/linkml/class_uri)
 
@@ -26,5 +26,9 @@ URI: [linkml:class_uri](https://w3id.org/linkml/class_uri)
 |  |  |  |
 | --- | --- | --- |
 | **Aliases:** | | public ID |
-| **In Subsets:** | | basic |
+| **Comments:** | | Assigning class_uris can provide additional hooks for interoperation, indicating a common conceptual model |
+| **In Subsets:** | | SpecificationSubset |
+|  | | BasicSubset |
+| **See also:** | | [linkml:definition_uri](linkml:definition_uri) |
+|  | | [https://linkml.io/linkml/schemas/uris-and-mappings.html](https://linkml.io/linkml/schemas/uris-and-mappings.html) |
 

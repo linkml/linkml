@@ -21,3 +21,10 @@ slot_definition &#8594;  <sub>0..\*</sub> slot_definition
 ## Used by
 
  * slot_definition
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **In Subsets:** | | SpecificationSubset |
+

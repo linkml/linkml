@@ -45,7 +45,7 @@ def test_any_of(framework, data_name, value, is_valid, use_default_range):
     :param data_name:
     :param value:
     :param is_valid:
-    :param use_default_range:
+    :param use_default_range: if True, the default range will be included in addition to any_of.
     :return:
     """
     expected_json_schema = {
@@ -103,6 +103,7 @@ def test_any_of(framework, data_name, value, is_valid, use_default_range):
         expected_behavior = ValidationBehavior.INCOMPLETE
     if framework == JSON_SCHEMA and use_default_range:
         expected_behavior = ValidationBehavior.INCOMPLETE
+    # TODO: rdflib transformer has issues around ranges
     check_data(
         schema,
         data_name,
@@ -112,6 +113,7 @@ def test_any_of(framework, data_name, value, is_valid, use_default_range):
         target_class=CLASS_C,
         expected_behavior=expected_behavior,
         description=f"validity {is_valid} check for value {value}",
+        exclude_rdf=True,
     )
 
 
@@ -316,6 +318,71 @@ def test_none_of(framework, data_name, value, is_valid):
 
 
 @pytest.mark.parametrize(
+    "data_name,instance,is_valid",
+    [
+        ("v0", {}, False),
+        ("v1", {SLOT_S1: "x"}, True),
+        ("v2", {SLOT_S2: "x"}, True),
+        ("v3", {SLOT_S1: "x", SLOT_S2: "x"}, False),
+    ],
+)
+@pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
+@pytest.mark.skip("requires metamodel changes")
+def test_cardinality_in_exactly_one_of(framework, data_name, instance, is_valid):
+    """
+    Tests intersection of cardinality and exactly_one_of.
+
+    TODO: unskip this test when metamodel allows attributes or slot usage on anon expressions.
+
+    :param framework:
+    :param data_name:
+    :param instance:
+    :param is_valid:
+    :return:
+    """
+    classes = {
+        CLASS_C: {
+            "exactly_one_of": [
+                {
+                    "attributes": {
+                        SLOT_S1: {
+                            "required": True,
+                        },
+                    },
+                },
+                {
+                    "attributes": {
+                        SLOT_S2: {
+                            "required": True,
+                        },
+                    },
+                },
+            ],
+        },
+    }
+    schema = validated_schema(
+        test_cardinality_in_exactly_one_of,
+        "default",
+        framework,
+        classes=classes,
+        core_elements=["exactly_one_of", "minimum_value", "maximum_value"],
+    )
+    expected_behavior = ValidationBehavior.IMPLEMENTS
+    if framework != JSON_SCHEMA:
+        expected_behavior = ValidationBehavior.INCOMPLETE
+    check_data(
+        schema,
+        data_name,
+        framework,
+        instance,
+        is_valid,
+        target_class=CLASS_C,
+        expected_behavior=expected_behavior,
+        description=f"validity {is_valid} check for value {instance}",
+    )
+
+
+@pytest.mark.parametrize(
     "value",
     [1, 10, 15, 20, 21],
 )
@@ -329,21 +396,21 @@ def test_min_max(framework, min_val, max_val, value):
     Tests behavior of minimum and maximum value.
 
     :param framework:
-    :param data_name:
-    :param value:
-    :param is_valid:
-    :param use_default_range:
+    :param min_val: minimum value for slot in schema
+    :param max_val: maximum value for slot in schema
+    :param value: value of slot in data to test with
     :return:
     """
     classes = {
         CLASS_C: {
             "attributes": {
                 SLOT_S1: {
+                    "required": True,
                     "range": "integer",
                     "minimum_value": min_val,
                     "maximum_value": max_val,
                     "_mappings": {
-                        PYDANTIC: f"{SLOT_S1}: Optional[int] = Field(None, ge={min_val}, le={max_val})",
+                        PYDANTIC: f"{SLOT_S1}: int = Field(..., ge={min_val}, le={max_val})",
                     },
                 },
             },
@@ -457,6 +524,7 @@ def test_preconditions(framework, s1, s2, is_valid):
     )
     expected_behavior = ValidationBehavior.IMPLEMENTS
     if framework != JSON_SCHEMA:
+        # only JSON Schema supports rules
         expected_behavior = ValidationBehavior.INCOMPLETE
     check_data(
         schema,
@@ -540,4 +608,100 @@ def test_union_of(framework, data_name, value, is_valid):
         target_class=CLASS_C,
         expected_behavior=expected_behavior,
         description=f"validity {is_valid} check for value {value}",
+    )
+
+
+@pytest.mark.parametrize(
+    "data_name,instance,is_valid",
+    [
+        ("v0", {}, False),
+        ("v1", {SLOT_S1: "x"}, True),
+        ("v2", {SLOT_S2: "x"}, True),
+        ("v3", {SLOT_S1: "x", SLOT_S2: "x"}, False),
+    ],
+)
+@pytest.mark.parametrize("multivalued", [False, True])
+@pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
+def test_value_presence_in_rules(framework, multivalued, data_name, instance, is_valid):
+    """
+    Tests intersection of value_presence and rules.
+
+    Uses a class with two slots, s1 and s2, where either s1 or s2 is set,
+    but not both.
+
+    :param framework:
+    :param multivalued:
+    :param data_name:
+    :param instance:
+    :param is_valid:
+    :return:
+    """
+    classes = {
+        CLASS_C: {
+            "attributes": {
+                SLOT_S1: {
+                    "multivalued": multivalued,
+                },
+                SLOT_S2: {
+                    "multivalued": multivalued,
+                },
+            },
+            "rules": [
+                {
+                    "preconditions": {
+                        "slot_conditions": {
+                            SLOT_S1: {
+                                "value_presence": "PRESENT",
+                            },
+                        },
+                    },
+                    "postconditions": {
+                        "slot_conditions": {
+                            SLOT_S2: {
+                                "value_presence": "ABSENT",
+                            },
+                        },
+                    },
+                },
+                {
+                    "preconditions": {
+                        "slot_conditions": {
+                            SLOT_S1: {
+                                "value_presence": "ABSENT",
+                            },
+                        },
+                    },
+                    "postconditions": {
+                        "slot_conditions": {
+                            SLOT_S2: {
+                                "value_presence": "PRESENT",
+                            },
+                        },
+                    },
+                },
+            ],
+        },
+    }
+    schema = validated_schema(
+        test_value_presence_in_rules,
+        f"MV{multivalued}",
+        framework,
+        classes=classes,
+        core_elements=["preconditions", "postconditions", "slot_conditions", "value_presence"],
+    )
+    expected_behavior = ValidationBehavior.IMPLEMENTS
+    if framework != JSON_SCHEMA:
+        if not is_valid:
+            expected_behavior = ValidationBehavior.INCOMPLETE
+    if multivalued:
+        instance = {k: [v] for k, v in instance.items()}
+    check_data(
+        schema,
+        data_name,
+        framework,
+        instance,
+        is_valid,
+        target_class=CLASS_C,
+        expected_behavior=expected_behavior,
+        description=f"validity {is_valid} check for value {instance}",
     )

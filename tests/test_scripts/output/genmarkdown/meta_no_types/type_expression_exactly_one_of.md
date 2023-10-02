@@ -28,5 +28,7 @@ URI: [linkml:type_expression_exactly_one_of](https://w3id.org/linkml/type_expres
 
 |  |  |  |
 | --- | --- | --- |
+| **In Subsets:** | | SpecificationSubset |
+| **See also:** | | [https://w3id.org/linkml/docs/specification/05validation/#rules](https://w3id.org/linkml/docs/specification/05validation/#rules) |
 | **Exact Mappings:** | | sh:xone |
 

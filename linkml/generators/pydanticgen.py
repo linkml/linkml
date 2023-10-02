@@ -118,7 +118,7 @@ class {{ c.name }}
     {{attr.name}}: {{ attr.annotations['python_range'].value }} = Field(
     {%- if predefined_slot_values[c.name][attr.name] -%}
         {{ predefined_slot_values[c.name][attr.name] }}
-    {%- elif attr.required -%}
+    {%- elif (attr.required or attr.identifier or attr.key) -%}
         ...
     {%- else -%}
         None
@@ -557,7 +557,7 @@ class PydanticGenerator(OOCodeGenerator):
                         pyrange = f"List[{pyrange}]"
                     else:
                         pyrange = f"Dict[{collection_key}, {pyrange}]"
-                if not s.required and not s.designates_type:
+                if not (s.required or s.identifier or s.key) and not s.designates_type:
                     pyrange = f"Optional[{pyrange}]"
                 ann = Annotation("python_range", pyrange)
                 s.annotations[ann.tag] = ann

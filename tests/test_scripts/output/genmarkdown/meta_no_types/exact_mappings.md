@@ -17,6 +17,7 @@ None &#8594;  <sub>0..\*</sub> [Uriorcurie](Uriorcurie.md)
 
 ## Children
 
+ *  [UnitOfMeasure➞exact mappings](UnitOfMeasure_exact_mappings.md)
 
 ## Used by
 

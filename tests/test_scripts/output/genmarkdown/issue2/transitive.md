@@ -26,5 +26,6 @@ slot_definition &#8594;  <sub>0..1</sub> boolean
 
 |  |  |  |
 | --- | --- | --- |
+| **In Subsets:** | | SpecificationSubset |
 | **Close Mappings:** | | owl:TransitiveProperty |
 

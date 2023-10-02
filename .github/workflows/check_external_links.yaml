@@ -30,4 +30,4 @@ jobs:
       - name: Build documentation.
         run: |
           cd docs/
-          poetry run sphinx-build -b linkcheck . _build
+          poetry run sphinx-build -b linkcheck . _build | grep "broken"

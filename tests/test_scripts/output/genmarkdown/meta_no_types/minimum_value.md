@@ -31,5 +31,6 @@ URI: [linkml:minimum_value](https://w3id.org/linkml/minimum_value)
 |  |  |  |
 | --- | --- | --- |
 | **Aliases:** | | low value |
-| **In Subsets:** | | basic |
+| **In Subsets:** | | SpecificationSubset |
+|  | | BasicSubset |
 

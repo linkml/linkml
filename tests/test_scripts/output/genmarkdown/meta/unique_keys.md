@@ -2,7 +2,7 @@
 # Slot: unique_keys
 
 
-Set of unique keys for this slot
+A collection of named unique keys for this class. Unique keys may be singular or compound.
 
 URI: [linkml:unique_keys](https://w3id.org/linkml/unique_keys)
 
@@ -25,7 +25,9 @@ URI: [linkml:unique_keys](https://w3id.org/linkml/unique_keys)
 
 |  |  |  |
 | --- | --- | --- |
-| **In Subsets:** | | basic |
-|  | | relational_model |
+| **In Subsets:** | | SpecificationSubset |
+|  | | BasicSubset |
+|  | | RelationalModelProfile |
+| **See also:** | | [https://linkml.io/linkml/schemas/constraints.html#unique-key](https://linkml.io/linkml/schemas/constraints.html#unique-key) |
 | **Exact Mappings:** | | owl:hasKey |
 

@@ -27,4 +27,5 @@ URI: [linkml:shared](https://w3id.org/linkml/shared)
 | --- | --- | --- |
 | **Aliases:** | | inverse functional |
 |  | | many to one or many |
+| **In Subsets:** | | SpecificationSubset |
 

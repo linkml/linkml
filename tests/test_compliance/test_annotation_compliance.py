@@ -1,42 +1,26 @@
-"""
-Tests for annotation compliance.
+"""Tests for annotation compliance.
 
- - TODO: dynamic annotations
+Note these tests differ from other compliance tests in that
+there is no instance data to test.
 """
 
 import pytest
 
 from tests.test_compliance.helper import (
-    ValidationBehavior,
-    check_data,
     validated_schema,
 )
 from tests.test_compliance.test_compliance import CLASS_C, CORE_FRAMEWORKS, SLOT_S1
 
 
-@pytest.mark.parametrize("include_meaning", [True, False])
-@pytest.mark.parametrize("value", ["A", "C", "schema:A"])
-@pytest.mark.parametrize(
-    "annotation_name,annotation_desc,pvs",
-    [
-        ("annotation_A", "basic_annotation", [("A", "schema:A", "An A"), ("B", "schema:B", "A B")]),
-        (
-            "annotation_B",
-            "curies_annotation",
-            [("schema:A", "schema:A", "An A"), ("schema:B", "schema:B", "A B")],
-        ),
-        (
-            "annotation_C",
-            "ws_annotation",
-            [("A B", "schema:AB", "An A B"), ("B-%", "schema:Bpct", "A B%")],
-        ),
-    ],
-)
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
-@pytest.mark.skip(reason="TODO:  annotations")
-def test_annotation(framework, annotation_name, annotation_desc, pvs, value, include_meaning):
+def test_annotation(framework):
     """
     Tests behavior of annotations.
+
+    See: `<https://w3id.org/linkml/annotations>_`
+
+    Note annotations do not affect data, so
+    there is no instance data accompanying this test
 
     :param framework: some frameworks like sqlite do not support annotations
     :param annotation_name: name of the annotation
@@ -47,25 +31,26 @@ def test_annotation(framework, annotation_name, annotation_desc, pvs, value, inc
     :return:
     """
     classes = {
-        CLASS_C: {"attributes": {SLOT_S1: {}, "annotations": {}}},
+        "MetaclassM": {
+            "attributes": {
+                "metaslot": {},
+            }
+        },
+        CLASS_C: {
+            "attributes": {
+                SLOT_S1: {},
+                "annotations": {},
+            },
+            "annotations": {},
+            "instantiates": ["MetaclassM"],
+        },
     }
 
-    schema = validated_schema(
+    _schema = validated_schema(
         test_annotation,
-        f"{annotation_name}_M{include_meaning}",
+        "annotation",
         framework,
         classes=classes,
         core_elements=["annotations"],
     )
-    is_valid = value in [pv[0] for pv in pvs]
-    expected_behavior = ValidationBehavior.IMPLEMENTS
-    check_data(
-        schema,
-        value.replace(":", "_").replace(" ", "_"),
-        framework,
-        {SLOT_S1: value},
-        is_valid,
-        target_class=CLASS_C,
-        expected_behavior=expected_behavior,
-        description="annotation",
-    )
+    # TODO: test compliance with metaclasses

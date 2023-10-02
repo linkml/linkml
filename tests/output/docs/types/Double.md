@@ -9,3 +9,10 @@ URI: [linkml:Double](https://w3id.org/linkml/Double)
 |  |  |  |
 | --- | --- | --- |
 | Root (builtin) type | | **float** |
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **Close Mappings:** | | schema:Float |
+

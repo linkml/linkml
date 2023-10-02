@@ -24,11 +24,13 @@ definition &#8594;  <sub>0..1</sub> [String](types/String.md)
 
  * class_definition
  * definition
+ * enum_definition
  * slot_definition
 
 ## Other properties
 
 |  |  |  |
 | --- | --- | --- |
+| **In Subsets:** | | SpecificationSubset |
 | **See also:** | | [https://github.com/linkml/issues/128](https://github.com/linkml/issues/128) |
 

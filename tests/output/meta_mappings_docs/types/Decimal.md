@@ -9,3 +9,10 @@ URI: [linkml:Decimal](https://w3id.org/linkml/Decimal)
 |  |  |  |
 | --- | --- | --- |
 | Root (builtin) type | | **Decimal** |
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **Broad Mappings:** | | schema:Number |
+

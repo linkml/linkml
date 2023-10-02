@@ -26,5 +26,6 @@ URI: [linkml:symmetric](https://w3id.org/linkml/symmetric)
 
 |  |  |  |
 | --- | --- | --- |
+| **In Subsets:** | | SpecificationSubset |
 | **Close Mappings:** | | owl:SymmetricProperty |
 

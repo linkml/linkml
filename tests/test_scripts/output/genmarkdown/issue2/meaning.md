@@ -26,6 +26,7 @@ permissible_value &#8594;  <sub>0..1</sub> uriorcurie
 |  |  |  |
 | --- | --- | --- |
 | **Aliases:** | | PV meaning |
-| **In Subsets:** | | basic |
+| **In Subsets:** | | SpecificationSubset |
+|  | | BasicSubset |
 | **See also:** | | [https://en.wikipedia.org/wiki/ISO/IEC_11179](https://en.wikipedia.org/wiki/ISO/IEC_11179) |
 

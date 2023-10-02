@@ -3,6 +3,7 @@ from linkml_runtime.utils.formatutils import camelcase
 
 from tests.test_compliance.helper import (
     JSON_SCHEMA,
+    OWL,
     PYDANTIC,
     PYTHON_DATACLASSES,
     SQL_DDL_SQLITE,
@@ -21,6 +22,9 @@ from tests.test_compliance.test_compliance import CLASS_C, CORE_FRAMEWORKS, SLOT
 def test_typeof(framework, linkml_type, example_value):
     """
     Tests behavior of extended types.
+
+    An extended type is a user defined type that inherits
+    from a base type using type_of
 
     :param framework: all should support built-in types
     :param linkml_type: from the linkml metamodel
@@ -88,6 +92,10 @@ def test_typeof(framework, linkml_type, example_value):
         if not is_valid:
             # SQLite effectively coerces everything and has no type checking
             expected_behavior = ValidationBehavior.INCOMPLETE
+    if framework == OWL:
+        # OWL validation currently depends on python dataclasses to make instances;
+        # this coerces
+        expected_behavior = ValidationBehavior.INCOMPLETE
     check_data(
         schema,
         f"{type(example_value).__name__}-{example_value}",

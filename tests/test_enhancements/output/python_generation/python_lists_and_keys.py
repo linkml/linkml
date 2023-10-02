@@ -1,5 +1,5 @@
-# Auto generated from python_lists_and_keys.yaml by pythongen.py version: 0.9.0
-# Generation date: 2022-01-27T02:54:11
+# Auto generated from python_lists_and_keys.yaml by pythongen.py version: 0.0.1
+# Generation date: 2023-09-22T11:49:31
 # Schema: lists_and_keys
 #
 # id: http://examples.org/linkml/test/lists_and_keys
@@ -8,35 +8,20 @@
 
 import dataclasses
 import re
-import sys
-from dataclasses import dataclass
-from typing import Any, ClassVar, Dict, List, Optional, Union
-
 from jsonasobj2 import JsonObj, as_dict
-from linkml_runtime.linkml_model.meta import (EnumDefinition, PermissibleValue,
-                                              PvFormulaOptions)
-from linkml_runtime.utils.curienamespace import CurieNamespace
-from linkml_runtime.utils.dataclass_extensions_376 import \
-    dataclasses_init_fn_with_kwargs
-from linkml_runtime.utils.enumerations import EnumDefinitionImpl
-from linkml_runtime.utils.formatutils import camelcase, sfx, underscore
-from linkml_runtime.utils.metamodelcore import bnode, empty_dict, empty_list
-from linkml_runtime.utils.slot import Slot
-from linkml_runtime.utils.yamlutils import (YAMLRoot, extended_float,
-                                            extended_int, extended_str)
-from rdflib import Namespace, URIRef
+from typing import Optional, List, Union, Dict, ClassVar, Any
+from dataclasses import dataclass
+from linkml_runtime.linkml_model.meta import EnumDefinition, PermissibleValue, PvFormulaOptions
 
-from .python_complex_ranges import (IdentifiedOneElementClass,
-                                    IdentifiedOneElementClassName,
-                                    IdentifiedThreeElementClass,
-                                    IdentifiedThreeElementClassName,
-                                    KeyedOneElementClass,
-                                    KeyedOneElementClassName,
-                                    KeyedThreeElementClass,
-                                    KeyedThreeElementClassName,
-                                    KeyedTwoElementClass,
-                                    KeyedTwoElementClassName, OneElementClass,
-                                    ThreeElementClass, TwoElementClass)
+from linkml_runtime.utils.slot import Slot
+from linkml_runtime.utils.metamodelcore import empty_list, empty_dict, bnode
+from linkml_runtime.utils.yamlutils import YAMLRoot, extended_str, extended_float, extended_int
+from linkml_runtime.utils.dataclass_extensions_376 import dataclasses_init_fn_with_kwargs
+from linkml_runtime.utils.formatutils import camelcase, underscore, sfx
+from linkml_runtime.utils.enumerations import EnumDefinitionImpl
+from rdflib import Namespace, URIRef
+from linkml_runtime.utils.curienamespace import CurieNamespace
+from . python_complex_ranges import IdentifiedOneElementClass, IdentifiedOneElementClassName, IdentifiedThreeElementClass, IdentifiedThreeElementClassName, KeyedOneElementClass, KeyedOneElementClassName, KeyedThreeElementClass, KeyedThreeElementClassName, KeyedTwoElementClass, KeyedTwoElementClassName, OneElementClass, ThreeElementClass, TwoElementClass
 
 metamodel_version = "1.7.0"
 version = None

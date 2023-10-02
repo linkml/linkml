@@ -29,7 +29,7 @@ class MetaModelTestCase(GeneratorTestCase):
         )
 
     def test_meta_owl_schema(self):
-        """Test the owl schema generator for the biolink model"""
+        """Test the owl schema generator for the linkml model"""
         self.single_file_generator(
             "owl",
             OwlSchemaGenerator,

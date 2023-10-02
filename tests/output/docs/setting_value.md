@@ -20,3 +20,10 @@ URI: [linkml:setting_value](https://w3id.org/linkml/setting_value)
 ## Used by
 
  * [Setting](Setting.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **In Subsets:** | | SpecificationSubset |
+
