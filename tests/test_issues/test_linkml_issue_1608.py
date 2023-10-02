@@ -1,15 +1,10 @@
+import importlib
 import os
-import pprint
 
-import yaml
-from linkml_runtime import SchemaView
 from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.loaders import yaml_loader
 
 from linkml.generators import PythonGenerator
-
-import importlib
-
 from linkml.validators import JsonSchemaDataValidator
 
 schema_file = "input/linkml_issue_1608_schema.yaml"
