@@ -13,6 +13,10 @@ from rdflib.term import Identifier as rdflib_Identifier
 from linkml_runtime.utils.namespaces import Namespaces
 from linkml_runtime.utils.strictness import is_strict
 
+from linkml_runtime.utils.uri_validator import validate_uri
+from linkml_runtime.utils.uri_validator import validate_uri_reference
+from linkml_runtime.utils.uri_validator import validate_curie
+
 # Reference Decimal to make sure it stays in the imports
 _z = Decimal(1)
 
@@ -105,10 +109,12 @@ class URIorCURIE(Identifier):
         if not isinstance(v, (str, URIRef, Curie, URIorCURIE)):
             return False
         v = str(v)
-        if ':' in v and '://' not in v:
-            return URIorCURIE.is_curie(v)
+        if validate_uri(v):
+            return True
+        elif validate_uri_reference(v):
+            return True
         else:
-            return URI.is_valid(v)
+            return URIorCURIE.is_curie(v)
 
     @staticmethod
     def is_absolute(v: str) -> bool:
@@ -116,6 +122,8 @@ class URIorCURIE(Identifier):
 
     @staticmethod
     def is_curie(v: str, nsm: Optional[Namespaces] = None) -> bool:
+        if not validate_curie(v):
+            return False
         if ':' in v and '://' not in v:
             ns, ln = v.split(':', 1)
             return len(ns) == 0 or (NCName.is_valid(ns) and
@@ -142,7 +150,12 @@ class URI(URIorCURIE):
 
     @classmethod
     def is_valid(cls, v: str) -> bool:
-        return v is not None and not URIorCURIE.is_curie(v) and cls.uri_re.match(v)
+        if validate_uri(v):
+            return True
+        elif validate_uri_reference(v):
+            return True
+        else:
+            return False
 
 
 class Curie(URIorCURIE):
@@ -174,6 +187,8 @@ class Curie(URIorCURIE):
 
     @classmethod
     def is_valid(cls, v: str) -> bool:
+        if not validate_curie(v):
+            return False
         pnln = cls.ns_ln(v)
         #return pnln is not None and (not pnln[0] or isinstance(pnln[0], PN_PREFIX))
         return pnln is not None
