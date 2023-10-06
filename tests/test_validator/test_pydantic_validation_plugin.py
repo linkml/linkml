@@ -1,18 +1,17 @@
-from pathlib import Path
-
 import pytest
 from linkml_runtime.linkml_model import SchemaDefinition
 from linkml_runtime.loaders import yaml_loader
+from pydantic.version import VERSION as PYDANTIC_VERSION
 
 from linkml.validator.plugins.pydantic_validation_plugin import PydanticValidationPlugin
 from linkml.validator.validation_context import ValidationContext
 
-PERSONINFO_SCHEMA = str(Path(__file__).parent / "input/personinfo.yaml")
+IS_PYDANTIC_V1 = PYDANTIC_VERSION[0] == "1"
 
 
 @pytest.fixture
-def validation_context():
-    schema = yaml_loader.load(PERSONINFO_SCHEMA, SchemaDefinition)
+def validation_context(input_path):
+    schema = yaml_loader.load(input_path("personinfo.yaml"), SchemaDefinition)
     return ValidationContext(schema, "Person")
 
 
@@ -29,7 +28,7 @@ def validation_context():
         ({"id": "1", "full_name": "Person One", "aliases": "Person 1"}, False, False),
         ({"id": "1", "full_name": ["Person One"]}, False, False),
         ({"id": ["1"], "full_name": "Person One"}, False, False),
-        ({"id": "1", "full_name": 1, "age": 100}, True, False),
+        ({"id": "1", "full_name": 1, "age": 100}, True if IS_PYDANTIC_V1 else False, False),
         ({"id": "1", "full_name": 1, "age": "one hundred"}, False, False),
         ({"full_name": "Person One"}, False, False),
         # TODO

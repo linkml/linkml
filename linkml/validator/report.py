@@ -25,9 +25,9 @@ class ValidationResult(BaseModel):
     type: str
     severity: Severity
     message: str
-    instance: Optional[Any]
-    instance_index: Optional[int]
-    instantiates: Optional[str]
+    instance: Optional[Any] = None
+    instance_index: Optional[int] = None
+    instantiates: Optional[str] = None
 
 
 class ValidationReport(BaseModel):
