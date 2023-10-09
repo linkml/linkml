@@ -6,26 +6,26 @@ from typing import Optional
 from linkml_runtime import SchemaView
 from linkml_runtime.linkml_model import SchemaDefinition
 
-from linkml.generators.jsonschemagen import JsonSchemaGenerator
+from linkml.generators import JsonSchemaGenerator, PydanticGenerator
 
 
 class ValidationContext:
     """Provides state that may be shared between validation plugins"""
 
     def __init__(self, schema: SchemaDefinition, target_class: str) -> None:
-        self.schema = schema
-        self.schema_view = SchemaView(self.schema)
-        self.target_class = self._get_target_class(target_class)
-        self.cached_artefacts = {}
+        # Since SchemaDefinition is not hashable, to make caching simpler we store the schema
+        # in a "private" property and assume it never changes.
+        self._schema = schema
+        self._schema_view = SchemaView(self._schema)
+        self._target_class = self._get_target_class(target_class)
 
-    def __eq__(self, other: object) -> bool:
-        if not isinstance(other, ValidationContext):
-            return False
+    @property
+    def schema_view(self):
+        return self._schema_view
 
-        return self.schema.id == other.schema.id and self.target_class == other.target_class
-
-    def __hash__(self) -> int:
-        return hash((self.schema.id, self.target_class))
+    @property
+    def target_class(self):
+        return self._target_class
 
     @lru_cache
     def json_schema(self, *, closed: bool, path_override: Optional[os.PathLike] = None):
@@ -35,22 +35,32 @@ class ValidationContext:
 
         not_closed = not closed
         jsonschema_gen = JsonSchemaGenerator(
-            schema=self.schema,
+            schema=self._schema,
             mergeimports=True,
-            top_class=self.target_class,
+            top_class=self._target_class,
             not_closed=not_closed,
         )
         return jsonschema_gen.generate()
 
+    def pydantic_model(self, *, closed: bool):
+        module = self._pydantic_module(closed)
+        return module.__dict__[self._target_class]
+
+    @lru_cache
+    def _pydantic_module(self, *closed: bool):
+        return PydanticGenerator(self._schema, allow_extra=not closed).compile_module()
+
     def _get_target_class(self, target_class: str) -> str:
         if target_class is None:
             roots = [
-                class_name for class_name, class_def in self.schema_view.all_classes().items() if class_def.tree_root
+                class_name
+                for class_name, class_def in self._schema_view.all_classes().items()
+                if class_def.tree_root
             ]
             if len(roots) != 1:
                 raise ValueError(f"Cannot determine tree root: {roots}")
             return roots[0]
         else:
             # strict=True raises ValueError if class is not found in schema
-            class_def = self.schema_view.get_class(target_class, strict=True)
+            class_def = self._schema_view.get_class(target_class, strict=True)
             return class_def.name

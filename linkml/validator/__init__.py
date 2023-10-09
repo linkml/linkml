@@ -41,9 +41,9 @@ def _get_default_validator(
     except ValueError as e:
         raise ValueError(f"Invalid schema: {schema}") from e
 
-    validation_plugins = [JsonschemaValidationPlugin(closed=True, strict=strict)]
+    validation_plugins = [JsonschemaValidationPlugin(closed=True)]
 
-    return Validator(schema, validation_plugins=validation_plugins)
+    return Validator(schema, validation_plugins=validation_plugins, strict=strict)
 
 
 def validate(

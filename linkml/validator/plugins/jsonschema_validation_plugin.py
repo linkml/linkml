@@ -22,14 +22,11 @@ class JsonschemaValidationPlugin(ValidationPlugin):
 
         :param closed: If True, additional properties are not allowed on instances.
             Defaults to False.
-        :param strict: If true, stop validating after the first validation problem
-            is found. Defaults to False.
         :param json_schema_path: If provided, JSON Schema will not be generated from the schema,
             instead it will be read from this path. In this case the value of the `closed` argument
             is disregarded and the open- or closed-ness of the existing JSON Schema is taken as-is.
         """
         self.closed = closed
-        self.strict = strict
         self.json_schema_path = json_schema_path
 
     def process(self, instance: Any, context: ValidationContext) -> Iterator[ValidationResult]:
@@ -51,5 +48,3 @@ class JsonschemaValidationPlugin(ValidationPlugin):
                 instantiates=context.target_class,
                 message=f"{best_error.message} in /{'/'.join(str(p) for p in best_error.absolute_path)}",
             )
-            if self.strict:
-                return
