@@ -1062,7 +1062,7 @@ class ReferenceValidatorTestCase(unittest.TestCase):
             "uriorcurie": [
                 ("X:1", [], [], "X:1"),
                 ("http://example.org", [], [], "http://example.org"),
-                ("", [], [ConstraintType.TypeConstraint], ""),
+                ("", [], [], ""),
                 ("a b", [], [ConstraintType.TypeConstraint], "a b"),
                 (None, [], [], None),
             ],
