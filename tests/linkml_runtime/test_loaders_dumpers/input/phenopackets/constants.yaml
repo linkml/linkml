@@ -322,7 +322,7 @@ enums:
         meaning: UCUM:degree
       DIOPTER:
         description: diopter
-        meaning: UCUM:[diop]
+        meaning: UCUM:%5Bdiop%5D
       GRAM:
         description: gram
         meaning: UCUM:g
@@ -373,7 +373,7 @@ enums:
         meaning: UCUM:mm
       MILLIMETRES_OF_MERCURY:
         description: millimetres of mercury
-        meaning: UCUM:mm[Hg]
+        meaning: UCUM:mm%5BHg%5D
       MILLIMOLE:
         description: millimole
         meaning: UCUM:mmol
