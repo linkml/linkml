@@ -170,7 +170,7 @@ def test_type_range(framework, linkml_type, example_value):
             }
         },
     }
-    schema = validated_schema(test_type_range, linkml_type, framework, classes=classes)
+    schema = validated_schema(test_type_range, linkml_type, framework, classes=classes, core_elements=["range"])
     expected_behavior = None
     v = example_value
     is_valid = isinstance(v, (type_py_cls, type(None)))
@@ -250,7 +250,7 @@ def test_uri_types(framework, linkml_type, example_value, is_valid):
     expected_behavior = ValidationBehavior.IMPLEMENTS
     if not is_valid and framework in [PYDANTIC, JSON_SCHEMA]:
         expected_behavior = ValidationBehavior.INCOMPLETE
-    schema = validated_schema(test_type_range, linkml_type, framework, classes=classes)
+    schema = validated_schema(test_type_range, linkml_type, framework, classes=classes, core_elements=["uri", "uriorcurie"])
     check_data(
         schema,
         ensafeify(f"{example_value}-{example_value}"),
@@ -316,7 +316,7 @@ def test_date_types(framework, linkml_type, example_value, is_valid):
     }
     coerced = False
     expected_behavior = ValidationBehavior.IMPLEMENTS
-    schema = validated_schema(test_date_types, linkml_type, framework, classes=classes)
+    schema = validated_schema(test_date_types, linkml_type, framework, classes=classes, core_elements=["range", "TypeDefinition"])
     if framework == SQL_DDL_SQLITE:
         # SQLite Date type only accepts Python date objects as input
         expected_behavior = ValidationBehavior.INCOMPLETE
@@ -484,7 +484,7 @@ def test_cardinality(framework, multivalued, required, data_name, value):
         }
     }
     schema = validated_schema(
-        test_cardinality, f"MV{multivalued}_REQ{required}", framework, classes=classes
+        test_cardinality, f"MV{multivalued}_REQ{required}", framework, classes=classes, core_elements=["required", "multivalued"],
     )
     coerced = None
     is_valid = True
@@ -558,7 +558,7 @@ def test_identifier_is_required(framework, required_asserted, data_name, instanc
         }
     }
     schema = validated_schema(
-        test_cardinality, f"REQ{required_asserted}", framework, classes=classes
+        test_cardinality, f"requiredEQ_{required_asserted}", framework, classes=classes, core_elements=["identifier", "required"],
     )
     expected_behavior = ValidationBehavior.IMPLEMENTS
     check_data(
@@ -632,8 +632,8 @@ def test_non_standard_names(
             "typeof": "string",
         },
     }
-    name = ensafeify(f"CN{class_name}_SN{slot_name}_TN{type_name}")
-    schema = validated_schema(test_cardinality, name, framework, classes=classes, types=types)
+    name = ensafeify(f"ClassNameEQ_{class_name}__SlotNameEQ_{slot_name}__TypeNameEQ_{type_name}")
+    schema = validated_schema(test_cardinality, name, framework, classes=classes, types=types, core_elements=[])
     expected_behavior = ValidationBehavior.IMPLEMENTS
     instance = {
         safe_slot_name: "x",
@@ -700,7 +700,7 @@ def test_non_standard_num_names(framework, enum_name, pv_name):
     }
     name = ensafeify(f"EN{enum_name}_PV{pv_name}")
     schema = validated_schema(
-        test_non_standard_num_names, name, framework, classes=classes, enums=enums
+        test_non_standard_num_names, name, framework, classes=classes, enums=enums, core_elements=[],
     )
     expected_behavior = ValidationBehavior.IMPLEMENTS
     instance = {

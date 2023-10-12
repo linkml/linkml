@@ -16,7 +16,7 @@ from tests.test_compliance.test_compliance import (
     CLASS_C1a,
     CLASS_C1b,
     SLOT_S1a,
-    SLOT_S1b,
+    SLOT_S1b, CLASS_C1a1,
 )
 
 
@@ -26,7 +26,10 @@ from tests.test_compliance.test_compliance import (
         ("t0 type optional", "string", {}, True, False),
         ("t1", "string", {SLOT_TYPE: CLASS_C1a}, True, False),
         ("t2", "string", {SLOT_TYPE: "fake"}, False, False),
+        ("t2 generic A", "string", {SLOT_TYPE: CLASS_C1, SLOT_S1a: "..."}, False, False),
+        ("t2 generic B", "string", {SLOT_TYPE: CLASS_C1, SLOT_S1b: "..."}, False, False),
         ("t3", "string", {SLOT_TYPE: CLASS_C1a, SLOT_S1a: "..."}, True, False),
+        ("t3b", "string", {SLOT_TYPE: CLASS_C1a1, SLOT_S1a: "..."}, True, False),
         ("t4", "string", {SLOT_TYPE: CLASS_C1a, SLOT_S1b: "..."}, False, False),
         ("t5", "string", {SLOT_TYPE: CLASS_C1b, SLOT_S1b: "..."}, True, False),
         ("t6", "uriorcurie", {SLOT_TYPE: f"ex:{CLASS_C1a}"}, True, False),
@@ -40,11 +43,23 @@ def test_designates_type(framework, description, type_range, object, is_valid, o
     """
     Tests behavior of designates_type.
 
-    :param framework:
-    :param description:
-    :param type_range:
-    :param object:
-    :param is_valid:
+    This creates a schema consisting of a *constainer* class that has a multivalued slot *entities*,
+    with a range of C1. C1 has a slot *type* that designates the type of the entity.  C1a and C1b
+    are subclasses of C1.
+
+    C1a has a slot S1a, C1b has a slot S1b.
+
+    The schema is tested against different data objects with different combinations of these slots
+    set.
+
+    The data is only valid if the slots are specified for the correct type.
+
+    :param framework: generator to test
+    :param description: name of test data object
+    :param type_range: range of the type designator slot (e.g. string, uriorcurie)
+    :param object: data instance to test
+    :param is_valid: whether the data is valid
+    :param override_uri: whether to use class_uri to override the type
     :return:
     """
     classes = {
@@ -83,6 +98,9 @@ def test_designates_type(framework, description, type_range, object, is_valid, o
                 SLOT_S1b: {},
             },
         },
+        CLASS_C1a1: {
+            "is_a": CLASS_C1a,
+        },
     }
     if override_uri:
         for cn, cls in classes.items():
@@ -101,6 +119,7 @@ def test_designates_type(framework, description, type_range, object, is_valid, o
     if framework != PYDANTIC and framework != JSON_SCHEMA and framework != PYTHON_DATACLASSES:
         expected_behavior = ValidationBehavior.INCOMPLETE
     if override_uri and framework in [PYDANTIC, PYTHON_DATACLASSES]:
+        # Pydantic and dataclasses don't support using class_uri to override the type
         expected_behavior = ValidationBehavior.INCOMPLETE
     check_data(
         schema,

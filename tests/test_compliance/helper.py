@@ -363,15 +363,32 @@ def _obj_within_obj(expected: Dict, actual: Dict) -> bool:
     return False
 
 
-def _schema_out_path(schema: Dict) -> Path:
-    out_dir = OUTPUT_DIR / schema["name"]
+def _schema_out_path(schema: Dict, parent=False) -> Path:
+    f"""
+    Get the output path for a schema.
+    
+    This is derived from the schema name (which is already constrained to be
+    filesystem safe).
+    
+    :param schema: 
+    :return: 
+    """
+    toks = schema["name"].split("-")
+    test_name = toks[0]
+    schema_name = "-".join(toks[1:])
+    out_dir = OUTPUT_DIR / test_name
+    if not parent:
+        out_dir = out_dir  / schema_name
     out_dir.mkdir(parents=True, exist_ok=True)
     return out_dir
 
 
 @lru_cache
-def _get_linkml_types():
-    return yaml.safe_load(open(linkml_runtime.SCHEMA_DIRECTORY / "types.yaml"))
+def _get_linkml_types() -> dict:
+    type_schema = yaml.safe_load(open(linkml_runtime.SCHEMA_DIRECTORY / "types.yaml"))
+    for typ in type_schema.get("types", {}).values():
+        typ["from_schema"] = "https://w3id.org/linkml/types"
+    return type_schema
 
 
 def _make_schema(
@@ -384,6 +401,7 @@ def _make_schema(
     prefixes: Dict = None,
     core_elements: List = None,
     post_process: Callable = None,
+    merge_type_imports = True,
     **kwargs,
 ) -> Tuple[Dict, List]:
     """
@@ -419,9 +437,14 @@ def _make_schema(
         # Fetching the types.yaml file via an import each time this schema is
         # resolved takes too much time so we fetch it once manually and inline
         # the relevant parts here
-        linkml_types = _get_linkml_types()
-        schema["prefixes"].update(linkml_types.get("prefixes", {}))
-        schema["types"].update(linkml_types.get("types", {}))
+        if merge_type_imports:
+            linkml_types = _get_linkml_types()
+            schema["prefixes"].update(linkml_types.get("prefixes", {}))
+            schema["types"].update(linkml_types.get("types", {}))
+        else:
+            if "imports" not in schema:
+                schema["imports"] = []
+            schema["imports"].append("linkml:types")
     else:
         schema = deepcopy(schema)
 
@@ -443,13 +466,35 @@ def _make_schema(
         post_process(schema)
     mappings = list(_extract_mappings(schema))
     out_dir = _schema_out_path(schema)
+    parent_out_dir = _schema_out_path(schema, parent=True)
+    # Write top-level README (TODO: avoid doing this for each combination)
+    with open(parent_out_dir / "README.md", "w", encoding="utf-8") as stream:
+        dlines = [x.strip() for x in schema["description"].split("\n")]
+        dlines = [x for x in dlines if not x.startswith(":")]
+        desc = "\n".join(dlines)
+        stream.write(f"# {test.__name__}\n\n")
+        stream.write(f"{desc}\n\n")
+        stream.write("## Elements Tested\n\n")
+        for el in core_elements:
+            stream.write(f"* [{el}](https://w3id.org/linkml/{el})\n")
+    # Write README for this schema combo
     with open(out_dir / "README.md", "w", encoding="utf-8") as stream:
         dlines = [x.strip() for x in schema["description"].split("\n")]
         dlines = [x for x in dlines if not x.startswith(":")]
         desc = "\n".join(dlines)
         stream.write(f"# {schema_name.replace('test_', '')}\n\n")
         stream.write(f"{desc}\n\n")
-        stream.write("* Schema: [schema.yaml](schema.yaml)\n")
+        schema_minimal = deepcopy(schema)
+        builtin = [tn for tn, t in schema_minimal.get("types", {}).items() if t.get("from_schema", None) == "https://w3id.org/linkml/types"]
+        for t in builtin:
+            del schema_minimal["types"][t]
+        if "imports" not in schema_minimal:
+            schema_minimal["imports"] = []
+        schema_minimal["imports"].append("linkml:types")
+        stream.write("## Schema\n\n")
+        stream.write("```yaml\n")
+        yaml.safe_dump(schema_minimal, stream, sort_keys=False)
+        stream.write("```\n\n")
     with open(out_dir / "schema.yaml", "w", encoding="utf-8") as stream:
         yaml.safe_dump(schema, stream, sort_keys=False)
     with open(out_dir / "mappings.txt", "w", encoding="utf-8") as stream:
@@ -616,6 +661,21 @@ def check_data(
     feature = feature_dict[schema_name_to_feature[schema["name"]]]
     feature.num_tests += 1
     # TODO: avoid repeated rewrites of same object shared across frameworks
+    with open(out_dir / f"README.{data_name}.md", "w", encoding="utf-8") as stream:
+        stream.write(f"# {data_name}\n")
+        if description:
+            stream.write(f"_{description}_\n")
+        stream.write("\n## Schema:\n")
+        stream.write(" * [../schema.yaml](../schema.yaml)\n")
+        stream.write("\n## Object:\n")
+        stream.write("```yaml\n")
+        yaml.safe_dump(object_to_validate, stream)
+        stream.write("```\n")
+        stream.write("\nExpected behavior:\n\n")
+        if valid:
+            stream.write("* valid (frameworks must accept the data object)\n")
+        else:
+            stream.write("* invalid (frameworks must flag the data object)\n")
     with open(out_dir / f"{data_name}.yaml", "w", encoding="utf-8") as stream:
         yaml.safe_dump(object_to_validate, stream)
     notes = None
@@ -828,3 +888,38 @@ def robot_check_coherency(
     except subprocess.CalledProcessError as e:
         logging.info(f"Robot call failed, likely unsatisfiable: {e}")
         return False
+
+
+TREE_NODE = Tuple[int]
+def generate_tree_nodes(depth=3, num_siblings=2, path: List[int]=None) -> Iterator[TREE_NODE]:
+    """
+    Generate a tree of data names, with depth `depth`.
+
+    :param depth:
+    :return:
+    """
+    assert depth >= 0
+    if path is None:
+        path = [0]
+    yield tuple(path)
+    for i in range(1, num_siblings+1):
+        if depth > 0:
+            yield from generate_tree_nodes(depth=depth-1, num_siblings=num_siblings, path=path + [i])
+
+
+def generate_tree(depth=3, num_siblings=2, prefix="N") -> Iterator[Tuple[str, List[str]]]:
+    """
+    Generate a tree of data names, with depth `depth`.
+
+    :param depth:
+    :return:
+    """
+    assert depth >= 0
+    def node_id(path):
+        return prefix + "".join(str(i) for i in path)
+    for path in generate_tree_nodes(depth=depth, num_siblings=num_siblings):
+        assert len(path) > 0
+        if len(path) == 1:
+            yield node_id(path), []
+        else:
+            yield node_id(path), [node_id(path[:-1])]
