@@ -91,6 +91,10 @@ class NamespacesTestCase(unittest.TestCase):
         prefixmap_merged.add_prefixmap('bioregistry')
         self.assertGreater(len(prefixmap_merged), 3860)
 
+        test_NCIT_curie = 'NCIT:C25300'
+        test_NCIT_uri = URIRef('http://purl.obolibrary.org/obo/NCIT_C25300')
+        self.assertEqual(prefixmap_merged.curie_for(test_NCIT_uri), test_NCIT_curie)
+        self.assertEqual(prefixmap_merged.uri_for(test_NCIT_curie), test_NCIT_uri)
 
 if __name__ == '__main__':
     unittest.main()

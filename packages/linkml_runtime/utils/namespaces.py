@@ -139,7 +139,7 @@ class Namespaces(CaseInsensitiveDict):
         present, None is returned
 
         @param uri: URI to create the CURIE for
-        @param default_ok: True means the default prefix is ok. Otherwise we have to have a reql prefix
+        @param default_ok: True means the default prefix is ok. Otherwise, we have to have a real prefix
         @param pythonform: True means take the python/rdflib uppercase format
         """
         if ':' in uri and ':/' not in uri:
@@ -148,28 +148,41 @@ class Namespaces(CaseInsensitiveDict):
         if pythonform:
             default_ok = False
         match: Tuple[str, Optional[Namespace]] = ('', None)     # match string / prefix
-        u = str(uri)
+        uri_string = str(uri)
 
-        # Find the longest match
-        for k, v in self.items():
-            vs = str(v)
-            if u.startswith(vs):
-                if len(vs) > len(match[0]) and (default_ok or k not in (Namespaces._default_key, Namespaces._base_key)):
-                    match = (vs, k)
+        # Find the longest match for the URI, self.items() is a list of (prefix/namespace, uri base prefix) tuples
+        for namespace, uri_base in self.items():
+            uri_base_string = str(uri_base)
+            # uri_string is passed into this method as the full URI to be converted to a CURIE
+            if uri_string.startswith(uri_base_string):
+                # default key and base key are `@default` `@base` respectively
+                # at this point match[0] is '', match[1] is None
+                if len(uri_base_string) > len(match[0]) and \
+                        (default_ok or namespace not in (Namespaces._default_key, Namespaces._base_key)):
+                    match = (uri_base_string, namespace)
+
+        # check if length of uri_base_string is > 0, now after basically assigning it to be the URI base string
+        # that matches the start of the URI coming into the method
         if len(match[0]):
             if pythonform:
-                ns = match[1].upper()
-                ln = u.replace((match[0]), '')
-                if not ln:
-                    return f"URIRef(str({ns}))"
-                elif ln.isidentifier():
-                    return f"{ns}.{ln}"
+                # uppercase the namespace
+                namespace = match[1].upper()
+                # match[0] is the URI base string, so we remove that from the incoming URI
+                leftover_uri = uri_string.replace((match[0]), '')
+                if not leftover_uri:
+                    return f"URIRef(str({namespace}))"
+                # why?
+                # elif leftover_uri.isidentifier():
+                #    return f"{namespace}.{leftover_uri}"
                 else:
-                    return f'{ns}["{ln}"]'
+                    return f'{namespace}["{leftover_uri}"]'
             else:
-                return u.replace(match[0],
-                                 ':' if match[1] == Namespaces._default_key else
-                                 '' if match[1] == Namespaces._base_key else match[1] + ':')
+                if match[1] == Namespaces._default_key:
+                    return uri_string.replace(match[0], ':')
+                elif match[1] == Namespaces._base_key:
+                    return uri_string.replace(match[0], '')
+                else:
+                    return uri_string.replace(match[0], match[1] + ':')
         return None
 
     def prefix_for(self, uri_or_curie: Any, case_shift: bool = True) -> Optional[str]:
@@ -213,7 +226,7 @@ class Namespaces(CaseInsensitiveDict):
         return URIRef(self.join(self[prefix], local))
 
     def uri_or_curie_for(self, prefix: Union[str, URIRef], suffix: str) -> str:
-        """ Return a CURIE for prefix/suffix in possible, else a URI """
+        """ Return a CURIE for prefix/suffix if possible, else a URI """
         if isinstance(prefix, URIRef) or ':/' in str(prefix):
             prefix_as_uri = str(prefix)
             for k, v in self.items():
