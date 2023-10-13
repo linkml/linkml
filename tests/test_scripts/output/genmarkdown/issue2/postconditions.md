@@ -28,5 +28,7 @@ None &#8594;  <sub>0..1</sub> anonymous_class_expression
 | **Aliases:** | | then |
 |  | | head |
 |  | | consequents |
+| **In Subsets:** | | SpecificationSubset |
+| **See also:** | | [https://w3id.org/linkml/docs/specification/05validation/#rules](https://w3id.org/linkml/docs/specification/05validation/#rules) |
 | **Close Mappings:** | | swrl:body |
 

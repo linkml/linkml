@@ -17,13 +17,17 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 <Decimal> xsd:decimal
 
-<Time> xsd:dateTime
+<Time> xsd:time
 
 <Date> xsd:date
 
 <Datetime> xsd:dateTime
 
+<DateOrDatetime> <DateOrDatetime>
+
 <Uriorcurie> IRI
+
+<Curie> xsd:string
 
 <Uri> IRI
 
@@ -32,6 +36,12 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 <Objectidentifier> IRI
 
 <Nodeidentifier> NONLITERAL
+
+<Jsonpointer> xsd:string
+
+<Jsonpath> xsd:string
+
+<Sparqlpath> xsd:string
 
 <AltDescription> CLOSED {
     (  $<AltDescription_tes> (  <source> @<String> ;
@@ -70,6 +80,25 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <slot_conditions> @<SlotDefinition> *
        ) ;
        rdf:type [ <AnonymousClassExpression> ] ?
+    )
+}
+
+<AnonymousEnumExpression> CLOSED {
+    (  $<AnonymousEnumExpression_tes> (  &<EnumExpression_tes> ;
+          rdf:type [ <EnumExpression> ] ? ;
+          <code_set> @<Uriorcurie> ? ;
+          <code_set_tag> @<String> ? ;
+          <code_set_version> @<String> ? ;
+          <pv_formula> @<PvFormulaOptions> ? ;
+          <permissible_values> @<PermissibleValue> * ;
+          <include> @<AnonymousEnumExpression> * ;
+          <minus> @<AnonymousEnumExpression> * ;
+          <inherits> @<EnumDefinition> * ;
+          <reachable_from> @<ReachabilityQuery> ? ;
+          <matches> @<MatchQuery> ? ;
+          <concepts> @<Uriorcurie> *
+       ) ;
+       rdf:type [ <AnonymousEnumExpression> ] ?
     )
 }
 
@@ -112,6 +141,11 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <related_mappings> @<Uriorcurie> * ;
           <narrow_mappings> @<Uriorcurie> * ;
           <broad_mappings> @<Uriorcurie> * ;
+          <created_by> @<Uriorcurie> ? ;
+          <created_on> @<Datetime> ? ;
+          <last_updated_on> @<Datetime> ? ;
+          <modified_by> @<Uriorcurie> ? ;
+          <status> @<Uriorcurie> ? ;
           <rank> @<Integer> ?
        ) ;
        rdf:type [ <AnonymousExpression> ] ?
@@ -125,6 +159,7 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           rdf:type [ <SlotExpression> ] ? ;
           <range> @<Element> ? ;
           <range_expression> @<AnonymousClassExpression> ? ;
+          <enum_range> @<EnumExpression> ? ;
           <required> @<Boolean> ? ;
           <recommended> @<Boolean> ? ;
           <inlined> @<Boolean> ? ;
@@ -133,6 +168,9 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <maximum_value> @<Integer> ? ;
           <pattern> @<String> ? ;
           <structured_pattern> @<PatternExpression> ? ;
+          <unit> @<UnitOfMeasure> ? ;
+          <implicit_prefix> @<String> ? ;
+          <value_presence> @<PresenceEnum> ? ;
           <equals_string> @<String> ? ;
           <equals_string_in> @<String> * ;
           <equals_number> @<Integer> ? ;
@@ -140,7 +178,7 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <minimum_cardinality> @<Integer> ? ;
           <maximum_cardinality> @<Integer> ? ;
           <has_member> @<AnonymousSlotExpression> ? ;
-          <all_members> @<SlotDefinition> * ;
+          <all_members> @<AnonymousSlotExpression> ? ;
           <none_of> @<AnonymousSlotExpression> * ;
           <exactly_one_of> @<AnonymousSlotExpression> * ;
           <any_of> @<AnonymousSlotExpression> * ;
@@ -155,6 +193,8 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           rdf:type [ <TypeExpression> ] ? ;
           <pattern> @<String> ? ;
           <structured_pattern> @<PatternExpression> ? ;
+          <unit> @<UnitOfMeasure> ? ;
+          <implicit_prefix> @<String> ? ;
           <equals_string> @<String> ? ;
           <equals_string_in> @<String> * ;
           <equals_number> @<Integer> ? ;
@@ -166,6 +206,18 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <all_of> @<AnonymousTypeExpression> *
        ) ;
        rdf:type [ <AnonymousTypeExpression> ] ?
+    )
+}
+
+<Anything> CLOSED {
+    (  $<Anything_tes> rdf:type . * ;
+       rdf:type [ <Anything> ] ?
+    )
+}
+
+<AnyValue> CLOSED {
+    (  $<AnyValue_tes> rdf:type . * ;
+       rdf:type [ <AnyValue> ] ?
     )
 }
 
@@ -261,7 +313,12 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <close_mappings> @<Uriorcurie> * ;
           <related_mappings> @<Uriorcurie> * ;
           <narrow_mappings> @<Uriorcurie> * ;
-          <broad_mappings> @<Uriorcurie> *
+          <broad_mappings> @<Uriorcurie> * ;
+          <created_by> @<Uriorcurie> ? ;
+          <created_on> @<Datetime> ? ;
+          <last_updated_on> @<Datetime> ? ;
+          <modified_by> @<Uriorcurie> ? ;
+          <status> @<Uriorcurie> ?
        ) ;
        rdf:type [ <ClassRule> ] ?
     )
@@ -292,6 +349,11 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <related_mappings> @<Uriorcurie> * ;
           <narrow_mappings> @<Uriorcurie> * ;
           <broad_mappings> @<Uriorcurie> * ;
+          <created_by> @<Uriorcurie> ? ;
+          <created_on> @<Datetime> ? ;
+          <last_updated_on> @<Datetime> ? ;
+          <modified_by> @<Uriorcurie> ? ;
+          <status> @<Uriorcurie> ? ;
           <rank> @<Integer> ?
        ) ;
        rdf:type [ <CommonMetadata> ] ?
@@ -299,7 +361,7 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 }
 
 <Definition>  (
-    @<ClassDefinition> OR @<SlotDefinition>
+    @<ClassDefinition> OR @<EnumDefinition> OR @<SlotDefinition>
 )
 
 <Definition_struct> {
@@ -310,11 +372,6 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <mixins> @<Definition> * ;
           <apply_to> @<Definition> * ;
           <values_from> @<Uriorcurie> * ;
-          <created_by> @<Uriorcurie> ? ;
-          <created_on> @<Datetime> ? ;
-          <last_updated_on> @<Datetime> ? ;
-          <modified_by> @<Uriorcurie> ? ;
-          <status> @<Uriorcurie> ? ;
           <string_serialization> @<String> ?
        ) ;
        rdf:type [ <Definition> ]
@@ -322,7 +379,7 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 }
 
 <Element>  (
-    @<Definition> OR @<EnumDefinition> OR @<SchemaDefinition> OR @<SubsetDefinition> OR @<TypeDefinition>
+    @<Definition> OR @<SchemaDefinition> OR @<SubsetDefinition> OR @<TypeDefinition>
 )
 
 <Element_struct> {
@@ -336,6 +393,7 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <definition_uri> @<Uriorcurie> ? ;
           <local_names> @<LocalName> * ;
           <conforms_to> @<String> ? ;
+          <implements> @<Uriorcurie> * ;
           <extensions> @<Extension> * ;
           <annotations> @<Annotation> * ;
           <description> @<String> ? ;
@@ -362,6 +420,11 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <related_mappings> @<Uriorcurie> * ;
           <narrow_mappings> @<Uriorcurie> * ;
           <broad_mappings> @<Uriorcurie> * ;
+          <created_by> @<Uriorcurie> ? ;
+          <created_on> @<Datetime> ? ;
+          <last_updated_on> @<Datetime> ? ;
+          <modified_by> @<Uriorcurie> ? ;
+          <status> @<Uriorcurie> ? ;
           <rank> @<Integer> ?
        ) ;
        rdf:type [ <Element> ]
@@ -369,28 +432,57 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 }
 
 <EnumDefinition> CLOSED {
-    (  $<EnumDefinition_tes> (  &<Element_tes> ;
-          rdf:type [ <Element> ] ? ;
+    (  $<EnumDefinition_tes> (  &<Definition_tes> ;
+          rdf:type [ <Definition> ] ? ;
+          &<EnumExpression_tes> ;
+          rdf:type [ <EnumExpression> ] ? ;
+          <enum_uri> @<Uriorcurie> ? ;
           <code_set> @<Uriorcurie> ? ;
           <code_set_tag> @<String> ? ;
           <code_set_version> @<String> ? ;
           <pv_formula> @<PvFormulaOptions> ? ;
-          <permissible_values> @<PermissibleValue> *
+          <permissible_values> @<PermissibleValue> * ;
+          <include> @<AnonymousEnumExpression> * ;
+          <minus> @<AnonymousEnumExpression> * ;
+          <inherits> @<EnumDefinition> * ;
+          <reachable_from> @<ReachabilityQuery> ? ;
+          <matches> @<MatchQuery> ? ;
+          <concepts> @<Uriorcurie> *
        ) ;
        rdf:type [ <EnumDefinition> ]
     )
 }
 
+<EnumExpression> CLOSED {
+    (  $<EnumExpression_tes> (  &<Expression_tes> ;
+          rdf:type [ <Expression> ] ? ;
+          <code_set> @<Uriorcurie> ? ;
+          <code_set_tag> @<String> ? ;
+          <code_set_version> @<String> ? ;
+          <pv_formula> @<PvFormulaOptions> ? ;
+          <permissible_values> @<PermissibleValue> * ;
+          <include> @<AnonymousEnumExpression> * ;
+          <minus> @<AnonymousEnumExpression> * ;
+          <inherits> @<EnumDefinition> * ;
+          <reachable_from> @<ReachabilityQuery> ? ;
+          <matches> @<MatchQuery> ? ;
+          <concepts> @<Uriorcurie> *
+       ) ;
+       rdf:type [ <EnumExpression> ] ?
+    )
+}
+
 <Example> CLOSED {
     (  $<Example_tes> (  <value> @<String> ? ;
-          <description> @<String> ?
+          <description> @<String> ? ;
+          <object> @<Anything> ?
        ) ;
        rdf:type [ <Example> ] ?
     )
 }
 
 <Expression>  (
-    @<SlotExpression> OR @<TypeExpression>
+    @<EnumExpression> OR @<SlotExpression> OR @<TypeExpression>
 )
 
 <Expression_struct> {
@@ -408,7 +500,7 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 <Extension>  (
     CLOSED {
        (  $<Extension_tes> (  <tag> @<Uriorcurie> ;
-             <value> @<String> ;
+             <value> @<AnyValue> ;
              <extensions> @<Extension> *
           ) ;
           rdf:type [ <Extension> ]
@@ -452,6 +544,11 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <related_mappings> @<Uriorcurie> * ;
           <narrow_mappings> @<Uriorcurie> * ;
           <broad_mappings> @<Uriorcurie> * ;
+          <created_by> @<Uriorcurie> ? ;
+          <created_on> @<Datetime> ? ;
+          <last_updated_on> @<Datetime> ? ;
+          <modified_by> @<Uriorcurie> ? ;
+          <status> @<Uriorcurie> ? ;
           <rank> @<Integer> ?
        ) ;
        rdf:type [ <ImportExpression> ] ?
@@ -463,6 +560,14 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <local_name_value> @<String>
        ) ;
        rdf:type [ <LocalName> ]
+    )
+}
+
+<MatchQuery> CLOSED {
+    (  $<MatchQuery_tes> (  <identifier_pattern> @<String> ? ;
+          <source_ontology> @<Uriorcurie> ?
+       ) ;
+       rdf:type [ <MatchQuery> ] ?
     )
 }
 
@@ -509,6 +614,11 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <related_mappings> @<Uriorcurie> * ;
           <narrow_mappings> @<Uriorcurie> * ;
           <broad_mappings> @<Uriorcurie> * ;
+          <created_by> @<Uriorcurie> ? ;
+          <created_on> @<Datetime> ? ;
+          <last_updated_on> @<Datetime> ? ;
+          <modified_by> @<Uriorcurie> ? ;
+          <status> @<Uriorcurie> ? ;
           <rank> @<Integer> ?
        ) ;
        rdf:type [ <PathExpression> ] ?
@@ -551,6 +661,11 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <related_mappings> @<Uriorcurie> * ;
           <narrow_mappings> @<Uriorcurie> * ;
           <broad_mappings> @<Uriorcurie> * ;
+          <created_by> @<Uriorcurie> ? ;
+          <created_on> @<Datetime> ? ;
+          <last_updated_on> @<Datetime> ? ;
+          <modified_by> @<Uriorcurie> ? ;
+          <status> @<Uriorcurie> ? ;
           <rank> @<Integer> ?
        ) ;
        rdf:type [ <PatternExpression> ] ?
@@ -566,6 +681,7 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           rdf:type [ <CommonMetadata> ] ? ;
           <description> @<String> ? ;
           <meaning> @<Uriorcurie> ? ;
+          <unit> @<UnitOfMeasure> ? ;
           <mixins> @<PermissibleValue> * ;
           <extensions> @<Extension> * ;
           <annotations> @<Annotation> * ;
@@ -592,6 +708,11 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <related_mappings> @<Uriorcurie> * ;
           <narrow_mappings> @<Uriorcurie> * ;
           <broad_mappings> @<Uriorcurie> * ;
+          <created_by> @<Uriorcurie> ? ;
+          <created_on> @<Datetime> ? ;
+          <last_updated_on> @<Datetime> ? ;
+          <modified_by> @<Uriorcurie> ? ;
+          <status> @<Uriorcurie> ? ;
           <rank> @<Integer> ?
        ) ;
        rdf:type [ <PermissibleValue> ]
@@ -603,6 +724,18 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <prefix_reference> @<Uri>
        ) ;
        rdf:type [ <Prefix> ]
+    )
+}
+
+<ReachabilityQuery> CLOSED {
+    (  $<ReachabilityQuery_tes> (  <source_ontology> @<Uriorcurie> ? ;
+          <source_nodes> @<Uriorcurie> * ;
+          <relationship_types> @<Uriorcurie> * ;
+          <is_direct> @<Boolean> ? ;
+          <include_self> @<Boolean> ? ;
+          <traverse_up> @<Boolean> ?
+       ) ;
+       rdf:type [ <ReachabilityQuery> ] ?
     )
 }
 
@@ -686,10 +819,12 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <path_rule> @<PathExpression> ? ;
           <disjoint_with> @<SlotDefinition> * ;
           <children_are_mutually_disjoint> @<Boolean> ? ;
+          <union_of> @<SlotDefinition> * ;
           <mixins> @<SlotDefinition> * ;
           <apply_to> @<SlotDefinition> * ;
           <range> @<Element> ? ;
           <range_expression> @<AnonymousClassExpression> ? ;
+          <enum_range> @<EnumExpression> ? ;
           <required> @<Boolean> ? ;
           <recommended> @<Boolean> ? ;
           <inlined> @<Boolean> ? ;
@@ -698,6 +833,9 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <maximum_value> @<Integer> ? ;
           <pattern> @<String> ? ;
           <structured_pattern> @<PatternExpression> ? ;
+          <unit> @<UnitOfMeasure> ? ;
+          <implicit_prefix> @<String> ? ;
+          <value_presence> @<PresenceEnum> ? ;
           <equals_string> @<String> ? ;
           <equals_string_in> @<String> * ;
           <equals_number> @<Integer> ? ;
@@ -705,7 +843,7 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <minimum_cardinality> @<Integer> ? ;
           <maximum_cardinality> @<Integer> ? ;
           <has_member> @<AnonymousSlotExpression> ? ;
-          <all_members> @<SlotDefinition> * ;
+          <all_members> @<AnonymousSlotExpression> ? ;
           <none_of> @<AnonymousSlotExpression> * ;
           <exactly_one_of> @<AnonymousSlotExpression> * ;
           <any_of> @<AnonymousSlotExpression> * ;
@@ -720,6 +858,7 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           rdf:type [ <Expression> ] ? ;
           <range> @<Element> ? ;
           <range_expression> @<AnonymousClassExpression> ? ;
+          <enum_range> @<EnumExpression> ? ;
           <required> @<Boolean> ? ;
           <recommended> @<Boolean> ? ;
           <inlined> @<Boolean> ? ;
@@ -728,6 +867,9 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <maximum_value> @<Integer> ? ;
           <pattern> @<String> ? ;
           <structured_pattern> @<PatternExpression> ? ;
+          <unit> @<UnitOfMeasure> ? ;
+          <implicit_prefix> @<String> ? ;
+          <value_presence> @<PresenceEnum> ? ;
           <equals_string> @<String> ? ;
           <equals_string_in> @<String> * ;
           <equals_number> @<Integer> ? ;
@@ -735,7 +877,7 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <minimum_cardinality> @<Integer> ? ;
           <maximum_cardinality> @<Integer> ? ;
           <has_member> @<AnonymousSlotExpression> ? ;
-          <all_members> @<SlotDefinition> * ;
+          <all_members> @<AnonymousSlotExpression> ? ;
           <none_of> @<AnonymousSlotExpression> * ;
           <exactly_one_of> @<AnonymousSlotExpression> * ;
           <any_of> @<AnonymousSlotExpression> * ;
@@ -783,6 +925,11 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <related_mappings> @<Uriorcurie> * ;
           <narrow_mappings> @<Uriorcurie> * ;
           <broad_mappings> @<Uriorcurie> * ;
+          <created_by> @<Uriorcurie> ? ;
+          <created_on> @<Datetime> ? ;
+          <last_updated_on> @<Datetime> ? ;
+          <modified_by> @<Uriorcurie> ? ;
+          <status> @<Uriorcurie> ? ;
           <rank> @<Integer> ?
        ) ;
        rdf:type [ <StructuredAlias> ] ?
@@ -806,8 +953,11 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <base> @<String> ? ;
           <uri> @<Uriorcurie> ? ;
           <repr> @<String> ? ;
+          <union_of> @<TypeDefinition> * ;
           <pattern> @<String> ? ;
           <structured_pattern> @<PatternExpression> ? ;
+          <unit> @<UnitOfMeasure> ? ;
+          <implicit_prefix> @<String> ? ;
           <equals_string> @<String> ? ;
           <equals_string_in> @<String> * ;
           <equals_number> @<Integer> ? ;
@@ -827,6 +977,8 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           rdf:type [ <Expression> ] ? ;
           <pattern> @<String> ? ;
           <structured_pattern> @<PatternExpression> ? ;
+          <unit> @<UnitOfMeasure> ? ;
+          <implicit_prefix> @<String> ? ;
           <equals_string> @<String> ? ;
           <equals_string_in> @<String> * ;
           <equals_number> @<Integer> ? ;
@@ -850,6 +1002,7 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           rdf:type [ <CommonMetadata> ] ? ;
           <unique_key_name> @<String> ;
           <unique_key_slots> @<SlotDefinition> + ;
+          <consider_nulls_inequal> @<Boolean> ? ;
           <extensions> @<Extension> * ;
           <annotations> @<Annotation> * ;
           <description> @<String> ? ;
@@ -876,9 +1029,28 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <related_mappings> @<Uriorcurie> * ;
           <narrow_mappings> @<Uriorcurie> * ;
           <broad_mappings> @<Uriorcurie> * ;
+          <created_by> @<Uriorcurie> ? ;
+          <created_on> @<Datetime> ? ;
+          <last_updated_on> @<Datetime> ? ;
+          <modified_by> @<Uriorcurie> ? ;
+          <status> @<Uriorcurie> ? ;
           <rank> @<Integer> ?
        ) ;
        rdf:type [ <UniqueKey> ]
+    )
+}
+
+<UnitOfMeasure> CLOSED {
+    (  $<UnitOfMeasure_tes> (  <symbol> @<String> ? ;
+          <abbreviation> @<String> ? ;
+          <descriptive_name> @<String> ? ;
+          <exact_mappings> @<Uriorcurie> * ;
+          <ucum_code> @<String> ? ;
+          <derivation> @<String> ? ;
+          <has_quantity_kind> @<Uriorcurie> ? ;
+          <iec61360code> @<String> ?
+       ) ;
+       rdf:type [ <UnitOfMeasure> ] ?
     )
 }
 

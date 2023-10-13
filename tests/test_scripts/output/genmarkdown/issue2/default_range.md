@@ -25,6 +25,7 @@ schema_definition &#8594;  <sub>0..1</sub> type_definition
 
 |  |  |  |
 | --- | --- | --- |
-| **In Subsets:** | | minimal |
-|  | | basic |
+| **In Subsets:** | | SpecificationSubset |
+|  | | MinimalSubset |
+|  | | BasicSubset |
 

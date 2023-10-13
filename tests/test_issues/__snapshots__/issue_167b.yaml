@@ -1,0 +1,441 @@
+name: annotations_test
+id: http://example.org/tests/issue167b
+imports:
+- linkml:annotations
+- linkml:types
+- linkml:extensions
+license: https://creativecommons.org/publicdomain/zero/1.0/
+prefixes:
+  ex:
+    prefix_prefix: ex
+    prefix_reference: http://example.org/
+  linkml:
+    prefix_prefix: linkml
+    prefix_reference: https://w3id.org/linkml/
+emit_prefixes:
+- linkml
+default_curi_maps:
+- semweb_context
+default_prefix: ex
+default_range: string
+types:
+  string:
+    name: string
+    definition_uri: https://w3id.org/linkml/String
+    description: A character string
+    notes:
+    - In RDF serializations, a slot with range of string is treated as a literal or
+      type xsd:string.   If you are authoring schemas in LinkML YAML, the type is
+      referenced with the lower case "string".
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    exact_mappings:
+    - schema:Text
+    base: str
+    uri: xsd:string
+  integer:
+    name: integer
+    definition_uri: https://w3id.org/linkml/Integer
+    description: An integer
+    notes:
+    - If you are authoring schemas in LinkML YAML, the type is referenced with the
+      lower case "integer".
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    exact_mappings:
+    - schema:Integer
+    base: int
+    uri: xsd:integer
+  boolean:
+    name: boolean
+    definition_uri: https://w3id.org/linkml/Boolean
+    description: A binary (true or false) value
+    notes:
+    - If you are authoring schemas in LinkML YAML, the type is referenced with the
+      lower case "boolean".
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    exact_mappings:
+    - schema:Boolean
+    base: Bool
+    uri: xsd:boolean
+    repr: bool
+  float:
+    name: float
+    definition_uri: https://w3id.org/linkml/Float
+    description: A real number that conforms to the xsd:float specification
+    notes:
+    - If you are authoring schemas in LinkML YAML, the type is referenced with the
+      lower case "float".
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    exact_mappings:
+    - schema:Float
+    base: float
+    uri: xsd:float
+  double:
+    name: double
+    definition_uri: https://w3id.org/linkml/Double
+    description: A real number that conforms to the xsd:double specification
+    notes:
+    - If you are authoring schemas in LinkML YAML, the type is referenced with the
+      lower case "double".
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    close_mappings:
+    - schema:Float
+    base: float
+    uri: xsd:double
+  decimal:
+    name: decimal
+    definition_uri: https://w3id.org/linkml/Decimal
+    description: A real number with arbitrary precision that conforms to the xsd:decimal
+      specification
+    notes:
+    - If you are authoring schemas in LinkML YAML, the type is referenced with the
+      lower case "decimal".
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    broad_mappings:
+    - schema:Number
+    base: Decimal
+    uri: xsd:decimal
+  time:
+    name: time
+    definition_uri: https://w3id.org/linkml/Time
+    description: A time object represents a (local) time of day, independent of any
+      particular day
+    notes:
+    - URI is dateTime because OWL reasoners do not work with straight date or time
+    - If you are authoring schemas in LinkML YAML, the type is referenced with the
+      lower case "time".
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    exact_mappings:
+    - schema:Time
+    base: XSDTime
+    uri: xsd:time
+    repr: str
+  date:
+    name: date
+    definition_uri: https://w3id.org/linkml/Date
+    description: a date (year, month and day) in an idealized calendar
+    notes:
+    - URI is dateTime because OWL reasoners don't work with straight date or time
+    - If you are authoring schemas in LinkML YAML, the type is referenced with the
+      lower case "date".
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    exact_mappings:
+    - schema:Date
+    base: XSDDate
+    uri: xsd:date
+    repr: str
+  datetime:
+    name: datetime
+    definition_uri: https://w3id.org/linkml/Datetime
+    description: The combination of a date and time
+    notes:
+    - If you are authoring schemas in LinkML YAML, the type is referenced with the
+      lower case "datetime".
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    exact_mappings:
+    - schema:DateTime
+    base: XSDDateTime
+    uri: xsd:dateTime
+    repr: str
+  date_or_datetime:
+    name: date_or_datetime
+    definition_uri: https://w3id.org/linkml/DateOrDatetime
+    description: Either a date or a datetime
+    notes:
+    - If you are authoring schemas in LinkML YAML, the type is referenced with the
+      lower case "date_or_datetime".
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: str
+    uri: linkml:DateOrDatetime
+    repr: str
+  uriorcurie:
+    name: uriorcurie
+    definition_uri: https://w3id.org/linkml/Uriorcurie
+    description: a URI or a CURIE
+    notes:
+    - If you are authoring schemas in LinkML YAML, the type is referenced with the
+      lower case "uriorcurie".
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: URIorCURIE
+    uri: xsd:anyURI
+    repr: str
+  curie:
+    name: curie
+    definition_uri: https://w3id.org/linkml/Curie
+    conforms_to: https://www.w3.org/TR/curie/
+    description: a compact URI
+    notes:
+    - If you are authoring schemas in LinkML YAML, the type is referenced with the
+      lower case "curie".
+    comments:
+    - in RDF serializations this MUST be expanded to a URI
+    - in non-RDF serializations MAY be serialized as the compact representation
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: Curie
+    uri: xsd:string
+    repr: str
+  uri:
+    name: uri
+    definition_uri: https://w3id.org/linkml/Uri
+    conforms_to: https://www.ietf.org/rfc/rfc3987.txt
+    description: a complete URI
+    notes:
+    - If you are authoring schemas in LinkML YAML, the type is referenced with the
+      lower case "uri".
+    comments:
+    - in RDF serializations a slot with range of uri is treated as a literal or type
+      xsd:anyURI unless it is an identifier or a reference to an identifier, in which
+      case it is translated directly to a node
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    close_mappings:
+    - schema:URL
+    base: URI
+    uri: xsd:anyURI
+    repr: str
+  ncname:
+    name: ncname
+    definition_uri: https://w3id.org/linkml/Ncname
+    description: Prefix part of CURIE
+    notes:
+    - If you are authoring schemas in LinkML YAML, the type is referenced with the
+      lower case "ncname".
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: NCName
+    uri: xsd:string
+    repr: str
+  objectidentifier:
+    name: objectidentifier
+    definition_uri: https://w3id.org/linkml/Objectidentifier
+    description: A URI or CURIE that represents an object in the model.
+    notes:
+    - If you are authoring schemas in LinkML YAML, the type is referenced with the
+      lower case "objectidentifier".
+    comments:
+    - Used for inheritance and type checking
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: ElementIdentifier
+    uri: shex:iri
+    repr: str
+  nodeidentifier:
+    name: nodeidentifier
+    definition_uri: https://w3id.org/linkml/Nodeidentifier
+    description: A URI, CURIE or BNODE that represents a node in a model.
+    notes:
+    - If you are authoring schemas in LinkML YAML, the type is referenced with the
+      lower case "nodeidentifier".
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: NodeIdentifier
+    uri: shex:nonLiteral
+    repr: str
+  jsonpointer:
+    name: jsonpointer
+    definition_uri: https://w3id.org/linkml/Jsonpointer
+    conforms_to: https://datatracker.ietf.org/doc/html/rfc6901
+    description: A string encoding a JSON Pointer. The value of the string MUST conform
+      to JSON Point syntax and SHOULD dereference to a valid object within the current
+      instance document when encoded in tree form.
+    notes:
+    - If you are authoring schemas in LinkML YAML, the type is referenced with the
+      lower case "jsonpointer".
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: str
+    uri: xsd:string
+    repr: str
+  jsonpath:
+    name: jsonpath
+    definition_uri: https://w3id.org/linkml/Jsonpath
+    conforms_to: https://www.ietf.org/archive/id/draft-goessner-dispatch-jsonpath-00.html
+    description: A string encoding a JSON Path. The value of the string MUST conform
+      to JSON Point syntax and SHOULD dereference to zero or more valid objects within
+      the current instance document when encoded in tree form.
+    notes:
+    - If you are authoring schemas in LinkML YAML, the type is referenced with the
+      lower case "jsonpath".
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: str
+    uri: xsd:string
+    repr: str
+  sparqlpath:
+    name: sparqlpath
+    definition_uri: https://w3id.org/linkml/Sparqlpath
+    conforms_to: https://www.w3.org/TR/sparql11-query/#propertypaths
+    description: A string encoding a SPARQL Property Path. The value of the string
+      MUST conform to SPARQL syntax and SHOULD dereference to zero or more valid objects
+      within the current instance document when encoded as RDF.
+    notes:
+    - If you are authoring schemas in LinkML YAML, the type is referenced with the
+      lower case "sparqlpath".
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: str
+    uri: xsd:string
+    repr: str
+slots:
+  annotations:
+    name: annotations
+    definition_uri: https://w3id.org/linkml/annotations
+    description: a collection of tag/text tuples with the semantics of OWL Annotation
+    from_schema: https://w3id.org/linkml/annotations
+    imported_from: linkml:annotations
+    is_a: extensions
+    domain: annotatable
+    slot_uri: linkml:annotations
+    multivalued: true
+    owner: annotation
+    domain_of:
+    - annotatable
+    - annotation
+    range: annotation
+    inlined: true
+  extensions:
+    name: extensions
+    definition_uri: https://w3id.org/linkml/extensions
+    description: a tag/text tuple attached to an arbitrary element
+    from_schema: https://w3id.org/linkml/extensions
+    imported_from: linkml:extensions
+    domain: extensible
+    slot_uri: linkml:extensions
+    multivalued: true
+    owner: extensible
+    domain_of:
+    - extension
+    - extensible
+    range: extension
+    inlined: true
+  extension_tag:
+    name: extension_tag
+    definition_uri: https://w3id.org/linkml/extension_tag
+    description: a tag associated with an extension
+    from_schema: https://w3id.org/linkml/extensions
+    imported_from: linkml:extensions
+    domain: extension
+    slot_uri: linkml:tag
+    key: true
+    alias: tag
+    owner: extension
+    domain_of:
+    - extension
+    range: uriorcurie
+    required: true
+  extension_value:
+    name: extension_value
+    definition_uri: https://w3id.org/linkml/extension_value
+    description: the actual annotation
+    from_schema: https://w3id.org/linkml/extensions
+    imported_from: linkml:extensions
+    domain: extension
+    slot_uri: linkml:value
+    alias: value
+    owner: extension
+    domain_of:
+    - extension
+    range: AnyValue
+    required: true
+    inlined: true
+classes:
+  my class:
+    name: my class
+    definition_uri: http://example.org/MyClass
+    annotations:
+      SKOS:prefLabel:
+        tag: SKOS:prefLabel
+        value: a label
+      altLabel:
+        tag: altLabel
+        value: some other label
+    description: Annotations as tag value pairs. Note that altLabel is defined in
+      the default namespace, not in the SKOS namespace
+    from_schema: http://example.org/tests/issue167b
+    class_uri: ex:MyClass
+  my class 2:
+    name: my class 2
+    definition_uri: http://example.org/MyClass2
+    annotations:
+      prefLabel:
+        tag: prefLabel
+        value: a preferred label
+        annotations:
+          source:
+            tag: source
+            value: PMID:12345
+    description: -> This form of annotations is a tag/value format, which allows annotations
+      to be annotated.  Note, however, that the annotation source is NOT a CURIE,
+      rather just a string.
+    from_schema: http://example.org/tests/issue167b
+    class_uri: ex:MyClass2
+  annotatable:
+    name: annotatable
+    definition_uri: https://w3id.org/linkml/Annotatable
+    description: mixin for classes that support annotations
+    from_schema: https://w3id.org/linkml/annotations
+    imported_from: linkml:annotations
+    mixin: true
+    slots:
+    - annotations
+    class_uri: linkml:Annotatable
+  annotation:
+    name: annotation
+    definition_uri: https://w3id.org/linkml/Annotation
+    description: a tag/value pair with the semantics of OWL Annotation
+    from_schema: https://w3id.org/linkml/annotations
+    imported_from: linkml:annotations
+    is_a: extension
+    mixins:
+    - annotatable
+    slots:
+    - extension_tag
+    - extension_value
+    - extensions
+    - annotations
+    class_uri: linkml:Annotation
+  AnyValue:
+    name: AnyValue
+    definition_uri: https://w3id.org/linkml/AnyValue
+    from_schema: https://w3id.org/linkml/extensions
+    imported_from: linkml:extensions
+    mappings:
+    - linkml:Any
+    class_uri: linkml:Any
+  extension:
+    name: extension
+    definition_uri: https://w3id.org/linkml/Extension
+    description: a tag/value pair used to add non-model information to an entry
+    from_schema: https://w3id.org/linkml/extensions
+    imported_from: linkml:extensions
+    slots:
+    - extension_tag
+    - extension_value
+    - extensions
+    class_uri: linkml:Extension
+  extensible:
+    name: extensible
+    definition_uri: https://w3id.org/linkml/Extensible
+    description: mixin for classes that support extension
+    from_schema: https://w3id.org/linkml/extensions
+    imported_from: linkml:extensions
+    mixin: true
+    slots:
+    - extensions
+    class_uri: linkml:Extensible
+metamodel_version: 1.7.0
+source_file: issue_167b.yaml
+source_file_date: '2000-01-01T00:00:00'
+source_file_size: 1
+generation_date: '2000-01-01T00:00:00'

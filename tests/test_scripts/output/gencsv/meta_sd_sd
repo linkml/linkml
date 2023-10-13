@@ -1,8 +1,8 @@
 # metamodel_version: 1.7.0
 # version: 2.0.0
 id,mappings,description
-definition,,base class for definitions
-element,,a named element in the model
-schema_definition,,"a collection of subset, type, slot and class definitions"
-slot_definition,,the definition of a property or a slot
+definition,,abstract base class for core metaclasses
+element,,A named element in the model
+schema_definition,,A collection of definitions that make up a schema or a data model.
+slot_definition,,an element that describes how instances are related to other instances
 

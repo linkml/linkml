@@ -20,3 +20,10 @@ URI: [linkml:syntax](https://w3id.org/linkml/syntax)
 ## Used by
 
  * [PatternExpression](PatternExpression.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **In Subsets:** | | SpecificationSubset |
+

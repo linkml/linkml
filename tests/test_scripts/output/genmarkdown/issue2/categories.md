@@ -2,7 +2,7 @@
 # Slot: categories
 
 
-controlled terms used to categorize an element
+Controlled terms used to categorize an element.
 
 URI: [linkml:categories](https://w3id.org/linkml/categories)
 
@@ -27,5 +27,6 @@ None &#8594;  <sub>0..\*</sub> uriorcurie
 |  |  |  |
 | --- | --- | --- |
 | **Mappings:** | | dcterms:subject |
-| **In Subsets:** | | basic |
+| **Comments:** | | if you wish to use uncontrolled terms or terms that lack identifiers then use the keywords element |
+| **In Subsets:** | | BasicSubset |
 

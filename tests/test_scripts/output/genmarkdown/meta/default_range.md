@@ -25,6 +25,7 @@ URI: [linkml:default_range](https://w3id.org/linkml/default_range)
 
 |  |  |  |
 | --- | --- | --- |
-| **In Subsets:** | | minimal |
-|  | | basic |
+| **In Subsets:** | | SpecificationSubset |
+|  | | MinimalSubset |
+|  | | BasicSubset |
 

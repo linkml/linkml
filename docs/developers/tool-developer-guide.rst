@@ -1,4 +1,4 @@
-Tool Implementor Guide
+Tool Implementer Guide
 ======================
 
 This guide is for developers of *generic* LinkML tools that operate

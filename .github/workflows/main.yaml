@@ -20,9 +20,16 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest]
         python-version: ["3.8", "3.9", "3.10"]
+        pydantic-version: ["1", "2"]
         exclude:
           - os: windows-latest
             python-version: "3.8"
+          - os: windows-latest
+            pydantic-version: "2"
+          - python-version: "3.8"
+            pydantic-version: "2"
+          - python-version: "3.9"
+            pydantic-version: "2"
 
     # See https://github.com/snok/install-poetry#running-on-windows
     defaults:
@@ -71,6 +78,12 @@ jobs:
         run: poetry install --no-interaction --no-root
 
       #----------------------------------------------
+      # install pydantic
+      #----------------------------------------------
+      - name: Install Pydantic
+        run: poetry add pydantic@^${{ matrix.pydantic-version }}
+
+      #----------------------------------------------
       #         setup and install graphviz
       #----------------------------------------------
       - name: Setup Graphviz
@@ -89,7 +102,7 @@ jobs:
       #----------------------------------------------
       - name: Generate coverage results
         run: |
-          poetry run coverage run -m unittest discover
+          poetry run coverage run -m pytest
           poetry run coverage xml
           poetry run coverage report -m
         shell: bash

@@ -2,7 +2,7 @@
 # Slot: prefix_prefix
 
 
-the nsname (sans ':' for a given prefix)
+The prefix components of a prefix expansions. This is the part that appears before the colon in a CURIE.
 
 URI: [linkml:prefix_prefix](https://w3id.org/linkml/prefix_prefix)
 
@@ -25,5 +25,7 @@ prefix &#8594;  <sub>1..1</sub> ncname
 
 |  |  |  |
 | --- | --- | --- |
-| **In Subsets:** | | basic |
+| **Mappings:** | | sh:prefix |
+| **In Subsets:** | | SpecificationSubset |
+|  | | BasicSubset |
 

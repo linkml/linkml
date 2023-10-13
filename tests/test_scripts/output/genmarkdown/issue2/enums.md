@@ -2,7 +2,7 @@
 # Slot: enums
 
 
-enumerated ranges
+An index to the collection of all enum definitions in the schema
 
 URI: [linkml:enums](https://w3id.org/linkml/enums)
 
@@ -25,6 +25,8 @@ schema_definition &#8594;  <sub>0..\*</sub> enum_definition
 
 |  |  |  |
 | --- | --- | --- |
-| **In Subsets:** | | basic |
-|  | | object_oriented |
+| **In Subsets:** | | SpecificationSubset |
+|  | | BasicSubset |
+|  | | ObjectOrientedProfile |
+|  | | OwlProfile |
 

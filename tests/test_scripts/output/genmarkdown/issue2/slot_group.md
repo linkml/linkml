@@ -26,5 +26,7 @@ slot_definition &#8594;  <sub>0..1</sub> slot_definition
 |  |  |  |
 | --- | --- | --- |
 | **Mappings:** | | sh:group |
-| **In Subsets:** | | basic |
+| **Comments:** | | slot groups do not change the semantics of a model but are a useful way of visually grouping related slots |
+| **In Subsets:** | | SpecificationSubset |
+|  | | BasicSubset |
 

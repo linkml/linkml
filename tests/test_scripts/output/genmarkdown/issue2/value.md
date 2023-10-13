@@ -26,5 +26,5 @@ URI: [linkml:value](https://w3id.org/linkml/value)
 |  |  |  |
 | --- | --- | --- |
 | **Mappings:** | | skos:example |
-| **In Subsets:** | | basic |
+| **In Subsets:** | | BasicSubset |
 

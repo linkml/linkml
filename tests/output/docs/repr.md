@@ -25,5 +25,6 @@ URI: [linkml:repr](https://w3id.org/linkml/repr)
 
 |  |  |  |
 | --- | --- | --- |
-| **In Subsets:** | | basic |
+| **In Subsets:** | | SpecificationSubset |
+|  | | BasicSubset |
 

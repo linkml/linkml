@@ -18,26 +18,21 @@ There are two cases you need to consider while writing your unit test. The first
 * While creating a test for a bug, you can should make a file called `test_linkml_issue_NNN.py`. After that it is perhaps easiest to just copy over a test from an existing issue test case and modify it.
   * As discussed above, ideally, all your test issues will have an accompanying minimal test schema. One pattern is that you include the schema in your Python unit test file as strings. Another pattern is to include them as separate YAML files in the `input` folder.
 * As for new functionality, as directed above, create a test case under any of the existing Python test files if there are tests already scoped with respect to your enhancement. Or if not, then create a new Python test file with your unit test.
-* All tests within this repo are Python [unittest](https://docs.python.org/3/library/unittest.html) tests. The unittest module is bundled natively with the latest versions of Python. The tests can be run using either the unittest module, or using the [pytest](https://docs.pytest.org/en/6.2.x/) library.
+* The tests in this repo are a mix of Python [unittest](https://docs.python.org/3/library/unittest.html) tests and [pytest](https://docs.pytest.org/en/) tests. See below for more details on the transition. Because of this mix, tests should always be run using the `pytest` CLI.
 * If you have already activated the poetry virtual environment, then there is no need to use the `poetry run` prefix.
-* If you want to isolate specific test methods from within your Python unit test file, then you can use the `-k` option for the unittest module. Refer to [unittest](https://docs.python.org/3.3/library/unittest.html) module docs for more information on its usage.
+* If you want to isolate specific test functions from within your Python unit test file, then you can use the [`-k` command line option](https://docs.pytest.org/en/stable/reference/reference.html#command-line-flags).
 
 
-To run your  test using `unittest`:
-
-```python
-poetry run python -m unittest tests/test_issues/test_linkml_issue_NNN.py
-```
-
-To run your test using `pytest`:
+To run a single test file using `pytest`:
 
 ```python
 poetry run pytest tests/test_issues/test_linkml_issue_NNN.py
 ```
+
 You can run the full test suite in the following way:
 
 ```bash
-poetry run python -m unittest discover
+poetry run pytest
 ```
 
 or via a shortcut Makefile target:
@@ -50,12 +45,12 @@ make test
 runs the entire test suite with the new test case that you added, on that test case branch too.
 
 Note: You will see a number of issues which are named `test_issue_NNN.py`. The numbers and convention for those
-issues are with reference to the old *biolinkml* issue numbering convention.
+issues are with reference to the old [biolinkml](https://github.com/biolink/biolinkml) issue numbering convention.
 
 #### General Tips
 
 * Always make sure to use `assert` statements to compare the expected value with the actual value, rather than simply printing or logging the expected and actual values.
-* Avoid using `print` statements for logging purposes. Use the `logging` module natively provided by Python approporiately with it's various logging levels like `DEBUG`, `INFO`, `ERROR`, etc.
+* Avoid using `print` statements for logging purposes. Use the `logging` module natively provided by Python appropriately with its various logging levels like `DEBUG`, `INFO`, `ERROR`, etc.
 * You can create a config file by copying the [test_config.ini.example](https://github.com/linkml/linkml/blob/main/tests/test_config.ini.example) to a `test_config.ini` file and making changes, for example, to the logging levels:
 
 ```
@@ -87,6 +82,61 @@ To run all tests:
 * Open to Run/Debug
 * `+` to add test
 * Choose “Python tests > unittests”
+
+#### Unittest to pytest conversion
+
+As of August 2023 this project has started converting its test suite from being based on the native [unittest module](https://docs.python.org/3/library/unittest.html) to being based on [pytest](https://docs.pytest.org/en/stable/index.html). Because of the presence of both styles of test in the codebase, it is recommended that you always use `pytest` to run tests.
+
+Currently the following test directories have been entirely converted to pytest:
+
+* `tests/test_compliance`
+* `tests/test_issues`
+
+New tests in any directory should be written using pytest.
+
+#### Custom pytest fixtures
+
+* `input_path` This fixture provides a factory function to get the path to a file within the `input` directory adjacent to the current test file. So for example with this file structure:
+
+  ```
+  tests
+  └── test_foo
+      ├── input
+      │   └── schema_a.yaml
+      └── test_foo_feature_a.py
+  ```
+
+  You would would access `schema_a.yaml` within your test like:
+
+  ```python
+  # test_foo_feature_a.py
+  def test_feature_a(input_path):
+    path_to_schema = input_path("schema_a.yaml")
+  ```
+
+* `snapshot` This fixture provides a way of comparing a string, temporary file, or temporary directory to a known, good artifact. The artifacts are stored in a directory called `__snapshots__` alongside the test.
+
+  **Warning**: snapshot testing can be very powerful, but it can also lead to brittle tests. You should **seriously consider alternatives** before writing this type of test.
+
+  If you make a change that intentionally causes some output to not match the saved snapshot file(s), you should update the snapshots by running `pytest` with the `--generate-snapshots` flag. You should try to run only a single or small group of tests with this flag (as opposed to the entire test suite). The updated snapshot files should be checked in to Git alongside your other code changes.
+
+#### Testing multiple Pydantic versions
+
+LinkML both generates and depends on Pydantic. [Pydantic V2](https://docs.pydantic.dev/2.4/migration/) brought a number of breaking changes, but we intend to support both V1 and V2. By default, the `PydanticGenerator` class will generate code compatible with the version of Pydantic that is installed in your environment. This can be overridden by explicitly setting the `pydantic_version` field.
+
+As of October 2023, our default development environment still specifies Pydantic 1 (as determined by the `poetry.lock` file). But since we also support Pydantic 2 (as specified in `pyproject.toml`), it is important to test with Pydantic 2 in your environment. To facilitate that there is a `tox` environment called `pydantic2`. To run all tests with Pydantic 2 installed:
+
+```shell
+poetry run tox -e pydantic2
+```
+
+Additional arguments will be passed to `pytest`. For example, to run a specific test:
+
+```shell
+poetry run tox -e pydantic2 -- tests/test_compliance/test_core_compliance.py
+```
+
+Our main GitHub Actions testing workflow will also automatically perform one test run with Pydantic 2 in the environment.
 
 ### Code formatting and linting
 

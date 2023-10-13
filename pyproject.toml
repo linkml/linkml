@@ -63,6 +63,7 @@ gen-doc = "linkml.generators.docgen:cli"
 gen-prolog = "linkml.generators.lpgen:cli"
 gen-namespaces = "linkml.generators.namespacegen:cli"
 gen-owl = "linkml.generators.owlgen:cli"
+gen-plantuml = "linkml.generators.plantumlgen:cli"
 gen-proto = "linkml.generators.protogen:cli"
 gen-py-classes = "linkml.generators.pythongen:cli"
 gen-python = "linkml.generators.pythongen:cli"
@@ -96,7 +97,7 @@ gen-linkml = "linkml.generators.linkmlgen:cli"
 linkml-schema-fixer = "linkml.utils.schema_fixer:main"
 
 [tool.poetry.dependencies]
-python = "^3.7.6"
+python = "^3.8"
 antlr4-python3-runtime = "<4.10,==4.*,>=4.9.0"
 click = ">=7.0"
 graphviz = ">=0.10.1"
@@ -106,12 +107,12 @@ jinja2 = ">= 3.1.0"
 jsonasobj2 = "==1.*,>=1.0.0,>=1.0.3"
 jsonschema = {extras = ["format"], version = ">=4.0.0"}
 linkml-dataops = "*"
-linkml-runtime = ">=1.5.4"
+linkml-runtime = ">=1.6.0"
 openpyxl = "*"
 parse = "*"
 prefixcommons = ">=0.1.7"
 prefixmaps = ">=0.1.3"
-pydantic = "*"
+pydantic = ">=1.0.0,<3.0.0"
 pyjsg = ">=0.11.6"
 pyshex = ">=0.7.20"
 pyshexc = ">=0.8.3"
@@ -138,6 +139,10 @@ sphinx-click = "*"
 sphinx-rtd-theme = "*"
 myst-parser = "*"
 
+[tool.poetry.group.tests.dependencies]
+pytest = "^7.4.0"
+pytest-subtests = "^0.11.0"
+
 [tool.poetry.extras]
 docs = ["Sphinx", "sphinxcontrib-mermaid", "furo"]
 
@@ -163,16 +168,27 @@ force-exclude = '''
   \.direnv|\.eggs|\.git|\.hg|\.ipynb_checkpoints|\.mypy_cache|\.nox|\.pytest_cache|\.ruff_cache|\.tox|\.svn|\.venv|\.vscode|__pypackages__|_build|buck-out|build|dist|venv
   # additional exclude
   | tests.*/output
+  | __snapshots__
   | docs
   | examples
   | notebooks
 )/
 '''
 
+[tool.pytest.ini_options]
+filterwarnings = [
+  # https://github.com/RDFLib/rdflib/issues/1830
+  "ignore:.*_pytestfixturefunction is not defined in namespace:UserWarning"
+]
+markers = [
+  "network: mark tests that make external network requests"
+]
+
 [tool.ruff]
 extend-exclude = [
     "tests/output",
     "tests/**/output",
+    "tests/**/__snapshots__",
     "examples/",
     "docs/",
     "notebooks/"

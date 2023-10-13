@@ -27,4 +27,5 @@ URI: [linkml:class_definition_rules](https://w3id.org/linkml/class_definition_ru
 |  |  |  |
 | --- | --- | --- |
 | **Mappings:** | | sh:rule |
+| **In Subsets:** | | SpecificationSubset |
 

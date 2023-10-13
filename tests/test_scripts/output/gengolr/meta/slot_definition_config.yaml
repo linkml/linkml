@@ -1,6 +1,6 @@
 # metamodel_version: 1.7.0# version: 2.0.0id: slot_definition
 schema_generating: true
-description: the definition of a property or a slot
+description: an element that describes how instances are related to other instances
 display_name: slot_definition
 document_category: slot_definition
 weight: 20
@@ -11,12 +11,13 @@ fields:
     target class.
   display_name: name
 - id: id_prefixes
-  description: the identifier of this class or slot must begin with the URIs referenced
-    by this prefix
+  description: An allowed list of prefixes for which identifiers must conform. The
+    identifier of this class or slot must begin with the URIs referenced by this prefix
   display_name: id_prefixes
   cardinality: multi
 - id: definition_uri
-  description: the "native" URI of the element
+  description: The native URI of the element. This is always within the namespace
+    of the containing schema. Contrast with the assigned URI, via class_uri or slot_uri
   display_name: definition_uri
 - id: local_names
   display_name: local_names
@@ -24,6 +25,12 @@ fields:
 - id: conforms_to
   description: An established standard to which the element conforms.
   display_name: conforms_to
+- id: implements
+  description: An element in another schema which this element conforms to. The referenced
+    element is not imported into the schema for the implementing element. However,
+    the referenced schema may be used to check conformance of the implementing element.
+  display_name: implements
+  cardinality: multi
 - id: extensions
   description: a tag/text tuple attached to an arbitrary element
   display_name: extensions
@@ -33,27 +40,30 @@ fields:
   display_name: annotations
   cardinality: multi
 - id: description
-  description: a description of the element's purpose and use
+  description: a textual description of the element's purpose and use
   display_name: description
 - id: alt_descriptions
+  description: A sourced alternative description for an element
   display_name: alt_descriptions
   cardinality: multi
 - id: title
-  description: the official title of the element
+  description: A concise human-readable display label for the element. The title should
+    mirror the name, and should use ordinary textual punctuation.
   display_name: title
 - id: deprecated
   description: Description of why and when this element will no longer be used
   display_name: deprecated
 - id: todos
-  description: Outstanding issue that needs resolution
+  description: Outstanding issues that needs resolution
   display_name: todos
   cardinality: multi
 - id: notes
-  description: editorial notes about an element intended for internal consumption
+  description: editorial notes about an element intended primarily for internal consumption
   display_name: notes
   cardinality: multi
 - id: comments
-  description: notes and comments about an element intended for external consumption
+  description: notes and comments about an element intended primarily for external
+    consumption
   display_name: comments
   cardinality: multi
 - id: examples
@@ -62,8 +72,7 @@ fields:
   cardinality: multi
 - id: in_subset
   description: used to indicate membership of a term in a defined subset of terms
-    used for a particular domain or application (e.g. the translator_minimal subset
-    holding the minimal set of predicates used in a translator knowledge graph)
+    used for a particular domain or application.
   display_name: in_subset
   cardinality: multi
 - id: from_schema
@@ -77,9 +86,10 @@ fields:
   description: A related resource from which the element is derived.
   display_name: source
 - id: in_language
+  description: the primary language used in the sources
   display_name: in_language
 - id: see_also
-  description: a reference
+  description: A list of related entities or URLs that may be of relevance
   display_name: see_also
   cardinality: multi
 - id: deprecated_element_has_exact_replacement
@@ -91,10 +101,13 @@ fields:
     uri or curie
   display_name: deprecated element has possible replacement
 - id: aliases
+  description: Alternate names/labels for the element. These do not alter the semantics
+    of the schema, but may be useful to support search and alignment.
   display_name: aliases
   cardinality: multi
 - id: structured_aliases
-  description: A list of structured_alias objects.
+  description: A list of structured_alias objects, used to provide aliases in conjunction
+    with additional metadata.
   display_name: structured_aliases
   cardinality: multi
 - id: mappings
@@ -129,22 +142,6 @@ fields:
     have broader meaning.
   display_name: broad mappings
   cardinality: multi
-- id: rank
-  description: the relative order in which the element occurs, lower values are given
-    precedence
-  display_name: rank
-- id: abstract
-  description: an abstract class is a high level class or slot that is typically used
-    to group common slots together and cannot be directly instantiated.
-  display_name: abstract
-- id: mixin
-  description: this slot or class can only be used as a mixin.
-  display_name: mixin
-- id: values_from
-  description: the identifier of a "value set" -- a set of identifiers that form the
-    possible values for the range of a slot
-  display_name: values_from
-  cardinality: multi
 - id: created_by
   description: agent that created the element
   display_name: created_by
@@ -160,6 +157,30 @@ fields:
 - id: status
   description: status of the element
   display_name: status
+- id: rank
+  description: the relative order in which the element occurs, lower values are given
+    precedence
+  display_name: rank
+- id: abstract
+  description: Indicates the class or slot cannot be directly instantiated and is
+    intended for grouping purposes.
+  display_name: abstract
+- id: mixin
+  description: Indicates the class or slot is intended to be inherited from without
+    being an is_a parent. mixins should not be inherited from using is_a, except by
+    other mixins.
+  display_name: mixin
+- id: values_from
+  description: 'The identifier of a "value set" -- a set of identifiers that form
+    the possible values for the range of a slot. Note: this is different than ''subproperty_of''
+    in that ''subproperty_of'' is intended to be a single ontology term while ''values_from''
+    is the identifier of an entire value set.  Additionally, this is different than
+    an enumeration in that in an enumeration, the values of the enumeration are listed
+    directly in the model itself. Setting this property on a slot does not guarantee
+    an expansion of the ontological hiearchy into an enumerated list of possible values
+    in every serialization of the model.'
+  display_name: values_from
+  cardinality: multi
 - id: string_serialization
   description: 'Used on a slot that stores the string serialization of the containing
     object. The syntax follows python formatted strings, with slot names enclosed
@@ -186,10 +207,13 @@ fields:
     \    S1: Y\n\nimplicitly asserts that X is an instance of C1\n"
   display_name: domain
 - id: slot_uri
-  description: predicate of this slot for semantic web application
+  description: URI of the class that provides a semantic interpretation of the slot
+    in a linked data context. The URI may come from any namespace and may be shared
+    between schemas.
   display_name: slot_uri
 - id: multivalued
-  description: true means that slot can have more than one value
+  description: true means that slot can have more than one value and should be represented
+    using a list or collection structure.
   display_name: multivalued
 - id: inherited
   description: true means that the *value* of a slot is inherited by subclasses
@@ -199,12 +223,13 @@ fields:
   display_name: readonly
 - id: ifabsent
   description: "function that provides a default value for the slot.  Possible values\
-    \ for this slot are defined in\nlinkml_runtime.utils.ifabsent_functions.default_library:\n\
-    \  * [Tt]rue -- boolean True\n  * [Ff]alse -- boolean False\n  * int(value) --\
-    \ integer value\n  * str(value) -- string value\n  * default_range -- schema default\
-    \ range\n  * bnode -- blank node identifier\n  * slot_uri -- URI for the slot\n\
-    \  * class_curie -- CURIE for the containing class\n  * class_uri -- URI for the\
-    \ containing class"
+    \ for this slot are defined in\nlinkml.utils.ifabsent_functions.default_library:\n\
+    \  * [Tt]rue -- boolean True\n  * [Ff]alse -- boolean False\n  * bnode -- blank\
+    \ node identifier\n  * class_curie -- CURIE for the containing class\n  * class_uri\
+    \ -- URI for the containing class\n  * default_ns -- schema default namespace\n\
+    \  * default_range -- schema default range\n  * int(value) -- integer value\n\
+    \  * slot_uri -- URI for the slot\n  * slot_curie -- CURIE for the slot\n  * string(value)\
+    \ -- string value"
   display_name: ifabsent
 - id: list_elements_unique
   description: If True, then there must be no duplicates in the elements of a multivalued
@@ -219,10 +244,11 @@ fields:
     many to one or many to many
   display_name: shared
 - id: key
-  description: True means that the key slot(s) uniquely identify the container.
+  description: True means that the key slot(s) uniquely identify the elements within
+    a single container
   display_name: key
 - id: identifier
-  description: True means that the key slot(s) uniquely identify the container. There
+  description: True means that the key slot(s) uniquely identifies the elements. There
     can be at most one identifier or key per container
   display_name: identifier
 - id: designates_type
@@ -243,7 +269,9 @@ fields:
   display_name: domain_of
   cardinality: multi
 - id: subproperty_of
-  description: Ontology property which this slot is a subproperty of
+  description: 'Ontology property which this slot is a subproperty of.  Note: setting
+    this property on a slot does not guarantee an expansion of the ontological hiearchy
+    into an enumerated list of possible values in every serialization of the model.'
   display_name: subproperty_of
 - id: symmetric
   description: If s is symmetric, and i.s=v, then v.s=i
@@ -252,7 +280,7 @@ fields:
   description: If s is reflexive, then i.s=i for all instances i
   display_name: reflexive
 - id: locally_reflexive
-  description: If s is locally_reflexive, then i.s=i for all instances i where s if
+  description: If s is locally_reflexive, then i.s=i for all instances i where s is
     a class slot for the type of i
   display_name: locally_reflexive
 - id: irreflexive
@@ -270,8 +298,8 @@ fields:
     instance of r s' d
   display_name: inverse
 - id: is_class_field
-  description: indicates that any instance, i,  the domain of this slot will include
-    an assert of i s range
+  description: indicates that for any instance, i, the domain of this slot will include
+    an assertion of i s range
   display_name: is_class_field
 - id: transitive_form_of
   description: If s transitive_form_of d, then (1) s holds whenever d holds (2) s
@@ -282,7 +310,7 @@ fields:
   description: transitive_form_of including the reflexive case
   display_name: reflexive_transitive_form_of
 - id: role
-  description: the role played by the slot range
+  description: a textual descriptor that indicates the role played by the slot range
   display_name: role
 - id: is_usage_slot
   description: True means that this slot was defined in a slot_usage situation
@@ -303,7 +331,7 @@ fields:
   display_name: is_grouping_slot
 - id: path_rule
   description: a rule for inferring a slot assignment based on evaluating a path through
-    a sequence of slot assignments
+    a sequence of slot assignemnts
   display_name: path_rule
 - id: disjoint_with
   description: Two classes are disjoint if they have no instances in common, two slots
@@ -314,18 +342,17 @@ fields:
   description: If true then all direct is_a children are mutually disjoint and share
     no instances in common
   display_name: children_are_mutually_disjoint
+- id: union_of
+  description: indicates that the domain element consists exactly of the members of
+    the element in the range.
+  display_name: slot_definition_union_of
+  cardinality: multi
 - id: is_a
-  description: specifies single-inheritance between classes or slots. While multiple
-    inheritance is not allowed, mixins can be provided effectively providing the same
-    thing. The semantics are the same when translated to formalisms that allow MI
-    (e.g. RDFS/OWL). When translating to a SI framework (e.g. java classes, python
-    classes) then is a is used. When translating a framework without polymorphism
-    (e.g. json-schema, solr document schema) then is a and mixins are recursively
-    unfolded
+  description: A primary parent slot from which inheritable metaslots are propagated
   display_name: slot_definition_is_a
 - id: mixins
-  description: List of definitions to be mixed in. Targets may be any definition of
-    the same type
+  description: A collection of secondary parent mixin slots from which inheritable
+    metaslots are propagated
   display_name: slot_definition_mixins
   cardinality: multi
 - id: apply_to
@@ -346,12 +373,16 @@ fields:
   description: A range that is described as a boolean expression combining existing
     ranges
   display_name: range_expression
+- id: enum_range
+  description: An inlined enumeration
+  display_name: enum_range
 - id: required
-  description: true means that the slot must be present in the loaded definition
+  description: true means that the slot must be present in instances of the class
+    definition
   display_name: required
 - id: recommended
-  description: true means that the slot should be present in the loaded definition,
-    but this is not required
+  description: true means that the slot should be present in instances of the class
+    definition, but this is not required
   display_name: recommended
 - id: inlined
   description: True means that keyed or identified slot appears in an outer structure
@@ -379,6 +410,17 @@ fields:
   description: the string value of the slot must conform to the regular expression
     in the pattern expression
   display_name: structured_pattern
+- id: unit
+  description: an encoding of a unit
+  display_name: unit
+- id: implicit_prefix
+  description: Causes the slot value to be interpreted as a uriorcurie after prefixing
+    with this string
+  display_name: implicit_prefix
+- id: value_presence
+  description: if true then a value must be present (for lists there must be at least
+    one value). If false then a value must be absent (for lists, must be empty)
+  display_name: value_presence
 - id: equals_string
   description: the slot must have range string and the value of the slot must equal
     the specified value
@@ -402,17 +444,13 @@ fields:
   description: the maximum number of entries for a multivalued slot
   display_name: maximum_cardinality
 - id: has_member
-  description: the values of the slot is multivalued with at least one member satisfying
+  description: the value of the slot is multivalued with at least one member satisfying
     the condition
   display_name: has_member
 - id: all_members
-  description: "the value of the multivalued slot is a list where all elements conform\
-    \ to the specified values.\nthis defines a dynamic class with named slots according\
-    \ to matching constraints\n\nE.g to state that all members of a list are between\
-    \ 1 and 10\n```\nall_members:\n  x:\n    range: integer\n    minimum_value: 10\n\
-    \    maximum_value: 10\n```"
+  description: the value of the slot is multivalued with all members satisfying the
+    condition
   display_name: all_members
-  cardinality: multi
 - id: none_of
   description: holds if none of the expressions hold
   display_name: slot_expression_none_of

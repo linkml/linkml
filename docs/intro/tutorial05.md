@@ -142,7 +142,7 @@ Outputs:
 - We also provide a generator for [creating SQL Alchemy models](https://linkml.io/linkml/generators/sqlalchemy.html)
 - We are gradually adding support for other languages
    - [java](https://linkml.io/linkml/generators/java.html)
-   - [typescript generators](https://linkml.io/linkml/generators/java.html) for javascript developers
+   - [typescript generators](https://linkml.io/linkml/generators/typescript.html) for javascript developers
 - For a full list of generators see [generators](https://linkml.io/linkml/generators/index.html)
 
 

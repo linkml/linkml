@@ -1,10 +1,6 @@
-import unittest
-
 from rdflib import Graph, Namespace
 
 from linkml.generators.owlgen import MetadataProfile, OwlSchemaGenerator
-from tests.test_issues.environment import env
-from tests.utils.test_environment import TestEnvironmentTestCase
 
 # reported in https://github.com/linkml/linkml/issues/711
 # export custom annotations
@@ -29,6 +25,7 @@ prefixes:
   bizcodes: https://example.org/bizcodes/
   schema: http://schema.org/
   ae: http://example.org/annotation-export#
+  oa: http://www.w3.org/ns/oa#
 
 default_prefix: ae
 default_range: string
@@ -45,7 +42,7 @@ classes:
       - family name
     annotations:
       ae:metadata: "Local prefixed annotation"
-      is_current: Local unpredixed annotation
+      is_current: Local unprefixed annotation
       err:non_existing: "This annotation will be skipped silently"
       oa:describing: "Annotation not in prefxes, but present in metamodel namespaces"
 
@@ -73,48 +70,41 @@ AE = Namespace("http://example.org/annotation-export#")
 OA = Namespace("http://www.w3.org/ns/oa#")
 
 
-class IssueAnnotationExportCase(TestEnvironmentTestCase):
-    env = env
+def test_owlgen_annotation_export():
+    # export the source schema containing both title and description
+    gen = OwlSchemaGenerator(
+        schema_str,
+        ontology_uri_suffix=None,
+        type_objects=False,
+        metaclasses=False,
+        add_ols_annotations=True,
+        metadata_profile=MetadataProfile.rdfs,
+        format="ttl",
+    )
+    output = gen.serialize()
 
-    def test_owlgen_annotation_export(self):
-        # export the source schema containing both title and description
-        gen = OwlSchemaGenerator(
-            schema_str,
-            ontology_uri_suffix=None,
-            type_objects=False,
-            metaclasses=False,
-            add_ols_annotations=True,
-            metadata_profile=MetadataProfile.rdfs,
-            format="ttl",
-        )
-        output = gen.serialize()
+    # load back via rdflib
+    graph = Graph(base=AE)
+    graph.parse(data=output, format="ttl")
 
-        # load back via rdflib
-        graph = Graph(base=AE)
-        graph.parse(data=output, format="ttl")
+    # check annotations have been exported for class 'Person'
+    _test_subject_annotations(subject=AE.Person, graph=graph)
 
-        # check annotations have been exported for class 'Person'
-        self._test_subject_annotations(subject=AE.Person, graph=graph)
-
-        # check annotations have been exported for slot 'name'
-        self._test_subject_annotations(subject=AE.name, graph=graph)
-
-    def _test_subject_annotations(self, subject, graph):
-        # annotation without a prefix in source YAML
-        assert (subject, AE.is_current, None) in graph
-        # annotation with default prefix
-        assert (subject, AE.metadata, None) in graph
-        # oa:describing is prefixed with prefix not in local scheme, but present in metamodel
-        assert (subject, OA.describing, None) in graph
-        # annotation with unknown prefix is skipped silently
-        # err:non_existing must not be present in the result
-        predicates = list(graph.predicates(subject=subject, object=None))
-        for pred in predicates:
-            self.assertFalse(
-                "non_existing" in pred,
-                f"Annotation err:non_existing for {subject} should be skipped, but is present in the result.",
-            )
+    # check annotations have been exported for slot 'name'
+    _test_subject_annotations(subject=AE.name, graph=graph)
 
 
-if __name__ == "__main__":
-    unittest.main()
+def _test_subject_annotations(subject, graph):
+    # annotation without a prefix in source YAML
+    assert (subject, AE.is_current, None) in graph
+    # annotation with default prefix
+    assert (subject, AE.metadata, None) in graph
+    # oa:describing is prefixed with prefix not in local scheme, but present in metamodel
+    assert (subject, OA.describing, None) in graph
+    # annotation with unknown prefix is skipped silently
+    # err:non_existing must not be present in the result
+    predicates = list(graph.predicates(subject=subject, object=None))
+    for pred in predicates:
+        assert (
+            "non_existing" not in pred
+        ), f"Annotation err:non_existing for {subject} should be skipped, but is present in the result."

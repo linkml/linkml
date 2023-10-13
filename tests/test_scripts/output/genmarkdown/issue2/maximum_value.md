@@ -31,5 +31,6 @@ slot_definition &#8594;  <sub>0..1</sub> integer
 |  |  |  |
 | --- | --- | --- |
 | **Aliases:** | | high value |
-| **In Subsets:** | | basic |
+| **In Subsets:** | | SpecificationSubset |
+|  | | BasicSubset |
 

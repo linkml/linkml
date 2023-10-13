@@ -10,7 +10,7 @@ All data follows some kind of schema or data model, whether it is explicitly art
  * you have a knowledge graph in Neo4J
  * you are working with linked data in RDF
 
-LinkML is designed to be flexible enough to cover all these use cases, allowing for lighweight semantic data dictionaries for tabular data, through rich interlinked schemas for knowledge graphs and triplestores
+LinkML is designed to be flexible enough to cover all these use cases, allowing for lightweight semantic data dictionaries for tabular data, through rich interlinked schemas for knowledge graphs and triplestores
 
 ## My data is a simple spreadsheet/TSV, why should I use LinkML?
 
@@ -54,7 +54,8 @@ classes:
       occupation_class:
         range: job_code   ## enumeration
     unique_keys:
-      - description: email is unique
+      primary:
+        description: email is unique
         unique_key_slots:
           - email
 enums:
@@ -135,6 +136,24 @@ However, if any of the following apply to you, you may want to consider LinkML -
 When making your decision, you should weigh factors such as the fact that things that can be expressed in one framework may not be expressible in the other.
 
 See also FAQ entries in [modeling](modeling) which compare some similar constructs.
+
+## Why should I use LinkML over JSON-LD?
+
+JSON-LD is a lightweight way of exchanging RDF data as JSON files. Different groups use JSON-LD
+in different ways. In some cases, JSON-LD contexts are provided as a way to map from developer-friendly
+JSON files to less familiar RDF/Turtle formats. In other cases, the JSON-LD files are operated on
+directly as JSON objects.
+
+Note that JSON-LD doesn't in itself describe how data should be *structured* - e.g. which fields
+are expected, what the expected range is of different fields, etc. Some groups combine a JSON-LD
+specification with either JSON-Schema or with a shape language like SHACL.
+
+One advantage of LinkML is that it provides a "one stop shop", where all aspects of your data
+can be described in one place without duplication, and then have JSON-LD contexts, shapes, and
+JSON schema generated for you.
+
+For more, see [Using JSON-LD](https://linkml.io/linkml/howtos/using-jsonld.html) in the how-tos
+section of this site.
 
 ## Why should I use LinkML over ShEx/SHACL?
 
@@ -264,7 +283,7 @@ similarities to LinkML.
 There are a number of reasons to use LinkML over UML
 
 * The UML standard is large and complex
-* UML serializaton in XMI is hard to work with
+* UML serialization in XMI is hard to work with
 * UML is more geared towards software engineering and includes features not needed for data modeling, such as operations
 * UML tools are complex and expensive (both financially and in terms of learning curves)
 * In contrast LinkML makes it easy to author schemas using nothing more than a text editor
@@ -279,7 +298,7 @@ However, the yUML generator (used in [the markdown generator](https://linkml.io/
 ## Why should I use LinkML over OWL?
 
 The Web Ontology Language (OWL) is a Description Logic formalism for representing
-ontological knowldge.
+ontological knowledge.
 
 LinkML is in a very different class of languages from OWL. LinkML is a
 *schema language*, with features in common with JSON-Schema, XML Schema,
@@ -340,7 +359,7 @@ The W3C [CSV on the Web](https://www.w3.org/TR/tabular-data-primer/)
 CSVs and other kinds of tabular data.
 
 An example use of CSVW is to semantically describe the columns in a
-CSV/TSV, for example a CSV about country locations and nomenculature. The following in Example 10 from the CSVW primer:
+CSV/TSV, for example a CSV about country locations and nomenclature. The following in Example 10 from the CSVW primer:
 
 ```json
 {

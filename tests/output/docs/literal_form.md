@@ -2,7 +2,7 @@
 # Slot: literal_form
 
 
-The literal lexical form of a structured alias
+The literal lexical form of a structured alias; i.e the actual alias value.
 
 URI: [linkml:literal_form](https://w3id.org/linkml/literal_form)
 

@@ -21,6 +21,7 @@ import re
 import sys
 from contextlib import redirect_stdout
 from dataclasses import dataclass, field
+from functools import lru_cache
 from io import StringIO
 from pathlib import Path
 from typing import Callable, ClassVar, Dict, List, Mapping, Optional, Set, TextIO, Type, Union, cast
@@ -56,6 +57,23 @@ from linkml.utils.typereferences import References
 
 DEFAULT_LOG_LEVEL: str = "WARNING"
 DEFAULT_LOG_LEVEL_INT: int = logging.WARNING
+
+
+@lru_cache
+def _resolved_metamodel(mergeimports):
+    if not os.path.exists(LOCAL_METAMODEL_YAML_FILE):
+        raise AssertionError(f"{LOCAL_METAMODEL_YAML_FILE} not found")
+
+    base_dir = str(Path(str(LOCAL_METAMODEL_YAML_FILE)).parent)
+    logging.debug(f"BASE={base_dir}")
+    metamodel = SchemaLoader(
+        LOCAL_METAMODEL_YAML_FILE,
+        importmap={"linkml": base_dir},
+        base_dir=base_dir,
+        mergeimports=mergeimports,
+    )
+    metamodel.resolve()
+    return metamodel
 
 
 @dataclass
@@ -172,18 +190,7 @@ class Generator(metaclass=abc.ABCMeta):
             self.source_file_date = None
             self.source_file_size = None
         if self.requires_metamodel:
-            if os.path.exists(LOCAL_METAMODEL_YAML_FILE):
-                base_dir = str(Path(str(LOCAL_METAMODEL_YAML_FILE)).parent)
-                logging.debug(f"BASE={base_dir}")
-                self.metamodel = SchemaLoader(
-                    LOCAL_METAMODEL_YAML_FILE,
-                    importmap={"linkml": base_dir},
-                    base_dir=base_dir,
-                    mergeimports=self.mergeimports,
-                )
-            else:
-                raise AssertionError(f"{LOCAL_METAMODEL_YAML_FILE} not found")
-            self.metamodel.resolve()
+            self.metamodel = _resolved_metamodel(self.mergeimports)
         schema = self.schema
         # TODO: remove aliasing
         self.emit_metadata = self.metadata
@@ -203,7 +210,6 @@ class Generator(metaclass=abc.ABCMeta):
         # See https://github.com/linkml/linkml/issues/923 for discussion on how
         # to simplify the overall framework
         if isinstance(schema, Generator):
-            logging.info("Instantiating generator with another generator is deprecated")
             gen = schema
             self.schema = gen.schema
             self.synopsis = gen.synopsis

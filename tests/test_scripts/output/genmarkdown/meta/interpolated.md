@@ -20,3 +20,10 @@ URI: [linkml:interpolated](https://w3id.org/linkml/interpolated)
 ## Used by
 
  * [PatternExpression](PatternExpression.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **In Subsets:** | | SpecificationSubset |
+

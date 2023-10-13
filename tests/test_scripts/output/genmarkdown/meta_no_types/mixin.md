@@ -2,7 +2,7 @@
 # Slot: mixin
 
 
-this slot or class can only be used as a mixin.
+Indicates the class or slot is intended to be inherited from without being an is_a parent. mixins should not be inherited from using is_a, except by other mixins.
 
 URI: [linkml:mixin](https://w3id.org/linkml/mixin)
 
@@ -21,6 +21,7 @@ URI: [linkml:mixin](https://w3id.org/linkml/mixin)
 
  * [ClassDefinition](ClassDefinition.md)
  * [Definition](Definition.md)
+ * [EnumDefinition](EnumDefinition.md)
  * [SlotDefinition](SlotDefinition.md)
 
 ## Other properties
@@ -28,7 +29,8 @@ URI: [linkml:mixin](https://w3id.org/linkml/mixin)
 |  |  |  |
 | --- | --- | --- |
 | **Aliases:** | | trait |
-| **In Subsets:** | | basic |
-|  | | object_oriented |
+| **In Subsets:** | | SpecificationSubset |
+|  | | BasicSubset |
+|  | | ObjectOrientedProfile |
 | **See also:** | | [https://en.wikipedia.org/wiki/Mixin](https://en.wikipedia.org/wiki/Mixin) |
 

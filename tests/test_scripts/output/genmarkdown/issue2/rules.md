@@ -26,4 +26,5 @@ class_definition &#8594;  <sub>0..\*</sub> class_rule
 |  |  |  |
 | --- | --- | --- |
 | **Mappings:** | | sh:rule |
+| **In Subsets:** | | SpecificationSubset |
 

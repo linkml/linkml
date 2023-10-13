@@ -20,6 +20,7 @@ from linkml_runtime.linkml_model.meta import (
 from linkml_runtime.utils.compile_python import compile_python
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.schemaview import SchemaView
+from pydantic.version import VERSION as PYDANTIC_VERSION
 
 from linkml._version import __version__
 from linkml.generators.common.type_designators import (
@@ -30,7 +31,11 @@ from linkml.generators.oocodegen import OOCodeGenerator
 from linkml.utils.generator import shared_arguments
 from linkml.utils.ifabsent_functions import ifabsent_value_declaration
 
-default_template = """
+
+def default_template(pydantic_ver: str = "1") -> str:
+    """Constructs a default template for pydantic classes based on the version of pydantic"""
+    ### HEADER ###
+    template = """
 {#-
 
   Jinja2 Template for a pydantic classes
@@ -38,9 +43,15 @@ default_template = """
 from __future__ import annotations
 from datetime import datetime, date
 from enum import Enum
-from typing import List, Dict, Optional, Any, Union
-from pydantic import BaseModel as BaseModel, Field
-from linkml_runtime.linkml_model import Decimal
+from typing import List, Dict, Optional, Any, Union"""
+    if pydantic_ver == 1:
+        template += """
+from pydantic import BaseModel as BaseModel, Field"""
+    else:
+        template += """
+from pydantic import BaseModel as BaseModel, ConfigDict, Field"""
+
+    template += """
 import sys
 if sys.version_info >= (3, 8):
     from typing import Literal
@@ -50,7 +61,10 @@ else:
 
 metamodel_version = "{{metamodel_version}}"
 version = "{{version if version else None}}"
-
+"""
+    ### BASE MODEL ###
+    if pydantic_ver == "1":
+        template += """
 class WeakRefShimBaseModel(BaseModel):
    __slots__ = '__weakref__'
 
@@ -62,7 +76,19 @@ class ConfiguredBaseModel(WeakRefShimBaseModel,
                 arbitrary_types_allowed = True,
                 use_enum_values = True):
     pass
-
+"""
+    else:
+        template += """
+class ConfiguredBaseModel(BaseModel):
+    model_config = ConfigDict(
+        validate_assignment=True,
+        validate_default=True,
+        extra={% if allow_extra %}'allow'{% else %}'forbid'{% endif %},
+        arbitrary_types_allowed=True,
+        use_enum_values = True)
+"""
+    ### ENUMS ###
+    template += """
 {% for e in enums.values() %}
 class {{ e.name }}(str, Enum):
     {% if e.description -%}
@@ -80,7 +106,9 @@ class {{ e.name }}(str, Enum):
     dummy = "dummy"
     {% endif %}
 {% endfor %}
-
+"""
+    ### CLASSES ###
+    template += """
 {%- for c in schema.classes.values() %}
 class {{ c.name }}
     {%- if class_isa_plus_mixins[c.name] -%}
@@ -98,7 +126,7 @@ class {{ c.name }}
     {{attr.name}}: {{ attr.annotations['python_range'].value }} = Field(
     {%- if predefined_slot_values[c.name][attr.name] -%}
         {{ predefined_slot_values[c.name][attr.name] }}
-    {%- elif attr.required -%}
+    {%- elif (attr.required or attr.identifier or attr.key) -%}
         ...
     {%- else -%}
         None
@@ -111,15 +139,26 @@ class {{ c.name }}
     {% else -%}
     None
     {% endfor %}
-
 {% endfor %}
-
+"""
+    ### FWD REFS / REBUILD MODEL ###
+    if pydantic_ver == "1":
+        template += """
 # Update forward refs
 # see https://pydantic-docs.helpmanual.io/usage/postponed_annotations/
 {% for c in schema.classes.values() -%}
 {{ c.name }}.update_forward_refs()
 {% endfor %}
 """
+    else:
+        template += """
+# Model rebuild
+# see https://pydantic-docs.helpmanual.io/usage/models/#rebuilding-a-model
+{% for c in schema.classes.values() -%}
+{{ c.name }}.model_rebuild()
+{% endfor %}
+"""
+    return template
 
 
 def _get_pyrange(t: TypeDefinition, sv: SchemaView) -> str:
@@ -147,11 +186,12 @@ class PydanticGenerator(OOCodeGenerator):
 
     # ClassVar overrides
     generatorname = os.path.basename(__file__)
-    generatorversion = "0.0.1"
+    generatorversion = "0.0.2"
     valid_formats = ["pydantic"]
     file_extension = "py"
 
     # ObjectVars
+    pydantic_version: str = field(default_factory=lambda: PYDANTIC_VERSION[0])
     template_file: str = None
     allow_extra: bool = field(default_factory=lambda: False)
     gen_mixin_inheritance: bool = field(default_factory=lambda: True)
@@ -441,7 +481,7 @@ class PydanticGenerator(OOCodeGenerator):
             with open(self.template_file) as template_file:
                 template_obj = Template(template_file.read())
         else:
-            template_obj = Template(default_template)
+            template_obj = Template(default_template(self.pydantic_version))
 
         sv: SchemaView
         sv = self.schemaview
@@ -525,7 +565,7 @@ class PydanticGenerator(OOCodeGenerator):
                         pyrange = f"List[{pyrange}]"
                     else:
                         pyrange = f"Dict[{collection_key}, {pyrange}]"
-                if not s.required and not s.designates_type:
+                if not (s.required or s.identifier or s.key) and not s.designates_type:
                     pyrange = f"Optional[{pyrange}]"
                 ann = Annotation("python_range", pyrange)
                 s.annotations[ann.tag] = ann
@@ -547,6 +587,12 @@ class PydanticGenerator(OOCodeGenerator):
 
 @shared_arguments(PydanticGenerator)
 @click.option("--template_file", help="Optional jinja2 template to use for class generation")
+@click.option(
+    "--pydantic_version",
+    type=click.Choice(["1", "2"]),
+    default="1",
+    help="Pydantic version to use (1 or 2)",
+)
 @click.version_option(__version__, "-V", "--version")
 @click.command()
 def cli(
@@ -557,12 +603,14 @@ def cli(
     genmeta=False,
     classvars=True,
     slots=True,
+    pydantic_version="1",
     **args,
 ):
     """Generate pydantic classes to represent a LinkML model"""
     gen = PydanticGenerator(
         yamlfile,
         template_file=template_file,
+        pydantic_version=pydantic_version,
         emit_metadata=head,
         genmeta=genmeta,
         gen_classvars=classvars,

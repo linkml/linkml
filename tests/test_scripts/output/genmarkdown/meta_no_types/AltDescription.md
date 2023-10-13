@@ -21,15 +21,16 @@ URI: [linkml:AltDescription](https://w3id.org/linkml/AltDescription)
  * [alt_description➞source](alt_description_source.md)  <sub>1..1</sub>
      * Description: the source of an attributed description
      * Range: [String](String.md)
-     * in subsets: (basic)
+     * in subsets: (BasicSubset)
  * [alt_description➞description](alt_description_text.md)  <sub>1..1</sub>
      * Description: text of an attributed description
      * Range: [String](String.md)
-     * in subsets: (basic)
+     * in subsets: (BasicSubset)
 
 ## Other properties
 
 |  |  |  |
 | --- | --- | --- |
-| **In Subsets:** | | basic |
+| **Aliases:** | | structured description |
+| **In Subsets:** | | BasicSubset |
 

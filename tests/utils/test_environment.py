@@ -11,22 +11,12 @@ from io import StringIO
 from pathlib import Path
 from typing import Callable, List, Optional, Union
 
-import click
 from linkml_runtime.linkml_model import linkml_files
 from linkml_runtime.linkml_model.linkml_files import Format, Source
 
 from linkml import LOCAL_MAPPINGS_YAML_FILE, LOCAL_METAMODEL_YAML_FILE, LOCAL_TYPES_YAML_FILE
 from tests.utils.dirutils import are_dir_trees_equal
 from tests.utils.mismatchlog import MismatchLog
-
-
-def no_click_exit(_self, code=0):
-    from tests import CLIExitException
-
-    raise CLIExitException(code)
-
-
-click.core.Context.exit = no_click_exit
 
 
 def _identity(s):

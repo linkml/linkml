@@ -2,7 +2,7 @@
 # Slot: notes
 
 
-editorial notes about an element intended for internal consumption
+editorial notes about an element intended primarily for internal consumption
 
 URI: [linkml:notes](https://w3id.org/linkml/notes)
 
@@ -44,6 +44,5 @@ URI: [linkml:notes](https://w3id.org/linkml/notes)
 |  |  |  |
 | --- | --- | --- |
 | **Mappings:** | | skos:editorialNote |
-| **In Subsets:** | | owl |
-|  | | basic |
+| **In Subsets:** | | BasicSubset |
 

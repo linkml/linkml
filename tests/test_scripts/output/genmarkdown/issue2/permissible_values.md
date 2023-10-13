@@ -9,7 +9,7 @@ URI: [linkml:permissible_values](https://w3id.org/linkml/permissible_values)
 
 ## Domain and Range
 
-enum_definition &#8594;  <sub>0..\*</sub> permissible_value
+enum_expression &#8594;  <sub>0..\*</sub> permissible_value
 
 ## Parents
 
@@ -19,11 +19,15 @@ enum_definition &#8594;  <sub>0..\*</sub> permissible_value
 
 ## Used by
 
+ * anonymous_enum_expression
  * enum_definition
+ * enum_expression
 
 ## Other properties
 
 |  |  |  |
 | --- | --- | --- |
-| **In Subsets:** | | basic |
+| **Aliases:** | | coded values |
+| **In Subsets:** | | SpecificationSubset |
+|  | | BasicSubset |
 

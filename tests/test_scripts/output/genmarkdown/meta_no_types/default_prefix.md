@@ -2,7 +2,7 @@
 # Slot: default_prefix
 
 
-default and base prefix -- used for ':' identifiers, @base and @vocab
+The prefix that is used for all elements within a schema
 
 URI: [linkml:default_prefix](https://w3id.org/linkml/default_prefix)
 
@@ -25,6 +25,7 @@ URI: [linkml:default_prefix](https://w3id.org/linkml/default_prefix)
 
 |  |  |  |
 | --- | --- | --- |
-| **In Subsets:** | | minimal |
-|  | | basic |
+| **In Subsets:** | | SpecificationSubset |
+|  | | MinimalSubset |
+|  | | BasicSubset |
 

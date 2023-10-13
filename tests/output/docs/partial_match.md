@@ -20,3 +20,10 @@ URI: [linkml:partial_match](https://w3id.org/linkml/partial_match)
 ## Used by
 
  * [PatternExpression](PatternExpression.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **In Subsets:** | | SpecificationSubset |
+

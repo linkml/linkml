@@ -19,6 +19,7 @@ persons:
   - p1a2
 - id: X:P2
   name: person2
+  gender: cisgender_man
   has_familial_relationships:
   - related_to: X:P1
     type: SIBLING_OF

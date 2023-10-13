@@ -9,3 +9,10 @@ URI: [linkml:Float](https://w3id.org/linkml/Float)
 |  |  |  |
 | --- | --- | --- |
 | Root (builtin) type | | **float** |
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **Exact Mappings:** | | schema:Float |
+

@@ -26,6 +26,6 @@ URI: [linkml:owned_by](https://w3id.org/linkml/owned_by)
 | --- | --- | --- |
 | **Aliases:** | | steward |
 |  | | owner |
-| **In Subsets:** | | basic |
+| **In Subsets:** | | BasicSubset |
 | **Close Mappings:** | | rdfs:isDefinedBy |
 

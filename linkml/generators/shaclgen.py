@@ -1,5 +1,6 @@
 import logging
 import os
+from dataclasses import dataclass, field
 
 import click
 from linkml_runtime.utils.formatutils import underscore
@@ -21,8 +22,12 @@ LINK_ML_TYPES_DATE = URIRef("http://www.w3.org/2001/XMLSchema#date")
 LINK_ML_TYPES_TIME = URIRef("http://www.w3.org/2001/XMLSchema#time")
 
 
+@dataclass
 class ShaclGenerator(Generator):
     # ClassVars
+    closed: bool = field(default_factory=lambda: True)
+    """True means add 'sh:closed=true' to all shapes, except of mixin shapes and shapes, that have parents"""
+
     generatorname = os.path.basename(__file__)
     generatorversion = "0.0.1"
     valid_formats = ["ttl"]
@@ -63,10 +68,13 @@ class ShaclGenerator(Generator):
             class_uri = URIRef(sv.get_uri(c, expand=True))
             shape_pv(RDF.type, SH.NodeShape)
             shape_pv(SH.targetClass, class_uri)  # TODO
-            if c.mixin or c.abstract:
-                shape_pv(SH.closed, Literal(False))
+            if self.closed:
+                if c.mixin or c.abstract:
+                    shape_pv(SH.closed, Literal(False))
+                else:
+                    shape_pv(SH.closed, Literal(True))
             else:
-                shape_pv(SH.closed, Literal(True))
+                shape_pv(SH.closed, Literal(False))
             if c.title is not None:
                 shape_pv(SH.name, Literal(c.title))
             if c.description is not None:
@@ -154,6 +162,12 @@ class ShaclGenerator(Generator):
 
 
 @shared_arguments(ShaclGenerator)
+@click.option(
+    "--closed/--non-closed",
+    default=True,
+    show_default=True,
+    help="Use '--closed' to generate closed SHACL shapes. Use '--non-closed' to generate open SHACL shapes.",
+)
 @click.version_option(__version__, "-V", "--version")
 @click.command()
 def cli(yamlfile, **args):

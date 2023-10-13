@@ -26,4 +26,7 @@ slot_definition &#8594;  <sub>0..1</sub> [String](types/String.md)
 |  |  |  |
 | --- | --- | --- |
 | **Mappings:** | | skos:prefLabel |
+| **Comments:** | | an example of alias is used within this metamodel, slot_definitions is aliases as slots |
+|  | | not to be confused with aliases, which indicates a set of terms to be used for search purposes. |
+| **In Subsets:** | | SpecificationSubset |
 

@@ -48,5 +48,8 @@ None &#8594;  <sub>0..1</sub> integer
 |  | | display order |
 | **Mappings:** | | sh:order |
 | **Comments:** | | the rank of an element does not affect the semantics |
-| **In Subsets:** | | basic |
+| **In Subsets:** | | SpecificationSubset |
+|  | | BasicSubset |
+| **Exact Mappings:** | | qudt:order |
+|  | | qb:order |
 

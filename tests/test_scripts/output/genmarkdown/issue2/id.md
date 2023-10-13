@@ -25,6 +25,8 @@ schema_definition &#8594;  <sub>1..1</sub> uri
 
 |  |  |  |
 | --- | --- | --- |
-| **In Subsets:** | | minimal |
-|  | | basic |
+| **In Subsets:** | | SpecificationSubset |
+|  | | MinimalSubset |
+|  | | BasicSubset |
+|  | | OwlProfile |
 

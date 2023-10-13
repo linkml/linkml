@@ -26,6 +26,7 @@ __all__ = [
     "markdowngen",
     "namespacegen",
     "owlgen",
+    "plantumlgen",
     "protogen",
     "pythongen",
     "pydanticgen",

@@ -24,11 +24,13 @@ URI: [linkml:string_serialization](https://w3id.org/linkml/string_serialization)
 
  * [ClassDefinition](ClassDefinition.md)
  * [Definition](Definition.md)
+ * [EnumDefinition](EnumDefinition.md)
  * [SlotDefinition](SlotDefinition.md)
 
 ## Other properties
 
 |  |  |  |
 | --- | --- | --- |
+| **In Subsets:** | | SpecificationSubset |
 | **See also:** | | [https://github.com/linkml/issues/128](https://github.com/linkml/issues/128) |
 

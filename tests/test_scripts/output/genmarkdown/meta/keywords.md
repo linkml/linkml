@@ -26,5 +26,5 @@ URI: [linkml:keywords](https://w3id.org/linkml/keywords)
 |  |  |  |
 | --- | --- | --- |
 | **Mappings:** | | schema:keywords |
-| **In Subsets:** | | basic |
+| **In Subsets:** | | BasicSubset |
 
