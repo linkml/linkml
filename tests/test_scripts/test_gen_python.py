@@ -80,8 +80,7 @@ types:
         ).serialize()
         self.assertTrue(
             output.startswith(
-                f"# Auto generated from None by pythongen.py version: "
-                f"{pythongen.PythonGenerator.generatorversion}"
+                f"# Auto generated from None by pythongen.py version: " f"{pythongen.PythonGenerator.generatorversion}"
             )
         )
         output = pythongen.PythonGenerator(yaml, format="py", metadata=False).serialize()
@@ -112,9 +111,7 @@ types:
         self.gen_and_comp_python("default_namespace")
 
     def test_gen_classvars_slots(self):
-        self.gen_and_comp_python(
-            "inheritedid", ["--no-classvars", "--no-slots"], "inheritedid_ncvs"
-        )
+        self.gen_and_comp_python("inheritedid", ["--no-classvars", "--no-slots"], "inheritedid_ncvs")
 
 
 if __name__ == "__main__":

@@ -57,15 +57,11 @@ class GenShExTestCase(ClickTestCase):
         self.assertTrue(os.path.exists(context_file))
 
         rdf_file = os.path.join(test_dir, "meta.ttl")
-        RDFGenerator(env.meta_yaml, importmap=env.import_map).serialize(
-            output=rdf_file, context=context_file
-        )
+        RDFGenerator(env.meta_yaml, importmap=env.import_map).serialize(output=rdf_file, context=context_file)
         self.assertTrue(os.path.exists(rdf_file))
 
         shex_file = os.path.join(test_dir, "meta.shex")
-        shexgen.ShExGenerator(env.meta_yaml, importmap=env.import_map).serialize(
-            output=shex_file, collections=False
-        )
+        shexgen.ShExGenerator(env.meta_yaml, importmap=env.import_map).serialize(output=shex_file, collections=False)
         self.assertTrue(os.path.exists(shex_file))
 
         if SKIP_SHEX_VALIDATION:

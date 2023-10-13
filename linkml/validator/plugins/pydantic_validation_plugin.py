@@ -38,9 +38,7 @@ class PydanticValidationPlugin(ValidationPlugin):
         :rtype: Iterator[ValidationResult]
         """
         if "pydantic_module" not in context.cached_artefacts:
-            context.cached_artefacts["pydantic_module"] = PydanticGenerator(
-                context.schema
-            ).compile_module()
+            context.cached_artefacts["pydantic_module"] = PydanticGenerator(context.schema).compile_module()
         pydantic_module = context.cached_artefacts["pydantic_module"]
         target_class = pydantic_module.__dict__[context.target_class]
         try:

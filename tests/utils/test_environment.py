@@ -61,9 +61,7 @@ class TestEnvironment:
 
             from tests import USE_LOCAL_IMPORT_MAP
 
-            self.import_map = (
-                self.input_path("local_import_map.json") if USE_LOCAL_IMPORT_MAP else None
-            )
+            self.import_map = self.input_path("local_import_map.json") if USE_LOCAL_IMPORT_MAP else None
             from tests import DEFAULT_MISMATCH_ACTION
 
             self.mismatch_action = DEFAULT_MISMATCH_ACTION
@@ -82,9 +80,7 @@ class TestEnvironment:
         from tests import USE_LOCAL_IMPORT_MAP
 
         if USE_LOCAL_IMPORT_MAP and not TestEnvironment.import_map_warning_emitted:
-            print(
-                "WARNING: USE_LOCAL_IMPORT_MAP must be reset to False before completing submission."
-            )
+            print("WARNING: USE_LOCAL_IMPORT_MAP must be reset to False before completing submission.")
             TestEnvironment.import_map_warning_emitted = True
 
     def clear_log(self) -> None:
@@ -137,9 +133,7 @@ class TestEnvironment:
         if len(paths):
             for i in range(len(paths)):
                 full_path = os.path.join(full_path, paths[i])
-                TestEnvironment.make_testing_directory(
-                    full_path, clear=clear and i == len(paths) - 1
-                )
+                TestEnvironment.make_testing_directory(full_path, clear=clear and i == len(paths) - 1)
         return full_path
 
     def string_comparator(self, expected: str, actual: str) -> Optional[str]:
@@ -171,13 +165,9 @@ class TestEnvironment:
                 shutil.rmtree(directory)
             os.makedirs(directory, exist_ok=True)
             with open(safety_file, "w") as f:
-                f.write(
-                    "Generated for safety.  Directory will not be cleared if this file is not present"
-                )
+                f.write("Generated for safety.  Directory will not be cleared if this file is not present")
 
-    def generate_directory(
-        self, dirname: Union[str, List[str]], generator: Callable[[str], None]
-    ) -> None:
+    def generate_directory(self, dirname: Union[str, List[str]], generator: Callable[[str], None]) -> None:
         """
         Invoke the generator and compare the output in a temp directory to the output directory.  Report the results
         and then update the output directory
@@ -223,14 +213,8 @@ class TestEnvironment:
         if not filtr:
             filtr = _identity
         filename = filename if isinstance(filename, List) else [filename]
-        actual_file = (
-            self.root_temp_file_path(*filename) if use_testing_root else self.actual_path(*filename)
-        )
-        expected_file = (
-            self.root_expected_path(*filename)
-            if use_testing_root
-            else self.expected_path(*filename)
-        )
+        actual_file = self.root_temp_file_path(*filename) if use_testing_root else self.actual_path(*filename)
+        expected_file = self.root_expected_path(*filename) if use_testing_root else self.expected_path(*filename)
 
         if value_is_returned:
             actual = generator()

@@ -97,9 +97,7 @@ def test_injection_clash(c_has_pk, d_has_pk):
     c_id_col = "id" if c_has_pk else "uid"
     d_id_col = "id" if d_has_pk else "uid"
     assert Counter([f"c_{c_id_col}", f"has_d_{d_id_col}"]) == Counter(c_has_d.attributes.keys())
-    assert Counter([f"c_{c_id_col}", f"has_d_{d_id_col}"]) == Counter(
-        get_primary_key_attributes(c_has_d)
-    )
+    assert Counter([f"c_{c_id_col}", f"has_d_{d_id_col}"]) == Counter(get_primary_key_attributes(c_has_d))
 
 
 def test_no_inject_primary_key():
@@ -122,9 +120,7 @@ def test_multivalued_literal():
     Test translation of lists of strings
     """
     b = SchemaBuilder()
-    b.add_class("c", ["name", "description", "aliases"]).set_slot(
-        "aliases", multivalued=True, singular_name="alias"
-    )
+    b.add_class("c", ["name", "description", "aliases"]).set_slot("aliases", multivalued=True, singular_name="alias")
     rel_schema = _translate(b).schema
     rsv = SchemaView(rel_schema)
     c = rsv.get_class("c")
@@ -357,9 +353,7 @@ def test_sqlt_complete_example(input_path):
         "MedicalEvent",
     ]:
         c = sv.get_class(relationship_class)
-        assert any(
-            a for a in c.attributes.values() if a.range == "Person" and a.name == "Person_id"
-        )
+        assert any(a for a in c.attributes.values() if a.range == "Person" and a.name == "Person_id")
         pk = sv.get_identifier_slot(cn)
         assert pk is not None
         assert pk.name == "id"

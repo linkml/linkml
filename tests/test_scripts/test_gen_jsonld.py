@@ -58,23 +58,17 @@ class GenJSONLDTestCase(ClickTestCase):
         # Generate all of the required contexts
         env.generate_single_file(
             env.expected_path(self.testdir, "includes", "simple_types.context.jsonld"),
-            lambda: ContextGenerator(
-                env.input_path("includes", "simple_types.yaml"), emit_metadata=False
-            ).serialize(),
+            lambda: ContextGenerator(env.input_path("includes", "simple_types.yaml"), emit_metadata=False).serialize(),
             value_is_returned=True,
         )
         env.generate_single_file(
             env.expected_path(self.testdir, "simple_slots.context.jsonld"),
-            lambda: ContextGenerator(
-                env.input_path("simple_slots.yaml"), emit_metadata=False
-            ).serialize(),
+            lambda: ContextGenerator(env.input_path("simple_slots.yaml"), emit_metadata=False).serialize(),
             value_is_returned=True,
         )
         env.generate_single_file(
             env.expected_path(self.testdir, "simple_uri_test.context.jsonld"),
-            lambda: ContextGenerator(
-                env.input_path("simple_uri_test.yaml"), emit_metadata=False
-            ).serialize(),
+            lambda: ContextGenerator(env.input_path("simple_uri_test.yaml"), emit_metadata=False).serialize(),
             value_is_returned=True,
         )
         self.do_test(

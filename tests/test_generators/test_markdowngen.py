@@ -37,12 +37,8 @@ def test_markdowngen(kitchen_sink_path, tmp_path):
     assert_mdfile_contains(tmp_path / "Person.md", "has medical history", after="Own")
     assert_mdfile_contains(tmp_path / "Person.md", "aliases", after="Mixed in from HasAliases")
 
-    assert_mdfile_contains(
-        tmp_path / "has_medical_history.md", "MedicalEvent", after="Domain and Range"
-    )
-    assert_mdfile_contains(
-        tmp_path / "has_medical_history.md", "subset B", after="Other properties"
-    )
+    assert_mdfile_contains(tmp_path / "has_medical_history.md", "MedicalEvent", after="Domain and Range")
+    assert_mdfile_contains(tmp_path / "has_medical_history.md", "subset B", after="Other properties")
 
 
 def test_slot_name_mapping(kitchen_sink_path, tmp_path):

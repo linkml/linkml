@@ -56,16 +56,12 @@ class Report(YAMLRoot):
     class_name: ClassVar[str] = "report"
     class_model_uri: ClassVar[URIRef] = REPORTING.Report
 
-    results: Optional[
-        Union[Union[dict, "CheckResult"], List[Union[dict, "CheckResult"]]]
-    ] = empty_list()
+    results: Optional[Union[Union[dict, "CheckResult"], List[Union[dict, "CheckResult"]]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if not isinstance(self.results, list):
             self.results = [self.results] if self.results is not None else []
-        self.results = [
-            v if isinstance(v, CheckResult) else CheckResult(**as_dict(v)) for v in self.results
-        ]
+        self.results = [v if isinstance(v, CheckResult) else CheckResult(**as_dict(v)) for v in self.results]
 
         super().__post_init__(**kwargs)
 

@@ -12,9 +12,7 @@ def test_pydantic_obey_range(schema_str):
     gen = PydanticGenerator(schema_str)
     output = gen.serialize()
 
-    assert (
-        re.match(r"Union\[[a-zA-Z0-9]*\]", output) is None
-    ), "a python Union should always have more than one option"
+    assert re.match(r"Union\[[a-zA-Z0-9]*\]", output) is None, "a python Union should always have more than one option"
 
     output_subset = [line for line in output.splitlines() if "thingtype" in line]
     assert len(output_subset) > 0

@@ -10,9 +10,7 @@ from linkml.generators.shexgen import ShExGenerator
 from tests.test_generators.test_pythongen import make_python
 
 
-@pytest.mark.skipif(
-    sys.version_info < (3, 8), reason="ShEx has issues with python 3.7 at the moment"
-)
+@pytest.mark.skipif(sys.version_info < (3, 8), reason="ShEx has issues with python 3.7 at the moment")
 def test_shex(kitchen_sink_path, input_path, tmp_path):
     """tests generation of shex and subsequent evaluation"""
     kitchen_module = make_python(kitchen_sink_path)

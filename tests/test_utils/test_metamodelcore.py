@@ -116,9 +116,7 @@ class MetamodelCoreTest(unittest.TestCase):
     def test_time(self):
         v = datetime.time(13, 17, 43, 279000)
         self.assertEqual("13:17:43.279000", XSDTime(v))  # A date can be a datetime
-        self.assertEqual(
-            "13:17:43.279000", XSDTime(Literal(v, datatype=XSD.time))
-        )  # An RDFLIB Literal
+        self.assertEqual("13:17:43.279000", XSDTime(Literal(v, datatype=XSD.time)))  # An RDFLIB Literal
         self.assertEqual("13:17:43.279000", v.isoformat())  # A string
         self.assertEqual("13:17:43.279000", XSDTime(XSDTime(v)))  # An existing date
         strict()
@@ -157,9 +155,7 @@ class MetamodelCoreTest(unittest.TestCase):
     def test_datetime(self):
         v = datetime.datetime(2019, 7, 6, 17, 22, 39, 7300)
         self.assertEqual("2019-07-06T17:22:39.007300", XSDDateTime(v))
-        self.assertEqual(
-            "2019-07-06T17:22:39.007300", XSDDateTime(Literal(v, datatype=XSD.datetime))
-        )
+        self.assertEqual("2019-07-06T17:22:39.007300", XSDDateTime(Literal(v, datatype=XSD.datetime)))
         self.assertEqual("2019-07-06T17:22:39.007300", XSDDateTime(Literal(v).value))
         self.assertEqual("2019-07-06T17:22:39.007300", v.isoformat())
         self.assertEqual("2019-07-06T17:22:39.007300", XSDDateTime(XSDDateTime(v)))

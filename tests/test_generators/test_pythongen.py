@@ -44,9 +44,7 @@ def test_pythongen(kitchen_sink_path):
         "has_birth_event=None, species_name=None, stomach_count=None, is_living=None, aliases=[])"
     )
 
-    f = kitchen_module.FamilialRelationship(
-        related_to="me", type="SIBLING_OF", cordialness="heartfelt"
-    )
+    f = kitchen_module.FamilialRelationship(related_to="me", type="SIBLING_OF", cordialness="heartfelt")
     assert str(f) == (
         "FamilialRelationship(started_at_time=None, ended_at_time=None, related_to='me', "
         "type='SIBLING_OF', cordialness=(text='heartfelt', description='warm and hearty friendliness'))"

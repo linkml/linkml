@@ -45,9 +45,7 @@ class ValidationContext:
     def _get_target_class(self, target_class: str) -> str:
         if target_class is None:
             roots = [
-                class_name
-                for class_name, class_def in self.schema_view.all_classes().items()
-                if class_def.tree_root
+                class_name for class_name, class_def in self.schema_view.all_classes().items() if class_def.tree_root
             ]
             if len(roots) != 1:
                 raise ValueError(f"Cannot determine tree root: {roots}")

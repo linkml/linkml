@@ -69,12 +69,7 @@ class TerminusdbGenerator(Generator):
         print(json.dumps(WQ().woql_and(*self.classes, *self.raw_additions).to_dict(), indent=2))
 
     def visit_class(self, cls: ClassDefinition) -> bool:
-        self.clswq = (
-            WQ()
-            .add_class(camelcase(cls.name))
-            .label(camelcase(cls.name))
-            .description(be(cls.description))
-        )
+        self.clswq = WQ().add_class(camelcase(cls.name)).label(camelcase(cls.name)).description(be(cls.description))
         if cls.is_a:
             self.clswq.parent(camelcase(cls.is_a))
         if cls.abstract:
@@ -90,9 +85,7 @@ class TerminusdbGenerator(Generator):
     def end_class(self, cls: ClassDefinition) -> None:
         self.classes.append(self.clswq)
 
-    def visit_class_slot(
-        self, cls: ClassDefinition, aliased_slot_name: str, slot: SlotDefinition
-    ) -> None:
+    def visit_class_slot(self, cls: ClassDefinition, aliased_slot_name: str, slot: SlotDefinition) -> None:
         if slot.range in self.schema.classes:
             rng = camelcase(slot.range)
         elif slot.range in self.schema.types:

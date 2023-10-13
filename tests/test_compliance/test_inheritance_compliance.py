@@ -82,9 +82,7 @@ from tests.test_compliance.test_compliance import (
     ],
 )
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
-def test_basic_class_inheritance(
-    framework, description, cls: str, object, is_valid, parent_is_abstract
-):
+def test_basic_class_inheritance(framework, description, cls: str, object, is_valid, parent_is_abstract):
     """
     Tests behavior is_a in class hierarchies.
 
@@ -145,9 +143,7 @@ def test_basic_class_inheritance(
         if framework in [PYDANTIC, PYTHON_DATACLASSES, SQL_DDL_SQLITE, OWL]:
             # currently lax about instantiating abstract classes
             expected_behavior = ValidationBehavior.INCOMPLETE
-    schema = validated_schema(
-        test_basic_class_inheritance, f"ABS{parent_is_abstract}", framework, classes=classes
-    )
+    schema = validated_schema(test_basic_class_inheritance, f"ABS{parent_is_abstract}", framework, classes=classes)
     check_data(
         schema,
         description.replace(" ", "_"),

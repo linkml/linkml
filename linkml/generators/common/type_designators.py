@@ -4,9 +4,7 @@ from linkml_runtime.linkml_model.meta import ClassDefinition, SlotDefinition
 from linkml_runtime.utils.schemaview import SchemaView
 
 
-def get_type_designator_value(
-    sv: SchemaView, type_designator_slot: SlotDefinition, class_def: ClassDefinition
-) -> str:
+def get_type_designator_value(sv: SchemaView, type_designator_slot: SlotDefinition, class_def: ClassDefinition) -> str:
     """
     returns the correct value for a type designator field for a given class, depending on its range
     this implements the logic described in https://github.com/linkml/linkml/issues/945:

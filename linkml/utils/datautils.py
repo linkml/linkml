@@ -102,9 +102,7 @@ def infer_root_class(sv: SchemaView) -> Optional[ClassDefinitionName]:
         return None
 
 
-def infer_index_slot(
-    sv: SchemaView, root_class: ClassDefinitionName
-) -> Optional[SlotDefinitionName]:
+def infer_index_slot(sv: SchemaView, root_class: ClassDefinitionName) -> Optional[SlotDefinitionName]:
     index_slots = []
     for sn in sv.class_slots(root_class):
         slot = sv.induced_slot(sn, root_class)

@@ -77,9 +77,7 @@ class Person(HasNewsEvents, HasAliases, NamedThing):
     birth_date: Optional[str] = Field(None)
     age_in_years: Optional[int] = Field(None, ge=0, le=999)
     gender: Optional[GenderType] = Field(None)
-    current_address: Optional[Address] = Field(
-        None, description="""The address at which a person currently lives"""
-    )
+    current_address: Optional[Address] = Field(None, description="""The address at which a person currently lives""")
     has_employment_history: Optional[List[EmploymentEvent]] = Field(default_factory=list)
     has_familial_relationships: Optional[List[FamilialRelationship]] = Field(default_factory=list)
     has_medical_history: Optional[List[MedicalEvent]] = Field(default_factory=list)
@@ -99,9 +97,7 @@ class Organization(HasNewsEvents, HasAliases, NamedThing):
     mission_statement: Optional[str] = Field(None)
     founding_date: Optional[str] = Field(None)
     founding_location: Optional[str] = Field(None)
-    current_address: Optional[Address] = Field(
-        None, description="""The address at which a person currently lives"""
-    )
+    current_address: Optional[Address] = Field(None, description="""The address at which a person currently lives""")
     aliases: Optional[List[str]] = Field(default_factory=list)
     has_news_events: Optional[List[NewsEvent]] = Field(default_factory=list)
     id: Optional[str] = Field(None)

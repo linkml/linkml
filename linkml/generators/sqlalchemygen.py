@@ -105,9 +105,7 @@ class SQLAlchemyGenerator(Generator):
         #        #raise ValueError(f'Class must have attrs: {c.name}')
         self.add_safe_aliases(tr_schema)
         tr_sv = SchemaView(tr_schema)
-        rel_schema_classes_ordered = [
-            tr_sv.get_class(cn, strict=True) for cn in self.order_classes_by_hierarchy(tr_sv)
-        ]
+        rel_schema_classes_ordered = [tr_sv.get_class(cn, strict=True) for cn in self.order_classes_by_hierarchy(tr_sv)]
         rel_schema_classes_ordered = [c for c in rel_schema_classes_ordered if not self.skip(c)]
         for c in rel_schema_classes_ordered:
             # For SQLA there needs to be a primary key for each class;
@@ -123,9 +121,7 @@ class SQLAlchemyGenerator(Generator):
             backrefs=backrefs,
             classname=camelcase,
             no_model_import=no_model_import,
-            is_join_table=lambda c: any(
-                tag for tag in c.annotations.keys() if tag == "linkml:derived_from"
-            ),
+            is_join_table=lambda c: any(tag for tag in c.annotations.keys() if tag == "linkml:derived_from"),
             classes=rel_schema_classes_ordered,
         )
         return code
@@ -159,17 +155,13 @@ class SQLAlchemyGenerator(Generator):
             model_path = self.schema.name
 
         if template == TemplateEnum.DECLARATIVE:
-            sqla_code = self.generate_sqla(
-                model_path=None, no_model_import=True, template=template, **kwargs
-            )
+            sqla_code = self.generate_sqla(model_path=None, no_model_import=True, template=template, **kwargs)
             return compile_python(sqla_code, package_path=model_path)
         elif compile_python_dataclasses:
             # concatenate the python dataclasses with the sqla code
             if pydantic:
                 # mixin inheritance doesn't get along with SQLAlchemy's imperative (aka classical) mapping
-                pygen = PydanticGenerator(
-                    self.original_schema, allow_extra=True, gen_mixin_inheritance=False
-                )
+                pygen = PydanticGenerator(self.original_schema, allow_extra=True, gen_mixin_inheritance=False)
             else:
                 pygen = PythonGenerator(self.original_schema)
             dc_code = pygen.serialize()
@@ -196,11 +188,7 @@ class SQLAlchemyGenerator(Generator):
         olist = sv.class_roots()
         unprocessed = [cn for cn in sv.all_classes() if cn not in olist]
         while len(unprocessed) > 0:
-            ext_list = [
-                cn
-                for cn in unprocessed
-                if not any(p for p in sv.class_parents(cn) if p not in olist)
-            ]
+            ext_list = [cn for cn in unprocessed if not any(p for p in sv.class_parents(cn) if p not in olist)]
             if len(ext_list) == 0:
                 raise ValueError(f"Cycle in hierarchy, cannot process: {unprocessed}")
             olist += ext_list

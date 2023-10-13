@@ -110,9 +110,7 @@ def test_attributes(framework, description, object, is_valid):
             },
         },
     }
-    schema = validated_schema(
-        test_attributes, "attributes", framework, classes=classes, core_elements=["attributes"]
-    )
+    schema = validated_schema(test_attributes, "attributes", framework, classes=classes, core_elements=["attributes"])
     check_data(
         schema,
         description.replace(" ", "_"),
@@ -423,11 +421,7 @@ def test_cardinality(framework, multivalued, required, data_name, value):
         "  )"
         "}"
     )
-    owl_mv = (
-        ""
-        if multivalued
-        else "[ a owl:Restriction ; owl:maxCardinality 1 ; owl:onProperty ex:s1 ],"
-    )
+    owl_mv = "" if multivalued else "[ a owl:Restriction ; owl:maxCardinality 1 ; owl:onProperty ex:s1 ],"
     owl = (
         "@prefix ex: <http://example.org/> ."
         "@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> ."
@@ -447,13 +441,7 @@ def test_cardinality(framework, multivalued, required, data_name, value):
     )
     sql_nullable = "NOT NULL" if required else ""
     if not multivalued:
-        sqlite = (
-            'CREATE TABLE "C" ('
-            f"  id INTEGER NOT NULL,"
-            f"  s1 TEXT {sql_nullable},"
-            "  PRIMARY KEY (id)"
-            ");"
-        )
+        sqlite = 'CREATE TABLE "C" (' f"  id INTEGER NOT NULL," f"  s1 TEXT {sql_nullable}," "  PRIMARY KEY (id)" ");"
     else:
         sqlite = (
             'CREATE TABLE "C_s1" ('
@@ -483,9 +471,7 @@ def test_cardinality(framework, multivalued, required, data_name, value):
             }
         }
     }
-    schema = validated_schema(
-        test_cardinality, f"MV{multivalued}_REQ{required}", framework, classes=classes
-    )
+    schema = validated_schema(test_cardinality, f"MV{multivalued}_REQ{required}", framework, classes=classes)
     coerced = None
     is_valid = True
     list2scalar = False
@@ -557,9 +543,7 @@ def test_identifier_is_required(framework, required_asserted, data_name, instanc
             }
         }
     }
-    schema = validated_schema(
-        test_cardinality, f"REQ{required_asserted}", framework, classes=classes
-    )
+    schema = validated_schema(test_cardinality, f"REQ{required_asserted}", framework, classes=classes)
     expected_behavior = ValidationBehavior.IMPLEMENTS
     check_data(
         schema,
@@ -601,9 +585,7 @@ def ensafeify(name: str):
         ("C", "C", "1s", "1s", "T1"),
     ],
 )
-def test_non_standard_names(
-    framework, class_name, safe_class_name, slot_name, safe_slot_name, type_name
-):
+def test_non_standard_names(framework, class_name, safe_class_name, slot_name, safe_slot_name, type_name):
     """
     Tests that non-standard class and slot names are handled gracefully.
 
@@ -699,9 +681,7 @@ def test_non_standard_num_names(framework, enum_name, pv_name):
         },
     }
     name = ensafeify(f"EN{enum_name}_PV{pv_name}")
-    schema = validated_schema(
-        test_non_standard_num_names, name, framework, classes=classes, enums=enums
-    )
+    schema = validated_schema(test_non_standard_num_names, name, framework, classes=classes, enums=enums)
     expected_behavior = ValidationBehavior.IMPLEMENTS
     instance = {
         SLOT_S1: pv_name,

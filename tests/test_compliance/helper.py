@@ -49,9 +49,7 @@ FRAMEWORK = str  ## pydantic, java, etc
 PYDANTIC_ROOT_CLASS = "ConfiguredBaseModel"
 PYTHON_DATACLASSES_ROOT_CLASS = "YAMLRoot"
 PYDANTIC = "pydantic"
-PYDANTIC_STRICT = (
-    "pydantic_strict"  ## TODO: https://docs.pydantic.dev/latest/usage/types/strict_types/
-)
+PYDANTIC_STRICT = "pydantic_strict"  ## TODO: https://docs.pydantic.dev/latest/usage/types/strict_types/
 PYTHON_DATACLASSES = "python_dataclasses"
 JSON_SCHEMA = "jsonschema"
 SHACL = "shacl"
@@ -122,9 +120,7 @@ class Feature(BaseModel):
     class Config:
         use_enum_values = True
 
-    def set_framework_behavior(
-        self, framework: FRAMEWORK, behavior: ValidationBehavior
-    ) -> ValidationBehavior:
+    def set_framework_behavior(self, framework: FRAMEWORK, behavior: ValidationBehavior) -> ValidationBehavior:
         if framework not in self.implementations:
             self.implementations[framework] = behavior
             return behavior
@@ -246,9 +242,7 @@ def _get_metamodel_elements(obj: Any) -> Iterator[str]:
         pass
 
 
-def _generate_framework_output(
-    schema: Dict, framework: str, mappings: List = None
-) -> Tuple[Generator, str, str]:
+def _generate_framework_output(schema: Dict, framework: str, mappings: List = None) -> Tuple[Generator, str, str]:
     """
     Compile a schema using a framework (e.g. jsonschema generation).
 
@@ -287,9 +281,7 @@ def _generate_framework_output(
                     assert compare_rdf(expected, output, subsumes=framework in [OWL]) == set()
                 elif isinstance(expected, str):
                     if "".join(expected.split()) not in "".join(output.split()):
-                        pytest.fail(
-                            f"Not a substring when ignoring whitespace:\n'{expected}'\n'{output}'"
-                        )
+                        pytest.fail(f"Not a substring when ignoring whitespace:\n'{expected}'\n'{output}'")
                     # assert expected in output
                 elif isinstance(expected, dict):
                     output_obj = json.loads(output)
@@ -305,9 +297,7 @@ def _generate_framework_output(
 TRIPLE = Tuple[rdflib.URIRef, rdflib.URIRef, Union[rdflib.URIRef, rdflib.Literal]]
 
 
-def compare_rdf(
-    expected: Union[str, List[TRIPLE]], actual: str, subsumes: bool = False
-) -> Optional[Set]:
+def compare_rdf(expected: Union[str, List[TRIPLE]], actual: str, subsumes: bool = False) -> Optional[Set]:
     """
     Compares two rdf serializations.
 
@@ -336,9 +326,7 @@ def compare_rdf(
     if subsumes:
         return triples_expected.difference(triples_actual)
     else:
-        return triples_expected.union(triples_actual).difference(
-            triples_expected.intersection(triples_actual)
-        )
+        return triples_expected.union(triples_actual).difference(triples_expected.intersection(triples_actual))
 
 
 def _obj_within_obj(expected: Dict, actual: Dict) -> bool:
@@ -528,9 +516,7 @@ def _as_compact_yaml(obj: Union[YAMLRoot, BaseModel, Dict]) -> str:
     return yaml_dumper.dumps(obj)
 
 
-def _objects_are_equal(
-    obj1: Union[YAMLRoot, BaseModel, Dict], obj2: Union[YAMLRoot, BaseModel, Dict]
-) -> bool:
+def _objects_are_equal(obj1: Union[YAMLRoot, BaseModel, Dict], obj2: Union[YAMLRoot, BaseModel, Dict]) -> bool:
     y1 = _as_compact_yaml(obj1)
     y2 = _as_compact_yaml(obj2)
     return y1 == y2
@@ -579,9 +565,7 @@ def check_data(
     object_to_validate: Dict,
     valid: bool,
     should_warn: bool = False,
-    expected_behavior: Union[
-        ValidationBehavior, Tuple[ValidationBehavior, str]
-    ] = ValidationBehavior.IMPLEMENTS,
+    expected_behavior: Union[ValidationBehavior, Tuple[ValidationBehavior, str]] = ValidationBehavior.IMPLEMENTS,
     target_class: str = None,
     description: str = None,
     coerced: Dict = None,
@@ -637,9 +621,7 @@ def check_data(
             # coercion detection and output of repaired objects
             mod = compile_python(output)
             py_cls = getattr(mod, target_class)
-            logging.info(
-                f"Validating {py_cls} against {object_to_validate}// {expected_behavior} {valid}"
-            )
+            logging.info(f"Validating {py_cls} against {object_to_validate}// {expected_behavior} {valid}")
             py_inst = None
             if valid:
                 py_inst = py_cls(**object_to_validate)
@@ -660,9 +642,7 @@ def check_data(
                     if isinstance(gen, PydanticGenerator):
                         with pytest.raises(pydantic.ValidationError):
                             py_inst = py_cls(**object_to_validate)
-                            logging.info(
-                                f"Unexpectedly instantiated {py_inst} from {object_to_validate}"
-                            )
+                            logging.info(f"Unexpectedly instantiated {py_inst} from {object_to_validate}")
                     else:
                         with pytest.raises(Exception):
                             py_inst = py_cls(**object_to_validate)
@@ -674,27 +654,17 @@ def check_data(
                     if isinstance(gen, PythonGenerator):
                         ttl_path = out_dir / f"{data_name}.ttl"
                         _convert_data_to_rdf(schema, object_to_validate, target_class, ttl_path)
-            logging.info(
-                f"fwk: {framework}, cls: {target_class}, inst: {object_to_validate}, valid: {valid}"
-            )
+            logging.info(f"fwk: {framework}, cls: {target_class}, inst: {object_to_validate}, valid: {valid}")
 
         elif isinstance(gen, JsonSchemaGenerator):
             validator = JsonSchemaDataValidator(schema=yaml.dump(schema))
-            errors = list(
-                validator.iter_validate_dict(
-                    _clean_dict(object_to_validate), target_class, closed=True
-                )
-            )
-            logging.info(
-                f"Expecting {valid}, Validating {object_to_validate} against {target_class}, errors: {errors}"
-            )
+            errors = list(validator.iter_validate_dict(_clean_dict(object_to_validate), target_class, closed=True))
+            logging.info(f"Expecting {valid}, Validating {object_to_validate} against {target_class}, errors: {errors}")
             if valid:
                 assert errors == [], f"Errors found in json schema validation: {errors}"
             else:
                 if expected_behavior == ValidationBehavior.ACCEPTS:
-                    logging.info(
-                        "Does not flag exception for borderline case (e.g. matching an int to a float)"
-                    )
+                    logging.info("Does not flag exception for borderline case (e.g. matching an int to a float)")
                 else:
                     assert errors != [], "Expected errors in json schema validation, but none found"
             if should_warn:
@@ -703,9 +673,7 @@ def check_data(
             if not exclude_rdf:
                 ttl_path = out_dir / f"{data_name}.ttl"
                 _convert_data_to_rdf(schema, object_to_validate, target_class, ttl_path)
-                coherent = robot_check_coherency(
-                    ttl_path, output_path, str(ttl_path) + ".reasoned.owl"
-                )
+                coherent = robot_check_coherency(ttl_path, output_path, str(ttl_path) + ".reasoned.owl")
                 if coherent is not None:
                     if valid:
                         assert coherent, f"Coherency check failed for {ttl_path}"
@@ -749,9 +717,7 @@ def check_data(
         )
 
 
-def _convert_data_to_rdf(
-    schema: dict, instance: dict, target_class: str, ttl_path: str
-) -> Optional[rdflib.Graph]:
+def _convert_data_to_rdf(schema: dict, instance: dict, target_class: str, ttl_path: str) -> Optional[rdflib.Graph]:
     ttl_path = str(ttl_path)
     gen, output, _ = _generate_framework_output(schema, PYTHON_DATACLASSES)
     mod = compile_python(output)
@@ -784,9 +750,7 @@ def robot_is_on_path():
     return shutil.which("robot") is not None
 
 
-def robot_check_coherency(
-    data_path: str, ontology_path: str, output_path: str = None
-) -> Optional[bool]:
+def robot_check_coherency(data_path: str, ontology_path: str, output_path: str = None) -> Optional[bool]:
     """
     Check the data validates using an OWL reasoner, executed by robot.
 

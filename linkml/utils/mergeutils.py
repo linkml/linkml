@@ -83,8 +83,7 @@ def merge_namespaces(target: SchemaDefinition, mergee: SchemaDefinition, namespa
             else:
                 if (
                     prefix.prefix_prefix in target.prefixes
-                    and target.prefixes[prefix.prefix_prefix].prefix_reference
-                    != prefix.prefix_reference
+                    and target.prefixes[prefix.prefix_prefix].prefix_reference != prefix.prefix_reference
                 ):
                     logging.info(
                         "Ignoring different relative prefix for %s from %s, "
@@ -103,9 +102,7 @@ def merge_namespaces(target: SchemaDefinition, mergee: SchemaDefinition, namespa
             prefix.prefix_prefix in target.prefixes
             and target.prefixes[prefix.prefix_prefix].prefix_reference != prefix.prefix_reference
         ):
-            raise ValueError(
-                f"Prefix: {prefix.prefix_prefix} mismatch between {target.name} and {mergee.name}"
-            )
+            raise ValueError(f"Prefix: {prefix.prefix_prefix} mismatch between {target.name} and {mergee.name}")
     for mmap in mergee.default_curi_maps:
         namespaces.add_prefixmap(mmap)
 
@@ -134,9 +131,7 @@ def merge_dicts(
 ) -> None:
     for k, v in source.items():
         if k in target and source[k].from_schema != target[k].from_schema:
-            raise ValueError(
-                f"Conflicting URIs ({source[k].from_schema}, {target[k].from_schema}) for item: {k}"
-            )
+            raise ValueError(f"Conflicting URIs ({source[k].from_schema}, {target[k].from_schema}) for item: {k}")
         target[k] = deepcopy(v)
         # currently all imports closures are merged into main schema, EXCEPT
         # internal linkml types, which are considered separate
@@ -175,9 +170,7 @@ def merge_slots(
     target.__post_init__()
 
 
-def slot_usage_name(
-    usage_name: SlotDefinitionName, owning_class: ClassDefinition
-) -> SlotDefinitionName:
+def slot_usage_name(usage_name: SlotDefinitionName, owning_class: ClassDefinition) -> SlotDefinitionName:
     """
      Synthesize a unique name for an overridden slot
 
@@ -188,9 +181,7 @@ def slot_usage_name(
     return SlotDefinitionName(extended_str.concat(owning_class.name, "_", usage_name))
 
 
-def alias_root(
-    schema: SchemaDefinition, slotname: SlotDefinitionName
-) -> Optional[SlotDefinitionName]:
+def alias_root(schema: SchemaDefinition, slotname: SlotDefinitionName) -> Optional[SlotDefinitionName]:
     """Return the ultimate alias of a slot"""
     alias = schema.slots[slotname].alias if slotname in schema.slots else None
     if alias and alias == slotname:

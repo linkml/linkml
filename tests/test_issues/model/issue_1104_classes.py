@@ -91,9 +91,7 @@ class NamedThing(YAMLRoot):
             self.alternative_identifiers = (
                 [self.alternative_identifiers] if self.alternative_identifiers is not None else []
             )
-        self.alternative_identifiers = [
-            v if isinstance(v, str) else str(v) for v in self.alternative_identifiers
-        ]
+        self.alternative_identifiers = [v if isinstance(v, str) else str(v) for v in self.alternative_identifiers]
 
         super().__post_init__(**kwargs)
 
@@ -191,9 +189,7 @@ class WorkflowExecutionActivity(Activity):
     has_output: Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]] = None
     was_informed_by: Union[str, ActivityId] = None
     raw_type: Optional[str] = None
-    part_of: Optional[
-        Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]]
-    ] = empty_list()
+    part_of: Optional[Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]]] = empty_list()
     type: Optional[str] = None
     was_associated_with: Optional[Union[str, WorkflowExecutionActivityId]] = None
 
@@ -212,17 +208,13 @@ class WorkflowExecutionActivity(Activity):
             self.MissingRequiredField("has_input")
         if not isinstance(self.has_input, list):
             self.has_input = [self.has_input] if self.has_input is not None else []
-        self.has_input = [
-            v if isinstance(v, NamedThingId) else NamedThingId(v) for v in self.has_input
-        ]
+        self.has_input = [v if isinstance(v, NamedThingId) else NamedThingId(v) for v in self.has_input]
 
         if self._is_empty(self.has_output):
             self.MissingRequiredField("has_output")
         if not isinstance(self.has_output, list):
             self.has_output = [self.has_output] if self.has_output is not None else []
-        self.has_output = [
-            v if isinstance(v, NamedThingId) else NamedThingId(v) for v in self.has_output
-        ]
+        self.has_output = [v if isinstance(v, NamedThingId) else NamedThingId(v) for v in self.has_output]
 
         if self._is_empty(self.was_informed_by):
             self.MissingRequiredField("was_informed_by")
@@ -269,9 +261,7 @@ class MetatranscriptomeAssembly(WorkflowExecutionActivity):
         if not isinstance(self.id, MetatranscriptomeAssemblyId):
             self.id = MetatranscriptomeAssemblyId(self.id)
 
-        if self.insdc_assembly_identifiers is not None and not isinstance(
-            self.insdc_assembly_identifiers, str
-        ):
+        if self.insdc_assembly_identifiers is not None and not isinstance(self.insdc_assembly_identifiers, str):
             self.insdc_assembly_identifiers = str(self.insdc_assembly_identifiers)
 
         super().__post_init__(**kwargs)
@@ -456,9 +446,7 @@ slots.metatranscriptome_activity_set = Slot(
     ],
 )
 
-slots.id = Slot(
-    uri=NMDC.id, name="id", curie=NMDC.curie("id"), model_uri=NMDC.id, domain=None, range=URIRef
-)
+slots.id = Slot(uri=NMDC.id, name="id", curie=NMDC.curie("id"), model_uri=NMDC.id, domain=None, range=URIRef)
 
 slots.name = Slot(
     uri=NMDC.name,

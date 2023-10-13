@@ -44,9 +44,7 @@ class GenRDFTestCase(ClickTestCase):
 
     def _gen_context_file(self, fname: str, metauris: bool = False) -> str:
         cntxt_txt = ldcontext_metadata_filter(
-            ContextGenerator(
-                env.meta_yaml, useuris=not metauris, importmap=env.import_map
-            ).serialize()
+            ContextGenerator(env.meta_yaml, useuris=not metauris, importmap=env.import_map).serialize()
         )
         cntxt_file_path = self.expected_file_path(fname)
         if os.path.exists(cntxt_file_path):

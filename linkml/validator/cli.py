@@ -19,9 +19,7 @@ class Config(BaseModel):
     schema_path: Union[str, Path] = Field(alias="schema")
     target_class: Optional[str] = None
     data_sources: Iterable[Union[str, Dict[str, Dict[str, str]]]] = []
-    plugins: Optional[Dict[str, Optional[Dict[str, Any]]]] = {
-        "JsonschemaValidationPlugin": {"closed": True}
-    }
+    plugins: Optional[Dict[str, Optional[Dict[str, Any]]]] = {"JsonschemaValidationPlugin": {"closed": True}}
 
 
 def _resolve_class(full_class_name: str, default_package: str, **kwargs):
@@ -46,24 +44,18 @@ def _resolve_plugins(plugin_config: Dict[str, Dict[str, Any]]) -> List[Validatio
     return plugins
 
 
-def _resolve_loaders(
-    loader_config: Iterable[Union[str, Dict[str, Dict[str, str]]]]
-) -> List[Loader]:
+def _resolve_loaders(loader_config: Iterable[Union[str, Dict[str, Dict[str, str]]]]) -> List[Loader]:
     loaders = []
     for entry in loader_config:
         if isinstance(entry, str):
             loader = default_loader_for_file(entry)
         elif isinstance(entry, dict):
             if len(entry) > 1:
-                raise click.ClickException(
-                    f"Invalid config. Dictionary entries should only have one key: {entry}"
-                )
+                raise click.ClickException(f"Invalid config. Dictionary entries should only have one key: {entry}")
             class_name = next(iter(entry.keys()))
             loader = _resolve_class(class_name, "linkml.validator.loaders", **entry[class_name])
         else:
-            raise click.ClickException(
-                "Invalid config. Data sources must be specified as a string or as dictionary."
-            )
+            raise click.ClickException("Invalid config. Data sources must be specified as a string or as dictionary.")
         loaders.append(loader)
     return loaders
 
@@ -118,9 +110,7 @@ def cli(
     for loader in loaders:
         for result in validator.iter_results_from_source(loader, config.target_class):
             severity_counter[result.severity] += 1
-            click.echo(
-                f"[{result.severity.value}] {result.message} of {loader.source}#{result.instance_index}"
-            )
+            click.echo(f"[{result.severity.value}] {result.message} of {loader.source}#{result.instance_index}")
 
     if sum(severity_counter.values()) == 0:
         click.echo("No issues found!")

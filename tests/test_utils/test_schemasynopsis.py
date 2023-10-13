@@ -24,9 +24,7 @@ class SchemaSynopsisTestCase(TestEnvironmentTestCase):
             lambda: "\n".join(schema.synopsis.errors()),
             value_is_returned=True,
         )
-        self.env.generate_single_file(
-            base_name + ".synopsis", lambda: self.summary, value_is_returned=True
-        )
+        self.env.generate_single_file(base_name + ".synopsis", lambda: self.summary, value_is_returned=True)
 
     def test_meta_synopsis(self):
         """Raise a flag if the number of classes, slots, types or other elements change in the model"""

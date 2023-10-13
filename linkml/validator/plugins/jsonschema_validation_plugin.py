@@ -41,9 +41,7 @@ class JsonschemaValidationPlugin(ValidationPlugin):
         :rtype: Iterator[ValidationResult]
         """
         json_schema = context.json_schema(closed=self.closed, path_override=self.json_schema_path)
-        validator = jsonschema.Draft7Validator(
-            json_schema, format_checker=jsonschema.Draft7Validator.FORMAT_CHECKER
-        )
+        validator = jsonschema.Draft7Validator(json_schema, format_checker=jsonschema.Draft7Validator.FORMAT_CHECKER)
         for error in validator.iter_errors(instance):
             best_error = best_match([error])
             yield ValidationResult(

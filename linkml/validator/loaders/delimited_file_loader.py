@@ -27,18 +27,14 @@ class _DelimitedFileLoader(Loader, ABC):
     def delimiter(self):
         pass
 
-    def __init__(
-        self, source, *, skip_empty_rows: bool = False, index_slot_name: Optional[str] = None
-    ) -> None:
+    def __init__(self, source, *, skip_empty_rows: bool = False, index_slot_name: Optional[str] = None) -> None:
         super().__init__(source)
         self.skip_empty_rows = skip_empty_rows
         self.index_slot_name = index_slot_name
 
     def _rows(self) -> Iterator[dict]:
         with open(self.source) as file:
-            reader: csv.DictReader = csv.DictReader(
-                file, delimiter=self.delimiter, skipinitialspace=True
-            )
+            reader: csv.DictReader = csv.DictReader(file, delimiter=self.delimiter, skipinitialspace=True)
             for row in reader:
                 if self.skip_empty_rows and not any(row.values()):
                     continue

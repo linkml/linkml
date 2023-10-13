@@ -147,9 +147,7 @@ def cli(
         infer_all_slot_values(obj, schemaview=sv, config=infer_config)
     if validate:
         if schema is None:
-            raise Exception(
-                "--schema must be passed in order to validate. Suppress with --no-validate"
-            )
+            raise Exception("--schema must be passed in order to validate. Suppress with --no-validate")
         # TODO: use validator framework
         validation.validate_object(obj, schema)
 

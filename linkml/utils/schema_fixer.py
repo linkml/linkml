@@ -127,13 +127,9 @@ class SchemaFixer:
         for cn in sv.all_classes():
             for s in sv.class_induced_slots(cn):
                 ranges.add(s.range)
-        top_level_classes = [
-            c for c in sv.all_classes().values() if not c.tree_root and c.name not in ranges
-        ]
+        top_level_classes = [c for c in sv.all_classes().values() if not c.tree_root and c.name not in ranges]
         if must_have_identifier:
-            top_level_classes = [
-                c for c in top_level_classes if sv.get_identifier_slot(c.name) is not None
-            ]
+            top_level_classes = [c for c in top_level_classes if sv.get_identifier_slot(c.name) is not None]
         index_slots = []
         for c in top_level_classes:
             has_identifier = sv.get_identifier_slot(c.name)
@@ -157,9 +153,7 @@ class SchemaFixer:
             self._add_history(f"Adding container slot: {index_slot.name}")
         return index_slots
 
-    def attributes_to_slots(
-        self, schema: SchemaDefinition, remove_redundant_slot_usage=True
-    ) -> None:
+    def attributes_to_slots(self, schema: SchemaDefinition, remove_redundant_slot_usage=True) -> None:
         """
         Convert all attributes to slots
 
@@ -211,15 +205,11 @@ class SchemaFixer:
                 if v is not None and v != [] and v != {}:
                     curr_v = getattr(su, k, None)
                     if not overwrite and curr_v and curr_v != v:
-                        raise ValueError(
-                            f"Conflict in {cls.name}.{slot.name}, attr {k} {v} != {curr_v}"
-                        )
+                        raise ValueError(f"Conflict in {cls.name}.{slot.name}, attr {k} {v} != {curr_v}")
                     setattr(su, k, v)
             self._add_history(f"Merged slot usage: {slot.name}")
 
-    def remove_redundant_slot_usage(
-        self, schema: SchemaDefinition, class_name: ClassDefinitionName = None
-    ):
+    def remove_redundant_slot_usage(self, schema: SchemaDefinition, class_name: ClassDefinitionName = None):
         """
         Remove parts of slot_usage that can be inferred
 
@@ -267,15 +257,11 @@ class SchemaFixer:
                         continue
                     induced_v = getattr(induced_slot, metaslot_name, None)
                     if v is not None and v != [] and v != {} and v == induced_v:
-                        logging.info(
-                            f"REDUNDANT: {class_name}.{slot_usage_key}[{metaslot_name}] = {v}"
-                        )
+                        logging.info(f"REDUNDANT: {class_name}.{slot_usage_key}[{metaslot_name}] = {v}")
                         to_delete.append(metaslot_name)
                 for metaslot_name in to_delete:
                     del slot_usage_value[metaslot_name]
-                    self._add_history(
-                        f"Removed redundant: {class_name}.slot_usage[{slot_usage_key}].[{metaslot_name}]"
-                    )
+                    self._add_history(f"Removed redundant: {class_name}.slot_usage[{slot_usage_key}].[{metaslot_name}]")
             empty_keys = []
             for slot_usage_key, slot_usage_value in cls.slot_usage.items():
                 metaslot_keys = list(json_dumper.to_dict(slot_usage_value).keys())

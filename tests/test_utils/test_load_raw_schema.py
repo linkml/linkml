@@ -77,20 +77,14 @@ class RawLoaderTestCase(unittest.TestCase):
             output = env.expected_path("schema4.json")
             if not os.path.exists(output):
                 with open(output, "w") as f:
-                    f.write(
-                        as_json(
-                            JsonObj(**{k: as_dict(loads(as_json(v))) for k, v in s.types.items()})
-                        )
-                    )
+                    f.write(as_json(JsonObj(**{k: as_dict(loads(as_json(v))) for k, v in s.types.items()})))
 
             with open(output) as f:
                 expected = as_dict(load(f))
             self.assertEqual(expected, {k: as_dict(loads(as_json(v))) for k, v in s.types.items()})
             s.types = None
 
-        self._verify_schema1_content(
-            load_raw_schema(env.input_path("schema4.yaml")), "schema4", check_types
-        )
+        self._verify_schema1_content(load_raw_schema(env.input_path("schema4.yaml")), "schema4", check_types)
 
     def test_base_dir(self):
         """Test the base directory option"""
