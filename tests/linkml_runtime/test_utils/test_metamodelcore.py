@@ -96,6 +96,15 @@ class MetamodelCoreTest(unittest.TestCase):
         x = URI("rdf:type")
         self.assertTrue(URI.is_valid(x))
         self.assertTrue(URI.is_valid("urn:abc:123"))
+        self.assertTrue(URI.is_valid("https://john.doe@www.example.com:123/forum/questions/?tag=networking&order=newest#top"))
+        self.assertTrue(URI.is_valid("ldap://[2001:db8::7]/c=GB?objectClass?one"))
+        self.assertTrue(URI.is_valid("ldap://[2001:db8::7]/c=GB?objectClass?one"))
+        self.assertTrue(URI.is_valid("mailto:John.Doe@example.com"))
+        self.assertTrue(URI.is_valid("news:comp.infosystems.www.servers.unix"))
+        self.assertTrue(URI.is_valid("tel:+1-816-555-1212"))
+        self.assertTrue(URI.is_valid("telnet://192.0.2.16:80/"))
+        self.assertTrue(URI.is_valid("urn:oasis:names:specification:docbook:dtd:xml:4.1.2"))
+        self.assertTrue(URI.is_valid("file:///home/user/"))
 
     def test_bool(self):
         self.assertTrue(Bool(True))
