@@ -31,5 +31,6 @@ URI: [linkml:maximum_value](https://w3id.org/linkml/maximum_value)
 |  |  |  |
 | --- | --- | --- |
 | **Aliases:** | | high value |
-| **In Subsets:** | | basic |
+| **In Subsets:** | | SpecificationSubset |
+|  | | BasicSubset |
 

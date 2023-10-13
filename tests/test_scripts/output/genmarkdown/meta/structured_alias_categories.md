@@ -27,6 +27,7 @@ URI: [linkml:structured_alias_categories](https://w3id.org/linkml/structured_ali
 |  |  |  |
 | --- | --- | --- |
 | **Mappings:** | | dcterms:subject |
-| **Examples:** | | Example(value='https://w3id.org/mod#acronym', description='An acronym') |
-| **In Subsets:** | | basic |
+| **Comments:** | | if you wish to use uncontrolled terms or terms that lack identifiers then use the keywords element |
+| **Examples:** | | Example(value='https://w3id.org/mod#acronym', description='An acronym', object=None) |
+| **In Subsets:** | | BasicSubset |
 

@@ -26,7 +26,7 @@ There are two cases you need to consider while writing your unit test. The first
 To run a single test file using `pytest`:
 
 ```python
-poetry run pytset tests/test_issues/test_linkml_issue_NNN.py
+poetry run pytest tests/test_issues/test_linkml_issue_NNN.py
 ```
 
 You can run the full test suite in the following way:
@@ -119,6 +119,24 @@ New tests in any directory should be written using pytest.
   **Warning**: snapshot testing can be very powerful, but it can also lead to brittle tests. You should **seriously consider alternatives** before writing this type of test.
 
   If you make a change that intentionally causes some output to not match the saved snapshot file(s), you should update the snapshots by running `pytest` with the `--generate-snapshots` flag. You should try to run only a single or small group of tests with this flag (as opposed to the entire test suite). The updated snapshot files should be checked in to Git alongside your other code changes.
+
+#### Testing multiple Pydantic versions
+
+LinkML both generates and depends on Pydantic. [Pydantic V2](https://docs.pydantic.dev/2.4/migration/) brought a number of breaking changes, but we intend to support both V1 and V2. By default, the `PydanticGenerator` class will generate code compatible with the version of Pydantic that is installed in your environment. This can be overridden by explicitly setting the `pydantic_version` field.
+
+As of October 2023, our default development environment still specifies Pydantic 1 (as determined by the `poetry.lock` file). But since we also support Pydantic 2 (as specified in `pyproject.toml`), it is important to test with Pydantic 2 in your environment. To facilitate that there is a `tox` environment called `pydantic2`. To run all tests with Pydantic 2 installed:
+
+```shell
+poetry run tox -e pydantic2
+```
+
+Additional arguments will be passed to `pytest`. For example, to run a specific test:
+
+```shell
+poetry run tox -e pydantic2 -- tests/test_compliance/test_core_compliance.py
+```
+
+Our main GitHub Actions testing workflow will also automatically perform one test run with Pydantic 2 in the environment.
 
 ### Code formatting and linting
 

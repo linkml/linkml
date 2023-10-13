@@ -20,3 +20,10 @@ None &#8594;  <sub>0..1</sub> [Boolean](Boolean.md)
 ## Used by
 
  * [ClassRule](ClassRule.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **In Subsets:** | | SpecificationSubset |
+

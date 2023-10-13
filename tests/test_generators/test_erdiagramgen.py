@@ -1,16 +1,22 @@
-import unittest
-
-from linkml.generators.erdiagramgen import ERDiagramGenerator
-from tests.test_generators.environment import env
-
-SCHEMA = env.input_path("kitchen_sink.yaml")
-MERMAID_OUT = env.expected_path("kitchen_sink.mermaid.md")
-
-MARKDOWN_HEADER = """```mermaid
-erDiagram
+"""
+Tests generation of mermaidfrom LinkML schemas
 """
 
-PERSON = """
+from linkml.generators.erdiagramgen import ERDiagramGenerator
+
+
+def remove_whitespace(string: str):
+    return string.replace(" ", "")
+
+
+MARKDOWN_HEADER = remove_whitespace(
+    """```mermaid
+erDiagram
+"""
+)
+
+PERSON = remove_whitespace(
+    """
 Person {
     string id
     string name
@@ -21,93 +27,93 @@ Person {
     stringList aliases
 }
 """
+)
 
-PERSON2MEDICALEVENT = """
+PERSON2MEDICALEVENT = remove_whitespace(
+    """
 Person ||--}o MedicalEvent : "has medical history"
 """
+)
 
-FAMILIALRELATIONSHIP2PERSON = """
+FAMILIALRELATIONSHIP2PERSON = remove_whitespace(
+    """
 FamilialRelationship ||--|| Person : "related to"
 """
+)
 
-DATASET2PERSON = """
+DATASET2PERSON = remove_whitespace(
+    """
 Dataset ||--}o Person : "persons"
 """
+)
 
 
-class ERDiagramGeneratorTestCase(unittest.TestCase):
-    """
-    Tests generation of mermaidfrom LinkML schemas
-    """
-
-    def test_serialize(self):
-        """Test default serialization (structural)"""
-        gen = ERDiagramGenerator(SCHEMA)
-        mermaid = gen.serialize()
-        with open(MERMAID_OUT, "w") as stream:
-            stream.write(mermaid)
-        self._in(MARKDOWN_HEADER, mermaid, "default format should be markdown")
-        self._in(PERSON, mermaid)
-        self._in(PERSON2MEDICALEVENT, mermaid)
-        self._in(FAMILIALRELATIONSHIP2PERSON, mermaid)
-        self.assertNotIn("FakeClass", mermaid, "FakeClass should not be reachable from root")
-
-    def test_serialize_direct(self):
-        """Test default serialization (structural), no markdown block"""
-        gen = ERDiagramGenerator(SCHEMA, format="mermaid")
-        mermaid = gen.serialize()
-        self.assertNotIn("```", mermaid, "markdown header should not be present")
-        self._in(PERSON, mermaid)
-        self._in(PERSON2MEDICALEVENT, mermaid)
-        self.assertNotIn("FakeClass", mermaid, "FakeClass should not be reachable from root")
-
-    def test_serialize_exclude_attributes(self):
-        """Test default serialization (structural), excluding attributes"""
-        gen = ERDiagramGenerator(SCHEMA, exclude_attributes=True)
-        mermaid = gen.serialize()
-        self.assertNotIn("string", mermaid, "attributes should be excluded")
-        self._in(PERSON2MEDICALEVENT, mermaid)
-        self._in(FAMILIALRELATIONSHIP2PERSON, mermaid)
-
-    def test_serialize_all(self):
-        """Test serialization of all elements"""
-        gen = ERDiagramGenerator(SCHEMA, structural=False)
-        mermaid = gen.serialize()
-        self._in(PERSON, mermaid)
-        self._in(PERSON2MEDICALEVENT, mermaid)
-        self.assertIn("FakeClass", mermaid, "FakeClass be included even if not reachable")
-
-    def test_serialize_selected(self):
-        """Test serialization of selected elements"""
-        gen = ERDiagramGenerator(SCHEMA)
-        mermaid = gen.serialize_classes(["FamilialRelationship"])
-        self.assertNotIn("Person {", mermaid, "Person not reachable from selected")
-        self._in(FAMILIALRELATIONSHIP2PERSON, mermaid, "dangling references should be included")
-
-    def test_follow_references(self):
-        """Test serialization of selected elements following non-inlined references"""
-        gen = ERDiagramGenerator(SCHEMA)
-        mermaid = gen.serialize_classes(["FamilialRelationship"], follow_references=True)
-        self._in(PERSON, mermaid)
-        self._in(FAMILIALRELATIONSHIP2PERSON, mermaid)
-
-    def test_max_hops(self):
-        """Test truncation at depth"""
-        gen = ERDiagramGenerator(SCHEMA)
-        mermaid = gen.serialize_classes(["Dataset"], max_hops=0)
-        self.assertNotIn("Person {", mermaid, "Person not reachable from selected in zero hops")
-        self._in(DATASET2PERSON, mermaid, "dangling references should be included")
-        mermaid = gen.serialize_classes(["Dataset"], max_hops=1)
-        self._in(PERSON, mermaid, "Person reachable from selected in one hop")
-        self.assertNotIn(
-            "FamilialRelationship {",
-            mermaid,
-            "FamilialRelationship not reachable from selected in zero hops",
-        )
-
-    def _in(self, s1, s2, message: str = None):
-        self.assertIn(s1.replace(" ", ""), s2.replace(" ", ""), message)
+def test_serialize(kitchen_sink_path):
+    """Test default serialization (structural)"""
+    gen = ERDiagramGenerator(kitchen_sink_path)
+    mermaid = remove_whitespace(gen.serialize())
+    assert MARKDOWN_HEADER in mermaid, "default format should be markdown"
+    assert PERSON in mermaid
+    assert PERSON2MEDICALEVENT in mermaid
+    assert FAMILIALRELATIONSHIP2PERSON in mermaid
+    assert "FakeClass" not in mermaid, "FakeClass should not be reachable from root"
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_serialize_direct(kitchen_sink_path):
+    """Test default serialization (structural), no markdown block"""
+    gen = ERDiagramGenerator(kitchen_sink_path, format="mermaid")
+    mermaid = remove_whitespace(gen.serialize())
+    assert "```" not in mermaid, "markdown header should not be present"
+    assert PERSON in mermaid
+    assert PERSON2MEDICALEVENT in mermaid
+    assert "FakeClass" not in mermaid, "FakeClass should not be reachable from root"
+
+
+def test_serialize_exclude_attributes(kitchen_sink_path):
+    """Test default serialization (structural), excluding attributes"""
+    gen = ERDiagramGenerator(kitchen_sink_path, exclude_attributes=True)
+    mermaid = remove_whitespace(gen.serialize())
+    assert "string" not in mermaid, "attributes should be excluded"
+    assert PERSON2MEDICALEVENT in mermaid
+    assert FAMILIALRELATIONSHIP2PERSON in mermaid
+
+
+def test_serialize_all(kitchen_sink_path):
+    """Test serialization of all elements"""
+    gen = ERDiagramGenerator(kitchen_sink_path, structural=False)
+    mermaid = remove_whitespace(gen.serialize())
+    assert PERSON in mermaid
+    assert PERSON2MEDICALEVENT in mermaid
+    assert "FakeClass" in mermaid, "FakeClass be included even if not reachable"
+
+
+def test_serialize_selected(kitchen_sink_path):
+    """Test serialization of selected elements"""
+    gen = ERDiagramGenerator(kitchen_sink_path)
+    mermaid = remove_whitespace(gen.serialize_classes(["FamilialRelationship"]))
+    assert "Person{" not in mermaid, "Person not reachable from selected"
+    assert FAMILIALRELATIONSHIP2PERSON in mermaid, "dangling references should be included"
+
+
+def test_follow_references(kitchen_sink_path):
+    """Test serialization of selected elements following non-inlined references"""
+    gen = ERDiagramGenerator(kitchen_sink_path)
+    mermaid = remove_whitespace(
+        gen.serialize_classes(["FamilialRelationship"], follow_references=True)
+    )
+    assert PERSON in mermaid
+    assert FAMILIALRELATIONSHIP2PERSON in mermaid
+
+
+def test_max_hops(kitchen_sink_path):
+    """Test truncation at depth"""
+    gen = ERDiagramGenerator(kitchen_sink_path)
+    mermaid = remove_whitespace(gen.serialize_classes(["Dataset"], max_hops=0))
+    assert "Person{" not in mermaid, "Person not reachable from selected in zero hops"
+    assert DATASET2PERSON in mermaid, "dangling references should be included"
+
+    mermaid = remove_whitespace(gen.serialize_classes(["Dataset"], max_hops=1))
+    assert PERSON in mermaid, "Person reachable from selected in one hop"
+    assert (
+        "FamilialRelationship{" not in mermaid
+    ), "FamilialRelationship not reachable from selected in zero hops"

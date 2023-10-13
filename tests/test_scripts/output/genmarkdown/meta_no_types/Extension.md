@@ -7,7 +7,7 @@ a tag/value pair used to add non-model information to an entry
 URI: [linkml:Extension](https://w3id.org/linkml/Extension)
 
 
-[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[Extension]<extensions%200..*-++[Extension&#124;tag(pk):uriorcurie;value:string],[Extension]^-[Annotation],[Extensible],[Annotation])](https://yuml.me/diagram/nofunky;dir:TB/class/[Extension]<extensions%200..*-++[Extension&#124;tag(pk):uriorcurie;value:string],[Extension]^-[Annotation],[Extensible],[Annotation])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[Extension]<extensions%200..*-++[Extension&#124;tag(pk):uriorcurie],[AnyValue]<value%201..1-++[Extension],[Extension]^-[Annotation],[Extensible],[Annotation],[AnyValue])](https://yuml.me/diagram/nofunky;dir:TB/class/[Extension]<extensions%200..*-++[Extension&#124;tag(pk):uriorcurie],[AnyValue]<value%201..1-++[Extension],[Extension]^-[Annotation],[Extensible],[Annotation],[AnyValue])
 
 ## Children
 
@@ -27,7 +27,7 @@ URI: [linkml:Extension](https://w3id.org/linkml/Extension)
      * Range: [Uriorcurie](Uriorcurie.md)
  * [extension➞value](extension_value.md)  <sub>1..1</sub>
      * Description: the actual annotation
-     * Range: [String](String.md)
+     * Range: [AnyValue](AnyValue.md)
  * [extensions](extensions.md)  <sub>0..\*</sub>
      * Description: a tag/text tuple attached to an arbitrary element
      * Range: [Extension](Extension.md)

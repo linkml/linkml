@@ -10,6 +10,8 @@
     dcterms:license "https://creativecommons.org/publicdomain/zero/1.0/" ;
     sh:declare [ sh:namespace linkml: ;
             sh:prefix "linkml" ],
+        [ sh:namespace <https://w3id.org/linkml/examples/personinfo/> ;
+            sh:prefix "ex" ],
         [ sh:namespace schema: ;
             sh:prefix "sdo" ] ;
     linkml:classes <https://w3id.org/linkml/examples/personinfo/GeoAge>,
@@ -17,7 +19,7 @@
         <https://w3id.org/linkml/examples/personinfo/Organization>,
         <https://w3id.org/linkml/examples/personinfo/Person>,
         <https://w3id.org/linkml/examples/personinfo/Thing> ;
-    linkml:default_prefix "https://w3id.org/linkml/examples/personinfo/" ;
+    linkml:default_prefix "ex" ;
     linkml:default_range <https://w3id.org/linkml/examples/personinfo/string> ;
     linkml:generation_date "2000-01-01T00:00:00"^^xsd:dateTime ;
     linkml:id <https://w3id.org/linkml/examples/personinfo> ;
@@ -37,8 +39,8 @@
         <https://w3id.org/linkml/examples/personinfo/person__aliases>,
         <https://w3id.org/linkml/examples/personinfo/person__phone> ;
     linkml:source_file "linkml_issue_384.yaml" ;
-    linkml:source_file_date "2023-07-14T10:43:06"^^xsd:dateTime ;
-    linkml:source_file_size 1220 ;
+    linkml:source_file_date "2000-01-01T00:00:00"^^xsd:dateTime ;
+    linkml:source_file_size 1 ;
     linkml:types <https://w3id.org/linkml/examples/personinfo/boolean>,
         <https://w3id.org/linkml/examples/personinfo/curie>,
         <https://w3id.org/linkml/examples/personinfo/date>,
@@ -61,6 +63,7 @@
 
 <https://w3id.org/linkml/examples/personinfo/boolean> a linkml:TypeDefinition ;
     skos:definition "A binary (true or false) value" ;
+    skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"boolean\"." ;
     skos:exactMatch schema:Boolean ;
     skos:inScheme linkml:types ;
     linkml:base "Bool" ;
@@ -72,6 +75,7 @@
 <https://w3id.org/linkml/examples/personinfo/curie> a linkml:TypeDefinition ;
     dcterms:conformsTo "https://www.w3.org/TR/curie/" ;
     skos:definition "a compact URI" ;
+    skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"curie\"." ;
     skos:inScheme linkml:types ;
     skos:note "in RDF serializations this MUST be expanded to a URI",
         "in non-RDF serializations MAY be serialized as the compact representation" ;
@@ -83,7 +87,8 @@
 
 <https://w3id.org/linkml/examples/personinfo/date> a linkml:TypeDefinition ;
     skos:definition "a date (year, month and day) in an idealized calendar" ;
-    skos:editorialNote "URI is dateTime because OWL reasoners don't work with straight date or time" ;
+    skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"date\".",
+        "URI is dateTime because OWL reasoners don't work with straight date or time" ;
     skos:exactMatch schema:Date ;
     skos:inScheme linkml:types ;
     linkml:base "XSDDate" ;
@@ -94,6 +99,7 @@
 
 <https://w3id.org/linkml/examples/personinfo/date_or_datetime> a linkml:TypeDefinition ;
     skos:definition "Either a date or a datetime" ;
+    skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"date_or_datetime\"." ;
     skos:inScheme linkml:types ;
     linkml:base "str" ;
     linkml:definition_uri linkml:DateOrDatetime ;
@@ -103,6 +109,7 @@
 
 <https://w3id.org/linkml/examples/personinfo/datetime> a linkml:TypeDefinition ;
     skos:definition "The combination of a date and time" ;
+    skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"datetime\"." ;
     skos:exactMatch schema:DateTime ;
     skos:inScheme linkml:types ;
     linkml:base "XSDDateTime" ;
@@ -114,6 +121,7 @@
 <https://w3id.org/linkml/examples/personinfo/decimal> a linkml:TypeDefinition ;
     skos:broadMatch schema:Number ;
     skos:definition "A real number with arbitrary precision that conforms to the xsd:decimal specification" ;
+    skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"decimal\"." ;
     skos:inScheme linkml:types ;
     linkml:base "Decimal" ;
     linkml:definition_uri linkml:Decimal ;
@@ -123,6 +131,7 @@
 <https://w3id.org/linkml/examples/personinfo/double> a linkml:TypeDefinition ;
     skos:closeMatch schema:Float ;
     skos:definition "A real number that conforms to the xsd:double specification" ;
+    skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"double\"." ;
     skos:inScheme linkml:types ;
     linkml:base "float" ;
     linkml:definition_uri linkml:Double ;
@@ -132,6 +141,7 @@
 <https://w3id.org/linkml/examples/personinfo/jsonpath> a linkml:TypeDefinition ;
     dcterms:conformsTo "https://www.ietf.org/archive/id/draft-goessner-dispatch-jsonpath-00.html" ;
     skos:definition "A string encoding a JSON Path. The value of the string MUST conform to JSON Point syntax and SHOULD dereference to zero or more valid objects within the current instance document when encoded in tree form." ;
+    skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"jsonpath\"." ;
     skos:inScheme linkml:types ;
     linkml:base "str" ;
     linkml:definition_uri linkml:Jsonpath ;
@@ -142,6 +152,7 @@
 <https://w3id.org/linkml/examples/personinfo/jsonpointer> a linkml:TypeDefinition ;
     dcterms:conformsTo "https://datatracker.ietf.org/doc/html/rfc6901" ;
     skos:definition "A string encoding a JSON Pointer. The value of the string MUST conform to JSON Point syntax and SHOULD dereference to a valid object within the current instance document when encoded in tree form." ;
+    skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"jsonpointer\"." ;
     skos:inScheme linkml:types ;
     linkml:base "str" ;
     linkml:definition_uri linkml:Jsonpointer ;
@@ -151,6 +162,7 @@
 
 <https://w3id.org/linkml/examples/personinfo/ncname> a linkml:TypeDefinition ;
     skos:definition "Prefix part of CURIE" ;
+    skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"ncname\"." ;
     skos:inScheme linkml:types ;
     linkml:base "NCName" ;
     linkml:definition_uri linkml:Ncname ;
@@ -160,6 +172,7 @@
 
 <https://w3id.org/linkml/examples/personinfo/nodeidentifier> a linkml:TypeDefinition ;
     skos:definition "A URI, CURIE or BNODE that represents a node in a model." ;
+    skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"nodeidentifier\"." ;
     skos:inScheme linkml:types ;
     linkml:base "NodeIdentifier" ;
     linkml:definition_uri linkml:Nodeidentifier ;
@@ -169,6 +182,7 @@
 
 <https://w3id.org/linkml/examples/personinfo/objectidentifier> a linkml:TypeDefinition ;
     skos:definition "A URI or CURIE that represents an object in the model." ;
+    skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"objectidentifier\"." ;
     skos:inScheme linkml:types ;
     skos:note "Used for inheritance and type checking" ;
     linkml:base "ElementIdentifier" ;
@@ -180,6 +194,7 @@
 <https://w3id.org/linkml/examples/personinfo/sparqlpath> a linkml:TypeDefinition ;
     dcterms:conformsTo "https://www.w3.org/TR/sparql11-query/#propertypaths" ;
     skos:definition "A string encoding a SPARQL Property Path. The value of the string MUST conform to SPARQL syntax and SHOULD dereference to zero or more valid objects within the current instance document when encoded as RDF." ;
+    skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"sparqlpath\"." ;
     skos:inScheme linkml:types ;
     linkml:base "str" ;
     linkml:definition_uri linkml:Sparqlpath ;
@@ -189,7 +204,8 @@
 
 <https://w3id.org/linkml/examples/personinfo/time> a linkml:TypeDefinition ;
     skos:definition "A time object represents a (local) time of day, independent of any particular day" ;
-    skos:editorialNote "URI is dateTime because OWL reasoners do not work with straight date or time" ;
+    skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"time\".",
+        "URI is dateTime because OWL reasoners do not work with straight date or time" ;
     skos:exactMatch schema:Time ;
     skos:inScheme linkml:types ;
     linkml:base "XSDTime" ;
@@ -202,6 +218,7 @@
     dcterms:conformsTo "https://www.ietf.org/rfc/rfc3987.txt" ;
     skos:closeMatch schema:URL ;
     skos:definition "a complete URI" ;
+    skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"uri\"." ;
     skos:inScheme linkml:types ;
     skos:note "in RDF serializations a slot with range of uri is treated as a literal or type xsd:anyURI unless it is an identifier or a reference to an identifier, in which case it is translated directly to a node" ;
     linkml:base "URI" ;
@@ -212,6 +229,7 @@
 
 <https://w3id.org/linkml/examples/personinfo/uriorcurie> a linkml:TypeDefinition ;
     skos:definition "a URI or a CURIE" ;
+    skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"uriorcurie\"." ;
     skos:inScheme linkml:types ;
     linkml:base "URIorCURIE" ;
     linkml:definition_uri linkml:Uriorcurie ;
@@ -334,6 +352,7 @@
 
 <https://w3id.org/linkml/examples/personinfo/float> a linkml:TypeDefinition ;
     skos:definition "A real number that conforms to the xsd:float specification" ;
+    skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"float\"." ;
     skos:exactMatch schema:Float ;
     skos:inScheme linkml:types ;
     linkml:base "float" ;
@@ -343,6 +362,7 @@
 
 <https://w3id.org/linkml/examples/personinfo/integer> a linkml:TypeDefinition ;
     skos:definition "An integer" ;
+    skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"integer\"." ;
     skos:exactMatch schema:Integer ;
     skos:inScheme linkml:types ;
     linkml:base "int" ;
@@ -410,6 +430,7 @@
 
 <https://w3id.org/linkml/examples/personinfo/string> a linkml:TypeDefinition ;
     skos:definition "A character string" ;
+    skos:editorialNote "In RDF serializations, a slot with range of string is treated as a literal or type xsd:string.   If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"string\"." ;
     skos:exactMatch schema:Text ;
     skos:inScheme linkml:types ;
     linkml:base "str" ;

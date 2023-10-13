@@ -1,0 +1,30 @@
+# test.schema.yaml
+id: http://example.org/pattern
+name: pattern
+
+imports:
+  - https://w3id.org/linkml/types
+
+slots:
+  phone:
+    any_of:
+      - range: AmericanPhone
+      - range: GermanPhone
+
+classes:
+  Test:
+    tree_root: true
+    slots:
+      - phone
+
+  AmericanPhone:
+    attributes:
+      phone_number:
+        range: string
+        pattern: ^\d{3} \d{3} \d{4}$
+
+  GermanPhone:
+    attributes:
+      phone_number:
+        range: string
+        pattern: ^0\d{3}-\d{8}$

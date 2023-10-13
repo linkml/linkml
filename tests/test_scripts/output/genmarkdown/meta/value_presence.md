@@ -20,6 +20,9 @@ URI: [linkml:value_presence](https://w3id.org/linkml/value_presence)
 
 ## Used by
 
+ * [AnonymousSlotExpression](AnonymousSlotExpression.md)
+ * [SlotDefinition](SlotDefinition.md)
+ * [SlotExpression](SlotExpression.md)
 
 ## Other properties
 

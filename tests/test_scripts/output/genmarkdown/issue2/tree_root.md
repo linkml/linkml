@@ -2,7 +2,7 @@
 # Slot: tree_root
 
 
-indicator that this is the root class in tree structures
+Indicates that this is the Container class which forms the root of the serialized document structure in tree serializations
 
 URI: [linkml:tree_root](https://w3id.org/linkml/tree_root)
 
@@ -25,5 +25,7 @@ class_definition &#8594;  <sub>0..1</sub> boolean
 
 |  |  |  |
 | --- | --- | --- |
-| **In Subsets:** | | basic |
+| **In Subsets:** | | SpecificationSubset |
+|  | | BasicSubset |
+| **See also:** | | [https://linkml.io/linkml/intro/tutorial02.html](https://linkml.io/linkml/intro/tutorial02.html) |
 

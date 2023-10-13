@@ -9,7 +9,7 @@ URI: [linkml:code_set_tag](https://w3id.org/linkml/code_set_tag)
 
 ## Domain and Range
 
-[EnumDefinition](EnumDefinition.md) &#8594;  <sub>0..1</sub> [String](types/String.md)
+[EnumExpression](EnumExpression.md) &#8594;  <sub>0..1</sub> [String](types/String.md)
 
 ## Parents
 
@@ -19,12 +19,14 @@ URI: [linkml:code_set_tag](https://w3id.org/linkml/code_set_tag)
 
 ## Used by
 
+ * [AnonymousEnumExpression](AnonymousEnumExpression.md)
  * [EnumDefinition](EnumDefinition.md)
+ * [EnumExpression](EnumExpression.md)
 
 ## Other properties
 
 |  |  |  |
 | --- | --- | --- |
-| **Comments:** | | enum_definition cannot have both a code_set_tag and a code_set_version |
-| **In Subsets:** | | basic |
+| **Comments:** | | enum_expression cannot have both a code_set_tag and a code_set_version |
+| **In Subsets:** | | BasicSubset |
 

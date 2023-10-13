@@ -25,3 +25,11 @@ URI: [linkml:structured_pattern](https://w3id.org/linkml/structured_pattern)
  * [SlotExpression](SlotExpression.md)
  * [TypeDefinition](TypeDefinition.md)
  * [TypeExpression](TypeExpression.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **In Subsets:** | | SpecificationSubset |
+| **See also:** | | [https://linkml.io/linkml/schemas/constraints.html#structured-patterns](https://linkml.io/linkml/schemas/constraints.html#structured-patterns) |
+

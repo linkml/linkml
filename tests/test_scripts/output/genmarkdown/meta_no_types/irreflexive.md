@@ -26,5 +26,6 @@ URI: [linkml:irreflexive](https://w3id.org/linkml/irreflexive)
 
 |  |  |  |
 | --- | --- | --- |
+| **In Subsets:** | | SpecificationSubset |
 | **Close Mappings:** | | owl:IrreflexiveProperty |
 

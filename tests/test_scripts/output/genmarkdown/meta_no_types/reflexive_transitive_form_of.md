@@ -21,3 +21,10 @@ None &#8594;  <sub>0..1</sub> [SlotDefinition](SlotDefinition.md)
 ## Used by
 
  * [SlotDefinition](SlotDefinition.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **In Subsets:** | | SpecificationSubset |
+

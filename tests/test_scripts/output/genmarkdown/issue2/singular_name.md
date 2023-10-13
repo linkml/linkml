@@ -25,6 +25,7 @@ slot_definition &#8594;  <sub>0..1</sub> [String](types/String.md)
 
 |  |  |  |
 | --- | --- | --- |
-| **Mappings:** | | skos:altLabel |
-| **In Subsets:** | | basic |
+| **Comments:** | | this may be used in some schema translations where use of a singular form is idiomatic, for example RDF |
+| **In Subsets:** | | BasicSubset |
+| **Close Mappings:** | | skos:altLabel |
 

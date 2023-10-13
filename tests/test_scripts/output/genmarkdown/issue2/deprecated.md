@@ -43,6 +43,7 @@ URI: [linkml:deprecated](https://w3id.org/linkml/deprecated)
 
 |  |  |  |
 | --- | --- | --- |
-| **In Subsets:** | | basic |
+| **Comments:** | | note that linkml does not use a boolean to indicate deprecation status - the presence of a string value in this field is sufficient to indicate deprecation. |
+| **In Subsets:** | | BasicSubset |
 | **Close Mappings:** | | owl:deprecated |
 

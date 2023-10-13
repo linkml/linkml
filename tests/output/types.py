@@ -1,5 +1,5 @@
-# Auto generated from types.yaml by pythongen.py version: 0.9.0
-# Generation date: 2022-01-27T02:52:23
+# Auto generated from types.yaml by pythongen.py version: 0.0.1
+# Generation date: 2023-09-25T15:55:13
 # Schema: types
 #
 # id: https://w3id.org/linkml/types
@@ -8,25 +8,19 @@
 
 import dataclasses
 import re
-import sys
-from dataclasses import dataclass
-from typing import Any, ClassVar, Dict, List, Optional, Union
-
 from jsonasobj2 import JsonObj, as_dict
-from linkml_runtime.utils.curienamespace import CurieNamespace
-from linkml_runtime.utils.dataclass_extensions_376 import \
-    dataclasses_init_fn_with_kwargs
-from linkml_runtime.utils.enumerations import EnumDefinitionImpl
-from linkml_runtime.utils.formatutils import camelcase, sfx, underscore
-from linkml_runtime.utils.metamodelcore import (URI, Bool, Decimal,
-                                                ElementIdentifier, NCName,
-                                                NodeIdentifier, URIorCURIE,
-                                                XSDDate, XSDDateTime, XSDTime,
-                                                bnode, empty_dict, empty_list)
+from typing import Optional, List, Union, Dict, ClassVar, Any
+from dataclasses import dataclass
+
 from linkml_runtime.utils.slot import Slot
-from linkml_runtime.utils.yamlutils import (YAMLRoot, extended_float,
-                                            extended_int, extended_str)
+from linkml_runtime.utils.metamodelcore import empty_list, empty_dict, bnode
+from linkml_runtime.utils.yamlutils import YAMLRoot, extended_str, extended_float, extended_int
+from linkml_runtime.utils.dataclass_extensions_376 import dataclasses_init_fn_with_kwargs
+from linkml_runtime.utils.formatutils import camelcase, underscore, sfx
+from linkml_runtime.utils.enumerations import EnumDefinitionImpl
 from rdflib import Namespace, URIRef
+from linkml_runtime.utils.curienamespace import CurieNamespace
+from linkml_runtime.utils.metamodelcore import Bool, Curie, Decimal, ElementIdentifier, NCName, NodeIdentifier, URI, URIorCURIE, XSDDate, XSDDateTime, XSDTime
 
 metamodel_version = "1.7.0"
 version = "2.0.0"
@@ -36,6 +30,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
 
 # Namespaces
 LINKML = CurieNamespace('linkml', 'https://w3id.org/linkml/')
+SCHEMA = CurieNamespace('schema', 'http://schema.org/')
 SHEX = CurieNamespace('shex', 'http://www.w3.org/ns/shex#')
 XSD = CurieNamespace('xsd', 'http://www.w3.org/2001/XMLSchema#')
 DEFAULT_ = LINKML
@@ -114,12 +109,28 @@ class Datetime(XSDDateTime):
     type_model_uri = LINKML.Datetime
 
 
+class DateOrDatetime(str):
+    """ Either a date or a datetime """
+    type_class_uri = LINKML.DateOrDatetime
+    type_class_curie = "linkml:DateOrDatetime"
+    type_name = "date_or_datetime"
+    type_model_uri = LINKML.DateOrDatetime
+
+
 class Uriorcurie(URIorCURIE):
     """ a URI or a CURIE """
     type_class_uri = XSD.anyURI
     type_class_curie = "xsd:anyURI"
     type_name = "uriorcurie"
     type_model_uri = LINKML.Uriorcurie
+
+
+class Curie(Curie):
+    """ a compact URI """
+    type_class_uri = XSD.string
+    type_class_curie = "xsd:string"
+    type_name = "curie"
+    type_model_uri = LINKML.Curie
 
 
 class Uri(URI):

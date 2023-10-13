@@ -26,5 +26,6 @@ None &#8594;  <sub>0..1</sub> [SlotDefinition](SlotDefinition.md)
 
 |  |  |  |
 | --- | --- | --- |
-| **Comments:** | | {'Example': 'ancestor_of is the transitive_form_of parent_of'} |
+| **Comments:** | | Example: ancestor_of is the transitive_form_of parent_of |
+| **In Subsets:** | | SpecificationSubset |
 

@@ -25,6 +25,7 @@ URI: [linkml:is_grouping_slot](https://w3id.org/linkml/is_grouping_slot)
 
 |  |  |  |
 | --- | --- | --- |
-| **In Subsets:** | | basic |
+| **In Subsets:** | | SpecificationSubset |
+|  | | BasicSubset |
 | **Close Mappings:** | | sh:PropertyGroup |
 

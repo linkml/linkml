@@ -29,4 +29,5 @@ URI: [linkml:range_expression](https://w3id.org/linkml/range_expression)
 |  |  |  |
 | --- | --- | --- |
 | **Comments:** | | one use for this is being able to describe a range using any_of expressions, for example to combine two enums |
+| **In Subsets:** | | SpecificationSubset |
 

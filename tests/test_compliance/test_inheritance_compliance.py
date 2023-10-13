@@ -3,6 +3,7 @@ import pytest
 
 from tests.test_compliance.helper import (
     JSON_SCHEMA,
+    OWL,
     PYDANTIC,
     PYTHON_DATACLASSES,
     SQL_DDL_SQLITE,
@@ -141,7 +142,7 @@ def test_basic_class_inheritance(
     expected_behavior = ValidationBehavior.IMPLEMENTS
     if cls == CLASS_D and parent_is_abstract:
         is_valid = False
-        if framework in [PYDANTIC, PYTHON_DATACLASSES, SQL_DDL_SQLITE]:
+        if framework in [PYDANTIC, PYTHON_DATACLASSES, SQL_DDL_SQLITE, OWL]:
             # currently lax about instantiating abstract classes
             expected_behavior = ValidationBehavior.INCOMPLETE
     schema = validated_schema(
@@ -267,8 +268,8 @@ def test_mixins(framework, description, cls, object, is_valid):
     schema = validated_schema(test_mixins, "default", framework, classes=classes)
     expected_behavior = ValidationBehavior.IMPLEMENTS
     if cls != CLASS_C:
-        if framework in [PYDANTIC, PYTHON_DATACLASSES, SQL_DDL_SQLITE]:
-            # currently lax about instantiating mixins
+        if framework in [PYDANTIC, PYTHON_DATACLASSES, SQL_DDL_SQLITE, OWL]:
+            # currently lax about prohibiting instantiating mixins
             expected_behavior = ValidationBehavior.INCOMPLETE
     check_data(
         schema,
@@ -395,6 +396,9 @@ def test_refine_attributes(framework, description, cls, object, is_valid):
 def test_slot_usage(framework, description, cls, object, is_valid):
     """
     Tests slot usage inheritance.
+
+    * C is_a D, and refines s1 from Y to X
+    * X is_a Y
 
     :param framework:
     :param description:

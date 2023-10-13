@@ -25,6 +25,5 @@ URI: [linkml:generation_date](https://w3id.org/linkml/generation_date)
 
 |  |  |  |
 | --- | --- | --- |
-| **In Subsets:** | | owl |
-|  | | basic |
+| **In Subsets:** | | BasicSubset |
 

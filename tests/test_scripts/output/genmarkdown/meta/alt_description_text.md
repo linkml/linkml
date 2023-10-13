@@ -25,5 +25,5 @@ URI: [linkml:alt_description_text](https://w3id.org/linkml/alt_description_text)
 
 |  |  |  |
 | --- | --- | --- |
-| **In Subsets:** | | basic |
+| **In Subsets:** | | BasicSubset |
 
