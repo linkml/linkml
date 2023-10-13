@@ -356,14 +356,7 @@ def validate_uri_reference(input):
     return uri_validator.match(input) or uri_relative_ref_validator.match(input)
 
 
-def validate_absolute_uri(input):
-    return abs_uri_validator.match(input)
-
-
 def validate_curie(input):
     #    print(CURIE)
     return curie_validator.match(input)
 
-
-def validate_safe_curie(input):
-    return safe_curie_validator.match(input)

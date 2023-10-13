@@ -47,11 +47,14 @@ class MetamodelCoreTest(unittest.TestCase):
             URIorCURIE("1:def")
         with self.assertRaises(ValueError):
             URIorCURIE(" ")
-        #with self.assertRaises(ValueError):
-        #    URIorCURIE("_")
+        with self.assertRaises(ValueError):
+            URIorCURIE("[")
         lax()
         URIorCURIE("1abc:def")
         URIorCURIE("1:def")
+        self.assertFalse(URIorCURIE.is_valid(123))
+        URIorCURIE.is_curie("abc:123")
+        self.assertFalse(URIorCURIE.is_curie("http://example.org/path"))
 
     def test_curie(self):
         """ Test the CURIE type """
