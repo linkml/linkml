@@ -1,5 +1,5 @@
 import unittest
-from typing import List, Optional, Union
+from typing import Optional
 
 from linkml.utils.schemaloader import SchemaLoader
 from tests.test_utils.environment import env

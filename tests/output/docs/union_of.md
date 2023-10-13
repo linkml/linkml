@@ -2,21 +2,31 @@
 # Slot: union_of
 
 
-indicates that the domain class consists exactly of the members of the classes in the range
+indicates that the domain element consists exactly of the members of the element in the range.
 
 URI: [linkml:union_of](https://w3id.org/linkml/union_of)
 
 
 ## Domain and Range
 
-[ClassDefinition](ClassDefinition.md) &#8594;  <sub>0..\*</sub> [ClassDefinition](ClassDefinition.md)
+[Element](Element.md) &#8594;  <sub>0..\*</sub> [Element](Element.md)
 
 ## Parents
 
 
 ## Children
 
+ *  [class_definition➞union_of](class_definition_union_of.md)
+ *  [slot_definition➞union_of](slot_definition_union_of.md)
+ *  [type_definition➞union_of](type_definition_union_of.md)
 
 ## Used by
 
- * [ClassDefinition](ClassDefinition.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **In Subsets:** | | SpecificationSubset |
+|  | | OwlProfile |
+

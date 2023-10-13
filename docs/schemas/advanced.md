@@ -84,7 +84,7 @@ classes:
               pattern: "[0-9]{5}(-[0-9]{4})?"
             telephone:
               pattern: "^\\+1 "
-        description: USA and territories must have a specific regex patern for postal codes and phone numbers
+        description: USA and territories must have a specific regex pattern for postal codes and phone numbers
 ```
 
 See above for implementation status

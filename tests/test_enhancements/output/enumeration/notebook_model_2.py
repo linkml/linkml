@@ -1,5 +1,5 @@
-# Auto generated from notebook_model_2.yaml by pythongen.py version: 0.9.0
-# Generation date: 2022-01-27T02:54:10
+# Auto generated from notebook_model_2.yaml by pythongen.py version: 0.0.1
+# Generation date: 2023-09-22T11:49:30
 # Schema: simple
 #
 # id: http://example.org/test/simple
@@ -8,24 +8,20 @@
 
 import dataclasses
 import re
-import sys
-from dataclasses import dataclass
-from typing import Any, ClassVar, Dict, List, Optional, Union
-
 from jsonasobj2 import JsonObj, as_dict
-from linkml_runtime.linkml_model.meta import (EnumDefinition, PermissibleValue,
-                                              PvFormulaOptions)
-from linkml_runtime.linkml_model.types import String
-from linkml_runtime.utils.curienamespace import CurieNamespace
-from linkml_runtime.utils.dataclass_extensions_376 import \
-    dataclasses_init_fn_with_kwargs
-from linkml_runtime.utils.enumerations import EnumDefinitionImpl
-from linkml_runtime.utils.formatutils import camelcase, sfx, underscore
-from linkml_runtime.utils.metamodelcore import bnode, empty_dict, empty_list
+from typing import Optional, List, Union, Dict, ClassVar, Any
+from dataclasses import dataclass
+from linkml_runtime.linkml_model.meta import EnumDefinition, PermissibleValue, PvFormulaOptions
+
 from linkml_runtime.utils.slot import Slot
-from linkml_runtime.utils.yamlutils import (YAMLRoot, extended_float,
-                                            extended_int, extended_str)
+from linkml_runtime.utils.metamodelcore import empty_list, empty_dict, bnode
+from linkml_runtime.utils.yamlutils import YAMLRoot, extended_str, extended_float, extended_int
+from linkml_runtime.utils.dataclass_extensions_376 import dataclasses_init_fn_with_kwargs
+from linkml_runtime.utils.formatutils import camelcase, underscore, sfx
+from linkml_runtime.utils.enumerations import EnumDefinitionImpl
 from rdflib import Namespace, URIRef
+from linkml_runtime.utils.curienamespace import CurieNamespace
+from linkml_runtime.linkml_model.types import String
 
 metamodel_version = "1.7.0"
 version = None
@@ -71,8 +67,9 @@ class UnusualEnumPatterns(EnumDefinitionImpl):
     """
     Very odd enumeration
     """
-    M = PermissibleValue(text="M",
-                         description="Normal selection")
+    M = PermissibleValue(
+        text="M",
+        description="Normal selection")
 
     _defn = EnumDefinition(
         name="UnusualEnumPatterns",
@@ -82,16 +79,20 @@ class UnusualEnumPatterns(EnumDefinitionImpl):
     @classmethod
     def _addvals(cls):
         setattr(cls, "1",
-                PermissibleValue(text="1",
-                                 description="Numeric selection") )
+            PermissibleValue(
+                text="1",
+                description="Numeric selection"))
         setattr(cls, "def",
-                PermissibleValue(text="def",
-                                 description="Python reserved word") )
+            PermissibleValue(
+                text="def",
+                description="Python reserved word"))
         setattr(cls, "embedded space",
-                PermissibleValue(text="embedded space",
-                                 description="Embedded space") )
+            PermissibleValue(
+                text="embedded space",
+                description="Embedded space"))
         setattr(cls, "% ! -- whoo",
-                PermissibleValue(text="% ! -- whoo",
-                                 description="Really weird stuff") )
+            PermissibleValue(
+                text="% ! -- whoo",
+                description="Really weird stuff"))
 
 # Slots

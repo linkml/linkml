@@ -26,4 +26,5 @@ URI: [linkml:list_elements_unique](https://w3id.org/linkml/list_elements_unique)
 |  |  |  |
 | --- | --- | --- |
 | **Comments:** | | should only be used with multivalued slots |
+| **In Subsets:** | | SpecificationSubset |
 

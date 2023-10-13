@@ -1,4 +1,4 @@
-# metamodel_version: 1.7.0# version: 1.8.2id: quantity_value
+# metamodel_version: 1.7.0# version: 3.1.2id: quantity_value
 schema_generating: true
 description: A value of an attribute that is quantitative and measurable, expressed
   as a combination of a unit and a numeric value

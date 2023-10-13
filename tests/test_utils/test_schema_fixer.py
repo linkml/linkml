@@ -1,8 +1,7 @@
 import unittest
 from copy import deepcopy
 
-from linkml_runtime.dumpers import yaml_dumper
-from linkml_runtime.linkml_model import SlotDefinitionName, SlotDefinition
+from linkml_runtime.linkml_model import SlotDefinition, SlotDefinitionName
 
 from linkml.utils.schema_builder import SchemaBuilder
 from linkml.utils.schema_fixer import SchemaFixer
@@ -30,8 +29,6 @@ class SchemaFixerTestCase(unittest.TestCase):
         s = b.schema
         fixer = SchemaFixer()
         fixer.add_titles(s)
-        #print(fixer.history)
-        #print(yaml_dumper.dumps(s))
         c = s.classes[MY_CLASS]
         e = s.enums[MY_ENUM]
         self.assertEqual(c.title, "my class")
@@ -61,8 +58,6 @@ class SchemaFixerTestCase(unittest.TestCase):
         s = b.schema
         fixer = SchemaFixer()
         fixer.attributes_to_slots(s, remove_redundant_slot_usage=False)
-        #print(fixer.history)
-        #print(yaml_dumper.dumps(s))
         c = s.classes[MY_CLASS]
         self.assertCountEqual([FULL_NAME, DESC], c.slots)
         self.assertEqual({}, c.attributes)
@@ -75,10 +70,7 @@ class SchemaFixerTestCase(unittest.TestCase):
         s = b.schema
         fixer = SchemaFixer()
         c = s.classes[MY_CLASS]
-        fixer.merge_slot_usage(
-            s, c, SlotDefinition(FULL_NAME, description="desc1", range="string")
-        )
-        #print(yaml_dumper.dumps(s))
+        fixer.merge_slot_usage(s, c, SlotDefinition(FULL_NAME, description="desc1", range="string"))
         su = c.slot_usage[FULL_NAME]
         self.assertEqual("desc1", su.description)
         self.assertEqual("string", su.range)
@@ -93,15 +85,11 @@ class SchemaFixerTestCase(unittest.TestCase):
                 range="string",
             ),
         )
-        #print(yaml_dumper.dumps(s))
         su = c.slot_usage[FULL_NAME]
         with self.assertRaises(ValueError):
             fixer.merge_slot_usage(s, c, SlotDefinition(FULL_NAME, description="desc2"))
         self.assertEqual("desc1", su.description)
-        fixer.merge_slot_usage(
-            s, c, SlotDefinition(FULL_NAME, description="desc2"), overwrite=True
-        )
-        #print(yaml_dumper.dumps(s))
+        fixer.merge_slot_usage(s, c, SlotDefinition(FULL_NAME, description="desc2"), overwrite=True)
         su = c.slot_usage[FULL_NAME]
         self.assertEqual("desc2", su.description)
 
@@ -130,7 +118,9 @@ class SchemaFixerTestCase(unittest.TestCase):
         )
         # add a slot usage that is fully redundant
         c.slot_usage[DESC] = SlotDefinition(DESC, range="string")
-        b.add_slot(deepcopy(slot1), replace_if_present=True).add_slot(deepcopy(slot2), replace_if_present=True)
+        b.add_slot(deepcopy(slot1), replace_if_present=True).add_slot(
+            deepcopy(slot2), replace_if_present=True
+        )
         b.add_defaults()
         fixer = SchemaFixer()
         fixer.remove_redundant_slot_usage(s)
@@ -164,8 +154,6 @@ class SchemaFixerTestCase(unittest.TestCase):
         s = b.schema
         fixer = SchemaFixer()
         fixer.attributes_to_slots(s, remove_redundant_slot_usage=True)
-        #print(fixer.history)
-        #print(yaml_dumper.dumps(s))
         c = s.classes[MY_CLASS]
         self.assertCountEqual([ID, FULL_NAME, DESC], c.slots)
         self.assertEqual({}, c.attributes)
@@ -191,15 +179,12 @@ class SchemaFixerTestCase(unittest.TestCase):
         b.add_defaults()
         fixer = SchemaFixer()
         schema = b.schema
-        print(yaml_dumper.dumps(schema))
         fixed_schema = fixer.fix_element_names(schema)
         for v in slots.values():
             self.assertIn(v, fixed_schema.slots)
         for v in classes.values():
             self.assertIn(v, fixed_schema.classes)
         self.assertEqual("FooBar", fixed_schema.slots["foo_bar_ref"].range)
-
-
 
 
 if __name__ == "__main__":

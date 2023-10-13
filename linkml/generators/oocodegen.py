@@ -2,11 +2,16 @@ import abc
 import re
 import unicodedata
 from dataclasses import dataclass, field
-from typing import List, Optional, Dict
+from typing import Dict, List, Optional
 
-from linkml_runtime.linkml_model.meta import (ClassDefinition,
-                                              SchemaDefinition, SlotDefinition,
-                                              TypeDefinition)
+from linkml_runtime.linkml_model.meta import (
+    ClassDefinition,
+    EnumDefinition,
+    EnumDefinitionName,
+    SchemaDefinition,
+    SlotDefinition,
+    TypeDefinition,
+)
 from linkml_runtime.utils.formatutils import camelcase, lcamelcase, underscore
 from linkml_runtime.utils.schemaview import SchemaView
 
@@ -66,7 +71,6 @@ class OOClass:
 
 @dataclass
 class OOCodeGenerator(Generator):
-
     # ClassVars
     java_style = True
     visit_all_class_slots = False
@@ -119,13 +123,36 @@ class OOCodeGenerator(Generator):
             return label
         else:
             # add an underscore if the value starts with a digit
-            label = re.sub("(?=^\d)", "number_", label)
+            label = re.sub(r"(?=^\d)", "number_", label)
 
             safe_label = ""
             for character in label:
                 safe_label += self.replace_invalid_identifier_character(character)
 
             return safe_label
+
+    def generate_enums(self, all_enums: Dict[EnumDefinitionName, EnumDefinition]) -> Dict:
+        # TODO: make an explicit class to represent how an enum is passed to the template
+        enums = {}
+        for enum_name, enum_original in all_enums.items():
+            enum = {"name": camelcase(enum_name), "values": {}}
+
+            if hasattr(enum_original, "description"):
+                enum["description"] = enum_original.description
+
+            for pv in enum_original.permissible_values.values():
+                label = self.generate_enum_label(pv.text)
+                val = {"label": label, "value": pv.text.replace('"', '\\"')}
+                if hasattr(pv, "description"):
+                    val["description"] = pv.description
+                else:
+                    val["description"] = None
+
+                enum["values"][label] = val
+
+            enums[enum_name] = enum
+
+        return enums
 
     def create_documents(self) -> List[OODocument]:
         """
@@ -138,12 +165,14 @@ class OOCodeGenerator(Generator):
         for cn in sv.all_classes(imports=False):
             c = sv.get_class(cn)
             safe_cn = camelcase(cn)
-            oodoc = OODocument(
-                name=safe_cn, package=self.package, source_schema=sv.schema
-            )
+            oodoc = OODocument(name=safe_cn, package=self.package, source_schema=sv.schema)
             docs.append(oodoc)
             ooclass = OOClass(
-                name=safe_cn, description=c.description, package=self.package, fields=[], source_class=c
+                name=safe_cn,
+                description=c.description,
+                package=self.package,
+                fields=[],
+                source_class=c,
             )
             # currently hardcoded for java style, one class per doc
             oodoc.classes = [ooclass]

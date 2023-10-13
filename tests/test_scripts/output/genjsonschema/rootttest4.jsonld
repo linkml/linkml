@@ -16,6 +16,7 @@
     "$id": "http://example.org/tests/issue177",
     "$schema": "http://json-schema.org/draft-07/schema#",
     "additionalProperties": true,
+    "description": "",
     "metamodel_version": "1.7.0",
     "title": "issue177",
     "type": "object",

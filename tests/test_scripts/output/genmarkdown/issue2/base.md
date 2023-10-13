@@ -2,7 +2,7 @@
 # Slot: base
 
 
-python base type that implements this type definition
+python base type in the LinkML runtime that implements this type definition
 
 URI: [linkml:base](https://w3id.org/linkml/base)
 
@@ -27,5 +27,6 @@ type_definition &#8594;  <sub>0..1</sub> [String](types/String.md)
 | --- | --- | --- |
 | **Comments:** | | every root type must have a base |
 |  | | the base is inherited by child types but may be overriden.  Base compatibility is not checked. |
-| **In Subsets:** | | basic |
+| **In Subsets:** | | SpecificationSubset |
+|  | | BasicSubset |
 

@@ -82,7 +82,7 @@ and transformations between different representations of the same
 data; for example, if your JSON documents need to work in concert with
 your relational database or graph store.
 
-LinkML has [many different generators for[existing
+LinkML has [many different generators for existing
 frameworks](../generators/index) that allow the translation of a LinkML
 schema to other frameworks:
 

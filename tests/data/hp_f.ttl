@@ -2874,7 +2874,7 @@ obo:HP_0000739 a owl:Class ;
     skos:prefLabel "Anxiety" .
 
 obo:HP_0000740 a owl:Class ;
-    skos:definition "Recurrent attacks of severe anxiety, whose occurence is not restricted to any particular situation or set of circumstances and is therefore unpredictable." ;
+    skos:definition "Recurrent attacks of severe anxiety, whose occurrence is not restricted to any particular situation or set of circumstances and is therefore unpredictable." ;
     skos:notation "HP_0000740" ;
     skos:prefLabel "Episodic paroxysmal anxiety" .
 
@@ -9398,7 +9398,7 @@ obo:HP_0002607 a owl:Class ;
     skos:prefLabel "Bowel incontinence" .
 
 obo:HP_0002608 a owl:Class ;
-    skos:definition "Celiac disease (CD) is an autoimmune condition affecting the small intestine, triggered by the ingestion of gluten, the protein fraction of wheat, barley, and rye. Clinical manifestations of CD are highly variable and include both gastrointestinal and non-gastrointestinal features. The hallmark of CD is an immune-mediated enteropathy. This term is included because the occurence of CD is seen as a feature of a number of other diseases." ;
+    skos:definition "Celiac disease (CD) is an autoimmune condition affecting the small intestine, triggered by the ingestion of gluten, the protein fraction of wheat, barley, and rye. Clinical manifestations of CD are highly variable and include both gastrointestinal and non-gastrointestinal features. The hallmark of CD is an immune-mediated enteropathy. This term is included because the occurrence of CD is seen as a feature of a number of other diseases." ;
     skos:notation "HP_0002608" ;
     skos:prefLabel "Celiac disease" .
 
@@ -21922,7 +21922,7 @@ obo:HP_0006855 a owl:Class ;
     skos:prefLabel "Cerebellar vermis atrophy" .
 
 obo:HP_0006858 a owl:Class ;
-    skos:definition "A loss or impairment of the sensation of the relative position of parts of the body and joint position occuring at distal joints." ;
+    skos:definition "A loss or impairment of the sensation of the relative position of parts of the body and joint position occurring at distal joints." ;
     skos:notation "HP_0006858" ;
     skos:prefLabel "Impaired distal proprioception" .
 
@@ -24704,7 +24704,7 @@ obo:HP_0007928 a owl:Class ;
     skos:prefLabel "Abnormal flash visual evoked potentials" .
 
 obo:HP_0007929 a owl:Class ;
-    skos:definition "Separation of the inner layers of the retina (neural retina) from the pigment epithelium occuring near the outer limit (periphery) of the retina." ;
+    skos:definition "Separation of the inner layers of the retina (neural retina) from the pigment epithelium occurring near the outer limit (periphery) of the retina." ;
     skos:notation "HP_0007929" ;
     skos:prefLabel "Peripheral retinal detachment" .
 
@@ -31447,7 +31447,7 @@ obo:HP_0009942 a owl:Class ;
     skos:prefLabel "Duplication of thumb phalanx" .
 
 obo:HP_0009943 a owl:Class ;
-    skos:definition "A complete duplication affecting one or more of the phalanges of the thumb. As opposed to a partial duplication were there is still a variable degree of fusion between the duplicated bones, a complete duplication leads to two separate bones appearing side to side (radio-ulnar axis) as seen on x-rays. A duplication leading to an accesory bone appearing in the proximo-distal axis on x-rays, this is actually a different entity called a Pseudoepiphyses (see according terms) sometimes also referred to as Hyperphalangism." ;
+    skos:definition "A complete duplication affecting one or more of the phalanges of the thumb. As opposed to a partial duplication were there is still a variable degree of fusion between the duplicated bones, a complete duplication leads to two separate bones appearing side to side (radio-ulnar axis) as seen on x-rays. A duplication leading to an accessory bone appearing in the proximo-distal axis on x-rays, this is actually a different entity called a Pseudoepiphyses (see according terms) sometimes also referred to as Hyperphalangism." ;
     skos:notation "HP_0009943" ;
     skos:prefLabel "Complete duplication of thumb phalanx" .
 
@@ -31516,7 +31516,7 @@ obo:HP_0009956 a owl:Class ;
     skos:prefLabel "Partial duplication of the phalanges of the 2nd finger" .
 
 obo:HP_0009957 a owl:Class ;
-    skos:definition "A complete duplication affecting one or more of the phalanges of the 2nd finger. As opposed to a partial duplication were there is still a variable degree of fusion between the duplicated bones, a complete duplication leads to two separate bones appearing side to side (radio-ulnar axis) as seen on x-rays. A duplication leading to an accesory bone appearing in the proximo-distal axis on x-rays, is a different entity called a Pseudoepiphyses (see according terms) sometimes also referred to as Hyperphalangism." ;
+    skos:definition "A complete duplication affecting one or more of the phalanges of the 2nd finger. As opposed to a partial duplication were there is still a variable degree of fusion between the duplicated bones, a complete duplication leads to two separate bones appearing side to side (radio-ulnar axis) as seen on x-rays. A duplication leading to an accessory bone appearing in the proximo-distal axis on x-rays, is a different entity called a Pseudoepiphyses (see according terms) sometimes also referred to as Hyperphalangism." ;
     skos:notation "HP_0009957" ;
     skos:prefLabel "Complete duplication of the phalanges of the 2nd finger" .
 
@@ -31530,7 +31530,7 @@ obo:HP_0009959 a owl:Class ;
     skos:prefLabel "Duplication of phalanx of 3rd finger" .
 
 obo:HP_0009960 a owl:Class ;
-    skos:definition "A complete duplication affecting one or more of the phalanges of the 3rd finger. As opposed to a partial duplication were there is still a variable degree of fusion between the duplicated bones, a complete duplication leads to two separate bones appearing side to side (radio-ulnar axis) as seen on x-rays. A duplication leading to an accesory bone appearing in the proximo-distal axis on x-rays, this is actually a different entity called a Pseudoepiphyses (see according terms) sometimes also referred to as Hyperphalangism." ;
+    skos:definition "A complete duplication affecting one or more of the phalanges of the 3rd finger. As opposed to a partial duplication were there is still a variable degree of fusion between the duplicated bones, a complete duplication leads to two separate bones appearing side to side (radio-ulnar axis) as seen on x-rays. A duplication leading to an accessory bone appearing in the proximo-distal axis on x-rays, this is actually a different entity called a Pseudoepiphyses (see according terms) sometimes also referred to as Hyperphalangism." ;
     skos:notation "HP_0009960" ;
     skos:prefLabel "Complete duplication of the phalanges of the 3rd finger" .
 
@@ -31594,7 +31594,7 @@ obo:HP_0009972 a owl:Class ;
     skos:prefLabel "Duplication of phalanx of 4th finger" .
 
 obo:HP_0009973 a owl:Class ;
-    skos:definition "A complete duplication affecting one or more of the phalanges of the 4th finger. As opposed to a partial duplication were there is still a variable degree of fusion between the duplicated bones, a complete duplication leads to two separate bones appearing side to side (radio-ulnar axis) as seen on x-rays. A duplication leading to an accesory bone appearing in the proximo-distal axis on x-rays, this is actually a different entity called a Pseudoepiphyses (see according terms) sometimes also referred to as Hyperphalangism." ;
+    skos:definition "A complete duplication affecting one or more of the phalanges of the 4th finger. As opposed to a partial duplication were there is still a variable degree of fusion between the duplicated bones, a complete duplication leads to two separate bones appearing side to side (radio-ulnar axis) as seen on x-rays. A duplication leading to an accessory bone appearing in the proximo-distal axis on x-rays, this is actually a different entity called a Pseudoepiphyses (see according terms) sometimes also referred to as Hyperphalangism." ;
     skos:notation "HP_0009973" ;
     skos:prefLabel "Complete duplication of the phalanges of the 4th finger" .
 
@@ -31654,7 +31654,7 @@ obo:HP_0009985 a owl:Class ;
     skos:prefLabel "Duplication of phalanx of 5th finger" .
 
 obo:HP_0009986 a owl:Class ;
-    skos:definition "A complete duplication affecting one or more of the phalanges of the 5th finger. As opposed to a partial duplication were there is still a variable degree of fusion between the duplicated bones, a complete duplication leads to two separate bones appearing side to side (radio-ulnar axis) as seen on x-rays. A duplication leading to an accesory bone appearing in the proximo-distal axis on x-rays, this is actually a different entity called a Pseudoepiphyses (see according terms) sometimes also referred to as Hyperphalangism." ;
+    skos:definition "A complete duplication affecting one or more of the phalanges of the 5th finger. As opposed to a partial duplication were there is still a variable degree of fusion between the duplicated bones, a complete duplication leads to two separate bones appearing side to side (radio-ulnar axis) as seen on x-rays. A duplication leading to an accessory bone appearing in the proximo-distal axis on x-rays, this is actually a different entity called a Pseudoepiphyses (see according terms) sometimes also referred to as Hyperphalangism." ;
     skos:notation "HP_0009986" ;
     skos:prefLabel "Complete duplication of the phalanges of the 5th finger" .
 
@@ -31714,7 +31714,7 @@ obo:HP_0009997 a owl:Class ;
     skos:prefLabel "Duplication of phalanx of hand" .
 
 obo:HP_0009998 a owl:Class ;
-    skos:definition "A complete duplication affecting one or more of the phalanges of the hand. As opposed to a partial duplication were there is still a variable degree of fusion between the duplicated bones, a complete duplication leads to two separate bones appearing side to side (radio-ulnar axis) as seen on x-rays. A duplication leading to an accesory bone appearing in the proximo-distal axis on x-rays, is a different entity called a Pseudoepiphyses (see according terms) sometimes also referred to as Hyperphalangism." ;
+    skos:definition "A complete duplication affecting one or more of the phalanges of the hand. As opposed to a partial duplication were there is still a variable degree of fusion between the duplicated bones, a complete duplication leads to two separate bones appearing side to side (radio-ulnar axis) as seen on x-rays. A duplication leading to an accessory bone appearing in the proximo-distal axis on x-rays, is a different entity called a Pseudoepiphyses (see according terms) sometimes also referred to as Hyperphalangism." ;
     skos:notation "HP_0009998" ;
     skos:prefLabel "Complete duplication of phalanx of hand" .
 
@@ -31724,7 +31724,7 @@ obo:HP_0009999 a owl:Class ;
     skos:prefLabel "Partial duplication of the phalanx of hand" .
 
 obo:HP_0010000 a owl:Class ;
-    skos:definition "A complete duplication affecting one or more of the proximal phalanges of the hand. As opposed to a partial duplication were there is still a variable degree of fusion between the duplicated bones, a complete duplication leads to two separate bones appearing side to side (radio-ulnar axis) as seen on x-rays. A duplication leading to an accesory bone appearing in the proximo-distal axis on x-rays, this is actually a different entity called a Pseudoepiphyses (see according terms) sometimes also referred to as Hyperphalangism." ;
+    skos:definition "A complete duplication affecting one or more of the proximal phalanges of the hand. As opposed to a partial duplication were there is still a variable degree of fusion between the duplicated bones, a complete duplication leads to two separate bones appearing side to side (radio-ulnar axis) as seen on x-rays. A duplication leading to an accessory bone appearing in the proximo-distal axis on x-rays, this is actually a different entity called a Pseudoepiphyses (see according terms) sometimes also referred to as Hyperphalangism." ;
     skos:notation "HP_0010000" ;
     skos:prefLabel "Complete duplication of the proximal phalanges of the hand" .
 
@@ -32713,7 +32713,7 @@ obo:HP_0010222 a owl:Class ;
     skos:prefLabel "Abnormality of the epiphysis of the 3rd metacarpal" .
 
 obo:HP_0010223 a owl:Class ;
-    skos:definition "The normal epiphysis of the third metacarpal is localised at the distal end of the metacarpal bone. This term aplies if an accesory epiphysis, located at the proximal end of the metacarpal bone, is present." ;
+    skos:definition "The normal epiphysis of the third metacarpal is localised at the distal end of the metacarpal bone. This term aplies if an accessory epiphysis, located at the proximal end of the metacarpal bone, is present." ;
     skos:notation "HP_0010223" ;
     skos:prefLabel "Pseudoepiphysis of the 3rd metacarpal" .
 
@@ -32723,7 +32723,7 @@ obo:HP_0010224 a owl:Class ;
     skos:prefLabel "Abnormality of the epiphysis of the 4th metacarpal" .
 
 obo:HP_0010225 a owl:Class ;
-    skos:definition "The normal epiphysis of the fourth metacarpal is localised at the distal end of the metacarpal bone. This term aplies if an accesory epiphysis, located at the proximal end of the metacarpal bone, is present." ;
+    skos:definition "The normal epiphysis of the fourth metacarpal is localised at the distal end of the metacarpal bone. This term aplies if an accessory epiphysis, located at the proximal end of the metacarpal bone, is present." ;
     skos:notation "HP_0010225" ;
     skos:prefLabel "Pseudoepiphysis of the 4th metacarpal" .
 
@@ -32733,7 +32733,7 @@ obo:HP_0010226 a owl:Class ;
     skos:prefLabel "Abnormality of the epiphysis of the 5th metacarpal" .
 
 obo:HP_0010227 a owl:Class ;
-    skos:definition "The normal epiphysis of the fifth metacarpal is localised at the distal end of the metacarpal bone. This term aplies if an accesory epiphysis, located at the proximal end of the metacarpal bone, is present." ;
+    skos:definition "The normal epiphysis of the fifth metacarpal is localised at the distal end of the metacarpal bone. This term aplies if an accessory epiphysis, located at the proximal end of the metacarpal bone, is present." ;
     skos:notation "HP_0010227" ;
     skos:prefLabel "Pseudoepiphysis of the 5th metacarpal" .
 
@@ -33681,7 +33681,7 @@ obo:HP_0010438 a owl:Class ;
 obo:HP_0010440 a owl:Class ;
     skos:definition "In contrast to forms of polydactyly where the supernumerary digit (this can either be a rudimentary or a completely 'normal' digit) is either located postaxial (on the fibular side of the foot, next top the little toe), preaxial (on the tibial side of the foot, next to the big toe) or mesoaxial (somewhere central, between big and little toe), a supernumerary digit may also be placed ectopically, meaning anywhere else except post-,meso- or preaxial. In the literature this is sometimes referred to as Disorganisation-like Syndrome (OMIM223200)." ;
     skos:notation "HP_0010440" ;
-    skos:prefLabel "Ectopic accesory toe-like appendage" .
+    skos:prefLabel "Ectopic accessory toe-like appendage" .
 
 obo:HP_0010441 a owl:Class ;
     skos:definition "In contrast to forms of polydactyly where the supernumerary digit (this can either be a rudimentary or a completely 'normal' digit) is either located postaxial (on the ulnar side of the hand, next to the little finger), preaxial (on the radial side of the hand, next to the thumb) or mesoaxial (somewhere central, between thumb and little finger), a supernumerary digit may also be placed ectopically, meaning anywhere else except post-,meso- or preaxial. In the literature this is sometimes referred to as Disorganisation-like Syndrome (OMIM223200)." ;
@@ -48549,7 +48549,7 @@ obo:HP_0025593 a owl:Class ;
     skos:prefLabel "Superior oblique muscle restriction"@en .
 
 obo:HP_0025594 a owl:Class ;
-    skos:definition "An ocular motility abnormality characterized by an overacting superior oblique muscle resulting to vertical incomitance of the eyes in lateral gaze. On examination, this is commonly seen as a downshoot of the adducting eye occuring when gaze is directed into the field of action of the inferior oblique muscle, producing a greater downward excursion of the adducted eye than of the abducted eye." ;
+    skos:definition "An ocular motility abnormality characterized by an overacting superior oblique muscle resulting to vertical incomitance of the eyes in lateral gaze. On examination, this is commonly seen as a downshoot of the adducting eye occurring when gaze is directed into the field of action of the inferior oblique muscle, producing a greater downward excursion of the adducted eye than of the abducted eye." ;
     skos:prefLabel "Superior oblique muscle overaction"@en .
 
 obo:HP_0025595 a owl:Class ;
@@ -49681,15 +49681,15 @@ obo:HP_0030243 a owl:Class ;
     skos:prefLabel "Hepatic vein thrombosis" .
 
 obo:HP_0030244 a owl:Class ;
-    skos:definition "The occurence of an elevated body temperature of the mother during pregnancy." ;
+    skos:definition "The occurrence of an elevated body temperature of the mother during pregnancy." ;
     skos:prefLabel "Maternal fever in pregnancy" .
 
 obo:HP_0030245 a owl:Class ;
-    skos:definition "The occurence of maternal fever during labor." ;
+    skos:definition "The occurrence of maternal fever during labor." ;
     skos:prefLabel "Intrapartum fever" .
 
 obo:HP_0030246 a owl:Class ;
-    skos:definition "The occurence of fever in a mother during the first trimester of pregnancy." ;
+    skos:definition "The occurrence of fever in a mother during the first trimester of pregnancy." ;
     skos:prefLabel "Maternal first trimester fever" .
 
 obo:HP_0030247 a owl:Class ;
@@ -51575,7 +51575,7 @@ obo:HP_0030789 a owl:Class ;
     skos:prefLabel "Excessive cerumen" .
 
 obo:HP_0030790 a owl:Class ;
-    skos:definition "An anomolous earwax color. Earwax (cerumen) is usually light to dark brown or orange in color." ;
+    skos:definition "An anomalous earwax color. Earwax (cerumen) is usually light to dark brown or orange in color." ;
     skos:prefLabel "Abnormal cerumen color" .
 
 obo:HP_0030791 a owl:Class ;
@@ -51591,7 +51591,7 @@ obo:HP_0030793 a owl:Class ;
     skos:prefLabel "Jaw swelling" .
 
 obo:HP_0030794 a owl:Class ;
-    skos:definition "An anomolous circulating concentration of the connecting (C) peptide, which links the insulin A and B chains in proinsulin, providing thereby a means to promote their efficient folding and assembly in the endoplasmic reticulum during insulin biosynthesis. After cleavage of proinsulin, C-peptide is stored with insulin in the soluble phase of the secretory granules and is subsequently released in equimolar amounts with insulin, providing a useful independent indicator of insulin secretion." ;
+    skos:definition "An anomalous circulating concentration of the connecting (C) peptide, which links the insulin A and B chains in proinsulin, providing thereby a means to promote their efficient folding and assembly in the endoplasmic reticulum during insulin biosynthesis. After cleavage of proinsulin, C-peptide is stored with insulin in the soluble phase of the secretory granules and is subsequently released in equimolar amounts with insulin, providing a useful independent indicator of insulin secretion." ;
     skos:prefLabel "Abnormal C-peptide level" .
 
 obo:HP_0030795 a owl:Class ;
@@ -52651,7 +52651,7 @@ obo:HP_0031073 a owl:Class ;
     skos:prefLabel "Abnormal response to endocrine stimulation test" .
 
 obo:HP_0031074 a owl:Class ;
-    skos:definition "An anomolous response to stimulation by adminstration of the adrenocorticotropic hormone (ACTH). ACTH stimulation normally stimulates the adrenal glands to release cortisol and adrenaline." ;
+    skos:definition "An anomalous response to stimulation by adminstration of the adrenocorticotropic hormone (ACTH). ACTH stimulation normally stimulates the adrenal glands to release cortisol and adrenaline." ;
     skos:prefLabel "Abnormal response to ACTH stimulation test" .
 
 obo:HP_0031075 a owl:Class ;
@@ -53354,7 +53354,7 @@ obo:HP_0031261 a owl:Class ;
     skos:prefLabel "Bladder polyp" .
 
 obo:HP_0031263 a owl:Class ;
-    skos:definition "Any anomolous structure of the renal corpuscle, which is the initial component of the nephron that filters blood. The renal corpuscle consists of a knot of capillaries (glomerulus) that is surrounded by a double-walled capsule (Bowman capsule) that opens into a renal tubule." ;
+    skos:definition "Any anomalous structure of the renal corpuscle, which is the initial component of the nephron that filters blood. The renal corpuscle consists of a knot of capillaries (glomerulus) that is surrounded by a double-walled capsule (Bowman capsule) that opens into a renal tubule." ;
     skos:prefLabel "Abnormal renal corpuscle morphology" .
 
 obo:HP_0031264 a owl:Class ;
@@ -55866,7 +55866,7 @@ obo:HP_0031918 a owl:Class ;
     skos:prefLabel "Ovarian sex cord-stromal tumor" .
 
 obo:HP_0031919 a owl:Class ;
-    skos:definition "Juvenile granulosa cell ovarian tumor (JGCOT) is a rare sex cord stromal tumor, occuring most frequently in premenarchal girls or young women. In contrast to adult granulosa cell tumor, JGCOT has a high mitotic index and more aggressive tumor growth. Microscopically it is seen as diffuse and regularly distributed neoplastic cells with a wide cytoplasm and pleomorphic hyperchromatic nucleus. Follicle formation, in various sizes and shapes, is important in JGCOT. Call-Exner bodies are infrequently seen in JGCOT in contrast to the adult type." ;
+    skos:definition "Juvenile granulosa cell ovarian tumor (JGCOT) is a rare sex cord stromal tumor, occurring most frequently in premenarchal girls or young women. In contrast to adult granulosa cell tumor, JGCOT has a high mitotic index and more aggressive tumor growth. Microscopically it is seen as diffuse and regularly distributed neoplastic cells with a wide cytoplasm and pleomorphic hyperchromatic nucleus. Follicle formation, in various sizes and shapes, is important in JGCOT. Call-Exner bodies are infrequently seen in JGCOT in contrast to the adult type." ;
     skos:prefLabel "Juvenile type ovarian granulosa cell tumor" .
 
 obo:HP_0031920 a owl:Class ;
@@ -56618,7 +56618,7 @@ obo:HP_0032118 a owl:Class ;
     skos:prefLabel "Retinitis" .
 
 obo:HP_0032119 a owl:Class ;
-    skos:definition "A type of glaucomatous optic neuropathy occuring in the presence of a narrow anterior chamber angle." ;
+    skos:definition "A type of glaucomatous optic neuropathy occurring in the presence of a narrow anterior chamber angle." ;
     skos:prefLabel "Narrow angle glaucoma" .
 
 obo:HP_0032120 a owl:Class ;
@@ -57080,15 +57080,15 @@ obo:HP_0032236 a owl:Class ;
     skos:prefLabel "Increased circulating immature neutrophil count" .
 
 obo:HP_0032237 a owl:Class ;
-    skos:definition "An abnormally increased number of myelocytes in the peripheral blood circulation. Myelocytes are immature neutrophils with a size of 12-18 micrometers, a round or oval nucleus with no nucleoli, bluish-pink staining cytoplasm with primary and seconday granules, and a nucleus:cytoplasm ratio of 2:1." ;
+    skos:definition "An abnormally increased number of myelocytes in the peripheral blood circulation. Myelocytes are immature neutrophils with a size of 12-18 micrometers, a round or oval nucleus with no nucleoli, bluish-pink staining cytoplasm with primary and secondary granules, and a nucleus:cytoplasm ratio of 2:1." ;
     skos:prefLabel "Increased circulating myelocyte count" .
 
 obo:HP_0032238 a owl:Class ;
-    skos:definition "An abnormally increased number of metamyelocytes in the peripheral blood circulation. Metamyelocytes are immature neutrophils with a size of 10-18 micrometers, an indented or kidney-shaped nucleus, pinkish-blue staining cytoplasm with seconday granules, and a nucleus:cytoplasm ratio of 1.5:1." ;
+    skos:definition "An abnormally increased number of metamyelocytes in the peripheral blood circulation. Metamyelocytes are immature neutrophils with a size of 10-18 micrometers, an indented or kidney-shaped nucleus, pinkish-blue staining cytoplasm with secondary granules, and a nucleus:cytoplasm ratio of 1.5:1." ;
     skos:prefLabel "Increased circulating metamyelocyte count" .
 
 obo:HP_0032239 a owl:Class ;
-    skos:definition "An abnormally increased number of band cells in the peripheral blood circulation. Band cells are immature neutrophils with a size of 10-18 micrometers, a horseshoe-shaped nucleus with no nucleoli, light-pink staining cytoplasm with many small seconday granules, and a nucleus:cytoplasm ratio of 1:2." ;
+    skos:definition "An abnormally increased number of band cells in the peripheral blood circulation. Band cells are immature neutrophils with a size of 10-18 micrometers, a horseshoe-shaped nucleus with no nucleoli, light-pink staining cytoplasm with many small secondary granules, and a nucleus:cytoplasm ratio of 1:2." ;
     skos:prefLabel "Increased circulating band cell count" .
 
 obo:HP_0032240 a owl:Class ;
@@ -60073,7 +60073,7 @@ obo:HP_0032999 a owl:Class ;
     skos:prefLabel "Increased fecal porphyrin" .
 
 obo:HP_0033000 a owl:Class ;
-    skos:definition "Narrowing of the larynx, commonly occuring during viral respiratory tract infections, in particular in children, leads to symptoms such as hoarseness, a barking cough, stridor, and sometimes dyspnea and respiratory failure." ;
+    skos:definition "Narrowing of the larynx, commonly occurring during viral respiratory tract infections, in particular in children, leads to symptoms such as hoarseness, a barking cough, stridor, and sometimes dyspnea and respiratory failure." ;
     skos:prefLabel "Subglottic laryngitis" .
 
 obo:HP_0033001 a owl:Class ;
@@ -61681,7 +61681,7 @@ obo:HP_0040241 a owl:Class ;
     skos:prefLabel "Increased RIPA" .
 
 obo:HP_0040242 a owl:Class ;
-    skos:definition "Bleeding occuring within a muscle" ;
+    skos:definition "Bleeding occurring within a muscle" ;
     skos:prefLabel "Muscle hemorrhage" .
 
 obo:HP_0040243 a owl:Class ;

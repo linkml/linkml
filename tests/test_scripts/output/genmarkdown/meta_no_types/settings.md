@@ -25,5 +25,7 @@ URI: [linkml:settings](https://w3id.org/linkml/settings)
 
 |  |  |  |
 | --- | --- | --- |
-| **Comments:** | | global variables are used in string interpolation |
+| **Aliases:** | | constants |
+| **Comments:** | | global variables are used in string interpolation in structured patterns |
+| **In Subsets:** | | SpecificationSubset |
 

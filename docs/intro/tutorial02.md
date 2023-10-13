@@ -48,6 +48,7 @@ classes:
       aliases:
       phone:
       age:
+        range: integer
   Container:
     tree_root: true
     attributes:
@@ -56,6 +57,9 @@ classes:
         inlined_as_list: true
         range: Person
 ```
+
+This time we are modeling age as an integer. We use the construct
+``range`` to state that the values of ``age`` must be integers.
 
 We introduce a class called `Container`. This doesn't necessarily
 reflect a "real world" entity in our domain, it's just a convenient

@@ -1,22 +1,8 @@
-import unittest
-
 from linkml.generators.markdowngen import MarkdownGenerator
-from tests.test_issues.environment import env
-from tests.utils.test_environment import TestEnvironmentTestCase
 
 
-class Issue179TestCase(TestEnvironmentTestCase):
-    env = env
+def test_issue_179(input_path, snapshot, tmp_path):
+    """Make sure that inheritance isn't implied by reference slots"""
 
-    def test_issue_179(self):
-        """Make sure that inheritence isn't implied by reference slots"""
-        env.generate_directory(
-            "issue179",
-            lambda d: MarkdownGenerator(env.input_path("issue_179.yaml")).serialize(
-                directory=d
-            ),
-        )
-
-
-if __name__ == "__main__":
-    unittest.main()
+    MarkdownGenerator(input_path("issue_179.yaml")).serialize(directory=tmp_path)
+    assert tmp_path == snapshot("issue179")

@@ -9,8 +9,7 @@ import yaml
 from linkml._version import __version__
 
 from .config.datamodel.config import RuleLevel
-from .formatters import (JsonFormatter, MarkdownFormatter, TerminalFormatter,
-                         TsvFormatter)
+from .formatters import JsonFormatter, MarkdownFormatter, TerminalFormatter, TsvFormatter
 from .linter import Linter
 
 YAML_SUFFIXES = [".yml", ".yaml"]
@@ -35,9 +34,7 @@ def get_yaml_files(root: Path) -> Iterable[str]:
 @click.command()
 @click.argument(
     "schema",
-    type=click.Path(
-        exists=True, dir_okay=True, file_okay=True, resolve_path=True, path_type=Path
-    ),
+    type=click.Path(exists=True, dir_okay=True, file_okay=True, resolve_path=True, path_type=Path),
 )
 @click.option(
     "-c",
@@ -66,9 +63,7 @@ def get_yaml_files(root: Path) -> Iterable[str]:
     help="Validate the schema against the LinkML Metamodel and then exit without checking linter rules.",
 )
 @click.option("-v", "--verbose", is_flag=True)
-@click.option(
-    "-o", "--output", type=click.File("w"), default="-", help="Report file name."
-)
+@click.option("-o", "--output", type=click.File("w"), default="-", help="Report file name.")
 @click.option(
     "--ignore-warnings",
     is_flag=True,
@@ -131,9 +126,7 @@ def main(
     formatter.start_report()
     for path in get_yaml_files(schema):
         formatter.start_schema(path)
-        report = linter.lint(
-            path, fix=fix, validate_schema=validate, validate_only=validate_only
-        )
+        report = linter.lint(path, fix=fix, validate_schema=validate, validate_only=validate_only)
         for problem in report:
             if str(problem.level) is RuleLevel.error.text:
                 error_count += 1

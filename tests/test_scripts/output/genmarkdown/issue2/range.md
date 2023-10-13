@@ -37,8 +37,9 @@ slot_definition &#8594;  <sub>0..1</sub> [Element](Element.md)
 | --- | --- | --- |
 | **Aliases:** | | value domain |
 | **Comments:** | | range is underspecified, as not all elements can appear as the range of a slot. |
-| **In Subsets:** | | minimal |
-|  | | basic |
-|  | | relational_model |
-|  | | object_oriented |
+| **In Subsets:** | | SpecificationSubset |
+|  | | MinimalSubset |
+|  | | BasicSubset |
+|  | | RelationalModelProfile |
+|  | | ObjectOrientedProfile |
 

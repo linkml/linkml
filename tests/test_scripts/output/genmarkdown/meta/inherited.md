@@ -25,5 +25,7 @@ URI: [linkml:inherited](https://w3id.org/linkml/inherited)
 
 |  |  |  |
 | --- | --- | --- |
-| **Comments:** | | Inherited applies to slot values.  Parent *slots* are always inherited by subclasses |
+| **Comments:** | | the slot is to be used for defining *metamodels* only |
+|  | | Inherited applies to slot values.  Parent *slots* are always inherited by subclasses |
+| **In Subsets:** | | SpecificationSubset |
 

@@ -25,5 +25,7 @@ schema_definition &#8594;  <sub>0..\*</sub> setting
 
 |  |  |  |
 | --- | --- | --- |
-| **Comments:** | | global variables are used in string interpolation |
+| **Aliases:** | | constants |
+| **Comments:** | | global variables are used in string interpolation in structured patterns |
+| **In Subsets:** | | SpecificationSubset |
 

@@ -25,6 +25,7 @@ unique_key &#8594;  <sub>1..1</sub> [String](types/String.md)
 
 |  |  |  |
 | --- | --- | --- |
-| **In Subsets:** | | basic |
-|  | | relational_model |
+| **In Subsets:** | | SpecificationSubset |
+|  | | BasicSubset |
+|  | | RelationalModelProfile |
 

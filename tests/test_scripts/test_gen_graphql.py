@@ -18,9 +18,7 @@ class GenGraphqlTestCase(ClickTestCase):
 
     def test_meta(self):
         self.do_test([], "meta.graphql")
-        self.do_test(
-            "-f xsv", "meta_error", expected_error=click.exceptions.BadParameter
-        )
+        self.do_test("-f xsv", "meta_error", expected_error=click.exceptions.BadParameter)
 
 
 if __name__ == "__main__":

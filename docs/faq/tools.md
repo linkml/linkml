@@ -20,7 +20,8 @@ There are other tools in the LinkML ecosystem that you may find useful:
 * [linkml/schemasheets](https://github.com/linkml/schemasheets), for managing your schema as a spreadsheet
 * [linkml/linkml-model-enrichment](https://github.com/linkml/linkml-model-enrichment), for bootstrapping and enhancing schemas
 * [linkml/linkml-owl](https://github.com/linkml/linkml-owl), for generating OWL ontologies using schemas as templates
-* [linkml/sparqlfun](https://github.com/linkml/sparqlfun), for templated SPARQL queries
+
+See [../ecosystem](../ecosystem) for more info on the LinkML ecosystem.
 
 ## How do I install the LinkML tools?
 
@@ -57,7 +58,8 @@ For small schemas with limited inheritance, it should be possible to mentally pi
 
 There are a few strategies:
 
-* Use [gen-markdown](https://linkml.io/linkml/generators/markdown) to make markdown that can be viewed using mkdocs
+* Use [gen-doc](https://linkml.io/linkml/generators/markdown) to make markdown that can be viewed using mkdocs
+    * note you get this "for free" if you set up your project using the LinkML cookiecutter
 * Use [gen-owl](https://linkml.io/linkml/generators/owl) to make an OWL ontology, which can be browsed:
     * Using an ontology editing tool like Protege
     * By publishing the ontology with an ontology repository (e.g. BioPortal or a member of the OntoPortal alliance) and using a web ontology browser
@@ -190,14 +192,14 @@ See the [markdown generator](https://linkml.io/linkml/generators/markdown) for d
 If you run:
 
 ```
-gen-markdown -d docs personinfo.yaml
+gen-doc -d docs personinfo.yaml
 ```
 
 It will place all the markdown documents you need to run a [mkdocs](https://www.mkdocs.org/) site
 
 ## How do I include UML class diagrams?
 
-The docgen framework uses [Mermaid](https://mermaid-js.github.io/mermaid/#/) to generate class diagrams
+The docgen framework uses [Mermaid](https://mermaid.js.org/) to generate class diagrams
 from your schema. This is included as a default when you use the docgen framework.
 
 ## Can I include generated documentation in a Sphinx site?
@@ -248,6 +250,10 @@ The protocol is:
 
 An example repo that uses highly customized templates: [GSC MIxS](https://genomicsstandardsconsortium.github.io/mixs)
 
+Note that one disadvantage of using custom templates is that you will not automatically get improvements
+made back in the core templates - you will need to manually sync. We are working on ways to make the
+Jinja2 templates more compositional so that this is less of an issue.
+
 ## Can I use LinkML in conjunction with SQL Databases?
 
 Yes, and in fact providing semantics and expressivity to relational databases is a core LinkML use case.
@@ -293,7 +299,7 @@ itself follows commonly established Entity-Relationship (ER)
 patterns. Here you would have one set of classes corresponding to
 nodes, and another set of classes corresponding to edges. The slots on
 edge classes can be decorated with
-[relational_role](https://w3id.org/relational_role) descriptors.
+[relational_role](https://w3id.org/linkml/relational_role) descriptors.
 
 
 ## Can I use my schema to do reasoning over my data?

@@ -1,4 +1,4 @@
-# Multidimension Arrays
+# Multidimensional Arrays
 
 __NOTE__ This is an *experimental* feature of LinkML. It may be only
 partially implemented, and subject to change.
@@ -98,7 +98,7 @@ This representation is quite convenient for scientific computing. The underlying
 an N-dimensional (nested lists) in many languages:
 
 ```python
->>> measurments = yaml.safe_load(open("lolol.yaml"))
+>>> measurements = yaml.safe_load(open("lolol.yaml"))
 >>> measurements[0][0][0]
 111
 ```
@@ -266,7 +266,7 @@ This relies on a feature implemented in LinkML 1.5,
 [implements](https://w3id.org/linkml/implements). This provides
 information for tools to *interpret* the axes and elements.
 
-In particalar:
+In particular:
 
  - our `TemperatureMatrix` class *implements* `linkml:ThreeDimensionalArray`
  - the 3 axes class *implements* `linkml:OneDimensionalSeries`

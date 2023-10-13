@@ -18,7 +18,7 @@ sys.path.insert(0, os.path.abspath('..'))
 # -- Project information -----------------------------------------------------
 
 project = 'linkml'
-copyright = '2021, LinkML Authors'
+copyright = '2021-2023, LinkML Authors'
 author = 'LinkML Authors'
 
 
@@ -75,7 +75,12 @@ html_favicon = 'https://linkml.io/uploads/linkml-logo_color-no-words.png'
 # Options for the linkcheck builder
 linkcheck_ignore = [
     'https://w3id.org/linkml/*',
+    'https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5819722',
+    'https://doi.org/10.1093/database/bax105',
+    'https://github.com/linkml/prefixmaps/*#*',
+    'https://docs.google.com/presentation/d/*#*'
 ]
+
 
 # Options for autosectionlabel
 autosectionlabel_prefix_document = True

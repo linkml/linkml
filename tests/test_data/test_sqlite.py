@@ -2,12 +2,11 @@ import csv
 import os
 import unittest
 
-import _csv
 from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.linkml_model import SlotDefinition
 from linkml_runtime.loaders import csv_loader, yaml_loader
 from linkml_runtime.utils.introspection import package_schemaview
-from linkml_runtime.utils.schemaview import SchemaDefinition, SchemaView
+from linkml_runtime.utils.schemaview import SchemaDefinition
 from sqlalchemy.orm import sessionmaker
 
 import tests.test_data.model.personinfo
@@ -15,8 +14,7 @@ from linkml.utils.schema_builder import SchemaBuilder
 from linkml.utils.schema_fixer import SchemaFixer
 from linkml.utils.sqlutils import SQLStore
 from tests.test_data.environment import env
-from tests.test_data.model.personinfo import (Container, FamilialRelationship,
-                                              GenderType, Person)
+from tests.test_data.model.personinfo import Container, FamilialRelationship, GenderType, Person
 from tests.utils.dict_comparator import compare_objs, compare_yaml
 
 SCHEMA = env.input_path("personinfo.yaml")
@@ -43,17 +41,16 @@ class SQLiteStoreTest(unittest.TestCase):
 
         See https://github.com/linkml/linkml/issues/817
         """
-        r = FamilialRelationship(type="SIBLING_OF", related_to="x")
+        FamilialRelationship(type="SIBLING_OF", related_to="x")
         p = Person(id="x", gender=GenderType(GenderType.cisgender_man))
         self.assertEqual(type(p.gender), GenderType)
-        c = Container(persons=[p])
+        Container(persons=[p])
 
     def test_sqlite_store(self):
         """
         tests a complete end-to-end example with a dump-load cycle
         """
         # step 1: setup
-        sv = SchemaView(SCHEMA)
         # TODO: currently it is necessary to pass the actual yaml rather than a schema object
         # endpoint = SQLiteEndpoint(sv.schema, database_path=DB, include_schema_in_database=False)
         endpoint = SQLStore(SCHEMA, database_path=DB, include_schema_in_database=False)
@@ -69,14 +66,7 @@ class SQLiteStoreTest(unittest.TestCase):
         q = session.query(endpoint.module.Person)
         all_objs = q.all()
         self.assertEqual(2, len(all_objs))
-        for p in all_objs:
-            print(p)
-            for rel in p.has_familial_relationships:
-                print(rel)
-                print(rel.type)
         q = session.query(endpoint.module.FamilialRelationship)
-        for r in q.all():
-            print(r)
         session.close()
         # step 4: test loading from SQLStore
         # 4a: first test load_all, diff to original data should be empty
@@ -99,16 +89,12 @@ class SQLiteStoreTest(unittest.TestCase):
         # step 1: setup
         sv = package_schemaview("linkml_runtime.linkml_model.meta")
         # sv = SchemaView(METAMODEL_SCHEMA)
-        endpoint = SQLStore(
-            sv.schema, database_path=METAMODEL_DB, include_schema_in_database=False
-        )
+        endpoint = SQLStore(sv.schema, database_path=METAMODEL_DB, include_schema_in_database=False)
         endpoint.native_module = tests.test_data.model.personinfo
         endpoint.db_exists(force=True)
         endpoint.compile()
         # step 2: load data from file and store in SQLStore
-        container: SchemaDefinition = yaml_loader.load(
-            SCHEMA, target_class=SchemaDefinition
-        )
+        yaml_loader.load(SCHEMA, target_class=SchemaDefinition)
         schema_instance = SchemaDefinition(id="test", name="test")
         endpoint.dump(schema_instance)
 
@@ -120,7 +106,6 @@ class SQLiteStoreTest(unittest.TestCase):
         b.add_class("my_abstract", slots=["my_abstract_slot"], abstract=True)
         b.add_class("my_class1", is_a="my_abstract", mixins=["my_mixin"])
         b.add_class("my_class2", slots=["ref_to_c1"])
-        # print(yaml_dumper.dumps(b.schema))
         endpoint = SQLStore(b.schema, database_path=TMP_DB)
         endpoint.db_exists(force=True)
         mod = endpoint.compile_native()
@@ -128,7 +113,6 @@ class SQLiteStoreTest(unittest.TestCase):
         i2 = mod.MyClass2(ref_to_c1=i1)
         endpoint.dump(i2)
         i2_recap = endpoint.load(target_class=mod.MyClass2)
-        # print(yaml_dumper.dumps(i2_recap))
         diff = compare_objs(i2, i2_recap)
         self.assertEqual(diff, "")
 

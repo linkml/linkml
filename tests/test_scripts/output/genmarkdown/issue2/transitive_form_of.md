@@ -26,5 +26,6 @@ None &#8594;  <sub>0..1</sub> slot_definition
 
 |  |  |  |
 | --- | --- | --- |
-| **Comments:** | | {'Example': 'ancestor_of is the transitive_form_of parent_of'} |
+| **Comments:** | | Example: ancestor_of is the transitive_form_of parent_of |
+| **In Subsets:** | | SpecificationSubset |
 

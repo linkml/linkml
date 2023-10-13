@@ -26,3 +26,10 @@ None &#8594;  <sub>0..\*</sub> [String](types/String.md)
  * slot_expression
  * type_definition
  * type_expression
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **In Subsets:** | | SpecificationSubset |
+

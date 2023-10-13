@@ -2,7 +2,7 @@
 # Slot: mixins
 
 
-List of definitions to be mixed in. Targets may be any definition of the same type
+A collection of secondary parent classes or slots from which inheritable metaslots are propagated from.
 
 URI: [linkml:mixins](https://w3id.org/linkml/mixins)
 
@@ -23,6 +23,7 @@ URI: [linkml:mixins](https://w3id.org/linkml/mixins)
 ## Used by
 
  * [Definition](Definition.md)
+ * [EnumDefinition](EnumDefinition.md)
 
 ## Other properties
 
@@ -30,7 +31,9 @@ URI: [linkml:mixins](https://w3id.org/linkml/mixins)
 | --- | --- | --- |
 | **Aliases:** | | traits |
 | **Comments:** | | mixins act in the same way as parents (is_a). They allow a model to have a primary strict hierachy, while keeping the benefits of multiple inheritance |
-| **In Subsets:** | | basic |
-|  | | object_oriented |
+| **In Subsets:** | | SpecificationSubset |
+|  | | BasicSubset |
+|  | | ObjectOrientedProfile |
+|  | | OwlProfile |
 | **See also:** | | [https://en.wikipedia.org/wiki/Mixin](https://en.wikipedia.org/wiki/Mixin) |
 

@@ -1,23 +1,12 @@
 import os
 from collections import defaultdict
-from typing import Optional, Union
+from typing import Optional
 
-from linkml_runtime.dumpers.csv_dumper import CSVDumper
-from linkml_runtime.dumpers.json_dumper import JSONDumper
-from linkml_runtime.dumpers.rdf_dumper import RDFDumper
-from linkml_runtime.dumpers.rdflib_dumper import RDFLibDumper
-from linkml_runtime.dumpers.yaml_dumper import YAMLDumper
-from linkml_runtime.linkml_model.meta import (ClassDefinitionName,
-                                              SchemaDefinition,
-                                              SlotDefinitionName)
-from linkml_runtime.loaders.csv_loader import CSVLoader
-from linkml_runtime.loaders.json_loader import JSONLoader
+from linkml_runtime.dumpers import CSVDumper, JSONDumper, RDFLibDumper, TSVDumper, YAMLDumper
+from linkml_runtime.linkml_model.meta import ClassDefinitionName, SlotDefinitionName
+from linkml_runtime.loaders import CSVLoader, JSONLoader, RDFLibLoader, TSVLoader, YAMLLoader
 from linkml_runtime.loaders.loader_root import Loader
-from linkml_runtime.loaders.rdf_loader import RDFLoader
-from linkml_runtime.loaders.rdflib_loader import RDFLibLoader
-from linkml_runtime.loaders.yaml_loader import YAMLLoader
 from linkml_runtime.utils.schemaview import SchemaView
-from linkml_runtime.utils.yamlutils import YAMLRoot
 
 from linkml.generators.jsonldcontextgen import ContextGenerator
 
@@ -27,9 +16,9 @@ dumpers_loaders = {
     "json": (JSONDumper, JSONLoader),
     "rdf": (RDFLibDumper, RDFLibLoader),
     "ttl": (RDFLibDumper, RDFLibLoader),
-    "json-ld": (RDFLibDumper, RDFLibLoader),
+    "json-ld": (JSONDumper, JSONLoader),
     "csv": (CSVDumper, CSVLoader),
-    "tsv": (CSVDumper, CSVLoader),
+    "tsv": (TSVDumper, TSVLoader),
 }
 
 aliases = {
@@ -42,9 +31,7 @@ def _get_format(path: str, specified_format: str = None, default=None):
     if specified_format is None:
         if path is None:
             if default is None:
-                raise Exception(
-                    f"Must pass format option OR pass a filename with known file suffix"
-                )
+                raise Exception("Must pass format option OR pass a filename with known file suffix")
             else:
                 specified_format = default
         else:
@@ -52,9 +39,7 @@ def _get_format(path: str, specified_format: str = None, default=None):
             if ext is not None:
                 specified_format = ext.replace(".", "")
             else:
-                raise Exception(
-                    f"Must pass format option OR use known file suffix: {path}"
-                )
+                raise Exception(f"Must pass format option OR use known file suffix: {path}")
     specified_format = specified_format.lower()
     if specified_format in aliases:
         specified_format = aliases[specified_format]

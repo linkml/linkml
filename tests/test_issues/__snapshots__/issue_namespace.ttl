@@ -1,0 +1,303 @@
+@prefix biolink: <https://w3id.org/biolink/vocab/> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix linkml: <https://w3id.org/linkml/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<https://w3id.org/biolink/biolink-model> a linkml:SchemaDefinition ;
+    rdfs:label "Biolink_Model" ;
+    dct:description "Entity and association taxonomy and datamodel for life-sciences data" ;
+    linkml:classes [ a linkml:ClassDefinition ;
+            rdfs:label "NamedThing" ;
+            dct:description "a databased entity or concept/class" ;
+            linkml:class_uri "https://w3id.org/biolink/vocab/NamedThing" ;
+            linkml:definition_uri "https://w3id.org/biolink/vocab/NamedThing" ;
+            linkml:from_schema "https://w3id.org/biolink/biolink-model" ;
+            linkml:slot_usage [ ] ;
+            linkml:slots "id",
+                "name" ],
+        [ a linkml:ClassDefinition ;
+            rdfs:label "AnatomicalEntity" ;
+            biolink:subclass_of <uberon:0001062> ;
+            linkml:class_uri "https://w3id.org/biolink/vocab/AnatomicalEntity" ;
+            linkml:definition_uri "https://w3id.org/biolink/vocab/AnatomicalEntity" ;
+            linkml:from_schema "https://w3id.org/biolink/biolink-model" ;
+            linkml:is_a "NamedThing" ;
+            linkml:slot_usage [ ] ;
+            linkml:slots "id",
+                "name" ] ;
+    linkml:default_curi_maps "idot_context",
+        "monarch_context",
+        "obo_context",
+        "semweb_context" ;
+    linkml:default_prefix "biolink" ;
+    linkml:default_range "string" ;
+    linkml:emit_prefixes "BIOGRID",
+        "OIO",
+        "rdf",
+        "rdfs",
+        "skos",
+        "xsd" ;
+    linkml:generation_date "2000-01-01T00:00:00" ;
+    linkml:imports "linkml:types" ;
+    linkml:license "https://creativecommons.org/publicdomain/zero/1.0/" ;
+    linkml:metamodel_version "1.7.0" ;
+    linkml:prefixes [ linkml:prefix_prefix "biolink" ;
+            linkml:prefix_reference "https://w3id.org/biolink/vocab/" ],
+        [ linkml:prefix_prefix "SIO" ;
+            linkml:prefix_reference "http://semanticscience.org/resource/SIO_" ],
+        [ linkml:prefix_prefix "UMLSST" ;
+            linkml:prefix_reference "https://uts-ws.nlm.nih.gov/rest/semantic-network/semantic-network/current/STY/" ],
+        [ linkml:prefix_prefix "wgs" ;
+            linkml:prefix_reference "http://www.w3.org/2003/01/geo/wgs84_pos" ],
+        [ linkml:prefix_prefix "skos" ;
+            linkml:prefix_reference "http://www.w3.org/2004/02/skos/core#" ],
+        [ linkml:prefix_prefix "linkml" ;
+            linkml:prefix_reference "https://w3id.org/linkml/" ],
+        [ linkml:prefix_prefix "qud" ;
+            linkml:prefix_reference "http://qudt.org/1.1/schema/qudt#" ],
+        [ linkml:prefix_prefix "UMLSSC" ;
+            linkml:prefix_reference "https://uts-ws.nlm.nih.gov/rest/semantic-network/semantic-network/current/TUI/" ],
+        [ linkml:prefix_prefix "UMLSSG" ;
+            linkml:prefix_reference "https://uts-ws.nlm.nih.gov/rest/semantic-network/semantic-network/current/GROUP/" ],
+        [ linkml:prefix_prefix "OBAN" ;
+            linkml:prefix_reference "http://purl.org/oban/" ] ;
+    linkml:slots [ a linkml:SlotDefinition ;
+            rdfs:label "id" ;
+            linkml:definition_uri "https://w3id.org/biolink/vocab/id" ;
+            linkml:domain "NamedThing" ;
+            linkml:domain_of "NamedThing" ;
+            linkml:from_schema "https://w3id.org/biolink/biolink-model" ;
+            linkml:identifier true ;
+            linkml:owner "NamedThing" ;
+            linkml:range "identifier_type" ;
+            linkml:required true ;
+            linkml:slot_uri "https://w3id.org/biolink/vocab/id" ],
+        [ a linkml:SlotDefinition ;
+            rdfs:label "name" ;
+            linkml:definition_uri "https://w3id.org/biolink/vocab/name" ;
+            linkml:domain "NamedThing" ;
+            linkml:domain_of "NamedThing" ;
+            linkml:from_schema "https://w3id.org/biolink/biolink-model" ;
+            linkml:owner "NamedThing" ;
+            linkml:range "string" ;
+            linkml:required true ;
+            linkml:slot_uri "https://w3id.org/biolink/vocab/name" ] ;
+    linkml:source_file "issue_namespace.yaml" ;
+    linkml:source_file_date "2000-01-01T00:00:00" ;
+    linkml:source_file_size 1 ;
+    linkml:types [ a linkml:TypeDefinition ;
+            rdfs:label "decimal" ;
+            dct:description "A real number with arbitrary precision that conforms to the xsd:decimal specification" ;
+            linkml:base "Decimal" ;
+            linkml:broad_mappings "schema:Number" ;
+            linkml:definition_uri "https://w3id.org/linkml/Decimal" ;
+            linkml:from_schema "https://w3id.org/linkml/types" ;
+            linkml:imported_from "linkml:types" ;
+            linkml:notes "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"decimal\"." ;
+            linkml:uri "http://www.w3.org/2001/XMLSchema#decimal" ],
+        [ a linkml:TypeDefinition ;
+            rdfs:label "date" ;
+            dct:description "a date (year, month and day) in an idealized calendar" ;
+            linkml:base "XSDDate" ;
+            linkml:definition_uri "https://w3id.org/linkml/Date" ;
+            linkml:exact_mappings "schema:Date" ;
+            linkml:from_schema "https://w3id.org/linkml/types" ;
+            linkml:imported_from "linkml:types" ;
+            linkml:notes "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"date\".",
+                "URI is dateTime because OWL reasoners don't work with straight date or time" ;
+            linkml:repr "str" ;
+            linkml:uri "http://www.w3.org/2001/XMLSchema#date" ],
+        [ a linkml:TypeDefinition ;
+            rdfs:label "time" ;
+            dct:description "A time object represents a (local) time of day, independent of any particular day" ;
+            linkml:base "XSDTime" ;
+            linkml:definition_uri "https://w3id.org/linkml/Time" ;
+            linkml:exact_mappings "schema:Time" ;
+            linkml:from_schema "https://w3id.org/linkml/types" ;
+            linkml:imported_from "linkml:types" ;
+            linkml:notes "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"time\".",
+                "URI is dateTime because OWL reasoners do not work with straight date or time" ;
+            linkml:repr "str" ;
+            linkml:uri "http://www.w3.org/2001/XMLSchema#time" ],
+        [ a linkml:TypeDefinition ;
+            rdfs:label "date_or_datetime" ;
+            dct:description "Either a date or a datetime" ;
+            linkml:base "str" ;
+            linkml:definition_uri "https://w3id.org/linkml/DateOrDatetime" ;
+            linkml:from_schema "https://w3id.org/linkml/types" ;
+            linkml:imported_from "linkml:types" ;
+            linkml:notes "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"date_or_datetime\"." ;
+            linkml:repr "str" ;
+            linkml:uri "https://w3id.org/linkml/DateOrDatetime" ],
+        [ a linkml:TypeDefinition ;
+            rdfs:label "integer" ;
+            dct:description "An integer" ;
+            linkml:base "int" ;
+            linkml:definition_uri "https://w3id.org/linkml/Integer" ;
+            linkml:exact_mappings "schema:Integer" ;
+            linkml:from_schema "https://w3id.org/linkml/types" ;
+            linkml:imported_from "linkml:types" ;
+            linkml:notes "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"integer\"." ;
+            linkml:uri "http://www.w3.org/2001/XMLSchema#integer" ],
+        [ a linkml:TypeDefinition ;
+            rdfs:label "double" ;
+            dct:description "A real number that conforms to the xsd:double specification" ;
+            linkml:base "float" ;
+            linkml:close_mappings "schema:Float" ;
+            linkml:definition_uri "https://w3id.org/linkml/Double" ;
+            linkml:from_schema "https://w3id.org/linkml/types" ;
+            linkml:imported_from "linkml:types" ;
+            linkml:notes "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"double\"." ;
+            linkml:uri "http://www.w3.org/2001/XMLSchema#double" ],
+        [ a linkml:TypeDefinition ;
+            rdfs:label "nodeidentifier" ;
+            dct:description "A URI, CURIE or BNODE that represents a node in a model." ;
+            linkml:base "NodeIdentifier" ;
+            linkml:definition_uri "https://w3id.org/linkml/Nodeidentifier" ;
+            linkml:from_schema "https://w3id.org/linkml/types" ;
+            linkml:imported_from "linkml:types" ;
+            linkml:notes "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"nodeidentifier\"." ;
+            linkml:repr "str" ;
+            linkml:uri "http://www.w3.org/ns/shex#nonLiteral" ],
+        [ a linkml:TypeDefinition ;
+            rdfs:label "float" ;
+            dct:description "A real number that conforms to the xsd:float specification" ;
+            linkml:base "float" ;
+            linkml:definition_uri "https://w3id.org/linkml/Float" ;
+            linkml:exact_mappings "schema:Float" ;
+            linkml:from_schema "https://w3id.org/linkml/types" ;
+            linkml:imported_from "linkml:types" ;
+            linkml:notes "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"float\"." ;
+            linkml:uri "http://www.w3.org/2001/XMLSchema#float" ],
+        [ a linkml:TypeDefinition ;
+            rdfs:label "identifier_type" ;
+            dct:description "A string that is intended to uniquely identify a thing May be URI in full or compact (CURIE) form" ;
+            linkml:base "ElementIdentifier" ;
+            linkml:definition_uri "https://w3id.org/biolink/vocab/IdentifierType" ;
+            linkml:from_schema "https://w3id.org/biolink/biolink-model" ;
+            linkml:uri "http://www.w3.org/2001/XMLSchema#anyURI" ],
+        [ a linkml:TypeDefinition ;
+            rdfs:label "jsonpointer" ;
+            dct:description "A string encoding a JSON Pointer. The value of the string MUST conform to JSON Point syntax and SHOULD dereference to a valid object within the current instance document when encoded in tree form." ;
+            linkml:base "str" ;
+            linkml:conforms_to "https://datatracker.ietf.org/doc/html/rfc6901" ;
+            linkml:definition_uri "https://w3id.org/linkml/Jsonpointer" ;
+            linkml:from_schema "https://w3id.org/linkml/types" ;
+            linkml:imported_from "linkml:types" ;
+            linkml:notes "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"jsonpointer\"." ;
+            linkml:repr "str" ;
+            linkml:uri "http://www.w3.org/2001/XMLSchema#string" ],
+        [ a linkml:TypeDefinition ;
+            rdfs:label "string" ;
+            dct:description "A character string" ;
+            linkml:base "str" ;
+            linkml:definition_uri "https://w3id.org/linkml/String" ;
+            linkml:exact_mappings "schema:Text" ;
+            linkml:from_schema "https://w3id.org/linkml/types" ;
+            linkml:imported_from "linkml:types" ;
+            linkml:notes "In RDF serializations, a slot with range of string is treated as a literal or type xsd:string.   If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"string\"." ;
+            linkml:uri "http://www.w3.org/2001/XMLSchema#string" ],
+        [ a linkml:TypeDefinition ;
+            rdfs:label "datetime" ;
+            dct:description "The combination of a date and time" ;
+            linkml:base "XSDDateTime" ;
+            linkml:definition_uri "https://w3id.org/linkml/Datetime" ;
+            linkml:exact_mappings "schema:DateTime" ;
+            linkml:from_schema "https://w3id.org/linkml/types" ;
+            linkml:imported_from "linkml:types" ;
+            linkml:notes "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"datetime\"." ;
+            linkml:repr "str" ;
+            linkml:uri "http://www.w3.org/2001/XMLSchema#dateTime" ],
+        [ a linkml:TypeDefinition ;
+            rdfs:label "sparqlpath" ;
+            dct:description "A string encoding a SPARQL Property Path. The value of the string MUST conform to SPARQL syntax and SHOULD dereference to zero or more valid objects within the current instance document when encoded as RDF." ;
+            linkml:base "str" ;
+            linkml:conforms_to "https://www.w3.org/TR/sparql11-query/#propertypaths" ;
+            linkml:definition_uri "https://w3id.org/linkml/Sparqlpath" ;
+            linkml:from_schema "https://w3id.org/linkml/types" ;
+            linkml:imported_from "linkml:types" ;
+            linkml:notes "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"sparqlpath\"." ;
+            linkml:repr "str" ;
+            linkml:uri "http://www.w3.org/2001/XMLSchema#string" ],
+        [ a linkml:TypeDefinition ;
+            rdfs:label "ncname" ;
+            dct:description "Prefix part of CURIE" ;
+            linkml:base "NCName" ;
+            linkml:definition_uri "https://w3id.org/linkml/Ncname" ;
+            linkml:from_schema "https://w3id.org/linkml/types" ;
+            linkml:imported_from "linkml:types" ;
+            linkml:notes "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"ncname\"." ;
+            linkml:repr "str" ;
+            linkml:uri "http://www.w3.org/2001/XMLSchema#string" ],
+        [ a linkml:TypeDefinition ;
+            rdfs:label "objectidentifier" ;
+            dct:description "A URI or CURIE that represents an object in the model." ;
+            linkml:base "ElementIdentifier" ;
+            linkml:comments "Used for inheritance and type checking" ;
+            linkml:definition_uri "https://w3id.org/linkml/Objectidentifier" ;
+            linkml:from_schema "https://w3id.org/linkml/types" ;
+            linkml:imported_from "linkml:types" ;
+            linkml:notes "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"objectidentifier\"." ;
+            linkml:repr "str" ;
+            linkml:uri "http://www.w3.org/ns/shex#iri" ],
+        [ a linkml:TypeDefinition ;
+            rdfs:label "uri" ;
+            dct:description "a complete URI" ;
+            linkml:base "URI" ;
+            linkml:close_mappings "schema:URL" ;
+            linkml:comments "in RDF serializations a slot with range of uri is treated as a literal or type xsd:anyURI unless it is an identifier or a reference to an identifier, in which case it is translated directly to a node" ;
+            linkml:conforms_to "https://www.ietf.org/rfc/rfc3987.txt" ;
+            linkml:definition_uri "https://w3id.org/linkml/Uri" ;
+            linkml:from_schema "https://w3id.org/linkml/types" ;
+            linkml:imported_from "linkml:types" ;
+            linkml:notes "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"uri\"." ;
+            linkml:repr "str" ;
+            linkml:uri "http://www.w3.org/2001/XMLSchema#anyURI" ],
+        [ a linkml:TypeDefinition ;
+            rdfs:label "jsonpath" ;
+            dct:description "A string encoding a JSON Path. The value of the string MUST conform to JSON Point syntax and SHOULD dereference to zero or more valid objects within the current instance document when encoded in tree form." ;
+            linkml:base "str" ;
+            linkml:conforms_to "https://www.ietf.org/archive/id/draft-goessner-dispatch-jsonpath-00.html" ;
+            linkml:definition_uri "https://w3id.org/linkml/Jsonpath" ;
+            linkml:from_schema "https://w3id.org/linkml/types" ;
+            linkml:imported_from "linkml:types" ;
+            linkml:notes "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"jsonpath\"." ;
+            linkml:repr "str" ;
+            linkml:uri "http://www.w3.org/2001/XMLSchema#string" ],
+        [ a linkml:TypeDefinition ;
+            rdfs:label "curie" ;
+            dct:description "a compact URI" ;
+            linkml:base "Curie" ;
+            linkml:comments "in RDF serializations this MUST be expanded to a URI",
+                "in non-RDF serializations MAY be serialized as the compact representation" ;
+            linkml:conforms_to "https://www.w3.org/TR/curie/" ;
+            linkml:definition_uri "https://w3id.org/linkml/Curie" ;
+            linkml:from_schema "https://w3id.org/linkml/types" ;
+            linkml:imported_from "linkml:types" ;
+            linkml:notes "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"curie\"." ;
+            linkml:repr "str" ;
+            linkml:uri "http://www.w3.org/2001/XMLSchema#string" ],
+        [ a linkml:TypeDefinition ;
+            rdfs:label "uriorcurie" ;
+            dct:description "a URI or a CURIE" ;
+            linkml:base "URIorCURIE" ;
+            linkml:definition_uri "https://w3id.org/linkml/Uriorcurie" ;
+            linkml:from_schema "https://w3id.org/linkml/types" ;
+            linkml:imported_from "linkml:types" ;
+            linkml:notes "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"uriorcurie\"." ;
+            linkml:repr "str" ;
+            linkml:uri "http://www.w3.org/2001/XMLSchema#anyURI" ],
+        [ a linkml:TypeDefinition ;
+            rdfs:label "boolean" ;
+            dct:description "A binary (true or false) value" ;
+            linkml:base "Bool" ;
+            linkml:definition_uri "https://w3id.org/linkml/Boolean" ;
+            linkml:exact_mappings "schema:Boolean" ;
+            linkml:from_schema "https://w3id.org/linkml/types" ;
+            linkml:imported_from "linkml:types" ;
+            linkml:notes "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"boolean\"." ;
+            linkml:repr "bool" ;
+            linkml:uri "http://www.w3.org/2001/XMLSchema#boolean" ] .
+
+

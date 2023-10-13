@@ -2,7 +2,7 @@
 # Slot: abstract
 
 
-an abstract class is a high level class or slot that is typically used to group common slots together and cannot be directly instantiated.
+Indicates the class or slot cannot be directly instantiated and is intended for grouping purposes.
 
 URI: [linkml:abstract](https://w3id.org/linkml/abstract)
 
@@ -21,12 +21,14 @@ URI: [linkml:abstract](https://w3id.org/linkml/abstract)
 
  * [ClassDefinition](ClassDefinition.md)
  * [Definition](Definition.md)
+ * [EnumDefinition](EnumDefinition.md)
  * [SlotDefinition](SlotDefinition.md)
 
 ## Other properties
 
 |  |  |  |
 | --- | --- | --- |
-| **In Subsets:** | | basic |
-|  | | object_oriented |
+| **In Subsets:** | | SpecificationSubset |
+|  | | BasicSubset |
+|  | | ObjectOrientedProfile |
 

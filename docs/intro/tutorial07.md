@@ -46,7 +46,7 @@ classes:
         range: Person
 
 # slots are first-class entities in the metamodel
-# delcaring them here allows them to be reused elsewhere
+# declaring them here allows them to be reused elsewhere
 slots:
   id:
     identifier: true
@@ -333,6 +333,8 @@ slots:
   id:
     identifier: true
   full_name:
+  related_to:
+  relationship_type:
 
 enums:
   FamilialRelationshipType:

@@ -1,8 +1,9 @@
 # {% if schema.title %}{{ schema.title }}{% else %}{{ schema.name }}{% endif %}
 
-{{ schema.description }}
+{% if schema.description %}{{ schema.description }}{% endif %}
 
 URI: {{ schema.id }}
+
 Name: {{ schema.name }}
 
 {% if include_top_level_diagram %}
@@ -18,9 +19,15 @@ Name: {{ schema.name }}
 
 | Class | Description |
 | --- | --- |
+{% if gen.hierarchical_class_view -%}
+{% for u, v in gen.class_hierarchy_as_tuples() -%}
+| {{ "&nbsp;"|safe*u*8 }}{{ gen.link(schemaview.get_class(v)) }} | {{ schemaview.get_class(v).description }} |
+{% endfor %}
+{% else -%}
 {% for c in gen.all_class_objects()|sort(attribute=sort_by) -%}
 | {{gen.link(c)}} | {{c.description|enshorten}} |
 {% endfor %}
+{% endif %}
 
 ## Slots
 

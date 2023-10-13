@@ -26,6 +26,5 @@ schema_definition &#8594;  <sub>0..1</sub> [String](types/String.md)
 |  |  |  |
 | --- | --- | --- |
 | **Mappings:** | | dcterms:license |
-| **In Subsets:** | | owl |
-|  | | basic |
+| **In Subsets:** | | BasicSubset |
 

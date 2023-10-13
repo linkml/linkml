@@ -27,5 +27,6 @@ slot_definition &#8594;  <sub>0..1</sub> boolean
 |  |  |  |
 | --- | --- | --- |
 | **Comments:** | | asymmetry is the combination of antisymmetry and irreflexivity |
+| **In Subsets:** | | SpecificationSubset |
 | **Close Mappings:** | | owl:AsymmetricProperty |
 

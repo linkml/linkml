@@ -1,22 +1,25 @@
-# Auto generated from meta.yaml by namespacegen.py version: 0.9.0
-# Generation date: 2022-03-08T17:01:35
+# Auto generated from meta.yaml by namespacegen.py version: 0.0.1
+# Generation date: 2023-09-25T16:04:45
 # Schema: meta
 #
 # id: https://w3id.org/linkml/meta
 # description: The metamodel for schemas defined using the Linked Data Modeling Language framework. For more
-#              information on LinkML, see [linkml.io](https://linkml.io) Core metaclasses: *
+#              information on LinkML: * [linkml.io](https://linkml.io) main website *
+#              [specification](https://w3id.org/linkml/docs/specification/) LinkML is self-describing. Every
+#              LinkML schema consists of elements that instantiate classes in this metamodel. Core metaclasses: *
 #              [SchemaDefinition](https://w3id.org/linkml/SchemaDefinition) *
 #              [ClassDefinition](https://w3id.org/linkml/ClassDefinition) *
-#              [SlotDefinition](https://w3id.org/linkml/SlotDefinition) Every LinkML model instantiates
-#              SchemaDefinition, all classes in the model instantiate ClassDefinition, and so on Note that the
-#              LinkML metamodel instantiates itself. For a non-normative introduction to LinkML schemas, see the
-#              tutorial and schema guide on [linkml.io/linkml]. For canonical reference documentation on any
+#              [SlotDefinition](https://w3id.org/linkml/SlotDefinition) *
+#              [TypeDefinition](https://w3id.org/linkml/TypeDefinition) There are many subsets of *profiles* of
+#              the metamodel, for different purposes: * [MinimalSubset](https://w3id.org/linkml/MinimalSubset) *
+#              [BasicSubset](https://w3id.org/linkml/BasicSubset) *
+#              [BasicSubset](https://w3id.org/linkml/BasicSubset) For canonical reference documentation on any
 #              metamodel construct, refer to the official URI for each construct, e.g.
 #              [https://w3id.org/linkml/is_a](https://w3id.org/linkml/is_a)
 # license: https://creativecommons.org/publicdomain/zero/1.0/
 
 from collections import defaultdict
-from typing import Dict, Iterable, Tuple
+from typing import Iterable, Dict, Tuple
 
 from linkml_runtime.utils.curienamespace import CurieNamespace
 
@@ -38,6 +41,7 @@ class BiolinkNameSpace:
 
     _namespaces = [
         CurieNamespace('IAO', 'http://purl.obolibrary.org/obo/IAO_'),
+        CurieNamespace('NCIT', 'http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#'),
         CurieNamespace('OIO', 'http://www.geneontology.org/formats/oboInOwl#'),
         CurieNamespace('bibo', 'http://purl.org/ontology/bibo/'),
         CurieNamespace('dcterms', 'http://purl.org/dc/terms/'),
@@ -47,10 +51,11 @@ class BiolinkNameSpace:
         CurieNamespace('pav', 'http://purl.org/pav/'),
         CurieNamespace('prov', 'http://www.w3.org/ns/prov#'),
         CurieNamespace('qb', 'http://purl.org/linked-data/cube#'),
+        CurieNamespace('qudt', 'http://qudt.org/schema/qudt/'),
         CurieNamespace('rdf', 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'),
         CurieNamespace('rdfs', 'http://www.w3.org/2000/01/rdf-schema#'),
         CurieNamespace('schema', 'http://schema.org/'),
-        CurieNamespace('sh', 'https://w3id.org/shacl/'),
+        CurieNamespace('sh', 'http://www.w3.org/ns/shacl#'),
         CurieNamespace('skos', 'http://www.w3.org/2004/02/skos/core#'),
         CurieNamespace('skosxl', 'http://www.w3.org/2008/05/skos-xl#'),
         CurieNamespace('swrl', 'http://www.w3.org/2003/11/swrl#'),

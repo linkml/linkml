@@ -12,7 +12,7 @@ In principle, two styles of mappings are possible:
 
 1. Declarative, in which SQLA-style classes are generated, with
    combined mappings
-2. Imperative, in which seperate mappings are created for a
+2. Imperative, in which separate mappings are created for a
    pre-existing object model, such as one created by the existing
    python or pydantic generators
 
@@ -25,7 +25,7 @@ Overview
 Declarative Mode
 ^^^^^^^^^^^^^^^^
 
-`declarative mapping docs<https://docs.sqlalchemy.org/en/14/orm/declarative_mapping.html>` on SQL Alchemy site
+See `declarative mapping docs<https://docs.sqlalchemy.org/en/latest/orm/declarative_mapping.html>`_ on SQL Alchemy site
 
 Given input such as:
 

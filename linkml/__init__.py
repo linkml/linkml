@@ -20,9 +20,7 @@ MODULE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 LOCAL_METAMODEL_YAML_FILE = linkml_files.LOCAL_PATH_FOR(Source.META, Format.YAML)
 LOCAL_TYPES_YAML_FILE = linkml_files.LOCAL_PATH_FOR(Source.TYPES, Format.YAML)
 LOCAL_MAPPINGS_YAML_FILE = linkml_files.LOCAL_PATH_FOR(Source.MAPPINGS, Format.YAML)
-LOCAL_ANNOTATIONS_YAML_FILE = linkml_files.LOCAL_PATH_FOR(
-    Source.ANNOTATIONS, Format.YAML
-)
+LOCAL_ANNOTATIONS_YAML_FILE = linkml_files.LOCAL_PATH_FOR(Source.ANNOTATIONS, Format.YAML)
 LOCAL_EXTENSIONS_YAML_FILE = linkml_files.LOCAL_PATH_FOR(Source.EXTENSIONS, Format.YAML)
 
 # Local location of jsonld and context.jsonld files
@@ -30,9 +28,7 @@ LOCAL_METAMODEL_LDCONTEXT_FILE = linkml_files.LOCAL_PATH_FOR(Source.META, Format
 LOCAL_METAMODEL_JSONLD_FILE = linkml_files.LOCAL_PATH_FOR(Source.META, Format.JSON)
 LOCAL_TYPES_LDCONTEXT_FILE = linkml_files.LOCAL_PATH_FOR(Source.TYPES, Format.JSONLD)
 LOCAL_TYPES_JSONLD_FILE = linkml_files.LOCAL_PATH_FOR(Source.TYPES, Format.JSON)
-LOCAL_MAPPINGS_LDCONTEXT_FILE = linkml_files.LOCAL_PATH_FOR(
-    Source.MAPPINGS, Format.JSONLD
-)
+LOCAL_MAPPINGS_LDCONTEXT_FILE = linkml_files.LOCAL_PATH_FOR(Source.MAPPINGS, Format.JSONLD)
 LOCAL_MAPPINGS_JSONLD_FILE = linkml_files.LOCAL_PATH_FOR(Source.MAPPINGS, Format.JSON)
 
 # Local location of metamodel shex file

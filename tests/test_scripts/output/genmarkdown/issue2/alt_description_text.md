@@ -25,5 +25,5 @@ alt_description &#8594;  <sub>1..1</sub> [String](types/String.md)
 
 |  |  |  |
 | --- | --- | --- |
-| **In Subsets:** | | basic |
+| **In Subsets:** | | BasicSubset |
 

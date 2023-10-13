@@ -1,8 +1,13 @@
 import unittest
 
-from linkml_runtime.utils.formatutils import (be, camelcase, lcamelcase,
-                                              split_line, underscore,
-                                              wrapped_annotation)
+from linkml_runtime.utils.formatutils import (
+    be,
+    camelcase,
+    lcamelcase,
+    split_line,
+    underscore,
+    wrapped_annotation,
+)
 
 
 class FormatUtilsTestCase(unittest.TestCase):
@@ -54,7 +59,7 @@ class FormatUtilsTestCase(unittest.TestCase):
         self.assertEqual(
             """This is a mess'o test that goes on for a long way.  It has some carriage
 	returns embedded in it but otherwise it drags on and on and on until the cows come home. Splitline covers this we 
-	hope. """,
+	hope. """,  # noqa: W291, E101, W191
             wrapped_annotation(text),
         )
 

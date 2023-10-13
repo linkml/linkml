@@ -1,25 +1,9 @@
-import os
-import unittest
-from contextlib import redirect_stdout
-
 from linkml.generators.sparqlgen import SparqlGenerator
-from tests.test_generators.environment import env
-
-SCHEMA = env.input_path("kitchen_sink.yaml")
-DIR = env.expected_path("kitchen_sink_sparql")
-SPARQL = env.expected_path("kitchen_sink.rq")
 
 
-
-class SparqlGeneratorTestCase(unittest.TestCase):
-    def test_sparqlgen(self):
-        """Generate java classes"""
-        gen = SparqlGenerator(SCHEMA)
-        sparql = gen.serialize(directory=DIR)
-        #print(sparql)
-        # TODO: add more checks
-        self.assertIn("?subject rdf:type ks:Person", sparql)
-
-
-if __name__ == "__main__":
-    unittest.main()
+def test_sparqlgen(kitchen_sink_path):
+    """Generate java classes"""
+    gen = SparqlGenerator(kitchen_sink_path)
+    sparql = gen.serialize()
+    # TODO: add more checks
+    assert "?subject rdf:type ks:Person" in sparql

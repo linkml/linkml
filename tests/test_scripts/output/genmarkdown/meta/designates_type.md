@@ -26,4 +26,6 @@ URI: [linkml:designates_type](https://w3id.org/linkml/designates_type)
 |  |  |  |
 | --- | --- | --- |
 | **Aliases:** | | type designator |
+| **In Subsets:** | | SpecificationSubset |
+| **See also:** | | [https://linkml.io/linkml/schemas/type-designators.html](https://linkml.io/linkml/schemas/type-designators.html) |
 

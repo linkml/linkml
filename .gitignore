@@ -6,8 +6,8 @@ output/
 docs/_sources
 docs/_modules
 docs/_images
-sphinx/_build/
-sphinx/source/
+docs/_build/
+docs/source/
 
 # Jekyll
 Gemfile.lock

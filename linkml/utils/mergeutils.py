@@ -3,12 +3,16 @@ import logging
 from copy import deepcopy
 from typing import Dict, List, Optional, Union, cast
 
-from linkml_runtime.linkml_model.meta import (ClassDefinition, Element,
-                                              EnumDefinition, SchemaDefinition,
-                                              SlotDefinition,
-                                              SlotDefinitionName,
-                                              TypeDefinition,
-                                              TypeDefinitionName)
+from linkml_runtime.linkml_model.meta import (
+    ClassDefinition,
+    Element,
+    EnumDefinition,
+    SchemaDefinition,
+    SlotDefinition,
+    SlotDefinitionName,
+    TypeDefinition,
+    TypeDefinitionName,
+)
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.namespaces import Namespaces
 from linkml_runtime.utils.yamlutils import extended_str
@@ -45,26 +49,14 @@ def merge_schemas(
             imported_from_uri = imported_from
         else:
             imported_from_uri = namespaces.uri_for(imported_from)
-    merge_dicts(
-        target.classes, mergee.classes, imported_from, imported_from_uri, merge_imports
-    )
-    merge_dicts(
-        target.slots, mergee.slots, imported_from, imported_from_uri, merge_imports
-    )
-    merge_dicts(
-        target.types, mergee.types, imported_from, imported_from_uri, merge_imports
-    )
-    merge_dicts(
-        target.subsets, mergee.subsets, imported_from, imported_from_uri, merge_imports
-    )
-    merge_dicts(
-        target.enums, mergee.enums, imported_from, imported_from_uri, merge_imports
-    )
+    merge_dicts(target.classes, mergee.classes, imported_from, imported_from_uri, merge_imports)
+    merge_dicts(target.slots, mergee.slots, imported_from, imported_from_uri, merge_imports)
+    merge_dicts(target.types, mergee.types, imported_from, imported_from_uri, merge_imports)
+    merge_dicts(target.subsets, mergee.subsets, imported_from, imported_from_uri, merge_imports)
+    merge_dicts(target.enums, mergee.enums, imported_from, imported_from_uri, merge_imports)
 
 
-def merge_namespaces(
-    target: SchemaDefinition, mergee: SchemaDefinition, namespaces
-) -> None:
+def merge_namespaces(target: SchemaDefinition, mergee: SchemaDefinition, namespaces) -> None:
     """
     Add the mergee namespace definitions to target
 
@@ -74,7 +66,6 @@ def merge_namespaces(
     :return:
     """
     for prefix in mergee.prefixes.values():
-
         # Handle local prefixes special: we assume that these happen because we are in different (levels of) folders,
         # and we assume that they reference the same linkml file
         if "://" not in prefix.prefix_reference:
@@ -110,8 +101,7 @@ def merge_namespaces(
         #     target.prefixes[prefix.prefix_prefix] = prefix
         if (
             prefix.prefix_prefix in target.prefixes
-            and target.prefixes[prefix.prefix_prefix].prefix_reference
-            != prefix.prefix_reference
+            and target.prefixes[prefix.prefix_prefix].prefix_reference != prefix.prefix_reference
         ):
             raise ValueError(
                 f"Prefix: {prefix.prefix_prefix} mismatch between {target.name} and {mergee.name}"
@@ -177,11 +167,7 @@ def merge_slots(
     if skip is None:
         skip = []
     for k, v in dataclasses.asdict(source).items():
-        if (
-            k not in skip
-            and v is not None
-            and (not inheriting or getattr(target, k, None) is None)
-        ):
+        if k not in skip and v is not None and (not inheriting or getattr(target, k, None) is None):
             if k in source._inherited_slots or not inheriting:
                 setattr(target, k, deepcopy(v))
             else:
@@ -234,9 +220,7 @@ def merge_classes(
         if slotbase in target.slot_usage:
             slotname = slot_usage_name(slotbase, target)
         if slotbase not in target_base_slots:
-            target.slots.append(slotname) if at_end else target.slots.insert(
-                0, slotname
-            )
+            target.slots.append(slotname) if at_end else target.slots.insert(0, slotname)
             target_base_slots.add(slotbase)
 
 

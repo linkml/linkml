@@ -2,7 +2,7 @@
 # Slot: prefix_reference
 
 
-A URI associated with a given prefix
+The namespace to which a prefix expands to.
 
 URI: [linkml:prefix_reference](https://w3id.org/linkml/prefix_reference)
 
@@ -25,5 +25,7 @@ prefix &#8594;  <sub>1..1</sub> uri
 
 |  |  |  |
 | --- | --- | --- |
-| **In Subsets:** | | basic |
+| **Mappings:** | | sh:namespace |
+| **In Subsets:** | | SpecificationSubset |
+|  | | BasicSubset |
 

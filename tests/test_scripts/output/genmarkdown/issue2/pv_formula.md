@@ -9,7 +9,7 @@ URI: [linkml:pv_formula](https://w3id.org/linkml/pv_formula)
 
 ## Domain and Range
 
-enum_definition &#8594;  <sub>0..1</sub> [pv_formula_options](pv_formula_options.md)
+enum_expression &#8594;  <sub>0..1</sub> [pv_formula_options](pv_formula_options.md)
 
 ## Parents
 
@@ -19,7 +19,9 @@ enum_definition &#8594;  <sub>0..1</sub> [pv_formula_options](pv_formula_options
 
 ## Used by
 
+ * anonymous_enum_expression
  * enum_definition
+ * enum_expression
 
 ## Other properties
 
@@ -27,5 +29,6 @@ enum_definition &#8594;  <sub>0..1</sub> [pv_formula_options](pv_formula_options
 | --- | --- | --- |
 | **Comments:** | | you cannot have BOTH the permissible_values and permissible_value_formula tag |
 |  | | code_set must be supplied for this to be valid |
-| **In Subsets:** | | basic |
+| **In Subsets:** | | SpecificationSubset |
+|  | | BasicSubset |
 

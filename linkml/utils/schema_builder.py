@@ -1,11 +1,16 @@
-from dataclasses import dataclass, field
-from typing import Dict, List, Union, Optional
+from dataclasses import dataclass
+from typing import Any, Dict, List, Optional, Union
 
-from linkml_runtime.linkml_model import (ClassDefinition, EnumDefinition,
-                                         PermissibleValue, Prefix,
-                                         SchemaDefinition, SlotDefinition,
-                                         TypeDefinition)
-from linkml_runtime.utils.formatutils import camelcase, underscore
+from linkml_runtime.linkml_model import (
+    ClassDefinition,
+    EnumDefinition,
+    PermissibleValue,
+    Prefix,
+    SchemaDefinition,
+    SlotDefinition,
+    TypeDefinition,
+)
+from linkml_runtime.utils.formatutils import underscore
 from linkml_runtime.utils.schema_as_dict import schema_as_dict
 
 
@@ -55,8 +60,8 @@ class SchemaBuilder:
     def add_class(
         self,
         cls: Union[ClassDefinition, Dict, str],
-        slots: List[Union[str, SlotDefinition]] = None,
-        slot_usage: Dict[str, SlotDefinition] = None,
+        slots: Union[Dict, List[Union[str, SlotDefinition]]] = None,
+        slot_usage: Union[Dict[str, SlotDefinition], Dict[str, Any], List[SlotDefinition]] = None,
         replace_if_present=False,
         use_attributes=False,
         **kwargs,
@@ -69,6 +74,7 @@ class SchemaBuilder:
         :param slot_usage: slots keyed by slot name
         :param replace_if_present: if True, replace existing class if present
         :param kwargs: additional ClassDefinition properties
+        :param use_attributes: if True, add slots as attributes
         :return: builder
         :raises ValueError: if class already exists and replace_if_present=False
         """
@@ -83,12 +89,18 @@ class SchemaBuilder:
             for s in slots:
                 if isinstance(s, SlotDefinition):
                     cls.attributes[s.name] = s
+                elif isinstance(s, dict):
+                    cls.attributes[s["name"]] = s
+                elif isinstance(s, str):
+                    cls.attributes[s] = SlotDefinition(s)
                 else:
-                    raise ValueError(
-                        f"If use_attributes=True then slots must be SlotDefinitions"
-                    )
+                    raise ValueError("If use_attributes=True then slots must be SlotDefinitions")
         else:
             if slots is not None:
+                if isinstance(slots, dict):
+                    for k, v in slots.items():
+                        cls.slots.append(k)
+                        self.add_slot(SlotDefinition(k, **v), replace_if_present=replace_if_present)
                 for s in slots:
                     cls.slots.append(s.name if isinstance(s, SlotDefinition) else s)
                     if isinstance(s, str) and s in self.schema.slots:
@@ -96,14 +108,28 @@ class SchemaBuilder:
                         continue
                     self.add_slot(s, replace_if_present=replace_if_present)
             if slot_usage:
-                for k, v in slot_usage.items():
-                    cls.slot_usage[k] = v
+                if isinstance(slot_usage, dict):
+                    for k, v in slot_usage.items():
+                        if isinstance(v, dict):
+                            v = SlotDefinition(k, **v)
+                        cls.slot_usage[k] = v
+                elif isinstance(slot_usage, list):
+                    for s in slot_usage:
+                        cls.slot_usage[s.name] = s
+                else:
+                    raise ValueError(
+                        f"slot_usage {slot_usage} must be a dict or list of SlotDefinitions"
+                    )
         for k, v in kwargs.items():
             setattr(cls, k, v)
         return self
 
     def add_slot(
-        self, slot: Union[SlotDefinition, Dict, str], class_name: str = None, replace_if_present=False, **kwargs
+        self,
+        slot: Union[SlotDefinition, Dict, str],
+        class_name: str = None,
+        replace_if_present=False,
+        **kwargs,
     ) -> "SchemaBuilder":
         """
         Adds the slot to the schema.
@@ -170,7 +196,7 @@ class SchemaBuilder:
                     enum_def.permissible_values[pv.text] = pv
         return self
 
-    def add_prefix(self, prefix: str, url: str, replace_if_present = False) -> "SchemaBuilder":
+    def add_prefix(self, prefix: str, url: str, replace_if_present=False) -> "SchemaBuilder":
         """
         Adds a prefix for use with CURIEs
 
@@ -205,12 +231,12 @@ class SchemaBuilder:
         return self
 
     def add_type(
-            self,
-            type: Union[TypeDefinition, Dict, str],
-            typeof: str = None,
-            uri: str = None,
-            replace_if_present=False,
-            **kwargs
+        self,
+        type: Union[TypeDefinition, Dict, str],
+        typeof: str = None,
+        uri: str = None,
+        replace_if_present=False,
+        **kwargs,
     ) -> "SchemaBuilder":
         """
         Adds the type to the schema

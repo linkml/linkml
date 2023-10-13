@@ -1,11 +1,7 @@
-import unittest
+import pytest
 from rdflib import Graph
 
 from linkml.generators.rdfgen import RDFGenerator
-from tests.test_generators.environment import env
-
-SCHEMA = env.input_path('kitchen_sink.yaml')
-RDF_OUTPUT = env.expected_path('kitchen_sink.ttl')
 
 JSONLD = """
 {
@@ -26,30 +22,18 @@ JSONLD = """
   ]
 }"""
 
-class RdfGeneratorTestCase(unittest.TestCase):
 
-    @unittest.skip("TODO")
-    def test_rdfgen(self):
-        """ rdf  """
-        s = RDFGenerator(SCHEMA, mergeimports=False).serialize()
-        with open(RDF_OUTPUT, 'w') as stream:
-            stream.write(s)
-        g = Graph()
-        g.parse(RDF_OUTPUT, format="turtle")
-
-    @unittest.skip("TODO")
-    def test_rdf_type_in_jsonld(self):
-        graph = Graph()
-        graph.parse(data=JSONLD, format="json-ld", prefix=True)
-        ttl_str = graph.serialize(format='turtle').decode()
-        print(ttl_str)
-        graph.parse(data=ttl_str, format="turtle")
+@pytest.mark.skip("TODO")
+def test_rdfgen(kitchen_sink_path):
+    """rdf"""
+    s = RDFGenerator(kitchen_sink_path, mergeimports=False).serialize()
+    g = Graph()
+    g.parse(data=s, format="turtle")
 
 
-
-
-
-
-
-if __name__ == '__main__':
-    unittest.main()
+@pytest.mark.skip("TODO")
+def test_rdf_type_in_jsonld(self):
+    graph = Graph()
+    graph.parse(data=JSONLD, format="json-ld", prefix=True)
+    ttl_str = graph.serialize(format="turtle").decode()
+    graph.parse(data=ttl_str, format="turtle")

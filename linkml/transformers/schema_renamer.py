@@ -1,4 +1,3 @@
-import inspect
 from copy import deepcopy
 from dataclasses import dataclass, field
 from typing import Any, Callable, Dict, Type
@@ -6,11 +5,18 @@ from typing import Any, Callable, Dict, Type
 import click
 from jsonasobj2 import as_dict
 from linkml_runtime import SchemaView
-from linkml_runtime.linkml_model import (ClassDefinition, ClassDefinitionName,
-                                         Element, ElementName, EnumDefinition,
-                                         EnumDefinitionName, SchemaDefinition,
-                                         SlotDefinition, SlotDefinitionName,
-                                         TypeDefinition, TypeDefinitionName)
+from linkml_runtime.linkml_model import (
+    ClassDefinition,
+    ClassDefinitionName,
+    ElementName,
+    EnumDefinition,
+    EnumDefinitionName,
+    SchemaDefinition,
+    SlotDefinition,
+    SlotDefinitionName,
+    TypeDefinition,
+    TypeDefinitionName,
+)
 from linkml_runtime.utils.formatutils import camelcase, lcamelcase, underscore
 from linkml_runtime.utils.schema_as_dict import schema_as_yaml_dump
 from linkml_runtime.utils.yamlutils import YAMLRoot
@@ -92,9 +98,7 @@ class SchemaRenamer:
             return new_element
         else:
             try:
-                element_vars = {
-                    k: v for k, v in vars(element).items() if not k.startswith("_")
-                }
+                element_vars = {k: v for k, v in vars(element).items() if not k.startswith("_")}
                 if len(element_vars) == 0:
                     return element
                 else:
@@ -141,7 +145,7 @@ def main(schema, output, class_names, slot_names):
     if slot_names:
         rename_map[SlotDefinition] = n2f(slot_names)
     if not rename_map.keys():
-        raise ValueError(f"No transformations specified")
+        raise ValueError("No transformations specified")
     renamer = SchemaRenamer(rename_function_map=rename_map)
     rschema = renamer.rename_elements(sv.schema)
     ystr = schema_as_yaml_dump(rschema)

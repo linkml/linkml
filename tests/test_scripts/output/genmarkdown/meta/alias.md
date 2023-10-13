@@ -26,4 +26,7 @@ URI: [linkml:alias](https://w3id.org/linkml/alias)
 |  |  |  |
 | --- | --- | --- |
 | **Mappings:** | | skos:prefLabel |
+| **Comments:** | | an example of alias is used within this metamodel, slot_definitions is aliases as slots |
+|  | | not to be confused with aliases, which indicates a set of terms to be used for search purposes. |
+| **In Subsets:** | | SpecificationSubset |
 

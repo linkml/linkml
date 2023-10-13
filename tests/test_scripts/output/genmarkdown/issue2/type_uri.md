@@ -27,5 +27,6 @@ type_definition &#8594;  <sub>0..1</sub> uriorcurie
 | --- | --- | --- |
 | **Comments:** | | uri is typically drawn from the set of URI's defined in OWL (https://www.w3.org/TR/2012/REC-owl2-syntax-20121211/#Datatype_Maps) |
 |  | | every root type must have a type uri |
-| **In Subsets:** | | basic |
+| **In Subsets:** | | SpecificationSubset |
+|  | | BasicSubset |
 

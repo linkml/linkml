@@ -1,16 +1,17 @@
 BASE <https://w3id.org/linkml/>
-PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX owl: <http://www.w3.org/2002/07/owl#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 PREFIX skosxl: <http://www.w3.org/2008/05/skos-xl#>
 PREFIX pav: <http://purl.org/pav/>
 PREFIX oslc: <http://open-services.net/ns/core#>
-PREFIX schema1: <http://schema.org/>
+PREFIX schema: <http://schema.org/>
 PREFIX bibo: <http://purl.org/ontology/bibo/>
-PREFIX sh1: <https://w3id.org/shacl/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX qudt: <http://qudt.org/schema/qudt/>
+PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
 
 
@@ -26,13 +27,17 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
 
 <Decimal> xsd:decimal
 
-<Time> xsd:dateTime
+<Time> xsd:time
 
 <Date> xsd:date
 
 <Datetime> xsd:dateTime
 
+<DateOrDatetime> <DateOrDatetime>
+
 <Uriorcurie> IRI
+
+<Curie> xsd:string
 
 <Uri> IRI
 
@@ -41,6 +46,12 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
 <Objectidentifier> IRI
 
 <Nodeidentifier> NONLITERAL
+
+<Jsonpointer> xsd:string
+
+<Jsonpath> xsd:string
+
+<Sparqlpath> xsd:string
 
 <AltDescription> CLOSED {
     (  $<AltDescription_tes> (  <source> @<String> ;
@@ -82,6 +93,25 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
     )
 }
 
+<AnonymousEnumExpression> CLOSED {
+    (  $<AnonymousEnumExpression_tes> (  &<EnumExpression_tes> ;
+          rdf:type [ <EnumExpression> ] ? ;
+          <code_set> @<Uriorcurie> ? ;
+          <code_set_tag> @<String> ? ;
+          <code_set_version> @<String> ? ;
+          <pv_formula> @<PvFormulaOptions> ? ;
+          <permissible_values> @<PermissibleValue> * ;
+          <include> @<AnonymousEnumExpression> * ;
+          <minus> @<AnonymousEnumExpression> * ;
+          <inherits> @<EnumDefinition> * ;
+          <reachable_from> @<ReachabilityQuery> ? ;
+          <matches> @<MatchQuery> ? ;
+          <concepts> @<Uriorcurie> *
+       ) ;
+       rdf:type [ <AnonymousEnumExpression> ] ?
+    )
+}
+
 <AnonymousExpression>  (
     @<AnonymousClassExpression> OR @<AnonymousSlotExpression>
 )
@@ -109,7 +139,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           skos:inScheme @<Uri> ? ;
           <imported_from> @<String> ? ;
           dcterms:source @<Uriorcurie> ? ;
-          schema1:inLanguage @<String> ? ;
+          schema:inLanguage @<String> ? ;
           rdfs:seeAlso @<Uriorcurie> * ;
           <deprecated_element_has_exact_replacement> @<Uriorcurie> ? ;
           <deprecated_element_has_possible_replacement> @<Uriorcurie> ? ;
@@ -121,7 +151,12 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           skos:relatedMatch @<Uriorcurie> * ;
           skos:narrowMatch @<Uriorcurie> * ;
           skos:broadMatch @<Uriorcurie> * ;
-          sh1:order @<Integer> ?
+          pav:createdBy @<Uriorcurie> ? ;
+          pav:createdOn @<Datetime> ? ;
+          pav:lastUpdatedOn @<Datetime> ? ;
+          oslc:modifiedBy @<Uriorcurie> ? ;
+          bibo:status @<Uriorcurie> ? ;
+          sh:order @<Integer> ?
        ) ;
        rdf:type [ <AnonymousExpression> ] ?
     )
@@ -134,6 +169,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           rdf:type [ <SlotExpression> ] ? ;
           <range> @<Element> ? ;
           <range_expression> @<AnonymousClassExpression> ? ;
+          <enum_range> @<EnumExpression> ? ;
           <required> @<Boolean> ? ;
           <recommended> @<Boolean> ? ;
           <inlined> @<Boolean> ? ;
@@ -142,6 +178,9 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           <maximum_value> @<Integer> ? ;
           <pattern> @<String> ? ;
           <structured_pattern> @<PatternExpression> ? ;
+          qudt:unit @<UnitOfMeasure> ? ;
+          <implicit_prefix> @<String> ? ;
+          <value_presence> @<PresenceEnum> ? ;
           <equals_string> @<String> ? ;
           <equals_string_in> @<String> * ;
           <equals_number> @<Integer> ? ;
@@ -149,7 +188,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           <minimum_cardinality> @<Integer> ? ;
           <maximum_cardinality> @<Integer> ? ;
           <has_member> @<AnonymousSlotExpression> ? ;
-          <all_members> @<SlotDefinition> * ;
+          <all_members> @<AnonymousSlotExpression> ? ;
           <none_of> @<AnonymousSlotExpression> * ;
           <exactly_one_of> @<AnonymousSlotExpression> * ;
           <any_of> @<AnonymousSlotExpression> * ;
@@ -164,6 +203,8 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           rdf:type [ <TypeExpression> ] ? ;
           <pattern> @<String> ? ;
           <structured_pattern> @<PatternExpression> ? ;
+          qudt:unit @<UnitOfMeasure> ? ;
+          <implicit_prefix> @<String> ? ;
           <equals_string> @<String> ? ;
           <equals_string_in> @<String> * ;
           <equals_number> @<Integer> ? ;
@@ -178,6 +219,18 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
     )
 }
 
+<Anything> CLOSED {
+    (  $<Anything_tes> rdf:type . * ;
+       rdf:type [ <Any> ] ?
+    )
+}
+
+<AnyValue> CLOSED {
+    (  $<AnyValue_tes> rdf:type . * ;
+       rdf:type [ <Any> ] ?
+    )
+}
+
 <ClassDefinition> CLOSED {
     (  $<ClassDefinition_tes> (  &<Definition_tes> ;
           rdf:type [ <Definition> ] ? ;
@@ -187,12 +240,12 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           <slot_usage> @<SlotDefinition> * ;
           <attributes> @<SlotDefinition> * ;
           <class_uri> @<Uriorcurie> ? ;
-          rdfs:subClassOf @<Uriorcurie> ? ;
+          <subclass_of> @<Uriorcurie> ? ;
           <union_of> @<ClassDefinition> * ;
           <defining_slots> @<SlotDefinition> * ;
           <tree_root> @<Boolean> ? ;
           <unique_keys> @<UniqueKey> * ;
-          sh1:rule @<ClassRule> * ;
+          sh:rule @<ClassRule> * ;
           <classification_rules> @<AnonymousClassExpression> * ;
           <slot_names_unique> @<Boolean> ? ;
           <represents_relationship> @<Boolean> ? ;
@@ -238,13 +291,13 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           rdf:type [ <Annotatable> ] ? ;
           &<CommonMetadata_tes> ;
           rdf:type [ <CommonMetadata> ] ? ;
-          sh1:condition @<AnonymousClassExpression> ? ;
+          sh:condition @<AnonymousClassExpression> ? ;
           <postconditions> @<AnonymousClassExpression> ? ;
           <elseconditions> @<AnonymousClassExpression> ? ;
           <bidirectional> @<Boolean> ? ;
           <open_world> @<Boolean> ? ;
-          sh1:order @<Integer> ? ;
-          sh1:deactivated @<Boolean> ? ;
+          sh:order @<Integer> ? ;
+          sh:deactivated @<Boolean> ? ;
           <extensions> @<Extension> * ;
           <annotations> @<Annotation> * ;
           skos:definition @<String> ? ;
@@ -259,7 +312,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           skos:inScheme @<Uri> ? ;
           <imported_from> @<String> ? ;
           dcterms:source @<Uriorcurie> ? ;
-          schema1:inLanguage @<String> ? ;
+          schema:inLanguage @<String> ? ;
           rdfs:seeAlso @<Uriorcurie> * ;
           <deprecated_element_has_exact_replacement> @<Uriorcurie> ? ;
           <deprecated_element_has_possible_replacement> @<Uriorcurie> ? ;
@@ -270,7 +323,12 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           skos:closeMatch @<Uriorcurie> * ;
           skos:relatedMatch @<Uriorcurie> * ;
           skos:narrowMatch @<Uriorcurie> * ;
-          skos:broadMatch @<Uriorcurie> *
+          skos:broadMatch @<Uriorcurie> * ;
+          pav:createdBy @<Uriorcurie> ? ;
+          pav:createdOn @<Datetime> ? ;
+          pav:lastUpdatedOn @<Datetime> ? ;
+          oslc:modifiedBy @<Uriorcurie> ? ;
+          bibo:status @<Uriorcurie> ?
        ) ;
        rdf:type [ <ClassRule> ] ?
     )
@@ -289,7 +347,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           skos:inScheme @<Uri> ? ;
           <imported_from> @<String> ? ;
           dcterms:source @<Uriorcurie> ? ;
-          schema1:inLanguage @<String> ? ;
+          schema:inLanguage @<String> ? ;
           rdfs:seeAlso @<Uriorcurie> * ;
           <deprecated_element_has_exact_replacement> @<Uriorcurie> ? ;
           <deprecated_element_has_possible_replacement> @<Uriorcurie> ? ;
@@ -301,14 +359,19 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           skos:relatedMatch @<Uriorcurie> * ;
           skos:narrowMatch @<Uriorcurie> * ;
           skos:broadMatch @<Uriorcurie> * ;
-          sh1:order @<Integer> ?
+          pav:createdBy @<Uriorcurie> ? ;
+          pav:createdOn @<Datetime> ? ;
+          pav:lastUpdatedOn @<Datetime> ? ;
+          oslc:modifiedBy @<Uriorcurie> ? ;
+          bibo:status @<Uriorcurie> ? ;
+          sh:order @<Integer> ?
        ) ;
        rdf:type [ <CommonMetadata> ] ?
     )
 }
 
 <Definition>  (
-    @<ClassDefinition> OR @<SlotDefinition>
+    @<ClassDefinition> OR @<EnumDefinition> OR @<SlotDefinition>
 )
 
 <Definition_struct> {
@@ -319,11 +382,6 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           <mixins> @<Definition> * ;
           <apply_to> @<Definition> * ;
           <values_from> @<Uriorcurie> * ;
-          pav:createdBy @<Uriorcurie> ? ;
-          pav:createdOn @<Datetime> ? ;
-          pav:lastUpdatedOn @<Datetime> ? ;
-          oslc:modifiedBy @<Uriorcurie> ? ;
-          bibo:status @<Uriorcurie> ? ;
           <string_serialization> @<String> ?
        ) ;
        rdf:type [ <Definition> ]
@@ -331,7 +389,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
 }
 
 <Element>  (
-    @<Definition> OR @<EnumDefinition> OR @<SchemaDefinition> OR @<SubsetDefinition> OR @<TypeDefinition>
+    @<Definition> OR @<SchemaDefinition> OR @<SubsetDefinition> OR @<TypeDefinition>
 )
 
 <Element_struct> {
@@ -345,6 +403,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           <definition_uri> @<Uriorcurie> ? ;
           <local_names> @<LocalName> * ;
           dcterms:conformsTo @<String> ? ;
+          <implements> @<Uriorcurie> * ;
           <extensions> @<Extension> * ;
           <annotations> @<Annotation> * ;
           skos:definition @<String> ? ;
@@ -359,7 +418,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           skos:inScheme @<Uri> ? ;
           <imported_from> @<String> ? ;
           dcterms:source @<Uriorcurie> ? ;
-          schema1:inLanguage @<String> ? ;
+          schema:inLanguage @<String> ? ;
           rdfs:seeAlso @<Uriorcurie> * ;
           <deprecated_element_has_exact_replacement> @<Uriorcurie> ? ;
           <deprecated_element_has_possible_replacement> @<Uriorcurie> ? ;
@@ -371,35 +430,69 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           skos:relatedMatch @<Uriorcurie> * ;
           skos:narrowMatch @<Uriorcurie> * ;
           skos:broadMatch @<Uriorcurie> * ;
-          sh1:order @<Integer> ?
+          pav:createdBy @<Uriorcurie> ? ;
+          pav:createdOn @<Datetime> ? ;
+          pav:lastUpdatedOn @<Datetime> ? ;
+          oslc:modifiedBy @<Uriorcurie> ? ;
+          bibo:status @<Uriorcurie> ? ;
+          sh:order @<Integer> ?
        ) ;
        rdf:type [ <Element> ]
     )
 }
 
 <EnumDefinition> CLOSED {
-    (  $<EnumDefinition_tes> (  &<Element_tes> ;
-          rdf:type [ <Element> ] ? ;
+    (  $<EnumDefinition_tes> (  &<Definition_tes> ;
+          rdf:type [ <Definition> ] ? ;
+          &<EnumExpression_tes> ;
+          rdf:type [ <EnumExpression> ] ? ;
+          <enum_uri> @<Uriorcurie> ? ;
           <code_set> @<Uriorcurie> ? ;
           <code_set_tag> @<String> ? ;
           <code_set_version> @<String> ? ;
           <pv_formula> @<PvFormulaOptions> ? ;
-          <permissible_values> @<PermissibleValue> *
+          <permissible_values> @<PermissibleValue> * ;
+          <include> @<AnonymousEnumExpression> * ;
+          <minus> @<AnonymousEnumExpression> * ;
+          <inherits> @<EnumDefinition> * ;
+          <reachable_from> @<ReachabilityQuery> ? ;
+          <matches> @<MatchQuery> ? ;
+          <concepts> @<Uriorcurie> *
        ) ;
        rdf:type [ <EnumDefinition> ]
     )
 }
 
+<EnumExpression> CLOSED {
+    (  $<EnumExpression_tes> (  &<Expression_tes> ;
+          rdf:type [ <Expression> ] ? ;
+          <code_set> @<Uriorcurie> ? ;
+          <code_set_tag> @<String> ? ;
+          <code_set_version> @<String> ? ;
+          <pv_formula> @<PvFormulaOptions> ? ;
+          <permissible_values> @<PermissibleValue> * ;
+          <include> @<AnonymousEnumExpression> * ;
+          <minus> @<AnonymousEnumExpression> * ;
+          <inherits> @<EnumDefinition> * ;
+          <reachable_from> @<ReachabilityQuery> ? ;
+          <matches> @<MatchQuery> ? ;
+          <concepts> @<Uriorcurie> *
+       ) ;
+       rdf:type [ <EnumExpression> ] ?
+    )
+}
+
 <Example> CLOSED {
     (  $<Example_tes> (  skos:example @<String> ? ;
-          <description> @<String> ?
+          <description> @<String> ? ;
+          <object> @<Anything> ?
        ) ;
        rdf:type [ <Example> ] ?
     )
 }
 
 <Expression>  (
-    @<SlotExpression> OR @<TypeExpression>
+    @<EnumExpression> OR @<SlotExpression> OR @<TypeExpression>
 )
 
 <Expression_struct> {
@@ -417,7 +510,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
 <Extension>  (
     CLOSED {
        (  $<Extension_tes> (  <tag> @<Uriorcurie> ;
-             <value> @<String> ;
+             <value> @<AnyValue> ;
              <extensions> @<Extension> *
           ) ;
           rdf:type [ <Extension> ]
@@ -449,7 +542,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           skos:inScheme @<Uri> ? ;
           <imported_from> @<String> ? ;
           dcterms:source @<Uriorcurie> ? ;
-          schema1:inLanguage @<String> ? ;
+          schema:inLanguage @<String> ? ;
           rdfs:seeAlso @<Uriorcurie> * ;
           <deprecated_element_has_exact_replacement> @<Uriorcurie> ? ;
           <deprecated_element_has_possible_replacement> @<Uriorcurie> ? ;
@@ -461,7 +554,12 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           skos:relatedMatch @<Uriorcurie> * ;
           skos:narrowMatch @<Uriorcurie> * ;
           skos:broadMatch @<Uriorcurie> * ;
-          sh1:order @<Integer> ?
+          pav:createdBy @<Uriorcurie> ? ;
+          pav:createdOn @<Datetime> ? ;
+          pav:lastUpdatedOn @<Datetime> ? ;
+          oslc:modifiedBy @<Uriorcurie> ? ;
+          bibo:status @<Uriorcurie> ? ;
+          sh:order @<Integer> ?
        ) ;
        rdf:type [ <ImportExpression> ] ?
     )
@@ -472,6 +570,14 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           skos:altLabel @<String>
        ) ;
        rdf:type [ <LocalName> ]
+    )
+}
+
+<MatchQuery> CLOSED {
+    (  $<MatchQuery_tes> (  <identifier_pattern> @<String> ? ;
+          <source_ontology> @<Uriorcurie> ?
+       ) ;
+       rdf:type [ <MatchQuery> ] ?
     )
 }
 
@@ -506,7 +612,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           skos:inScheme @<Uri> ? ;
           <imported_from> @<String> ? ;
           dcterms:source @<Uriorcurie> ? ;
-          schema1:inLanguage @<String> ? ;
+          schema:inLanguage @<String> ? ;
           rdfs:seeAlso @<Uriorcurie> * ;
           <deprecated_element_has_exact_replacement> @<Uriorcurie> ? ;
           <deprecated_element_has_possible_replacement> @<Uriorcurie> ? ;
@@ -518,7 +624,12 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           skos:relatedMatch @<Uriorcurie> * ;
           skos:narrowMatch @<Uriorcurie> * ;
           skos:broadMatch @<Uriorcurie> * ;
-          sh1:order @<Integer> ?
+          pav:createdBy @<Uriorcurie> ? ;
+          pav:createdOn @<Datetime> ? ;
+          pav:lastUpdatedOn @<Datetime> ? ;
+          oslc:modifiedBy @<Uriorcurie> ? ;
+          bibo:status @<Uriorcurie> ? ;
+          sh:order @<Integer> ?
        ) ;
        rdf:type [ <PathExpression> ] ?
     )
@@ -548,7 +659,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           skos:inScheme @<Uri> ? ;
           <imported_from> @<String> ? ;
           dcterms:source @<Uriorcurie> ? ;
-          schema1:inLanguage @<String> ? ;
+          schema:inLanguage @<String> ? ;
           rdfs:seeAlso @<Uriorcurie> * ;
           <deprecated_element_has_exact_replacement> @<Uriorcurie> ? ;
           <deprecated_element_has_possible_replacement> @<Uriorcurie> ? ;
@@ -560,7 +671,12 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           skos:relatedMatch @<Uriorcurie> * ;
           skos:narrowMatch @<Uriorcurie> * ;
           skos:broadMatch @<Uriorcurie> * ;
-          sh1:order @<Integer> ?
+          pav:createdBy @<Uriorcurie> ? ;
+          pav:createdOn @<Datetime> ? ;
+          pav:lastUpdatedOn @<Datetime> ? ;
+          oslc:modifiedBy @<Uriorcurie> ? ;
+          bibo:status @<Uriorcurie> ? ;
+          sh:order @<Integer> ?
        ) ;
        rdf:type [ <PatternExpression> ] ?
     )
@@ -575,6 +691,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           rdf:type [ <CommonMetadata> ] ? ;
           skos:definition @<String> ? ;
           <meaning> @<Uriorcurie> ? ;
+          qudt:unit @<UnitOfMeasure> ? ;
           <mixins> @<PermissibleValue> * ;
           <extensions> @<Extension> * ;
           <annotations> @<Annotation> * ;
@@ -589,7 +706,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           skos:inScheme @<Uri> ? ;
           <imported_from> @<String> ? ;
           dcterms:source @<Uriorcurie> ? ;
-          schema1:inLanguage @<String> ? ;
+          schema:inLanguage @<String> ? ;
           rdfs:seeAlso @<Uriorcurie> * ;
           <deprecated_element_has_exact_replacement> @<Uriorcurie> ? ;
           <deprecated_element_has_possible_replacement> @<Uriorcurie> ? ;
@@ -601,17 +718,34 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           skos:relatedMatch @<Uriorcurie> * ;
           skos:narrowMatch @<Uriorcurie> * ;
           skos:broadMatch @<Uriorcurie> * ;
-          sh1:order @<Integer> ?
+          pav:createdBy @<Uriorcurie> ? ;
+          pav:createdOn @<Datetime> ? ;
+          pav:lastUpdatedOn @<Datetime> ? ;
+          oslc:modifiedBy @<Uriorcurie> ? ;
+          bibo:status @<Uriorcurie> ? ;
+          sh:order @<Integer> ?
        ) ;
        rdf:type [ <PermissibleValue> ]
     )
 }
 
 <Prefix> CLOSED {
-    (  $<Prefix_tes> (  <prefix_prefix> @<Ncname> ;
-          <prefix_reference> @<Uri>
+    (  $<Prefix_tes> (  sh:prefix @<Ncname> ;
+          sh:namespace @<Uri>
        ) ;
        rdf:type [ <Prefix> ]
+    )
+}
+
+<ReachabilityQuery> CLOSED {
+    (  $<ReachabilityQuery_tes> (  <source_ontology> @<Uriorcurie> ? ;
+          <source_nodes> @<Uriorcurie> * ;
+          <relationship_types> @<Uriorcurie> * ;
+          <is_direct> @<Boolean> ? ;
+          <include_self> @<Boolean> ? ;
+          <traverse_up> @<Boolean> ?
+       ) ;
+       rdf:type [ <ReachabilityQuery> ] ?
     )
 }
 
@@ -622,7 +756,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           pav:version @<String> ? ;
           <imports> @<Uriorcurie> * ;
           dcterms:license @<String> ? ;
-          <prefixes> @<Prefix> * ;
+          sh:declare @<Prefix> * ;
           <emit_prefixes> @<Ncname> * ;
           <default_curi_maps> @<String> * ;
           <default_prefix> @<String> ? ;
@@ -640,7 +774,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           <slot_names_unique> @<Boolean> ? ;
           <settings> @<Setting> * ;
           dcterms:subject @<Uriorcurie> * ;
-          schema1:keywords @<String> *
+          schema:keywords @<String> *
        ) ;
        rdf:type [ <SchemaDefinition> ]
     )
@@ -659,7 +793,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           rdf:type [ <Definition> ] ? ;
           &<SlotExpression_tes> ;
           rdf:type [ <SlotExpression> ] ? ;
-          skos:altLabel @<String> ? ;
+          <singular_name> @<String> ? ;
           <domain> @<ClassDefinition> ? ;
           <slot_uri> @<Uriorcurie> ? ;
           <multivalued> @<Boolean> ? ;
@@ -690,15 +824,17 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           <is_usage_slot> @<Boolean> ? ;
           <usage_slot_name> @<String> ? ;
           <relational_role> @<RelationalRoleEnum> ? ;
-          sh1:group @<SlotDefinition> ? ;
+          sh:group @<SlotDefinition> ? ;
           <is_grouping_slot> @<Boolean> ? ;
           <path_rule> @<PathExpression> ? ;
           <disjoint_with> @<SlotDefinition> * ;
           <children_are_mutually_disjoint> @<Boolean> ? ;
+          <union_of> @<SlotDefinition> * ;
           <mixins> @<SlotDefinition> * ;
           <apply_to> @<SlotDefinition> * ;
           <range> @<Element> ? ;
           <range_expression> @<AnonymousClassExpression> ? ;
+          <enum_range> @<EnumExpression> ? ;
           <required> @<Boolean> ? ;
           <recommended> @<Boolean> ? ;
           <inlined> @<Boolean> ? ;
@@ -707,6 +843,9 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           <maximum_value> @<Integer> ? ;
           <pattern> @<String> ? ;
           <structured_pattern> @<PatternExpression> ? ;
+          qudt:unit @<UnitOfMeasure> ? ;
+          <implicit_prefix> @<String> ? ;
+          <value_presence> @<PresenceEnum> ? ;
           <equals_string> @<String> ? ;
           <equals_string_in> @<String> * ;
           <equals_number> @<Integer> ? ;
@@ -714,7 +853,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           <minimum_cardinality> @<Integer> ? ;
           <maximum_cardinality> @<Integer> ? ;
           <has_member> @<AnonymousSlotExpression> ? ;
-          <all_members> @<SlotDefinition> * ;
+          <all_members> @<AnonymousSlotExpression> ? ;
           <none_of> @<AnonymousSlotExpression> * ;
           <exactly_one_of> @<AnonymousSlotExpression> * ;
           <any_of> @<AnonymousSlotExpression> * ;
@@ -729,6 +868,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           rdf:type [ <Expression> ] ? ;
           <range> @<Element> ? ;
           <range_expression> @<AnonymousClassExpression> ? ;
+          <enum_range> @<EnumExpression> ? ;
           <required> @<Boolean> ? ;
           <recommended> @<Boolean> ? ;
           <inlined> @<Boolean> ? ;
@@ -737,6 +877,9 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           <maximum_value> @<Integer> ? ;
           <pattern> @<String> ? ;
           <structured_pattern> @<PatternExpression> ? ;
+          qudt:unit @<UnitOfMeasure> ? ;
+          <implicit_prefix> @<String> ? ;
+          <value_presence> @<PresenceEnum> ? ;
           <equals_string> @<String> ? ;
           <equals_string_in> @<String> * ;
           <equals_number> @<Integer> ? ;
@@ -744,7 +887,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           <minimum_cardinality> @<Integer> ? ;
           <maximum_cardinality> @<Integer> ? ;
           <has_member> @<AnonymousSlotExpression> ? ;
-          <all_members> @<SlotDefinition> * ;
+          <all_members> @<AnonymousSlotExpression> ? ;
           <none_of> @<AnonymousSlotExpression> * ;
           <exactly_one_of> @<AnonymousSlotExpression> * ;
           <any_of> @<AnonymousSlotExpression> * ;
@@ -780,7 +923,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           skos:inScheme @<Uri> ? ;
           <imported_from> @<String> ? ;
           dcterms:source @<Uriorcurie> ? ;
-          schema1:inLanguage @<String> ? ;
+          schema:inLanguage @<String> ? ;
           rdfs:seeAlso @<Uriorcurie> * ;
           <deprecated_element_has_exact_replacement> @<Uriorcurie> ? ;
           <deprecated_element_has_possible_replacement> @<Uriorcurie> ? ;
@@ -792,7 +935,12 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           skos:relatedMatch @<Uriorcurie> * ;
           skos:narrowMatch @<Uriorcurie> * ;
           skos:broadMatch @<Uriorcurie> * ;
-          sh1:order @<Integer> ?
+          pav:createdBy @<Uriorcurie> ? ;
+          pav:createdOn @<Datetime> ? ;
+          pav:lastUpdatedOn @<Datetime> ? ;
+          oslc:modifiedBy @<Uriorcurie> ? ;
+          bibo:status @<Uriorcurie> ? ;
+          sh:order @<Integer> ?
        ) ;
        rdf:type [ skosxl:Label ] ?
     )
@@ -815,8 +963,11 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           <base> @<String> ? ;
           <uri> @<Uriorcurie> ? ;
           <repr> @<String> ? ;
+          <union_of> @<TypeDefinition> * ;
           <pattern> @<String> ? ;
           <structured_pattern> @<PatternExpression> ? ;
+          qudt:unit @<UnitOfMeasure> ? ;
+          <implicit_prefix> @<String> ? ;
           <equals_string> @<String> ? ;
           <equals_string_in> @<String> * ;
           <equals_number> @<Integer> ? ;
@@ -836,6 +987,8 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           rdf:type [ <Expression> ] ? ;
           <pattern> @<String> ? ;
           <structured_pattern> @<PatternExpression> ? ;
+          qudt:unit @<UnitOfMeasure> ? ;
+          <implicit_prefix> @<String> ? ;
           <equals_string> @<String> ? ;
           <equals_string_in> @<String> * ;
           <equals_number> @<Integer> ? ;
@@ -859,6 +1012,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           rdf:type [ <CommonMetadata> ] ? ;
           <unique_key_name> @<String> ;
           <unique_key_slots> @<SlotDefinition> + ;
+          <consider_nulls_inequal> @<Boolean> ? ;
           <extensions> @<Extension> * ;
           <annotations> @<Annotation> * ;
           skos:definition @<String> ? ;
@@ -873,7 +1027,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           skos:inScheme @<Uri> ? ;
           <imported_from> @<String> ? ;
           dcterms:source @<Uriorcurie> ? ;
-          schema1:inLanguage @<String> ? ;
+          schema:inLanguage @<String> ? ;
           rdfs:seeAlso @<Uriorcurie> * ;
           <deprecated_element_has_exact_replacement> @<Uriorcurie> ? ;
           <deprecated_element_has_possible_replacement> @<Uriorcurie> ? ;
@@ -885,9 +1039,28 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           skos:relatedMatch @<Uriorcurie> * ;
           skos:narrowMatch @<Uriorcurie> * ;
           skos:broadMatch @<Uriorcurie> * ;
-          sh1:order @<Integer> ?
+          pav:createdBy @<Uriorcurie> ? ;
+          pav:createdOn @<Datetime> ? ;
+          pav:lastUpdatedOn @<Datetime> ? ;
+          oslc:modifiedBy @<Uriorcurie> ? ;
+          bibo:status @<Uriorcurie> ? ;
+          sh:order @<Integer> ?
        ) ;
        rdf:type [ <UniqueKey> ]
+    )
+}
+
+<UnitOfMeasure> CLOSED {
+    (  $<UnitOfMeasure_tes> (  qudt:symbol @<String> ? ;
+          qudt:abbreviation @<String> ? ;
+          rdfs:label @<String> ? ;
+          skos:exactMatch @<Uriorcurie> * ;
+          qudt:ucumCode @<String> ? ;
+          <derivation> @<String> ? ;
+          qudt:hasQuantityKind @<Uriorcurie> ? ;
+          qudt:iec61360Code @<String> ?
+       ) ;
+       rdf:type [ qudt:Unit ] ?
     )
 }
 

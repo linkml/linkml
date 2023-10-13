@@ -1,8 +1,7 @@
-import unittest
-
-from linkml.generators.pydanticgen import PydanticGenerator
+import pytest
 from linkml_runtime.utils.compile_python import compile_python
 
+from linkml.generators.pydanticgen import PydanticGenerator
 from linkml.generators.pythongen import PythonGenerator
 
 model_txt = """
@@ -75,83 +74,76 @@ classes:
 """
 
 
-class IfAbsentTestCase(unittest.TestCase):
-    def test_ifabsent(self):
-        """
-        Tests pythongenerator with ifabsent_functions.
+def test_ifabsent():
+    """
+    Tests pythongenerator with ifabsent_functions.
 
-        See: https://github.com/linkml/linkml/issues/1333
-        """
-        # print(PythonGenerator(model_txt).serialize())
-        m = compile_python(PythonGenerator(model_txt).serialize())
-        sample = m.HighClass()
-        self.assertEqual(sample.bool_true_slot, True)
-        self.assertEqual(sample.bool_false_slot, False)
-        print("class_curie_slot fails")
-        # self.assertEqual(sample.class_curie_slot, m.HighClass.class_class_curie)
-        self.assertIsNone(sample.class_curie_slot)
-        print("class_uri_slot fails")
-        # self.assertEqual(sample.class_uri_slot, m.HighClass.class_class_uri)
-        self.assertIsNone(sample.class_uri_slot)
-        print(m.HighClass.class_class_uri)
-        print("default_ns fails")
-        # self.assertEqual(sample.default_ns_slot, 'ex')
-        self.assertEqual(sample.default_ns_slot, None)
-        print("default_range fails")
-        # self.assertEqual(sample.default_range_slot, 'string')
-        self.assertIsNone(sample.default_range_slot)
-        print("int(0) fails")
-        self.assertEqual(sample.int_0_slot, 0)
-        self.assertEqual(sample.int_42_slot, 42)
-        self.assertEqual(sample.neg_int_slot, -117243)
-        print("slot_curie fails")
-        # self.assertEqual(sample.slot_curie_slot, m.slots.slot_curie_slot.curie)
-        self.assertIsNone(sample.slot_curie_slot)
-        print("slot_uri fails")
-        # self.assertEqual(sample.slot_uri_slot, m.slots.slot_uri_slot.uri)
-        self.assertIsNone(sample.slot_uri_slot)
-        self.assertIsNone(sample.slot_curie_slot)
-        self.assertEqual(sample.string_slot, "s1")
-        self.assertEqual(sample.mt_string_slot, "")
+    See: https://github.com/linkml/linkml/issues/1333
+    """
+    m = compile_python(PythonGenerator(model_txt).serialize())
+    sample = m.HighClass()
+    assert sample.bool_true_slot is True
+    assert sample.bool_false_slot is False
+    # TODO: class_curie_slot fails
+    # assert sample.class_curie_slot, m.HighClass.class_class_curie)
+    assert sample.class_curie_slot is None
+    # TODO: class_uri_slot fails
+    # assert sample.class_uri_slot, m.HighClass.class_class_uri)
+    assert sample.class_uri_slot is None
 
-    @unittest.skip("TODO: https://github.com/linkml/linkml/issues/1334")
-    def test_ifabsent_pydantic(self):
-        """
-        Tests pydantic generator with ifabsent_functions.
-
-        See: https://github.com/linkml/linkml/issues/1334
-        """
-        print(PydanticGenerator(model_txt).serialize())
-        m = compile_python(PydanticGenerator(model_txt).serialize())
-        sample = m.HighClass()
-        self.assertEqual(sample.bool_true_slot, True)
-        self.assertEqual(sample.bool_false_slot, False)
-        print("class_curie_slot fails")
-        # self.assertEqual(sample.class_curie_slot, m.HighClass.class_class_curie)
-        self.assertIsNone(sample.class_curie_slot)
-        print("class_uri_slot fails")
-        # self.assertEqual(sample.class_uri_slot, m.HighClass.class_class_uri)
-        self.assertIsNone(sample.class_uri_slot)
-        print(m.HighClass.class_class_uri)
-        print("default_ns fails")
-        self.assertEqual(sample.default_ns_slot, 'ex')
-        print("default_range fails")
-        # self.assertEqual(sample.default_range_slot, 'string')
-        self.assertIsNone(sample.default_range_slot)
-        print("int(0) fails")
-        self.assertEqual(sample.int_0_slot, 0)
-        self.assertEqual(sample.int_42_slot, 42)
-        self.assertEqual(sample.neg_int_slot, -117243)
-        print("slot_curie fails")
-        # self.assertEqual(sample.slot_curie_slot, m.slots.slot_curie_slot.curie)
-        self.assertIsNone(sample.slot_curie_slot)
-        print("slot_uri fails")
-        # self.assertEqual(sample.slot_uri_slot, m.slots.slot_uri_slot.uri)
-        self.assertIsNone(sample.slot_uri_slot)
-        self.assertIsNone(sample.slot_curie_slot)
-        self.assertEqual(sample.string_slot, "s1")
-        self.assertEqual(sample.mt_string_slot, "")
+    # TODO: default_ns fails")
+    # assert sample.default_ns_slot, 'ex')
+    assert sample.default_ns_slot is None
+    # TODO: default_range fails
+    # assert sample.default_range_slot, 'string')
+    assert sample.default_range_slot is None
+    # TODO: int(0) fails
+    assert sample.int_0_slot == 0
+    assert sample.int_42_slot == 42
+    assert sample.neg_int_slot == -117243
+    # TODO: slot_curie fails
+    # assert sample.slot_curie_slot, m.slots.slot_curie_slot.curie)
+    assert sample.slot_curie_slot is None
+    # TODO: slot_uri fails
+    # assert sample.slot_uri_slot, m.slots.slot_uri_slot.uri)
+    assert sample.slot_uri_slot is None
+    assert sample.slot_curie_slot is None
+    assert sample.string_slot == "s1"
+    assert sample.mt_string_slot == ""
 
 
-if __name__ == '__main__':
-    unittest.main()
+@pytest.mark.skip("TODO: https://github.com/linkml/linkml/issues/1334")
+def test_ifabsent_pydantic():
+    """
+    Tests pydantic generator with ifabsent_functions.
+
+    See: https://github.com/linkml/linkml/issues/1334
+    """
+    m = compile_python(PydanticGenerator(model_txt).serialize())
+    sample = m.HighClass()
+    assert sample.bool_true_slot is True
+    assert sample.bool_false_slot is False
+    # TODO: class_curie_slot fails
+    # assert sample.class_curie_slot, m.HighClass.class_class_curie)
+    assert sample.class_curie_slot is None
+    # TODO: class_uri_slot fails
+    # assert sample.class_uri_slot, m.HighClass.class_class_uri)
+    assert sample.class_uri_slot is None
+    # TODO: default_ns fails
+    assert sample.default_ns_slot == "ex"
+    # TODO: default_range fails
+    # assert sample.default_range_slot, 'string')
+    assert sample.default_range_slot is None
+    # TODO: int(0) fails
+    assert sample.int_0_slot == 0
+    assert sample.int_42_slot == 42
+    assert sample.neg_int_slot == -117243
+    # TODO: slot_curie fails
+    # assert sample.slot_curie_slot, m.slots.slot_curie_slot.curie)
+    assert sample.slot_curie_slot is None
+    # TODO: slot_uri fails
+    # assert sample.slot_uri_slot, m.slots.slot_uri_slot.uri)
+    assert sample.slot_uri_slot is None
+    assert sample.slot_curie_slot is None
+    assert sample.string_slot == "s1"
+    assert sample.mt_string_slot == ""

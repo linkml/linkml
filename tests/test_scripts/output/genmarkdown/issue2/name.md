@@ -35,11 +35,13 @@ URI: [linkml:name](https://w3id.org/linkml/name)
 | **Aliases:** | | short name |
 |  | | unique name |
 | **Mappings:** | | rdfs:label |
-| **In Subsets:** | | owl |
-|  | | minimal |
-|  | | basic |
-|  | | relational_model |
-|  | | object_oriented |
+| **In Subsets:** | | SpecificationSubset |
+|  | | OwlProfile |
+|  | | MinimalSubset |
+|  | | BasicSubset |
+|  | | RelationalModelProfile |
+|  | | ObjectOrientedProfile |
 | **See also:** | | [https://en.wikipedia.org/wiki/Data_element_name](https://en.wikipedia.org/wiki/Data_element_name) |
+|  | | [https://linkml.io/linkml/faq/modeling.html#why-are-my-class-names-translated-to-camelcase](https://linkml.io/linkml/faq/modeling.html#why-are-my-class-names-translated-to-camelcase) |
 | **Exact Mappings:** | | schema:name |
 

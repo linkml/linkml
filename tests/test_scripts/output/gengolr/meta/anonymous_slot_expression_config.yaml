@@ -13,27 +13,30 @@ fields:
   display_name: annotations
   cardinality: multi
 - id: description
-  description: a description of the element's purpose and use
+  description: a textual description of the element's purpose and use
   display_name: description
 - id: alt_descriptions
+  description: A sourced alternative description for an element
   display_name: alt_descriptions
   cardinality: multi
 - id: title
-  description: the official title of the element
+  description: A concise human-readable display label for the element. The title should
+    mirror the name, and should use ordinary textual punctuation.
   display_name: title
 - id: deprecated
   description: Description of why and when this element will no longer be used
   display_name: deprecated
 - id: todos
-  description: Outstanding issue that needs resolution
+  description: Outstanding issues that needs resolution
   display_name: todos
   cardinality: multi
 - id: notes
-  description: editorial notes about an element intended for internal consumption
+  description: editorial notes about an element intended primarily for internal consumption
   display_name: notes
   cardinality: multi
 - id: comments
-  description: notes and comments about an element intended for external consumption
+  description: notes and comments about an element intended primarily for external
+    consumption
   display_name: comments
   cardinality: multi
 - id: examples
@@ -42,8 +45,7 @@ fields:
   cardinality: multi
 - id: in_subset
   description: used to indicate membership of a term in a defined subset of terms
-    used for a particular domain or application (e.g. the translator_minimal subset
-    holding the minimal set of predicates used in a translator knowledge graph)
+    used for a particular domain or application.
   display_name: in_subset
   cardinality: multi
 - id: from_schema
@@ -57,9 +59,10 @@ fields:
   description: A related resource from which the element is derived.
   display_name: source
 - id: in_language
+  description: the primary language used in the sources
   display_name: in_language
 - id: see_also
-  description: a reference
+  description: A list of related entities or URLs that may be of relevance
   display_name: see_also
   cardinality: multi
 - id: deprecated_element_has_exact_replacement
@@ -71,10 +74,13 @@ fields:
     uri or curie
   display_name: deprecated element has possible replacement
 - id: aliases
+  description: Alternate names/labels for the element. These do not alter the semantics
+    of the schema, but may be useful to support search and alignment.
   display_name: aliases
   cardinality: multi
 - id: structured_aliases
-  description: A list of structured_alias objects.
+  description: A list of structured_alias objects, used to provide aliases in conjunction
+    with additional metadata.
   display_name: structured_aliases
   cardinality: multi
 - id: mappings
@@ -109,6 +115,21 @@ fields:
     have broader meaning.
   display_name: broad mappings
   cardinality: multi
+- id: created_by
+  description: agent that created the element
+  display_name: created_by
+- id: created_on
+  description: time at which the element was created
+  display_name: created_on
+- id: last_updated_on
+  description: time at which the element was last updated
+  display_name: last_updated_on
+- id: modified_by
+  description: agent that modified the element
+  display_name: modified_by
+- id: status
+  description: status of the element
+  display_name: status
 - id: rank
   description: the relative order in which the element occurs, lower values are given
     precedence
@@ -122,12 +143,16 @@ fields:
   description: A range that is described as a boolean expression combining existing
     ranges
   display_name: range_expression
+- id: enum_range
+  description: An inlined enumeration
+  display_name: enum_range
 - id: required
-  description: true means that the slot must be present in the loaded definition
+  description: true means that the slot must be present in instances of the class
+    definition
   display_name: required
 - id: recommended
-  description: true means that the slot should be present in the loaded definition,
-    but this is not required
+  description: true means that the slot should be present in instances of the class
+    definition, but this is not required
   display_name: recommended
 - id: inlined
   description: True means that keyed or identified slot appears in an outer structure
@@ -155,6 +180,17 @@ fields:
   description: the string value of the slot must conform to the regular expression
     in the pattern expression
   display_name: structured_pattern
+- id: unit
+  description: an encoding of a unit
+  display_name: unit
+- id: implicit_prefix
+  description: Causes the slot value to be interpreted as a uriorcurie after prefixing
+    with this string
+  display_name: implicit_prefix
+- id: value_presence
+  description: if true then a value must be present (for lists there must be at least
+    one value). If false then a value must be absent (for lists, must be empty)
+  display_name: value_presence
 - id: equals_string
   description: the slot must have range string and the value of the slot must equal
     the specified value
@@ -178,17 +214,13 @@ fields:
   description: the maximum number of entries for a multivalued slot
   display_name: maximum_cardinality
 - id: has_member
-  description: the values of the slot is multivalued with at least one member satisfying
+  description: the value of the slot is multivalued with at least one member satisfying
     the condition
   display_name: has_member
 - id: all_members
-  description: "the value of the multiavlued slot is a list where all elements conform\
-    \ to the specified values.\nthis defines a dynamic class with named slots according\
-    \ to matching constraints\n\nE.g to state that all members of a list are between\
-    \ 1 and 10\n```\nall_members:\n  x:\n    range: integer\n    minimum_value: 10\n\
-    \    maximum_value: 10\n```"
+  description: the value of the slot is multivalued with all members satisfying the
+    condition
   display_name: all_members
-  cardinality: multi
 - id: none_of
   description: holds if none of the expressions hold
   display_name: slot_expression_none_of

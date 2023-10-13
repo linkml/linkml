@@ -1,9 +1,6 @@
 import json
-import unittest
 
 from linkml.generators.jsonschemagen import JsonSchemaGenerator
-from tests.test_issues.environment import env
-from tests.utils.test_environment import TestEnvironmentTestCase
 
 # reported in https://github.com/linkml/linkml/issues/726
 
@@ -51,35 +48,27 @@ slots:
 """
 
 
-class Issue726ConstCase(TestEnvironmentTestCase):
-    env = env
+def test_jsonschema():
+    gen = JsonSchemaGenerator(schema_str)
+    output = gen.serialize()
+    js = json.loads(output)
+    top_props = js["properties"]
+    s1C = top_props["s1"]
+    s2C = top_props["s2"]
+    s3C = top_props["s3"]
+    s4C = top_props["s4"]
+    D = js["$defs"]["D"]["properties"]
+    s1D = D["s1"]
+    s2D = D["s2"]
+    s3D = D["s3"]
+    s4D = D["s4"]
 
-    def test_jsonschema(self):
-        gen = JsonSchemaGenerator(schema_str)
-        output = gen.serialize()
-        print(output)
-        js = json.loads(output)
-        top_props = js["properties"]
-        s1C = top_props["s1"]
-        s2C = top_props["s2"]
-        s3C = top_props["s3"]
-        s4C = top_props["s4"]
-        D = js["$defs"]["D"]["properties"]
-        s1D = D["s1"]
-        s2D = D["s2"]
-        s3D = D["s3"]
-        s4D = D["s4"]
+    assert s1C["const"] == "foo"
+    assert s2C["const"] == "bar"
+    assert "const" not in s1D
+    assert s2D["const"] == "bar"
 
-        self.assertEqual(s1C["const"], "foo")
-        self.assertEqual(s2C["const"], "bar")
-        self.assertNotIn("const", s1D)
-        self.assertEqual(s2D["const"], "bar")
-
-        self.assertEqual(s3C["const"], 32)
-        self.assertEqual(s4C["const"], 7)
-        self.assertNotIn("const", s3D)
-        self.assertEqual(s4D["const"], 7)
-
-
-if __name__ == "__main__":
-    unittest.main()
+    assert s3C["const"] == 32
+    assert s4C["const"] == 7
+    assert "const" not in s3D
+    assert s4D["const"] == 7

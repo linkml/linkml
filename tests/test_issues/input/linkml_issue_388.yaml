@@ -3,6 +3,7 @@ prefixes:
   linkml: https://w3id.org/linkml/
   this: https://example.org/this/
   other: https://example.org/other/
+  xsd: http://www.w3.org/2001/XMLSchema#
 default_range: my_str
 default_prefix: this
 

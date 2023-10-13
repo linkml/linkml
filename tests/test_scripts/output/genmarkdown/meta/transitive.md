@@ -26,5 +26,6 @@ URI: [linkml:transitive](https://w3id.org/linkml/transitive)
 
 |  |  |  |
 | --- | --- | --- |
+| **In Subsets:** | | SpecificationSubset |
 | **Close Mappings:** | | owl:TransitiveProperty |
 

@@ -1,6 +1,7 @@
 import os
 import re
 import unittest
+
 # This has to occur post ClickTestCase
 from functools import reduce
 from pathlib import PurePath
@@ -14,7 +15,6 @@ from linkml.generators import jsonldgen
 from linkml.generators.jsonldcontextgen import ContextGenerator
 from tests.test_scripts.environment import env
 from tests.utils.clicktestcase import ClickTestCase
-from tests.utils.filters import ldcontext_metadata_filter
 
 cwd = os.path.dirname(__file__)
 meta_context = "file:./output/gencontext/meta.jsonld"
@@ -119,20 +119,14 @@ class GenJSONLDTestCase(ClickTestCase):
                 n_classes,
                 f"Expected {expected_classes} classes in {model}",
             )
-            self.assertEqual(
-                expected_slots, n_slots, f"Expected {expected_slots} slots in {model}"
-            )
-            self.assertEqual(
-                expected_types, n_types, f"Expected {expected_types} types in {model}"
-            )
+            self.assertEqual(expected_slots, n_slots, f"Expected {expected_slots} slots in {model}")
+            self.assertEqual(expected_types, n_types, f"Expected {expected_types} types in {model}")
             self.assertEqual(
                 expected_subsets,
                 n_subsets,
                 f"Expected {expected_subsets} subsets in {model}",
             )
-            self.assertEqual(
-                expected_enums, n_enums, f"Expected {expected_enums} enums in {model}"
-            )
+            self.assertEqual(expected_enums, n_enums, f"Expected {expected_enums} enums in {model}")
 
     @unittest.skip("This test is too fragile, needs updated when metamodel changes")
     def test_meta_output(self):
@@ -143,7 +137,6 @@ class GenJSONLDTestCase(ClickTestCase):
 
         # Generate an image of the metamodel
         gen = ContextGenerator(env.meta_yaml, importmap=env.import_map)
-        print(f"P {env.meta_yaml}")
 
         base = gen.namespaces[gen.schema.default_prefix]
         if str(base)[-1] not in "/#":

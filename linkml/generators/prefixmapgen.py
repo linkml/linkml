@@ -3,18 +3,15 @@ Generate JSON-LD contexts
 
 """
 import csv
-import logging
 import os
 from dataclasses import dataclass, field
-from typing import Dict, Mapping, Optional, Set, TextIO, Union
+from typing import Dict, Optional, Set
 
 import click
 from jsonasobj2 import JsonObj, as_json
-from linkml_runtime.linkml_model.meta import (ClassDefinition, Definition,
-                                              Element, SchemaDefinition,
-                                              SlotDefinition)
+from linkml_runtime.linkml_model.meta import ClassDefinition, SlotDefinition
 from linkml_runtime.linkml_model.types import SHEX
-from linkml_runtime.utils.formatutils import be, camelcase, underscore
+from linkml_runtime.utils.formatutils import camelcase
 from rdflib import XSD
 
 from linkml._version import __version__
@@ -25,7 +22,6 @@ URI_RANGES = (XSD.anyURI, SHEX.nonliteral, SHEX.bnode, SHEX.iri)
 
 @dataclass
 class PrefixGenerator(Generator):
-
     # ClassVars
     generatorname = os.path.basename(__file__)
     generatorversion = "0.1.1"
@@ -44,12 +40,10 @@ class PrefixGenerator(Generator):
         super().__post_init__()
         if self.namespaces is None:
             raise TypeError(
-                "Schema text must be supplied to context generater.  Preparsed schema will not work"
+                "Schema text must be supplied to context generator.  Preparsed schema will not work"
             )
 
-    def visit_schema(
-        self, base: Optional[str] = None, output: Optional[str] = None, **_
-    ):
+    def visit_schema(self, base: Optional[str] = None, output: Optional[str] = None, **_):
         # Add any explicitly declared prefixes
         for prefix in self.schema.prefixes.values():
             self.emit_prefixes.add(prefix.prefix_prefix)
@@ -66,9 +60,7 @@ class PrefixGenerator(Generator):
             if self.default_ns:
                 self.emit_prefixes.add(self.default_ns)
 
-    def end_schema(
-        self, base: Optional[str] = None, output: Optional[str] = None, **_
-    ) -> None:
+    def end_schema(self, base: Optional[str] = None, output: Optional[str] = None, **_) -> None:
         context = JsonObj()
         if base:
             if "://" not in base:

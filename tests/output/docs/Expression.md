@@ -11,12 +11,13 @@ URI: [linkml:Expression](https://w3id.org/linkml/Expression)
 
 ## Children
 
+ * [EnumExpression](EnumExpression.md) - An expression that constrains the range of a slot
  * [SlotExpression](SlotExpression.md) - an expression that constrains the range of values a slot can take
- * [TypeExpression](TypeExpression.md)
+ * [TypeExpression](TypeExpression.md) - An abstract class grouping named types and anonymous type expressions
 
 ## Mixin for
 
- * [AnonymousExpression](AnonymousExpression.md) (mixin) 
+ * [AnonymousExpression](AnonymousExpression.md) (mixin)  - An abstract parent class for any nested expression
  * [PathExpression](PathExpression.md) (mixin)  - An expression that describes an abstract path from an object to another through a sequence of slot lookups
  * [StructuredAlias](StructuredAlias.md) (mixin)  - object that contains meta data about a synonym or alias including where it came from (source) and its scope (narrow, broad, etc.)
 

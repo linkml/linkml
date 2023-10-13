@@ -17,6 +17,7 @@ None &#8594;  <sub>0..\*</sub> uriorcurie
 
 ## Children
 
+ *  UnitOfMeasure_exact mappings
 
 ## Used by
 

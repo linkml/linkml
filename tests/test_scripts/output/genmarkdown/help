@@ -12,6 +12,7 @@ Options:
   --noyuml                        Do not add yUML figures to pages
   --notypesdir                    Do not create a separate types directory
   --warnonexist                   Warn if output file already exists
+  -V, --version                   Show the version and exit.
   -f, --format [md]               Output format  [default: md]
   --metadata / --no-metadata      Include metadata in output  [default:
                                   metadata]
@@ -24,4 +25,6 @@ Options:
   --mergeimports / --no-mergeimports
                                   Merge imports into source file
                                   (default=mergeimports)
+  --stacktrace / --no-stacktrace  Print a stack trace when an error occurs
+                                  [default: no-stacktrace]
   --help                          Show this message and exit.

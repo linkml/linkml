@@ -8,7 +8,7 @@ URIs and IRIs are generalizations of URLs. URIs are used as identifiers in linke
 
 For example, in [schema.org](http://schema.org), the URI [http://schema.org/Person](http://schema.org/Person) is the identifier for the Person concept.
 
-URIs can be shortended as CURIEs (Compact URIs). Given a prefix declaration where we map `schema` to `http://schema.org/`, then we can use the CURIE `schema:Person` to denote the person concept.
+URIs can be shortened as CURIEs (Compact URIs). Given a prefix declaration where we map `schema` to `http://schema.org/`, then we can use the CURIE `schema:Person` to denote the person concept.
 
 For more on URIs and their importance in Linked Data, see
 

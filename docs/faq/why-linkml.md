@@ -10,7 +10,7 @@ All data follows some kind of schema or data model, whether it is explicitly art
  * you have a knowledge graph in Neo4J
  * you are working with linked data in RDF
 
-LinkML is designed to be flexible enough to cover all these use cases, allowing for lighweight semantic data dictionaries for tabular data, through rich interlinked schemas for knowledge graphs and triplestores
+LinkML is designed to be flexible enough to cover all these use cases, allowing for lightweight semantic data dictionaries for tabular data, through rich interlinked schemas for knowledge graphs and triplestores
 
 ## My data is a simple spreadsheet/TSV, why should I use LinkML?
 
@@ -54,7 +54,8 @@ classes:
       occupation_class:
         range: job_code   ## enumeration
     unique_keys:
-      - description: email is unique
+      primary:
+        description: email is unique
         unique_key_slots:
           - email
 enums:
@@ -106,7 +107,7 @@ This has a number of advantages:
 
  - you make the intended meaning of your columns more transparent and explicit
  - your TSVs can be automatically translated to JSON-LD and RDF via the LinkML framework
- - it faciliates automated and semi-automated mapping between your data and other representations
+ - it facilitates automated and semi-automated mapping between your data and other representations
 
 There are a number of proposed frameworks for providing lightweight data dictionaries for your TSVs/spreadsheets:
 
@@ -124,16 +125,35 @@ JSON-Schema is a fantastic framework for validating JSON documents. If your prim
 However, if any of the following apply to you, you may want to consider LinkML - and remember, you can always
 [compile your LinkML schema down to JSON-Schema](../generators/json-schema)!
 
- * You want to make use inheritance/polymorphism
+ * You want to make use of inheritance/polymorphism
  * you want a language with a simple core based around familiar concepts of classes and fields (slots)
  * you want to make your data more FAIR (Findable Accessible Interoperable Reusable), for example, by annotating schema elements with IRIs
  * you want to use JSON-LD but don't want to coordinate separate JSON-Schema and JSON-LD context documents - LinkML is an all-in-one-solution!
- * you want a more advanced ontology-aware enumerations or [dynamic enumerations](https://douroucouli.wordpress.com/2022/07/15/using-ontologies-within-data-models-and-standards/)
- * you want your datamodel to be used in other frameworks than JSON - e.g. TSVs, SQL databases, Triplestores, graph databases
+ * you want enums to be aligned with ontologies or standard vocabularies
+ * you need to use [dynamic enumerations](https://douroucouli.wordpress.com/2022/07/15/using-ontologies-within-data-models-and-standards/)
+ * you want your data model to be used in other frameworks than JSON - e.g. TSVs, SQL databases, Triple stores, graph databases
 
 When making your decision, you should weigh factors such as the fact that things that can be expressed in one framework may not be expressible in the other.
 
 See also FAQ entries in [modeling](modeling) which compare some similar constructs.
+
+## Why should I use LinkML over JSON-LD?
+
+JSON-LD is a lightweight way of exchanging RDF data as JSON files. Different groups use JSON-LD
+in different ways. In some cases, JSON-LD contexts are provided as a way to map from developer-friendly
+JSON files to less familiar RDF/Turtle formats. In other cases, the JSON-LD files are operated on
+directly as JSON objects.
+
+Note that JSON-LD doesn't in itself describe how data should be *structured* - e.g. which fields
+are expected, what the expected range is of different fields, etc. Some groups combine a JSON-LD
+specification with either JSON-Schema or with a shape language like SHACL.
+
+One advantage of LinkML is that it provides a "one stop shop", where all aspects of your data
+can be described in one place without duplication, and then have JSON-LD contexts, shapes, and
+JSON schema generated for you.
+
+For more, see [Using JSON-LD](https://linkml.io/linkml/howtos/using-jsonld.html) in the how-tos
+section of this site.
 
 ## Why should I use LinkML over ShEx/SHACL?
 
@@ -263,12 +283,13 @@ similarities to LinkML.
 There are a number of reasons to use LinkML over UML
 
 * The UML standard is large and complex
+* UML serialization in XMI is hard to work with
 * UML is more geared towards software engineering and includes features not needed for data modeling, such as operations
 * UML tools are complex and expensive (both financially and in terms of learning curves)
 * In contrast LinkML makes it easy to author schemas using nothing more than a text editor
 * All the tooling for LinkML is free and open
 * LinkML has the ability to compile to other frameworks
-* LinkML has facilities for semantic modeling, not anticipated in UML
+* LinkML has facilities for *semantic modeling*, not anticipated in UML
 
 Currently there is no way to generate complete UML from a LinkML schema.
 
@@ -276,18 +297,27 @@ However, the yUML generator (used in [the markdown generator](https://linkml.io/
 
 ## Why should I use LinkML over OWL?
 
+The Web Ontology Language (OWL) is a Description Logic formalism for representing
+ontological knowledge.
+
 LinkML is in a very different class of languages from OWL. LinkML is a
 *schema language*, with features in common with JSON-Schema, XML Schema,
-UML, SQL DDL, shape languages such as ShEx/SHACL.
+UML, SQL DDL, shape languages such as ShEx/SHACL. OWL is a subset of first-order logic,
+based in set theory that is intended for open-world reasoning.
 
-In our experience OWL is best for "open model" direct representations
+In our experience OWL is best for open world direct representations
 of domain knowledge, and should not be used as a schema
 language. Many LinkML contributors and users also work with large biomedical
-terminological-style ontologies in OWL. However, we appreciate this is nuanced, and we welcome any
+terminological-style ontologies in OWL, these are essentially large structured
+vocabularies, and are not intended for representing *data*. In the wider
+semantic web world, people have historically sought to use OWL as a schema language,
+with mixed results.
+
+However, we appreciate this is nuanced, and we welcome any
 questions or discussions via our GitHub issue tracker.
 
-If you do have a schema expressed in OWL, you can use the linkml
-toolkit to infer/bootstrap a LinkML schema from it. But note this is a
+If you do have a schema expressed in OWL, you can use [schema-automator](https://github.com/linkml/schema-automator)
+to infer/bootstrap a LinkML schema from it. But note this is a
 heuristic procedure, and will not give you sensible results from a
 large "terminological" ontology (such as an OBO ontology); it is best used with schema-style "ontologies",
 such as common semantic web vocabularies.
@@ -316,7 +346,7 @@ costly to maintain.
 LinkML provides a **systematic way to manage data dictionaries and metadata elements**.
 
 Historically this has required use of YAML files to maintain a schema,
-which can be offputting to non-technical metadata curators. A new framework allows the best of both worlds:
+which can be off-putting to non-technical metadata curators. SchemaSheets allows the best of both worlds:
 
  * [SchemaSheets](https://github.com/linkml/schemasheets) -- author schemas as spreadsheets
 
@@ -329,7 +359,7 @@ The W3C [CSV on the Web](https://www.w3.org/TR/tabular-data-primer/)
 CSVs and other kinds of tabular data.
 
 An example use of CSVW is to semantically describe the columns in a
-CSV/TSV, for example a CSV about country locations and nomenculature. The following in Example 10 from the CSVW primer:
+CSV/TSV, for example a CSV about country locations and nomenclature. The following in Example 10 from the CSVW primer:
 
 ```json
 {
@@ -373,7 +403,7 @@ We are currently planning on writing a generator for CSVW JSON-LD.
 
 ## Why should I use LinkML over ISO-11179?
 
-ISO-11179 is an ISO standard for Metadata and Metadata Registries. It
+[ISO-11179](https://en.wikipedia.org/wiki/ISO/IEC_11179) is an ISO standard for Metadata and Metadata Registries. It
 provides a rich standardized way of exchanging data dictionaries. For
 example, an ISO-11179 registry can be used to register all of the
 columns in a data file or tags in an XML file, and to map semantics

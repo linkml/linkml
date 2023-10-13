@@ -42,22 +42,14 @@ class YamlUtilTestCase(TestEnvironmentTestCase):
             self.assertEqual("schema1", s1["name"])
 
     def test_as_json(self):
-        schema = self.fix_schema_metadata(
-            load_raw_schema(env.input_path("schema6.yaml"))
-        )
-        env.eval_single_file(
-            env.expected_path("schema6.json"), as_json(schema), filtr=lambda s: s
-        )
+        schema = self.fix_schema_metadata(load_raw_schema(env.input_path("schema6.yaml")))
+        env.eval_single_file(env.expected_path("schema6.json"), as_json(schema), filtr=lambda s: s)
 
     @unittest.skip("MULTI-Schema test -- re-enable if necessary")
     def test_as_yaml(self):
         """Test the YAML output representation"""
-        schema = self.fix_schema_metadata(
-            load_raw_schema(env.input_path("schema4.yaml"))
-        )
-        env.eval_single_file(
-            env.expected_path("schema4.yaml"), as_yaml(schema), filtr=lambda s: s
-        )
+        schema = self.fix_schema_metadata(load_raw_schema(env.input_path("schema4.yaml")))
+        env.eval_single_file(env.expected_path("schema4.yaml"), as_yaml(schema), filtr=lambda s: s)
 
 
 if __name__ == "__main__":

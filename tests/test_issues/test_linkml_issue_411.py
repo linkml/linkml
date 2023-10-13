@@ -1,12 +1,8 @@
 import json
-import unittest
 
-import jsonasobj
 import jsonschema
 
 from linkml.generators.jsonschemagen import JsonSchemaGenerator
-from tests.test_issues.environment import env
-from tests.utils.test_environment import TestEnvironmentTestCase
 
 schema_str = """
 id: http://example.org
@@ -56,19 +52,12 @@ json_str = """
 """
 
 
-class IssueJSONSchemaInlinedAsDictCase(TestEnvironmentTestCase):
-    env = env
+def test_inslined_as_dict():
+    """Make sure that enums are generated as part of the output"""
+    gen = JsonSchemaGenerator(schema_str)
+    jsonschema_str = gen.serialize(not_closed=False)
 
-    def test_inslined_as_dict(self):
-        """Make sure that enums are generated as part of the output"""
-        gen = JsonSchemaGenerator(schema_str)
-        jsonschema_str = gen.serialize(not_closed=False)
-        print(jsonschema_str)
-        obj = json.loads(json_str)
-        jsonschema_obj = json.loads(jsonschema_str)
-        v = jsonschema.validate(obj, jsonschema_obj)
-        print(f"V={v}")
-
-
-if __name__ == "__main__":
-    unittest.main()
+    obj = json.loads(json_str)
+    jsonschema_obj = json.loads(jsonschema_str)
+    v = jsonschema.validate(obj, jsonschema_obj)
+    assert v is None

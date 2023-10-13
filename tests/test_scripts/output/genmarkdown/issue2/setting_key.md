@@ -20,3 +20,10 @@ setting &#8594;  <sub>1..1</sub> ncname
 ## Used by
 
  * setting
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **In Subsets:** | | SpecificationSubset |
+

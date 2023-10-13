@@ -1,24 +1,14 @@
-import csv
 import os
 import unittest
 
-import _csv
-
 import yaml
 from linkml_runtime.dumpers import yaml_dumper
-from linkml_runtime.linkml_model import SlotDefinition
-from linkml_runtime.loaders import csv_loader, yaml_loader
-from linkml_runtime.utils.introspection import package_schemaview
-from linkml_runtime.utils.schemaview import SchemaDefinition, SchemaView
 from sqlalchemy.orm import sessionmaker
 
-import tests.test_data.model.personinfo
-from linkml.utils.schema_builder import SchemaBuilder
-from linkml.utils.schema_fixer import SchemaFixer
+from linkml.generators.pydanticgen import PydanticGenerator
 from linkml.utils.sqlutils import SQLStore
 from tests.test_data.environment import env
-from tests.test_data.model.personinfo_pydantic import (Container, FamilialRelationship, Person, GenderType)
-from tests.utils.dict_comparator import compare_objs, compare_yaml
+from tests.utils.dict_comparator import compare_yaml
 
 SCHEMA = env.input_path("personinfo.yaml")
 METAMODEL_SCHEMA = env.input_path(os.path.join("meta", "meta.yaml"))
@@ -38,32 +28,37 @@ class SQLiteStoreTest(unittest.TestCase):
     - :meth:`SQLStore.load`
     """
 
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.personinfo_module = PydanticGenerator(SCHEMA).compile_module()
+
     def test_enums(self):
         """
         Tests that enum objects can be constructed inlined.
 
         See https://github.com/linkml/linkml/issues/817
         """
-        r = FamilialRelationship(type="SIBLING_OF", related_to="x")
-        p = Person(id="x", gender=GenderType("cisgender_man"))
-        self.assertIsInstance(p.gender, GenderType)
+        mod = self.personinfo_module
+        mod.FamilialRelationship(type="SIBLING_OF", related_to="x")
+        p = mod.Person(id="x", gender=mod.GenderType("cisgender_man"))
+        self.assertIsInstance(p.gender, str)
 
     def test_sqlite_store(self):
         """
         tests a complete end-to-end example with a dump-load cycle
         """
         # step 1: setup
-        sv = SchemaView(SCHEMA)
         # TODO: currently it is necessary to pass the actual yaml rather than a schema object
         # endpoint = SQLiteEndpoint(sv.schema, database_path=DB, include_schema_in_database=False)
+        mod = self.personinfo_module
         endpoint = SQLStore(SCHEMA, database_path=DB, include_schema_in_database=False)
-        endpoint.native_module = tests.test_data.model.personinfo_pydantic
+        endpoint.native_module = mod
         endpoint.db_exists(force=True)
         # step 2: load data from file and store in SQLStore
         # TODO: use yaml_loader once this supports pydantic
         with open(DATA) as file:
             dict_obj = yaml.safe_load(file)
-        container = Container(**dict_obj)
+        container = mod.Container(**dict_obj)
         endpoint.dump(container)
         # step 3: test query using SQL Alchemy
         session_class = sessionmaker(bind=endpoint.engine)
@@ -71,18 +66,11 @@ class SQLiteStoreTest(unittest.TestCase):
         q = session.query(endpoint.module.Person)
         all_objs = q.all()
         self.assertEqual(2, len(all_objs))
-        for p in all_objs:
-            print(p)
-            for rel in p.has_familial_relationships:
-                print(rel)
-                print(rel.type)
         q = session.query(endpoint.module.FamilialRelationship)
-        for r in q.all():
-            print(r)
         # step 4: test loading from SQLStore
         # 4a: first test load_all, diff to original data should be empty
-        [returned_container] = endpoint.load_all(target_class=Container)
-        #y = yaml_dumper.dumps(x[0])
+        [returned_container] = endpoint.load_all(target_class=mod.Container)
+        # y = yaml_dumper.dumps(x[0])
         returned_dict = returned_container.dict(exclude_none=True)
         if False:
             # Fix when this is fixed https://github.com/linkml/linkml/issues/999
@@ -94,10 +82,9 @@ class SQLiteStoreTest(unittest.TestCase):
             # 4b: next test load implicit object, diff to original data should be empty
             container_loaded = endpoint.load()
             yaml_dumper.dump(container_loaded, to_file=DATA_RECAP)
-            y = yaml_dumper.dumps(container_loaded)
+            yaml_dumper.dumps(container_loaded)
             diff = compare_yaml(DATA, DATA_RECAP)
             self.assertEqual(diff, "")
-
 
 
 if __name__ == "__main__":

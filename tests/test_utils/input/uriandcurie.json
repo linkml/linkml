@@ -72,7 +72,7 @@
       "definition_uri": "m:Objectidentifier",
       "description": "A URI or CURIE that represents an object in the model.",
       "comments": [
-        "Used for inheritence and type checking"
+        "Used for inheritance and type checking"
       ],
       "from_schema": "http://example.org/test/uriandcurie",
       "base": "ElementIdentifier",

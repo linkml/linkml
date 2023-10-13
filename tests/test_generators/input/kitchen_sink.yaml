@@ -194,7 +194,7 @@ classes:
         range: Person
         required: true
       cordialness:
-        required: true
+        # required: true
 
   BirthEvent:
     is_a: Event

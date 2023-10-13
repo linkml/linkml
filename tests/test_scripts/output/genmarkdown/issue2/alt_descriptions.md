@@ -2,7 +2,7 @@
 # Slot: alt_descriptions
 
 
-
+A sourced alternative description for an element
 
 URI: [linkml:alt_descriptions](https://w3id.org/linkml/alt_descriptions)
 
@@ -44,5 +44,5 @@ URI: [linkml:alt_descriptions](https://w3id.org/linkml/alt_descriptions)
 |  |  |  |
 | --- | --- | --- |
 | **Aliases:** | | alternate definitions |
-| **In Subsets:** | | basic |
+| **In Subsets:** | | BasicSubset |
 

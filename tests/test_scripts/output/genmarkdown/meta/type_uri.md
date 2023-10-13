@@ -27,5 +27,6 @@ URI: [linkml:type_uri](https://w3id.org/linkml/type_uri)
 | --- | --- | --- |
 | **Comments:** | | uri is typically drawn from the set of URI's defined in OWL (https://www.w3.org/TR/2012/REC-owl2-syntax-20121211/#Datatype_Maps) |
 |  | | every root type must have a type uri |
-| **In Subsets:** | | basic |
+| **In Subsets:** | | SpecificationSubset |
+|  | | BasicSubset |
 
