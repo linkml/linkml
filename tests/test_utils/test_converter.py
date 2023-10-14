@@ -12,6 +12,9 @@ JSON_OUT = env.expected_path("data_example.out.json")
 YAML_OUT = env.expected_path("data_example.out.yaml")
 RDF_OUT = env.expected_path("data_example.out.ttl")
 
+SCHEMA_DESCENDANTS = env.input_path("schema7.yaml")
+DATA_DESCENDANTS = env.input_path("animals.yaml")
+
 
 class TestCommandLineInterface(unittest.TestCase):
     def setUp(self) -> None:
@@ -48,6 +51,40 @@ class TestCommandLineInterface(unittest.TestCase):
             self.assertEqual(p2["age_in_months"], 240)
             self.assertEqual(p2["age_category"], "adult")
             self.assertEqual(p2["full_name"], "first2 last2")
+
+    def test_convert_including_descendants(self):
+        """
+        Tests using the --include-range-class-descendants option to support
+        subtype polymorphism.
+        """
+        result = self.runner.invoke(
+            cli,
+            [
+                "--include-range-class-descendants",
+                "--validate",
+                "-C",
+                "Container",
+                "-s",
+                SCHEMA_DESCENDANTS,
+                "-t",
+                "json-ld",
+                "-o",
+                JSON_OUT,
+                DATA_DESCENDANTS,
+            ],
+        )
+        print(result.stdout)
+        if result.exit_code:
+            print(result.exception)
+            raise result.exception
+        else:
+            with open(JSON_OUT) as file:
+                p1 = json.load(file)
+                print(p1)
+                self.assertEqual(p1["animals"][0]["animal_family"], "Dog")
+                self.assertEqual(p1["animals"][0]["breed"], "Golden Retriever")
+                self.assertEqual(p1["animals"][1]["animal_family"], "Ant")
+                self.assertTrue(p1["animals"][1]["venom"])
 
     def test_version(self):
         runner = CliRunner(mix_stderr=False)

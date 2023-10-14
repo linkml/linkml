@@ -67,6 +67,14 @@ from linkml.utils.datautils import (
     help="Infer missing slot values",
 )
 @click.option("--context", "-c", multiple=True, help="path to JSON-LD context file")
+@click.option(
+    "--include-range-class-descendants/--no-range-class-descendants",
+    default=False,
+    show_default=False,
+    help="""
+When handling range constraints, include all descendants of the range class instead of just the range class
+""",
+)
 @click.version_option(__version__, "-V", "--version")
 @click.argument("input")
 def cli(
@@ -83,6 +91,7 @@ def cli(
     validate=None,
     infer=None,
     index_slot=None,
+    include_range_class_descendants=False,
 ) -> None:
     """
     Converts instance data to and from different LinkML Runtime serialization formats.
@@ -141,17 +150,25 @@ def cli(
                 raise Exception("--index-slot is required for CSV input")
         inargs["index_slot"] = index_slot
         inargs["schema"] = schema
-    obj = loader.load(source=input, target_class=py_target_class, **inargs)
-    if infer:
-        infer_config = inference_utils.Config(use_expressions=True, use_string_serialization=True)
-        infer_all_slot_values(obj, schemaview=sv, config=infer_config)
+    try:
+        data_as_dict = loader.load_as_dict(source=input, **inargs)
+    except NotImplementedError:
+        print("load_as_dict has failed! Loading as object")
+        obj = loader.load(source=input, target_class=py_target_class, **inargs)
+        data_as_dict = as_simple_dict(obj)
     if validate:
         if schema is None:
             raise Exception(
                 "--schema must be passed in order to validate. Suppress with --no-validate"
             )
-        # TODO: use validator framework
-        validation.validate_object(obj, schema)
+        validator = JsonSchemaDataValidator(schema, include_range_class_descendants=include_range_class_descendants)
+        validator.iter_validate_dict(data_as_dict, target_class_name=py_target_class.class_name)
+
+    obj = loader.load(source=input, target_class=py_target_class, **inargs)
+
+    if infer:
+        infer_config = inference_utils.Config(use_expressions=True, use_string_serialization=True)
+        infer_all_slot_values(obj, schemaview=sv, config=infer_config)
 
     output_format = _get_format(output, output_format, default="json")
     if output_format == "json-ld":

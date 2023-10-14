@@ -22,6 +22,7 @@ def validate_object(
     schema: Union[str, TextIO, SchemaDefinition],
     target_class: Type[YAMLRoot] = None,
     closed: bool = True,
+    include_range_class_descendants=False,
 ):
     """
     validates instance data against a schema
@@ -41,6 +42,7 @@ def validate_object(
         mergeimports=True,
         top_class=target_class.class_name,
         not_closed=not_closed,
+        include_range_class_descendants=include_range_class_descendants,
     ).serialize(not_closed=not_closed)
     jsonschema_obj = json.loads(jsonschemastr)
     return jsonschema.validate(

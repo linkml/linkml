@@ -1,0 +1,7 @@
+animals:
+  - animal_family: Dog
+    max_age: "17 years"
+    breed: Golden Retriever
+  - animal_family: Ant
+    max_age: "7 years"
+    venom: true
