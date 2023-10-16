@@ -31,29 +31,30 @@ class MetamodelCoreTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             NCName('A12!')
 
-    def test_uris(self):
+    def test_uriorcuries(self):
         """ Test the URI and URIorCURIE types """
         str1 = "https://google.com/test#file?abc=1&def=4"
         self.assertEqual(str1, URIorCURIE(str1))
-        self.assertEqual(str1, URI(str1))
         str2 = "abc:123"
         self.assertEqual(str2, URIorCURIE(str2))
         str3 = ":123"
         self.assertEqual(str3, URIorCURIE(str3))
         with self.assertRaises(ValueError):
-            URI(str2)
+            URIorCURIE("abc:[def]")
         with self.assertRaises(ValueError):
             URIorCURIE("1abc:def")
         with self.assertRaises(ValueError):
             URIorCURIE("1:def")
         with self.assertRaises(ValueError):
             URIorCURIE(" ")
-        #with self.assertRaises(ValueError):
-        #    URIorCURIE("_")
+        with self.assertRaises(ValueError):
+            URIorCURIE("[")
         lax()
-        URI(str2)
         URIorCURIE("1abc:def")
         URIorCURIE("1:def")
+        self.assertFalse(URIorCURIE.is_valid(123))
+        URIorCURIE.is_curie("abc:123")
+        self.assertFalse(URIorCURIE.is_curie("http://example.org/path"))
 
     def test_curie(self):
         """ Test the CURIE type """
@@ -79,22 +80,34 @@ class MetamodelCoreTest(unittest.TestCase):
 
     def test_uri(self):
         """ Test the URI data type """
+        str1 = "https://google.com/test#file?abc=1&def=4"
+        self.assertEqual(str1, URI(str1))
         self.assertEqual("http://foo.org/bargles", URI("http://foo.org/bargles"))
         with self.assertRaises(ValueError):
-            URI("rdf:type")
-        with self.assertRaises(ValueError):
             URI(":")
+        with self.assertRaises(ValueError):
+            URI(":123")
         # imports range is uriorcurie, so we allow file paths
         #URI("1")
-        URI("foo.bar")
-        URI("../a/b")
+        self.assertTrue(URI.is_valid("foo.bar"))
+        self.assertTrue(URI.is_valid("../a/b"))
+        self.assertTrue(URI.is_valid("abc:123"))
         #with self.assertRaises(ValueError):
         #    URI("x1")
-        with self.assertRaises(ValueError):
-            URI("")
-        lax()
+        # an empty URI is a valid same-document URI reference
+        self.assertTrue(URI.is_valid(""))
         x = URI("rdf:type")
-        self.assertFalse(URI.is_valid(x))
+        self.assertTrue(URI.is_valid(x))
+        self.assertTrue(URI.is_valid("urn:abc:123"))
+        self.assertTrue(URI.is_valid("https://john.doe@www.example.com:123/forum/questions/?tag=networking&order=newest#top"))
+        self.assertTrue(URI.is_valid("ldap://[2001:db8::7]/c=GB?objectClass?one"))
+        self.assertTrue(URI.is_valid("ldap://[2001:db8::7]/c=GB?objectClass?one"))
+        self.assertTrue(URI.is_valid("mailto:John.Doe@example.com"))
+        self.assertTrue(URI.is_valid("news:comp.infosystems.www.servers.unix"))
+        self.assertTrue(URI.is_valid("tel:+1-816-555-1212"))
+        self.assertTrue(URI.is_valid("telnet://192.0.2.16:80/"))
+        self.assertTrue(URI.is_valid("urn:oasis:names:specification:docbook:dtd:xml:4.1.2"))
+        self.assertTrue(URI.is_valid("file:///home/user/"))
 
     def test_bool(self):
         self.assertTrue(Bool(True))

@@ -3006,7 +3006,7 @@ class UnitTerms(EnumDefinitionImpl):
                                    meaning=UCUM.degree)
     DIOPTER = PermissibleValue(text="DIOPTER",
                                      description="diopter",
-                                     meaning=UCUM["[diop]"])
+                                     meaning=UCUM["%5Bdiop%5D"])
     GRAM = PermissibleValue(text="GRAM",
                                description="gram",
                                meaning=UCUM.g)
@@ -3057,7 +3057,7 @@ class UnitTerms(EnumDefinitionImpl):
                                            meaning=UCUM.mm)
     MILLIMETRES_OF_MERCURY = PermissibleValue(text="MILLIMETRES_OF_MERCURY",
                                                                    description="millimetres of mercury",
-                                                                   meaning=UCUM["mm[Hg]"])
+                                                                   meaning=UCUM["mm%5BHg%5D"])
     MILLIMOLE = PermissibleValue(text="MILLIMOLE",
                                          description="millimole",
                                          meaning=UCUM.mmol)
