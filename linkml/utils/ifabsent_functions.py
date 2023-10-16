@@ -29,11 +29,7 @@ def default_curie_or_uri(loader: SchemaLoader) -> str:
 def curie_for(loader: SchemaLoader, is_class: bool) -> Optional[str]:
     """Return the Curie for the schema in loader.  Return None if there is no curie form"""
     prefix = default_curie_or_uri(loader)
-    suffix = (
-        "camelcase(self.name)"
-        if is_class
-        else "underscore(self.alias if self.alias else self.name)"
-    )
+    suffix = "camelcase(self.name)" if is_class else "underscore(self.alias if self.alias else self.name)"
     if ":/" not in prefix:
         return '"' + prefix + ":" + '" + ' + suffix
     else:
@@ -117,13 +113,7 @@ default_library: List[
 
 def isabsent_match(
     txt: Text,
-) -> Optional[
-    Tuple[
-        Match[str],
-        bool,
-        Callable[[Match[str], SchemaLoader, ClassDefinition, SlotDefinition], str],
-    ]
-]:
+) -> Optional[Tuple[Match[str], bool, Callable[[Match[str], SchemaLoader, ClassDefinition, SlotDefinition], str],]]:
     txt = str(txt)
     for pattern, postinit, f in default_library:
         m = re.match(pattern + "$", txt)

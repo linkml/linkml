@@ -88,9 +88,7 @@ def test_unrestricted_range(default_range, preserve_class_is_a):
     sb.add_class("Any", class_uri="linkml:Any")
     sb.add_slot("id", identifier=True, replace_if_present=True)
     sb.add_slot("name", required=True, range="Any", replace_if_present=True)
-    sb.add_slot(
-        "a_number", replace_if_present=True, any_of=[{"range": "integer"}, {"range": "float"}]
-    )
+    sb.add_slot("a_number", replace_if_present=True, any_of=[{"range": "integer"}, {"range": "float"}])
     sb.add_slot("foo", replace_if_present=True, any_of=[{"range": "string"}, {"range": "Any"}])
     tr = LogicalModelTransformer(preserve_class_is_a=preserve_class_is_a)
     sb.schema.default_range = default_range
@@ -202,9 +200,7 @@ def test_type_inheritance():
     id_slot = p.attributes["id"]
     assert id_slot.range == "PersonCodeType"
     assert id_slot.identifier is True
-    assert {r"^P[A-Z][a-z]+$", r"^[A-Z][a-z]+$"} == {t.pattern for t in id_slot.all_of}.union(
-        {id_slot.pattern}
-    )
+    assert {r"^P[A-Z][a-z]+$", r"^[A-Z][a-z]+$"} == {t.pattern for t in id_slot.all_of}.union({id_slot.pattern})
     age_slot = p.attributes["age"]
     assert age_slot.range == "AgeType"
     assert (age_slot.minimum_value, age_slot.maximum_value) == (0, 200)

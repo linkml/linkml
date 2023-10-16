@@ -91,9 +91,7 @@ class PermissibleValuesFormatRule(LinterRule):
         for enum_def in schema_view.all_enums(imports=False).values():
             for value in enum_def.permissible_values.keys():
                 if pattern.fullmatch(value) is None:
-                    yield LinterProblem(
-                        f"{self.format_element(enum_def)} has permissible value '{value}'"
-                    )
+                    yield LinterProblem(f"{self.format_element(enum_def)} has permissible value '{value}'")
 
 
 @lru_cache(maxsize=None)
@@ -174,15 +172,9 @@ class TreeRootClassRule(LinterRule):
         for cn in schema_view.all_classes():
             for s in schema_view.class_induced_slots(cn):
                 ranges.add(s.range)
-        top_level_classes = [
-            c
-            for c in schema_view.all_classes().values()
-            if not c.tree_root and c.name not in ranges
-        ]
+        top_level_classes = [c for c in schema_view.all_classes().values() if not c.tree_root and c.name not in ranges]
         if must_have_identifier:
-            top_level_classes = [
-                c for c in top_level_classes if schema_view.get_identifier_slot(c.name) is not None
-            ]
+            top_level_classes = [c for c in top_level_classes if schema_view.get_identifier_slot(c.name) is not None]
         index_slots = []
         for c in top_level_classes:
             has_identifier = schema_view.get_identifier_slot(c.name)
@@ -217,9 +209,7 @@ class NoInvalidSlotUsageRule(LinterRule):
             class_slots = schema_view.class_slots(class_name)
             for slot_usage_name in slot_usage.keys():
                 if slot_usage_name not in class_slots:
-                    yield LinterProblem(
-                        f"Slot '{slot_usage_name}' not found on class '{class_name}'"
-                    )
+                    yield LinterProblem(f"Slot '{slot_usage_name}' not found on class '{class_name}'")
 
 
 class StandardNamingRule(LinterRule):
@@ -233,9 +223,7 @@ class StandardNamingRule(LinterRule):
         slot_pattern = self.PATTERNS["snake"]
         enum_pattern = self.PATTERNS["uppercamel"]
         permissible_value_pattern = (
-            self.PATTERNS["uppersnake"]
-            if self.config.permissible_values_upper_case
-            else self.PATTERNS["snake"]
+            self.PATTERNS["uppersnake"] if self.config.permissible_values_upper_case else self.PATTERNS["snake"]
         )
 
         for class_name in schema_view.all_classes(imports=False).keys():

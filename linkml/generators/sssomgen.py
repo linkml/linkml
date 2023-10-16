@@ -121,9 +121,7 @@ class SSSOMGenerator(Generator):
                 default_prefix = self.schema_defaults[obj.from_schema]
                 for k, v in obj.permissible_values.items():
                     if v["meaning"]:
-                        subject_id = (
-                            default_prefix + ":" + subject_category + "#" + k.replace(" ", "")
-                        )
+                        subject_id = default_prefix + ":" + subject_category + "#" + k.replace(" ", "")
                         subject_label = k.replace(" ", "")
                         object_id = obj.permissible_values[k]["meaning"]
                         row_dict = {}

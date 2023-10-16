@@ -306,9 +306,7 @@ def cli(yamlfile, classes: List[str], max_hops: Optional[int], follow_references
         **args,
     )
     if classes:
-        print(
-            gen.serialize_classes(classes, follow_references=follow_references, max_hops=max_hops)
-        )
+        print(gen.serialize_classes(classes, follow_references=follow_references, max_hops=max_hops))
     else:
         print(gen.serialize())
 

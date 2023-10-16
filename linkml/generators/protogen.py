@@ -51,9 +51,7 @@ class ProtoGenerator(Generator):
     def end_class(self, cls: ClassDefinition) -> None:
         print(" }")
 
-    def visit_class_slot(
-        self, cls: ClassDefinition, aliased_slot_name: str, slot: SlotDefinition
-    ) -> None:
+    def visit_class_slot(self, cls: ClassDefinition, aliased_slot_name: str, slot: SlotDefinition) -> None:
         qual = "repeated " if slot.multivalued else ""
         slotname = lcamelcase(aliased_slot_name)
         slot_range = camelcase(slot.range)

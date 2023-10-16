@@ -24,17 +24,13 @@ class GenNamespaceTestCase(ClickTestCase):
             [],
             "meta_namespaces.py",
             filtr=metadata_filter,
-            comparator=lambda exp, act: compare_python(
-                exp, act, self.env.expected_path("meta_namespaces.py")
-            ),
+            comparator=lambda exp, act: compare_python(exp, act, self.env.expected_path("meta_namespaces.py")),
         )
         self.do_test(
             "-f py",
             "meta_namespaces.py",
             filtr=metadata_filter,
-            comparator=lambda exp, act: compare_python(
-                exp, act, self.env.expected_path("meta_namespaces.py")
-            ),
+            comparator=lambda exp, act: compare_python(exp, act, self.env.expected_path("meta_namespaces.py")),
         )
         self.do_test("-f xsv", "meta_error", expected_error=click.exceptions.BadParameter)
 

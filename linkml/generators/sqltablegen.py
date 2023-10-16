@@ -196,9 +196,7 @@ class SQLTableGenerator(Generator):
                         nullable=not s.required,
                     )
                     if include_comments:
-                        ddl_str += (
-                            f"--     * Slot: {sn} Description: {strip_newlines(s.description)}\n"
-                        )
+                        ddl_str += f"--     * Slot: {sn} Description: {strip_newlines(s.description)}\n"
                     if s.description:
                         col.comment = s.description
                     cols.append(col)

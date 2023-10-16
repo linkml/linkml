@@ -30,9 +30,7 @@ class MappingsGeneratorTestCase(GeneratorTestCase):
     @unittest.skipIf(SKIP_MARKDOWN_VALIDATION, SKIP_MARKDOWN_VALIDATION_REASON)
     def test_mappings_markdown(self):
         """Generate documentation for the meta_mappings"""
-        self.directory_generator(
-            "meta_mappings_docs", MarkdownGenerator, input_file=LOCAL_MAPPINGS_YAML_FILE
-        )
+        self.directory_generator("meta_mappings_docs", MarkdownGenerator, input_file=LOCAL_MAPPINGS_YAML_FILE)
 
     @staticmethod
     def _evaluate_shex_results(results: List[EvaluationResult]) -> bool:
@@ -48,9 +46,7 @@ class MappingsGeneratorTestCase(GeneratorTestCase):
                     print(r.reason)
         return success
 
-    @unittest.skip(
-        "test_base/test_mappings_generators.py: This test needs upgrading to latest harness"
-    )
+    @unittest.skip("test_base/test_mappings_generators.py: This test needs upgrading to latest harness")
     def test_mappings_rdf(self):
         """Test the imported mappings in the biolink metamodel"""
         test_dir = self.env.temp_file_path("mappings_rdf_test", is_dir=True)

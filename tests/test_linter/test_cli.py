@@ -36,9 +36,7 @@ classes:
         )
 
 
-def write_config_file(
-    name: str, extends_recommended: bool = False, tree_root_level: str = "error"
-) -> None:
+def write_config_file(name: str, extends_recommended: bool = False, tree_root_level: str = "error") -> None:
     with open(name, "w") as f:
         if extends_recommended:
             f.write(
@@ -135,9 +133,7 @@ class TestLinterCli(unittest.TestCase):
             write_schema_file()
             write_config_file(config_file, extends_recommended=False, tree_root_level="warning")
 
-            result = self.runner.invoke(
-                main, ["--config", config_file, "--ignore-warnings", SCHEMA_FILE]
-            )
+            result = self.runner.invoke(main, ["--config", config_file, "--ignore-warnings", SCHEMA_FILE])
             self.assertEqual(result.exit_code, 0)
             self.assertIn(
                 "warning  Schema does not have class with `tree_root: true`  (tree_root_class)",
@@ -150,9 +146,7 @@ class TestLinterCli(unittest.TestCase):
             write_schema_file()
             write_config_file(config_file, extends_recommended=False, tree_root_level="warning")
 
-            result = self.runner.invoke(
-                main, ["--config", config_file, "--max-warnings", 1, SCHEMA_FILE]
-            )
+            result = self.runner.invoke(main, ["--config", config_file, "--max-warnings", 1, SCHEMA_FILE])
             self.assertEqual(result.exit_code, 0)
             self.assertIn(
                 "warning  Schema does not have class with `tree_root: true`  (tree_root_class)",
@@ -165,9 +159,7 @@ class TestLinterCli(unittest.TestCase):
             write_schema_file()
             write_config_file(config_file, extends_recommended=False, tree_root_level="warning")
 
-            result = self.runner.invoke(
-                main, ["--config", config_file, "--max-warnings", 0, SCHEMA_FILE]
-            )
+            result = self.runner.invoke(main, ["--config", config_file, "--max-warnings", 0, SCHEMA_FILE])
             self.assertEqual(result.exit_code, 1)
             self.assertIn(
                 "warning  Schema does not have class with `tree_root: true`  (tree_root_class)",

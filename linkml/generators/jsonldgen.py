@@ -159,9 +159,7 @@ class JSONLDGenerator(Generator):
             # model_context = self.schema.source_file.replace('.yaml', '.prefixes.context.jsonld')
             # context = [METAMODEL_CONTEXT_URI, f'file://./{model_context}']
             # TODO: The _visit function above alters the schema in situ
-            add_prefixes = ContextGenerator(
-                self.original_schema, model=False, metadata=False
-            ).serialize()
+            add_prefixes = ContextGenerator(self.original_schema, model=False, metadata=False).serialize()
             add_prefixes_json = loads(add_prefixes)
             context = [METAMODEL_CONTEXT_URI, add_prefixes_json["@context"]]
         elif isinstance(context, str):  # Some of the older code doesn't do multiple contexts
@@ -179,9 +177,7 @@ class JSONLDGenerator(Generator):
                 context[ci] = "file://" + context[ci]
 
         if self.format == "jsonld":
-            self.schema["@context"] = (
-                context[0] if len(context) == 1 and not base_prefix else context
-            )
+            self.schema["@context"] = context[0] if len(context) == 1 and not base_prefix else context
             if base_prefix:
                 self.schema["@context"].append({"@base": base_prefix})
         # json_obj["@id"] = self.schema.id

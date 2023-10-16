@@ -160,7 +160,7 @@ ignore-words-list = 'mater,connexion,infarction'
 quiet-level = 3
 
 [tool.black]
-line-length = 100
+line-length = 120
 target-versions = ["py38", "py39", "py310", "py311"]
 force-exclude = '''
 /(

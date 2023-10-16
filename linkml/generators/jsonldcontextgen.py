@@ -53,9 +53,7 @@ class ContextGenerator(Generator):
     def __post_init__(self) -> None:
         super().__post_init__()
         if self.namespaces is None:
-            raise TypeError(
-                "Schema text must be supplied to context generator.  Preparsed schema will not work"
-            )
+            raise TypeError("Schema text must be supplied to context generator.  Preparsed schema will not work")
 
     def visit_schema(self, base: Optional[str] = None, output: Optional[str] = None, **_):
         # Add any explicitly declared prefixes
@@ -103,9 +101,7 @@ class ContextGenerator(Generator):
         context_content = {}
         if base:
             if "://" not in base:
-                self.context_body["@base"] = os.path.relpath(
-                    base, os.path.dirname(self.schema.source_file)
-                )
+                self.context_body["@base"] = os.path.relpath(base, os.path.dirname(self.schema.source_file))
             else:
                 self.context_body["@base"] = base
         if prefixes:
@@ -137,9 +133,7 @@ class ContextGenerator(Generator):
         self.add_mappings(cls)
         cls_uri_prefix, cls_uri_suffix = self.namespaces.prefix_suffix(cls.class_uri)
         if not self.default_ns or not cls_uri_prefix or cls_uri_prefix != self.default_ns:
-            class_def["@id"] = (
-                (cls_uri_prefix + ":" + cls_uri_suffix) if cls_uri_prefix else cls.class_uri
-            )
+            class_def["@id"] = (cls_uri_prefix + ":" + cls_uri_suffix) if cls_uri_prefix else cls.class_uri
             if cls_uri_prefix:
                 self.add_prefix(cls_uri_prefix)
         if class_def:

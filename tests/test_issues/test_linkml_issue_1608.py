@@ -17,9 +17,7 @@ def test_heterogeneous_collection(input_path):
 
     # read a YAML data file and instantiate it against the generated/serialized/compiled Database class
     # this performs SOME validation
-    database_instance = yaml_loader.loads(
-        input_path("linkml_issue_1608_data.yaml"), target_class=module.Database
-    )
+    database_instance = yaml_loader.loads(input_path("linkml_issue_1608_data.yaml"), target_class=module.Database)
 
     # print("\n")
     # print(yaml_dumper.dumps(database_instance))

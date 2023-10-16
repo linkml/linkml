@@ -27,9 +27,7 @@ def test_attribute_behavior(input_path, snapshot, snapshot_path):
     output = RDFGenerator(schema).serialize(context=[METAMODEL_CONTEXT_URI])
     assert output == snapshot(f"{name}.ttl")
 
-    output = OwlSchemaGenerator(schema, metaclasses=False).serialize(
-        context=[METAMODEL_CONTEXT_URI]
-    )
+    output = OwlSchemaGenerator(schema, metaclasses=False).serialize(context=[METAMODEL_CONTEXT_URI])
     assert output == snapshot(f"{name}.owl")
 
     g = Graph()

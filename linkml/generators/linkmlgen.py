@@ -73,8 +73,7 @@ class LinkmlGenerator(Generator):
             return yaml_str
         else:
             raise ValueError(
-                f"{self.format} is an invalid format. Use one of the following "
-                f"formats: {self.valid_formats}"
+                f"{self.format} is an invalid format. Use one of the following " f"formats: {self.valid_formats}"
             )
 
 

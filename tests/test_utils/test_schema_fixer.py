@@ -113,14 +113,10 @@ class SchemaFixerTestCase(unittest.TestCase):
             description="unique identifier",
         )
         # add a slot usage for full_name that is intentionally partially redundant with the main slot
-        c.slot_usage[FULL_NAME] = SlotDefinition(
-            FULL_NAME, range="string", description="full name", pattern="^.*$"
-        )
+        c.slot_usage[FULL_NAME] = SlotDefinition(FULL_NAME, range="string", description="full name", pattern="^.*$")
         # add a slot usage that is fully redundant
         c.slot_usage[DESC] = SlotDefinition(DESC, range="string")
-        b.add_slot(deepcopy(slot1), replace_if_present=True).add_slot(
-            deepcopy(slot2), replace_if_present=True
-        )
+        b.add_slot(deepcopy(slot1), replace_if_present=True).add_slot(deepcopy(slot2), replace_if_present=True)
         b.add_defaults()
         fixer = SchemaFixer()
         fixer.remove_redundant_slot_usage(s)

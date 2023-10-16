@@ -58,9 +58,7 @@ class SummaryGenerator(Generator):
         )
         return True
 
-    def visit_class_slot(
-        self, cls: ClassDefinition, aliased_slot_name: str, slot: SlotDefinition
-    ) -> None:
+    def visit_class_slot(self, cls: ClassDefinition, aliased_slot_name: str, slot: SlotDefinition) -> None:
         min_card = 1 if slot.required else 0
         max_card = "*" if slot.multivalued else 1
         abstract = "A" if slot.abstract or slot.mixin else ""

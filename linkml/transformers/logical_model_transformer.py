@@ -324,9 +324,7 @@ class LogicalModelTransformer(ModelTransformer):
                     t.is_a = None
         if self.tidy_default_range:
             target_schema.default_range = None
-            any_proxy_classes = [
-                c for c in target_schema.classes.values() if c.class_uri == "linkml:Any"
-            ]
+            any_proxy_classes = [c for c in target_schema.classes.values() if c.class_uri == "linkml:Any"]
             if any_proxy_classes:
                 for c in any_proxy_classes:
                     del target_schema.classes[c.name]
@@ -342,9 +340,7 @@ class LogicalModelTransformer(ModelTransformer):
         attributes: Dict[SlotDefinitionName, SlotDefinition] = {}
         for anc in anc_classes:
             top_level_slots = [(s, target_schema.slots[s]) for s in anc.slots]
-            for slot_name, slot_expr in (
-                list(anc.attributes.items()) + list(anc.slot_usage.items()) + top_level_slots
-            ):
+            for slot_name, slot_expr in list(anc.attributes.items()) + list(anc.slot_usage.items()) + top_level_slots:
                 if slot_name not in attributes:
                     attributes[slot_name] = SlotDefinition(slot_name)
                 sx = attributes[slot_name]
@@ -440,9 +436,7 @@ class LogicalModelTransformer(ModelTransformer):
                 x = logictools.simplify_full(x)
                 logger.debug(f"Simplified: {x}")
                 if logictools.is_contradiction(x):
-                    raise UnsatisfiableAttribute(
-                        f"Attribute {cls.name}.{att.name} is unsatisfiable"
-                    )
+                    raise UnsatisfiableAttribute(f"Attribute {cls.name}.{att.name} is unsatisfiable")
                 self._simplify_member_ofs(x)
                 logger.debug(f"Simplified member of: {x}")
                 simplified_att = self._from_logical_expression(x)
@@ -488,9 +482,7 @@ class LogicalModelTransformer(ModelTransformer):
                 logger.warning(f"Unknown class {x} in {elements}")
         return [x for x in elements if x not in redundant]
 
-    def _type_descendants(
-        self, type_name: str, imports=True, reflexive=True, depth_first=True
-    ) -> List[str]:
+    def _type_descendants(self, type_name: str, imports=True, reflexive=True, depth_first=True) -> List[str]:
         # TODO: move this to schemaview
         sv = self.schemaview
         from linkml_runtime.utils.schemaview import _closure
@@ -506,9 +498,7 @@ class LogicalModelTransformer(ModelTransformer):
             depth_first=depth_first,
         )
 
-    def _enum_descendants(
-        self, enum_name: str, imports=True, reflexive=True, depth_first=True
-    ) -> List[str]:
+    def _enum_descendants(self, enum_name: str, imports=True, reflexive=True, depth_first=True) -> List[str]:
         # TODO: move this to schemaview
         sv = self.schemaview
         from linkml_runtime.utils.schemaview import _closure
@@ -559,32 +549,16 @@ class LogicalModelTransformer(ModelTransformer):
                 elts = [rn]
             exprs.append(logictools.IsIn(type_var, elts))
         if slot_expression.all_of:
-            exprs.append(
-                logictools.And(
-                    *[self._as_logical_expression(subx) for subx in slot_expression.all_of]
-                )
-            )
+            exprs.append(logictools.And(*[self._as_logical_expression(subx) for subx in slot_expression.all_of]))
         if slot_expression.exactly_one_of:
             # TODO: disjointness
-            exprs.append(
-                logictools.Or(
-                    *[self._as_logical_expression(subx) for subx in slot_expression.exactly_one_of]
-                )
-            )
+            exprs.append(logictools.Or(*[self._as_logical_expression(subx) for subx in slot_expression.exactly_one_of]))
         if slot_expression.none_of:
             exprs.append(
-                logictools.Not(
-                    logictools.Or(
-                        *[self._as_logical_expression(subx) for subx in slot_expression.none_of]
-                    )
-                )
+                logictools.Not(logictools.Or(*[self._as_logical_expression(subx) for subx in slot_expression.none_of]))
             )
         if slot_expression.any_of:
-            exprs.append(
-                logictools.Or(
-                    *[self._as_logical_expression(subx) for subx in slot_expression.any_of]
-                )
-            )
+            exprs.append(logictools.Or(*[self._as_logical_expression(subx) for subx in slot_expression.any_of]))
         for p in HERITABLE_METASLOT:
             if p in [
                 "range",
@@ -619,9 +593,7 @@ class LogicalModelTransformer(ModelTransformer):
             ase.all_of.extend(remaining_all_of)
             return ase
         elif isinstance(expr, logictools.Or):
-            return AnonymousSlotExpression(
-                any_of=[self._from_logical_expression(e) for e in expr.operands]
-            )
+            return AnonymousSlotExpression(any_of=[self._from_logical_expression(e) for e in expr.operands])
         elif isinstance(expr, logictools.Not):
             return AnonymousSlotExpression(none_of=[self._from_logical_expression(expr.operand)])
         elif isinstance(expr, logictools.Eq):
@@ -653,9 +625,7 @@ class LogicalModelTransformer(ModelTransformer):
                     elif len(val) == 1:
                         return AnonymousSlotExpression(range=val[0])
                     else:
-                        return AnonymousSlotExpression(
-                            any_of=[AnonymousSlotExpression(range=v) for v in sorted(val)]
-                        )
+                        return AnonymousSlotExpression(any_of=[AnonymousSlotExpression(range=v) for v in sorted(val)])
                 else:
                     raise ValueError(f"Unknown predicate {expr.predicate} for {var}")
             else:
@@ -690,9 +660,7 @@ class LogicalModelTransformer(ModelTransformer):
         multivalued = root_slot.multivalued
         s = ""
         if attribute.any_of:
-            union_terms = [
-                self._att_as_python_expression(x, root_slot, stack + [x]) for x in attribute.any_of
-            ]
+            union_terms = [self._att_as_python_expression(x, root_slot, stack + [x]) for x in attribute.any_of]
             s = f"Union[{', '.join(union_terms)}]"
         else:
             if attribute.range:

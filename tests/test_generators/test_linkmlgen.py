@@ -54,7 +54,5 @@ def test_structured_pattern(input_path):
     pattern_gen.serialize()
     # log yaml_filename so developers can look at its contents
     assert pattern_gen.schemaview.get_slot("id").pattern == r"^P\d{7}"
-    assert (
-        pattern_gen.schemaview.get_slot("height").pattern == "\\d+[\\.\\d+] (centimeter|meter|inch)"
-    )
+    assert pattern_gen.schemaview.get_slot("height").pattern == "\\d+[\\.\\d+] (centimeter|meter|inch)"
     assert pattern_gen.schemaview.get_slot("weight").pattern == "\\d+[\\.\\d+] (kg|g|lbs|stone)"
