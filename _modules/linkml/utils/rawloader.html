@@ -357,12 +357,8 @@
     <span class="c1"># Passing a URL or file name</span>
     <span class="k">if</span> <span class="n">detect_type</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">base_dir</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="n">HBType</span><span class="o">.</span><span class="n">STRING</span><span class="p">,</span> <span class="n">HBType</span><span class="o">.</span><span class="n">STRINGABLE</span><span class="p">):</span>
         <span class="k">assert</span> <span class="n">source_file</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;source_file parameter not allowed if data is a file or URL&quot;</span>
-        <span class="k">assert</span> <span class="p">(</span>
-            <span class="n">source_file_date</span> <span class="ow">is</span> <span class="kc">None</span>
-        <span class="p">),</span> <span class="s2">&quot;source_file_date parameter not allowed if data is a file or URL&quot;</span>
-        <span class="k">assert</span> <span class="p">(</span>
-            <span class="n">source_file_size</span> <span class="ow">is</span> <span class="kc">None</span>
-        <span class="p">),</span> <span class="s2">&quot;source_file_size parameter not allowed if data is a file or URL&quot;</span>
+        <span class="k">assert</span> <span class="n">source_file_date</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;source_file_date parameter not allowed if data is a file or URL&quot;</span>
+        <span class="k">assert</span> <span class="n">source_file_size</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;source_file_size parameter not allowed if data is a file or URL&quot;</span>
 
     <span class="c1"># Convert the input into a valid SchemaDefinition</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">)):</span>
@@ -399,9 +395,7 @@
         <span class="n">schema</span><span class="o">.</span><span class="n">source_file</span> <span class="o">=</span> <span class="n">schema_metadata</span><span class="o">.</span><span class="n">source_file</span>
         <span class="n">src_date</span> <span class="o">=</span> <span class="n">schema_metadata</span><span class="o">.</span><span class="n">source_file_date</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">schema</span><span class="o">.</span><span class="n">source_file_date</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="n">parse</span><span class="p">(</span><span class="n">src_date</span><span class="p">)</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="n">DATETIME_FORMAT</span><span class="p">)</span> <span class="k">if</span> <span class="n">src_date</span> <span class="k">else</span> <span class="kc">None</span>
-            <span class="p">)</span>
+            <span class="n">schema</span><span class="o">.</span><span class="n">source_file_date</span> <span class="o">=</span> <span class="n">parse</span><span class="p">(</span><span class="n">src_date</span><span class="p">)</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="n">DATETIME_FORMAT</span><span class="p">)</span> <span class="k">if</span> <span class="n">src_date</span> <span class="k">else</span> <span class="kc">None</span>
         <span class="k">except</span> <span class="n">ParserError</span><span class="p">:</span>
             <span class="n">schema</span><span class="o">.</span><span class="n">source_file_date</span> <span class="o">=</span> <span class="n">src_date</span>
         <span class="n">schema</span><span class="o">.</span><span class="n">source_file_size</span> <span class="o">=</span> <span class="n">schema_metadata</span><span class="o">.</span><span class="n">source_file_size</span>

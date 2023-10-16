@@ -679,9 +679,7 @@
     <span class="n">obj</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="nb">input</span><span class="p">,</span> <span class="n">target_class</span><span class="o">=</span><span class="n">py_target_class</span><span class="p">,</span> <span class="o">**</span><span class="n">inargs</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">validate</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">schema</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
-                <span class="s2">&quot;--schema must be passed in order to validate. Suppress with --no-validate&quot;</span>
-            <span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;--schema must be passed in order to validate. Suppress with --no-validate&quot;</span><span class="p">)</span>
         <span class="c1"># TODO: use validator framework</span>
         <span class="n">validation</span><span class="o">.</span><span class="n">validate_object</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">schema</span><span class="p">)</span>
 

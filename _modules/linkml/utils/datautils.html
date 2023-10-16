@@ -404,9 +404,7 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
 
-<div class="viewcode-block" id="infer_index_slot"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.datautils.infer_index_slot">[docs]</a><span class="k">def</span> <span class="nf">infer_index_slot</span><span class="p">(</span>
-    <span class="n">sv</span><span class="p">:</span> <span class="n">SchemaView</span><span class="p">,</span> <span class="n">root_class</span><span class="p">:</span> <span class="n">ClassDefinitionName</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">SlotDefinitionName</span><span class="p">]:</span>
+<div class="viewcode-block" id="infer_index_slot"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.datautils.infer_index_slot">[docs]</a><span class="k">def</span> <span class="nf">infer_index_slot</span><span class="p">(</span><span class="n">sv</span><span class="p">:</span> <span class="n">SchemaView</span><span class="p">,</span> <span class="n">root_class</span><span class="p">:</span> <span class="n">ClassDefinitionName</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">SlotDefinitionName</span><span class="p">]:</span>
     <span class="n">index_slots</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">sn</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">class_slots</span><span class="p">(</span><span class="n">root_class</span><span class="p">):</span>
         <span class="n">slot</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">induced_slot</span><span class="p">(</span><span class="n">sn</span><span class="p">,</span> <span class="n">root_class</span><span class="p">)</span>
