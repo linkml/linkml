@@ -319,7 +319,6 @@ class SchemaFixer:
             new_slots[str(slot_name)] = harmonized_slot
         return new_slots
 
-
     def remove_unused_prefixes(self, schema: SchemaDefinition):
         raise NotImplementedError
 
@@ -412,7 +411,7 @@ def fix_names(input_schema, **kwargs):
 def implicit_slots(input_schema, **kwargs):
     """Find implicit slots in schema"""
     with open(input_schema) as f:
-        schema_dict = yaml.safe_load(f)
+        yaml.safe_load(f)
     sv = SchemaView(input_schema)
     fixer = SchemaFixer()
     slots = fixer.implicit_slots(sv.schema)

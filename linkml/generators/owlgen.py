@@ -15,13 +15,15 @@ from linkml_runtime.linkml_model.meta import (
     AnonymousTypeExpression,
     ClassDefinition,
     ClassDefinitionName,
+    ClassRule,
     Definition,
     EnumDefinition,
     EnumDefinitionName,
+    PermissibleValue,
     SlotDefinition,
     SlotDefinitionName,
     TypeDefinition,
-    TypeDefinitionName, PermissibleValue, ClassRule,
+    TypeDefinitionName,
 )
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.introspection import package_schemaview
@@ -343,13 +345,17 @@ class OwlSchemaGenerator(Generator):
                 uk_props_listnode = BNode()
                 Collection(self.graph, uk_props_listnode, uk_props)
                 self.graph.add((subject_expr, OWL.hasKey, uk_props_listnode))
+
         def condition_to_bnode(expr: AnonymousClassExpression) -> Optional[BNode]:
-            ixn_listnode = self.transform_class_expression(expr, quantifier_predicate=OWL.someValuesFrom)
+            ixn_listnode = self.transform_class_expression(
+                expr, quantifier_predicate=OWL.someValuesFrom
+            )
             if not ixn_listnode:
                 return None
             if expr.is_a:
                 ixn_listnode = self._intersection_of([ixn_listnode, self._class_uri(expr.is_a)])
             return ixn_listnode
+
         for rule in cls.rules:
             pre_node = condition_to_bnode(rule.preconditions)
             pre_node = self._intersection_of([pre_node, subject_expr])
@@ -376,7 +382,9 @@ class OwlSchemaGenerator(Generator):
                 self.graph.add((subject_expr, RDFS.subClassOf, superclass_expr))
 
     def transform_class_expression(
-        self, cls: Union[ClassDefinition, AnonymousClassExpression], quantifier_predicate: URIRef = OWL.allValuesFrom,
+        self,
+        cls: Union[ClassDefinition, AnonymousClassExpression],
+        quantifier_predicate: URIRef = OWL.allValuesFrom,
     ) -> BNode:
         """
         Transform a LinkML class expression into an OWL expression.
@@ -390,7 +398,11 @@ class OwlSchemaGenerator(Generator):
         graph = self.graph
         sv = self.schemaview
         if isinstance(cls, ClassDefinition):
-            own_slots = list(cls.slot_usage.values()) + list(cls.attributes.values()) + list(cls.slot_conditions.values())
+            own_slots = (
+                list(cls.slot_usage.values())
+                + list(cls.attributes.values())
+                + list(cls.slot_conditions.values())
+            )
             for slot_name in cls.slots:
                 if slot_name not in cls.slot_usage:
                     slot = sv.get_slot(slot_name)
@@ -741,7 +753,9 @@ class OwlSchemaGenerator(Generator):
                     g.add((pv_uri, RDF.type, enum_uri))
                 has_parent = False
                 if pv.is_a:
-                    self.graph.add((pv_uri, RDFS.subClassOf, self._permissible_value_uri(pv.is_a, enum_uri, e)))
+                    self.graph.add(
+                        (pv_uri, RDFS.subClassOf, self._permissible_value_uri(pv.is_a, enum_uri, e))
+                    )
                     has_parent = True
                 for mixin in sorted(pv.mixins):
                     parent = self._permissible_value_uri(mixin, enum_uri, e)
@@ -751,7 +765,9 @@ class OwlSchemaGenerator(Generator):
                         has_parent = True
                     self.graph.add((enum_uri, RDFS.subClassOf, parent))
                 if not has_parent and self.add_root_classes:
-                    self.graph.add((pv_uri, RDFS.subClassOf, URIRef(PermissibleValue.class_class_uri)))
+                    self.graph.add(
+                        (pv_uri, RDFS.subClassOf, URIRef(PermissibleValue.class_class_uri))
+                    )
         if all([pv is not None for pv in pv_uris]):
             self._union_of(pv_uris, node=enum_uri)
             for pv_uri in pv_uris:
@@ -771,7 +787,12 @@ class OwlSchemaGenerator(Generator):
             body.extend(self._add_rule_condition(subject, post, cls))
         self._swrl_rule(subject, body, head)
 
-    def _add_rule_condition(self, subject: Union[URIRef, BNode], condition: AnonymousClassExpression, cls: ClassDefinition) -> List[BNode]:
+    def _add_rule_condition(
+        self,
+        subject: Union[URIRef, BNode],
+        condition: AnonymousClassExpression,
+        cls: ClassDefinition,
+    ) -> List[BNode]:
         for slot_name, expr in condition.slot_conditions.items():
             var = self._swrl_var(slot_name)
             if expr.maximum_value is not None:
@@ -1000,11 +1021,15 @@ class OwlSchemaGenerator(Generator):
             return XSD[expanded[4:]]
         return URIRef(expanded)
 
-    def _permissible_value_uri(self, pv: Union[str, EnumDefinition], enum_uri: str, enum_def: EnumDefinition=None) -> URIRef:
+    def _permissible_value_uri(
+        self, pv: Union[str, EnumDefinition], enum_uri: str, enum_def: EnumDefinition = None
+    ) -> URIRef:
         if isinstance(pv, str):
             pv_name = pv
             if enum_def is None:
-                raise ValueError(f"Cannot find permissible value: {pv}, no enum definition provided")
+                raise ValueError(
+                    f"Cannot find permissible value: {pv}, no enum definition provided"
+                )
             pvs = [pv for k, pv in enum_def.permissible_values.items() if k == pv_name]
             if len(pvs) != 1:
                 raise ValueError(f"Cannot find permissible value: {pv_name}, got: {pvs}")

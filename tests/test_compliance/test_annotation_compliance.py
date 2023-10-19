@@ -15,15 +15,18 @@ from tests.test_compliance.test_compliance import CLASS_C, CORE_FRAMEWORKS, SLOT
 
 
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
-@pytest.mark.parametrize("name,class_annotations,slot_annotations", [
-    ("empty", {}, {}),
-    ("slot_num", {"foo": 1}, {}),
-    ("slot_str", {"foo": "v1"}, {}),
-    ("class_num", {}, {"foo": 1}),
-    ("class_str", {}, {"foo": "v1"}),
-    ("slot_incomplete", {"foo": None}, None),
-    ("class_incomplete", None, {"foo": None}),
-])
+@pytest.mark.parametrize(
+    "name,class_annotations,slot_annotations",
+    [
+        ("empty", {}, {}),
+        ("slot_num", {"foo": 1}, {}),
+        ("slot_str", {"foo": "v1"}, {}),
+        ("class_num", {}, {"foo": 1}),
+        ("class_str", {}, {"foo": "v1"}),
+        ("slot_incomplete", {"foo": None}, None),
+        ("class_incomplete", None, {"foo": None}),
+    ],
+)
 @pytest.mark.parametrize("is_valid", [True, False])
 def test_annotation(framework, name, slot_annotations, class_annotations, is_valid):
     """
@@ -46,10 +49,11 @@ def test_annotation(framework, name, slot_annotations, class_annotations, is_val
     :param include_meaning: whether to include the meaning in the annotation
     :return:
     """
+
     def anns(tvs: Optional[dict]) -> Optional[dict]:
         if tvs is None:
             return None
-        return { k: {"tag":k, **{"value": v if v else {}}} for k, v in tvs.items() }
+        return {k: {"tag": k, **{"value": v if v else {}}} for k, v in tvs.items()}
 
     if is_valid:
         class_annotations = copy(class_annotations) or {}

@@ -364,21 +364,21 @@ def _obj_within_obj(expected: Dict, actual: Dict) -> bool:
 
 
 def _schema_out_path(schema: Dict, parent=False) -> Path:
-    f"""
+    """
     Get the output path for a schema.
-    
+
     This is derived from the schema name (which is already constrained to be
     filesystem safe).
-    
-    :param schema: 
-    :return: 
+
+    :param schema:
+    :return:
     """
     toks = schema["name"].split("-")
     test_name = toks[0]
     schema_name = "-".join(toks[1:])
     out_dir = OUTPUT_DIR / test_name
     if not parent:
-        out_dir = out_dir  / schema_name
+        out_dir = out_dir / schema_name
     out_dir.mkdir(parents=True, exist_ok=True)
     return out_dir
 
@@ -401,7 +401,7 @@ def _make_schema(
     prefixes: Dict = None,
     core_elements: List = None,
     post_process: Callable = None,
-    merge_type_imports = True,
+    merge_type_imports=True,
     **kwargs,
 ) -> Tuple[Dict, List]:
     """
@@ -485,7 +485,11 @@ def _make_schema(
         stream.write(f"# {schema_name.replace('test_', '')}\n\n")
         stream.write(f"{desc}\n\n")
         schema_minimal = deepcopy(schema)
-        builtin = [tn for tn, t in schema_minimal.get("types", {}).items() if t.get("from_schema", None) == "https://w3id.org/linkml/types"]
+        builtin = [
+            tn
+            for tn, t in schema_minimal.get("types", {}).items()
+            if t.get("from_schema", None) == "https://w3id.org/linkml/types"
+        ]
         for t in builtin:
             del schema_minimal["types"][t]
         if "imports" not in schema_minimal:
@@ -891,7 +895,9 @@ def robot_check_coherency(
 
 
 TREE_NODE = Tuple[int]
-def generate_tree_nodes(depth=3, num_siblings=2, path: List[int]=None) -> Iterator[TREE_NODE]:
+
+
+def generate_tree_nodes(depth=3, num_siblings=2, path: List[int] = None) -> Iterator[TREE_NODE]:
     """
     Generate a tree of data names, with depth `depth`.
 
@@ -902,9 +908,11 @@ def generate_tree_nodes(depth=3, num_siblings=2, path: List[int]=None) -> Iterat
     if path is None:
         path = [0]
     yield tuple(path)
-    for i in range(1, num_siblings+1):
+    for i in range(1, num_siblings + 1):
         if depth > 0:
-            yield from generate_tree_nodes(depth=depth-1, num_siblings=num_siblings, path=path + [i])
+            yield from generate_tree_nodes(
+                depth=depth - 1, num_siblings=num_siblings, path=path + [i]
+            )
 
 
 def generate_tree(depth=3, num_siblings=2, prefix="N") -> Iterator[Tuple[str, List[str]]]:
@@ -915,8 +923,10 @@ def generate_tree(depth=3, num_siblings=2, prefix="N") -> Iterator[Tuple[str, Li
     :return:
     """
     assert depth >= 0
+
     def node_id(path):
         return prefix + "".join(str(i) for i in path)
+
     for path in generate_tree_nodes(depth=depth, num_siblings=num_siblings):
         assert len(path) > 0
         if len(path) == 1:

@@ -9,13 +9,15 @@ from copy import deepcopy
 import pytest
 
 from tests.test_compliance.helper import (
+    JSON_SCHEMA,
     PYDANTIC,
     PYTHON_DATACLASSES,
     SQL_DDL_POSTGRES,
     SQL_DDL_SQLITE,
     ValidationBehavior,
     check_data,
-    validated_schema, JSON_SCHEMA, generate_tree,
+    generate_tree,
+    validated_schema,
 )
 from tests.test_compliance.test_compliance import CLASS_C, CORE_FRAMEWORKS, SLOT_S1
 
@@ -51,7 +53,7 @@ def test_enum(framework, enum_name, enum_desc, pvs, value, include_meaning):
 
     def _make_pv(_pv_name, pv_meaning, pv_description):
         pv = {
-            #"meaning": pv_meaning,
+            # "meaning": pv_meaning,
             "description": pv_description,
         }
         if include_meaning:
@@ -66,7 +68,9 @@ def test_enum(framework, enum_name, enum_desc, pvs, value, include_meaning):
             "description": enum_desc,
             "permissible_values": {pv[0]: _make_pv(*pv) for pv in pvs},
             "_mappings": {
-                PYDANTIC: f"class {safe_enum_name}(str, Enum)" if pvs else f"class {safe_enum_name}(str)",
+                PYDANTIC: f"class {safe_enum_name}(str, Enum)"
+                if pvs
+                else f"class {safe_enum_name}(str)",
                 PYTHON_DATACLASSES: f"class {safe_enum_name}(EnumDefinitionImpl)",
                 SQL_DDL_POSTGRES: f'CREATE TYPE "{enum_name}" AS ENUM',
             },
@@ -120,16 +124,21 @@ def test_enum(framework, enum_name, enum_desc, pvs, value, include_meaning):
 @pytest.mark.parametrize("include_meaning", [True, False])
 @pytest.mark.parametrize("use_mixins", [False, True])
 @pytest.mark.parametrize("propagate_down", [False, True])
-@pytest.mark.parametrize("data_name,data,is_valid", [
-    ("empty", {}, True),
-    ("1", {"slot_Enum0": "Enum0_1"}, True),
-    ("2", {"slot_Enum0": "Enum01_1"}, False),
-    ("3", {"slot_Enum0222": "Enum0222_1"}, True),
-    ("4", {"slot_Enum0222": "Enum022_1"}, True),
-    ("5", {"slot_Enum022": "Enum0222_1"}, False),
-])
+@pytest.mark.parametrize(
+    "data_name,data,is_valid",
+    [
+        ("empty", {}, True),
+        ("1", {"slot_Enum0": "Enum0_1"}, True),
+        ("2", {"slot_Enum0": "Enum01_1"}, False),
+        ("3", {"slot_Enum0222": "Enum0222_1"}, True),
+        ("4", {"slot_Enum0222": "Enum022_1"}, True),
+        ("5", {"slot_Enum022": "Enum0222_1"}, False),
+    ],
+)
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
-def test_enum_hierarchy(framework, use_mixins, include_meaning, propagate_down, data_name, data, is_valid):
+def test_enum_hierarchy(
+    framework, use_mixins, include_meaning, propagate_down, data_name, data, is_valid
+):
     """
     Tests behavior of enums.
 
@@ -143,8 +152,7 @@ def test_enum_hierarchy(framework, use_mixins, include_meaning, propagate_down, 
     """
 
     def _make_pv(_pv_name, pv_meaning=None, pv_description=None):
-        pv = {
-        }
+        pv = {}
         if pv_description:
             pv["description"] = pv_description
         if include_meaning and pv_meaning:
@@ -167,9 +175,7 @@ def test_enum_hierarchy(framework, use_mixins, include_meaning, propagate_down, 
     atts = {}
     for enum_name, parents in tree:
         pvs = {f"{enum_name}_{i}": _make_pv(f"{enum_name}_{i}") for i in range(1, 3)}
-        enums[enum_name] = {
-            "permissible_values": pvs
-        }
+        enums[enum_name] = {"permissible_values": pvs}
         if parents:
             if use_mixins:
                 enums[enum_name]["mixins"] = parents
@@ -184,14 +190,14 @@ def test_enum_hierarchy(framework, use_mixins, include_meaning, propagate_down, 
         # Note: assumes tree is ordered
         for child, parents in tree:
             for parent in parents:
-                enums[child]["permissible_values"].update(deepcopy(enums[parent]["permissible_values"]))
+                enums[child]["permissible_values"].update(
+                    deepcopy(enums[parent]["permissible_values"])
+                )
     else:
         pytest.skip("validation of inference of permissible values not yet implemented")
 
     classes = {
-        CLASS_C: {
-            "attributes": atts
-        },
+        CLASS_C: {"attributes": atts},
     }
 
     schema = validated_schema(
@@ -218,4 +224,3 @@ def test_enum_hierarchy(framework, use_mixins, include_meaning, propagate_down, 
         expected_behavior=expected_behavior,
         description=data_name,
     )
-

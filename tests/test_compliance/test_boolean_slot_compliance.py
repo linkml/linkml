@@ -5,12 +5,13 @@ import pytest
 
 from tests.test_compliance.helper import (
     JSON_SCHEMA,
+    OWL,
     PYDANTIC,
     PYTHON_DATACLASSES,
     SQL_DDL_SQLITE,
     ValidationBehavior,
     check_data,
-    validated_schema, OWL,
+    validated_schema,
 )
 from tests.test_compliance.test_compliance import (
     CLASS_ANY,
@@ -20,7 +21,11 @@ from tests.test_compliance.test_compliance import (
     CLASS_U2,
     CORE_FRAMEWORKS,
     SLOT_S1,
-    SLOT_S2, CLASS_C1, CLASS_C2, SLOT_S3, CLASS_C1a, CLASS_C1b, SLOT_S1a, SLOT_S1b,
+    SLOT_S2,
+    CLASS_C1a,
+    CLASS_C1b,
+    SLOT_S1a,
+    SLOT_S1b,
 )
 
 
@@ -446,12 +451,12 @@ def test_class_any_of(framework, data_name, s1value, s2value, is_valid):
                         },
                     },
                 },
-            ]
+            ],
         },
     }
     schema = validated_schema(
         test_class_any_of,
-        f"default",
+        "default",
         framework,
         classes=classes,
         slots=slots,
@@ -470,8 +475,9 @@ def test_class_any_of(framework, data_name, s1value, s2value, is_valid):
         target_class=CLASS_C,
         expected_behavior=expected_behavior,
         description=f"validity {is_valid} check for value {s1value}, {s2value}",
-        #exclude_rdf=True,
+        # exclude_rdf=True,
     )
+
 
 @pytest.mark.parametrize(
     "value",
@@ -506,12 +512,15 @@ def test_min_max(framework, min_val, max_val, equals_number: Optional[int], valu
                     "maximum_value": max_val,
                     "equals_number": equals_number,
                     "_mappings": {
-                        PYDANTIC: f"{SLOT_S1}: int = Field(..., ge={min_val}, le={max_val})" if not equals_number else ""
+                        PYDANTIC: f"{SLOT_S1}: int = Field(..., ge={min_val}, le={max_val})"
+                        if not equals_number
+                        else ""
                     },
                 },
             },
         },
     }
+
     def between(x, low, high) -> bool:
         if x is None:
             return True
@@ -520,6 +529,7 @@ def test_min_max(framework, min_val, max_val, equals_number: Optional[int], valu
         if high is not None and x > high:
             return False
         return True
+
     satisfiable = between(equals_number, min_val, max_val)
     if min_val is not None and max_val is not None:
         satisfiable = min_val <= max_val

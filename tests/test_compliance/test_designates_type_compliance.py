@@ -14,9 +14,10 @@ from tests.test_compliance.test_compliance import (
     CORE_FRAMEWORKS,
     SLOT_TYPE,
     CLASS_C1a,
+    CLASS_C1a1,
     CLASS_C1b,
     SLOT_S1a,
-    SLOT_S1b, CLASS_C1a1,
+    SLOT_S1b,
 )
 
 

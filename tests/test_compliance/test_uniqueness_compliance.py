@@ -1,11 +1,12 @@
 import pytest
 
 from tests.test_compliance.helper import (
+    OWL,
     PYTHON_DATACLASSES,
     SQL_DDL_SQLITE,
     ValidationBehavior,
     check_data,
-    validated_schema, OWL,
+    validated_schema,
 )
 from tests.test_compliance.test_compliance import (
     CLASS_C,
@@ -173,9 +174,11 @@ def test_unique_keys(
             },
             "_mappings": {
                 SQL_DDL_SQLITE: f"UNIQUE ({SLOT_S1}, {SLOT_S2})",
-                OWL: ("@prefix ex: <http://example.org/> ."
-                      "@prefix owl: <http://www.w3.org/2002/07/owl#> ."
-                      "ex:C owl:hasKey (ex:s1 ex:s2) , (ex:s1 ex:s3) .")
+                OWL: (
+                    "@prefix ex: <http://example.org/> ."
+                    "@prefix owl: <http://www.w3.org/2002/07/owl#> ."
+                    "ex:C owl:hasKey (ex:s1 ex:s2) , (ex:s1 ex:s3) ."
+                ),
             },
         },
     }
