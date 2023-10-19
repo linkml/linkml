@@ -195,9 +195,7 @@ class DocGenerator(Generator):
         template = self._get_template("schema")
         for schema_name in sv.imports_closure():
             imported_schema = sv.schema_map.get(schema_name)
-            out_str = template.render(
-                gen=self, schema=imported_schema, schemaview=sv, **template_vars
-            )
+            out_str = template.render(gen=self, schema=imported_schema, schemaview=sv, **template_vars)
             self._write(out_str, directory, imported_schema.name)
         template = self._get_template("class")
         for cn, c in sv.all_classes().items():
@@ -398,9 +396,7 @@ class DocGenerator(Generator):
         return list(map(self.link, e_list))
 
     def _exclude_type(self, t: TypeDefinition) -> bool:
-        return self._is_external(t) and not self.schemaview.schema.id.startswith(
-            "https://w3id.org/linkml/"
-        )
+        return self._is_external(t) and not self.schemaview.schema.id.startswith("https://w3id.org/linkml/")
 
     def _is_external(self, element: Element) -> bool:
         # note: this is currently incomplete. See: https://github.com/linkml/linkml/issues/782
@@ -612,9 +608,7 @@ class DocGenerator(Generator):
             return yaml_dumper.dumps(element)
         else:
             if not isinstance(element, ClassDefinition):
-                raise ValueError(
-                    f"Inferred only applicable for classes, not {element.name} {type(element)}"
-                )
+                raise ValueError(f"Inferred only applicable for classes, not {element.name} {type(element)}")
             # TODO: move this code to schemaview
             c = deepcopy(element)
             attrs = self.schemaview.class_induced_slots(c.name)
@@ -779,8 +773,7 @@ class DocGenerator(Generator):
         :return: list of all own attributes of a class
         """
         return [
-            self.inject_slot_info(self.schemaview.induced_slot(sn, cls.name))
-            for sn in self.get_direct_slot_names(cls)
+            self.inject_slot_info(self.schemaview.induced_slot(sn, cls.name)) for sn in self.get_direct_slot_names(cls)
         ]
 
     def get_indirect_slots(self, cls: ClassDefinition) -> List[SlotDefinition]:
@@ -892,9 +885,7 @@ class DocGenerator(Generator):
 )
 @click.version_option(__version__, "-V", "--version")
 @click.command()
-def cli(
-    yamlfile, directory, dialect, template_directory, use_slot_uris, hierarchical_class_view, **args
-):
+def cli(yamlfile, directory, dialect, template_directory, use_slot_uris, hierarchical_class_view, **args):
     """Generate documentation folder from a LinkML YAML schema
 
     Currently a default set of templates for markdown is provided (see the

@@ -47,9 +47,7 @@ class ShaclGenerator(Generator):
 
     def serialize(self, **args) -> None:
         g = self.as_graph()
-        data = g.serialize(
-            format="turtle" if self.format in ["owl", "ttl"] else self.format
-        ).decode()
+        data = g.serialize(format="turtle" if self.format in ["owl", "ttl"] else self.format).decode()
         return data
 
     def as_graph(self) -> None:

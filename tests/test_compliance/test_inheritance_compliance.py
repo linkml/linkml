@@ -82,9 +82,7 @@ from tests.test_compliance.test_compliance import (
     ],
 )
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
-def test_basic_class_inheritance(
-    framework, description, cls: str, object, is_valid, parent_is_abstract
-):
+def test_basic_class_inheritance(framework, description, cls: str, object, is_valid, parent_is_abstract):
     """
     Tests behavior is_a in class hierarchies.
 

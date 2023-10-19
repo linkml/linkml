@@ -42,9 +42,7 @@ class ShExGenerator(Generator):
     shex: Schema = field(default_factory=lambda: Schema())  # ShEx Schema being generated
     shapes: List = field(default_factory=lambda: [])
     shape: Optional[Shape] = None  # Current shape being defined
-    list_shapes: List[IRIREF] = field(
-        default_factory=lambda: []
-    )  # Shapes that have been defined as lists
+    list_shapes: List[IRIREF] = field(default_factory=lambda: [])  # Shapes that have been defined as lists
 
     def __post_init__(self):
         super().__post_init__()
@@ -54,9 +52,7 @@ class ShExGenerator(Generator):
         self.meta = Namespace(
             self.namespaces.join(self.namespaces[METAMODEL_NAMESPACE_NAME], "")
         )  # URI for the metamodel
-        self.base = Namespace(
-            self.namespaces.join(self.namespaces._base, "")
-        )  # Base URI for what is being modeled
+        self.base = Namespace(self.namespaces.join(self.namespaces._base, ""))  # Base URI for what is being modeled
         self.generate_header()
 
     def generate_header(self):
@@ -78,9 +74,7 @@ class ShExGenerator(Generator):
                 elif typ_type_uri == SHEX.nonLiteral:
                     self.shapes.append(NodeConstraint(id=model_uri, nodeKind="nonliteral"))
                 else:
-                    self.shapes.append(
-                        NodeConstraint(id=model_uri, datatype=self.namespaces.uri_for(typ.uri))
-                    )
+                    self.shapes.append(NodeConstraint(id=model_uri, datatype=self.namespaces.uri_for(typ.uri)))
             else:
                 typeof_uri = self._class_or_type_uri(typ.typeof)
                 self.shapes.append(Shape(id=model_uri, expression=typeof_uri))
@@ -124,13 +118,9 @@ class ShExGenerator(Generator):
                 childrenExprs.append(self._class_or_type_uri(child_classname))
             if not (cls.mixin or cls.abstract) or len(childrenExprs) == 1:
                 childrenExprs.insert(0, self.shape)
-                self.shapes.append(
-                    ShapeOr(id=self._class_or_type_uri(cls), shapeExprs=childrenExprs)
-                )
+                self.shapes.append(ShapeOr(id=self._class_or_type_uri(cls), shapeExprs=childrenExprs))
             else:
-                self.shapes.append(
-                    ShapeOr(id=self._class_or_type_uri(cls), shapeExprs=childrenExprs)
-                )
+                self.shapes.append(ShapeOr(id=self._class_or_type_uri(cls), shapeExprs=childrenExprs))
                 self.shape.id = self._class_or_type_uri(cls, "_struct")
                 self.shapes.append(self.shape)
         else:
@@ -189,9 +179,7 @@ class ShExGenerator(Generator):
     def _slot_uri(self, name: str, suffix: Optional[str] = "") -> URIorCURIE:
         slot = self.schema.slots[name]
         return self.namespaces.uri_for(
-            self.namespaces.uri_or_curie_for(
-                self.schema_defaults[slot.from_schema], camelcase(name) + suffix
-            )
+            self.namespaces.uri_or_curie_for(self.schema_defaults[slot.from_schema], camelcase(name) + suffix)
         )
 
     def _add_constraint(self, constraint) -> None:

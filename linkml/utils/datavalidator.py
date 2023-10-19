@@ -15,7 +15,5 @@ class DataValidator:
     LinkML Schema to validate against
     """
 
-    def validate_dict(
-        self, data: dict, target_class: ClassDefinitionName = None, closed: bool = True
-    ) -> None:
+    def validate_dict(self, data: dict, target_class: ClassDefinitionName = None, closed: bool = True) -> None:
         raise NotImplementedError

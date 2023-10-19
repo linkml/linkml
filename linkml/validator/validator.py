@@ -47,9 +47,7 @@ class Validator:
         """
         return ValidationReport(results=list(self.iter_results(instance, target_class)))
 
-    def validate_source(
-        self, loader: Loader, target_class: Optional[str] = None
-    ) -> ValidationReport:
+    def validate_source(self, loader: Loader, target_class: Optional[str] = None) -> ValidationReport:
         """Validate instances from a data source
 
         :param loader: An instance of a subclass of `linkml.validator.loaders.Loader`
@@ -62,9 +60,7 @@ class Validator:
         """
         return ValidationReport(results=list(self.iter_results_from_source(loader, target_class)))
 
-    def iter_results(
-        self, instance: Any, target_class: Optional[str] = None
-    ) -> Iterator[ValidationResult]:
+    def iter_results(self, instance: Any, target_class: Optional[str] = None) -> Iterator[ValidationResult]:
         """Lazily yield validation results for the given instance
 
         :param instance: The instance to validate

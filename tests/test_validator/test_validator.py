@@ -105,9 +105,7 @@ class TestValidator(unittest.TestCase):
     def test_error_on_missing_target_class(self):
         plugins = [AcceptNothingValidationPlugin(1)]
         validator = Validator(SCHEMA, plugins)
-        self.assertRaises(
-            ValueError, lambda: validator.validate({"foo": "bar"}, "NonExistentClass")
-        )
+        self.assertRaises(ValueError, lambda: validator.validate({"foo": "bar"}, "NonExistentClass"))
 
     def test_validate_source(self):
         plugins = [AcceptNothingValidationPlugin(3)]

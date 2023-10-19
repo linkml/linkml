@@ -69,8 +69,5 @@ enums:
     assert enum
     assert enum["values"]["number_123"]["value"] == "123"
     assert enum["values"]["PLUS_SIGN"]["value"] == "+"
-    assert (
-        enum["values"]["This_AMPERSAND_that_plus_maybe_a_TOP_HAT"]["value"]
-        == "This & that, plus maybe a 🎩"
-    )
+    assert enum["values"]["This_AMPERSAND_that_plus_maybe_a_TOP_HAT"]["value"] == "This & that, plus maybe a 🎩"
     assert enum["values"]["Ohio"]["value"] == "Ohio"

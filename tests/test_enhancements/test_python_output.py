@@ -119,9 +119,7 @@ class PythonOutputTestCase(TestEnvironmentTestCase):
                 importmap=env.import_map,
                 mergeimports=False,
             ).serialize(),
-            comparator=lambda expected, actual: compare_python(
-                expected, actual, env.expected_path(python_name)
-            ),
+            comparator=lambda expected, actual: compare_python(expected, actual, env.expected_path(python_name)),
             value_is_returned=True,
         )
 
@@ -145,9 +143,7 @@ class PythonOutputTestCase(TestEnvironmentTestCase):
                 importmap=env.import_map,
                 mergeimports=False,
             ).serialize(),
-            comparator=lambda exp, act: compare_python(
-                exp, act, self.env.expected_path(f"{test_dir}/{test_name}.py")
-            ),
+            comparator=lambda exp, act: compare_python(exp, act, self.env.expected_path(f"{test_dir}/{test_name}.py")),
             value_is_returned=True,
         )
 
@@ -164,9 +160,7 @@ class PythonOutputTestCase(TestEnvironmentTestCase):
                 importmap=env.import_map,
                 mergeimports=False,
             ).serialize(),
-            comparator=lambda expected, actual: compare_python(
-                expected, actual, env.expected_path(test_path)
-            ),
+            comparator=lambda expected, actual: compare_python(expected, actual, env.expected_path(test_path)),
             value_is_returned=True,
         )
 

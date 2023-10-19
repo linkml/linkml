@@ -9,7 +9,5 @@ def test_enum_import(input_path, snapshot):
     #                          comparator=lambda exp,
     #                          act: compare_python(exp, act, env.expected_path(self.directory, 'file1.py')),
     #                          value_is_returned=True)
-    output = PythonGenerator(
-        input_path("issue_enum_import/file2.yaml"), mergeimports=True
-    ).serialize()
+    output = PythonGenerator(input_path("issue_enum_import/file2.yaml"), mergeimports=True).serialize()
     assert output == snapshot("issue_enum_import/file2.py")

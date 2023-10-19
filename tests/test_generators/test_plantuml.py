@@ -61,9 +61,7 @@ def test_serialize_selected(input_class, expected, kitchen_sink_path):
     # have no defined relationships with classes like `FamilialRelationship`
     # have crept into class-selected diagrams
     if input_class == "FamilialRelationship":
-        assert (
-            'class "MarriageEvent"' not in plantuml
-        ), f"MarriageEvent not reachable from {input_class}"
+        assert 'class "MarriageEvent"' not in plantuml, f"MarriageEvent not reachable from {input_class}"
 
 
 def test_serialize(kitchen_sink_path):

@@ -26,9 +26,7 @@ class NamespaceGenerator(PythonGenerator):
         )
 
     def gen_schema(self) -> str:
-        split_descripton = "\n#              ".join(
-            split_line(be(self.schema.description), split_len=100)
-        )
+        split_descripton = "\n#              ".join(split_line(be(self.schema.description), split_len=100))
         head = (
             f"""# Auto generated from {self.schema.source_file} by {self.generatorname} version: {self.generatorversion}
 # Generation date: {self.schema.generation_date}

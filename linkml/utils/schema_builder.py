@@ -117,9 +117,7 @@ class SchemaBuilder:
                     for s in slot_usage:
                         cls.slot_usage[s.name] = s
                 else:
-                    raise ValueError(
-                        f"slot_usage {slot_usage} must be a dict or list of SlotDefinitions"
-                    )
+                    raise ValueError(f"slot_usage {slot_usage} must be a dict or list of SlotDefinitions")
         for k, v in kwargs.items():
             setattr(cls, k, v)
         return self

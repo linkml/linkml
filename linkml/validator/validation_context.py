@@ -1,4 +1,7 @@
+import json
+import os
 from functools import lru_cache
+from typing import Optional
 
 from linkml_runtime import SchemaView
 from linkml_runtime.linkml_model import SchemaDefinition
@@ -25,7 +28,11 @@ class ValidationContext:
         return hash((self.schema.id, self.target_class))
 
     @lru_cache
-    def json_schema(self, *, closed):
+    def json_schema(self, *, closed: bool, path_override: Optional[os.PathLike] = None):
+        if path_override:
+            with open(path_override) as json_schema_file:
+                return json.load(json_schema_file)
+
         not_closed = not closed
         jsonschema_gen = JsonSchemaGenerator(
             schema=self.schema,
@@ -38,9 +45,7 @@ class ValidationContext:
     def _get_target_class(self, target_class: str) -> str:
         if target_class is None:
             roots = [
-                class_name
-                for class_name, class_def in self.schema_view.all_classes().items()
-                if class_def.tree_root
+                class_name for class_name, class_def in self.schema_view.all_classes().items() if class_def.tree_root
             ]
             if len(roots) != 1:
                 raise ValueError(f"Cannot determine tree root: {roots}")

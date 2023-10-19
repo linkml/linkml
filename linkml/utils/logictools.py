@@ -288,9 +288,7 @@ def distribute_and_over_or(expr: Expression) -> Expression:
             new_operands = []
             for and_expr in and_exprs:
                 new_operands.extend(and_expr.operands)
-            new_operands.extend(
-                [operand for operand in expr.operands if not isinstance(operand, And)]
-            )
+            new_operands.extend([operand for operand in expr.operands if not isinstance(operand, And)])
             return And(*new_operands)
     elif isinstance(expr, Or):
         expr.operands = list(map(distribute_and_over_or, expr.operands))
@@ -300,9 +298,7 @@ def distribute_and_over_or(expr: Expression) -> Expression:
             new_operands = []
             for or_expr in or_exprs:
                 new_operands.extend(or_expr.operands)
-            new_operands.extend(
-                [operand for operand in expr.operands if not isinstance(operand, Or)]
-            )
+            new_operands.extend([operand for operand in expr.operands if not isinstance(operand, Or)])
             return Or(*new_operands)
     elif isinstance(expr, Not):
         expr.operand = distribute_and_over_or(expr.operand)
@@ -397,15 +393,9 @@ def is_tautology(expr):
     if isinstance(expr, Or):
         for i in range(len(expr.operands)):
             for j in range(i + 1, len(expr.operands)):
-                if (
-                    isinstance(expr.operands[i], Not)
-                    and expr.operands[i].operand == expr.operands[j]
-                ):
+                if isinstance(expr.operands[i], Not) and expr.operands[i].operand == expr.operands[j]:
                     return True
-                elif (
-                    isinstance(expr.operands[j], Not)
-                    and expr.operands[j].operand == expr.operands[i]
-                ):
+                elif isinstance(expr.operands[j], Not) and expr.operands[j].operand == expr.operands[i]:
                     return True
     elif isinstance(expr, And):
         for operand in expr.operands:

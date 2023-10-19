@@ -377,9 +377,7 @@ def dump(
     obj = loader.load(source=input, target_class=py_target_class, **inargs)
     if validate:
         if schema is None:
-            raise Exception(
-                "--schema must be passed in order to validate. Suppress with --no-validate"
-            )
+            raise Exception("--schema must be passed in order to validate. Suppress with --no-validate")
         # TODO: use validator framework
         validation.validate_object(obj, schema)
 

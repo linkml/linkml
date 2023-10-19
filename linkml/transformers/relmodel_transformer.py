@@ -112,11 +112,7 @@ def add_annotation(element: Definition, tag: str, value: str) -> None:
 
 
 def get_primary_key_attributes(cls: ClassDefinition) -> List[SlotDefinitionName]:
-    return [
-        a.name
-        for a in cls.attributes.values()
-        if RelationalAnnotations.PRIMARY_KEY in a.annotations
-    ]
+    return [a.name for a in cls.attributes.values() if RelationalAnnotations.PRIMARY_KEY in a.annotations]
 
 
 def get_foreign_key_map(cls: ClassDefinition) -> Dict[SlotDefinitionName, str]:
@@ -149,13 +145,9 @@ class RelationalModelTransformer:
     skip_abstract: bool = field(default_factory=lambda: True)
     skip_mixins: bool = field(default_factory=lambda: True)
     join_table_separator: str = field(default_factory=lambda: "_")
-    foreign_key_policy: ForeignKeyPolicy = field(
-        default_factory=lambda: ForeignKeyPolicy.INJECT_FK_FOR_NESTED
-    )
+    foreign_key_policy: ForeignKeyPolicy = field(default_factory=lambda: ForeignKeyPolicy.INJECT_FK_FOR_NESTED)
 
-    def transform(
-        self, tgt_schema_name: str = None, top_class: ClassDefinitionName = None
-    ) -> TransformationResult:
+    def transform(self, tgt_schema_name: str = None, top_class: ClassDefinitionName = None) -> TransformationResult:
         """
         Transforms the source schema into a relational schema
 
@@ -358,11 +350,9 @@ class RelationalModelTransformer:
                     if tc_pk_slot is None:
                         raise ValueError(f"No PK for attribute {a.name} range {a.range}")
                     is_inlined = a.inlined or not source_sv.get_identifier_slot(tc.name)
-                    if (
-                        fk_policy == ForeignKeyPolicy.INJECT_FK_FOR_NESTED
-                        and is_inlined
-                        and not a.multivalued
-                    ) or (fk_policy == ForeignKeyPolicy.INJECT_FK_FOR_ALL_REFS):
+                    if (fk_policy == ForeignKeyPolicy.INJECT_FK_FOR_NESTED and is_inlined and not a.multivalued) or (
+                        fk_policy == ForeignKeyPolicy.INJECT_FK_FOR_ALL_REFS
+                    ):
                         # if it is already an injected backref, no need to re-inject
                         if "backref" not in a.annotations:
                             del c.attributes[a.name]
@@ -378,9 +368,7 @@ class RelationalModelTransformer:
         result = TransformationResult(target, mappings=mappings)
         return result
 
-    def get_direct_identifier_attribute(
-        self, sv: SchemaView, cn: ClassDefinitionName
-    ) -> Optional[SlotDefinition]:
+    def get_direct_identifier_attribute(self, sv: SchemaView, cn: ClassDefinitionName) -> Optional[SlotDefinition]:
         c = sv.get_class(cn)
         for a in c.attributes.values():
             if a.identifier:

@@ -216,9 +216,7 @@ class JsonSchemaGenerator(Generator):
             if open_world is None:
                 open_world = False
 
-            if_subschema = self.get_subschema_for_anonymous_class(
-                rule.preconditions, properties_required=True
-            )
+            if_subschema = self.get_subschema_for_anonymous_class(rule.preconditions, properties_required=True)
             if if_subschema:
                 subschema["if"] = if_subschema
 
@@ -290,27 +288,19 @@ class JsonSchemaGenerator(Generator):
             subschema.add_property(self.aliased_slot_name(slot), prop, this_properties_required)
 
         if cls.any_of is not None and len(cls.any_of) > 0:
-            subschema["anyOf"] = [
-                self.get_subschema_for_anonymous_class(c, properties_required) for c in cls.any_of
-            ]
+            subschema["anyOf"] = [self.get_subschema_for_anonymous_class(c, properties_required) for c in cls.any_of]
 
         if cls.all_of is not None and len(cls.all_of) > 0:
-            subschema["allOf"] = [
-                self.get_subschema_for_anonymous_class(c, properties_required) for c in cls.all_of
-            ]
+            subschema["allOf"] = [self.get_subschema_for_anonymous_class(c, properties_required) for c in cls.all_of]
 
         if cls.exactly_one_of is not None and len(cls.exactly_one_of) > 0:
             subschema["oneOf"] = [
-                self.get_subschema_for_anonymous_class(c, properties_required)
-                for c in cls.exactly_one_of
+                self.get_subschema_for_anonymous_class(c, properties_required) for c in cls.exactly_one_of
             ]
 
         if cls.none_of is not None and len(cls.none_of) > 0:
             subschema["not"] = {
-                "anyOf": [
-                    self.get_subschema_for_anonymous_class(c, properties_required)
-                    for c in cls.any_of
-                ]
+                "anyOf": [self.get_subschema_for_anonymous_class(c, properties_required) for c in cls.any_of]
             }
 
         return subschema
@@ -328,9 +318,7 @@ class JsonSchemaGenerator(Generator):
                 return pv
             raise ValueError(f"Invalid permissible value in enum {enum}: {pv}")
 
-        permissible_values_texts = list(
-            map(extract_permissible_text, enum.permissible_values or [])
-        )
+        permissible_values_texts = list(map(extract_permissible_text, enum.permissible_values or []))
 
         enum_schema = JsonSchema(
             {
@@ -342,9 +330,7 @@ class JsonSchemaGenerator(Generator):
             enum_schema["enum"] = permissible_values_texts
         self.top_level_schema.add_def(enum.name, enum_schema)
 
-    def get_type_info_for_slot_subschema(
-        self, slot: AnonymousSlotExpression
-    ) -> Tuple[str, str, Union[str, List[str]]]:
+    def get_type_info_for_slot_subschema(self, slot: AnonymousSlotExpression) -> Tuple[str, str, Union[str, List[str]]]:
         # JSON Schema type (https://json-schema.org/understanding-json-schema/reference/type.html)
         typ = None
         # Reference to a JSON schema entity (https://json-schema.org/understanding-json-schema/structuring.html#ref)
@@ -380,9 +366,7 @@ class JsonSchemaGenerator(Generator):
 
         return (typ, fmt, reference)
 
-    def get_value_constraints_for_slot(
-        self, slot: Union[AnonymousSlotExpression, None]
-    ) -> JsonSchema:
+    def get_value_constraints_for_slot(self, slot: Union[AnonymousSlotExpression, None]) -> JsonSchema:
         if slot is None:
             return JsonSchema()
 
@@ -431,9 +415,7 @@ class JsonSchemaGenerator(Generator):
                         # If the range can be collected as a simple dict, then we can also accept the value
                         # of that simple dict directly.
                         if range_simple_dict_value_slot is not None:
-                            additionalProps.append(
-                                self.get_subschema_for_slot(range_simple_dict_value_slot)
-                            )
+                            additionalProps.append(self.get_subschema_for_slot(range_simple_dict_value_slot))
 
                         # If the range has no required slots, then null is acceptable
                         if len(range_required_slots) == 0:
@@ -445,12 +427,8 @@ class JsonSchemaGenerator(Generator):
                             additionalProps = additionalProps[0]
                         else:
                             additionalProps = JsonSchema({"anyOf": additionalProps})
-                        prop = JsonSchema(
-                            {"type": "object", "additionalProperties": additionalProps}
-                        )
-                        self.top_level_schema.add_lax_def(
-                            reference, self.aliased_slot_name(range_id_slot)
-                        )
+                        prop = JsonSchema({"type": "object", "additionalProperties": additionalProps})
+                        self.top_level_schema.add_lax_def(reference, self.aliased_slot_name(range_id_slot))
                     else:
                         prop = JsonSchema.array_of(JsonSchema.ref_for(reference))
                 else:
@@ -497,9 +475,7 @@ class JsonSchemaGenerator(Generator):
             bool_subschema["oneOf"] = [self.get_subschema_for_slot(s) for s in slot.exactly_one_of]
 
         if slot.none_of is not None and len(slot.none_of) > 0:
-            bool_subschema["not"] = {
-                "anyOf": [self.get_subschema_for_slot(s) for s in slot.none_of]
-            }
+            bool_subschema["not"] = {"anyOf": [self.get_subschema_for_slot(s) for s in slot.none_of]}
 
         if bool_subschema:
             if prop.is_array:
@@ -512,9 +488,7 @@ class JsonSchemaGenerator(Generator):
 
         return prop
 
-    def handle_class_slot(
-        self, subschema: JsonSchema, cls: ClassDefinition, slot: SlotDefinition
-    ) -> None:
+    def handle_class_slot(self, subschema: JsonSchema, cls: ClassDefinition, slot: SlotDefinition) -> None:
         class_id_slot = self.schemaview.get_identifier_slot(cls.name, use_key=True)
         slot_is_required = slot.required or slot == class_id_slot
 
@@ -537,15 +511,11 @@ class JsonSchemaGenerator(Generator):
         return self.top_level_schema
 
     def serialize(self, **kwargs) -> str:
-        return self.generate().to_json(
-            sort_keys=True, indent=self.indent if self.indent > 0 else None
-        )
+        return self.generate().to_json(sort_keys=True, indent=self.indent if self.indent > 0 else None)
 
     def _get_range_associated_slots(
         self, slot: SlotDefinition
-    ) -> Tuple[
-        Union[SlotDefinition, None], Union[SlotDefinition, None], Union[List[SlotDefinition], None]
-    ]:
+    ) -> Tuple[Union[SlotDefinition, None], Union[SlotDefinition, None], Union[List[SlotDefinition], None]]:
         range_class = self.schemaview.get_class(slot.range)
         if range_class is None:
             return None, None, None
@@ -555,9 +525,7 @@ class JsonSchemaGenerator(Generator):
             return None, None, None
 
         non_id_slots = [
-            s
-            for s in self.schemaview.class_induced_slots(range_class.name)
-            if s.name != range_class_id_slot.name
+            s for s in self.schemaview.class_induced_slots(range_class.name) if s.name != range_class_id_slot.name
         ]
         non_id_required_slots = [s for s in non_id_slots if s.required]
 

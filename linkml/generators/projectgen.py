@@ -82,9 +82,7 @@ class ProjectConfiguration:
     """
 
     directory: str = "tmp"
-    generator_args: Dict[GENERATOR_NAME, ARG_DICT] = field(
-        default_factory=lambda: defaultdict(dict)
-    )
+    generator_args: Dict[GENERATOR_NAME, ARG_DICT] = field(default_factory=lambda: defaultdict(dict))
     includes: List[str] = None
     excludes: List[str] = None
     mergeimports: bool = None
@@ -107,11 +105,7 @@ class ProjectGenerator:
             all_schemas = get_local_imports(schema_path, os.path.dirname(schema_path))
         print(f"ALL_SCHEMAS = {all_schemas}")
         for gen_name, (gen_cls, gen_path_fmt, default_gen_args) in GEN_MAP.items():
-            if (
-                config.includes is not None
-                and config.includes != []
-                and gen_name not in config.includes
-            ):
+            if config.includes is not None and config.includes != [] and gen_name not in config.includes:
                 logging.info(f"Skipping {gen_name} as not in inclusion list: {config.includes}")
                 continue
             if config.excludes is not None and gen_name in config.excludes:
@@ -137,9 +131,7 @@ class ProjectGenerator:
                 # special check for output key because ExcelGenerator and
                 # SSSOMGenerator read in output file name during initialization
                 if "output" in all_gen_args:
-                    all_gen_args["output"] = all_gen_args["output"].format(
-                        name=name, parent=parent_dir
-                    )
+                    all_gen_args["output"] = all_gen_args["output"].format(name=name, parent=parent_dir)
 
                 gen = gen_cls(local_path, **all_gen_args)
 
@@ -173,9 +165,7 @@ class ProjectGenerator:
 )
 @click.option("--generator-arguments", "-A", help="yaml configuration for generators")
 @click.option("--config-file", "-C", type=click.File("rb"), help="path to yaml configuration")
-@click.option(
-    "--exclude", "-X", multiple=True, help="list of artefacts to be excluded"
-)  # TODO: make this an enum
+@click.option("--exclude", "-X", multiple=True, help="list of artefacts to be excluded")  # TODO: make this an enum
 @click.option(
     "--include",
     "-I",

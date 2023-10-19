@@ -80,18 +80,14 @@ class GeneratorTest(Generator):
     def end_class(self, cls: ClassDefinition) -> None:
         self.visited.append(f"end_class: {cls.name}")
 
-    def visit_class_slot(
-        self, cls: ClassDefinition, aliased_slot_name: str, slot: SlotDefinition
-    ) -> None:
+    def visit_class_slot(self, cls: ClassDefinition, aliased_slot_name: str, slot: SlotDefinition) -> None:
         self.visited.append(
-            f"  slot: {slot.name}"
-            + (f" ({aliased_slot_name})" if slot.name != aliased_slot_name else "")
+            f"  slot: {slot.name}" + (f" ({aliased_slot_name})" if slot.name != aliased_slot_name else "")
         )
 
     def visit_slot(self, aliased_slot_name: str, slot: SlotDefinition) -> None:
         self.visited.append(
-            f"slot: {slot.name}"
-            + (f" ({aliased_slot_name})" if slot.name != aliased_slot_name else "")
+            f"slot: {slot.name}" + (f" ({aliased_slot_name})" if slot.name != aliased_slot_name else "")
         )
 
     def visit_type(self, typ: TypeDefinition) -> None:
@@ -495,9 +491,7 @@ classes:
         self.assertIn("Overlapping subset and slot names: dup name", gentext)
         self.assertIn("Overlapping subset and type names: dup name", gentext)
 
-        self.assertEqual(
-            "dup_name", gen.formatted_element_name(cast(ElementName, "dup name"), False)
-        )
+        self.assertEqual("dup_name", gen.formatted_element_name(cast(ElementName, "dup name"), False))
         self.assertEqual("int", gen.formatted_element_name(cast(ElementName, "dup name"), True))
         self.assertEqual("str", gen.formatted_element_name(cast(ElementName, "str"), True))
         self.assertIsNone(gen.formatted_element_name(cast(ElementName, "class c1"), False))
@@ -650,10 +644,7 @@ classes:
                 "s3": ["int", "T2", "T3"],
                 "s4": ["Bool"],
             },
-            {
-                s.name: gen.slot_range_path(s)
-                for s in gen.all_slots(cast(ClassDefinitionName, "c4"))
-            },
+            {s.name: gen.slot_range_path(s) for s in gen.all_slots(cast(ClassDefinitionName, "c4"))},
         )
         self.assertEqual(
             {
@@ -664,17 +655,11 @@ classes:
                 "s3": ["int", "T2", "T3"],
                 "s4": ["Bool"],
             },
-            {
-                s.name: gen.slot_range_path(s)
-                for s in gen.all_slots(cast(ClassDefinitionName, "c5"))
-            },
+            {s.name: gen.slot_range_path(s) for s in gen.all_slots(cast(ClassDefinitionName, "c5"))},
         )
         self.assertEqual(
             {"s1": ["int"], "s3": ["int", "T2", "T3"]},
-            {
-                s.name: gen.slot_range_path(s)
-                for s in gen.all_slots(cast(ClassDefinitionName, "c1"))
-            },
+            {s.name: gen.slot_range_path(s) for s in gen.all_slots(cast(ClassDefinitionName, "c1"))},
         )
 
     def test_ancestors(self):

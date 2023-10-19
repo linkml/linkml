@@ -20,9 +20,16 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest]
         python-version: ["3.8", "3.9", "3.10"]
+        pydantic-version: ["1", "2"]
         exclude:
           - os: windows-latest
             python-version: "3.8"
+          - os: windows-latest
+            pydantic-version: "2"
+          - python-version: "3.8"
+            pydantic-version: "2"
+          - python-version: "3.9"
+            pydantic-version: "2"
 
     # See https://github.com/snok/install-poetry#running-on-windows
     defaults:
@@ -69,6 +76,12 @@ jobs:
       - name: Install dependencies
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
         run: poetry install --no-interaction --no-root
+
+      #----------------------------------------------
+      # install pydantic
+      #----------------------------------------------
+      - name: Install Pydantic
+        run: poetry add pydantic@^${{ matrix.pydantic-version }}
 
       #----------------------------------------------
       #         setup and install graphviz
