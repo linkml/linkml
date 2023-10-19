@@ -168,9 +168,7 @@ def test_type_range(framework, linkml_type, example_value):
             }
         },
     }
-    schema = validated_schema(
-        test_type_range, linkml_type, framework, classes=classes, core_elements=["range"]
-    )
+    schema = validated_schema(test_type_range, linkml_type, framework, classes=classes, core_elements=["range"])
     expected_behavior = None
     v = example_value
     is_valid = isinstance(v, (type_py_cls, type(None)))
@@ -641,9 +639,7 @@ def test_non_standard_names(framework, class_name, safe_class_name, slot_name, s
         },
     }
     name = ensafeify(f"ClassNameEQ_{class_name}__SlotNameEQ_{slot_name}__TypeNameEQ_{type_name}")
-    schema = validated_schema(
-        test_cardinality, name, framework, classes=classes, types=types, core_elements=[]
-    )
+    schema = validated_schema(test_cardinality, name, framework, classes=classes, types=types, core_elements=[])
     expected_behavior = ValidationBehavior.IMPLEMENTS
     instance = {
         safe_slot_name: "x",

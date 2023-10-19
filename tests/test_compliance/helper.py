@@ -874,9 +874,7 @@ def generate_tree_nodes(depth=3, num_siblings=2, path: List[int] = None) -> Iter
     yield tuple(path)
     for i in range(1, num_siblings + 1):
         if depth > 0:
-            yield from generate_tree_nodes(
-                depth=depth - 1, num_siblings=num_siblings, path=path + [i]
-            )
+            yield from generate_tree_nodes(depth=depth - 1, num_siblings=num_siblings, path=path + [i])
 
 
 def generate_tree(depth=3, num_siblings=2, prefix="N") -> Iterator[Tuple[str, List[str]]]:

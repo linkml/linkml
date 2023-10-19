@@ -68,9 +68,7 @@ def test_enum(framework, enum_name, enum_desc, pvs, value, include_meaning):
             "description": enum_desc,
             "permissible_values": {pv[0]: _make_pv(*pv) for pv in pvs},
             "_mappings": {
-                PYDANTIC: f"class {safe_enum_name}(str, Enum)"
-                if pvs
-                else f"class {safe_enum_name}(str)",
+                PYDANTIC: f"class {safe_enum_name}(str, Enum)" if pvs else f"class {safe_enum_name}(str)",
                 PYTHON_DATACLASSES: f"class {safe_enum_name}(EnumDefinitionImpl)",
                 SQL_DDL_POSTGRES: f'CREATE TYPE "{enum_name}" AS ENUM',
             },
@@ -136,9 +134,7 @@ def test_enum(framework, enum_name, enum_desc, pvs, value, include_meaning):
     ],
 )
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
-def test_enum_hierarchy(
-    framework, use_mixins, include_meaning, propagate_down, data_name, data, is_valid
-):
+def test_enum_hierarchy(framework, use_mixins, include_meaning, propagate_down, data_name, data, is_valid):
     """
     Tests behavior of enums.
 
@@ -190,9 +186,7 @@ def test_enum_hierarchy(
         # Note: assumes tree is ordered
         for child, parents in tree:
             for parent in parents:
-                enums[child]["permissible_values"].update(
-                    deepcopy(enums[parent]["permissible_values"])
-                )
+                enums[child]["permissible_values"].update(deepcopy(enums[parent]["permissible_values"]))
     else:
         pytest.skip("validation of inference of permissible values not yet implemented")
 

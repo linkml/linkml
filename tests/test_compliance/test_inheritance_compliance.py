@@ -267,9 +267,7 @@ def test_mixins(framework, description, cls, object, is_valid):
             },
         },
     }
-    schema = validated_schema(
-        test_mixins, "default", framework, classes=classes, core_elements=["mixins", "mixin"]
-    )
+    schema = validated_schema(test_mixins, "default", framework, classes=classes, core_elements=["mixins", "mixin"])
     expected_behavior = ValidationBehavior.IMPLEMENTS
     if cls != CLASS_C:
         if framework in [PYDANTIC, PYTHON_DATACLASSES, SQL_DDL_SQLITE, OWL]:

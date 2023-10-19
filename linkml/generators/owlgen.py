@@ -341,9 +341,7 @@ class OwlSchemaGenerator(Generator):
                 self.graph.add((subject_expr, OWL.hasKey, uk_props_listnode))
 
         def condition_to_bnode(expr: AnonymousClassExpression) -> Optional[BNode]:
-            ixn_listnode = self.transform_class_expression(
-                expr, quantifier_predicate=OWL.someValuesFrom
-            )
+            ixn_listnode = self.transform_class_expression(expr, quantifier_predicate=OWL.someValuesFrom)
             if not ixn_listnode:
                 return None
             if expr.is_a:
@@ -393,9 +391,7 @@ class OwlSchemaGenerator(Generator):
         sv = self.schemaview
         if isinstance(cls, ClassDefinition):
             own_slots = (
-                list(cls.slot_usage.values())
-                + list(cls.attributes.values())
-                + list(cls.slot_conditions.values())
+                list(cls.slot_usage.values()) + list(cls.attributes.values()) + list(cls.slot_conditions.values())
             )
             for slot_name in cls.slots:
                 if slot_name not in cls.slot_usage:
@@ -728,9 +724,7 @@ class OwlSchemaGenerator(Generator):
                     g.add((pv_uri, RDF.type, enum_uri))
                 has_parent = False
                 if pv.is_a:
-                    self.graph.add(
-                        (pv_uri, RDFS.subClassOf, self._permissible_value_uri(pv.is_a, enum_uri, e))
-                    )
+                    self.graph.add((pv_uri, RDFS.subClassOf, self._permissible_value_uri(pv.is_a, enum_uri, e)))
                     has_parent = True
                 for mixin in sorted(pv.mixins):
                     parent = self._permissible_value_uri(mixin, enum_uri, e)
@@ -740,9 +734,7 @@ class OwlSchemaGenerator(Generator):
                         has_parent = True
                     self.graph.add((enum_uri, RDFS.subClassOf, parent))
                 if not has_parent and self.add_root_classes:
-                    self.graph.add(
-                        (pv_uri, RDFS.subClassOf, URIRef(PermissibleValue.class_class_uri))
-                    )
+                    self.graph.add((pv_uri, RDFS.subClassOf, URIRef(PermissibleValue.class_class_uri)))
         if all([pv is not None for pv in pv_uris]):
             self._union_of(pv_uris, node=enum_uri)
             for pv_uri in pv_uris:
@@ -858,9 +850,7 @@ class OwlSchemaGenerator(Generator):
     def _metaslot_uri(self, name: str) -> URIRef:
         return URIRef("https://w3id.org/linkml/" + name)
 
-    def _complement_of_union_of(
-        self, exprs: List[Union[BNode, URIRef]], **kwargs
-    ) -> Optional[Union[BNode, URIRef]]:
+    def _complement_of_union_of(self, exprs: List[Union[BNode, URIRef]], **kwargs) -> Optional[Union[BNode, URIRef]]:
         if not exprs:
             raise ValueError("Must pass at least one")
         neg_expr = BNode()
@@ -994,9 +984,7 @@ class OwlSchemaGenerator(Generator):
         if isinstance(pv, str):
             pv_name = pv
             if enum_def is None:
-                raise ValueError(
-                    f"Cannot find permissible value: {pv}, no enum definition provided"
-                )
+                raise ValueError(f"Cannot find permissible value: {pv}, no enum definition provided")
             pvs = [pv for k, pv in enum_def.permissible_values.items() if k == pv_name]
             if len(pvs) != 1:
                 raise ValueError(f"Cannot find permissible value: {pv_name}, got: {pvs}")
