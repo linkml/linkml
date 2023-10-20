@@ -12,7 +12,7 @@ from linkml.generators import JsonSchemaGenerator, PydanticGenerator
 class ValidationContext:
     """Provides state that may be shared between validation plugins"""
 
-    def __init__(self, schema: SchemaDefinition, target_class: str) -> None:
+    def __init__(self, schema: SchemaDefinition, target_class: Optional[str] = None) -> None:
         # Since SchemaDefinition is not hashable, to make caching simpler we store the schema
         # in a "private" property and assume it never changes.
         self._schema = schema
@@ -28,7 +28,13 @@ class ValidationContext:
         return self._target_class
 
     @lru_cache
-    def json_schema(self, *, closed: bool, path_override: Optional[os.PathLike] = None):
+    def json_schema(
+        self,
+        *,
+        closed: bool,
+        include_range_class_descendants: bool,
+        path_override: Optional[os.PathLike] = None,
+    ):
         if path_override:
             with open(path_override) as json_schema_file:
                 return json.load(json_schema_file)
@@ -39,6 +45,7 @@ class ValidationContext:
             mergeimports=True,
             top_class=self._target_class,
             not_closed=not_closed,
+            include_range_class_descendants=include_range_class_descendants,
         )
         return jsonschema_gen.generate()
 
@@ -50,7 +57,7 @@ class ValidationContext:
     def _pydantic_module(self, *closed: bool):
         return PydanticGenerator(self._schema, allow_extra=not closed).compile_module()
 
-    def _get_target_class(self, target_class: str) -> str:
+    def _get_target_class(self, target_class: Optional[str] = None) -> str:
         if target_class is None:
             roots = [
                 class_name

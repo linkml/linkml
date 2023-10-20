@@ -1,7 +1,7 @@
 import json
 
 import pytest
-from linkml_runtime.linkml_model import SchemaDefinition
+from linkml_runtime.linkml_model import ClassDefinition, SchemaDefinition, SlotDefinition
 from linkml_runtime.loaders import yaml_loader
 
 from linkml.validator.plugins import JsonschemaValidationPlugin
@@ -71,3 +71,35 @@ def test_path_override(validation_context, tmp_file_factory):
     result_iter = plugin.process(valid_instance, validation_context)
     with pytest.raises(StopIteration):
         next(result_iter)
+
+
+def test_include_range_class_descendants():
+    schema = SchemaDefinition(
+        id="test_include_range_class_descendants",
+        name="test_include_range_class_descendants",
+        classes=[
+            ClassDefinition(
+                name="Root",
+                attributes=[SlotDefinition(name="thing", range="A")],
+                tree_root=True,
+            ),
+            ClassDefinition(name="A", attributes=[SlotDefinition(name="a")]),
+            ClassDefinition(name="B", is_a="A", attributes=[SlotDefinition(name="b")]),
+        ],
+    )
+    validation_context = ValidationContext(schema)
+
+    plugin = JsonschemaValidationPlugin(include_range_class_descendants=True)
+    results = list(plugin.process({"thing": {"a": "1"}}, validation_context))
+    assert results == []
+
+    results = list(plugin.process({"thing": {"a": "1", "b": "2"}}, validation_context))
+    assert results == []
+
+    plugin = JsonschemaValidationPlugin(include_range_class_descendants=False)
+    results = list(plugin.process({"thing": {"a": "1"}}, validation_context))
+    assert results == []
+
+    results = list(plugin.process({"thing": {"a": "1", "b": "2"}}, validation_context))
+    assert len(results) == 1
+    assert "'b' was unexpected" in results[0].message
