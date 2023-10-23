@@ -46,7 +46,7 @@ def test_valid_csv_file(cli_runner, csv_data_file):
     """Verify that two rows of a CSV file successfully validate against an appropriate target class"""
 
     data_path = csv_data_file([VALID_PERSON_1, VALID_PERSON_2])
-    result = cli_runner.invoke(cli, ["-S", PERSONINFO_SCHEMA, "-T", "Person", data_path])
+    result = cli_runner.invoke(cli, ["-s", PERSONINFO_SCHEMA, "-C", "Person", data_path])
     assert result.exception is None
     assert result.output == "No issues found!\n"
     assert result.exit_code == 0
@@ -56,7 +56,7 @@ def test_valid_json_file_object(tmp_path, cli_runner, json_data_file):
     """Verify that a root-level object successfully validates against the tree_root class of the schema"""
 
     data_path = json_data_file({"persons": [VALID_PERSON_1, VALID_PERSON_2]})
-    result = cli_runner.invoke(cli, ["-S", PERSONINFO_SCHEMA, data_path])
+    result = cli_runner.invoke(cli, ["-s", PERSONINFO_SCHEMA, data_path])
     assert result.exception is None
     assert result.output == "No issues found!\n"
     assert result.exit_code == 0
@@ -67,7 +67,7 @@ def test_valid_json_file_list(cli_runner, json_data_file):
 
     data_path = json_data_file([VALID_PERSON_1, VALID_PERSON_2])
 
-    result = cli_runner.invoke(cli, ["-S", PERSONINFO_SCHEMA, "-T", "Person", data_path])
+    result = cli_runner.invoke(cli, ["-s", PERSONINFO_SCHEMA, "-C", "Person", data_path])
     assert result.exception is None
     assert result.output == "No issues found!\n"
     assert result.exit_code == 0
@@ -87,7 +87,7 @@ def test_invalid_json(cli_runner, json_data_file):
     invalid_data = {**VALID_PERSON_1, "phone": "asdf"}
     data_path = json_data_file({"persons": [invalid_data]})
 
-    result = cli_runner.invoke(cli, ["-S", PERSONINFO_SCHEMA, data_path])
+    result = cli_runner.invoke(cli, ["-s", PERSONINFO_SCHEMA, data_path])
     assert "[ERROR]" in result.output
     assert "'asdf' does not match" in result.output
     assert "/persons/0/phone" in result.output
