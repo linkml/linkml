@@ -118,7 +118,10 @@ class JsonSchema(UserDict):
             return JsonSchema({"$ref": f"#/$defs/{def_name}{def_suffix}"})
 
         if isinstance(class_name, list):
-            return JsonSchema({"anyOf": [_ref(name) for name in class_name]})
+            if len(class_name) == 1:
+                return _ref(class_name[0])
+            else:
+                return JsonSchema({"anyOf": [_ref(name) for name in class_name]})
         else:
             return _ref(class_name)
 
