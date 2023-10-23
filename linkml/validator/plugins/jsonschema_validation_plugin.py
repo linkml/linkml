@@ -47,9 +47,7 @@ class JsonschemaValidationPlugin(ValidationPlugin):
             include_range_class_descendants=self.include_range_class_descendants,
             path_override=self.json_schema_path,
         )
-        validator = jsonschema.Draft7Validator(
-            json_schema, format_checker=jsonschema.Draft7Validator.FORMAT_CHECKER
-        )
+        validator = jsonschema.Draft7Validator(json_schema, format_checker=jsonschema.Draft7Validator.FORMAT_CHECKER)
         for error in validator.iter_errors(instance):
             best_error = best_match([error])
             yield ValidationResult(

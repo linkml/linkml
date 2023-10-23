@@ -103,9 +103,7 @@ class Validator:
         for index, instance in enumerate(loader.iter_instances()):
             for plugin in self._validation_plugins:
                 for result in plugin.process(instance, context):
-                    if result.severity == Severity.FATAL or (
-                        self.strict and result.severity == Severity.ERROR
-                    ):
+                    if result.severity == Severity.FATAL or (self.strict and result.severity == Severity.ERROR):
                         has_failure = True
                     result.instance_index = index
                     yield result

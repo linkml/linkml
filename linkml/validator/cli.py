@@ -100,9 +100,7 @@ DEPRECATED = "[DEPRECATED: only used in legacy mode]"
     type=click.Choice(list(datautils.dumpers_loaders.keys())),
     help=f"{DEPRECATED} Input format. Inferred from input suffix if not specified",
 )
-@click.option(
-    "--index-slot", "-S", help=f"{DEPRECATED} top level slot. Required for CSV dumping/loading"
-)
+@click.option("--index-slot", "-S", help=f"{DEPRECATED} top level slot. Required for CSV dumping/loading")
 @click.option(
     "--include-range-class-descendants/--no-range-class-descendants",
     default=False,
@@ -142,9 +140,7 @@ def cli(
         )
 
     if module is not None:
-        click.secho(
-            "Warning: the -m/--module option is deprecated except in legacy mode.", fg="yellow"
-        )
+        click.secho("Warning: the -m/--module option is deprecated except in legacy mode.", fg="yellow")
     if input_format is not None:
         click.secho(
             "Warning: the -f/--input-format option is deprecated except in legacy mode. By "
@@ -153,9 +149,7 @@ def cli(
             fg="yellow",
         )
     if index_slot is not None:
-        click.secho(
-            "Warning: the -S/--index-slot option is deprecated except in legacy mode.", fg="yellow"
-        )
+        click.secho("Warning: the -S/--index-slot option is deprecated except in legacy mode.", fg="yellow")
     if include_range_class_descendants:
         click.secho(
             "Warning: the --include-range-class-descendants deprecated except in legacy mode. "
@@ -183,16 +177,12 @@ def cli(
 
     plugins = _resolve_plugins(config.plugins) if config.plugins else []
     loaders = _resolve_loaders(config.data_sources)
-    validator = Validator(
-        config.schema_path, validation_plugins=plugins, strict=exit_on_first_failure
-    )
+    validator = Validator(config.schema_path, validation_plugins=plugins, strict=exit_on_first_failure)
     severity_counter = Counter()
     for loader in loaders:
         for result in validator.iter_results_from_source(loader, config.target_class):
             severity_counter[result.severity] += 1
-            click.echo(
-                f"[{result.severity.value}] [{loader.source}/{result.instance_index}] {result.message}"
-            )
+            click.echo(f"[{result.severity.value}] [{loader.source}/{result.instance_index}] {result.message}")
 
     if sum(severity_counter.values()) == 0:
         click.echo("No issues found!")
