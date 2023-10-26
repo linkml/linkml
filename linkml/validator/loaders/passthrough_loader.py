@@ -4,13 +4,12 @@ from linkml.validator.loaders.loader import Loader
 
 
 class PassthroughLoader(Loader):
-    """A loader that passes through from an existing Iterator"""
+    """A loader that passes through from an existing Iterator
+
+    :param source: An Iterator
+    """
 
     def __init__(self, source: Iterator) -> None:
-        """Constructor method
-
-        :param source: An Iterator
-        """
         super().__init__(source)
 
     def iter_instances(self) -> Iterator[Any]:

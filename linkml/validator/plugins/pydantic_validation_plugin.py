@@ -9,8 +9,9 @@ from linkml.validator.validation_context import ValidationContext
 class PydanticValidationPlugin(ValidationPlugin):
     """A validation plugin which validates instances using a Pydantic validator.
 
-    Note that this plugin provides less complete validation than JsonschemaValidationPlugin.
-    Also, due to the nature of pydantic, it will fail fast on errors and only report the first
+    Note that this plugin provides less complete validation than
+    :class:`JsonschemaValidationPlugin`.
+    Also, due to the nature of Pydantic, it will fail fast on errors and only report the first
     error found.
 
     For general use cases, JsonschemaValidationPlugin is recommended. However, this plugin
@@ -19,14 +20,12 @@ class PydanticValidationPlugin(ValidationPlugin):
     - You are using in a pipeline to ensure objects will be valid for loading into Pydantic.
     - You are exploring relative capabilities of Pydantic and JSON Schema validation.
     - Pydantic is faster for your use case (to be tested).
+
+    :param strict: If ``true``, stop validating after the first validation problem
+        is found. Defaults to ``False``.
     """
 
     def __init__(self, closed: bool = False, strict: bool = False) -> None:
-        """Constructor method
-
-        :param strict: If true, stop validating after the first validation problem
-            is found. Defaults to False.
-        """
         self.strict = strict
 
     def process(self, instance: Any, context: ValidationContext) -> Iterator[ValidationResult]:

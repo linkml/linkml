@@ -6,13 +6,12 @@ from linkml.validator.loaders.loader import Loader
 
 
 class JsonLoader(Loader):
-    """A loader for instances serialized as JSON"""
+    """A loader for instances serialized as JSON
+
+    :param source: Path or URL to JSON source
+    """
 
     def __init__(self, source) -> None:
-        """Constructor method
-
-        :param source: Path or URL to JSON source
-        """
         super().__init__(source)
 
     def iter_instances(self) -> Iterator[Any]:

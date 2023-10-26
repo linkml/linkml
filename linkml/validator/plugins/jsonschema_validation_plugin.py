@@ -10,7 +10,16 @@ from linkml.validator.validation_context import ValidationContext
 
 
 class JsonschemaValidationPlugin(ValidationPlugin):
-    """A validation plugin which validates instances using a JSON Schema validator."""
+    """A validation plugin which validates instances using a JSON Schema validator.
+
+    :param closed: If ``True``, additional properties are not allowed on instances.
+        Defaults to ``False``.
+    :param strict: If ``True``, stop validating after the first validation problem
+        is found. Defaults to ``False``.
+    :param json_schema_path: If provided, JSON Schema will not be generated from the schema,
+        instead it will be read from this path. In this case the value of the ``closed`` argument
+        is disregarded and the open- or closed-ness of the existing JSON Schema is taken as-is.
+    """
 
     def __init__(
         self,
@@ -18,16 +27,6 @@ class JsonschemaValidationPlugin(ValidationPlugin):
         strict: bool = False,
         json_schema_path: Optional[os.PathLike] = None,
     ) -> None:
-        """Constructor method
-
-        :param closed: If True, additional properties are not allowed on instances.
-            Defaults to False.
-        :param strict: If true, stop validating after the first validation problem
-            is found. Defaults to False.
-        :param json_schema_path: If provided, JSON Schema will not be generated from the schema,
-            instead it will be read from this path. In this case the value of the `closed` argument
-            is disregarded and the open- or closed-ness of the existing JSON Schema is taken as-is.
-        """
         self.closed = closed
         self.strict = strict
         self.json_schema_path = json_schema_path

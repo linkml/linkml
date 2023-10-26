@@ -12,21 +12,20 @@ from linkml.validator.validation_context import ValidationContext
 
 
 class Validator:
-    """A class for coordinating instance validation using configurable plugins"""
+    """A class for coordinating instance validation using configurable plugins
+
+    :param schema: The schema to validate against. If a string or Path, the schema
+        will be loaded from that location. Otherwise, a ``SchemaDefinition`` is required.
+    :param validation_plugins: A list of plugins that be used to validate instances
+        using the given schema. Each element should be an instance of a subclass of
+        :class:`linkml.validator.plugins.ValidationPlugin`. Defaults to ``None``.
+    """
 
     def __init__(
         self,
         schema: Union[str, dict, TextIO, Path, SchemaDefinition],
         validation_plugins: Optional[List[ValidationPlugin]] = None,
     ) -> None:
-        """Constructor method
-
-        :param schema: The schema to validate against. If a string or Path, the schema
-            will be loaded from that location. Otherwise, a `SchemaDefinition` is required.
-        :param validation_plugins: A list of plugins that be used to validate instances
-            using the given schema. Each element should be an instance of a subclass of
-            `linkml.validator.plugins.ValidationPlugin`. Defaults to None.
-        """
         if isinstance(schema, Path):
             schema = str(schema)
         if isinstance(schema, SchemaDefinition):
@@ -40,8 +39,8 @@ class Validator:
 
         :param instance: The instance to validate
         :param target_class: Name of the class within the schema to validate
-            against. If None, the class will be inferred from the schema by
-            looked for a class with `tree_root: true`. Defaults to None.
+            against. If ``None``, the class will be inferred from the schema by
+            looked for a class with ``tree_root: true``. Defaults to ``None``.
         :return: A validation report
         :rtype: ValidationReport
         """
@@ -50,11 +49,11 @@ class Validator:
     def validate_source(self, loader: Loader, target_class: Optional[str] = None) -> ValidationReport:
         """Validate instances from a data source
 
-        :param loader: An instance of a subclass of `linkml.validator.loaders.Loader`
+        :param loader: An instance of a subclass of :class:`linkml.validator.loaders.Loader`
             which provides the instances to validate
         :param target_class: Name of the class within the schema to validate
-            against. If None, the class will be inferred from the schema by
-            looked for a class with `tree_root: true`. Defaults to None.
+            against. If ``None``, the class will be inferred from the schema by
+            looked for a class with ``tree_root: true``. Defaults to ``None``.
         :return: A validation report
         :rtype: ValidationReport
         """
@@ -65,8 +64,8 @@ class Validator:
 
         :param instance: The instance to validate
         :param target_class: Name of the class within the schema to validate
-            against. If None, the class will be inferred from the schema by
-            looked for a class with `tree_root: true`. Defaults to None.
+            against. If ``None``, the class will be inferred from the schema by
+            looked for a class with ``tree_root: true``. Defaults to ``None``.
         :return: Iterator over validation results
         :rtype: Iterator[ValidationResult]
         """
@@ -78,11 +77,11 @@ class Validator:
     ) -> Iterator[ValidationResult]:
         """Lazily yield validation results for the instances provided by a loader
 
-        :param loader: An instance of a subclass of `linkml.validator.loaders.Loader`
+        :param loader: An instance of a subclass of :class:`linkml.validator.loaders.Loader`
             which provides the instances to validate
         :param target_class: Name of the class within the schema to validate
-            against. If None, the class will be inferred from the schema by
-            looked for a class with `tree_root: true`. Defaults to None.
+            against. If ``None``, the class will be inferred from the schema by
+            looked for a class with ``tree_root: true``. Defaults to ``None``.
         :return: Iterator over validation results
         :rtype: Iterator[ValidationResult]
         """

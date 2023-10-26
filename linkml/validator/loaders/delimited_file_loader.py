@@ -48,7 +48,14 @@ class _DelimitedFileLoader(Loader, ABC):
 
 
 class CsvLoader(_DelimitedFileLoader):
-    """A loader for instances serialized as CSV"""
+    """A loader for instances serialized as CSV
+
+    :param skip_empty_rows: If ``True``, skip empty rows instead of yielding empty dicts. Defaults
+        to ``False``.
+    :param index_slot_name: If provided, ``iter_instances`` will yield one dict where all rows of
+        the CSV file are collected into a list with ``index_slot_name`` as the key. If ``None``,
+        ``iter_instances`` will yield each row as a dict individually. Defaults to ``None``.
+    """
 
     @property
     def delimiter(self):
@@ -56,7 +63,14 @@ class CsvLoader(_DelimitedFileLoader):
 
 
 class TsvLoader(_DelimitedFileLoader):
-    """A loader for instances serialized as TSV"""
+    """A loader for instances serialized as TSV
+
+    :param skip_empty_rows: If ``True``, skip empty rows instead of yielding empty dicts. Defaults
+        to ``False``.
+    :param index_slot_name: If provided, ``iter_instances`` will yield one dict where all rows of
+        the TSV file are collected into a list with ``index_slot_name`` as the key. If ``None``,
+        ``iter_instances`` will yield each row as a dict individually. Defaults to ``None``.
+    """
 
     @property
     def delimiter(self):
