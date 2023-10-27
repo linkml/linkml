@@ -185,7 +185,7 @@ def cli(
             click.echo(f"[{result.severity.value}] [{loader.source}/{result.instance_index}] {result.message}")
 
     if sum(severity_counter.values()) == 0:
-        click.echo("No issues found!")
+        click.echo("No issues found")
 
     exit_code = 1 if severity_counter[Severity.ERROR] > 0 else 0
     sys.exit(exit_code)

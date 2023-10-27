@@ -7,6 +7,7 @@ from linkml_runtime import SchemaView
 from linkml_runtime.linkml_model import SchemaDefinition
 
 from linkml.generators import JsonSchemaGenerator, PydanticGenerator
+from linkml.utils.datautils import infer_root_class
 
 
 class ValidationContext:
@@ -59,12 +60,7 @@ class ValidationContext:
 
     def _get_target_class(self, target_class: Optional[str] = None) -> str:
         if target_class is None:
-            roots = [
-                class_name for class_name, class_def in self._schema_view.all_classes().items() if class_def.tree_root
-            ]
-            if len(roots) != 1:
-                raise ValueError(f"Cannot determine tree root: {roots}")
-            return roots[0]
+            return infer_root_class(self._schema_view)
         else:
             # strict=True raises ValueError if class is not found in schema
             class_def = self._schema_view.get_class(target_class, strict=True)

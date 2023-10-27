@@ -48,7 +48,7 @@ def test_valid_csv_file(cli_runner, csv_data_file):
     data_path = csv_data_file([VALID_PERSON_1, VALID_PERSON_2])
     result = cli_runner.invoke(cli, ["-s", PERSONINFO_SCHEMA, "-C", "Person", data_path])
     assert result.exception is None
-    assert result.output == "No issues found!\n"
+    assert result.output == "No issues found\n"
     assert result.exit_code == 0
 
 
@@ -58,7 +58,7 @@ def test_valid_json_file_object(tmp_path, cli_runner, json_data_file):
     data_path = json_data_file({"persons": [VALID_PERSON_1, VALID_PERSON_2]})
     result = cli_runner.invoke(cli, ["-s", PERSONINFO_SCHEMA, data_path])
     assert result.exception is None
-    assert result.output == "No issues found!\n"
+    assert result.output == "No issues found\n"
     assert result.exit_code == 0
 
 
@@ -69,7 +69,7 @@ def test_valid_json_file_list(cli_runner, json_data_file):
 
     result = cli_runner.invoke(cli, ["-s", PERSONINFO_SCHEMA, "-C", "Person", data_path])
     assert result.exception is None
-    assert result.output == "No issues found!\n"
+    assert result.output == "No issues found\n"
     assert result.exit_code == 0
 
 
@@ -146,7 +146,7 @@ data_sources:
     result = cli_runner.invoke(cli, ["--config", str(config_path)])
     print(str(result.exception))
     assert result.exception is None
-    assert result.output == "No issues found!\n"
+    assert result.output == "No issues found\n"
     assert result.exit_code == 0
 
 
