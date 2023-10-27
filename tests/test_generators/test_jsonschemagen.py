@@ -24,9 +24,7 @@ def test_jsonschema_integration(kitchen_sink_path, input_path):
     able to validate the instance data.
     """
 
-    generator = JsonSchemaGenerator(
-        kitchen_sink_path, mergeimports=True, top_class="Dataset", not_closed=False
-    )
+    generator = JsonSchemaGenerator(kitchen_sink_path, mergeimports=True, top_class="Dataset", not_closed=False)
     kitchen_sink_json_schema = json.loads(generator.serialize())
 
     kitchen_module = make_python(kitchen_sink_path)
@@ -67,9 +65,7 @@ def test_class_uri_any(kitchen_sink_path, subtests):
     See also https://github.com/linkml/linkml/issues/579
     """
 
-    assert_schema_validates(
-        subtests, kitchen_sink_path, {"$defs": {"AnyObject": {"additionalProperties": True}}}
-    )
+    assert_schema_validates(subtests, kitchen_sink_path, {"$defs": {"AnyObject": {"additionalProperties": True}}})
 
 
 def test_compliance_cases(kitchen_sink_path, input_path, subtests):
@@ -81,9 +77,7 @@ def test_compliance_cases(kitchen_sink_path, input_path, subtests):
     validation, but cases can also be marked with valid: true if validation should pass.
     """
 
-    generator = JsonSchemaGenerator(
-        kitchen_sink_path, mergeimports=True, top_class="Dataset", not_closed=False
-    )
+    generator = JsonSchemaGenerator(kitchen_sink_path, mergeimports=True, top_class="Dataset", not_closed=False)
     kitchen_sink_json_schema = json.loads(generator.serialize())
 
     generator.not_closed = True
@@ -194,9 +188,7 @@ def test_rules(subtests, input_path):
                 },
             )
 
-            assert_schema_validates(
-                subtests, schema, case["json_schema"], case.get("data_cases", [])
-            )
+            assert_schema_validates(subtests, schema, case["json_schema"], case.get("data_cases", []))
 
 
 def test_rules_in_non_root_class(subtests, input_path):
@@ -258,9 +250,7 @@ def test_empty_inlined_as_dict_objects(subtests, input_path):
 # **********************************************************
 
 
-def external_file_test(
-    subtests, file: Union[str, Path], generator_args: Optional[Dict] = None
-) -> None:
+def external_file_test(subtests, file: Union[str, Path], generator_args: Optional[Dict] = None) -> None:
     if generator_args is None:
         generator_args = {"not_closed": False}
 

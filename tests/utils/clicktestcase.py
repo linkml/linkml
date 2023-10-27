@@ -137,9 +137,7 @@ class ClickTestCase(TestEnvironmentTestCase):
             else:
                 self.env.generate_single_file(
                     target,
-                    lambda: self.click_ep(
-                        arg_list, prog_name=self.prog_name, standalone_mode=False
-                    ),
+                    lambda: self.click_ep(arg_list, prog_name=self.prog_name, standalone_mode=False),
                     filtr=filtr,
                     comparator=comparator,
                 )

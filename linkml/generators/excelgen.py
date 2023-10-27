@@ -81,9 +81,7 @@ class ExcelGenerator(Generator):
             if not cls.mixin and not cls.abstract:
                 self.create_worksheet(workbook, cls_name)
 
-    def add_columns_to_worksheet(
-        self, workbook: Workbook, worksheet_name: str, sheet_headings: List[str]
-    ) -> None:
+    def add_columns_to_worksheet(self, workbook: Workbook, worksheet_name: str, sheet_headings: List[str]) -> None:
         """
         Get a worksheet by name and add a column to it in an existing workbook.
 
@@ -125,9 +123,7 @@ class ExcelGenerator(Generator):
         column_letter = get_column_letter(column_number)
 
         # Create the data validation object and set the dropdown values
-        dv = DataValidation(
-            type="list", formula1=f'"{",".join(dropdown_values)}"', allow_blank=True
-        )
+        dv = DataValidation(type="list", formula1=f'"{",".join(dropdown_values)}"', allow_blank=True)
 
         worksheet.add_data_validation(dv)
 
@@ -138,9 +134,7 @@ class ExcelGenerator(Generator):
 
     def serialize(self, **kwargs) -> str:
         self.output = (
-            os.path.abspath(convert_to_snake_case(self.schema.name) + ".xlsx")
-            if not self.output
-            else self.output
+            os.path.abspath(convert_to_snake_case(self.schema.name) + ".xlsx") if not self.output else self.output
         )
 
         workbook = self.create_workbook(self.output)
@@ -150,9 +144,7 @@ class ExcelGenerator(Generator):
         sv = self.schemaview
         for cls_name, cls in sv.all_classes(imports=self.mergeimports).items():
             if not cls.mixin and not cls.abstract:
-                slots = [
-                    s.name for s in sv.class_induced_slots(cls_name, imports=self.mergeimports)
-                ]
+                slots = [s.name for s in sv.class_induced_slots(cls_name, imports=self.mergeimports)]
                 self.add_columns_to_worksheet(workbook, cls_name, slots)
 
         enum_list = [e_name for e_name, _ in sv.all_enums(imports=self.mergeimports).items()]

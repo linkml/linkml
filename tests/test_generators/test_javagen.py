@@ -35,6 +35,4 @@ def test_javagen_classes(kitchen_sink_path, tmp_path):
     """Generate java classes"""
     gen = JavaGenerator(kitchen_sink_path, package=PACKAGE)
     gen.serialize(directory=str(tmp_path))
-    assert_file_contains(
-        tmp_path / "Address.java", "public class Address", after="package org.sink.kitchen"
-    )
+    assert_file_contains(tmp_path / "Address.java", "public class Address", after="package org.sink.kitchen")

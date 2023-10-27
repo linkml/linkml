@@ -101,9 +101,7 @@ def execute_blocks(directory: str, blocks: List[Block]) -> List[str]:
                     logging.info("Success!")
         elif block.is_stdout():
             if "compare_rdf" in block.annotations:
-                logging.warning(
-                    "SKIPPING RDF COMPARISON. TODO: https://github.com/linkml/linkml/issues/427"
-                )
+                logging.warning("SKIPPING RDF COMPARISON. TODO: https://github.com/linkml/linkml/issues/427")
             elif last_block.output:
                 if last_block.output.strip() != block.content.strip():
                     err(f"Mismatch: {str(last_block.output)} != {block.content}")

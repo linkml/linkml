@@ -2,6 +2,7 @@ from rdflib import Graph, URIRef
 from rdflib.namespace import OWL, RDF
 
 from linkml.generators.owlgen import OwlSchemaGenerator
+from linkml.generators.rdfgen import RDFGenerator
 
 
 def test_issue_owl_namespace(input_path, snapshot):
@@ -34,3 +35,10 @@ def test_aliases(input_path, snapshot):
     """Make sure aliases work"""
     output = OwlSchemaGenerator(input_path("issue_163c.yaml")).serialize()
     assert output == snapshot("issue_163c.owl")
+
+
+def test_issue_genrdf_exact_mappings(input_path, snapshot):
+    """Make sure that exact_mappings curies are correctly converted in rdfgen"""
+    output = RDFGenerator(input_path("issue_163d.yaml")).serialize()
+    expected = snapshot("issue_163d.ttl")
+    assert output == expected

@@ -98,9 +98,7 @@ def test_serialize_selected(kitchen_sink_path):
 def test_follow_references(kitchen_sink_path):
     """Test serialization of selected elements following non-inlined references"""
     gen = ERDiagramGenerator(kitchen_sink_path)
-    mermaid = remove_whitespace(
-        gen.serialize_classes(["FamilialRelationship"], follow_references=True)
-    )
+    mermaid = remove_whitespace(gen.serialize_classes(["FamilialRelationship"], follow_references=True))
     assert PERSON in mermaid
     assert FAMILIALRELATIONSHIP2PERSON in mermaid
 
@@ -114,6 +112,4 @@ def test_max_hops(kitchen_sink_path):
 
     mermaid = remove_whitespace(gen.serialize_classes(["Dataset"], max_hops=1))
     assert PERSON in mermaid, "Person reachable from selected in one hop"
-    assert (
-        "FamilialRelationship{" not in mermaid
-    ), "FamilialRelationship not reachable from selected in zero hops"
+    assert "FamilialRelationship{" not in mermaid, "FamilialRelationship not reachable from selected in zero hops"

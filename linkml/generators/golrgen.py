@@ -88,9 +88,7 @@ class GolrSchemaGenerator(Generator):
                 f.write("".join(self.generate_header()))
                 f.write(as_yaml(self.class_obj))
 
-    def visit_class_slot(
-        self, cls: ClassDefinition, aliased_slot_name: str, slot: SlotDefinition
-    ) -> None:
+    def visit_class_slot(self, cls: ClassDefinition, aliased_slot_name: str, slot: SlotDefinition) -> None:
         field = GOLRField(
             id=underscore(aliased_slot_name),
             description=slot.description,

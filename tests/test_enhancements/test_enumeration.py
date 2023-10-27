@@ -47,9 +47,7 @@ class EnumerationTestCase(TestEnvironmentTestCase):
                 importmap=env.import_map,
                 mergeimports=False,
             ).serialize(),
-            comparator=lambda exp, act: compare_python(
-                exp, act, self.env.expected_path(f"{self.testdir}/{file}.py")
-            ),
+            comparator=lambda exp, act: compare_python(exp, act, self.env.expected_path(f"{self.testdir}/{file}.py")),
             value_is_returned=True,
         )
 
@@ -128,9 +126,7 @@ class EnumerationTestCase(TestEnvironmentTestCase):
                 importmap=env.import_map,
                 mergeimports=False,
             ).serialize(),
-            comparator=lambda exp, act: compare_python(
-                exp, act, self.env.expected_path(python_name)
-            ),
+            comparator=lambda exp, act: compare_python(exp, act, self.env.expected_path(python_name)),
             value_is_returned=True,
         )
 
@@ -148,9 +144,7 @@ class EnumerationTestCase(TestEnvironmentTestCase):
                 gen_classvars=False,
                 gen_slots=False,
             ).serialize(),
-            comparator=lambda exp, act: compare_python(
-                exp, act, self.env.expected_path(python_name)
-            ),
+            comparator=lambda exp, act: compare_python(exp, act, self.env.expected_path(python_name)),
             value_is_returned=True,
         )
 
@@ -186,9 +180,7 @@ class EnumerationTestCase(TestEnvironmentTestCase):
                 gen_classvars=False,
                 gen_slots=False,
             ).serialize(),
-            comparator=lambda exp, act: compare_python(
-                exp, act, self.env.expected_path(python_name)
-            ),
+            comparator=lambda exp, act: compare_python(exp, act, self.env.expected_path(python_name)),
             value_is_returned=True,
         )
 
@@ -210,9 +202,7 @@ class EnumerationTestCase(TestEnvironmentTestCase):
                 gen_classvars=False,
                 gen_slots=False,
             ).serialize(),
-            comparator=lambda exp, act: compare_python(
-                exp, act, self.env.expected_path(python_name)
-            ),
+            comparator=lambda exp, act: compare_python(exp, act, self.env.expected_path(python_name)),
             value_is_returned=True,
         )
 
@@ -236,9 +226,7 @@ class EnumerationTestCase(TestEnvironmentTestCase):
                 gen_classvars=False,
                 gen_slots=False,
             ).serialize(),
-            comparator=lambda exp, act: compare_python(
-                exp, act, self.env.expected_path(python_name)
-            ),
+            comparator=lambda exp, act: compare_python(exp, act, self.env.expected_path(python_name)),
             value_is_returned=True,
         )
 

@@ -73,10 +73,7 @@ enums:
     assert enum
     assert enum["values"]["number_123"]["value"] == "123"
     assert enum["values"]["PLUS_SIGN"]["value"] == "+"
-    assert (
-        enum["values"]["This_AMPERSAND_that_plus_maybe_a_TOP_HAT"]["value"]
-        == "This & that, plus maybe a 🎩"
-    )
+    assert enum["values"]["This_AMPERSAND_that_plus_maybe_a_TOP_HAT"]["value"] == "This & that, plus maybe a 🎩"
     assert enum["values"]["Ohio"]["value"] == "Ohio"
 
 
@@ -132,17 +129,9 @@ slots:
     code = gen.serialize()
     lines = code.splitlines()
     ix = lines.index("class C(ConfiguredBaseModel):")
-    assert (
-        lines[ix + 3]
-        == "    inlined_things: Optional[Dict[str, Union[A, B]]] = Field(default_factory=dict)"
-    )
-    assert (
-        lines[ix + 4]
-        == "    inlined_as_list_things: Optional[List[Union[A, B]]] = Field(default_factory=list)"
-    )
-    assert (
-        lines[ix + 5] == "    not_inlined_things: Optional[List[str]] = Field(default_factory=list)"
-    )
+    assert lines[ix + 3] == "    inlined_things: Optional[Dict[str, Union[A, B]]] = Field(default_factory=dict)"
+    assert lines[ix + 4] == "    inlined_as_list_things: Optional[List[Union[A, B]]] = Field(default_factory=list)"
+    assert lines[ix + 5] == "    not_inlined_things: Optional[List[str]] = Field(default_factory=list)"
 
 
 def test_pydantic_inlining():
@@ -312,10 +301,7 @@ classes:
     date_slot_line = lines[ix + 8].strip()
     assert date_slot_line == "attr5: Optional[date] = Field(datetime.date(2020, 01, 01))"
     datetime_slot_line = lines[ix + 9].strip()
-    assert (
-        datetime_slot_line
-        == "attr6: Optional[datetime ] = Field(datetime.datetime(2020, 01, 01, 00, 00, 00))"
-    )
+    assert datetime_slot_line == "attr6: Optional[datetime ] = Field(datetime.datetime(2020, 01, 01, 00, 00, 00))"
 
 
 def test_multiline_module(input_path):

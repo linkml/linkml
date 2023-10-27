@@ -58,9 +58,7 @@ def test_identifier(framework, description, ids, is_valid, additional_slot_value
             },
         },
     }
-    schema = validated_schema(
-        test_identifier, "default", framework, classes=classes, core_elements=["identifier"]
-    )
+    schema = validated_schema(test_identifier, "default", framework, classes=classes, core_elements=["identifier"])
     obj = {"entities": [{"id": id, SLOT_S1: additional_slot_values} for id in ids]}
     expected_behavior = ValidationBehavior.IMPLEMENTS
     if not is_valid and framework != PYTHON_DATACLASSES:
@@ -135,9 +133,7 @@ def test_identifier(framework, description, ids, is_valid, additional_slot_value
     ],
 )
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
-def test_unique_keys(
-    framework, description, objects, is_valid, is_valid_if_nulls_inequal, consider_nulls_inequal
-):
+def test_unique_keys(framework, description, objects, is_valid, is_valid_if_nulls_inequal, consider_nulls_inequal):
     """
     Tests unique keys
 

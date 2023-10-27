@@ -34,9 +34,7 @@ def test_initvar():
     c: sell
 """
     parsed_yaml = yaml.load(yaml_str, DupCheckYamlLoader)
-    with pytest.raises(
-        ValueError, match="File \"<unicode string>\", line 4, col 5:  Unknown argument: c = 'sell'"
-    ):
+    with pytest.raises(ValueError, match="File \"<unicode string>\", line 4, col 5:  Unknown argument: c = 'sell'"):
         FesterBesterTester(**parsed_yaml["base"])
 
     parsed_yaml["base"].pop("c", None)

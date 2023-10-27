@@ -192,9 +192,7 @@ def test_sqla_imperative_dataclasses_exec(schema):
     engine.dispose()
 
 
-@pytest.mark.skip(
-    "Mixing sqla imperative and pydantic classes that extend from BaseModel may not play well together"
-)
+@pytest.mark.skip("Mixing sqla imperative and pydantic classes that extend from BaseModel may not play well together")
 def test_sqla_imperative_pydantic_exec(schema):
     """
     https://github.com/tiangolo/fastapi/issues/214
@@ -288,9 +286,7 @@ def test_sqla_declarative_exec(schema):
     p1.aliases = ["Anne"]
     # p1.aliases_rel = [mod.Person_alias(alias='zzz')]
     p1.aliases.append("Fred")
-    p1.has_familial_relationships.append(
-        mod.FamilialRelationship(related_to="P2", type="SIBLING_OF")
-    )
+    p1.has_familial_relationships.append(mod.FamilialRelationship(related_to="P2", type="SIBLING_OF"))
     news_event = mod.NewsEvent(headline="foo")
     p1.has_news_events.append(news_event)
     p1.current_address = address
@@ -324,12 +320,8 @@ def test_sqla_declarative_exec(schema):
     p1_news = p1_from_query.has_news_events
     assert any(e for e in p1_medical_history if e.diagnosis_id == "C999")
     assert any(e for e in p1_medical_history if e.diagnosis_id == "C001")
-    assert any(
-        e for e in p1_medical_history if (e.diagnosis.id == "C001" and e.diagnosis.name == "cough")
-    )
-    assert any(
-        e for e in p1_medical_history if (e.diagnosis.id == "C999" and e.diagnosis.name == "rash")
-    )
+    assert any(e for e in p1_medical_history if (e.diagnosis.id == "C001" and e.diagnosis.name == "cough"))
+    assert any(e for e in p1_medical_history if (e.diagnosis.id == "C999" and e.diagnosis.name == "rash"))
     assert any(r for r in p1_famrels if (r.related_to == "P2" and r.type == "SIBLING_OF"))
     assert any(n for n in p1_news if (n.headline == "foo"))
     session.commit()

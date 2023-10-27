@@ -7,7 +7,7 @@ ENV PYTHONFAULTHANDLER=1 \
   PIP_NO_CACHE_DIR=off \
   PIP_DISABLE_PIP_VERSION_CHECK=on \
   PIP_DEFAULT_TIMEOUT=100 \
-  POETRY_VERSION=1.2.1
+  POETRY_VERSION=1.6.0
 
 # Install Poetry
 RUN pip install "poetry==$POETRY_VERSION"
@@ -19,10 +19,14 @@ WORKDIR /code
 COPY ./.git ./.git
 COPY pyproject.toml poetry.lock README.md .
 COPY linkml linkml/
-RUN poetry build 
+RUN poetry build
 
 #######################################
 FROM python:3.9-slim-bullseye as runner
+
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt update
+RUN apt update && apt install -y gcc musl-dev python3-dev && rm -rf /var/lib/apt/lists/*
 
 RUN useradd --create-home linkmluser
 WORKDIR /home/linkmluser

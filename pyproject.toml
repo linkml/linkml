@@ -111,7 +111,7 @@ openpyxl = "*"
 parse = "*"
 prefixcommons = ">=0.1.7"
 prefixmaps = ">=0.1.3"
-pydantic = "*"
+pydantic = ">=1.0.0,<3.0.0"
 pyjsg = ">=0.11.6"
 pyshex = ">=0.7.20"
 pyshexc = ">=0.8.3"
@@ -160,7 +160,7 @@ ignore-words-list = 'mater,connexion,infarction'
 quiet-level = 3
 
 [tool.black]
-line-length = 100
+line-length = 120
 target-versions = ["py38", "py39", "py310", "py311"]
 force-exclude = '''
 /(

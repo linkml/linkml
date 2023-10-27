@@ -280,9 +280,7 @@ class SQLDDLGenerator(Generator):
             # TODO: raise error if the target is standard SQL
             raise Exception("PostgreSQL Inheritance not yet supported")
 
-    def visit_class_slot(
-        self, cls: ClassDefinition, aliased_slot_name: str, slot: SlotDefinition
-    ) -> None:
+    def visit_class_slot(self, cls: ClassDefinition, aliased_slot_name: str, slot: SlotDefinition) -> None:
         if self._is_hidden(cls):
             return False
         sqlschema = self.sqlschema
@@ -347,9 +345,7 @@ class SQLDDLGenerator(Generator):
                     backref_col = SQLColumn(name=backref_col_name, foreign_key=table_pk)
                     ref.add_column(backref_col)
                     table.remove_column(sqlcol)
-                    table.backrefs.append(
-                        Backref(original_column=sqlcol, backref_column=backref_col)
-                    )
+                    table.backrefs.append(Backref(original_column=sqlcol, backref_column=backref_col))
             else:
                 if not is_primitive:
                     ref_pk = ref.get_singular_primary_key()

@@ -27,9 +27,7 @@ class RDFGenerator(Generator):
     generatorversion = "0.1.1"
     # TODO: we leave ttl as default for backwards compatibility but nt is
     # recommended, see https://github.com/linkml/linkml/issues/163
-    valid_formats = ["ttl"] + sorted(
-        [x.name for x in rdflib_plugins(None, rdflib_Parser) if "/" not in str(x.name)]
-    )
+    valid_formats = ["ttl"] + sorted([x.name for x in rdflib_plugins(None, rdflib_Parser) if "/" not in str(x.name)])
     visit_all_class_slots = False
     uses_schemaloader = True
 
