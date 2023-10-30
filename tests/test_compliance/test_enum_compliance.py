@@ -104,8 +104,10 @@ def test_enum(framework, enum_name, enum_desc, pvs, value, include_meaning):
     if framework == SQL_DDL_SQLITE and not is_valid:
         # SQLite does not support enums
         expected_behavior = ValidationBehavior.INCOMPLETE
-    if pvs == [] and framework not in [JSON_SCHEMA, PYDANTIC]:
+    if pvs == [] and framework not in [JSON_SCHEMA]:
         # only JSON Schema supports empty enums
+        # pydantiggen will generate a string extension, but
+        # with pydantic2, automatic casting doesn't behave the same way
         expected_behavior = ValidationBehavior.FALSE_POSITIVE
     check_data(
         schema,
