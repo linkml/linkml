@@ -1,495 +1,624 @@
 @prefix GSSO: <http://purl.obolibrary.org/obo/GSSO_> .
-@prefix IAO: <http://purl.obolibrary.org/obo/IAO_> .
 @prefix dcterms: <http://purl.org/dc/terms/> .
 @prefix famrel: <https://example.org/FamilialRelations#> .
 @prefix linkml: <https://w3id.org/linkml/> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix personinfo: <https://w3id.org/linkml/examples/personinfo/> .
-@prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix schema: <http://schema.org/> .
 @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-linkml:SubsetDefinition a owl:Class ;
-    rdfs:label "subset_definition" .
-
-linkml:TypeDefinition a owl:Class ;
-    rdfs:label "type_definition" .
-
-<https://w3id.org/linkml/examples/personinfo> a owl:Ontology ;
+<https://w3id.org/linkml/examples/personinfo.owl.ttl> a owl:Ontology ;
     rdfs:label "personinfo" ;
-    IAO:0000700 personinfo:Address,
-        personinfo:Container,
-        personinfo:Event,
-        personinfo:HasAliases,
-        personinfo:NamedThing,
-        personinfo:Relationship,
-        personinfo:WithLocation ;
     dcterms:license "https://creativecommons.org/publicdomain/zero/1.0/" ;
-    linkml:generation_date "2022-10-06T14:46:01" ;
-    linkml:metamodel_version "1.7.0" ;
-    linkml:source_file "personinfo.yaml" ;
-    linkml:source_file_date "2022-03-10T13:02:37" ;
-    linkml:source_file_size 5368 .
+    skos:definition "Information about people, based on [schema.org](http://schema.org)" .
 
-personinfo:DiagnosisType a owl:Class,
-        linkml:EnumDefinition ;
-    rdfs:label "DiagnosisType" ;
-    owl:unionOf [ rdf:rest () ] .
-
-linkml:topValue a owl:DatatypeProperty ;
-    rdfs:label "value" .
-
-personinfo:Container a owl:Class,
-        linkml:ClassDefinition ;
+personinfo:Container a owl:Class ;
     rdfs:label "Container" ;
     rdfs:subClassOf [ a owl:Restriction ;
-            owl:allValuesFrom personinfo:Person ;
+            owl:allValuesFrom personinfo:Organization ;
+            owl:onProperty personinfo:organizations ],
+        [ a owl:Restriction ;
+            owl:minCardinality 0 ;
             owl:onProperty personinfo:persons ],
         [ a owl:Restriction ;
-            owl:allValuesFrom personinfo:Organization ;
-            owl:onProperty personinfo:organizations ] .
+            owl:minCardinality 0 ;
+            owl:onProperty personinfo:organizations ],
+        [ a owl:Restriction ;
+            owl:allValuesFrom personinfo:Person ;
+            owl:onProperty personinfo:persons ] ;
+    skos:inScheme <https://w3id.org/linkml/examples/personinfo> .
 
-personinfo:WithLocation a owl:Class,
-        linkml:ClassDefinition ;
+personinfo:DiagnosisType a owl:Class .
+
+personinfo:WithLocation a owl:Class ;
     rdfs:label "WithLocation" ;
     rdfs:subClassOf [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
-            owl:onClass personinfo:Place ;
-            owl:onProperty personinfo:in_location ],
-        linkml:mixin .
-
-personinfo:age_in_years a owl:ObjectProperty,
-        linkml:SlotDefinition ;
-    rdfs:label "age_in_years" ;
-    rdfs:range linkml:Integer .
-
-personinfo:city a owl:ObjectProperty,
-        linkml:SlotDefinition ;
-    rdfs:label "city" ;
-    rdfs:range linkml:String .
-
-personinfo:current_address a owl:ObjectProperty,
-        linkml:SlotDefinition ;
-    rdfs:label "current_address" ;
-    rdfs:range personinfo:Address ;
-    skos:definition "The address at which a person currently lives" .
-
-personinfo:diagnosis a owl:ObjectProperty,
-        linkml:SlotDefinition ;
-    rdfs:label "diagnosis" ;
-    rdfs:range personinfo:DiagnosisConcept .
-
-personinfo:duration a owl:ObjectProperty,
-        linkml:SlotDefinition ;
-    rdfs:label "duration" ;
-    rdfs:range linkml:Float .
-
-personinfo:employed_at a owl:ObjectProperty,
-        linkml:SlotDefinition ;
-    rdfs:label "employed_at" ;
-    rdfs:range personinfo:Organization .
-
-personinfo:founding_date a owl:ObjectProperty,
-        linkml:SlotDefinition ;
-    rdfs:label "founding_date" ;
-    rdfs:range linkml:String .
-
-personinfo:founding_location a owl:ObjectProperty,
-        linkml:SlotDefinition ;
-    rdfs:label "founding_location" ;
-    rdfs:range personinfo:Place .
-
-personinfo:has_employment_history a owl:ObjectProperty,
-        linkml:SlotDefinition ;
-    rdfs:label "has_employment_history" ;
-    rdfs:range personinfo:EmploymentEvent .
-
-personinfo:has_familial_relationships a owl:ObjectProperty,
-        linkml:SlotDefinition ;
-    rdfs:label "has_familial_relationships" ;
-    rdfs:range personinfo:FamilialRelationship .
-
-personinfo:has_medical_history a owl:ObjectProperty,
-        linkml:SlotDefinition ;
-    rdfs:label "has_medical_history" ;
-    rdfs:range personinfo:MedicalEvent .
-
-personinfo:is_current a owl:ObjectProperty,
-        linkml:SlotDefinition ;
-    rdfs:label "is_current" ;
-    rdfs:range linkml:Boolean .
-
-personinfo:mission_statement a owl:ObjectProperty,
-        linkml:SlotDefinition ;
-    rdfs:label "mission_statement" ;
-    rdfs:range linkml:String .
-
-personinfo:organizations a owl:ObjectProperty,
-        linkml:SlotDefinition ;
-    rdfs:label "organizations" ;
-    rdfs:range personinfo:Organization .
-
-personinfo:persons a owl:ObjectProperty,
-        linkml:SlotDefinition ;
-    rdfs:label "persons" ;
-    rdfs:range personinfo:Person .
-
-personinfo:postal_code a owl:ObjectProperty,
-        linkml:SlotDefinition ;
-    rdfs:label "postal_code" ;
-    rdfs:range linkml:String .
-
-personinfo:procedure a owl:ObjectProperty,
-        linkml:SlotDefinition ;
-    rdfs:label "procedure" ;
-    rdfs:range personinfo:ProcedureConcept .
-
-personinfo:street a owl:ObjectProperty,
-        linkml:SlotDefinition ;
-    rdfs:label "street" ;
-    rdfs:range linkml:String .
-
-GSSO:000371 a owl:Class,
-        personinfo:GenderType ;
-    rdfs:label "cisgender man" .
-
-GSSO:000372 a owl:Class,
-        personinfo:GenderType ;
-    rdfs:label "transgender man" .
-
-GSSO:000384 a owl:Class,
-        personinfo:GenderType ;
-    rdfs:label "transgender woman" .
-
-GSSO:000385 a owl:Class,
-        personinfo:GenderType ;
-    rdfs:label "cisgender woman" .
-
-GSSO:009253 a owl:Class,
-        personinfo:GenderType ;
-    rdfs:label "nonbinary woman" .
-
-GSSO:009254 a owl:Class,
-        personinfo:GenderType ;
-    rdfs:label "nonbinary man" .
-
-schema:birthDate a owl:ObjectProperty,
-        linkml:SlotDefinition ;
-    rdfs:label "birth_date" ;
-    rdfs:range linkml:String ;
-    skos:exactMatch schema:birthDate .
-
-schema:description a owl:ObjectProperty,
-        linkml:SlotDefinition ;
-    rdfs:label "description" ;
-    rdfs:range linkml:String ;
-    skos:exactMatch schema:description .
-
-schema:email a owl:ObjectProperty,
-        linkml:SlotDefinition ;
-    rdfs:label "primary_email" ;
-    rdfs:range linkml:String ;
-    skos:exactMatch schema:email .
-
-schema:gender a owl:ObjectProperty,
-        linkml:SlotDefinition ;
-    rdfs:label "gender" ;
-    rdfs:range personinfo:GenderType ;
-    skos:exactMatch schema:gender .
-
-schema:image a owl:ObjectProperty,
-        linkml:SlotDefinition ;
-    rdfs:label "image" ;
-    rdfs:range linkml:String ;
-    skos:exactMatch schema:image .
-
-famrel:02 a owl:Class,
-        personinfo:FamilialRelationshipType ;
-    rdfs:label "PARENT_OF" .
-
-personinfo:Concept a owl:Class,
-        linkml:ClassDefinition ;
-    rdfs:label "Concept" ;
-    rdfs:subClassOf personinfo:NamedThing .
-
-personinfo:DiagnosisConcept a owl:Class,
-        linkml:ClassDefinition ;
-    rdfs:label "DiagnosisConcept" ;
-    rdfs:subClassOf personinfo:Concept .
-
-personinfo:EmploymentEvent a owl:Class,
-        linkml:ClassDefinition ;
-    rdfs:label "EmploymentEvent" ;
-    rdfs:subClassOf [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
-            owl:onClass personinfo:Organization ;
-            owl:onProperty personinfo:employed_at ],
-        personinfo:Event .
-
-personinfo:FamilialRelationship a owl:Class,
-        linkml:ClassDefinition ;
-    rdfs:label "FamilialRelationship" ;
-    rdfs:subClassOf [ a owl:Restriction ;
-            owl:onClass personinfo:FamilialRelationshipType ;
-            owl:onProperty personinfo:type ;
-            owl:qualifiedCardinality 1 ],
-        [ a owl:Restriction ;
-            owl:onClass personinfo:Person ;
-            owl:onProperty personinfo:related_to ;
-            owl:qualifiedCardinality 1 ],
-        personinfo:Relationship .
-
-personinfo:MedicalEvent a owl:Class,
-        linkml:ClassDefinition ;
-    rdfs:label "MedicalEvent" ;
-    rdfs:subClassOf [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
-            owl:onClass personinfo:Place ;
+            owl:maxCardinality 1 ;
             owl:onProperty personinfo:in_location ],
         [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
-            owl:onClass personinfo:DiagnosisConcept ;
-            owl:onProperty personinfo:diagnosis ],
+            owl:allValuesFrom personinfo:Place ;
+            owl:onProperty personinfo:in_location ],
         [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
-            owl:onClass personinfo:ProcedureConcept ;
-            owl:onProperty personinfo:procedure ],
-        personinfo:Event .
+            owl:minCardinality 0 ;
+            owl:onProperty personinfo:in_location ] ;
+    skos:inScheme <https://w3id.org/linkml/examples/personinfo> .
 
-personinfo:ProcedureConcept a owl:Class,
-        linkml:ClassDefinition ;
-    rdfs:label "ProcedureConcept" ;
-    rdfs:subClassOf personinfo:Concept .
-
-personinfo:Relationship a owl:Class,
-        linkml:ClassDefinition ;
+personinfo:Relationship a owl:Class ;
     rdfs:label "Relationship" ;
     rdfs:subClassOf [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
-            owl:onClass linkml:String ;
+            owl:allValuesFrom xsd:string ;
+            owl:onProperty personinfo:type ],
+        [ a owl:Restriction ;
+            owl:minCardinality 0 ;
+            owl:onProperty personinfo:type ],
+        [ a owl:Restriction ;
+            owl:allValuesFrom xsd:date ;
+            owl:onProperty personinfo:started_at_time ],
+        [ a owl:Restriction ;
+            owl:maxCardinality 1 ;
+            owl:onProperty personinfo:type ],
+        [ a owl:Restriction ;
+            owl:maxCardinality 1 ;
             owl:onProperty personinfo:related_to ],
         [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
-            owl:onClass linkml:Date ;
-            owl:onProperty prov:endedAtTime ],
+            owl:minCardinality 0 ;
+            owl:onProperty personinfo:started_at_time ],
         [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
-            owl:onClass linkml:Date ;
-            owl:onProperty prov:startedAtTime ],
+            owl:minCardinality 0 ;
+            owl:onProperty personinfo:related_to ],
         [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
-            owl:onClass linkml:String ;
-            owl:onProperty personinfo:type ] .
+            owl:minCardinality 0 ;
+            owl:onProperty personinfo:ended_at_time ],
+        [ a owl:Restriction ;
+            owl:allValuesFrom xsd:date ;
+            owl:onProperty personinfo:ended_at_time ],
+        [ a owl:Restriction ;
+            owl:maxCardinality 1 ;
+            owl:onProperty personinfo:ended_at_time ],
+        [ a owl:Restriction ;
+            owl:maxCardinality 1 ;
+            owl:onProperty personinfo:started_at_time ],
+        [ a owl:Restriction ;
+            owl:allValuesFrom xsd:string ;
+            owl:onProperty personinfo:related_to ] ;
+    skos:inScheme <https://w3id.org/linkml/examples/personinfo> .
 
-personinfo:in_location a owl:ObjectProperty,
-        linkml:SlotDefinition ;
-    rdfs:label "in_location" ;
-    rdfs:range personinfo:Place .
+GSSO:000371 a owl:Class ;
+    rdfs:label "cisgender man" ;
+    rdfs:subClassOf personinfo:GenderType .
 
-personinfo:related_to a owl:ObjectProperty,
-        linkml:SlotDefinition .
+GSSO:000372 a owl:Class ;
+    rdfs:label "transgender man" ;
+    rdfs:subClassOf personinfo:GenderType .
 
-personinfo:type a owl:ObjectProperty,
-        linkml:SlotDefinition ;
-    rdfs:label "type" ;
-    rdfs:range linkml:String .
+GSSO:000384 a owl:Class ;
+    rdfs:label "transgender woman" ;
+    rdfs:subClassOf personinfo:GenderType .
 
-schema:identifier a owl:ObjectProperty,
-        linkml:SlotDefinition ;
-    rdfs:label "id" ;
-    rdfs:range linkml:String ;
-    skos:exactMatch schema:identifier .
+GSSO:000385 a owl:Class ;
+    rdfs:label "cisgender woman" ;
+    rdfs:subClassOf personinfo:GenderType .
 
-schema:name a owl:ObjectProperty,
-        linkml:SlotDefinition ;
-    rdfs:label "name" ;
-    rdfs:range linkml:String ;
-    skos:exactMatch schema:name .
+GSSO:009253 a owl:Class ;
+    rdfs:label "nonbinary woman" ;
+    rdfs:subClassOf personinfo:GenderType .
 
-prov:endedAtTime a owl:ObjectProperty,
-        linkml:SlotDefinition ;
-    rdfs:label "ended_at_time" ;
-    rdfs:range linkml:Date ;
-    skos:exactMatch prov:endedAtTime .
+GSSO:009254 a owl:Class ;
+    rdfs:label "nonbinary man" ;
+    rdfs:subClassOf personinfo:GenderType .
 
-prov:startedAtTime a owl:ObjectProperty,
-        linkml:SlotDefinition ;
-    rdfs:label "started_at_time" ;
-    rdfs:range linkml:Date ;
-    skos:exactMatch prov:startedAtTime .
+famrel:01 a owl:Class ;
+    rdfs:label "SIBLING_OF" ;
+    rdfs:subClassOf personinfo:FamilialRelationshipType .
 
-famrel:01 a owl:Class,
-        personinfo:FamilialRelationshipType ;
-    rdfs:label "CHILD_OF",
-        "SIBLING_OF" .
+famrel:02 a owl:Class ;
+    rdfs:label "PARENT_OF" ;
+    rdfs:subClassOf personinfo:FamilialRelationshipType .
 
-personinfo:Address a owl:Class,
-        linkml:ClassDefinition ;
+famrel:03 a owl:Class ;
+    rdfs:label "CHILD_OF" ;
+    rdfs:subClassOf personinfo:FamilialRelationshipType .
+
+personinfo:Address a owl:Class ;
     rdfs:label "Address" ;
     rdfs:subClassOf [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
-            owl:onClass linkml:String ;
+            owl:minCardinality 0 ;
             owl:onProperty personinfo:postal_code ],
         [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
-            owl:onClass linkml:String ;
+            owl:allValuesFrom xsd:string ;
             owl:onProperty personinfo:street ],
         [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
-            owl:onClass linkml:String ;
-            owl:onProperty personinfo:city ] ;
-    skos:exactMatch schema:PostalAddress .
+            owl:minCardinality 0 ;
+            owl:onProperty personinfo:street ],
+        [ a owl:Restriction ;
+            owl:allValuesFrom xsd:string ;
+            owl:onProperty personinfo:city ],
+        [ a owl:Restriction ;
+            owl:maxCardinality 1 ;
+            owl:onProperty personinfo:street ],
+        [ a owl:Restriction ;
+            owl:allValuesFrom xsd:string ;
+            owl:onProperty personinfo:postal_code ],
+        [ a owl:Restriction ;
+            owl:maxCardinality 1 ;
+            owl:onProperty personinfo:city ],
+        [ a owl:Restriction ;
+            owl:minCardinality 0 ;
+            owl:onProperty personinfo:city ],
+        [ a owl:Restriction ;
+            owl:maxCardinality 1 ;
+            owl:onProperty personinfo:postal_code ] ;
+    skos:exactMatch schema:PostalAddress ;
+    skos:inScheme <https://w3id.org/linkml/examples/personinfo> .
 
-personinfo:Event a owl:Class,
-        linkml:ClassDefinition ;
+personinfo:Concept a owl:Class ;
+    rdfs:label "Concept" ;
+    rdfs:subClassOf personinfo:NamedThing ;
+    skos:inScheme <https://w3id.org/linkml/examples/personinfo> .
+
+personinfo:DiagnosisConcept a owl:Class ;
+    rdfs:label "DiagnosisConcept" ;
+    rdfs:subClassOf personinfo:Concept ;
+    skos:inScheme <https://w3id.org/linkml/examples/personinfo> .
+
+personinfo:EmploymentEvent a owl:Class ;
+    rdfs:label "EmploymentEvent" ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:allValuesFrom personinfo:Organization ;
+            owl:onProperty personinfo:employed_at ],
+        [ a owl:Restriction ;
+            owl:maxCardinality 1 ;
+            owl:onProperty personinfo:employed_at ],
+        [ a owl:Restriction ;
+            owl:minCardinality 0 ;
+            owl:onProperty personinfo:employed_at ],
+        personinfo:Event ;
+    skos:inScheme <https://w3id.org/linkml/examples/personinfo> .
+
+personinfo:Event a owl:Class ;
     rdfs:label "Event" ;
     rdfs:subClassOf [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
-            owl:onClass linkml:Float ;
+            owl:maxCardinality 1 ;
+            owl:onProperty personinfo:ended_at_time ],
+        [ a owl:Restriction ;
+            owl:minCardinality 0 ;
+            owl:onProperty personinfo:is_current ],
+        [ a owl:Restriction ;
+            owl:maxCardinality 1 ;
+            owl:onProperty personinfo:is_current ],
+        [ a owl:Restriction ;
+            owl:maxCardinality 1 ;
+            owl:onProperty personinfo:started_at_time ],
+        [ a owl:Restriction ;
+            owl:allValuesFrom xsd:boolean ;
+            owl:onProperty personinfo:is_current ],
+        [ a owl:Restriction ;
+            owl:minCardinality 0 ;
             owl:onProperty personinfo:duration ],
         [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
-            owl:onClass linkml:Date ;
-            owl:onProperty prov:startedAtTime ],
+            owl:minCardinality 0 ;
+            owl:onProperty personinfo:started_at_time ],
         [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
-            owl:onClass linkml:Date ;
-            owl:onProperty prov:endedAtTime ],
+            owl:allValuesFrom xsd:date ;
+            owl:onProperty personinfo:ended_at_time ],
         [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
-            owl:onClass linkml:Boolean ;
-            owl:onProperty personinfo:is_current ] ;
-    skos:closeMatch schema:Event .
+            owl:allValuesFrom xsd:float ;
+            owl:onProperty personinfo:duration ],
+        [ a owl:Restriction ;
+            owl:allValuesFrom xsd:date ;
+            owl:onProperty personinfo:started_at_time ],
+        [ a owl:Restriction ;
+            owl:minCardinality 0 ;
+            owl:onProperty personinfo:ended_at_time ],
+        [ a owl:Restriction ;
+            owl:maxCardinality 1 ;
+            owl:onProperty personinfo:duration ] ;
+    skos:closeMatch schema:Event ;
+    skos:inScheme <https://w3id.org/linkml/examples/personinfo> .
 
-personinfo:FamilialRelationshipType a owl:Class,
-        linkml:EnumDefinition ;
-    rdfs:label "FamilialRelationshipType" ;
-    owl:unionOf ( famrel:01 famrel:02 famrel:01 ) ;
-    linkml:permissible_values famrel:01,
-        famrel:02 .
+personinfo:FamilialRelationship a owl:Class ;
+    rdfs:label "FamilialRelationship" ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:allValuesFrom personinfo:FamilialRelationshipType ;
+            owl:onProperty personinfo:type ],
+        [ a owl:Restriction ;
+            owl:minCardinality 1 ;
+            owl:onProperty personinfo:related_to ],
+        [ a owl:Restriction ;
+            owl:maxCardinality 1 ;
+            owl:onProperty personinfo:type ],
+        [ a owl:Restriction ;
+            owl:maxCardinality 1 ;
+            owl:onProperty personinfo:related_to ],
+        [ a owl:Restriction ;
+            owl:minCardinality 1 ;
+            owl:onProperty personinfo:type ],
+        [ a owl:Restriction ;
+            owl:allValuesFrom personinfo:Person ;
+            owl:onProperty personinfo:related_to ],
+        personinfo:Relationship ;
+    skos:inScheme <https://w3id.org/linkml/examples/personinfo> .
 
-personinfo:Person a owl:Class,
-        linkml:ClassDefinition ;
+personinfo:MedicalEvent a owl:Class ;
+    rdfs:label "MedicalEvent" ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:allValuesFrom personinfo:Place ;
+            owl:onProperty personinfo:in_location ],
+        [ a owl:Restriction ;
+            owl:maxCardinality 1 ;
+            owl:onProperty personinfo:in_location ],
+        [ a owl:Restriction ;
+            owl:allValuesFrom personinfo:ProcedureConcept ;
+            owl:onProperty personinfo:procedure ],
+        [ a owl:Restriction ;
+            owl:maxCardinality 1 ;
+            owl:onProperty personinfo:diagnosis ],
+        [ a owl:Restriction ;
+            owl:maxCardinality 1 ;
+            owl:onProperty personinfo:procedure ],
+        [ a owl:Restriction ;
+            owl:allValuesFrom personinfo:DiagnosisConcept ;
+            owl:onProperty personinfo:diagnosis ],
+        [ a owl:Restriction ;
+            owl:minCardinality 0 ;
+            owl:onProperty personinfo:diagnosis ],
+        [ a owl:Restriction ;
+            owl:minCardinality 0 ;
+            owl:onProperty personinfo:in_location ],
+        [ a owl:Restriction ;
+            owl:minCardinality 0 ;
+            owl:onProperty personinfo:procedure ],
+        personinfo:Event ;
+    skos:inScheme <https://w3id.org/linkml/examples/personinfo> .
+
+personinfo:ProcedureConcept a owl:Class ;
+    rdfs:label "ProcedureConcept" ;
+    rdfs:subClassOf personinfo:Concept ;
+    skos:inScheme <https://w3id.org/linkml/examples/personinfo> .
+
+personinfo:aliases a owl:DatatypeProperty ;
+    rdfs:label "aliases" ;
+    skos:exactMatch schema:alternateName ;
+    skos:inScheme <https://w3id.org/linkml/examples/personinfo> .
+
+personinfo:has_employment_history a owl:ObjectProperty ;
+    rdfs:label "has_employment_history" ;
+    rdfs:range personinfo:EmploymentEvent ;
+    skos:inScheme <https://w3id.org/linkml/examples/personinfo> .
+
+personinfo:has_familial_relationships a owl:ObjectProperty ;
+    rdfs:label "has_familial_relationships" ;
+    rdfs:range personinfo:FamilialRelationship ;
+    skos:inScheme <https://w3id.org/linkml/examples/personinfo> .
+
+personinfo:has_medical_history a owl:ObjectProperty ;
+    rdfs:label "has_medical_history" ;
+    rdfs:range personinfo:MedicalEvent ;
+    skos:inScheme <https://w3id.org/linkml/examples/personinfo> .
+
+personinfo:organizations a owl:ObjectProperty ;
+    rdfs:label "organizations" ;
+    rdfs:range personinfo:Organization ;
+    skos:inScheme <https://w3id.org/linkml/examples/personinfo> .
+
+personinfo:persons a owl:ObjectProperty ;
+    rdfs:label "persons" ;
+    rdfs:range personinfo:Person ;
+    skos:inScheme <https://w3id.org/linkml/examples/personinfo> .
+
+personinfo:HasAliases a owl:Class ;
+    rdfs:label "HasAliases" ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:minCardinality 0 ;
+            owl:onProperty personinfo:aliases ],
+        [ a owl:Restriction ;
+            owl:allValuesFrom xsd:string ;
+            owl:onProperty personinfo:aliases ] ;
+    skos:definition "A mixin applied to any class that can have aliases/alternateNames" ;
+    skos:inScheme <https://w3id.org/linkml/examples/personinfo> .
+
+personinfo:NamedThing a owl:Class ;
+    rdfs:label "NamedThing" ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:minCardinality 0 ;
+            owl:onProperty personinfo:description ],
+        [ a owl:Restriction ;
+            owl:minCardinality 0 ;
+            owl:onProperty personinfo:name ],
+        [ a owl:Restriction ;
+            owl:maxCardinality 1 ;
+            owl:onProperty personinfo:description ],
+        [ a owl:Restriction ;
+            owl:allValuesFrom xsd:string ;
+            owl:onProperty personinfo:image ],
+        [ a owl:Restriction ;
+            owl:maxCardinality 1 ;
+            owl:onProperty personinfo:image ],
+        [ a owl:Restriction ;
+            owl:allValuesFrom xsd:string ;
+            owl:onProperty personinfo:description ],
+        [ a owl:Restriction ;
+            owl:allValuesFrom xsd:string ;
+            owl:onProperty personinfo:name ],
+        [ a owl:Restriction ;
+            owl:allValuesFrom xsd:string ;
+            owl:onProperty personinfo:id ],
+        [ a owl:Restriction ;
+            owl:minCardinality 0 ;
+            owl:onProperty personinfo:image ],
+        [ a owl:Restriction ;
+            owl:maxCardinality 1 ;
+            owl:onProperty personinfo:id ],
+        [ a owl:Restriction ;
+            owl:minCardinality 1 ;
+            owl:onProperty personinfo:id ],
+        [ a owl:Restriction ;
+            owl:maxCardinality 1 ;
+            owl:onProperty personinfo:name ] ;
+    skos:closeMatch schema:Thing ;
+    skos:definition "A generic grouping for any identifiable entity" ;
+    skos:inScheme <https://w3id.org/linkml/examples/personinfo> .
+
+personinfo:Person a owl:Class ;
     rdfs:label "Person" ;
     rdfs:subClassOf [ a owl:Restriction ;
-            owl:allValuesFrom personinfo:MedicalEvent ;
+            owl:minCardinality 0 ;
+            owl:onProperty personinfo:age_in_years ],
+        [ a owl:Restriction ;
+            owl:allValuesFrom xsd:string ;
+            owl:onProperty personinfo:age_in_years ],
+        [ a owl:Restriction ;
+            owl:minCardinality 0 ;
+            owl:onProperty personinfo:birth_date ],
+        [ a owl:Restriction ;
+            owl:allValuesFrom personinfo:EmploymentEvent ;
+            owl:onProperty personinfo:has_employment_history ],
+        [ a owl:Restriction ;
+            owl:minCardinality 0 ;
             owl:onProperty personinfo:has_medical_history ],
         [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
-            owl:onClass personinfo:GenderType ;
-            owl:onProperty schema:gender ],
+            owl:allValuesFrom [ a rdfs:Datatype ;
+                    owl:onDatatype xsd:string ;
+                    owl:withRestrictions ( [ xsd:pattern "^\\S+@[\\S+\\.]+\\S+" ] ) ] ;
+            owl:onProperty personinfo:primary_email ],
+        [ a owl:Restriction ;
+            owl:maxCardinality 1 ;
+            owl:onProperty personinfo:birth_date ],
+        [ a owl:Restriction ;
+            owl:minCardinality 0 ;
+            owl:onProperty personinfo:current_address ],
+        [ a owl:Restriction ;
+            owl:maxCardinality 1 ;
+            owl:onProperty personinfo:current_address ],
+        [ a owl:Restriction ;
+            owl:maxCardinality 1 ;
+            owl:onProperty personinfo:age_in_years ],
+        [ a owl:Restriction ;
+            owl:allValuesFrom personinfo:Address ;
+            owl:onProperty personinfo:current_address ],
+        [ a owl:Restriction ;
+            owl:minCardinality 0 ;
+            owl:onProperty personinfo:has_familial_relationships ],
+        [ a owl:Restriction ;
+            owl:minCardinality 0 ;
+            owl:onProperty personinfo:primary_email ],
+        [ a owl:Restriction ;
+            owl:minCardinality 0 ;
+            owl:onProperty personinfo:has_employment_history ],
+        [ a owl:Restriction ;
+            owl:allValuesFrom personinfo:GenderType ;
+            owl:onProperty personinfo:gender ],
+        [ a owl:Restriction ;
+            owl:allValuesFrom xsd:string ;
+            owl:onProperty personinfo:birth_date ],
+        [ a owl:Restriction ;
+            owl:minCardinality 0 ;
+            owl:onProperty personinfo:gender ],
+        [ a owl:Restriction ;
+            owl:allValuesFrom personinfo:MedicalEvent ;
+            owl:onProperty personinfo:has_medical_history ],
         [ a owl:Restriction ;
             owl:allValuesFrom personinfo:FamilialRelationship ;
             owl:onProperty personinfo:has_familial_relationships ],
         [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
-            owl:onClass linkml:String ;
-            owl:onProperty schema:birthDate ],
+            owl:maxCardinality 1 ;
+            owl:onProperty personinfo:primary_email ],
         [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
-            owl:onClass personinfo:Address ;
-            owl:onProperty personinfo:current_address ],
-        [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
-            owl:onClass linkml:Integer ;
-            owl:onProperty personinfo:age_in_years ],
-        [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
-            owl:onClass linkml:String ;
-            owl:onProperty schema:email ],
-        [ a owl:Restriction ;
-            owl:allValuesFrom linkml:String ;
-            owl:onProperty personinfo:aliases ],
-        [ a owl:Restriction ;
-            owl:allValuesFrom personinfo:EmploymentEvent ;
-            owl:onProperty personinfo:has_employment_history ],
+            owl:maxCardinality 1 ;
+            owl:onProperty personinfo:gender ],
         personinfo:HasAliases,
         personinfo:NamedThing ;
     skos:definition "A person (alive, dead, undead, or fictional)." ;
-    skos:exactMatch schema:Person .
+    skos:exactMatch schema:Person ;
+    skos:inScheme <https://w3id.org/linkml/examples/personinfo> .
 
-personinfo:HasAliases a owl:Class,
-        linkml:ClassDefinition ;
-    rdfs:label "HasAliases" ;
-    rdfs:subClassOf [ a owl:Restriction ;
-            owl:allValuesFrom linkml:String ;
-            owl:onProperty personinfo:aliases ],
-        linkml:mixin ;
-    skos:definition "A mixin applied to any class that can have aliases/alternateNames" .
+personinfo:age_in_years a owl:DatatypeProperty ;
+    rdfs:label "age_in_years" ;
+    rdfs:range [ a rdfs:Datatype ;
+            owl:intersectionOf ( xsd:integer [ a rdfs:Datatype ;
+                        owl:onDatatype xsd:integer ;
+                        owl:withRestrictions ( [ xsd:minInclusive 0 ] ) ] [ a rdfs:Datatype ;
+                        owl:onDatatype xsd:integer ;
+                        owl:withRestrictions ( [ xsd:maxInclusive 999 ] ) ] ) ] ;
+    skos:inScheme <https://w3id.org/linkml/examples/personinfo> .
 
-personinfo:NamedThing a owl:Class,
-        linkml:ClassDefinition ;
-    rdfs:label "NamedThing" ;
-    rdfs:subClassOf [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
-            owl:onClass linkml:String ;
-            owl:onProperty schema:image ],
-        [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
-            owl:onClass linkml:String ;
-            owl:onProperty schema:description ],
-        [ a owl:Restriction ;
-            owl:onClass linkml:String ;
-            owl:onProperty schema:identifier ;
-            owl:qualifiedCardinality 1 ],
-        [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
-            owl:onClass linkml:String ;
-            owl:onProperty schema:name ] ;
-    skos:closeMatch schema:Thing ;
-    skos:definition "A generic grouping for any identifiable entity" .
+personinfo:birth_date a owl:DatatypeProperty ;
+    rdfs:label "birth_date" ;
+    skos:inScheme <https://w3id.org/linkml/examples/personinfo> .
 
-personinfo:Organization a owl:Class,
-        linkml:ClassDefinition ;
+personinfo:city a owl:DatatypeProperty ;
+    rdfs:label "city" ;
+    skos:inScheme <https://w3id.org/linkml/examples/personinfo> .
+
+personinfo:current_address a owl:ObjectProperty ;
+    rdfs:label "current_address" ;
+    rdfs:range personinfo:Address ;
+    skos:definition "The address at which a person currently lives" ;
+    skos:inScheme <https://w3id.org/linkml/examples/personinfo> .
+
+personinfo:description a owl:DatatypeProperty ;
+    rdfs:label "description" ;
+    skos:inScheme <https://w3id.org/linkml/examples/personinfo> .
+
+personinfo:diagnosis a owl:ObjectProperty ;
+    rdfs:label "diagnosis" ;
+    rdfs:range personinfo:DiagnosisConcept ;
+    skos:inScheme <https://w3id.org/linkml/examples/personinfo> .
+
+personinfo:duration a owl:DatatypeProperty ;
+    rdfs:label "duration" ;
+    rdfs:range xsd:float ;
+    skos:inScheme <https://w3id.org/linkml/examples/personinfo> .
+
+personinfo:employed_at a owl:ObjectProperty ;
+    rdfs:label "employed_at" ;
+    rdfs:range personinfo:Organization ;
+    skos:inScheme <https://w3id.org/linkml/examples/personinfo> .
+
+personinfo:founding_date a owl:DatatypeProperty ;
+    rdfs:label "founding_date" ;
+    skos:inScheme <https://w3id.org/linkml/examples/personinfo> .
+
+personinfo:founding_location a owl:ObjectProperty ;
+    rdfs:label "founding_location" ;
+    rdfs:range personinfo:Place ;
+    skos:inScheme <https://w3id.org/linkml/examples/personinfo> .
+
+personinfo:gender a owl:ObjectProperty ;
+    rdfs:label "gender" ;
+    rdfs:range personinfo:GenderType ;
+    skos:inScheme <https://w3id.org/linkml/examples/personinfo> .
+
+personinfo:image a owl:DatatypeProperty ;
+    rdfs:label "image" ;
+    skos:inScheme <https://w3id.org/linkml/examples/personinfo> .
+
+personinfo:is_current a owl:DatatypeProperty ;
+    rdfs:label "is_current" ;
+    rdfs:range xsd:boolean ;
+    skos:inScheme <https://w3id.org/linkml/examples/personinfo> .
+
+personinfo:mission_statement a owl:DatatypeProperty ;
+    rdfs:label "mission_statement" ;
+    skos:inScheme <https://w3id.org/linkml/examples/personinfo> .
+
+personinfo:postal_code a owl:DatatypeProperty ;
+    rdfs:label "postal_code" ;
+    rdfs:range xsd:string ;
+    skos:inScheme <https://w3id.org/linkml/examples/personinfo> .
+
+personinfo:primary_email a owl:DatatypeProperty ;
+    rdfs:label "primary_email" ;
+    skos:inScheme <https://w3id.org/linkml/examples/personinfo> .
+
+personinfo:procedure a owl:ObjectProperty ;
+    rdfs:label "procedure" ;
+    rdfs:range personinfo:ProcedureConcept ;
+    skos:inScheme <https://w3id.org/linkml/examples/personinfo> .
+
+personinfo:street a owl:DatatypeProperty ;
+    rdfs:label "street" ;
+    skos:inScheme <https://w3id.org/linkml/examples/personinfo> .
+
+personinfo:FamilialRelationshipType a owl:Class ;
+    owl:unionOf ( famrel:01 famrel:02 famrel:03 ) ;
+    linkml:permissible_values famrel:01,
+        famrel:02,
+        famrel:03 .
+
+personinfo:Organization a owl:Class ;
     rdfs:label "Organization" ;
     rdfs:subClassOf [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
-            owl:onClass linkml:String ;
-            owl:onProperty personinfo:founding_date ],
+            owl:allValuesFrom personinfo:Place ;
+            owl:onProperty personinfo:founding_location ],
         [ a owl:Restriction ;
-            owl:allValuesFrom linkml:String ;
-            owl:onProperty personinfo:aliases ],
-        [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
-            owl:onClass linkml:String ;
+            owl:minCardinality 0 ;
             owl:onProperty personinfo:mission_statement ],
         [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
-            owl:onClass personinfo:Place ;
+            owl:minCardinality 0 ;
+            owl:onProperty personinfo:founding_date ],
+        [ a owl:Restriction ;
+            owl:maxCardinality 1 ;
+            owl:onProperty personinfo:mission_statement ],
+        [ a owl:Restriction ;
+            owl:minCardinality 0 ;
+            owl:onProperty personinfo:founding_location ],
+        [ a owl:Restriction ;
+            owl:maxCardinality 1 ;
+            owl:onProperty personinfo:founding_date ],
+        [ a owl:Restriction ;
+            owl:allValuesFrom xsd:string ;
+            owl:onProperty personinfo:mission_statement ],
+        [ a owl:Restriction ;
+            owl:allValuesFrom xsd:string ;
+            owl:onProperty personinfo:founding_date ],
+        [ a owl:Restriction ;
+            owl:maxCardinality 1 ;
             owl:onProperty personinfo:founding_location ],
         personinfo:HasAliases,
         personinfo:NamedThing ;
     skos:definition "An organization such as a company or university" ;
-    skos:exactMatch schema:Organization .
+    skos:exactMatch schema:Organization ;
+    skos:inScheme <https://w3id.org/linkml/examples/personinfo> .
 
-personinfo:aliases a owl:ObjectProperty,
-        linkml:SlotDefinition ;
-    rdfs:label "aliases" ;
-    rdfs:range linkml:String ;
-    skos:exactMatch schema:alternateName .
-
-personinfo:Place a owl:Class,
-        linkml:ClassDefinition ;
+personinfo:Place a owl:Class ;
     rdfs:label "Place" ;
     rdfs:subClassOf [ a owl:Restriction ;
-            owl:onClass linkml:String ;
-            owl:onProperty schema:identifier ;
-            owl:qualifiedCardinality 1 ],
+            owl:maxCardinality 1 ;
+            owl:onProperty personinfo:id ],
         [ a owl:Restriction ;
-            owl:allValuesFrom linkml:String ;
-            owl:onProperty personinfo:aliases ],
+            owl:minCardinality 0 ;
+            owl:onProperty personinfo:name ],
         [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
-            owl:onClass linkml:String ;
-            owl:onProperty schema:name ],
-        personinfo:HasAliases .
+            owl:minCardinality 1 ;
+            owl:onProperty personinfo:id ],
+        [ a owl:Restriction ;
+            owl:allValuesFrom xsd:string ;
+            owl:onProperty personinfo:id ],
+        [ a owl:Restriction ;
+            owl:maxCardinality 1 ;
+            owl:onProperty personinfo:name ],
+        [ a owl:Restriction ;
+            owl:allValuesFrom xsd:string ;
+            owl:onProperty personinfo:name ],
+        personinfo:HasAliases ;
+    skos:inScheme <https://w3id.org/linkml/examples/personinfo> .
 
-personinfo:GenderType a owl:Class,
-        linkml:EnumDefinition ;
-    rdfs:label "GenderType" ;
+personinfo:ended_at_time a owl:DatatypeProperty ;
+    rdfs:label "ended_at_time" ;
+    rdfs:range xsd:date ;
+    skos:inScheme <https://w3id.org/linkml/examples/personinfo> .
+
+personinfo:id a owl:DatatypeProperty ;
+    rdfs:label "id" ;
+    skos:inScheme <https://w3id.org/linkml/examples/personinfo> .
+
+personinfo:in_location a owl:ObjectProperty ;
+    rdfs:label "in_location" ;
+    rdfs:range personinfo:Place ;
+    skos:inScheme <https://w3id.org/linkml/examples/personinfo> .
+
+personinfo:name a owl:DatatypeProperty ;
+    rdfs:label "name" ;
+    skos:inScheme <https://w3id.org/linkml/examples/personinfo> .
+
+personinfo:related_to a owl:DatatypeProperty ;
+    rdfs:label "related_to" ;
+    skos:inScheme <https://w3id.org/linkml/examples/personinfo> .
+
+personinfo:started_at_time a owl:DatatypeProperty ;
+    rdfs:label "started_at_time" ;
+    rdfs:range xsd:date ;
+    skos:inScheme <https://w3id.org/linkml/examples/personinfo> .
+
+personinfo:type a owl:DatatypeProperty ;
+    rdfs:label "type" ;
+    skos:inScheme <https://w3id.org/linkml/examples/personinfo> .
+
+personinfo:GenderType a owl:Class ;
     owl:unionOf ( GSSO:009254 GSSO:009253 GSSO:000384 GSSO:000372 GSSO:000371 GSSO:000385 ) ;
     linkml:permissible_values GSSO:000371,
         GSSO:000372,
@@ -497,11 +626,5 @@ personinfo:GenderType a owl:Class,
         GSSO:000385,
         GSSO:009253,
         GSSO:009254 .
-
-linkml:ClassDefinition a owl:Class ;
-    rdfs:label "class_definition" .
-
-linkml:SlotDefinition a owl:Class ;
-    rdfs:label "slot_definition" .
 
 

@@ -259,6 +259,32 @@ slots:
 
 See [dynamic enums](https://linkml.io/linkml/schemas/enums.html#dynamic-enums) for more details.
 
+### Can I use LinkML to develop ontologies?
+
+LinkML is intended as a schema modeling framework, rather than an ontology modeling framework.
+Schemas are intended for modeling and constraining the structure of *data*, whereas ontologies
+and ontology modeling frameworks like OWL are for modeling and constraining models of the *world*.
+
+LinkML is intended to be *combined* with OWLs and other controlled vocabularies, using terms from
+these resources as mappings in enumerations.
+
+However, the distinction here is frequently blurred, and there are many examples of schemas that
+have been modeled using OWL - e.g. BioPAX, FOAF.
+
+LinkML allows any schema to be translated to OWL using the `gen-owl <https://linkml.io/linkml/generators/owl>`_ 
+generator. There are a number of reasons to do this:
+
+- take advantage of ontology exploration and browsing tools such as BioPortal and Protege
+- use OWL reasoning over schemas and datas (with the caveat that OWL uses *Open World* reasoning)
+
+You can also use `Schema Automator <https://linkml.io/schema-automator>`_ to do the reverse translation.
+
+It doesn't make sense to develop a large terminological-style ontology such as an OBO
+ontology as LinkML classes, since LinkML is intended for data modeling.
+
+One option is to use the `linkml-owl <https://linkml.io/linkml-owl>`_ framework to generate OWL
+classes from LinkML *data*
+
 ### Are CURIEs used in schema definitions checked for expandability and resolution?  
 
 No, not at this time.  However, linkml_runtime does have methods to help you expand the CURIEs in your data

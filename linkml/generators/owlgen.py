@@ -298,7 +298,7 @@ class OwlSchemaGenerator(Generator):
         for mixin in sorted(cls.mixins):
             parent = self._class_uri(mixin)
             if self.mixins_as_expressions:
-                parent = self._some_values_from(self._metaslot_uri("mixin"), parent)
+                parent = self._some_values_from(self._metaslot_uri("mixins"), parent)
             else:
                 has_parent = True
             self.graph.add((cls_uri, RDFS.subClassOf, parent))
@@ -327,7 +327,7 @@ class OwlSchemaGenerator(Generator):
                 self.graph.add((URIRef(cls_uri), p, URIRef(mapped_uri)))
         subject_expr = URIRef(cls_uri)
         if self.mixins_as_expressions and cls.mixin:
-            subject_expr = self._some_values_from(self._metaslot_uri("mixin"), subject_expr)
+            subject_expr = self._some_values_from(self._metaslot_uri("mixins"), subject_expr)
         type_designator = sv.get_type_designator_slot(cls.name)
         if type_designator:
             td_prop = self._prop_uri(type_designator.name)
@@ -690,7 +690,7 @@ class OwlSchemaGenerator(Generator):
         for mixin in sorted(e.mixins):
             parent = self._enum_uri(mixin)
             if self.mixins_as_expressions:
-                parent = self._some_values_from(self._metaslot_uri("mixin"), parent)
+                parent = self._some_values_from(self._metaslot_uri("mixins"), parent)
             else:
                 has_parent = True
             self.graph.add((enum_uri, RDFS.subClassOf, parent))
@@ -729,7 +729,7 @@ class OwlSchemaGenerator(Generator):
                 for mixin in sorted(pv.mixins):
                     parent = self._permissible_value_uri(mixin, enum_uri, e)
                     if self.mixins_as_expressions:
-                        parent = self._some_values_from(self._metaslot_uri("mixin"), parent)
+                        parent = self._some_values_from(self._metaslot_uri("mixins"), parent)
                     else:
                         has_parent = True
                     self.graph.add((enum_uri, RDFS.subClassOf, parent))
@@ -1079,15 +1079,14 @@ class OwlSchemaGenerator(Generator):
 def cli(yamlfile, metadata_profile: str, **kwargs):
     """Generate an OWL representation of a LinkML model
 
-    Examples:
+    Generate OWL using default parameters:
 
-        Generate OWL using default parameters:
+        gen-owl my_schema.yaml
 
-            gen-owl --no-metaclasses --no-type-objects my_schema.yaml
+    Note that in previous versions of this generator, the default was to use type objects and
+    to include metaclasses. To restore this behavior:
 
-        Generate OWL utilizing datatype properties for type slots and excluding metaclasses:
-
-            gen-owl --no-metaclasses --no-type-objects my_schema.yaml
+        gen-owl --metaclasses --type-objects my_schema.yaml
 
     For more info, see: https://linkml.io/linkml/generators/owl
     """
