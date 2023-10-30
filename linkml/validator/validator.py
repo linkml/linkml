@@ -7,7 +7,7 @@ from linkml_runtime.loaders import yaml_loader
 from linkml.validator.loaders import Loader
 from linkml.validator.loaders.passthrough_loader import PassthroughLoader
 from linkml.validator.plugins import ValidationPlugin
-from linkml.validator.report import ValidationReport, ValidationResult
+from linkml.validator.report import Severity, ValidationReport, ValidationResult
 from linkml.validator.validation_context import ValidationContext
 
 
@@ -18,6 +18,8 @@ class Validator:
         self,
         schema: Union[str, dict, TextIO, Path, SchemaDefinition],
         validation_plugins: Optional[List[ValidationPlugin]] = None,
+        *,
+        strict: bool = False
     ) -> None:
         """Constructor method
 
@@ -26,6 +28,8 @@ class Validator:
         :param validation_plugins: A list of plugins that be used to validate instances
             using the given schema. Each element should be an instance of a subclass of
             `linkml.validator.plugins.ValidationPlugin`. Defaults to None.
+        :param strict: If true, stop validating after the first validation problem
+            is found. Defaults to False.
         """
         if isinstance(schema, Path):
             schema = str(schema)
@@ -34,6 +38,7 @@ class Validator:
         else:
             self._schema: SchemaDefinition = yaml_loader.load(schema, SchemaDefinition)
         self._validation_plugins = validation_plugins
+        self.strict = strict
 
     def validate(self, instance: Any, target_class: Optional[str] = None) -> ValidationReport:
         """Validate the given instance
@@ -94,11 +99,20 @@ class Validator:
         for plugin in self._validation_plugins:
             plugin.pre_process(context)
 
+        has_failure = False
         for index, instance in enumerate(loader.iter_instances()):
             for plugin in self._validation_plugins:
                 for result in plugin.process(instance, context):
+                    if result.severity == Severity.FATAL or (self.strict and result.severity == Severity.ERROR):
+                        has_failure = True
                     result.instance_index = index
                     yield result
+                    if has_failure:
+                        break
+                if has_failure:
+                    break
+            if has_failure:
+                break
 
         for plugin in self._validation_plugins:
             plugin.post_process(context)

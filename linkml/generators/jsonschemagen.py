@@ -118,7 +118,10 @@ class JsonSchema(UserDict):
             return JsonSchema({"$ref": f"#/$defs/{def_name}{def_suffix}"})
 
         if isinstance(class_name, list):
-            return JsonSchema({"anyOf": [_ref(name) for name in class_name]})
+            if len(class_name) == 1:
+                return _ref(class_name[0])
+            else:
+                return JsonSchema({"anyOf": [_ref(name) for name in class_name]})
         else:
             return _ref(class_name)
 
@@ -157,7 +160,7 @@ class JsonSchemaGenerator(Generator):
     indent: int = 4
 
     inline: bool = False
-    top_class: Optional[ClassDefinitionName] = None  # JSON object is one instance of this
+    top_class: Optional[Union[ClassDefinitionName, str]] = None  # JSON object is one instance of this
     """Class instantiated by the root node of the document tree"""
 
     include_range_class_descendants: bool = field(default_factory=lambda: False)
