@@ -20,7 +20,7 @@ prefixes:
 imports:
   - linkml:types
 default_range: string
-  
+
 classes:
   Person:
     attributes:
@@ -68,7 +68,7 @@ persons:
     full_name: Clark Kent
     age: 90
     phone: 1-800-kryptonite
-  - id: ORCID:1234
+  - id: ORCID:5678
     age: 33
 ```
 
@@ -81,11 +81,16 @@ linkml-validate -s personinfo.yaml bad-data.yaml
 
 Will result in:
 
-```
-ValueError: full_name must be supplied
+```text
+[ERROR] [bad-data.yaml/0] '1-800-kryptonite' does not match '^[\\d\\(\\)\\-]+$' in /persons/0/phone
+[ERROR] [bad-data.yaml/0] 'full_name' is a required property in /persons/1
 ```
 
-better-data-v1.yaml:
+This indicates there are two issues with our data. The first says that the phone number of the first entry in the persons list (`/persons/0/phone`) doesn’t conform to the regular expression syntax we stated. The second says that we are missing the required `full_name` slot on the second entry in the person list (`/persons/1`).
+
+Let's fix the second issue.
+
+better-data.yaml:
 
 ```yaml
 persons:
@@ -93,56 +98,27 @@ persons:
     full_name: Clark Kent
     age: 90
     phone: 1-800-kryptonite
-  - id: ORCID:1234
+  - id: ORCID:5678
     full_name: Lois Lane
     age: 33
 ```
 
 <!-- FAIL -->
 ```bash
-linkml-validate -s personinfo.yaml better-data-v1.yaml
+linkml-validate -s personinfo.yaml better-data.yaml
 ```
 
 Will result in:
 
-```
-ValueError: File "<file>", line 6, col 9: ORCID:1234: duplicate key
-```
-
-Let's fix that:
-
-better-data-v2.yaml:
-
-```yaml
-persons:
-  - id: ORCID:1234
-    full_name: Clark Kent
-    age: 90
-    phone: 1-800-kryptonite
-  - id: ORCID:4567
-    full_name: Lois Lane
-    age: 33
+```text
+[ERROR] [better-data.yaml/0] '1-800-kryptonite' does not match '^[\\d\\(\\)\\-]+$' in /persons/0/phone
 ```
 
-<!-- FAIL -->
-```bash
-linkml-validate -s personinfo.yaml better-data-v2.yaml
-```
-
-Will result in:
-
-```
-{'pattern': '^[\\d\\(\\)\\-]+$', 'type': 'string'}
-
-On instance['persons'][0]['phone']:
-    '1-800-kryptonite'
-```
-
-This reflexts that the phone number doesn't conform to the regular expression syntax we stated.
+We have successfully fixed one of the issues with the data!
 
 ## Exercises
 
- 1. See if you can iterate on the example file to get something that works.
+ 1. See if you can iterate on the example data to get something that validates.
 
 ## Using the JSON Schema directly
 
@@ -188,8 +164,8 @@ The next section deals with working with RDF data.
 * Metamodel Specification
     * [identifier](https://w3id.org/linkml/identifier) slot
     * [required](https://w3id.org/linkml/required) slot
-    * [minimum_value](https://w3id.org/linkml/minimum_value) slot    
-    * [maximum_value](https://w3id.org/linkml/maximum_value) slot    
+    * [minimum_value](https://w3id.org/linkml/minimum_value) slot
+    * [maximum_value](https://w3id.org/linkml/maximum_value) slot
 * FAQ:
     - {ref}`LinkML vs shape languages <faq/why-linkml:why should i use linkml over shex/shacl?>`
 * Generators:

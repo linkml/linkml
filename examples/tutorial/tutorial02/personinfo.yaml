@@ -14,6 +14,7 @@ classes:
       aliases:
       phone:
       age:
+        range: integer
   Container:
     attributes:
       persons:
