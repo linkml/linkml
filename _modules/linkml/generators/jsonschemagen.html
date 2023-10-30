@@ -420,7 +420,10 @@
             <span class="k">return</span> <span class="n">JsonSchema</span><span class="p">({</span><span class="s2">&quot;$ref&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;#/$defs/</span><span class="si">{</span><span class="n">def_name</span><span class="si">}{</span><span class="n">def_suffix</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">})</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">class_name</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">JsonSchema</span><span class="p">({</span><span class="s2">&quot;anyOf&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">_ref</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">class_name</span><span class="p">]})</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">class_name</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">_ref</span><span class="p">(</span><span class="n">class_name</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">JsonSchema</span><span class="p">({</span><span class="s2">&quot;anyOf&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">_ref</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">class_name</span><span class="p">]})</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">_ref</span><span class="p">(</span><span class="n">class_name</span><span class="p">)</span></div>
 
@@ -459,7 +462,7 @@
     <span class="n">indent</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span>
 
     <span class="n">inline</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="n">top_class</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClassDefinitionName</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># JSON object is one instance of this</span>
+    <span class="n">top_class</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">ClassDefinitionName</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># JSON object is one instance of this</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Class instantiated by the root node of the document tree&quot;&quot;&quot;</span>
 
     <span class="n">include_range_class_descendants</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="kc">False</span><span class="p">)</span>
