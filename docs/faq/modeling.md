@@ -275,7 +275,7 @@ LinkML allows any schema to be translated to OWL using the `gen-owl <https://lin
 generator. There are a number of reasons to do this:
 
 - take advantage of ontology exploration and browsing tools such as BioPortal and Protege
-- use OWL reasoning over schemas and datas (with the caveat that OWL uses *Open World* reasoning)
+- use OWL reasoning over schemas and data (with the caveat that OWL uses *Open World* reasoning)
 
 You can also use `Schema Automator <https://linkml.io/schema-automator>`_ to do the reverse translation.
 
