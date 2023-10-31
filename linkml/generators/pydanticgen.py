@@ -90,7 +90,7 @@ class ConfiguredBaseModel(BaseModel):
     ### ENUMS ###
     template += """
 {% for e in enums.values() %}
-class {{ e.name }}(str, Enum):
+class {{ e.name }}(str{% if e['values'] %}, Enum{% endif %}):
     {% if e.description -%}
     \"\"\"
     {{ e.description }}
@@ -133,8 +133,11 @@ class {{ c.name }}
     {%- endif -%}
     {%- if attr.title != None %}, title="{{attr.title}}"{% endif -%}
     {%- if attr.description %}, description=\"\"\"{{attr.description}}\"\"\"{% endif -%}
-    {%- if attr.minimum_value != None %}, ge={{attr.minimum_value}}{% endif -%}
-    {%- if attr.maximum_value != None %}, le={{attr.maximum_value}}{% endif -%}
+    {%- if attr.equals_number != None %}, le={{attr.equals_number}}, ge={{attr.equals_number}}
+    {%- else -%}
+     {%- if attr.minimum_value != None %}, ge={{attr.minimum_value}}{% endif -%}
+     {%- if attr.maximum_value != None %}, le={{attr.maximum_value}}{% endif -%}
+    {%- endif -%}
     )
     {% else -%}
     None

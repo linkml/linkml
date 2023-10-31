@@ -11,11 +11,11 @@ ex:GeoObject a owl:Class,
         linkml:ClassDefinition ;
     rdfs:label "GeoObject" ;
     rdfs:subClassOf [ a owl:Restriction ;
-            owl:maxCardinality 1 ;
+            owl:minCardinality 0 ;
             owl:onProperty ex:aliases ],
         [ a owl:Restriction ;
-            owl:allValuesFrom ex:GeoAge ;
-            owl:onProperty ex:age ],
+            owl:maxCardinality 1 ;
+            owl:onProperty ex:aliases ],
         [ a owl:Restriction ;
             owl:maxCardinality 1 ;
             owl:onProperty ex:age ],
@@ -26,36 +26,31 @@ ex:GeoObject a owl:Class,
             owl:allValuesFrom linkml:String ;
             owl:onProperty ex:aliases ],
         [ a owl:Restriction ;
-            owl:minCardinality 0 ;
-            owl:onProperty ex:aliases ],
+            owl:allValuesFrom ex:GeoAge ;
+            owl:onProperty ex:age ],
         ex:Thing ;
-    skos:inScheme <https://w3id.org/linkml/examples/personinfo> .
-
-ex:id a owl:ObjectProperty,
-        linkml:SlotDefinition ;
-    rdfs:label "id" ;
     skos:inScheme <https://w3id.org/linkml/examples/personinfo> .
 
 ex:GeoAge a owl:Class,
         linkml:ClassDefinition ;
     rdfs:label "GeoAge" ;
     rdfs:subClassOf [ a owl:Restriction ;
-            owl:minCardinality 0 ;
-            owl:onProperty ex:unit ],
-        [ a owl:Restriction ;
             owl:maxCardinality 1 ;
-            owl:onProperty ex:value ],
-        [ a owl:Restriction ;
-            owl:allValuesFrom linkml:Float ;
-            owl:onProperty ex:value ],
-        [ a owl:Restriction ;
-            owl:minCardinality 0 ;
             owl:onProperty ex:value ],
         [ a owl:Restriction ;
             owl:allValuesFrom linkml:String ;
             owl:onProperty ex:unit ],
         [ a owl:Restriction ;
+            owl:minCardinality 0 ;
+            owl:onProperty ex:value ],
+        [ a owl:Restriction ;
             owl:maxCardinality 1 ;
+            owl:onProperty ex:unit ],
+        [ a owl:Restriction ;
+            owl:allValuesFrom linkml:Float ;
+            owl:onProperty ex:value ],
+        [ a owl:Restriction ;
+            owl:minCardinality 0 ;
             owl:onProperty ex:unit ] ;
     skos:inScheme <https://w3id.org/linkml/examples/personinfo> .
 
@@ -63,20 +58,20 @@ ex:Organization a owl:Class,
         linkml:ClassDefinition ;
     rdfs:label "Organization" ;
     rdfs:subClassOf [ a owl:Restriction ;
-            owl:maxCardinality 1 ;
-            owl:onProperty ex:full_name ],
-        [ a owl:Restriction ;
-            owl:allValuesFrom ex:Organization ;
+            owl:minCardinality 0 ;
             owl:onProperty ex:parent ],
         [ a owl:Restriction ;
             owl:allValuesFrom linkml:String ;
             owl:onProperty ex:full_name ],
         [ a owl:Restriction ;
-            owl:minCardinality 0 ;
-            owl:onProperty ex:parent ],
+            owl:maxCardinality 1 ;
+            owl:onProperty ex:full_name ],
         [ a owl:Restriction ;
             owl:minCardinality 0 ;
             owl:onProperty ex:full_name ],
+        [ a owl:Restriction ;
+            owl:allValuesFrom ex:Organization ;
+            owl:onProperty ex:parent ],
         ex:Thing ;
     skos:inScheme <https://w3id.org/linkml/examples/personinfo> .
 
@@ -84,43 +79,42 @@ ex:Person a owl:Class,
         linkml:ClassDefinition ;
     rdfs:label "Person" ;
     rdfs:subClassOf [ a owl:Restriction ;
-            owl:allValuesFrom linkml:String ;
-            owl:onProperty ex:aliases ],
-        [ a owl:Restriction ;
-            owl:maxCardinality 1 ;
-            owl:onProperty ex:phone ],
-        [ a owl:Restriction ;
             owl:minCardinality 0 ;
             owl:onProperty ex:age ],
         [ a owl:Restriction ;
-            owl:allValuesFrom linkml:Integer ;
+            owl:allValuesFrom linkml:String ;
+            owl:onProperty ex:phone ],
+        [ a owl:Restriction ;
+            owl:minCardinality 0 ;
+            owl:onProperty ex:parent ],
+        [ a owl:Restriction ;
+            owl:minCardinality 0 ;
+            owl:onProperty ex:aliases ],
+        [ a owl:Restriction ;
+            owl:maxCardinality 1 ;
             owl:onProperty ex:age ],
+        [ a owl:Restriction ;
+            owl:minCardinality 0 ;
+            owl:onProperty ex:phone ],
+        [ a owl:Restriction ;
+            owl:maxCardinality 1 ;
+            owl:onProperty ex:phone ],
         [ a owl:Restriction ;
             owl:allValuesFrom ex:Person ;
             owl:onProperty ex:parent ],
         [ a owl:Restriction ;
-            owl:allValuesFrom linkml:String ;
-            owl:onProperty ex:phone ],
-        [ a owl:Restriction ;
-            owl:minCardinality 0 ;
-            owl:onProperty ex:parent ],
-        [ a owl:Restriction ;
-            owl:minCardinality 0 ;
-            owl:onProperty ex:phone ],
-        [ a owl:Restriction ;
-            owl:maxCardinality 1 ;
+            owl:allValuesFrom linkml:Integer ;
             owl:onProperty ex:age ],
         [ a owl:Restriction ;
-            owl:minCardinality 0 ;
+            owl:allValuesFrom linkml:String ;
             owl:onProperty ex:aliases ],
         ex:Thing ;
     skos:exactMatch sdo:Person ;
     skos:inScheme <https://w3id.org/linkml/examples/personinfo> .
 
-ex:full_name a owl:ObjectProperty,
+ex:id a owl:ObjectProperty,
         linkml:SlotDefinition ;
-    rdfs:label "full_name" ;
-    dcterms:title "full name" ;
+    rdfs:label "id" ;
     skos:inScheme <https://w3id.org/linkml/examples/personinfo> .
 
 ex:phone a owl:ObjectProperty,
@@ -141,6 +135,24 @@ ex:value a owl:ObjectProperty,
 ex:Thing a owl:Class,
         linkml:ClassDefinition ;
     rdfs:label "Thing" ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:allValuesFrom linkml:String ;
+            owl:onProperty ex:full_name ],
+        [ a owl:Restriction ;
+            owl:maxCardinality 1 ;
+            owl:onProperty ex:full_name ],
+        [ a owl:Restriction ;
+            owl:minCardinality 0 ;
+            owl:onProperty ex:full_name ],
+        [ a owl:Restriction ;
+            owl:maxCardinality 1 ;
+            owl:onProperty ex:id ],
+        [ a owl:Restriction ;
+            owl:minCardinality 0 ;
+            owl:onProperty ex:id ],
+        [ a owl:Restriction ;
+            owl:allValuesFrom linkml:String ;
+            owl:onProperty ex:id ] ;
     skos:inScheme <https://w3id.org/linkml/examples/personinfo> .
 
 ex:parent a owl:ObjectProperty,
@@ -154,6 +166,12 @@ ex:aliases a owl:ObjectProperty,
 
 ex:age a owl:ObjectProperty,
         linkml:SlotDefinition .
+
+ex:full_name a owl:ObjectProperty,
+        linkml:SlotDefinition ;
+    rdfs:label "full_name" ;
+    dcterms:title "full name" ;
+    skos:inScheme <https://w3id.org/linkml/examples/personinfo> .
 
 <https://w3id.org/linkml/examples/personinfo> a owl:Ontology ;
     rdfs:label "personinfo" .

@@ -143,7 +143,13 @@ def test_basic_class_inheritance(framework, description, cls: str, object, is_va
         if framework in [PYDANTIC, PYTHON_DATACLASSES, SQL_DDL_SQLITE, OWL]:
             # currently lax about instantiating abstract classes
             expected_behavior = ValidationBehavior.INCOMPLETE
-    schema = validated_schema(test_basic_class_inheritance, f"ABS{parent_is_abstract}", framework, classes=classes)
+    schema = validated_schema(
+        test_basic_class_inheritance,
+        f"ABS{parent_is_abstract}",
+        framework,
+        classes=classes,
+        core_elements=["is_a", "abstract"],
+    )
     check_data(
         schema,
         description.replace(" ", "_"),
@@ -261,7 +267,7 @@ def test_mixins(framework, description, cls, object, is_valid):
             },
         },
     }
-    schema = validated_schema(test_mixins, "default", framework, classes=classes)
+    schema = validated_schema(test_mixins, "default", framework, classes=classes, core_elements=["mixins", "mixin"])
     expected_behavior = ValidationBehavior.IMPLEMENTS
     if cls != CLASS_C:
         if framework in [PYDANTIC, PYTHON_DATACLASSES, SQL_DDL_SQLITE, OWL]:

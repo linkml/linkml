@@ -1,5 +1,6 @@
 import logging
 import re
+from collections import defaultdict
 from copy import copy
 from dataclasses import dataclass
 from typing import Any, Callable, Dict, List, Union
@@ -270,6 +271,40 @@ class SchemaFixer:
             for k in empty_keys:
                 del cls.slot_usage[k]
 
+    def implicit_slots(self, schema: SchemaDefinition) -> Dict[str, Dict]:
+        """
+        Find slots that are implicit in the schema from slot_usage
+
+        :param schema:
+        :return:
+        """
+        sv = SchemaView(schema)
+        implicit_slots1 = defaultdict(list)
+        for cls in sv.all_classes().values():
+            for slot in cls.slot_usage.values():
+                slot_name = slot.name
+                if slot_name not in sv.all_slots():
+                    implicit_slots1[slot_name].append(json_dumper.to_dict(slot))
+        new_slots = {}
+        for slot_name, slot_list in implicit_slots1.items():
+            all_keys = set()
+            for slot in slot_list:
+                all_keys.update(slot.keys())
+            harmonized_slot = {}
+            for k in all_keys:
+                vals = []
+                vals_strs = set()
+                for slot in slot_list:
+                    val = slot.get(k, None)
+                    vals_strs.add(str(val))
+                    vals.append(val)
+                if len(vals_strs) == 1:
+                    harmonized_slot[k] = vals.pop()
+                elif len(vals_strs) > 1:
+                    logging.info(f"Variable values in {slot_name}.{k}: {vals_strs}")
+            new_slots[str(slot_name)] = harmonized_slot
+        return new_slots
+
     def remove_unused_prefixes(self, schema: SchemaDefinition):
         raise NotImplementedError
 
@@ -341,7 +376,7 @@ def main(verbose: int, quiet: bool):
     show_default=True,
     help="Apply fix to referenced elements from modules",
 )
-def fix_name(input_schema, **kwargs):
+def fix_names(input_schema, **kwargs):
     """Fix element names to conform to naming conventions"""
     with open(input_schema) as f:
         schema_dict = yaml.safe_load(f)
@@ -349,6 +384,26 @@ def fix_name(input_schema, **kwargs):
     fixer = SchemaFixer()
     schema = fixer.fix_element_names(sv.schema, schema_dict, **kwargs)
     print(yaml.dump(schema, sort_keys=False))
+
+
+@main.command()
+@click.argument("input_schema")
+@click.option(
+    "--imports/--no-imports",
+    default=False,
+    show_default=True,
+    help="Apply fix to referenced elements from modules",
+)
+def implicit_slots(input_schema, **kwargs):
+    """Find implicit slots in schema"""
+    with open(input_schema) as f:
+        yaml.safe_load(f)
+    sv = SchemaView(input_schema)
+    fixer = SchemaFixer()
+    slots = fixer.implicit_slots(sv.schema)
+    for slot in slots.values():
+        del slot["name"]
+    print(yaml.dump({"slots": slots}, sort_keys=False))
 
 
 if __name__ == "__main__":

@@ -96,3 +96,11 @@ can ensure you are not accidentally importing from elsewhere:
 ```
 grep "from tests.test_compliance.test_compliance_ import" tests/test_compliance/*py
 ```
+
+## A note on OWL tests
+
+Currently data validation using OWL is off by default, and data tests pass.
+
+In order to run the OWL tests, you should have ROBOT in your path. The unit test
+suite will then generate turtle files containing both ontology and data, and
+use HermiT to validate. Note this is currently slow.

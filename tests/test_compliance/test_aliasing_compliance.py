@@ -55,8 +55,23 @@ OWLNS = rdflib.Namespace("http://www.w3.org/2002/07/owl#")
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
 def test_alias(framework, class_uri, slot_uri, slot_alias, type_uri, data_name, instance, is_valid):
     """
-    Tests behavior of aliases.
+    Tests ability to alias slots and classes.
 
+    The alias metaslot allows for a different name to be used for a slot than the name of the slot.
+    It is not to be confused with `aliases`.
+
+    Known issues:
+
+    - PydanticGenerator does not yet support aliasing
+
+    :param framework:
+    :param class_uri:
+    :param slot_uri:
+    :param slot_alias:
+    :param type_uri:
+    :param data_name:
+    :param instance:
+    :param is_valid:
     :return:
     """
     prop_uriref = SCHEMA.s1 if slot_uri else EX.s1
@@ -113,9 +128,6 @@ def test_alias(framework, class_uri, slot_uri, slot_alias, type_uri, data_name, 
     if slot_alias:
         if framework == PYDANTIC:
             expected_behavior = ValidationBehavior.INCOMPLETE
-        if False and framework == PYTHON_DATACLASSES:
-            # RDF serialization does not use
-            expected_behavior = ValidationBehavior.INCOMPLETE
     check_data(
         schema,
         data_name,
@@ -144,8 +156,14 @@ def test_alias(framework, class_uri, slot_uri, slot_alias, type_uri, data_name, 
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
 def test_enum_alias(framework, enum_uri, pv_meaning, data_name, instance, is_valid):
     """
-    Tests behavior of enum and pv aliases.
+    Tests alias metaslot on EnumDefinitions and PermissibleValues.
 
+    :param framework:
+    :param enum_uri:
+    :param pv_meaning:
+    :param data_name:
+    :param instance:
+    :param is_valid:
     :return:
     """
     enum_uriref = SCHEMA.E if enum_uri else EX.E
