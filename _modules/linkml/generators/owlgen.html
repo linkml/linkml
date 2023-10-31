@@ -309,6 +309,7 @@
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">click</span>
+<span class="kn">import</span> <span class="nn">rdflib</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime</span> <span class="kn">import</span> <span class="n">SchemaView</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model.meta</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">AnonymousClassExpression</span><span class="p">,</span>
@@ -316,9 +317,11 @@
     <span class="n">AnonymousTypeExpression</span><span class="p">,</span>
     <span class="n">ClassDefinition</span><span class="p">,</span>
     <span class="n">ClassDefinitionName</span><span class="p">,</span>
+    <span class="n">ClassRule</span><span class="p">,</span>
     <span class="n">Definition</span><span class="p">,</span>
     <span class="n">EnumDefinition</span><span class="p">,</span>
     <span class="n">EnumDefinitionName</span><span class="p">,</span>
+    <span class="n">PermissibleValue</span><span class="p">,</span>
     <span class="n">SlotDefinition</span><span class="p">,</span>
     <span class="n">SlotDefinitionName</span><span class="p">,</span>
     <span class="n">TypeDefinition</span><span class="p">,</span>
@@ -337,6 +340,9 @@
 <span class="kn">from</span> <span class="nn">linkml.utils.generator</span> <span class="kn">import</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">shared_arguments</span>
 
 <span class="n">OWL_TYPE</span> <span class="o">=</span> <span class="n">URIRef</span>  <span class="c1">## RDFS.Literal or OWL.Thing</span>
+
+<span class="n">SWRL</span> <span class="o">=</span> <span class="n">rdflib</span><span class="o">.</span><span class="n">Namespace</span><span class="p">(</span><span class="s2">&quot;http://www.w3.org/2003/11/swrl#&quot;</span><span class="p">)</span>
+<span class="n">SWRLB</span> <span class="o">=</span> <span class="n">rdflib</span><span class="o">.</span><span class="n">Namespace</span><span class="p">(</span><span class="s2">&quot;http://www.w3.org/2003/11/swrlb#&quot;</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="MetadataProfile"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.owlgen.MetadataProfile">[docs]</a><span class="nd">@unique</span>
@@ -412,6 +418,8 @@
     <span class="n">metaclasses</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="kc">True</span><span class="p">)</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;if True, include OWL representations of ClassDefinition, SlotDefinition, etc. Introduces punning&quot;&quot;&quot;</span>
 
+    <span class="n">add_root_classes</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="kc">False</span><span class="p">)</span>
+
     <span class="n">add_ols_annotations</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="kc">True</span><span class="p">)</span>
     <span class="n">graph</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Graph</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Mutable graph that is being built up during OWL generation.&quot;&quot;&quot;</span>
@@ -443,6 +451,9 @@
 
     <span class="n">simplify</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="kc">True</span><span class="p">)</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Reduce complex expressions to simpler forms&quot;&quot;&quot;</span>
+
+    <span class="n">use_swrl</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="kc">False</span><span class="p">)</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Use of SWRL is experimental&quot;&quot;&quot;</span>
 
     <span class="n">target_profile</span><span class="p">:</span> <span class="n">OWLProfile</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">OWLProfile</span><span class="o">.</span><span class="n">dl</span><span class="p">)</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Target OWL profile. Currently the only distinction is between DL and Full&quot;&quot;&quot;</span>
@@ -582,13 +593,22 @@
         <span class="c1"># self._add_element_properties(cls_uri, cls)</span>
 
         <span class="c1"># Parent classes</span>
+        <span class="n">has_parent</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">is_a</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">cls_uri</span><span class="p">,</span> <span class="n">RDFS</span><span class="o">.</span><span class="n">subClassOf</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_class_uri</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">is_a</span><span class="p">)))</span>
+            <span class="n">has_parent</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">for</span> <span class="n">mixin</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">mixins</span><span class="p">):</span>
             <span class="n">parent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_class_uri</span><span class="p">(</span><span class="n">mixin</span><span class="p">)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mixins_as_expressions</span><span class="p">:</span>
-                <span class="n">parent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_some_values_from</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_metaslot_uri</span><span class="p">(</span><span class="s2">&quot;mixin&quot;</span><span class="p">),</span> <span class="n">parent</span><span class="p">)</span>
+                <span class="n">parent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_some_values_from</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_metaslot_uri</span><span class="p">(</span><span class="s2">&quot;mixins&quot;</span><span class="p">),</span> <span class="n">parent</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">has_parent</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">cls_uri</span><span class="p">,</span> <span class="n">RDFS</span><span class="o">.</span><span class="n">subClassOf</span><span class="p">,</span> <span class="n">parent</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">has_parent</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_root_classes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">mixin</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">mixins_as_expressions</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">cls_uri</span><span class="p">,</span> <span class="n">RDFS</span><span class="o">.</span><span class="n">subClassOf</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mixin_grouping_class_uri</span><span class="p">()))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">cls_uri</span><span class="p">,</span> <span class="n">RDFS</span><span class="o">.</span><span class="n">subClassOf</span><span class="p">,</span> <span class="n">URIRef</span><span class="p">(</span><span class="n">ClassDefinition</span><span class="o">.</span><span class="n">class_class_uri</span><span class="p">)))</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_profile</span><span class="p">(</span><span class="n">MetadataProfile</span><span class="o">.</span><span class="n">ols</span><span class="p">):</span>
             <span class="c1"># Add annotations for browser hints. See https://www.ebi.ac.uk/ols/docs/installation-guide</span>
             <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">is_a</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -607,6 +627,38 @@
             <span class="k">if</span> <span class="n">cls_uri</span> <span class="o">!=</span> <span class="n">mapped_uri</span><span class="p">:</span>
                 <span class="n">p</span> <span class="o">=</span> <span class="n">OWL</span><span class="o">.</span><span class="n">equivalentClass</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">assert_equivalent_classes</span> <span class="k">else</span> <span class="n">SKOS</span><span class="o">.</span><span class="n">exactMatch</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">URIRef</span><span class="p">(</span><span class="n">cls_uri</span><span class="p">),</span> <span class="n">p</span><span class="p">,</span> <span class="n">URIRef</span><span class="p">(</span><span class="n">mapped_uri</span><span class="p">)))</span>
+        <span class="n">subject_expr</span> <span class="o">=</span> <span class="n">URIRef</span><span class="p">(</span><span class="n">cls_uri</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mixins_as_expressions</span> <span class="ow">and</span> <span class="bp">cls</span><span class="o">.</span><span class="n">mixin</span><span class="p">:</span>
+            <span class="n">subject_expr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_some_values_from</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_metaslot_uri</span><span class="p">(</span><span class="s2">&quot;mixins&quot;</span><span class="p">),</span> <span class="n">subject_expr</span><span class="p">)</span>
+        <span class="n">type_designator</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">get_type_designator_slot</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">type_designator</span><span class="p">:</span>
+            <span class="n">td_prop</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prop_uri</span><span class="p">(</span><span class="n">type_designator</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">restr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_some_values_from</span><span class="p">(</span><span class="n">td_prop</span><span class="p">,</span> <span class="n">subject_expr</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">restr</span><span class="p">,</span> <span class="n">RDFS</span><span class="o">.</span><span class="n">subClassOf</span><span class="p">,</span> <span class="n">subject_expr</span><span class="p">))</span>
+        <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">unique_keys</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">uk</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">unique_keys</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                <span class="n">uk_props</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_prop_uri</span><span class="p">(</span><span class="n">slot</span><span class="p">)</span> <span class="k">for</span> <span class="n">slot</span> <span class="ow">in</span> <span class="n">uk</span><span class="o">.</span><span class="n">unique_key_slots</span><span class="p">]</span>
+                <span class="n">uk_props_listnode</span> <span class="o">=</span> <span class="n">BNode</span><span class="p">()</span>
+                <span class="n">Collection</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">,</span> <span class="n">uk_props_listnode</span><span class="p">,</span> <span class="n">uk_props</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">subject_expr</span><span class="p">,</span> <span class="n">OWL</span><span class="o">.</span><span class="n">hasKey</span><span class="p">,</span> <span class="n">uk_props_listnode</span><span class="p">))</span>
+
+        <span class="k">def</span> <span class="nf">condition_to_bnode</span><span class="p">(</span><span class="n">expr</span><span class="p">:</span> <span class="n">AnonymousClassExpression</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BNode</span><span class="p">]:</span>
+            <span class="n">ixn_listnode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transform_class_expression</span><span class="p">(</span><span class="n">expr</span><span class="p">,</span> <span class="n">quantifier_predicate</span><span class="o">=</span><span class="n">OWL</span><span class="o">.</span><span class="n">someValuesFrom</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">ixn_listnode</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="n">expr</span><span class="o">.</span><span class="n">is_a</span><span class="p">:</span>
+                <span class="n">ixn_listnode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_intersection_of</span><span class="p">([</span><span class="n">ixn_listnode</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_class_uri</span><span class="p">(</span><span class="n">expr</span><span class="o">.</span><span class="n">is_a</span><span class="p">)])</span>
+            <span class="k">return</span> <span class="n">ixn_listnode</span>
+
+        <span class="k">for</span> <span class="n">rule</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">rules</span><span class="p">:</span>
+            <span class="n">pre_node</span> <span class="o">=</span> <span class="n">condition_to_bnode</span><span class="p">(</span><span class="n">rule</span><span class="o">.</span><span class="n">preconditions</span><span class="p">)</span>
+            <span class="n">pre_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_intersection_of</span><span class="p">([</span><span class="n">pre_node</span><span class="p">,</span> <span class="n">subject_expr</span><span class="p">])</span>
+            <span class="n">post_node</span> <span class="o">=</span> <span class="n">condition_to_bnode</span><span class="p">(</span><span class="n">rule</span><span class="o">.</span><span class="n">postconditions</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">pre_node</span><span class="p">,</span> <span class="n">RDFS</span><span class="o">.</span><span class="n">subClassOf</span><span class="p">,</span> <span class="n">post_node</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">expr</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">classification_rules</span><span class="p">:</span>
+            <span class="n">ixn_listnode</span> <span class="o">=</span> <span class="n">condition_to_bnode</span><span class="p">(</span><span class="n">expr</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">ixn_listnode</span><span class="p">,</span> <span class="n">RDFS</span><span class="o">.</span><span class="n">subClassOf</span><span class="p">,</span> <span class="n">subject_expr</span><span class="p">))</span>
+        <span class="c1"># Other axioms, including those from anonymous expressions</span>
         <span class="n">superclass_expr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transform_class_expression</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">superclass_expr</span><span class="p">:</span>
             <span class="n">ixn_listnodes</span> <span class="o">=</span> <span class="p">[]</span>
@@ -617,17 +669,37 @@
                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ixn_listnodes</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">AssertionError</span>
                 <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">Collection</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">,</span> <span class="n">ixn_listnodes</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">cls_uri</span><span class="p">,</span> <span class="n">RDFS</span><span class="o">.</span><span class="n">subClassOf</span><span class="p">,</span> <span class="n">x</span><span class="p">))</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">subject_expr</span><span class="p">,</span> <span class="n">RDFS</span><span class="o">.</span><span class="n">subClassOf</span><span class="p">,</span> <span class="n">x</span><span class="p">))</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_remove_list</span><span class="p">(</span><span class="n">ixn_listnodes</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">remove</span><span class="p">((</span><span class="n">superclass_expr</span><span class="p">,</span> <span class="n">OWL</span><span class="o">.</span><span class="n">intersectionOf</span><span class="p">,</span> <span class="n">ixn_listnodes</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">cls_uri</span><span class="p">,</span> <span class="n">RDFS</span><span class="o">.</span><span class="n">subClassOf</span><span class="p">,</span> <span class="n">superclass_expr</span><span class="p">))</span></div>
+                <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">subject_expr</span><span class="p">,</span> <span class="n">RDFS</span><span class="o">.</span><span class="n">subClassOf</span><span class="p">,</span> <span class="n">superclass_expr</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="OwlSchemaGenerator.transform_class_expression"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.owlgen.OwlSchemaGenerator.transform_class_expression">[docs]</a>    <span class="k">def</span> <span class="nf">transform_class_expression</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">AnonymousClassExpression</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">BNode</span><span class="p">:</span>
+<div class="viewcode-block" id="OwlSchemaGenerator.transform_class_expression"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.owlgen.OwlSchemaGenerator.transform_class_expression">[docs]</a>    <span class="k">def</span> <span class="nf">transform_class_expression</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="bp">cls</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">AnonymousClassExpression</span><span class="p">],</span>
+        <span class="n">quantifier_predicate</span><span class="p">:</span> <span class="n">URIRef</span> <span class="o">=</span> <span class="n">OWL</span><span class="o">.</span><span class="n">allValuesFrom</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BNode</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Transform a LinkML class expression into an OWL expression.</span>
+
+<span class="sd">        If the class includes boolean expressions, then these</span>
+<span class="sd">        are recursively transformed.</span>
+
+<span class="sd">        :param cls: LinkML class expression</span>
+<span class="sd">        :return: blank node representing the OWL expression</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">graph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span>
         <span class="n">sv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">ClassDefinition</span><span class="p">):</span>
-            <span class="n">own_slots</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">slot_usage</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+            <span class="n">own_slots</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="nb">list</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">slot_usage</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">slot_conditions</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">slot_name</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">slots</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">slot_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">slot_usage</span><span class="p">:</span>
+                    <span class="n">slot</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">get_slot</span><span class="p">(</span><span class="n">slot_name</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">slot</span><span class="p">:</span>
+                        <span class="n">own_slots</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">slot</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">own_slots</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">own_slots</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">slot_conditions</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
@@ -677,9 +749,12 @@
                 <span class="n">top_slot</span> <span class="o">=</span> <span class="n">slot</span>
             <span class="n">avf</span> <span class="o">=</span> <span class="n">BNode</span><span class="p">()</span>
             <span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">avf</span><span class="p">,</span> <span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">OWL</span><span class="o">.</span><span class="n">Restriction</span><span class="p">))</span>
-            <span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">avf</span><span class="p">,</span> <span class="n">OWL</span><span class="o">.</span><span class="n">allValuesFrom</span><span class="p">,</span> <span class="n">x</span><span class="p">))</span>
+            <span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">avf</span><span class="p">,</span> <span class="n">quantifier_predicate</span><span class="p">,</span> <span class="n">x</span><span class="p">))</span>
             <span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">avf</span><span class="p">,</span> <span class="n">OWL</span><span class="o">.</span><span class="n">onProperty</span><span class="p">,</span> <span class="n">slot_uri</span><span class="p">))</span>
             <span class="n">owl_exprs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">avf</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">AnonymousClassExpression</span><span class="p">):</span>
+                <span class="c1"># cardinality constraints only belong at the top level</span>
+                <span class="k">continue</span>
             <span class="n">min_card_expr</span> <span class="o">=</span> <span class="n">BNode</span><span class="p">()</span>
             <span class="n">owl_exprs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">min_card_expr</span><span class="p">)</span>
             <span class="n">min_card</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">required</span> <span class="ow">or</span> <span class="n">top_slot</span><span class="o">.</span><span class="n">required</span> <span class="k">else</span> <span class="mi">0</span>
@@ -762,51 +837,6 @@
         <span class="n">constraints_exprs</span><span class="p">,</span> <span class="n">constraints_owltypes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_constraints</span><span class="p">(</span><span class="n">slot</span><span class="p">)</span>
         <span class="n">owl_types</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">constraints_owltypes</span><span class="p">)</span>
         <span class="n">owl_exprs</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">constraints_exprs</span><span class="p">)</span>
-        <span class="c1"># constraints = {</span>
-        <span class="c1">#     XSD.minInclusive: slot.minimum_value,</span>
-        <span class="c1">#     XSD.maxInclusive: slot.maximum_value,</span>
-        <span class="c1">#     XSD.pattern: slot.pattern,  # TODO: map between ECMAScript and XSD regular expressions</span>
-        <span class="c1"># }</span>
-        <span class="c1"># for constraint_prop, constraint_val in constraints.items():</span>
-        <span class="c1">#     if constraint_val is not None:</span>
-        <span class="c1">#         owl_types.add(RDFS.Literal)</span>
-        <span class="c1">#         dr = BNode()</span>
-        <span class="c1">#         graph.add((dr, RDF.type, RDFS.Datatype))</span>
-        <span class="c1">#         if isinstance(constraint_val, float):</span>
-        <span class="c1">#             graph.add((dr, OWL.onDatatype, XSD.float))</span>
-        <span class="c1">#         elif isinstance(constraint_val, int):</span>
-        <span class="c1">#             graph.add((dr, OWL.onDatatype, XSD.integer))</span>
-        <span class="c1">#         else:</span>
-        <span class="c1">#             graph.add((dr, OWL.onDatatype, XSD.string))</span>
-        <span class="c1">#         listnode = BNode()</span>
-        <span class="c1">#         x = BNode()</span>
-        <span class="c1">#         Collection(graph, listnode, [x])</span>
-        <span class="c1">#         graph.add((dr, OWL.withRestrictions, listnode))</span>
-        <span class="c1">#         graph.add((x, constraint_prop, Literal(constraint_val)))</span>
-        <span class="c1">#         owl_exprs.append(dr)</span>
-        <span class="c1"># constraints = {k: v for k, v in constraints.items() if v is not None}</span>
-        <span class="c1"># if False and constraints:</span>
-        <span class="c1">#     owl_types.add(RDFS.Literal)</span>
-        <span class="c1">#     dr = BNode()</span>
-        <span class="c1">#     listnode = BNode()</span>
-        <span class="c1">#     graph.add((dr, RDF.type, RDFS.Datatype))</span>
-        <span class="c1">#     # TODO: allow for mixing of constraints</span>
-        <span class="c1">#     #if isinstance(v, int):</span>
-        <span class="c1">#     #    dt = XSD.integer</span>
-        <span class="c1">#     #elif isinstance(v, float):</span>
-        <span class="c1">#     #    dt = XSD.decimal</span>
-        <span class="c1">#     #else:</span>
-        <span class="c1">#     #    logging.warning(f&quot;Unknown datatype for {v}&quot;)</span>
-        <span class="c1">#     #    dt = XSD.integer</span>
-        <span class="c1">#     graph.add((dr, OWL.onDatatype, XSD.integer))</span>
-        <span class="c1">#     graph.add((dr, OWL.withRestrictions, listnode))</span>
-        <span class="c1">#     dr_exprs = []</span>
-        <span class="c1">#     for prop, val in constraints.items():</span>
-        <span class="c1">#         x = BNode()</span>
-        <span class="c1">#         graph.add((x, prop, Literal(val)))</span>
-        <span class="c1">#         dr_exprs.append(x)</span>
-        <span class="c1">#     Collection(graph, listnode, dr_exprs)</span>
-        <span class="c1">#     owl_exprs.append(dr)</span>
         <span class="n">this_expr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_intersection_of</span><span class="p">(</span><span class="n">owl_exprs</span><span class="p">,</span> <span class="n">owl_types</span><span class="o">=</span><span class="n">owl_types</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">node_owltypes</span><span class="p">[</span><span class="n">this_expr</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_owltypes</span><span class="p">(</span><span class="n">owl_types</span><span class="p">,</span> <span class="n">owl_exprs</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">this_expr</span></div>
@@ -823,6 +853,9 @@
             <span class="n">XSD</span><span class="o">.</span><span class="n">maxInclusive</span><span class="p">:</span> <span class="n">element</span><span class="o">.</span><span class="n">maximum_value</span><span class="p">,</span>
             <span class="n">XSD</span><span class="o">.</span><span class="n">pattern</span><span class="p">:</span> <span class="n">element</span><span class="o">.</span><span class="n">pattern</span><span class="p">,</span>  <span class="c1"># TODO: map between ECMAScript and XSD regular expressions</span>
         <span class="p">}</span>
+        <span class="k">if</span> <span class="n">element</span><span class="o">.</span><span class="n">equals_number</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">constraints</span><span class="p">[</span><span class="n">XSD</span><span class="o">.</span><span class="n">minInclusive</span><span class="p">]</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">equals_number</span>
+            <span class="n">constraints</span><span class="p">[</span><span class="n">XSD</span><span class="o">.</span><span class="n">maxInclusive</span><span class="p">]</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">equals_number</span>
         <span class="k">for</span> <span class="n">constraint_prop</span><span class="p">,</span> <span class="n">constraint_val</span> <span class="ow">in</span> <span class="n">constraints</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">constraint_val</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">owl_types</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">RDFS</span><span class="o">.</span><span class="n">Literal</span><span class="p">)</span>
@@ -911,7 +944,7 @@
                 <span class="p">(</span>
                     <span class="n">type_uri</span><span class="p">,</span>
                     <span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">metamodel</span><span class="o">.</span><span class="n">namespaces</span><span class="p">[</span><span class="n">METAMODEL_NAMESPACE_NAME</span><span class="p">][</span><span class="n">camelcase</span><span class="p">(</span><span class="s2">&quot;type definition&quot;</span><span class="p">)],</span>
+                    <span class="n">URIRef</span><span class="p">(</span><span class="n">TypeDefinition</span><span class="o">.</span><span class="n">class_class_uri</span><span class="p">),</span>
                 <span class="p">)</span>
             <span class="p">)</span>
         <span class="c1"># self._add_element_properties(type_uri, typ)</span>
@@ -952,24 +985,35 @@
         <span class="n">g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span>
         <span class="n">enum_uri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_enum_uri</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
         <span class="n">g</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">enum_uri</span><span class="p">,</span> <span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">OWL</span><span class="o">.</span><span class="n">Class</span><span class="p">))</span>
+        <span class="n">has_parent</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">is_a</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">enum_uri</span><span class="p">,</span> <span class="n">RDFS</span><span class="o">.</span><span class="n">subClassOf</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_enum_uri</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">is_a</span><span class="p">)))</span>
+            <span class="n">has_parent</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">for</span> <span class="n">mixin</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">mixins</span><span class="p">):</span>
+            <span class="n">parent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_enum_uri</span><span class="p">(</span><span class="n">mixin</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mixins_as_expressions</span><span class="p">:</span>
+                <span class="n">parent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_some_values_from</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_metaslot_uri</span><span class="p">(</span><span class="s2">&quot;mixins&quot;</span><span class="p">),</span> <span class="n">parent</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">has_parent</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">enum_uri</span><span class="p">,</span> <span class="n">RDFS</span><span class="o">.</span><span class="n">subClassOf</span><span class="p">,</span> <span class="n">parent</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">has_parent</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_root_classes</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">enum_uri</span><span class="p">,</span> <span class="n">RDFS</span><span class="o">.</span><span class="n">subClassOf</span><span class="p">,</span> <span class="n">URIRef</span><span class="p">(</span><span class="n">EnumDefinition</span><span class="o">.</span><span class="n">class_class_uri</span><span class="p">)))</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">metaclasses</span><span class="p">:</span>
             <span class="n">g</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
                 <span class="p">(</span>
                     <span class="n">enum_uri</span><span class="p">,</span>
                     <span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">metamodel</span><span class="o">.</span><span class="n">namespaces</span><span class="p">[</span><span class="n">METAMODEL_NAMESPACE_NAME</span><span class="p">][</span><span class="n">camelcase</span><span class="p">(</span><span class="s2">&quot;enum definition&quot;</span><span class="p">)],</span>
+                    <span class="n">URIRef</span><span class="p">(</span><span class="n">EnumDefinition</span><span class="o">.</span><span class="n">class_class_uri</span><span class="p">),</span>
                 <span class="p">)</span>
             <span class="p">)</span>
         <span class="n">pv_uris</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">pv</span> <span class="ow">in</span> <span class="n">e</span><span class="o">.</span><span class="n">permissible_values</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-            <span class="k">if</span> <span class="n">pv</span><span class="o">.</span><span class="n">meaning</span><span class="p">:</span>
-                <span class="n">pv_uri</span> <span class="o">=</span> <span class="n">URIRef</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">expand_curie</span><span class="p">(</span><span class="n">pv</span><span class="o">.</span><span class="n">meaning</span><span class="p">))</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">pv_uri</span> <span class="o">=</span> <span class="n">enum_uri</span> <span class="o">+</span> <span class="s2">&quot;#&quot;</span> <span class="o">+</span> <span class="n">pv</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;+&quot;</span><span class="p">)</span>
+            <span class="n">pv_uri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_permissible_value_uri</span><span class="p">(</span><span class="n">pv</span><span class="p">,</span> <span class="n">enum_uri</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
             <span class="n">pv_uris</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pv_uri</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">pv_uri</span><span class="p">:</span>
                 <span class="n">g</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">pv_uri</span><span class="p">,</span> <span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">OWL</span><span class="o">.</span><span class="n">Class</span><span class="p">))</span>
                 <span class="n">g</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">pv_uri</span><span class="p">,</span> <span class="n">RDFS</span><span class="o">.</span><span class="n">label</span><span class="p">,</span> <span class="n">Literal</span><span class="p">(</span><span class="n">pv</span><span class="o">.</span><span class="n">text</span><span class="p">)))</span>
+                <span class="c1"># TODO: make this configurable</span>
                 <span class="n">g</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
                     <span class="p">(</span>
                         <span class="n">enum_uri</span><span class="p">,</span>
@@ -980,8 +1024,48 @@
                 <span class="c1"># self._add_element_properties(pv_uri, pv)</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">metaclasses</span><span class="p">:</span>
                     <span class="n">g</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">pv_uri</span><span class="p">,</span> <span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">enum_uri</span><span class="p">))</span>
+                <span class="n">has_parent</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="k">if</span> <span class="n">pv</span><span class="o">.</span><span class="n">is_a</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">pv_uri</span><span class="p">,</span> <span class="n">RDFS</span><span class="o">.</span><span class="n">subClassOf</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_permissible_value_uri</span><span class="p">(</span><span class="n">pv</span><span class="o">.</span><span class="n">is_a</span><span class="p">,</span> <span class="n">enum_uri</span><span class="p">,</span> <span class="n">e</span><span class="p">)))</span>
+                    <span class="n">has_parent</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">for</span> <span class="n">mixin</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">pv</span><span class="o">.</span><span class="n">mixins</span><span class="p">):</span>
+                    <span class="n">parent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_permissible_value_uri</span><span class="p">(</span><span class="n">mixin</span><span class="p">,</span> <span class="n">enum_uri</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mixins_as_expressions</span><span class="p">:</span>
+                        <span class="n">parent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_some_values_from</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_metaslot_uri</span><span class="p">(</span><span class="s2">&quot;mixins&quot;</span><span class="p">),</span> <span class="n">parent</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">has_parent</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">enum_uri</span><span class="p">,</span> <span class="n">RDFS</span><span class="o">.</span><span class="n">subClassOf</span><span class="p">,</span> <span class="n">parent</span><span class="p">))</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">has_parent</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_root_classes</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">pv_uri</span><span class="p">,</span> <span class="n">RDFS</span><span class="o">.</span><span class="n">subClassOf</span><span class="p">,</span> <span class="n">URIRef</span><span class="p">(</span><span class="n">PermissibleValue</span><span class="o">.</span><span class="n">class_class_uri</span><span class="p">)))</span>
         <span class="k">if</span> <span class="nb">all</span><span class="p">([</span><span class="n">pv</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">pv</span> <span class="ow">in</span> <span class="n">pv_uris</span><span class="p">]):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_union_of</span><span class="p">(</span><span class="n">pv_uris</span><span class="p">,</span> <span class="n">node</span><span class="o">=</span><span class="n">enum_uri</span><span class="p">)</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_union_of</span><span class="p">(</span><span class="n">pv_uris</span><span class="p">,</span> <span class="n">node</span><span class="o">=</span><span class="n">enum_uri</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">pv_uri</span> <span class="ow">in</span> <span class="n">pv_uris</span><span class="p">:</span>
+                <span class="c1"># this would normally be entailed, but we assert here so it is visible</span>
+                <span class="c1"># without reasoning</span>
+                <span class="n">g</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">pv_uri</span><span class="p">,</span> <span class="n">RDFS</span><span class="o">.</span><span class="n">subClassOf</span><span class="p">,</span> <span class="n">enum_uri</span><span class="p">))</span></div>
+
+    <span class="k">def</span> <span class="nf">_add_rule</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">URIRef</span><span class="p">,</span> <span class="n">BNode</span><span class="p">],</span> <span class="n">rule</span><span class="p">:</span> <span class="n">ClassRule</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_swrl</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;SWRL support is experimental and incomplete&quot;</span><span class="p">)</span>
+        <span class="n">head</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">body</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">pre</span> <span class="ow">in</span> <span class="n">rule</span><span class="o">.</span><span class="n">preconditions</span><span class="p">:</span>
+            <span class="n">head</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_add_rule_condition</span><span class="p">(</span><span class="n">subject</span><span class="p">,</span> <span class="n">pre</span><span class="p">,</span> <span class="bp">cls</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">post</span> <span class="ow">in</span> <span class="n">rule</span><span class="o">.</span><span class="n">postconditions</span><span class="p">:</span>
+            <span class="n">body</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_add_rule_condition</span><span class="p">(</span><span class="n">subject</span><span class="p">,</span> <span class="n">post</span><span class="p">,</span> <span class="bp">cls</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_swrl_rule</span><span class="p">(</span><span class="n">subject</span><span class="p">,</span> <span class="n">body</span><span class="p">,</span> <span class="n">head</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_add_rule_condition</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">subject</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">URIRef</span><span class="p">,</span> <span class="n">BNode</span><span class="p">],</span>
+        <span class="n">condition</span><span class="p">:</span> <span class="n">AnonymousClassExpression</span><span class="p">,</span>
+        <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">BNode</span><span class="p">]:</span>
+        <span class="k">for</span> <span class="n">slot_name</span><span class="p">,</span> <span class="n">expr</span> <span class="ow">in</span> <span class="n">condition</span><span class="o">.</span><span class="n">slot_conditions</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">var</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_swrl_var</span><span class="p">(</span><span class="n">slot_name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">expr</span><span class="o">.</span><span class="n">maximum_value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">var</span><span class="p">,</span> <span class="n">SWRLB</span><span class="o">.</span><span class="n">lessThanOrEqual</span><span class="p">,</span> <span class="n">Literal</span><span class="p">(</span><span class="n">expr</span><span class="o">.</span><span class="n">maximum_value</span><span class="p">)))</span>
 
 <div class="viewcode-block" id="OwlSchemaGenerator.has_profile"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.owlgen.OwlSchemaGenerator.has_profile">[docs]</a>    <span class="k">def</span> <span class="nf">has_profile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">profile</span><span class="p">:</span> <span class="n">MetadataProfile</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1033,11 +1117,53 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">node</span><span class="p">,</span> <span class="n">OWL</span><span class="o">.</span><span class="n">someValuesFrom</span><span class="p">,</span> <span class="n">filler</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">node</span>
 
+    <span class="k">def</span> <span class="nf">_has_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">property</span><span class="p">:</span> <span class="n">URIRef</span><span class="p">,</span> <span class="n">filler</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">URIRef</span><span class="p">,</span> <span class="n">BNode</span><span class="p">,</span> <span class="n">Literal</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">BNode</span><span class="p">:</span>
+        <span class="n">node</span> <span class="o">=</span> <span class="n">BNode</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">node</span><span class="p">,</span> <span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">OWL</span><span class="o">.</span><span class="n">Restriction</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">node</span><span class="p">,</span> <span class="n">OWL</span><span class="o">.</span><span class="n">onProperty</span><span class="p">,</span> <span class="nb">property</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">node</span><span class="p">,</span> <span class="n">OWL</span><span class="o">.</span><span class="n">hasValue</span><span class="p">,</span> <span class="n">filler</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">node</span>
+
+    <span class="k">def</span> <span class="nf">_swrl_var</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">var</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">URIRef</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">URIRef</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_swrl_class_atom</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cls_ref</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">BNode</span><span class="p">,</span> <span class="n">URIRef</span><span class="p">],</span> <span class="n">var</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BNode</span><span class="p">:</span>
+        <span class="n">node</span> <span class="o">=</span> <span class="n">BNode</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">node</span><span class="p">,</span> <span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">SWRL</span><span class="o">.</span><span class="n">ClassAtom</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">node</span><span class="p">,</span> <span class="n">SWRL</span><span class="o">.</span><span class="n">classPredicate</span><span class="p">,</span> <span class="n">cls_ref</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">node</span><span class="p">,</span> <span class="n">SWRL</span><span class="o">.</span><span class="n">argument1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_swrl_var</span><span class="p">(</span><span class="n">var</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="n">node</span>
+
+    <span class="k">def</span> <span class="nf">_swrl_abox_atom</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pred_ref</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">BNode</span><span class="p">,</span> <span class="n">URIRef</span><span class="p">],</span> <span class="n">arg1</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">arg2</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BNode</span><span class="p">:</span>
+        <span class="n">node</span> <span class="o">=</span> <span class="n">BNode</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">node</span><span class="p">,</span> <span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">SWRL</span><span class="o">.</span><span class="n">IndividualPropertyAtom</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">node</span><span class="p">,</span> <span class="n">SWRL</span><span class="o">.</span><span class="n">classPredicate</span><span class="p">,</span> <span class="n">pred_ref</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">node</span><span class="p">,</span> <span class="n">SWRL</span><span class="o">.</span><span class="n">argument1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_swrl_var</span><span class="p">(</span><span class="n">arg1</span><span class="p">)))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">node</span><span class="p">,</span> <span class="n">SWRL</span><span class="o">.</span><span class="n">argument2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_swrl_var</span><span class="p">(</span><span class="n">arg2</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="n">node</span>
+
+    <span class="k">def</span> <span class="nf">_swrl_rule</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">body</span><span class="p">,</span> <span class="n">head</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BNode</span><span class="p">:</span>
+        <span class="n">node</span> <span class="o">=</span> <span class="n">BNode</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">node</span><span class="p">,</span> <span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">SWRL</span><span class="o">.</span><span class="n">Imp</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">node</span><span class="p">,</span> <span class="n">SWRL</span><span class="o">.</span><span class="n">body</span><span class="p">,</span> <span class="n">body</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">node</span><span class="p">,</span> <span class="n">SWRL</span><span class="o">.</span><span class="n">head</span><span class="p">,</span> <span class="n">head</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">node</span>
+
+    <span class="k">def</span> <span class="nf">_metaslot_uri</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">URIRef</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">URIRef</span><span class="p">(</span><span class="s2">&quot;https://w3id.org/linkml/&quot;</span> <span class="o">+</span> <span class="n">name</span><span class="p">)</span>
+
     <span class="k">def</span> <span class="nf">_complement_of_union_of</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exprs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">BNode</span><span class="p">,</span> <span class="n">URIRef</span><span class="p">]],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">BNode</span><span class="p">,</span> <span class="n">URIRef</span><span class="p">]]:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">exprs</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Must pass at least one&quot;</span><span class="p">)</span>
         <span class="n">neg_expr</span> <span class="o">=</span> <span class="n">BNode</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">neg_expr</span><span class="p">,</span> <span class="n">OWL</span><span class="o">.</span><span class="n">complementOf</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_union_of</span><span class="p">(</span><span class="n">exprs</span><span class="p">)),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">owl_types</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_owltypes</span><span class="p">(</span><span class="nb">set</span><span class="p">(),</span> <span class="n">exprs</span><span class="p">)</span>
+        <span class="n">complement_predicate</span> <span class="o">=</span> <span class="n">OWL</span><span class="o">.</span><span class="n">complementOf</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">owl_types</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">RDFS</span><span class="o">.</span><span class="n">Literal</span> <span class="ow">in</span> <span class="n">owl_types</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">neg_expr</span><span class="p">,</span> <span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">RDFS</span><span class="o">.</span><span class="n">Datatype</span><span class="p">))</span>
+                <span class="n">complement_predicate</span> <span class="o">=</span> <span class="n">OWL</span><span class="o">.</span><span class="n">datatypeComplementOf</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">neg_expr</span><span class="p">,</span> <span class="n">complement_predicate</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_union_of</span><span class="p">(</span><span class="n">exprs</span><span class="p">)),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="n">neg_expr</span>
 
     <span class="k">def</span> <span class="nf">_intersection_of</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exprs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">BNode</span><span class="p">,</span> <span class="n">URIRef</span><span class="p">]],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">BNode</span><span class="p">,</span> <span class="n">URIRef</span><span class="p">]]:</span>
@@ -1066,6 +1192,8 @@
         <span class="n">owl_types</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="n">OWL_TYPE</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">BNode</span><span class="p">,</span> <span class="n">URIRef</span><span class="p">]]:</span>
         <span class="n">graph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span>
+        <span class="k">if</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">exprs</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;None in exprs: </span><span class="si">{</span><span class="n">exprs</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">exprs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
         <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">exprs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
@@ -1103,13 +1231,16 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_class_uri</span><span class="p">(</span><span class="n">ClassDefinitionName</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="p">))</span>
 
+    <span class="k">def</span> <span class="nf">_mixin_grouping_class_uri</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">URIRef</span><span class="p">(</span><span class="n">ClassDefinition</span><span class="o">.</span><span class="n">class_class_uri</span> <span class="o">+</span> <span class="s2">&quot;#Mixin&quot;</span><span class="p">)</span>
+
     <span class="k">def</span> <span class="nf">_class_uri</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cn</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ClassDefinitionName</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">URIRef</span><span class="p">:</span>
         <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">get_class</span><span class="p">(</span><span class="n">cn</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">URIRef</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">get_uri</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">native</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">use_native_uris</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="nf">_enum_uri</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">en</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">EnumDefinitionName</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">URIRef</span><span class="p">:</span>
         <span class="n">sv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span>
-        <span class="n">e</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">get_enum</span><span class="p">(</span><span class="n">en</span><span class="p">)</span>
+        <span class="n">e</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">get_enum</span><span class="p">(</span><span class="n">en</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">uri</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">enum_uri</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">uri</span><span class="p">:</span>
             <span class="n">uri</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sv</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">default_prefix</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">camelcase</span><span class="p">(</span><span class="n">en</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
@@ -1149,11 +1280,21 @@
             <span class="k">return</span> <span class="n">XSD</span><span class="p">[</span><span class="n">expanded</span><span class="p">[</span><span class="mi">4</span><span class="p">:]]</span>
         <span class="k">return</span> <span class="n">URIRef</span><span class="p">(</span><span class="n">expanded</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_add_metamodel_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cname</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">metac</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">metamodel</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">classes</span><span class="p">[</span><span class="n">cname</span><span class="p">]</span>
-        <span class="n">metac_uri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">metamodel</span><span class="o">.</span><span class="n">namespaces</span><span class="p">[</span><span class="n">METAMODEL_NAMESPACE_NAME</span><span class="p">][</span><span class="n">camelcase</span><span class="p">(</span><span class="n">metac</span><span class="o">.</span><span class="n">name</span><span class="p">)]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">metac_uri</span><span class="p">,</span> <span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">OWL</span><span class="o">.</span><span class="n">Class</span><span class="p">))</span>
-        <span class="c1"># self._add_element_properties(metac_uri, metac)</span>
+    <span class="k">def</span> <span class="nf">_permissible_value_uri</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">pv</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">EnumDefinition</span><span class="p">],</span> <span class="n">enum_uri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">enum_def</span><span class="p">:</span> <span class="n">EnumDefinition</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">URIRef</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pv</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">pv_name</span> <span class="o">=</span> <span class="n">pv</span>
+            <span class="k">if</span> <span class="n">enum_def</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot find permissible value: </span><span class="si">{</span><span class="n">pv</span><span class="si">}</span><span class="s2">, no enum definition provided&quot;</span><span class="p">)</span>
+            <span class="n">pvs</span> <span class="o">=</span> <span class="p">[</span><span class="n">pv</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">pv</span> <span class="ow">in</span> <span class="n">enum_def</span><span class="o">.</span><span class="n">permissible_values</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="n">pv_name</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">pvs</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot find permissible value: </span><span class="si">{</span><span class="n">pv_name</span><span class="si">}</span><span class="s2">, got: </span><span class="si">{</span><span class="n">pvs</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">pv</span> <span class="o">=</span> <span class="n">pvs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">pv</span><span class="o">.</span><span class="n">meaning</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">URIRef</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">expand_curie</span><span class="p">(</span><span class="n">pv</span><span class="o">.</span><span class="n">meaning</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">URIRef</span><span class="p">(</span><span class="n">enum_uri</span> <span class="o">+</span> <span class="s2">&quot;#&quot;</span> <span class="o">+</span> <span class="n">pv</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;+&quot;</span><span class="p">))</span>
 
 <div class="viewcode-block" id="OwlSchemaGenerator.slot_owl_type"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.owlgen.OwlSchemaGenerator.slot_owl_type">[docs]</a>    <span class="k">def</span> <span class="nf">slot_owl_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">URIRef</span><span class="p">:</span>
         <span class="n">sv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span>
@@ -1207,6 +1348,12 @@
     <span class="n">help</span><span class="o">=</span><span class="s2">&quot;If true, include linkml metamodel classes as metaclasses. Note this introduces punning in OWL-DL&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
+    <span class="s2">&quot;--add-root-classes/--no-add-root-classes&quot;</span><span class="p">,</span>
+    <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">show_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">help</span><span class="o">=</span><span class="s2">&quot;If true, include linkml metamodel classes as superclasses.&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
     <span class="s2">&quot;--add-ols-annotations/--no-add-ols-annotations&quot;</span><span class="p">,</span>
     <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">show_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -1224,19 +1371,24 @@
     <span class="n">show_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">help</span><span class="o">=</span><span class="s2">&quot;If true, add owl:equivalentClass between a class and a class_uri&quot;</span><span class="p">,</span>
 <span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
+    <span class="s2">&quot;--mixins-as-expressions/--no-mixins-as-expressions&quot;</span><span class="p">,</span>
+    <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">show_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">help</span><span class="o">=</span><span class="s2">&quot;If true, then mixins are represented as existential expressions&quot;</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">version_option</span><span class="p">(</span><span class="n">__version__</span><span class="p">,</span> <span class="s2">&quot;-V&quot;</span><span class="p">,</span> <span class="s2">&quot;--version&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">cli</span><span class="p">(</span><span class="n">yamlfile</span><span class="p">,</span> <span class="n">metadata_profile</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate an OWL representation of a LinkML model</span>
 
-<span class="sd">    Examples:</span>
+<span class="sd">    Generate OWL using default parameters:</span>
 
-<span class="sd">        Generate OWL using default parameters:</span>
+<span class="sd">        gen-owl my_schema.yaml</span>
 
-<span class="sd">            gen-owl --no-metaclasses --no-type-objects my_schema.yaml</span>
+<span class="sd">    Note that in previous versions of this generator, the default was to use type objects and</span>
+<span class="sd">    to include metaclasses. To restore this behavior:</span>
 
-<span class="sd">        Generate OWL utilizing datatype properties for type slots and excluding metaclasses:</span>
-
-<span class="sd">            gen-owl --no-metaclasses --no-type-objects my_schema.yaml</span>
+<span class="sd">        gen-owl --metaclasses --type-objects my_schema.yaml</span>
 
 <span class="sd">    For more info, see: https://linkml.io/linkml/generators/owl</span>
 <span class="sd">    &quot;&quot;&quot;</span>

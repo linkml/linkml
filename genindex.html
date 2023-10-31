@@ -315,6 +315,13 @@
 </li>
         </ul></li>
         <li>
+    --add-root-classes
+
+        <ul>
+          <li><a href="generators/owl.html#cmdoption-gen-owl-add-root-classes">gen-owl command line option</a>
+</li>
+        </ul></li>
+        <li>
     --assert-equivalent-classes
 
         <ul>
@@ -811,6 +818,13 @@
 </li>
         </ul></li>
         <li>
+    --mixins-as-expressions
+
+        <ul>
+          <li><a href="generators/owl.html#cmdoption-gen-owl-mixins-as-expressions">gen-owl command line option</a>
+</li>
+        </ul></li>
+        <li>
     --model
 
         <ul>
@@ -829,6 +843,13 @@
 
         <ul>
           <li><a href="generators/owl.html#cmdoption-gen-owl-add-ols-annotations">gen-owl command line option</a>
+</li>
+        </ul></li>
+        <li>
+    --no-add-root-classes
+
+        <ul>
+          <li><a href="generators/owl.html#cmdoption-gen-owl-add-root-classes">gen-owl command line option</a>
 </li>
         </ul></li>
         <li>
@@ -1004,6 +1025,13 @@
           <li><a href="generators/sssom.html#cmdoption-gen-sssom-metadata">gen-sssom command line option</a>
 </li>
           <li><a href="generators/typescript.html#cmdoption-gen-typescript-metadata">gen-typescript command line option</a>
+</li>
+        </ul></li>
+        <li>
+    --no-mixins-as-expressions
+
+        <ul>
+          <li><a href="generators/owl.html#cmdoption-gen-owl-mixins-as-expressions">gen-owl command line option</a>
 </li>
         </ul></li>
         <li>
@@ -1889,6 +1917,12 @@
 </li>
         <li><a href="linkml.utils.html#linkml.utils.schemasynopsis.SchemaSynopsis.add_ref">add_ref() (linkml.utils.schemasynopsis.SchemaSynopsis method)</a>
 </li>
+        <li><a href="linkml.generators.html#linkml.generators.owlgen.OwlSchemaGenerator.add_root_classes">add_root_classes (linkml.generators.owlgen.OwlSchemaGenerator attribute)</a>
+
+        <ul>
+          <li><a href="linkml.generators.html#linkml.generators.OwlSchemaGenerator.add_root_classes">(linkml.generators.OwlSchemaGenerator attribute)</a>
+</li>
+        </ul></li>
         <li><a href="linkml.generators.html#linkml.generators.SQLAlchemyGenerator.add_safe_aliases">add_safe_aliases() (linkml.generators.SQLAlchemyGenerator method)</a>
 </li>
         <li><a href="linkml.generators.html#linkml.generators.owlgen.OwlSchemaGenerator.add_slot">add_slot() (linkml.generators.owlgen.OwlSchemaGenerator method)</a>
@@ -1917,10 +1951,10 @@
         </ul></li>
         <li><a href="linkml.utils.html#linkml.utils.typereferences.References.addref">addref() (linkml.utils.typereferences.References method)</a>
 </li>
-        <li><a href="linkml.generators.html#linkml.generators.jsonldgen.JSONLDGenerator.adjust_slot">adjust_slot() (linkml.generators.jsonldgen.JSONLDGenerator method)</a>
-</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="linkml.generators.html#linkml.generators.jsonldgen.JSONLDGenerator.adjust_slot">adjust_slot() (linkml.generators.jsonldgen.JSONLDGenerator method)</a>
+</li>
         <li><a href="linkml.utils.html#linkml.utils.mergeutils.alias_root">alias_root() (in module linkml.utils.mergeutils)</a>
 </li>
         <li><a href="linkml.utils.html#linkml.utils.generator.Generator.aliased_slot_name">aliased_slot_name() (linkml.utils.generator.Generator method)</a>
@@ -3050,6 +3084,8 @@
         <ul>
           <li><a href="generators/owl.html#cmdoption-gen-owl-add-ols-annotations">--add-ols-annotations</a>
 </li>
+          <li><a href="generators/owl.html#cmdoption-gen-owl-add-root-classes">--add-root-classes</a>
+</li>
           <li><a href="generators/owl.html#cmdoption-gen-owl-assert-equivalent-classes">--assert-equivalent-classes</a>
 </li>
           <li><a href="generators/owl.html#cmdoption-gen-owl-f">--format</a>
@@ -3068,7 +3104,11 @@
 </li>
           <li><a href="generators/owl.html#cmdoption-gen-owl-useuris">--metauris</a>
 </li>
+          <li><a href="generators/owl.html#cmdoption-gen-owl-mixins-as-expressions">--mixins-as-expressions</a>
+</li>
           <li><a href="generators/owl.html#cmdoption-gen-owl-add-ols-annotations">--no-add-ols-annotations</a>
+</li>
+          <li><a href="generators/owl.html#cmdoption-gen-owl-add-root-classes">--no-add-root-classes</a>
 </li>
           <li><a href="generators/owl.html#cmdoption-gen-owl-assert-equivalent-classes">--no-assert-equivalent-classes</a>
 </li>
@@ -3077,6 +3117,8 @@
           <li><a href="generators/owl.html#cmdoption-gen-owl-metaclasses">--no-metaclasses</a>
 </li>
           <li><a href="generators/owl.html#cmdoption-gen-owl-metadata">--no-metadata</a>
+</li>
+          <li><a href="generators/owl.html#cmdoption-gen-owl-mixins-as-expressions">--no-mixins-as-expressions</a>
 </li>
           <li><a href="generators/owl.html#cmdoption-gen-owl-stacktrace">--no-stacktrace</a>
 </li>
@@ -3383,6 +3425,8 @@
           <li><a href="generators/shacl.html#cmdoption-gen-shacl-arg-YAMLFILE">YAMLFILE</a>
 </li>
         </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     gen-shex command line option
 
@@ -3428,8 +3472,6 @@
           <li><a href="generators/shex.html#cmdoption-gen-shex-arg-YAMLFILE">YAMLFILE</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     gen-sparql command line option
 
@@ -5964,6 +6006,12 @@
 
         <ul>
           <li><a href="linkml.generators.html#linkml.generators.OwlSchemaGenerator.use_native_uris">(linkml.generators.OwlSchemaGenerator attribute)</a>
+</li>
+        </ul></li>
+        <li><a href="linkml.generators.html#linkml.generators.owlgen.OwlSchemaGenerator.use_swrl">use_swrl (linkml.generators.owlgen.OwlSchemaGenerator attribute)</a>
+
+        <ul>
+          <li><a href="linkml.generators.html#linkml.generators.OwlSchemaGenerator.use_swrl">(linkml.generators.OwlSchemaGenerator attribute)</a>
 </li>
         </ul></li>
         <li><a href="linkml.generators.html#linkml.generators.csvgen.CsvGenerator.uses_schemaloader">uses_schemaloader (linkml.generators.csvgen.CsvGenerator attribute)</a>

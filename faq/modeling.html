@@ -524,6 +524,27 @@ occupation ontology, any body part from an anatomical ontology.</p>
 </div>
 <p>See <a class="reference external" href="https://linkml.io/linkml/schemas/enums.html#dynamic-enums">dynamic enums</a> for more details.</p>
 </section>
+<section id="can-i-use-linkml-to-develop-ontologies">
+<h3>Can I use LinkML to develop ontologies?<a class="headerlink" href="#can-i-use-linkml-to-develop-ontologies" title="Permalink to this heading">#</a></h3>
+<p>LinkML is intended as a schema modeling framework, rather than an ontology modeling framework.
+Schemas are intended for modeling and constraining the structure of <em>data</em>, whereas ontologies
+and ontology modeling frameworks like OWL are for modeling and constraining models of the <em>world</em>.</p>
+<p>LinkML is intended to be <em>combined</em> with OWLs and other controlled vocabularies, using terms from
+these resources as mappings in enumerations.</p>
+<p>However, the distinction here is frequently blurred, and there are many examples of schemas that
+have been modeled using OWL - e.g. BioPAX, FOAF.</p>
+<p>LinkML allows any schema to be translated to OWL using the <code class="docutils literal notranslate"><span class="pre">gen-owl</span> <span class="pre">&lt;https://linkml.io/linkml/generators/owl&gt;</span></code>_
+generator. There are a number of reasons to do this:</p>
+<ul class="simple">
+<li><p>take advantage of ontology exploration and browsing tools such as BioPortal and Protege</p></li>
+<li><p>use OWL reasoning over schemas and data (with the caveat that OWL uses <em>Open World</em> reasoning)</p></li>
+</ul>
+<p>You can also use <code class="docutils literal notranslate"><span class="pre">Schema</span> <span class="pre">Automator</span> <span class="pre">&lt;https://linkml.io/schema-automator&gt;</span></code>_ to do the reverse translation.</p>
+<p>It doesn’t make sense to develop a large terminological-style ontology such as an OBO
+ontology as LinkML classes, since LinkML is intended for data modeling.</p>
+<p>One option is to use the <code class="docutils literal notranslate"><span class="pre">linkml-owl</span> <span class="pre">&lt;https://linkml.io/linkml-owl&gt;</span></code>_ framework to generate OWL
+classes from LinkML <em>data</em></p>
+</section>
 <section id="are-curies-used-in-schema-definitions-checked-for-expandability-and-resolution">
 <h3>Are CURIEs used in schema definitions checked for expandability and resolution?<a class="headerlink" href="#are-curies-used-in-schema-definitions-checked-for-expandability-and-resolution" title="Permalink to this heading">#</a></h3>
 <p>No, not at this time.  However, linkml_runtime does have methods to help you expand the CURIEs in your data
@@ -898,6 +919,7 @@ will need to answer:</p>
 <li><a class="reference internal" href="#how-do-i-constrain-the-value-of-a-slot-using-an-ontology-or-vocabulary">How do I constrain the value of a slot using an ontology or vocabulary?</a><ul>
 <li><a class="reference internal" href="#how-do-i-constrain-a-slot-to-a-fixed-set-of-ontology-terms">How do I constrain a slot to a fixed set of ontology terms?</a></li>
 <li><a class="reference internal" href="#how-do-i-constrain-a-slot-to-a-branch-of-an-ontology-or-a-whole-ontology">How do I constrain a slot to a branch of an ontology or a whole ontology?</a></li>
+<li><a class="reference internal" href="#can-i-use-linkml-to-develop-ontologies">Can I use LinkML to develop ontologies?</a></li>
 <li><a class="reference internal" href="#are-curies-used-in-schema-definitions-checked-for-expandability-and-resolution">Are CURIEs used in schema definitions checked for expandability and resolution?</a></li>
 <li><a class="reference internal" href="#are-curies-used-in-data-that-validates-against-a-given-linkml-schema-checked-for-expandability-and-resolution">Are CURIEs used in data that validates against a given LinkML schema checked for expandability and resolution?</a></li>
 <li><a class="reference internal" href="#is-it-possible-for-us-to-import-only-a-subset-of-an-existing-linkml-model">Is it possible for us to import only a subset of an existing LinkML model?</a></li>

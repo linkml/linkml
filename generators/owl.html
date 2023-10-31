@@ -335,7 +335,11 @@ maps between LinkML <em>data</em> and OWL</p>
 <div><ul class="simple">
 <li><p>if the range of the slot is class, then an ObjectProperty is used</p></li>
 <li><p>otherwise DataProperty is used</p></li>
-<li><p>Exception to the above: if <code class="docutils literal notranslate"><span class="pre">type_objects</span></code> is set then ObjectProperties are always used</p></li>
+<li><p>Exception to the above: if <code class="docutils literal notranslate"><span class="pre">type_objects</span></code> is set then ObjectProperties are always used;
+instead of having ranges of type be mapped to literals, these map to class-shadows of
+literals, that have a data property <code class="docutils literal notranslate"><span class="pre">value</span></code>.
+This can be useful in some scenarios - for example, if you want to use the same property and
+allow <em>either</em> literals or objects as values.</p></li>
 </ul>
 </div></blockquote>
 </li>
@@ -343,13 +347,22 @@ maps between LinkML <em>data</em> and OWL</p>
 <blockquote>
 <div><ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">only</span></code> (universal restrictions) is used for ranges</p></li>
-<li><p>If a slot is not <cite>multivalued</cite> then a <code class="docutils literal notranslate"><span class="pre">max</span> <span class="pre">1</span></code> cardinality
+<li><p>If a slot is not <cite>multivalued</cite> then <code class="docutils literal notranslate"><span class="pre">max</span> <span class="pre">1</span></code> cardinality
 restrictions are used</p></li>
 <li><p>required non-multivalued slots have an <code class="docutils literal notranslate"><span class="pre">exactly</span> <span class="pre">1</span></code> cardinality restriction</p></li>
-<li><p>required multivalued slots have a <code class="docutils literal notranslate"><span class="pre">min</span> <span class="pre">1</span></code> cardinality
-restriction</p></li>
+<li><p>required slots have a <code class="docutils literal notranslate"><span class="pre">min</span> <span class="pre">1</span></code> cardinality restriction</p></li>
+<li><p>non-required slots have a <code class="docutils literal notranslate"><span class="pre">min</span> <span class="pre">0</span></code> cardinality restriction. Note that formally
+this is tautological and not necessary. However, adding this axiom helps make the intention
+explicit.</p></li>
 <li><p>it should be understood that OWL follows the Open World
 Assumption, thus OWL reasoners enforce a weaker model</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p>By default both <code class="docutils literal notranslate"><span class="pre">is_a</span></code> and <code class="docutils literal notranslate"><span class="pre">mixins</span></code> are mapped to <code class="docutils literal notranslate"><span class="pre">rdfs:subClassOf</span></code></p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">--mixins-as-expressions</span></code> to treat mixins as existential axioms</p></li>
 </ul>
 </div></blockquote>
 </li>
@@ -358,6 +371,7 @@ Assumption, thus OWL reasoners enforce a weaker model</p></li>
 <div><ul class="simple">
 <li><p>This means <em>punning</em> is used</p></li>
 <li><p>Set <code class="docutils literal notranslate"><span class="pre">--no-metaclasses</span></code> if you do not want this behavior</p></li>
+<li><p>Set <code class="docutils literal notranslate"><span class="pre">--add-root-classes</span></code> to add a root class for each metamodel class</p></li>
 </ul>
 </div></blockquote>
 </li>
@@ -366,6 +380,79 @@ Assumption, thus OWL reasoners enforce a weaker model</p></li>
 <p class="admonition-title">Note</p>
 <p>The current default settings for <code class="docutils literal notranslate"><span class="pre">metaclasses</span></code> and <code class="docutils literal notranslate"><span class="pre">type-objects</span></code> may change in the future</p>
 </div>
+</section>
+<section id="tips">
+<h3>Tips<a class="headerlink" href="#tips" title="Permalink to this heading">#</a></h3>
+<p>If you wish to produce an OWL file that is primarily for browsing or release on an ontology portal
+such as the Ontology Lookup Service (OLS) or OntoPortal/BioPortal, then consider using the
+<code class="docutils literal notranslate"><span class="pre">--add-root-classes</span></code> option to make the ontology more navigable.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">gen-owl</span></code> is run on PersonInfo <em>without</em> this option it results in a flat structure
+that is faithful and isomorphic to the existing schema:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">*</span> <span class="n">GenderType</span>
+<span class="o">*</span> <span class="n">FamilialRelationshipType</span>
+    <span class="o">*</span> <span class="n">CHILD_OF</span>
+    <span class="o">*</span> <span class="n">PARENT_OF</span>
+    <span class="o">*</span> <span class="o">...</span>
+<span class="o">*</span> <span class="n">Relationship</span>
+    <span class="o">*</span> <span class="n">FamilialRelationship</span>
+<span class="o">*</span> <span class="n">Event</span>
+    <span class="o">*</span> <span class="n">EmploymentEvent</span>
+    <span class="o">*</span> <span class="n">MedicalEvent</span>
+<span class="o">*</span> <span class="n">NamedThing</span>
+    <span class="o">*</span> <span class="n">Concept</span>
+<span class="o">*</span> <span class="n">HasAliases</span>
+</pre></div>
+</div>
+<p>Running with the option:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">*</span> <span class="n">EnumDefinition</span>
+    <span class="o">*</span> <span class="n">GenderType</span>
+    <span class="o">*</span> <span class="n">FamilialRelationshipType</span>
+<span class="o">*</span> <span class="n">ClassDefinition</span>
+    <span class="o">*</span> <span class="n">Relationship</span>
+        <span class="o">*</span> <span class="n">FamilialRelationship</span>
+    <span class="o">*</span> <span class="n">Event</span>
+        <span class="o">*</span> <span class="n">EmploymentEvent</span>
+        <span class="o">*</span> <span class="n">MedicalEvent</span>
+    <span class="o">*</span> <span class="n">NamedThing</span>
+        <span class="o">*</span> <span class="n">Concept</span>
+    <span class="o">*</span> <span class="n">HasAliases</span>
+<span class="o">*</span> <span class="n">PermissibleValue</span>
+    <span class="o">*</span> <span class="n">CHILD_OF</span>
+    <span class="o">*</span> <span class="o">...</span>
+</pre></div>
+</div>
+<p>If your schema is heavy on mixins, the resulting polyhierarchy can be hard to navigate. In this case,
+using <code class="docutils literal notranslate"><span class="pre">--mixins-as-expressions</span></code> will restrict the main subClassOf backbone to be purely <code class="docutils literal notranslate"><span class="pre">is_a</span></code>
+relationships. Mixin relationships will be modeled using existential restrictions (some values from).
+OWL General Class Inclusion (GCI) axioms will be used to preserve semantics.</p>
+<p>For example, on PersonInfo the default conversion yields:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Class</span><span class="p">:</span> <span class="n">Person</span>
+  <span class="n">SubClassOf</span><span class="p">:</span> <span class="n">NamedThing</span><span class="p">,</span> <span class="n">HasAlias</span><span class="p">,</span> <span class="o">...</span>
+<span class="n">Class</span><span class="p">:</span> <span class="n">HasAlias</span>
+  <span class="n">SubClassOf</span><span class="p">:</span> <span class="n">aliases</span> <span class="n">only</span> <span class="n">xsd</span><span class="p">:</span><span class="n">string</span><span class="p">,</span> <span class="o">...</span>
+<span class="o">...</span>
+</pre></div>
+</div>
+<p>Using <code class="docutils literal notranslate"><span class="pre">--mixins-as-expressions</span></code> gives:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Class</span><span class="p">:</span> <span class="n">Person</span>
+  <span class="n">SubClassOf</span><span class="p">:</span> <span class="n">NamedThing</span><span class="p">,</span> <span class="n">mixins</span> <span class="n">some</span> <span class="n">HasAlias</span><span class="p">,</span> <span class="o">...</span>
+<span class="n">Class</span><span class="p">:</span> <span class="n">HasAlias</span>
+<span class="n">GCIs</span><span class="p">:</span>
+  <span class="p">(</span><span class="n">mixins</span> <span class="n">some</span> <span class="n">HasAlias</span><span class="p">)</span> <span class="n">SubClassOf</span><span class="p">:</span> <span class="n">aliases</span> <span class="n">only</span> <span class="n">xsd</span><span class="p">:</span><span class="n">string</span><span class="p">,</span> <span class="o">...</span>
+<span class="o">...</span>
+</pre></div>
+</div>
+</section>
+<section id="semantics-of-mappings">
+<h3>Semantics of mappings<a class="headerlink" href="#semantics-of-mappings" title="Permalink to this heading">#</a></h3>
+<p>Generated OWL should be a faithful open-world rendering of the LinkML schema. This means that it may not be
+<em>complete</em> for the purposes of data validation. If a slot is not required, then an OWL reasoner will infer
+the presence of a slot value, even if not explicitly stated. However, it does not treat this as an error.</p>
+<p>Nevertheless, it can be informative to translate schemas with rich logical information to OWL, combine these
+with data converted to RDF, and then perform reasoning. If you use an ontology development environment
+like Protege, this can be an intuitive way of debugging errors with your schema.</p>
+<p>Note that currently only a subset of LinkML rules can be expressed as OWL. In future, we may
+add support to generate auxhiliary SWRL files including rules.</p>
 </section>
 <section id="other-examples">
 <h3>Other examples<a class="headerlink" href="#other-examples" title="Permalink to this heading">#</a></h3>
@@ -382,16 +469,14 @@ translation of Biolink schema to OWL</p></li>
 <section id="gen-owl">
 <h4>gen-owl<a class="headerlink" href="#gen-owl" title="Permalink to this heading">#</a></h4>
 <p>Generate an OWL representation of a LinkML model</p>
-<p>Examples:</p>
+<p>Generate OWL using default parameters:</p>
 <blockquote>
-<div><p>Generate OWL using default parameters:</p>
-<blockquote>
-<div><p>gen-owl –no-metaclasses –no-type-objects my_schema.yaml</p>
+<div><p>gen-owl my_schema.yaml</p>
 </div></blockquote>
-<p>Generate OWL utilizing datatype properties for type slots and excluding metaclasses:</p>
+<p>Note that in previous versions of this generator, the default was to use type objects and
+to include metaclasses. To restore this behavior:</p>
 <blockquote>
-<div><p>gen-owl –no-metaclasses –no-type-objects my_schema.yaml</p>
-</div></blockquote>
+<div><p>gen-owl –metaclasses –type-objects my_schema.yaml</p>
 </div></blockquote>
 <p>For more info, see: <a class="reference external" href="https://linkml.io/linkml/generators/owl">https://linkml.io/linkml/generators/owl</a></p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>gen-owl<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>YAMLFILE
@@ -441,6 +526,17 @@ translation of Biolink schema to OWL</p></li>
 </dd></dl>
 
 <dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-owl-add-root-classes">
+<span id="cmdoption-gen-owl-no-add-root-classes"></span><span class="sig-name descname"><span class="pre">--add-root-classes</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-add-root-classes</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-owl-add-root-classes" title="Permalink to this definition">#</a></dt>
+<dd><p>If true, include linkml metamodel classes as superclasses.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-gen-owl-add-ols-annotations">
 <span id="cmdoption-gen-owl-no-add-ols-annotations"></span><span class="sig-name descname"><span class="pre">--add-ols-annotations</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-add-ols-annotations</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-owl-add-ols-annotations" title="Permalink to this definition">#</a></dt>
 <dd><p>If true, auto-include annotations from <a class="reference external" href="https://www.ebi.ac.uk/ols/docs/installation-guide">https://www.ebi.ac.uk/ols/docs/installation-guide</a></p>
@@ -466,6 +562,17 @@ translation of Biolink schema to OWL</p></li>
 <dt class="sig sig-object std" id="cmdoption-gen-owl-assert-equivalent-classes">
 <span id="cmdoption-gen-owl-no-assert-equivalent-classes"></span><span class="sig-name descname"><span class="pre">--assert-equivalent-classes</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-assert-equivalent-classes</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-owl-assert-equivalent-classes" title="Permalink to this definition">#</a></dt>
 <dd><p>If true, add owl:equivalentClass between a class and a class_uri</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-owl-mixins-as-expressions">
+<span id="cmdoption-gen-owl-no-mixins-as-expressions"></span><span class="sig-name descname"><span class="pre">--mixins-as-expressions</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-mixins-as-expressions</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-owl-mixins-as-expressions" title="Permalink to this definition">#</a></dt>
+<dd><p>If true, then mixins are represented as existential expressions</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p>
@@ -632,6 +739,8 @@ translation of Biolink schema to OWL</p></li>
 <li><a class="reference internal" href="#example-output">Example Output</a></li>
 <li><a class="reference internal" href="#overview">Overview</a><ul>
 <li><a class="reference internal" href="#mapping">Mapping</a></li>
+<li><a class="reference internal" href="#tips">Tips</a></li>
+<li><a class="reference internal" href="#semantics-of-mappings">Semantics of mappings</a></li>
 <li><a class="reference internal" href="#other-examples">Other examples</a></li>
 </ul>
 </li>

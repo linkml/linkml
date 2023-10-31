@@ -392,7 +392,7 @@
     <span class="c1">### ENUMS ###</span>
     <span class="n">template</span> <span class="o">+=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">{</span><span class="si">% f</span><span class="s2">or e in enums.values() %}</span>
-<span class="s2">class {{ e.name }}(str, Enum):</span>
+<span class="s2">class {{ e.name }}(str{</span><span class="si">% i</span><span class="s2">f e[&#39;values&#39;] %}, Enum{</span><span class="si">% e</span><span class="s2">ndif %}):</span>
 <span class="s2">    {</span><span class="si">% i</span><span class="s2">f e.description -%}</span>
 <span class="s2">    </span><span class="se">\&quot;\&quot;\&quot;</span>
 <span class="s2">    {{ e.description }}</span>
@@ -435,8 +435,11 @@
 <span class="s2">    {</span><span class="si">%- e</span><span class="s2">ndif -%}</span>
 <span class="s2">    {</span><span class="si">%- i</span><span class="s2">f attr.title != None %}, title=&quot;{{attr.title}}&quot;{</span><span class="si">% e</span><span class="s2">ndif -%}</span>
 <span class="s2">    {</span><span class="si">%- i</span><span class="s2">f attr.description %}, description=</span><span class="se">\&quot;\&quot;\&quot;</span><span class="s2">{{attr.description}}</span><span class="se">\&quot;\&quot;\&quot;</span><span class="s2">{</span><span class="si">% e</span><span class="s2">ndif -%}</span>
-<span class="s2">    {</span><span class="si">%- i</span><span class="s2">f attr.minimum_value != None %}, ge={{attr.minimum_value}}{</span><span class="si">% e</span><span class="s2">ndif -%}</span>
-<span class="s2">    {</span><span class="si">%- i</span><span class="s2">f attr.maximum_value != None %}, le={{attr.maximum_value}}{</span><span class="si">% e</span><span class="s2">ndif -%}</span>
+<span class="s2">    {</span><span class="si">%- i</span><span class="s2">f attr.equals_number != None %}, le={{attr.equals_number}}, ge={{attr.equals_number}}</span>
+<span class="s2">    {</span><span class="si">%- e</span><span class="s2">lse -%}</span>
+<span class="s2">     {</span><span class="si">%- i</span><span class="s2">f attr.minimum_value != None %}, ge={{attr.minimum_value}}{</span><span class="si">% e</span><span class="s2">ndif -%}</span>
+<span class="s2">     {</span><span class="si">%- i</span><span class="s2">f attr.maximum_value != None %}, le={{attr.maximum_value}}{</span><span class="si">% e</span><span class="s2">ndif -%}</span>
+<span class="s2">    {</span><span class="si">%- e</span><span class="s2">ndif -%}</span>
 <span class="s2">    )</span>
 <span class="s2">    {</span><span class="si">% e</span><span class="s2">lse -%}</span>
 <span class="s2">    None</span>
