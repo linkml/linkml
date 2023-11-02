@@ -29,7 +29,7 @@ Alternatively, if there is a file named `.linkmllint.yaml` in the current workin
 Here is an example of a configuration file which includes all the recommended rules and enables an additional rule named `no_empty_title`:
 
 ```yaml
-# Use all the recommended rule and also enable the no_empty_title rule
+# Use all the recommended rules and also enable the no_empty_title rule
 extends: recommended
 rules:
   no_empty_title:
