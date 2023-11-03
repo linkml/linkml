@@ -16,10 +16,16 @@ LINK_ML_TYPES_STRING = URIRef("http://www.w3.org/2001/XMLSchema#string")
 LINK_ML_TYPES_BOOL = URIRef("http://www.w3.org/2001/XMLSchema#boolean")
 LINK_ML_TYPES_DECIMAL = URIRef("http://www.w3.org/2001/XMLSchema#decimal")
 LINK_ML_TYPES_INTEGER = URIRef("http://www.w3.org/2001/XMLSchema#integer")
+LINK_ML_TYPES_FLOAT = URIRef("http://www.w3.org/2001/XMLSchema#float")
+LINK_ML_TYPES_DOUBLE = URIRef("http://www.w3.org/2001/XMLSchema#double")
 LINK_ML_TYPES_DURATION = URIRef("http://www.w3.org/2001/XMLSchema#duration")
 LINK_ML_TYPES_DATETIME = URIRef("http://www.w3.org/2001/XMLSchema#dateTime")
 LINK_ML_TYPES_DATE = URIRef("http://www.w3.org/2001/XMLSchema#date")
 LINK_ML_TYPES_TIME = URIRef("http://www.w3.org/2001/XMLSchema#time")
+LINK_ML_TYPES_DATE_TIME = URIRef("http://www.w3.org/2001/XMLSchema#datetime")
+LINK_ML_TYPES_URI = URIRef("http://www.w3.org/2001/XMLSchema#anyURI")
+LINK_ML_TYPES_OBJECT_ID = URIRef("http://www.w3.org/ns/shex#iri")
+LINK_ML_TYPES_NODE_ID = URIRef("http://www.w3.org/ns/shex#nonLiteral")
 
 
 @dataclass
@@ -149,13 +155,34 @@ class ShaclGenerator(Generator):
                         prop_pv(SH.datatype, LINK_ML_TYPES_DATE)
                     elif r == "time":
                         prop_pv(SH.datatype, LINK_ML_TYPES_TIME)
+                    elif r == "datetime":
+                        prop_pv(SH.datatype, LINK_ML_TYPES_DATE_TIME)
                     elif r == "decimal":
                         prop_pv(SH.datatype, LINK_ML_TYPES_DECIMAL)
                     elif r == "integer":
                         prop_pv(SH.datatype, LINK_ML_TYPES_INTEGER)
+                    elif r == "float":
+                        prop_pv(SH.datatype, LINK_ML_TYPES_FLOAT)
+                    elif r == "double":
+                        prop_pv(SH.datatype, LINK_ML_TYPES_DOUBLE)
+                    elif r == "uri":
+                        prop_pv(SH.datatype, LINK_ML_TYPES_URI)
+                    elif r == "curi":
+                        prop_pv(SH.datatype, LINK_ML_TYPES_STRING)
+                    elif r == "ncname":
+                        prop_pv(SH.datatype, LINK_ML_TYPES_STRING)
+                    elif r == "objectidentifier":
+                        prop_pv(SH.datatype, LINK_ML_TYPES_OBJECT_ID)
+                    elif r == "nodeidentifier":
+                        prop_pv(SH.datatype, LINK_ML_TYPES_NODE_ID)
+                    elif r == "jsonpointer":
+                        prop_pv(SH.datatype, LINK_ML_TYPES_STRING)
+                    elif r == "jsonpath":
+                        prop_pv(SH.datatype, LINK_ML_TYPES_STRING)
+                    elif r == "sparqlpath":
+                        prop_pv(SH.datatype, LINK_ML_TYPES_STRING)
                 if s.pattern:
                     prop_pv(SH.pattern, Literal(s.pattern))
-
         return g
 
 
