@@ -28,7 +28,6 @@ LINK_ML_TYPES_OBJECT_ID = URIRef("http://www.w3.org/ns/shex#iri")
 LINK_ML_TYPES_NODE_ID = URIRef("http://www.w3.org/ns/shex#nonLiteral")
 
 
-
 @dataclass
 class ShaclGenerator(Generator):
     # ClassVars
