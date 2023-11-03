@@ -6,6 +6,8 @@ from linkml.validator.validation_context import ValidationContext
 
 
 class RecommendedSlotsPlugin(ValidationPlugin):
+    """A validation plugin which validates that recommended slots are populated"""
+
     def process(self, instance: dict, context: ValidationContext) -> Iterator[ValidationResult]:
         def _do_process(
             instance: dict, class_name: str, location: Optional[List[str]] = None

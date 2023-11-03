@@ -6,13 +6,12 @@ from linkml.validator.loaders.loader import Loader
 
 
 class YamlLoader(Loader):
-    """A loader for instances serialized as YAML"""
+    """A loader for instances serialized as YAML
+
+    :param source: Path to YAML source
+    """
 
     def __init__(self, source) -> None:
-        """Constructor method
-
-        :param source: Path to YAML source
-        """
         super().__init__(source)
 
     def iter_instances(self) -> Iterator[Any]:

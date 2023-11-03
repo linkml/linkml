@@ -10,7 +10,17 @@ from linkml.validator.validation_context import ValidationContext
 
 
 class JsonschemaValidationPlugin(ValidationPlugin):
-    """A validation plugin which validates instances using a JSON Schema validator."""
+    """A validation plugin which validates instances using a JSON Schema validator.
+
+    :param closed: If ``True``, additional properties are not allowed on instances.
+        Defaults to ``False``.
+    :param include_range_class_descendants: If True, use an open world assumption and allow the
+        range of a slot to be any descendant of the declared range. Note that if the range of a
+        slot has a type designator, descendants will always be included.
+    :param json_schema_path: If provided, JSON Schema will not be generated from the schema,
+        instead it will be read from this path. In this case the value of the ``closed`` argument
+        is disregarded and the open- or closed-ness of the existing JSON Schema is taken as-is.
+    """
 
     def __init__(
         self,
@@ -19,17 +29,6 @@ class JsonschemaValidationPlugin(ValidationPlugin):
         include_range_class_descendants: bool = True,
         json_schema_path: Optional[os.PathLike] = None,
     ) -> None:
-        """Constructor method
-
-        :param closed: If True, additional properties are not allowed on instances.
-            Defaults to False.
-        :param include_range_class_descendants: If True, use an open world assumption and allow the
-            range of a slot to be any descendant of the declared range. Note that if the range of a
-            slot has a type designator, descendants will always be included.
-        :param json_schema_path: If provided, JSON Schema will not be generated from the schema,
-            instead it will be read from this path. In this case the value of the `closed` argument
-            is disregarded and the open- or closed-ness of the existing JSON Schema is taken as-is.
-        """
         self.closed = closed
         self.include_range_class_descendants = include_range_class_descendants
         self.json_schema_path = json_schema_path
