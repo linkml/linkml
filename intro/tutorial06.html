@@ -311,7 +311,7 @@ will result in messy data that will need to cleaned up before any analysis is pe
 <p>personinfo.yaml:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://w3id.org/linkml/examples/personinfo</span>
 <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">personinfo</span>
-<span class="nt">prefixes</span><span class="p">:</span><span class="w">                                  </span>
+<span class="nt">prefixes</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">linkml</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://w3id.org/linkml/</span>
 <span class="w">  </span><span class="nt">schema</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://schema.org/</span>
 <span class="w">  </span><span class="nt">personinfo</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://w3id.org/linkml/examples/personinfo/</span>
@@ -319,10 +319,10 @@ will result in messy data that will need to cleaned up before any analysis is pe
 <span class="nt">imports</span><span class="p">:</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">linkml:types</span>
 <span class="nt">default_range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
-<span class="w">  </span>
+
 <span class="nt">classes</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">Person</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">class_uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">schema:Person</span><span class="w">             </span>
+<span class="w">    </span><span class="nt">class_uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">schema:Person</span>
 <span class="w">    </span><span class="nt">attributes</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">id</span><span class="p">:</span>
 <span class="w">        </span><span class="nt">identifier</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
@@ -330,14 +330,14 @@ will result in messy data that will need to cleaned up before any analysis is pe
 <span class="w">        </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class="w">        </span><span class="nt">description</span><span class="p">:</span>
 <span class="w">          </span><span class="l l-Scalar l-Scalar-Plain">name of the person</span>
-<span class="w">        </span><span class="nt">slot_uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">schema:name</span><span class="w">            </span>
+<span class="w">        </span><span class="nt">slot_uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">schema:name</span>
 <span class="w">      </span><span class="nt">aliases</span><span class="p">:</span>
 <span class="w">        </span><span class="nt">multivalued</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class="w">        </span><span class="nt">description</span><span class="p">:</span>
 <span class="w">          </span><span class="l l-Scalar l-Scalar-Plain">other names for the person</span>
 <span class="w">      </span><span class="nt">phone</span><span class="p">:</span>
 <span class="w">        </span><span class="nt">pattern</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;^[\\d\\(\\)\\-]+$&quot;</span>
-<span class="w">        </span><span class="nt">slot_uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">schema:telephone</span><span class="w">       </span>
+<span class="w">        </span><span class="nt">slot_uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">schema:telephone</span>
 <span class="w">      </span><span class="nt">age</span><span class="p">:</span>
 <span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">integer</span>
 <span class="w">        </span><span class="nt">minimum_value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
@@ -382,7 +382,7 @@ will result in messy data that will need to cleaned up before any analysis is pe
 </pre></div>
 </div>
 <p>If you run this you should see that it throws an error with the message:</p>
-<div class="highlight-test notranslate"><div class="highlight"><pre><span></span>ValueError: Unknown PersonStatus enumeration code: UNDEAD
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[ERROR] [data.yaml/0] &#39;UNDEAD&#39; is not one of [&#39;ALIVE&#39;, &#39;DEAD&#39;, &#39;UNKNOWN&#39;] in /persons/1/status
 </pre></div>
 </div>
 <!-- TODO: use schematools to patch the data -->
@@ -414,7 +414,7 @@ generated RDF.</p>
 <p>personinfo-mapped.yaml:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://w3id.org/linkml/examples/personinfo</span>
 <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">personinfo</span>
-<span class="nt">prefixes</span><span class="p">:</span><span class="w">                                  </span>
+<span class="nt">prefixes</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">linkml</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://w3id.org/linkml/</span>
 <span class="w">  </span><span class="nt">schema</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://schema.org/</span>
 <span class="w">  </span><span class="nt">personinfo</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://w3id.org/linkml/examples/personinfo/</span>
@@ -423,10 +423,10 @@ generated RDF.</p>
 <span class="nt">imports</span><span class="p">:</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">linkml:types</span>
 <span class="nt">default_range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
-<span class="w">  </span>
+
 <span class="nt">classes</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">Person</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">class_uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">schema:Person</span><span class="w">             </span>
+<span class="w">    </span><span class="nt">class_uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">schema:Person</span>
 <span class="w">    </span><span class="nt">attributes</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">id</span><span class="p">:</span>
 <span class="w">        </span><span class="nt">identifier</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
@@ -434,14 +434,14 @@ generated RDF.</p>
 <span class="w">        </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class="w">        </span><span class="nt">description</span><span class="p">:</span>
 <span class="w">          </span><span class="l l-Scalar l-Scalar-Plain">name of the person</span>
-<span class="w">        </span><span class="nt">slot_uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">schema:name</span><span class="w">            </span>
+<span class="w">        </span><span class="nt">slot_uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">schema:name</span>
 <span class="w">      </span><span class="nt">aliases</span><span class="p">:</span>
 <span class="w">        </span><span class="nt">multivalued</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class="w">        </span><span class="nt">description</span><span class="p">:</span>
 <span class="w">          </span><span class="l l-Scalar l-Scalar-Plain">other names for the person</span>
 <span class="w">      </span><span class="nt">phone</span><span class="p">:</span>
 <span class="w">        </span><span class="nt">pattern</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;^[\\d\\(\\)\\-]+$&quot;</span>
-<span class="w">        </span><span class="nt">slot_uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">schema:telephone</span><span class="w">       </span>
+<span class="w">        </span><span class="nt">slot_uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">schema:telephone</span>
 <span class="w">      </span><span class="nt">age</span><span class="p">:</span>
 <span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">integer</span>
 <span class="w">        </span><span class="nt">minimum_value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
@@ -464,7 +464,7 @@ generated RDF.</p>
 <span class="w">    </span><span class="nt">permissible_values</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">ALIVE</span><span class="p">:</span>
 <span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">the person is living</span>
-<span class="w">        </span><span class="nt">meaning</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">PATO:0001421</span><span class="w"> </span>
+<span class="w">        </span><span class="nt">meaning</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">PATO:0001421</span>
 <span class="w">      </span><span class="nt">DEAD</span><span class="p">:</span>
 <span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">the person is deceased</span>
 <span class="w">        </span><span class="nt">meaning</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">PATO:0001422</span>

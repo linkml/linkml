@@ -332,7 +332,7 @@ pip<span class="w"> </span>install<span class="w"> </span>linkml
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">linkml:types</span>
 <span class="nt">default_range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
 <span class="nt">default_prefix</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">personinfo</span>
-<span class="w">  </span>
+
 <span class="nt">classes</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">Person</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">attributes</span><span class="p">:</span>
@@ -348,7 +348,7 @@ pip<span class="w"> </span>install<span class="w"> </span>linkml
 <section id="converting-to-json-schema">
 <h2>Converting to JSON-Schema<a class="headerlink" href="#converting-to-json-schema" title="Permalink to this heading">#</a></h2>
 <p>Now run the following command on the file you just created:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gen-json-schema<span class="w"> </span>personinfo.yaml<span class="w"> </span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gen-json-schema<span class="w"> </span>personinfo.yaml
 </pre></div>
 </div>
 <p>Outputs:</p>
@@ -406,10 +406,10 @@ pip<span class="w"> </span>install<span class="w"> </span>linkml
 <p>note the values of all these fields are strings, even age; we will later return
 to this example and show how we could model this more naturally as a number.</p>
 <p>Validate:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>linkml-validate<span class="w"> </span>-s<span class="w"> </span>personinfo.yaml<span class="w"> </span>data.yaml<span class="w"> </span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>linkml-validate<span class="w"> </span>-s<span class="w"> </span>personinfo.yaml<span class="w"> </span>data.yaml
 </pre></div>
 </div>
-<p>You should see no errors. This means your data is valid. Success!</p>
+<p>You should see a message indicating there were no validation issues found. Success!</p>
 <p>To see an example of data not validating:</p>
 <p>bad-data.yaml:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ORCID:1234</span>
@@ -423,7 +423,7 @@ to this example and show how we could model this more naturally as a number.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>linkml-validate<span class="w"> </span>-s<span class="w"> </span>personinfo.yaml<span class="w"> </span>bad-data.yaml
 </pre></div>
 </div>
-<p>This should report an error to the effect that <code class="docutils literal notranslate"><span class="pre">made_up_field</span></code> is not known.</p>
+<p>This should report an error to the effect that <code class="docutils literal notranslate"><span class="pre">made_up_field</span></code> is not allowed.</p>
 </section>
 <section id="working-with-json">
 <h2>Working with JSON<a class="headerlink" href="#working-with-json" title="Permalink to this heading">#</a></h2>

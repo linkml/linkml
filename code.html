@@ -472,6 +472,331 @@ into the schema rather than providing dynamic methods.</p>
 <h2>Utils<a class="headerlink" href="#utils" title="Permalink to this heading">#</a></h2>
 <p>Utilities</p>
 </section>
+<section id="module-linkml.validator">
+<span id="validator"></span><h2>Validator<a class="headerlink" href="#module-linkml.validator" title="Permalink to this heading">#</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">linkml.validator</span></code> package contains a new LinkML validation framework that is more flexible
+than the <code class="docutils literal notranslate"><span class="pre">linkml.validators</span></code> package. While that package still exists, it may become deprecated
+in the future.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="linkml.validator.Validator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linkml.validator.</span></span><span class="sig-name descname"><span class="pre">Validator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">TextIO</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Path</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#linkml_runtime.linkml_model.meta.SchemaDefinition" title="linkml_runtime.linkml_model.meta.SchemaDefinition"><span class="pre">SchemaDefinition</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validation_plugins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#linkml.validator.plugins.ValidationPlugin" title="linkml.validator.plugins.validation_plugin.ValidationPlugin"><span class="pre">ValidationPlugin</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/linkml/validator/validator.html#Validator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.validator.Validator" title="Permalink to this definition">#</a></dt>
+<dd><p>A class for coordinating instance validation using configurable plugins</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>schema</strong> – The schema to validate against. If a string or Path, the schema
+will be loaded from that location. Otherwise, a <code class="docutils literal notranslate"><span class="pre">SchemaDefinition</span></code> is required.</p></li>
+<li><p><strong>validation_plugins</strong> – A list of plugins that be used to validate instances
+using the given schema. Each element should be an instance of a subclass of
+<a class="reference internal" href="#linkml.validator.plugins.ValidationPlugin" title="linkml.validator.plugins.ValidationPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">linkml.validator.plugins.ValidationPlugin</span></code></a>. Defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+<li><p><strong>strict</strong> – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, stop validating after the first validation problem
+is found. Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml.validator.Validator.iter_results">
+<span class="sig-name descname"><span class="pre">iter_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_class</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Iterator</span><span class="p"><span class="pre">[</span></span><span class="pre">ValidationResult</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/linkml/validator/validator.html#Validator.iter_results"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.validator.Validator.iter_results" title="Permalink to this definition">#</a></dt>
+<dd><p>Lazily yield validation results for the given instance</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>instance</strong> – The instance to validate</p></li>
+<li><p><strong>target_class</strong> – Name of the class within the schema to validate
+against. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, the class will be inferred from the schema by
+looked for a class with <code class="docutils literal notranslate"><span class="pre">tree_root:</span> <span class="pre">true</span></code>. Defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Iterator over validation results</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Iterator[ValidationResult]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml.validator.Validator.iter_results_from_source">
+<span class="sig-name descname"><span class="pre">iter_results_from_source</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">loader</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#linkml.validator.loaders.Loader" title="linkml.validator.loaders.loader.Loader"><span class="pre">Loader</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_class</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Iterator</span><span class="p"><span class="pre">[</span></span><span class="pre">ValidationResult</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/linkml/validator/validator.html#Validator.iter_results_from_source"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.validator.Validator.iter_results_from_source" title="Permalink to this definition">#</a></dt>
+<dd><p>Lazily yield validation results for the instances provided by a loader</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>loader</strong> – An instance of a subclass of <a class="reference internal" href="#linkml.validator.loaders.Loader" title="linkml.validator.loaders.Loader"><code class="xref py py-class docutils literal notranslate"><span class="pre">linkml.validator.loaders.Loader</span></code></a>
+which provides the instances to validate</p></li>
+<li><p><strong>target_class</strong> – Name of the class within the schema to validate
+against. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, the class will be inferred from the schema by
+looked for a class with <code class="docutils literal notranslate"><span class="pre">tree_root:</span> <span class="pre">true</span></code>. Defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Iterator over validation results</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Iterator[ValidationResult]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml.validator.Validator.validate">
+<span class="sig-name descname"><span class="pre">validate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_class</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ValidationReport</span></span></span><a class="reference internal" href="_modules/linkml/validator/validator.html#Validator.validate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.validator.Validator.validate" title="Permalink to this definition">#</a></dt>
+<dd><p>Validate the given instance</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>instance</strong> – The instance to validate</p></li>
+<li><p><strong>target_class</strong> – Name of the class within the schema to validate
+against. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, the class will be inferred from the schema by
+looked for a class with <code class="docutils literal notranslate"><span class="pre">tree_root:</span> <span class="pre">true</span></code>. Defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A validation report</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ValidationReport</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml.validator.Validator.validate_source">
+<span class="sig-name descname"><span class="pre">validate_source</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">loader</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#linkml.validator.loaders.Loader" title="linkml.validator.loaders.loader.Loader"><span class="pre">Loader</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_class</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ValidationReport</span></span></span><a class="reference internal" href="_modules/linkml/validator/validator.html#Validator.validate_source"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.validator.Validator.validate_source" title="Permalink to this definition">#</a></dt>
+<dd><p>Validate instances from a data source</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>loader</strong> – An instance of a subclass of <a class="reference internal" href="#linkml.validator.loaders.Loader" title="linkml.validator.loaders.Loader"><code class="xref py py-class docutils literal notranslate"><span class="pre">linkml.validator.loaders.Loader</span></code></a>
+which provides the instances to validate</p></li>
+<li><p><strong>target_class</strong> – Name of the class within the schema to validate
+against. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, the class will be inferred from the schema by
+looked for a class with <code class="docutils literal notranslate"><span class="pre">tree_root:</span> <span class="pre">true</span></code>. Defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A validation report</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ValidationReport</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="linkml.validator.validate">
+<span class="sig-prename descclassname"><span class="pre">linkml.validator.</span></span><span class="sig-name descname"><span class="pre">validate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#linkml_runtime.linkml_model.meta.SchemaDefinition" title="linkml_runtime.linkml_model.meta.SchemaDefinition"><span class="pre">SchemaDefinition</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_class</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ValidationReport</span></span></span><a class="reference internal" href="_modules/linkml/validator.html#validate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.validator.validate" title="Permalink to this definition">#</a></dt>
+<dd><p>Validate a data instance against a schema</p>
+<p>This function provides a simple interface to do basic validation performed by a JSON Schema
+validator on a single instance. To have more control over the type of validation performed,
+see the <a class="reference internal" href="#linkml.validator.Validator" title="linkml.validator.Validator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Validator</span></code></a> class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>instance</strong> – The instance to validate</p></li>
+<li><p><strong>schema</strong> – The schema used to validate the instance. If a string is
+it will be interpreted as a path, URL, or other loadable location.
+If it is a dict it should be compatible with <code class="docutils literal notranslate"><span class="pre">SchemaDefinition</span></code>,
+otherwise it should be a <code class="docutils literal notranslate"><span class="pre">SchemaDefinition</span></code> instance.</p></li>
+<li><p><strong>target_class</strong> – Name of the class within the schema to validate
+against. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, the class will be inferred from the schema by
+looked for a class with <code class="docutils literal notranslate"><span class="pre">tree_root:</span> <span class="pre">true</span></code>. Defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+<li><p><strong>strict</strong> – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, validation will stop after the first validation
+error is found, Otherwise all validation problems will be reported.
+Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If a valid <code class="docutils literal notranslate"><span class="pre">SchemaDefinition</span></code> cannot be constructed
+from the <code class="docutils literal notranslate"><span class="pre">schema</span></code> parameter.</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A validation report</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>ValidationReport</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="linkml.validator.validate_file">
+<span class="sig-prename descclassname"><span class="pre">linkml.validator.</span></span><span class="sig-name descname"><span class="pre">validate_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">bytes</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">PathLike</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#linkml_runtime.linkml_model.meta.SchemaDefinition" title="linkml_runtime.linkml_model.meta.SchemaDefinition"><span class="pre">SchemaDefinition</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_class</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ValidationReport</span></span></span><a class="reference internal" href="_modules/linkml/validator.html#validate_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.validator.validate_file" title="Permalink to this definition">#</a></dt>
+<dd><p>Validate instances loaded from a file against a schema</p>
+<p>This function provides a simple interface to do basic validation performed by a JSON Schema
+validator on instances loaded from a file. Loading is done according to the file’s extension.
+Accepted file extensions are: <code class="docutils literal notranslate"><span class="pre">.csv</span></code>, <code class="docutils literal notranslate"><span class="pre">.tsv</span></code>, <code class="docutils literal notranslate"><span class="pre">.yaml</span></code>, <code class="docutils literal notranslate"><span class="pre">.yml</span></code>, and <code class="docutils literal notranslate"><span class="pre">.json</span></code>.
+Individual rows of CSV and TSV files are treated as instances to validate. Each document
+within a YAML file is treated as an individual instance to validate. If the top-level of a
+JSON file is an array, each element of the array is treated as an instance to validate.
+Otherwise, if the top-level is an object it is treated as a single instance to validate.</p>
+<p>To have more control over the type of validation performed, see the <a class="reference internal" href="#linkml.validator.Validator" title="linkml.validator.Validator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Validator</span></code></a> class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>file</strong> – Path-like object of the file to be read</p></li>
+<li><p><strong>schema</strong> – The schema used to validate the instance. If a string is
+it will be interpreted as a path, URL, or other loadable location.
+If it is a dict it should be compatible with <code class="docutils literal notranslate"><span class="pre">SchemaDefinition</span></code>,
+otherwise it should be a <code class="docutils literal notranslate"><span class="pre">SchemaDefinition</span></code> instance.</p></li>
+<li><p><strong>target_class</strong> – Name of the class within the schema to validate
+against. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, the class will be inferred from the schema by
+looked for a class with <code class="docutils literal notranslate"><span class="pre">tree_root:</span> <span class="pre">true</span></code>. Defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+<li><p><strong>strict</strong> – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, validation will stop after the first validation
+error is found, Otherwise all validation problems will be reported.
+Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A validation report</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ValidationReport</p>
+</dd>
+</dl>
+</dd></dl>
+
+<section id="module-linkml.validator.loaders">
+<span id="loaders"></span><h3>Loaders<a class="headerlink" href="#module-linkml.validator.loaders" title="Permalink to this heading">#</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">linkml.validator.loaders</span></code> package contain classes which are responsible for yielding data
+instance from a source. Instances of these classes are passed to
+<a class="reference internal" href="#linkml.validator.Validator.validate_source" title="linkml.validator.Validator.validate_source"><code class="xref py py-meth docutils literal notranslate"><span class="pre">linkml.validator.Validator.validate_source()</span></code></a> and
+<a class="reference internal" href="#linkml.validator.Validator.iter_results_from_source" title="linkml.validator.Validator.iter_results_from_source"><code class="xref py py-meth docutils literal notranslate"><span class="pre">linkml.validator.Validator.iter_results_from_source()</span></code></a></p>
+<dl class="py class">
+<dt class="sig sig-object py" id="linkml.validator.loaders.CsvLoader">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linkml.validator.loaders.</span></span><span class="sig-name descname"><span class="pre">CsvLoader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip_empty_rows</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index_slot_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/linkml/validator/loaders/delimited_file_loader.html#CsvLoader"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.validator.loaders.CsvLoader" title="Permalink to this definition">#</a></dt>
+<dd><p>A loader for instances serialized as CSV</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>skip_empty_rows</strong> – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, skip empty rows instead of yielding empty dicts. Defaults
+to <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p><strong>index_slot_name</strong> – If provided, <code class="docutils literal notranslate"><span class="pre">iter_instances</span></code> will yield one dict where all rows of
+the CSV file are collected into a list with <code class="docutils literal notranslate"><span class="pre">index_slot_name</span></code> as the key. If <code class="docutils literal notranslate"><span class="pre">None</span></code>,
+<code class="docutils literal notranslate"><span class="pre">iter_instances</span></code> will yield each row as a dict individually. Defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="linkml.validator.loaders.JsonLoader">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linkml.validator.loaders.</span></span><span class="sig-name descname"><span class="pre">JsonLoader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/linkml/validator/loaders/json_loader.html#JsonLoader"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.validator.loaders.JsonLoader" title="Permalink to this definition">#</a></dt>
+<dd><p>A loader for instances serialized as JSON</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>source</strong> – Path or URL to JSON source</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="linkml.validator.loaders.Loader">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linkml.validator.loaders.</span></span><span class="sig-name descname"><span class="pre">Loader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/linkml/validator/loaders/loader.html#Loader"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.validator.loaders.Loader" title="Permalink to this definition">#</a></dt>
+<dd><p>Abstract base class for instance data loaders.</p>
+<p>Subclasses must implement the iter_instances method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>source</strong> – Path or URL to load instances from</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="linkml.validator.loaders.TsvLoader">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linkml.validator.loaders.</span></span><span class="sig-name descname"><span class="pre">TsvLoader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip_empty_rows</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index_slot_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/linkml/validator/loaders/delimited_file_loader.html#TsvLoader"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.validator.loaders.TsvLoader" title="Permalink to this definition">#</a></dt>
+<dd><p>A loader for instances serialized as TSV</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>skip_empty_rows</strong> – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, skip empty rows instead of yielding empty dicts. Defaults
+to <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p><strong>index_slot_name</strong> – If provided, <code class="docutils literal notranslate"><span class="pre">iter_instances</span></code> will yield one dict where all rows of
+the TSV file are collected into a list with <code class="docutils literal notranslate"><span class="pre">index_slot_name</span></code> as the key. If <code class="docutils literal notranslate"><span class="pre">None</span></code>,
+<code class="docutils literal notranslate"><span class="pre">iter_instances</span></code> will yield each row as a dict individually. Defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="linkml.validator.loaders.YamlLoader">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linkml.validator.loaders.</span></span><span class="sig-name descname"><span class="pre">YamlLoader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/linkml/validator/loaders/yaml_loader.html#YamlLoader"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.validator.loaders.YamlLoader" title="Permalink to this definition">#</a></dt>
+<dd><p>A loader for instances serialized as YAML</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>source</strong> – Path to YAML source</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-linkml.validator.plugins">
+<span id="plugins"></span><h3>Plugins<a class="headerlink" href="#module-linkml.validator.plugins" title="Permalink to this heading">#</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">linkml.validator.plugins</span></code> package contains classes that perform the actual validation work
+on data instances. Instances of these classes should be provided when constructing a
+<a class="reference internal" href="#linkml.validator.Validator" title="linkml.validator.Validator"><code class="xref py py-class docutils literal notranslate"><span class="pre">linkml.validator.Validator</span></code></a> instance.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="linkml.validator.plugins.JsonschemaValidationPlugin">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linkml.validator.plugins.</span></span><span class="sig-name descname"><span class="pre">JsonschemaValidationPlugin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">closed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_range_class_descendants</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">json_schema_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">PathLike</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/linkml/validator/plugins/jsonschema_validation_plugin.html#JsonschemaValidationPlugin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.validator.plugins.JsonschemaValidationPlugin" title="Permalink to this definition">#</a></dt>
+<dd><p>A validation plugin which validates instances using a JSON Schema validator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>closed</strong> – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, additional properties are not allowed on instances.
+Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p><strong>include_range_class_descendants</strong> – If True, use an open world assumption and allow the
+range of a slot to be any descendant of the declared range. Note that if the range of a
+slot has a type designator, descendants will always be included.</p></li>
+<li><p><strong>json_schema_path</strong> – If provided, JSON Schema will not be generated from the schema,
+instead it will be read from this path. In this case the value of the <code class="docutils literal notranslate"><span class="pre">closed</span></code> argument
+is disregarded and the open- or closed-ness of the existing JSON Schema is taken as-is.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="linkml.validator.plugins.PydanticValidationPlugin">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linkml.validator.plugins.</span></span><span class="sig-name descname"><span class="pre">PydanticValidationPlugin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">closed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/linkml/validator/plugins/pydantic_validation_plugin.html#PydanticValidationPlugin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.validator.plugins.PydanticValidationPlugin" title="Permalink to this definition">#</a></dt>
+<dd><p>A validation plugin which validates instances using a Pydantic validator.</p>
+<p>Note that this plugin provides less complete validation than
+<a class="reference internal" href="#linkml.validator.plugins.JsonschemaValidationPlugin" title="linkml.validator.plugins.JsonschemaValidationPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">JsonschemaValidationPlugin</span></code></a>.
+Also, due to the nature of Pydantic, it will fail fast on errors and only report the first
+error found.</p>
+<p>For general use cases, JsonschemaValidationPlugin is recommended. However, this plugin
+may be useful in some scenarios:</p>
+<ul class="simple">
+<li><p>You are using in a pipeline to ensure objects will be valid for loading into Pydantic.</p></li>
+<li><p>You are exploring relative capabilities of Pydantic and JSON Schema validation.</p></li>
+<li><p>Pydantic is faster for your use case (to be tested).</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>closed</strong> – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, additional properties are not allowed on instances.
+Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="linkml.validator.plugins.RecommendedSlotsPlugin">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linkml.validator.plugins.</span></span><span class="sig-name descname"><span class="pre">RecommendedSlotsPlugin</span></span><a class="reference internal" href="_modules/linkml/validator/plugins/recommended_slots_plugin.html#RecommendedSlotsPlugin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.validator.plugins.RecommendedSlotsPlugin" title="Permalink to this definition">#</a></dt>
+<dd><p>A validation plugin which validates that recommended slots are populated</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="linkml.validator.plugins.ValidationPlugin">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linkml.validator.plugins.</span></span><span class="sig-name descname"><span class="pre">ValidationPlugin</span></span><a class="reference internal" href="_modules/linkml/validator/plugins/validation_plugin.html#ValidationPlugin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.validator.plugins.ValidationPlugin" title="Permalink to this definition">#</a></dt>
+<dd><p>Abstract base class for validation plugins.</p>
+<p>Subclasses must implement a <code class="docutils literal notranslate"><span class="pre">process</span></code> method.</p>
+</dd></dl>
+
+</section>
+</section>
 </section>
 
         </article>
@@ -556,6 +881,33 @@ into the schema rather than providing dynamic methods.</p>
 </ul>
 </li>
 <li><a class="reference internal" href="#utils">Utils</a></li>
+<li><a class="reference internal" href="#module-linkml.validator">Validator</a><ul>
+<li><a class="reference internal" href="#linkml.validator.Validator"><code class="docutils literal notranslate"><span class="pre">Validator</span></code></a><ul>
+<li><a class="reference internal" href="#linkml.validator.Validator.iter_results"><code class="docutils literal notranslate"><span class="pre">Validator.iter_results()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.validator.Validator.iter_results_from_source"><code class="docutils literal notranslate"><span class="pre">Validator.iter_results_from_source()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.validator.Validator.validate"><code class="docutils literal notranslate"><span class="pre">Validator.validate()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.validator.Validator.validate_source"><code class="docutils literal notranslate"><span class="pre">Validator.validate_source()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#linkml.validator.validate"><code class="docutils literal notranslate"><span class="pre">validate()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.validator.validate_file"><code class="docutils literal notranslate"><span class="pre">validate_file()</span></code></a></li>
+<li><a class="reference internal" href="#module-linkml.validator.loaders">Loaders</a><ul>
+<li><a class="reference internal" href="#linkml.validator.loaders.CsvLoader"><code class="docutils literal notranslate"><span class="pre">CsvLoader</span></code></a></li>
+<li><a class="reference internal" href="#linkml.validator.loaders.JsonLoader"><code class="docutils literal notranslate"><span class="pre">JsonLoader</span></code></a></li>
+<li><a class="reference internal" href="#linkml.validator.loaders.Loader"><code class="docutils literal notranslate"><span class="pre">Loader</span></code></a></li>
+<li><a class="reference internal" href="#linkml.validator.loaders.TsvLoader"><code class="docutils literal notranslate"><span class="pre">TsvLoader</span></code></a></li>
+<li><a class="reference internal" href="#linkml.validator.loaders.YamlLoader"><code class="docutils literal notranslate"><span class="pre">YamlLoader</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-linkml.validator.plugins">Plugins</a><ul>
+<li><a class="reference internal" href="#linkml.validator.plugins.JsonschemaValidationPlugin"><code class="docutils literal notranslate"><span class="pre">JsonschemaValidationPlugin</span></code></a></li>
+<li><a class="reference internal" href="#linkml.validator.plugins.PydanticValidationPlugin"><code class="docutils literal notranslate"><span class="pre">PydanticValidationPlugin</span></code></a></li>
+<li><a class="reference internal" href="#linkml.validator.plugins.RecommendedSlotsPlugin"><code class="docutils literal notranslate"><span class="pre">RecommendedSlotsPlugin</span></code></a></li>
+<li><a class="reference internal" href="#linkml.validator.plugins.ValidationPlugin"><code class="docutils literal notranslate"><span class="pre">ValidationPlugin</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

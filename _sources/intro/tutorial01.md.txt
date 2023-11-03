@@ -40,7 +40,7 @@ imports:
   - linkml:types
 default_range: string
 default_prefix: personinfo
-  
+
 classes:
   Person:
     attributes:
@@ -58,7 +58,7 @@ classes:
 Now run the following command on the file you just created:
 
 ```bash
-gen-json-schema personinfo.yaml 
+gen-json-schema personinfo.yaml
 ```
 
 Outputs:
@@ -123,10 +123,10 @@ to this example and show how we could model this more naturally as a number.
 Validate:
 
 ```bash
-linkml-validate -s personinfo.yaml data.yaml 
+linkml-validate -s personinfo.yaml data.yaml
 ```
 
-You should see no errors. This means your data is valid. Success!
+You should see a message indicating there were no validation issues found. Success!
 
 To see an example of data not validating:
 
@@ -145,7 +145,7 @@ made_up_field: hello
 linkml-validate -s personinfo.yaml bad-data.yaml
 ```
 
-This should report an error to the effect that `made_up_field` is not known.
+This should report an error to the effect that `made_up_field` is not allowed.
 
 ## Working with JSON
 
@@ -197,7 +197,7 @@ This will produce an RDF/turtle file as follows
     ns1:full_name "Clark Kent" ;
     ns1:id "ORCID:1234" ;
     ns1:phone "555-555-5555" .
-```    
+```
 
 If you are not familiar with RDF that's OK! RDF is just one of the possible ways of working with LinkML.
 

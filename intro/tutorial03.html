@@ -321,7 +321,7 @@
 <span class="nt">imports</span><span class="p">:</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">linkml:types</span>
 <span class="nt">default_range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
-<span class="w">  </span>
+
 <span class="nt">classes</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">Person</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">attributes</span><span class="p">:</span>
@@ -363,7 +363,7 @@
 <span class="w">    </span><span class="nt">full_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Clark Kent</span>
 <span class="w">    </span><span class="nt">age</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">90</span>
 <span class="w">    </span><span class="nt">phone</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1-800-kryptonite</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ORCID:1234</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ORCID:5678</span>
 <span class="w">    </span><span class="nt">age</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">33</span>
 </pre></div>
 </div>
@@ -373,57 +373,37 @@
 </pre></div>
 </div>
 <p>Will result in:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ne">ValueError</span><span class="p">:</span> <span class="n">full_name</span> <span class="n">must</span> <span class="n">be</span> <span class="n">supplied</span>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[ERROR] [bad-data.yaml/0] &#39;1-800-kryptonite&#39; does not match &#39;^[\\d\\(\\)\\-]+$&#39; in /persons/0/phone
+[ERROR] [bad-data.yaml/0] &#39;full_name&#39; is a required property in /persons/1
 </pre></div>
 </div>
-<p>better-data-v1.yaml:</p>
+<p>This indicates there are two issues with our data. The first says that the phone number of the first entry in the persons list (<code class="docutils literal notranslate"><span class="pre">/persons/0/phone</span></code>) doesn’t conform to the regular expression syntax we stated. The second says that we are missing the required <code class="docutils literal notranslate"><span class="pre">full_name</span></code> slot on the second entry in the person list (<code class="docutils literal notranslate"><span class="pre">/persons/1</span></code>).</p>
+<p>Let’s fix the second issue.</p>
+<p>better-data.yaml:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">persons</span><span class="p">:</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ORCID:1234</span>
 <span class="w">    </span><span class="nt">full_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Clark Kent</span>
 <span class="w">    </span><span class="nt">age</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">90</span>
 <span class="w">    </span><span class="nt">phone</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1-800-kryptonite</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ORCID:1234</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ORCID:5678</span>
 <span class="w">    </span><span class="nt">full_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Lois Lane</span>
 <span class="w">    </span><span class="nt">age</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">33</span>
 </pre></div>
 </div>
 <!-- FAIL -->
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>linkml-validate<span class="w"> </span>-s<span class="w"> </span>personinfo.yaml<span class="w"> </span>better-data-v1.yaml
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>linkml-validate<span class="w"> </span>-s<span class="w"> </span>personinfo.yaml<span class="w"> </span>better-data.yaml
 </pre></div>
 </div>
 <p>Will result in:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ne">ValueError</span><span class="p">:</span> <span class="n">File</span> <span class="s2">&quot;&lt;file&gt;&quot;</span><span class="p">,</span> <span class="n">line</span> <span class="mi">6</span><span class="p">,</span> <span class="n">col</span> <span class="mi">9</span><span class="p">:</span> <span class="n">ORCID</span><span class="p">:</span><span class="mi">1234</span><span class="p">:</span> <span class="n">duplicate</span> <span class="n">key</span>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[ERROR] [better-data.yaml/0] &#39;1-800-kryptonite&#39; does not match &#39;^[\\d\\(\\)\\-]+$&#39; in /persons/0/phone
 </pre></div>
 </div>
-<p>Let’s fix that:</p>
-<p>better-data-v2.yaml:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">persons</span><span class="p">:</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ORCID:1234</span>
-<span class="w">    </span><span class="nt">full_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Clark Kent</span>
-<span class="w">    </span><span class="nt">age</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">90</span>
-<span class="w">    </span><span class="nt">phone</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1-800-kryptonite</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ORCID:4567</span>
-<span class="w">    </span><span class="nt">full_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Lois Lane</span>
-<span class="w">    </span><span class="nt">age</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">33</span>
-</pre></div>
-</div>
-<!-- FAIL -->
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>linkml-validate<span class="w"> </span>-s<span class="w"> </span>personinfo.yaml<span class="w"> </span>better-data-v2.yaml
-</pre></div>
-</div>
-<p>Will result in:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;pattern&#39;</span><span class="p">:</span> <span class="s1">&#39;^[</span><span class="se">\\</span><span class="s1">d</span><span class="se">\\</span><span class="s1">(</span><span class="se">\\</span><span class="s1">)</span><span class="se">\\</span><span class="s1">-]+$&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;string&#39;</span><span class="p">}</span>
-
-<span class="n">On</span> <span class="n">instance</span><span class="p">[</span><span class="s1">&#39;persons&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;phone&#39;</span><span class="p">]:</span>
-    <span class="s1">&#39;1-800-kryptonite&#39;</span>
-</pre></div>
-</div>
-<p>This reflexts that the phone number doesn’t conform to the regular expression syntax we stated.</p>
+<p>We have successfully fixed one of the issues with the data!</p>
 </section>
 <section id="exercises">
 <h2>Exercises<a class="headerlink" href="#exercises" title="Permalink to this heading">#</a></h2>
 <ol class="arabic simple">
-<li><p>See if you can iterate on the example file to get something that works.</p></li>
+<li><p>See if you can iterate on the example data to get something that validates.</p></li>
 </ol>
 </section>
 <section id="using-the-json-schema-directly">
