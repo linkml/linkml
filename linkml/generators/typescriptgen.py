@@ -168,6 +168,8 @@ class TypescriptGenerator(OOCodeGenerator):
                 tsrange = "string"
                 if t.base and t.base in type_map:
                     tsrange = type_map[t.base]
+                elif t.typeof and t.typeof in type_map:
+                    tsrange = type_map[t.typeof]
                 else:
                     logging.warning(f"Unknown type.base: {t.name}")
                 if slot.multivalued:
