@@ -36,7 +36,7 @@ class Validator:
             self._schema = schema
         else:
             self._schema: SchemaDefinition = yaml_loader.load(schema, SchemaDefinition)
-        if isinstance(schema, str):
+        if "\n" not in schema and isinstance(schema, str):
             self._schema.source_file = schema
         self._validation_plugins = validation_plugins
         self.strict = strict
