@@ -49,7 +49,7 @@ For example, the intended target object may be expressed in JSON as:
       "type": "SIBLING_OF"
     }
   ],
-  "has)employment_history": [
+  "has_employment_history": [
     {
       "employed_at": "University of Tokyo",
       "start_date": "2017-01-01"
