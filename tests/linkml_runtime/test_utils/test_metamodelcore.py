@@ -64,6 +64,8 @@ class MetamodelCoreTest(unittest.TestCase):
         self.assertFalse(Curie.is_valid("type"))
         self.assertEqual(":type", Curie(":type"))
         self.assertTrue(Curie.is_valid(':type'))
+        self.assertTrue(Curie.is_valid('WIKIDATA_PROPERTY:P854'))
+        self.assertTrue(Curie.is_valid('WIKIDATA.PROPERTY:P854'))
         with self.assertRaises(ValueError):
             Curie("1df:type")
         self.assertFalse(Curie.is_valid('1df:type'))
