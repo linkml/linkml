@@ -357,6 +357,5 @@ def validate_uri_reference(input):
 
 
 def validate_curie(input):
-    #    print(CURIE)
     return curie_validator.match(input)
 
