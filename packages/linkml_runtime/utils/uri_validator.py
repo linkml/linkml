@@ -42,7 +42,7 @@ unreserved = rf"(?: {ALPHA} | {DIGIT} | \- | \. | _ | ~ )"
 gen_delims = r"(?: : | / | \? | \# | \[ | \] | @ )"
 
 #   sub-delims    = "!" / "$" / "&" / "'" / "("
-sub_delims = r"(?: ! | \$ | & | ' | \( | \) | \* | \+ | , | ; | = )"
+sub_delims = r"(?: ! | \$ | & | ' | \( | \) | \* | \+ | , | ; | = )"
 
 #   pchar         = unreserved / pct-encoded / sub-delims / ":" / "@"
 pchar = rf"(?: {unreserved} | {pct_encoded} | {sub_delims} | : | @ )"
@@ -295,7 +295,7 @@ absolute_URI = rf"(?P<absolute_URI> {scheme} : {hier_part} (?: \? {query} )? )"
 # As of now this module doesn't support NCNameChar IRI, but
 # relative-refs as defined in URI,
 # NCNameChar	::=	Letter | Digit | '.' | '-' | '_'
-NCNameChar = rf"(?: {ALPHA} | {DIGIT} | \. | \- | _ )"
+NCNameChar = rf"(?: {ALPHA} | {DIGIT} | \. | \- | _ )"
 
 # prefix      :=   NCName
 # NCName  :=   (Letter | '_') (NCNameChar)*
