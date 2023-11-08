@@ -324,17 +324,17 @@ safe_CURIE = rf"""(?P<safe_CURIE>
 #
 ### Compile the regular expressions for better performance
 
-uri_validator = re.compile("^{}$".format(URI), re.VERBOSE)
+uri_validator = re.compile(f"^{URI}$", re.VERBOSE)
 
-#uri_ref_validator = re.compile("^{}$".format(URI_reference), re.VERBOSE)
+#uri_ref_validator = re.compile(f"^{URI_reference}$", re.VERBOSE)
 
-uri_relative_ref_validator = re.compile("^{}$".format(relative_ref), re.VERBOSE)
+uri_relative_ref_validator = re.compile(f"^{relative_ref}$", re.VERBOSE)
 
-abs_uri_validator = re.compile("^{}$".format(absolute_URI), re.VERBOSE)
+abs_uri_validator = re.compile(f"^{absolute_URI}$", re.VERBOSE)
 
-curie_validator = re.compile("^{}$".format(CURIE), re.VERBOSE)
+curie_validator = re.compile(f"^{CURIE}$", re.VERBOSE)
 
-safe_curie_validator = re.compile("^{}$".format(safe_CURIE), re.VERBOSE)
+safe_curie_validator = re.compile(f"^{safe_CURIE}$", re.VERBOSE)
 
 # -----------------------------------------------------------------------------
 #
