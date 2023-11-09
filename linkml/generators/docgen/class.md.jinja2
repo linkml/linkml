@@ -1,4 +1,10 @@
-# Class: {{ gen.name(element) }}
+{%- if element.title -%}
+    {%- set title = element.title ~ ' (' ~ gen.name(element) ~ ')' -%}
+{%- else -%}
+    {%- set title = gen.name(element) -%}
+{%- endif -%}
+
+# Class: {{ title }}
 
 {%- if header -%}
 {{header}}
