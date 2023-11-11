@@ -130,6 +130,9 @@ class DocGenerator(Generator):
     directory: str = None
     """directory in which to write documents"""
 
+    index_name: str = "index"
+    """name of the index document"""
+
     template_directory: str = None
     """directory for custom templates"""
 
@@ -188,7 +191,7 @@ class DocGenerator(Generator):
         }
         template = self._get_template("index")
         out_str = template.render(gen=self, schema=sv.schema, schemaview=sv, **template_vars)
-        self._write(out_str, directory, "index")  # TODO: make configurable
+        self._write(out_str, directory, self.index_name)
         if self._is_single_file_format(self.format):
             logging.info(f"{self.format} is a single-page format, skipping non-index elements")
             return
@@ -844,6 +847,7 @@ class DocGenerator(Generator):
     required=True,
     help="Folder to which document files are written",
 )
+@click.option("--index-name", default="index", show_default=True, help="Name of the index document.")
 @click.option("--dialect", help="Dialect or 'flavor' of Markdown used.")
 @click.option(
     "--diagram-type",
@@ -885,7 +889,7 @@ class DocGenerator(Generator):
 )
 @click.version_option(__version__, "-V", "--version")
 @click.command()
-def cli(yamlfile, directory, dialect, template_directory, use_slot_uris, hierarchical_class_view, **args):
+def cli(yamlfile, directory, index_name, dialect, template_directory, use_slot_uris, hierarchical_class_view, **args):
     """Generate documentation folder from a LinkML YAML schema
 
     Currently a default set of templates for markdown is provided (see the
@@ -912,6 +916,7 @@ def cli(yamlfile, directory, dialect, template_directory, use_slot_uris, hierarc
         template_directory=template_directory,
         use_slot_uris=use_slot_uris,
         hierarchical_class_view=hierarchical_class_view,
+        index_name=index_name,
         **args,
     )
     print(gen.serialize())

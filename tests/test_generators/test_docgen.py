@@ -4,6 +4,7 @@ Tests generation of markdown and similar documents
 Note that docgen replaces markdowngen
 """
 import logging
+import os
 from collections import Counter
 from copy import copy
 from typing import List
@@ -424,6 +425,15 @@ def test_custom_directory(kitchen_sink_path, input_path, tmp_path):
     gen.serialize(directory=str(tmp_path))
     # assert_mdfile_contains('Organization.md', 'Organization', after='Inheritance')
     assert_mdfile_contains(tmp_path / "Organization.md", "FAKE TEMPLATE")
+
+
+def test_gen_custom_named_index(kitchen_sink_path, tmp_path):
+    """Tests that the name of the index page can be customized"""
+    gen = DocGenerator(kitchen_sink_path, index_name="custom-index")
+    gen.serialize(directory=str(tmp_path))
+    assert_mdfile_contains(tmp_path / "custom-index.md", "# Kitchen Sink Schema")
+    # Additionally test that the default index.md has NOT been created
+    assert not os.path.exists(tmp_path / "index.md")
 
 
 def test_html(kitchen_sink_path, input_path, tmp_path):
