@@ -46,7 +46,7 @@ TYPEMAP = {
     "xsd:double": "Double",
     "xsd:boolean": "boolean",
     "xsd:dateTime": "ZonedDateTime",
-    "xsd:date": "LocalDateTime",
+    "xsd:date": "LocalDate",
     "xsd:time": "Instant",
     "xsd:anyURI": "String",
     "xsd:decimal": "BigDecimal",
