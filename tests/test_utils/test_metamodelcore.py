@@ -250,7 +250,7 @@ class MetamodelCoreTest(unittest.TestCase):
     rdfs:subject "http://example.org/tests/descendant1" .
 
 """,
-            as_rdf(y, context).serialize(format="turtle").decode(),
+            as_rdf(y, context).serialize(format="turtle"),
         )
         with self.assertRaises(ValueError):
             y = Pair(s, s)

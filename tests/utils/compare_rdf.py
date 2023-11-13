@@ -38,7 +38,7 @@ def print_triples(g: Graph) -> None:
     Print the contents of g into stdout
     :param g: graph to print
     """
-    g_text = re.sub(r"@prefix.*\n", "", g.serialize(format="turtle").decode())
+    g_text = re.sub(r"@prefix.*\n", "", g.serialize(format="turtle"))
     print(g_text)
 
 

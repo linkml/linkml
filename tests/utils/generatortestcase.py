@@ -20,7 +20,7 @@ class GeneratorTestCase(TestEnvironmentTestCase):
         g.bind("BIOLINK", BIOLINK_NS)
         g.bind("meta", METAMODEL_NAMESPACE)
         g.bind("owl", OWL)
-        g_text = re.sub(r"@prefix.*\n", "", g.serialize(format="turtle").decode())
+        g_text = re.sub(r"@prefix.*\n", "", g.serialize(format="turtle"))
         print(g_text)
 
     def single_file_generator(

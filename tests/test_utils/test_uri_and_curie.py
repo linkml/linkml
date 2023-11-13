@@ -58,7 +58,7 @@ class URIAndCurieTestCase(GeneratorTestCase):
         )
         env.eval_single_file(
             env.expected_path("uriandcurie.ttl"),
-            g.serialize(format="ttl").decode(),
+            g.serialize(format="ttl"),
             lambda s: s,
             compare_rdf,
         )
