@@ -1,4 +1,10 @@
-# Slot: {{ gen.name(element) }}
+{%- if element.title %}
+    {%- set title = element.title ~ ' (' ~ element.name ~ ')' -%}
+{%- else %}
+    {%- set title = gen.name(element) -%}
+{%- endif -%}
+
+# Slot: {{ title }}
 
 {%- if header -%}
 {{header}}
