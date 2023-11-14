@@ -32,7 +32,7 @@ from linkml.utils.generator import shared_arguments
 from linkml.utils.ifabsent_functions import ifabsent_value_declaration
 
 
-def default_template(pydantic_ver: str = "1") -> str:
+def default_template(pydantic_ver: str = "1", extra_fields: str = "forbid") -> str:
     """Constructs a default template for pydantic classes based on the version of pydantic"""
     ### HEADER ###
     template = """
@@ -64,7 +64,7 @@ version = "{{version if version else None}}"
 """
     ### BASE MODEL ###
     if pydantic_ver == "1":
-        template += """
+        template += f"""
 class WeakRefShimBaseModel(BaseModel):
    __slots__ = '__weakref__'
 
@@ -72,18 +72,18 @@ class ConfiguredBaseModel(WeakRefShimBaseModel,
                 validate_assignment = True,
                 validate_all = True,
                 underscore_attrs_are_private = True,
-                extra = {% if allow_extra %}'allow'{% else %}'forbid'{% endif %},
+                extra = {extra_fields},
                 arbitrary_types_allowed = True,
                 use_enum_values = True):
     pass
 """
     else:
-        template += """
+        template += f"""
 class ConfiguredBaseModel(BaseModel):
     model_config = ConfigDict(
         validate_assignment=True,
         validate_default=True,
-        extra={% if allow_extra %}'allow'{% else %}'forbid'{% endif %},
+        extra = {extra_fields},
         arbitrary_types_allowed=True,
         use_enum_values = True)
 """
@@ -196,7 +196,7 @@ class PydanticGenerator(OOCodeGenerator):
     # ObjectVars
     pydantic_version: str = field(default_factory=lambda: PYDANTIC_VERSION[0])
     template_file: str = None
-    allow_extra: bool = field(default_factory=lambda: False)
+    extra_fields: str = field(default_factory=lambda: "forbid")
     gen_mixin_inheritance: bool = field(default_factory=lambda: True)
 
     # ObjectVars (identical to pythongen)
@@ -454,7 +454,7 @@ class PydanticGenerator(OOCodeGenerator):
             with open(self.template_file) as template_file:
                 template_obj = Template(template_file.read())
         else:
-            template_obj = Template(default_template(self.pydantic_version))
+            template_obj = Template(default_template(self.pydantic_version, self.extra_fields))
 
         sv: SchemaView
         sv = self.schemaview
@@ -544,7 +544,7 @@ class PydanticGenerator(OOCodeGenerator):
             underscore=underscore,
             enums=enums,
             predefined_slot_values=self.get_predefined_slot_values(),
-            allow_extra=self.allow_extra,
+            extra_fields=self.extra_fields,
             metamodel_version=self.schema.metamodel_version,
             version=self.schema.version,
             class_isa_plus_mixins=self.get_class_isa_plus_mixins(),
@@ -563,7 +563,12 @@ class PydanticGenerator(OOCodeGenerator):
     default="1",
     help="Pydantic version to use (1 or 2)",
 )
-@click.option("--allow-extra", is_flag=True, show_default=True, default=False, help="Allow extra fields in BaseModel.")
+@click.option(
+    "--extra-fields",
+    type=click.Choice(["allow", "ignore", "forbid"], case_sensitive=False),
+    default="forbid",
+    help="How to handle extra fields in BaseModel.",
+)
 @click.version_option(__version__, "-V", "--version")
 @click.command()
 def cli(
@@ -575,6 +580,7 @@ def cli(
     classvars=True,
     slots=True,
     pydantic_version="1",
+    extra_fields="forbid",
     **args,
 ):
     """Generate pydantic classes to represent a LinkML model"""
@@ -582,6 +588,7 @@ def cli(
         yamlfile,
         template_file=template_file,
         pydantic_version=pydantic_version,
+        extra_fields=extra_fields,
         emit_metadata=head,
         genmeta=genmeta,
         gen_classvars=classvars,
