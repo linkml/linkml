@@ -148,7 +148,7 @@ class ShExGenerator(Generator):
             g = Graph()
             g.parse(data=shex, format="json-ld")
             g.bind("owl", OWL)
-            shex = g.serialize(format="turtle").decode()
+            shex = g.serialize(format="turtle")
         elif self.format == "shex":
             g = Graph()
             self.namespaces.load_graph(g)

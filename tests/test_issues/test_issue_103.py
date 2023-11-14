@@ -18,9 +18,9 @@ def test_jsonld_prefix():
     """
 
     g = Graph().parse(data=test_json, format="json-ld", prefix=True)
-    rdfstr = g.serialize(format="turtle").decode()
+    rdfstr = g.serialize(format="turtle")
     assert "@prefix CHEBI: <http://purl.obolibrary.org/obo/CHEBI_>" in rdfstr
 
     g = Graph().parse(data=test_json, format="json-ld", prefix=False)
-    rdfstr = g.serialize(format="turtle").decode()
+    rdfstr = g.serialize(format="turtle")
     assert "@prefix CHEBI: <http://purl.obolibrary.org/obo/CHEBI_>" not in rdfstr
