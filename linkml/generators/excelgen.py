@@ -54,7 +54,7 @@ class ExcelGenerator(Generator):
         for cls_name in classes:
             cls = sv.get_class(class_name=cls_name, imports=self.mergeimports)
             if not cls.mixin and not cls.abstract:
-                worksheet = workbook.create_sheet(cls_name)
+                workbook.create_sheet(cls_name)
 
                 # Add columns to the worksheet for the current class
                 slots = [s.name for s in sv.class_induced_slots(cls_name, self.mergeimports)]
