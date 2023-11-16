@@ -499,18 +499,10 @@ class PydanticGenerator(OOCodeGenerator):
 
                 # Confirm that the original slot range (ignoring the default that comes in from
                 # induced_slot) isn't in addition to setting any_of
-                if len(s.any_of) > 0 and sv.get_slot(sn).range is not None:
-                    base_range_subsumes_any_of = False
-                    base_range = sv.get_slot(sn).range
-                    base_range_cls = sv.get_class(base_range, strict=False)
-                    if base_range_cls is not None and base_range_cls.class_uri == "linkml:Any":
-                        base_range_subsumes_any_of = True
-                    if not base_range_subsumes_any_of:
-                        raise ValueError("Slot cannot have both range and any_of defined")
-
-                if s.any_of is not None and len(s.any_of) > 0:
+                any_of_ranges = [a.range if a.range else s.range for a in s.any_of]
+                if any_of_ranges:
                     # list comprehension here is pulling ranges from within AnonymousSlotExpression
-                    slot_ranges.extend([r.range for r in s.any_of])
+                    slot_ranges.extend(any_of_ranges)
                 else:
                     slot_ranges.append(s.range)
 
