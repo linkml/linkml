@@ -38,7 +38,7 @@ but can (and should) also be used to maintain and manage data, metadata, ontolog
 
 Some projects may opt to manage their data alongside the schema in the same repo. This may be a good pattern
 for "registry" style projects, but in other cases the data may be best managed separately in a dedicated
-store or a repository like Zenodo or FigShare.
+store or a repository like Zenodo or Figshare.
 
 ### Permissively License Your Code and Data
 
