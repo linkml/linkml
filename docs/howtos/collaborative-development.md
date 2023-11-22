@@ -77,6 +77,7 @@ You may wish to use an existing governance model or community documents as a sta
 - Biolink @sierra-moxon 
 - schema.org [how we work](https://schema.org/docs/howwework.html)
 - [GA4GH Constitution](https://www.ga4gh.org/constitution/)
+- [Bioregistry](https://github.com/biopragmatics/bioregistry/blob/main/docs/GOVERNANCE.md)
 
 ### Attract and Engage Contributors
 
