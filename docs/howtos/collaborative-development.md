@@ -74,7 +74,7 @@ Establishing codes of conduct, standard operating procedures, and guidelines for
 You may wish to use an existing governance model or community documents as a starting point for your project:
 
 - Bioschemas [community](https://bioschemas.org/community/) and [governance](https://github.com/Bioschemas/governance/blob/master/governance.md) docs
-- Biolink @sierra-moxon 
+- [Biolink](https://biolink.github.io/biolink-model/) 
 - schema.org [how we work](https://schema.org/docs/howwework.html)
 - [GA4GH Constitution](https://www.ga4gh.org/constitution/)
 - [Bioregistry](https://github.com/biopragmatics/bioregistry/blob/main/docs/GOVERNANCE.md)
