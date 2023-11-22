@@ -124,7 +124,7 @@ These principles and practices are aimed at fostering a more collaborative, effi
 
 ### Bioschemas governance
 
-__Source__: Bioschemas [community](https://bioschemas.org/community/) and [governance](https://github.com/Bioschemas/governance/blob/master/governance.md) docs @AlasdairGray
+__Source__: Bioschemas [community](https://bioschemas.org/community/) and [governance](https://github.com/Bioschemas/governance/blob/master/governance.md) docs
 
 The document titled "Bioschemas Governance" outlines the governance structure and guidelines for the Bioschemas community, a project aimed at improving data interoperability in life sciences. Here's a summary:
 
