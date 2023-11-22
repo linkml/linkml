@@ -17,7 +17,7 @@ proficiency and collaborative synergy.
 This guide is designed to equip you with the essentials for navigating these complexities efficiently.
 
 This guide is a work in progress, and in the spirit of the guide itself, we welcome comments ([issue 1744](https://github.com/linkml/linkml/issues/1744))
-and Pull Requests.
+and pull requests.
 
 ## Sources
 
