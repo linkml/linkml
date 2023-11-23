@@ -10,6 +10,7 @@ Some of these guides are works in progress
    :caption: Contents:
 
    linkml-project-cookiecutter
+   collaborative-development
    yq-for-schemas
    using-jsonld
    model-measurements

@@ -23,7 +23,7 @@ and pull requests.
 
 In this guide we draw from:
 
-- The O3 principles: [Open code, open data, and open infrastructure to promote the longevity of curated scientific resources](https://osf.io/vuzt3/)
+- The O3 guidelines: [Open code, open data, and open infrastructure to promote the longevity of curated scientific resources](https://osf.io/vuzt3/)
 - The [OBook](https://oboacademy.github.io/obook), and in particular [How to be an Open Science Engineer - maximising impact for a better world](https://oboacademy.github.io/obook/howto/open-science-engineer/)
 - The Tislab collaboration guide (link TBD)
 
@@ -31,7 +31,7 @@ In this guide we draw from:
 
 ### Version Control Your Schema
 
-(adapted from O3 principles)
+(adapted from [O3 guidelines](https://osf.io/vuzt3/)))
 
 Version control systems like git track changes in files and enable multiple users to collaborate. They are widely used for maintaining code,
 but can (and should) also be used to maintain and manage data, metadata, ontologies, schemas, and other semantic artifacts.
@@ -42,7 +42,7 @@ store or a repository like Zenodo or Figshare.
 
 ### Permissively License Your Code and Data
 
-(adapted from O3 principles)
+(adapted from [O3 guidelines](https://osf.io/vuzt3/)))
 
 Using recognizable, permissive licenses (e.g., CC0, CC BY) encourages contribution and ensures content longevity.
 Non-permissive licenses or custom terms can hinder reuse and engagement.
@@ -50,7 +50,7 @@ Permissive licensing doesn't typically lead to a lack of credit for the original
 
 ### Use Technical Workflows (Automation) and Social Workflows
 
-(adapted from O3 principles)
+(adapted from [O3 guidelines](https://osf.io/vuzt3/)))
 
 Automating quality control, generation of artifacts, releases, and deployment helps in maintaining and contributing to projects.
 This includes using continuous integration for quality checks, automating the generation of data views, and packaging data and code for easy deployment.
@@ -66,10 +66,11 @@ as [keeping issues and pull requests small and atomic](https://codeinthehole.com
 
 ### Establish Project Governance
 
-(adapted from O3 principles and TisLab guide)
+(adapted from [O3 guidelines](https://osf.io/vuzt3/)) and TisLab guide)
 
 Clear governance defines roles, responsibilities, and behavior expectations in a project.
-Establishing codes of conduct, standard operating procedures, and guidelines for administration and contribution roles is vital. Governance should evolve over time to meet the project's needs.
+Establishing codes of conduct, standard operating procedures, and guidelines for administration and contribution roles is vital.
+Governance should evolve over time to meet the project's needs.
 
 You may wish to use an existing governance model or community documents as a starting point for your project:
 
@@ -78,6 +79,15 @@ You may wish to use an existing governance model or community documents as a sta
 - schema.org [how we work](https://schema.org/docs/howwework.html)
 - [GA4GH Constitution](https://www.ga4gh.org/constitution/)
 - [Bioregistry](https://github.com/biopragmatics/bioregistry/blob/main/docs/GOVERNANCE.md)
+
+Some things the governance model should cover:
+
+- What are the collaborative processes for this project?
+- What are the norms and shared expectations, technical and social? This can include a code of conduct.
+- What is the procedure for deciding on schema changes?
+- What is the credit model for schema contributors?
+- What is the procedure for recording decisions? E.g. GitHub issues, [ADRs](https://adr.github.io/)
+- What is the procedure for resolving conflicts?
 
 ### Attract and Engage Contributors
 
@@ -88,6 +98,68 @@ for project documents such as a `CONTRIBUTING.md` file and a `CODE_OF_CONDUCT.md
 adapted for your project.
 
 The core schema developers should be familiar with existing best practice for contribution.
+But don't assume that everyone is familiar with these practices. It's a good idea to document these
+in a schema developers handbook or similar document. This could be appended to your CONTRIBUTING.md,
+or it could be a separate document, or something interwoven into your deployed documentation.
+
+Some things that the guide might cover:
+
+- **Tutorial and documentation**
+    * You can link to the LinkML tutorial, or you could have a tutorial specific to your schema
+- **Style guide for documentation**
+    * How should `description` field be written? US or UK spelling? Long or short? Technical or layperson?
+    * We recommend setting standards for minimizing jargon and ensuring clear language
+    * It is a good idea to set up GitHub actions to incorpore spell checking and other checks, e.g. codespell
+- **Naming conventions for schema elements**
+    * Good defaults: Use the LinkML [Linter recommended configuration](https://linkml.io/linkml/schemas/linter.html)
+    * Whatever you choose, consistency and documenting deviations from conventions is important
+    * Fully spell out names, except where this goes against conventions in the field
+         - Very few systems have character length limits. Say `address` not `addr`
+         - Conversely, for a biological schema `DNA` is well understood, no need for `DeoxyribonucleicAcid`
+         - You can use `aliases` to provide alternative names where there is possibility of confusion
+    * Classes should in general be noun phrases
+    * Ontology-style schemas: slots should be named such that `subject slot object` is a grammatical sentence
+- **Minimal information standards**
+    * What is the minimal information that should be provided for each schema element?
+    * LinkML allows for a variety of different metadata, but also permits very minimal metadata
+    * We recommend defining minimal metadata standards or recommendations for a particular project
+    * Consistency is sometimes better than boiling the ocean.
+         - E.g. Adding `mappings` is less valuable if it is only applied to a subset of elements 
+         - It may be better to use fewer elements but more broadly than many elements populated inconsistently
+    * Some good defaults:
+         - Every element **should** have a `description`
+         - Every class **should**  have testable examples and counterexamples
+         - Aliases should be populated if there is potential for confusing due to inconsistent terminology in the field
+- **Modeling style guide**
+    * LinkML allows for a wide variety of schema styles, from data dictionaries through to ontology-like models
+    * Decide on the most appropriate style for your project and document it
+    * Mixins allow for flexible multi-axial classification but you should be sure you really need them before using them
+    * Parsimony is a good principle to follow, avoid proliferating entities
+    * Document when to use inheritance vs composition
+    * The choice of whether and how to reuse other data models and standards is very project specific
+    * Document whether redundancy and denormalization is to be avoided (OLTP schemas) or embraced (OLAP schemas)
+    * Semantic schemas: Document the policy for where prefixes are derived and how to adjudicate conflicts
+         * bioregistry.io is a good choice
+- **Editor workflows**
+    * Document the canonical toolbox or workflow for editing the schema
+    * LinkML source is in YAML (or CSVs/spreadsheets if schemasheets is incorporated), there are many ways to edit YAML
+      - You may wish to encourage a canonical IDE or editor, and favor documenting processes for using it
+    * Document linking and whitespace conventions
+    * You may wish to encourage a canonical Git/GitHub tool and document this
+        - The [OBook recommends GitHub Desktop](https://oboacademy.github.io/obook/reference/github-desktop/)
+- **Communication protocols**
+    * Where should general questions be asked? (e.g. GitHub issues or discussions, Slack, email, zoom, Stack Overflow, etc.)
+    * We recommend setting up issue voting; see the [LinkML issue tracker](https://github.com/linkml/linkml/issues/974)
+    * What are expectations in terms of pull request review time, time frame in which questions are answered?
+- **Release Processes**
+    * We recommend following semantic versioning (semver) for all releases
+    * We recommend leveraging GitHub release processes
+    * Release processes will be heavily dependent on the role the schema plays in the broader ecosystem
+    * Manage change explicitly - provide data migration scripts where necessary
+    * Document how releases are planned and announced
+
+In general the guide should point to external resources where defaults are followed, broadly summarize these,
+and concentrate on things that are project-specific.
 
 ## Open Science Principles
 
