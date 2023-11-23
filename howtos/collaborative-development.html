@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Using yq for querying and manipulating schemas" href="yq-for-schemas.html" /><link rel="prev" title="LinkML Project Cookiecutter" href="linkml-project-cookiecutter.html" />
 
     <link rel="shortcut icon" href="https://linkml.io/uploads/linkml-logo_color-no-words.png"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
         <title>How to run a collaborative data modeling project - linkml documentation</title>
@@ -158,7 +158,7 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../intro/overview.html">LinkML at a glance</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../intro/install.html">Quick Install Guide</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../intro/tutorial.html">Tutorial</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -225,8 +225,9 @@
 <li class="toctree-l2"><a class="reference internal" href="../generators/excel.html">Excel Spreadsheet</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="index.html">How-to Guides</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">How-to Guides</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="linkml-project-cookiecutter.html">LinkML Project Cookiecutter</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">How to run a collaborative data modeling project</a></li>
 <li class="toctree-l2"><a class="reference internal" href="yq-for-schemas.html">Using yq for querying and manipulating schemas</a></li>
 <li class="toctree-l2"><a class="reference internal" href="using-jsonld.html">Using JSON-LD</a></li>
 <li class="toctree-l2"><a class="reference internal" href="model-measurements.html">How to model quantities and measurements</a></li>
@@ -321,7 +322,7 @@ and pull requests.</p>
 <h2>Sources<a class="headerlink" href="#sources" title="Permalink to this heading">#</a></h2>
 <p>In this guide we draw from:</p>
 <ul class="simple">
-<li><p>The O3 principles: <a class="reference external" href="https://osf.io/vuzt3/">Open code, open data, and open infrastructure to promote the longevity of curated scientific resources</a></p></li>
+<li><p>The O3 guidelines: <a class="reference external" href="https://osf.io/vuzt3/">Open code, open data, and open infrastructure to promote the longevity of curated scientific resources</a></p></li>
 <li><p>The <a class="reference external" href="https://oboacademy.github.io/obook">OBook</a>, and in particular <a class="reference external" href="https://oboacademy.github.io/obook/howto/open-science-engineer/">How to be an Open Science Engineer - maximising impact for a better world</a></p></li>
 <li><p>The Tislab collaboration guide (link TBD)</p></li>
 </ul>
@@ -330,7 +331,7 @@ and pull requests.</p>
 <h2>Principles<a class="headerlink" href="#principles" title="Permalink to this heading">#</a></h2>
 <section id="version-control-your-schema">
 <h3>Version Control Your Schema<a class="headerlink" href="#version-control-your-schema" title="Permalink to this heading">#</a></h3>
-<p>(adapted from O3 principles)</p>
+<p>(adapted from <a class="reference external" href="https://osf.io/vuzt3/">O3 guidelines</a>))</p>
 <p>Version control systems like git track changes in files and enable multiple users to collaborate. They are widely used for maintaining code,
 but can (and should) also be used to maintain and manage data, metadata, ontologies, schemas, and other semantic artifacts.</p>
 <p>Some projects may opt to manage their data alongside the schema in the same repo. This may be a good pattern
@@ -339,14 +340,14 @@ store or a repository like Zenodo or Figshare.</p>
 </section>
 <section id="permissively-license-your-code-and-data">
 <h3>Permissively License Your Code and Data<a class="headerlink" href="#permissively-license-your-code-and-data" title="Permalink to this heading">#</a></h3>
-<p>(adapted from O3 principles)</p>
+<p>(adapted from <a class="reference external" href="https://osf.io/vuzt3/">O3 guidelines</a>))</p>
 <p>Using recognizable, permissive licenses (e.g., CC0, CC BY) encourages contribution and ensures content longevity.
 Non-permissive licenses or custom terms can hinder reuse and engagement.
 Permissive licensing doesn’t typically lead to a lack of credit for the original resource.</p>
 </section>
 <section id="use-technical-workflows-automation-and-social-workflows">
 <h3>Use Technical Workflows (Automation) and Social Workflows<a class="headerlink" href="#use-technical-workflows-automation-and-social-workflows" title="Permalink to this heading">#</a></h3>
-<p>(adapted from O3 principles)</p>
+<p>(adapted from <a class="reference external" href="https://osf.io/vuzt3/">O3 guidelines</a>))</p>
 <p>Automating quality control, generation of artifacts, releases, and deployment helps in maintaining and contributing to projects.
 This includes using continuous integration for quality checks, automating the generation of data views, and packaging data and code for easy deployment.</p>
 <p>The <a class="reference external" href="https://github.com/linkml/linkml-project-cookiecutter/">LinkML Cookiecutter</a> provides a template for a project that
@@ -358,9 +359,10 @@ as <a class="reference external" href="https://codeinthehole.com/tips/advanced-p
 </section>
 <section id="establish-project-governance">
 <h3>Establish Project Governance<a class="headerlink" href="#establish-project-governance" title="Permalink to this heading">#</a></h3>
-<p>(adapted from O3 principles and TisLab guide)</p>
+<p>(adapted from <a class="reference external" href="https://osf.io/vuzt3/">O3 guidelines</a>) and TisLab guide)</p>
 <p>Clear governance defines roles, responsibilities, and behavior expectations in a project.
-Establishing codes of conduct, standard operating procedures, and guidelines for administration and contribution roles is vital. Governance should evolve over time to meet the project’s needs.</p>
+Establishing codes of conduct, standard operating procedures, and guidelines for administration and contribution roles is vital.
+Governance should evolve over time to meet the project’s needs.</p>
 <p>You may wish to use an existing governance model or community documents as a starting point for your project:</p>
 <ul class="simple">
 <li><p>Bioschemas <a class="reference external" href="https://bioschemas.org/community/">community</a> and <a class="reference external" href="https://github.com/Bioschemas/governance/blob/master/governance.md">governance</a> docs</p></li>
@@ -369,6 +371,15 @@ Establishing codes of conduct, standard operating procedures, and guidelines for
 <li><p><a class="reference external" href="https://www.ga4gh.org/constitution/">GA4GH Constitution</a></p></li>
 <li><p><a class="reference external" href="https://github.com/biopragmatics/bioregistry/blob/main/docs/GOVERNANCE.md">Bioregistry</a></p></li>
 </ul>
+<p>Some things the governance model should cover:</p>
+<ul class="simple">
+<li><p>What are the collaborative processes for this project?</p></li>
+<li><p>What are the norms and shared expectations, technical and social? This can include a code of conduct.</p></li>
+<li><p>What is the procedure for deciding on schema changes?</p></li>
+<li><p>What is the credit model for schema contributors?</p></li>
+<li><p>What is the procedure for recording decisions? E.g. GitHub issues, <a class="reference external" href="https://adr.github.io/">ADRs</a></p></li>
+<li><p>What is the procedure for resolving conflicts?</p></li>
+</ul>
 </section>
 <section id="attract-and-engage-contributors">
 <h3>Attract and Engage Contributors<a class="headerlink" href="#attract-and-engage-contributors" title="Permalink to this heading">#</a></h3>
@@ -376,7 +387,110 @@ Establishing codes of conduct, standard operating procedures, and guidelines for
 <p>The <a class="reference external" href="https://github.com/linkml/linkml-project-cookiecutter/">LinkML Cookiecutter</a> provides a template
 for project documents such as a <code class="docutils literal notranslate"><span class="pre">CONTRIBUTING.md</span></code> file and a <code class="docutils literal notranslate"><span class="pre">CODE_OF_CONDUCT.md</span></code> file that can be
 adapted for your project.</p>
-<p>The core schema developers should be familiar with existing best practice for contribution.</p>
+<p>The core schema developers should be familiar with existing best practice for contribution.
+But don’t assume that everyone is familiar with these practices. It’s a good idea to document these
+in a schema developers handbook or similar document. This could be appended to your CONTRIBUTING.md,
+or it could be a separate document, or something interwoven into your deployed documentation.</p>
+<p>Some things that the guide might cover:</p>
+<ul class="simple">
+<li><p><strong>Tutorial and documentation</strong></p>
+<ul>
+<li><p>You can link to the LinkML tutorial, or you could have a tutorial specific to your schema</p></li>
+</ul>
+</li>
+<li><p><strong>Style guide for documentation</strong></p>
+<ul>
+<li><p>How should <code class="docutils literal notranslate"><span class="pre">description</span></code> field be written? US or UK spelling? Long or short? Technical or layperson?</p></li>
+<li><p>We recommend setting standards for minimizing jargon and ensuring clear language</p></li>
+<li><p>It is a good idea to set up GitHub actions to incorpore spell checking and other checks, e.g. codespell</p></li>
+</ul>
+</li>
+<li><p><strong>Naming conventions for schema elements</strong></p>
+<ul>
+<li><p>Good defaults: Use the LinkML <a class="reference external" href="https://linkml.io/linkml/schemas/linter.html">Linter recommended configuration</a></p></li>
+<li><p>Whatever you choose, consistency and documenting deviations from conventions is important</p></li>
+<li><p>Fully spell out names, except where this goes against conventions in the field</p>
+<ul>
+<li><p>Very few systems have character length limits. Say <code class="docutils literal notranslate"><span class="pre">address</span></code> not <code class="docutils literal notranslate"><span class="pre">addr</span></code></p></li>
+<li><p>Conversely, for a biological schema <code class="docutils literal notranslate"><span class="pre">DNA</span></code> is well understood, no need for <code class="docutils literal notranslate"><span class="pre">DeoxyribonucleicAcid</span></code></p></li>
+<li><p>You can use <code class="docutils literal notranslate"><span class="pre">aliases</span></code> to provide alternative names where there is possibility of confusion</p></li>
+</ul>
+</li>
+<li><p>Classes should in general be noun phrases</p></li>
+<li><p>Ontology-style schemas: slots should be named such that <code class="docutils literal notranslate"><span class="pre">subject</span> <span class="pre">slot</span> <span class="pre">object</span></code> is a grammatical sentence</p></li>
+</ul>
+</li>
+<li><p><strong>Minimal information standards</strong></p>
+<ul>
+<li><p>What is the minimal information that should be provided for each schema element?</p></li>
+<li><p>LinkML allows for a variety of different metadata, but also permits very minimal metadata</p></li>
+<li><p>We recommend defining minimal metadata standards or recommendations for a particular project</p></li>
+<li><p>Consistency is sometimes better than boiling the ocean.</p>
+<ul>
+<li><p>E.g. Adding <code class="docutils literal notranslate"><span class="pre">mappings</span></code> is less valuable if it is only applied to a subset of elements</p></li>
+<li><p>It may be better to use fewer elements but more broadly than many elements populated inconsistently</p></li>
+</ul>
+</li>
+<li><p>Some good defaults:</p>
+<ul>
+<li><p>Every element <strong>should</strong> have a <code class="docutils literal notranslate"><span class="pre">description</span></code></p></li>
+<li><p>Every class <strong>should</strong>  have testable examples and counterexamples</p></li>
+<li><p>Aliases should be populated if there is potential for confusing due to inconsistent terminology in the field</p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong>Modeling style guide</strong></p>
+<ul>
+<li><p>LinkML allows for a wide variety of schema styles, from data dictionaries through to ontology-like models</p></li>
+<li><p>Decide on the most appropriate style for your project and document it</p></li>
+<li><p>Mixins allow for flexible multi-axial classification but you should be sure you really need them before using them</p></li>
+<li><p>Parsimony is a good principle to follow, avoid proliferating entities</p></li>
+<li><p>Document when to use inheritance vs composition</p></li>
+<li><p>The choice of whether and how to reuse other data models and standards is very project specific</p></li>
+<li><p>Document whether redundancy and denormalization is to be avoided (OLTP schemas) or embraced (OLAP schemas)</p></li>
+<li><p>Semantic schemas: Document the policy for where prefixes are derived and how to adjudicate conflicts</p>
+<ul>
+<li><p>bioregistry.io is a good choice</p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong>Editor workflows</strong></p>
+<ul>
+<li><p>Document the canonical toolbox or workflow for editing the schema</p></li>
+<li><p>LinkML source is in YAML (or CSVs/spreadsheets if schemasheets is incorporated), there are many ways to edit YAML</p>
+<ul>
+<li><p>You may wish to encourage a canonical IDE or editor, and favor documenting processes for using it</p></li>
+</ul>
+</li>
+<li><p>Document linking and whitespace conventions</p></li>
+<li><p>You may wish to encourage a canonical Git/GitHub tool and document this</p>
+<ul>
+<li><p>The <a class="reference external" href="https://oboacademy.github.io/obook/reference/github-desktop/">OBook recommends GitHub Desktop</a></p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong>Communication protocols</strong></p>
+<ul>
+<li><p>Where should general questions be asked? (e.g. GitHub issues or discussions, Slack, email, zoom, Stack Overflow, etc.)</p></li>
+<li><p>We recommend setting up issue voting; see the <a class="reference external" href="https://github.com/linkml/linkml/issues/974">LinkML issue tracker</a></p></li>
+<li><p>What are expectations in terms of pull request review time, time frame in which questions are answered?</p></li>
+</ul>
+</li>
+<li><p><strong>Release Processes</strong></p>
+<ul>
+<li><p>We recommend following semantic versioning (semver) for all releases</p></li>
+<li><p>We recommend leveraging GitHub release processes</p></li>
+<li><p>Release processes will be heavily dependent on the role the schema plays in the broader ecosystem</p></li>
+<li><p>Manage change explicitly - provide data migration scripts where necessary</p></li>
+<li><p>Document how releases are planned and announced</p></li>
+</ul>
+</li>
+</ul>
+<p>In general the guide should point to external resources where defaults are followed, broadly summarize these,
+and concentrate on things that are project-specific.</p>
 </section>
 </section>
 <section id="open-science-principles">
@@ -486,8 +600,26 @@ open ecosystem. The <a class="reference external" href="https://oboacademy.githu
       <footer>
         
         <div class="related-pages">
-          
-          
+          <a class="next-page" href="yq-for-schemas.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Using yq for querying and manipulating schemas</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="linkml-project-cookiecutter.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">LinkML Project Cookiecutter</div>
+                
+              </div>
+            </a>
         </div>
         <div class="bottom-of-page">
           <div class="left-details">
