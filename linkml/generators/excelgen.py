@@ -22,7 +22,7 @@ class ExcelGenerator(Generator):
     uses_schemaloader = False
     requires_metamodel = False
 
-    split_worksheets: bool = field(default_factory=lambda: False)
+    split_workbook_by_class: bool = field(default_factory=lambda: False)
 
     def __post_init__(self) -> None:
         super().__post_init__()
@@ -70,7 +70,7 @@ class ExcelGenerator(Generator):
                     workbook.save(output_path)
 
         workbook.save(output_path)
-        if self.split_worksheets:
+        if self.split_workbook_by_class:
             self.logger.info(f"The Excel workbook has been written to {output_path}")
 
     def add_columns_to_worksheet(self, workbook: Workbook, worksheet_name: str, sheet_headings: List[str]) -> None:
@@ -125,7 +125,7 @@ class ExcelGenerator(Generator):
             if not cls.mixin and not cls.abstract
         ]
 
-        if self.split_worksheets:
+        if self.split_workbook_by_class:
             self.output = os.path.abspath(self.schema.name + "_worksheets") if not self.output else self.output
 
             os.makedirs(self.output, exist_ok=True)
@@ -145,10 +145,10 @@ class ExcelGenerator(Generator):
 @shared_arguments(ExcelGenerator)
 @click.command()
 @click.option(
-    "--split-worksheets",
+    "--split-workbook-by-class",
     is_flag=True,
     default=False,
-    help="""Split model into separate worksheets in the Excel workbook, one for each class""",
+    help="""Split model into separate Excel workbooks/files, one for each class""",
 )
 @click.option(
     "-o",
@@ -157,9 +157,9 @@ class ExcelGenerator(Generator):
     help="""Name of Excel spreadsheet to be created, or name of directory to create split worksheets in""",
 )
 @click.version_option(__version__, "-V", "--version")
-def cli(yamlfile, **kwargs):
+def cli(yamlfile, split_workbook_by_class, output, **kwargs):
     """Generate Excel representation of a LinkML model"""
-    ExcelGenerator(yamlfile, **kwargs).serialize(**kwargs)
+    ExcelGenerator(yamlfile, split_workbook_by_class, output, **kwargs).serialize(**kwargs)
 
 
 if __name__ == "__main__":
