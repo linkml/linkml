@@ -1,0 +1,59 @@
+# Built from:
+# https://docs.github.com/en/actions/guides/building-and-testing-python
+# https://github.com/actions/setup-python/
+
+name: Build and test linkml-runtime
+
+on: [pull_request]
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python-version: ["3.7", "3.8", "3.9", "3.10"]
+        exclude:
+        - os: windows-latest
+          python-version: "3.7"
+        - os: windows-latest
+          python-version: "3.8"
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+
+      #----------------------------------------------
+      #          install poetry
+      #----------------------------------------------
+      - name: Install Poetry
+        # Pin to 1.3.2 to workaround https://github.com/python-poetry/poetry/issues/7611
+        run: pipx install poetry==1.3.2
+
+      #----------------------------------------------
+      #       check-out repo and set-up python
+      #----------------------------------------------
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: 'poetry'
+
+      #----------------------------------------------
+      #    install your root project, if required
+      #----------------------------------------------
+      - name: Install library
+        run: poetry install --no-interaction
+
+      # this step we remove and rebuild the poetry.lock file to ensure that the tests that follow can be run
+      # with the latest dependencies
+      - name: Install dependencies
+        run: |
+          rm -rf poetry.lock
+          poetry install 
+
+      - name: Run tests
+        run: poetry run python -m unittest discover
