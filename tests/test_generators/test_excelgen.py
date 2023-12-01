@@ -1,6 +1,7 @@
 import os
 
 from openpyxl import load_workbook
+
 from linkml.generators.excelgen import ExcelGenerator
 
 
