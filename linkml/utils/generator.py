@@ -763,14 +763,24 @@ class Generator(metaclass=abc.ABCMeta):
             slot = self.schema.slots[slot_name]
 
             # Debugging statement to see the details of each slot
-            print(f"Processing slot: {slot_name}, Slot details: {slot.domain_of}")
+            #print(f"Processing slot: {slot_name}, Slot details: {slot.domain_of}, class mixins: {cls.mixins}")
+            #print(type(slot.domain_of))
+            # slots from parent mixins should also be inherited # Person2 mixins: HasAliases is_a Interface
+            if cls.mixins:  # Person2
+                for mixin in cls.mixins:  # HasAliases
+                    cls_mixin = self.schemaview.get_element(mixin)  # HasAliases
+                    #print("class mixin.name", cls_mixin.name)
+                    if cls_mixin.is_a:  # Interface
+                        #print("class mixin.is_a", self.schemaview.get_element(cls_mixin.is_a))
+                        cls.mixins.append(cls_mixin.is_a)
+
 
             # Check if the class is in the domain of the slot or if any of its mixins are in the domain
             if cls.name in slot.domain_of or (set(cls.mixins).intersection(slot.domain_of)):
                 domain_slots.append(slot)
 
                 # Debugging statement to confirm that the slot is added
-                print(f"Added slot: {slot_name} to domain_slots for class: {cls.name}")
+                #print(f"Added slot: {slot_name} to domain_slots for class: {cls.name}")
 
         return domain_slots
 

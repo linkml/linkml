@@ -414,9 +414,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
             return ""
         inherited_slots = []
         for slotname in cls.slots:
-            print(cls.name, slotname)
             slot = self.schema.slots[slotname]
-            print(slot)
             if slot.inherited:
                 inherited_slots.append(slot.alias if slot.alias else slotname)
         inherited_slots_str = ", ".join([f'"{underscore(s)}"' for s in inherited_slots])
@@ -515,8 +513,8 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
         slot_variables = self._slot_iter(cls, lambda slot: not slot.required and slot in domain_slots)
         initializers += [self.gen_class_variable(cls, slot, False) for slot in slot_variables]
 
-        if cls.name in ["Person1", "Person2", "Person3", "Interface", "HasAliases"]:
-            print("gen_class_definitions", cls.name, cls.slots, "initializers", initializers)
+        # if cls.name in ["Person1", "Person2", "Person3", "Interface", "HasAliases"]:
+        #     print("gen_class_definitions", cls.name, cls.slots, "initializers", initializers)
         return "\n\t".join(initializers)
 
     def gen_class_variable(self, cls: ClassDefinition, slot: SlotDefinition, can_be_positional: bool) -> str:
@@ -533,7 +531,6 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
         """
         can_be_positional = False  # Force everything to be tag values
         slotname = self.slot_name(slot.name)
-        print("slotname", slotname, "classname", cls.name)
         slot_range, default_val = self.range_cardinality(slot, cls, can_be_positional)
         ifabsent_text = (
             ifabsent_value_declaration(slot.ifabsent, self, cls, slot) if slot.ifabsent is not None else None
@@ -808,7 +805,6 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
                 return ""
 
         aliased_slot_name = self.slot_name(slot.name)  # Mangled name by which the slot is known in python
-        print("aliased_slot_name", aliased_slot_name)
         _, _, base_type_name = self.class_reference_type(slot, cls)
 
         # Generate existence check for required slots.  Note that inherited classes have to do post init checks because

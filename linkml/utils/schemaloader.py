@@ -697,8 +697,6 @@ class SchemaLoader:
                     merge_classes(self.schema, cls, self.schema.classes[mixin], True)
                 else:
                     self.raise_value_error(f'Class: "{cls.name}" - unknown mixin reference: {mixin}', mixin)
-        if cls.name in ["Person1", "Person2", "Person3", "Interface", "HasAliases"]:
-            print("merged class at the end", cls.name, cls.slots)
 
     def process_slot_usage_definitions(self):
         """
