@@ -690,6 +690,13 @@
                      },
                      {
                         "type": "TripleConstraint",
+                        "predicate": "http://purl.org/dc/terms/contributor",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
                         "predicate": "http://purl.org/pav/createdOn",
                         "valueExpr": "https://w3id.org/linkml/Datetime",
                         "min": 0,
@@ -722,6 +729,20 @@
                         "valueExpr": "https://w3id.org/linkml/Integer",
                         "min": 0,
                         "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://purl.org/dc/terms/subject",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://schema.org/keywords",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": -1
                      }
                   ]
                },
@@ -1758,6 +1779,13 @@
                      },
                      {
                         "type": "TripleConstraint",
+                        "predicate": "http://purl.org/dc/terms/contributor",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
                         "predicate": "http://purl.org/pav/createdOn",
                         "valueExpr": "https://w3id.org/linkml/Datetime",
                         "min": 0,
@@ -1783,6 +1811,20 @@
                         "valueExpr": "https://w3id.org/linkml/Uriorcurie",
                         "min": 0,
                         "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://purl.org/dc/terms/subject",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://schema.org/keywords",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": -1
                      }
                   ]
                },
@@ -1988,6 +2030,13 @@
                      },
                      {
                         "type": "TripleConstraint",
+                        "predicate": "http://purl.org/dc/terms/contributor",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
                         "predicate": "http://purl.org/pav/createdOn",
                         "valueExpr": "https://w3id.org/linkml/Datetime",
                         "min": 0,
@@ -2020,6 +2069,20 @@
                         "valueExpr": "https://w3id.org/linkml/Integer",
                         "min": 0,
                         "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://purl.org/dc/terms/subject",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://schema.org/keywords",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": -1
                      }
                   ]
                },
@@ -2221,6 +2284,13 @@
                      },
                      {
                         "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/instantiates",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
                         "predicate": "https://w3id.org/linkml/extensions",
                         "valueExpr": "https://w3id.org/linkml/Extension",
                         "min": 0,
@@ -2410,6 +2480,13 @@
                      },
                      {
                         "type": "TripleConstraint",
+                        "predicate": "http://purl.org/dc/terms/contributor",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
                         "predicate": "http://purl.org/pav/createdOn",
                         "valueExpr": "https://w3id.org/linkml/Datetime",
                         "min": 0,
@@ -2442,6 +2519,20 @@
                         "valueExpr": "https://w3id.org/linkml/Integer",
                         "min": 0,
                         "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://purl.org/dc/terms/subject",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://schema.org/keywords",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": -1
                      }
                   ]
                },
@@ -3137,6 +3228,13 @@
                      },
                      {
                         "type": "TripleConstraint",
+                        "predicate": "http://purl.org/dc/terms/contributor",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
                         "predicate": "http://purl.org/pav/createdOn",
                         "valueExpr": "https://w3id.org/linkml/Datetime",
                         "min": 0,
@@ -3169,6 +3267,20 @@
                         "valueExpr": "https://w3id.org/linkml/Integer",
                         "min": 0,
                         "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://purl.org/dc/terms/subject",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://schema.org/keywords",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": -1
                      }
                   ]
                },
@@ -3574,6 +3686,13 @@
                      },
                      {
                         "type": "TripleConstraint",
+                        "predicate": "http://purl.org/dc/terms/contributor",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
                         "predicate": "http://purl.org/pav/createdOn",
                         "valueExpr": "https://w3id.org/linkml/Datetime",
                         "min": 0,
@@ -3606,6 +3725,20 @@
                         "valueExpr": "https://w3id.org/linkml/Integer",
                         "min": 0,
                         "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://purl.org/dc/terms/subject",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://schema.org/keywords",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": -1
                      }
                   ]
                },
@@ -3882,6 +4015,13 @@
                      },
                      {
                         "type": "TripleConstraint",
+                        "predicate": "http://purl.org/dc/terms/contributor",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
                         "predicate": "http://purl.org/pav/createdOn",
                         "valueExpr": "https://w3id.org/linkml/Datetime",
                         "min": 0,
@@ -3914,6 +4054,20 @@
                         "valueExpr": "https://w3id.org/linkml/Integer",
                         "min": 0,
                         "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://purl.org/dc/terms/subject",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://schema.org/keywords",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": -1
                      }
                   ]
                },
@@ -4190,6 +4344,13 @@
                      },
                      {
                         "type": "TripleConstraint",
+                        "predicate": "http://purl.org/dc/terms/contributor",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
                         "predicate": "http://purl.org/pav/createdOn",
                         "valueExpr": "https://w3id.org/linkml/Datetime",
                         "min": 0,
@@ -4222,6 +4383,20 @@
                         "valueExpr": "https://w3id.org/linkml/Integer",
                         "min": 0,
                         "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://purl.org/dc/terms/subject",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://schema.org/keywords",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": -1
                      }
                   ]
                },
@@ -4516,20 +4691,6 @@
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/linkml/settings",
                         "valueExpr": "https://w3id.org/linkml/Setting",
-                        "min": 0,
-                        "max": -1
-                     },
-                     {
-                        "type": "TripleConstraint",
-                        "predicate": "http://purl.org/dc/terms/subject",
-                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
-                        "min": 0,
-                        "max": -1
-                     },
-                     {
-                        "type": "TripleConstraint",
-                        "predicate": "http://schema.org/keywords",
-                        "valueExpr": "https://w3id.org/linkml/String",
                         "min": 0,
                         "max": -1
                      }
@@ -5588,6 +5749,13 @@
                      },
                      {
                         "type": "TripleConstraint",
+                        "predicate": "http://purl.org/dc/terms/contributor",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
                         "predicate": "http://purl.org/pav/createdOn",
                         "valueExpr": "https://w3id.org/linkml/Datetime",
                         "min": 0,
@@ -5620,6 +5788,13 @@
                         "valueExpr": "https://w3id.org/linkml/Integer",
                         "min": 0,
                         "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://schema.org/keywords",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": -1
                      }
                   ]
                },
@@ -6242,6 +6417,13 @@
                      },
                      {
                         "type": "TripleConstraint",
+                        "predicate": "http://purl.org/dc/terms/contributor",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
                         "predicate": "http://purl.org/pav/createdOn",
                         "valueExpr": "https://w3id.org/linkml/Datetime",
                         "min": 0,
@@ -6274,6 +6456,20 @@
                         "valueExpr": "https://w3id.org/linkml/Integer",
                         "min": 0,
                         "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://purl.org/dc/terms/subject",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://schema.org/keywords",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": -1
                      }
                   ]
                },
