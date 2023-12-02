@@ -213,9 +213,6 @@ def merge_classes(
         if slotbase not in target_base_slots:
             target.slots.append(slotname) if at_end else target.slots.insert(0, slotname)
             target_base_slots.add(slotbase)
-        if slotname == 'test_aliases':
-            print("target", target.name, target.slots)
-            print("source", source.name, source.slots)
 
 
 def merge_enums(

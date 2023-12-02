@@ -513,8 +513,6 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
         slot_variables = self._slot_iter(cls, lambda slot: not slot.required and slot in domain_slots)
         initializers += [self.gen_class_variable(cls, slot, False) for slot in slot_variables]
 
-        # if cls.name in ["Person1", "Person2", "Person3", "Interface", "HasAliases"]:
-        #     print("gen_class_definitions", cls.name, cls.slots, "initializers", initializers)
         return "\n\t".join(initializers)
 
     def gen_class_variable(self, cls: ClassDefinition, slot: SlotDefinition, can_be_positional: bool) -> str:
