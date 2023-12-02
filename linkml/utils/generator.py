@@ -762,11 +762,16 @@ class Generator(metaclass=abc.ABCMeta):
         for slot_name in cls.slots:
             slot = self.schema.slots[slot_name]
 
+            # add any mixin ancestors here so that slots will be distributed to descendents correctly via mixin
+            # hierarchy.
+            mixin_ancestors = []
             if cls.mixins:
                 for mixin in cls.mixins:
-                    cls_mixin = self.schemaview.get_element(mixin)
-                    if cls_mixin.is_a:
-                        cls.mixins.append(cls_mixin.is_a)
+                    for ancestor in self.schemaview.class_ancestors(mixin):
+                        mixin_ancestors.append(ancestor)
+
+            for mixin_ancestor in mixin_ancestors:
+                cls.mixins.append(mixin_ancestor)
 
             # Check if the class is in the domain of the slot or if any of its mixins are in the domain
             if cls.name in slot.domain_of or (set(cls.mixins).intersection(slot.domain_of)):

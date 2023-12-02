@@ -53,3 +53,4 @@ def test_mixin_inheritance_interface():
     assert hasattr(mod.Person1, 'test_aliases'), "Person1 should inherit 'aliases' attribute from Interface"
     assert hasattr(mod.HasAliases, 'test_aliases'), "HasAliases should inherit 'aliases' attribute from Interface"
     assert hasattr(mod.Person2, 'test_aliases'), "Person2 should inherit 'aliases' attribute from HasAliases"
+    assert hasattr(mod.Person3, 'test_aliases'), "Person2 should inherit 'aliases' attribute from HasAliases"
