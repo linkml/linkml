@@ -223,7 +223,7 @@ class Generator(metaclass=abc.ABCMeta):
         else:
             if isinstance(schema, SchemaDefinition):
                 # schemaloader based methods require schemas to have been created via SchemaLoader,
-                # which prepopulates some fields (e.g definition_url). If the schema has not been processed through the
+                # which prepopulates some fields (e.g. definition_url). If the schema has not been processed through the
                 # loader, then roundtrip
                 if any(c for c in schema.classes.values() if not c.definition_uri):
                     schema = yaml_dumper.dumps(schema)
@@ -339,11 +339,11 @@ class Generator(metaclass=abc.ABCMeta):
 
     def visit_class_slot(self, cls: ClassDefinition, aliased_slot_name: str, slot: SlotDefinition) -> None:
         """Visited for each slot in a class.  If class level visit_all_slots is true, this is visited once
-        for any class that is inherited (class itself, is_a, mixin, apply_to).  Otherwise just the own slots.
+        for any class that is inherited (class itself, is_a, mixin, apply_to).  Otherwise, just the own slots.
 
         @param cls: containing class
         @param aliased_slot_name: Aliased slot name.  May not be unique across all class slots
-        @param slot: slot being visited
+        @param slot: being visited
         """
         ...
 
@@ -758,11 +758,21 @@ class Generator(metaclass=abc.ABCMeta):
     # TODO: add lru cache once we get identity into the classes
     def domain_slots(self, cls: ClassDefinition) -> List[SlotDefinition]:
         """Return all slots in the class definition that are owned by the class"""
-        return [
-            slot
-            for slot in [self.schema.slots[sn] for sn in cls.slots]
-            if cls.name in slot.domain_of or (set(cls.mixins).intersection(slot.domain_of))
-        ]
+        domain_slots = []
+        for slot_name in cls.slots:
+            slot = self.schema.slots[slot_name]
+
+            # Debugging statement to see the details of each slot
+            print(f"Processing slot: {slot_name}, Slot details: {slot.domain_of}")
+
+            # Check if the class is in the domain of the slot or if any of its mixins are in the domain
+            if cls.name in slot.domain_of or (set(cls.mixins).intersection(slot.domain_of)):
+                domain_slots.append(slot)
+
+                # Debugging statement to confirm that the slot is added
+                print(f"Added slot: {slot_name} to domain_slots for class: {cls.name}")
+
+        return domain_slots
 
     def add_mappings(self, defn: Definition) -> None:
         """

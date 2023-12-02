@@ -16,35 +16,40 @@ classes:
       - Interface
 
   Person2:
+    slots:
+        - test_slot
     mixins:
       - HasAliases
 
+  Person3:
+    is_a: Person2
+    
   Interface:
     mixin: true
-    attributes:
-      aliases: {}
+    slots:
+      - test_aliases
 
   HasAliases:
     mixin: true
     is_a: Interface
+    
+slots:
+    test_slot:
+        description: "Test slot"
+        range: string
+    
+    test_aliases:
+        description: "Test aliases"
+        range: string
 """
-
-# Generate Python classes from the YAML schema
-gen = PythonGenerator(schema_yaml)
-output = gen.serialize()
-print(output)
-mod = compile_python(output, "testschema")
-
 
 # Now define the pytest tests
 def test_mixin_inheritance_interface():
+    gen = PythonGenerator(schema_yaml)
+    output = gen.serialize()
+    print(output)
+    mod = compile_python(output, "testschema")
     """Test if Person1 inherits attributes from Interface"""
-    assert hasattr(mod.Person1, 'aliases'), "Person1 should inherit 'aliases' attribute from Interface"
-
-def test_mixin_inheritance_has_aliases():
-    """Test if HasAliases inherits attributes from Interface"""
-    assert hasattr(mod.HasAliases, 'aliases'), "HasAliases should inherit 'aliases' attribute from Interface"
-
-def test_mixin_inheritance_person2():
-    """Test if Person2 inherits attributes from HasAliases"""
-    assert hasattr(mod.Person2, 'aliases'), "Person2 should inherit 'aliases' attribute from HasAliases"
+    assert hasattr(mod.Person1, 'test_aliases'), "Person1 should inherit 'aliases' attribute from Interface"
+    assert hasattr(mod.HasAliases, 'test_aliases'), "HasAliases should inherit 'aliases' attribute from Interface"
+    assert hasattr(mod.Person2, 'test_aliases'), "Person2 should inherit 'aliases' attribute from HasAliases"

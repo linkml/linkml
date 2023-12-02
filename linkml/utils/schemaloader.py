@@ -691,12 +691,14 @@ class SchemaLoader:
                         cls.is_a,
                     )
             for mixin in cls.mixins:
-                # Note that apply_to has ben injected as a faux mixin so it gets covered here
+                # Note that apply_to has been injected as a faux mixin, so it gets covered here
                 if mixin in self.schema.classes:
                     self.merge_class(self.schema.classes[mixin], merged_classes)
                     merge_classes(self.schema, cls, self.schema.classes[mixin], True)
                 else:
                     self.raise_value_error(f'Class: "{cls.name}" - unknown mixin reference: {mixin}', mixin)
+        if cls.name in ["Person1", "Person2", "Person3", "Interface", "HasAliases"]:
+            print("merged class at the end", cls.name, cls.slots)
 
     def process_slot_usage_definitions(self):
         """
