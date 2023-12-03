@@ -29,25 +29,8 @@ First create a file
 
 personinfo.yaml:
 
-```yaml
-id: https://w3id.org/linkml/examples/personinfo
-name: personinfo
-prefixes:
-  linkml: https://w3id.org/linkml/
-  personinfo: https://w3id.org/linkml/examples/personinfo
-imports:
-  - linkml:types
-default_range: string
-default_prefix: personinfo
-
-classes:
-  Person:
-    attributes:
-      id:
-      full_name:
-      aliases:
-      phone:
-      age:
+```{literalinclude} ../../examples/tutorial/tutorial01/personinfo.yaml
+:language: yaml
 ```
 
 (note that all files are available in the [examples/tutorial](https://github.com/linkml/linkml/tree/main/examples/tutorial) folder of this repository)
@@ -62,44 +45,8 @@ gen-json-schema personinfo.yaml
 
 Outputs:
 
-```json
-{
-   "$defs": {
-      "Person": {
-         "additionalProperties": false,
-         "description": "",
-         "properties": {
-            "age": {
-               "type": "string"
-            },
-            "aliases": {
-               "type": "string"
-            },
-            "full_name": {
-               "type": "string"
-            },
-            "id": {
-               "type": "string"
-            },
-            "phone": {
-               "type": "string"
-            }
-         },
-         "required": [],
-         "title": "Person",
-         "type": "object"
-      }
-   },
-   "$id": "https://w3id.org/linkml/examples/personinfo",
-   "$schema": "http://json-schema.org/draft-07/schema#",
-   "additionalProperties": true,
-   "metamodel_version": "1.7.0",
-   "properties": {},
-   "required": [],
-   "title": "personinfo",
-   "type": "object",
-   "version": null
-}
+```{literalinclude} ../../examples/tutorial/tutorial01/personinfo.json
+:language: yaml
 ```
 
 Don't worry if you don't know much about JSON-Schema. This is just an illustration that LinkML can be used in combination with a number of frameworks.
@@ -168,17 +115,21 @@ linkml-validate -s personinfo.yaml data.json
 You can use the linkml convert tool to convert your data to other formats, including RDF:
 
 ```bash
-linkml-convert -s personinfo.yaml data.yaml -o data.ttl
+linkml-convert -s personinfo.yaml data.yaml -t ttl
 ```
 
-(Note the converter uses the suffix to determine that RDF/turtle is required, but you can be explicit by setting `-t`)
-
-This will produce an RDF/turtle file as follows
+This will produce RDF/turtle output as follows
 
 <!-- MATCHES data.ttl -->
 
 ```{literalinclude} ../../examples/tutorial/tutorial01/data.ttl
 :language: turtle
+```
+
+To write the RDF/turtle output directly to a file use
+
+```bash
+linkml-convert -s personinfo.yaml data.yaml -o data.ttl
 ```
 
 If you are not familiar with RDF that's OK! RDF is just one of the possible ways of working with LinkML.

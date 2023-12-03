@@ -1,0 +1,34 @@
+{
+    "$defs": {
+        "Person": {
+            "additionalProperties": false,
+            "description": "",
+            "properties": {
+                "age": {
+                    "type": "string"
+                },
+                "aliases": {
+                    "type": "string"
+                },
+                "full_name": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                }
+            },
+            "title": "Person",
+            "type": "object"
+        }
+    },
+    "$id": "https://w3id.org/linkml/examples/personinfo",
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "additionalProperties": true,
+    "metamodel_version": "1.7.0",
+    "title": "personinfo",
+    "type": "object",
+    "version": null
+}
