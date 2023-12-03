@@ -29,7 +29,7 @@ data.yaml:
 :language: yaml
 ```
 
-In [Working with Data](../data/working-with-data) we will learn how to express the same data in TSV format.
+In [Working with Data](../data/csvs) we will learn how to express such data in TSV format.
 
 ## Nesting lists of objects
 
