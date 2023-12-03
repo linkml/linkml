@@ -5,4 +5,3 @@
     ns1:full_name "Clark Kent" ;
     ns1:id "ORCID:1234" ;
     ns1:phone "555-555-5555" .
-

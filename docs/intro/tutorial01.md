@@ -4,7 +4,6 @@ We assume that you already have LinkML [installed](install)
 
 For the purposes of this tutorial, the simplest setup is to use a virtual environment, and then install linkml:
 
-
 <!-- NO_EXECUTE -->
 ```bash
 mkdir linkml-tutorial
@@ -62,6 +61,7 @@ gen-json-schema personinfo.yaml
 ```
 
 Outputs:
+
 ```json
 {
    "$defs": {
@@ -110,14 +110,11 @@ Let's create an example data file. The file will contain an *instance* of the cl
 
 data.yaml:
 
-```yaml
-id: ORCID:1234
-full_name: Clark Kent
-age: "32"
-phone: 555-555-5555
+```{literalinclude} ../../examples/tutorial/tutorial01/data.yaml
+:language: yaml
 ```
 
-note the values of all these fields are strings, even age; we will later return
+Note the values of all these fields are strings, even age; we will later return
 to this example and show how we could model this more naturally as a number.
 
 Validate:
@@ -132,12 +129,8 @@ To see an example of data not validating:
 
 bad-data.yaml:
 
-```yaml
-id: ORCID:1234
-full_name: Clark Kent
-age: "32"
-phone: 555-555-5555
-made_up_field: hello
+```{literalinclude} ../../examples/tutorial/tutorial01/bad-data.yaml
+:language: yaml
 ```
 
 <!-- FAIL -->
@@ -151,22 +144,17 @@ This should report an error to the effect that `made_up_field` is not allowed.
 
 One of the advantages of LinkML is the same datamodel can be used for multiple expressions of the same data, for example:
 
- * YAML/JSON
- * TSVs/spreadsheets
- * RDF
- * Relational Databases
+* YAML/JSON
+* TSVs/spreadsheets
+* RDF
+* Relational Databases
 
 There are various complexities involved in going between these, but YAML and JSON are basically interchangeable with LinkML
 
 data.json:
 
-```json
-{
- "id": "ORCID:1234",
- "full_name": "Clark Kent",
- "age": "32",
- "phone": "555-555-5555"
-}
+```{literalinclude} ../../examples/tutorial/tutorial01/data.json
+:language: json
 ```
 
 This will validate in the same way as the equivalent YAML file:
@@ -174,7 +162,6 @@ This will validate in the same way as the equivalent YAML file:
 ```bash
 linkml-validate -s personinfo.yaml data.json
 ```
-
 
 ## Converting to RDF
 
@@ -189,14 +176,9 @@ linkml-convert -s personinfo.yaml data.yaml -o data.ttl
 This will produce an RDF/turtle file as follows
 
 <!-- MATCHES data.ttl -->
-```turtle
-@prefix ns1: <https://w3id.org/linkml/examples/personinfo/> .
 
-[] a ns1:Person ;
-    ns1:age "32" ;
-    ns1:full_name "Clark Kent" ;
-    ns1:id "ORCID:1234" ;
-    ns1:phone "555-555-5555" .
+```{literalinclude} ../../examples/tutorial/tutorial01/data.ttl
+:language: turtle
 ```
 
 If you are not familiar with RDF that's OK! RDF is just one of the possible ways of working with LinkML.
