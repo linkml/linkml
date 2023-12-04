@@ -13,21 +13,20 @@ the same way we would any other identifier or object. However, in some
 cases, this can lead to confusion about what the respective roles of
 the LinkML schema, data, or ontologies are.
 
-## Example: associations to ontology terms.
+## Motivating Example: associations to ontology terms.
 
 Let's say we want to model associations between genes and
 phenotypes. This is a standard use case for biological ontologies -
 creating *annotations* that associate some kind of entity with a descriptor.
 
-
-In the simplest case, this might be communicated by a two-column file
+In the simplest case, this might be communicated by a two-column file:
 
 |Gene|Phenotype|
 |---|---|
 |PEX1|Seizure|
 |PEX1|Hypotonia|
 
-This uses labels, which is not best practice; we should instead do this:
+This uses labels, which is not best practice; we could instead do this:
 
 |Gene|Phenotype|
 |---|---|
@@ -41,10 +40,12 @@ Or perhaps a denormalized representation:
 |NCBIGene:5189|PEX1|HP:0001250|Seizure|
 |NCBIGene:5189|PEX1|HP:0001252|Hypotonia|
 
-This is *denormalized* because we end up repeating values
+This is *denormalized* because we end up repeating values.
 
 If we go with a richer data serialization form like YAML, JSON, RDF,
-or a normalized relational database we can have a normalized representation, e.g.
+or a relational database model, we can *normalize* this model. For
+YAML/JSON this may be implemented by *referencing* objects in another
+collection, like this:
 
 ```yaml
 associations:
@@ -69,8 +70,9 @@ However, for now let's return to the simple 2-element model:
 |NCBIGene:5189|HP:0001250|
 |NCBIGene:5189|HP:0001252|
 
+### Simple schema for pairwise associations
 
-The simplest data model that could work for this case is:
+The simplest possible data model that could work for this case is:
 
 ```yaml
 classes:
@@ -84,9 +86,9 @@ Note that the schema doesn't care that the phenotypes come from an ontology, or 
 come from a standard resource - these are just pieces of data.
 
 However, this isn't quite satisfactory - it allows the data provider to put any free text they like in.
-We want to constrain to identifiers.
+We would like to constrain both `gene` and `phenotype` to be identifiers.
 
-Let's constrain it a bit more:
+We can do this by specifying a [https://w3id.org/linkml/range](range):
 
 ```yaml
 classes:
@@ -98,7 +100,7 @@ classes:
        range: uriorcurie
 ```
 
-We can constrain it further:
+We can constrain it further still, by including a regexp [https://w3id.org/linkml/pattern](pattern):
 
 ```yaml
 classes:
@@ -106,10 +108,10 @@ classes:
    attributes:
      gene:
        range: uriorcurie
-       pattern: "NCBIGene:\d+"
+       pattern: "NCBIGene:\\d+"
      phenotype:
        range: uriorcurie
-       pattern: "HP:\d+"
+       pattern: "HP:\\d+"
 ```
 
 (obviously this constrains the schema so tightly it can't be used
@@ -119,7 +121,7 @@ So far so good. But what if we want to have a data model where we
 can communicate information about the genes and phenotypes themselves,
 rather than forcing the client to do an external lookup?
 
-Let's go one step further, and make a *class* for gene and phenotype:
+Let's go one step further, and make a [https://w3id.org/linkml/ClassDefinition](class) for gene and phenotype:
 
 ```yaml
 classes:
@@ -129,18 +131,19 @@ classes:
        range: Gene
      phenotype:
        range: Phenotype
-       pattern: "HP:\d+"
  Gene:
    attributes:
      id:
        range: uriorcurie
        identifier: true
+       pattern: "NCBIGene:\\d+"
      label:
  Phenotype:
    attributes:
      id:
        range: uriorcurie
        identifier: true
+       pattern: "HP:\\d+"
      label:
 ```
 
@@ -154,7 +157,6 @@ classes:
        range: Gene
      phenotype:
        range: Phenotype
-       pattern: "HP:\d+"
  NamedThing:
    attributes:
      id:
@@ -163,14 +165,24 @@ classes:
      label:
  Gene:
   is_a: NamedThing
+  id_prefixes:
+    - NCBIGene
  Phenotype:
   is_a: NamedThing
+  id_prefixes:
+    - HP
 ```
 
-Let's add a container class:
+Note we are taking advantage of the [https://w3id.org/linkml/id_prefixes](id_prefixes) metaslot, but
+strictly speaking this is weaker than the previous regular expression pattern.
+
+### Adding a container
+
+Let's add a *container* class, to allow us to bundle lists of objects inside a single JSON or YAML document:
 
 ```
   Container:
+    tree_root: true
     attributes:
       genes:
         range: Gene
@@ -184,7 +196,9 @@ Let's add a container class:
       
 ```
 
-Note that inlining is non-default if a referenced entity has an identifier. This means
+Our container class allows genes, phenotypes, plus associations between them to be transmitted as a single YAML/JSON object/document.
+
+Note that [inlining](https://linkml.io/linkml/schemas/inlining.html) is non-default if a referenced entity has an identifier. This means
 that the right way to represent associations is using references (like foreign
 keys in a relational database):
 
@@ -195,6 +209,8 @@ associations:
   - gene: NCBIGene:5189
     phenotype: HP:0001252
 ```
+
+### Example of separate collections
 
 We can optionally communicate information about the referenced entities:
 
@@ -214,8 +230,13 @@ phenotypes:
     label: Hypotonia
 ```
 
-We can go one step further, and represent the ontology
-hierarchy in the data, by adding a `parents` slot in the schema:
+## Representing the ontology hierarchy as data
+
+It's common practice to separate the ontology representation from the data,
+but in some cases it may be useful to transmit everything using the same
+schema, sending both associations and ontology classificiation in one YAML/JSON blob.
+
+Let's do that here, by adding a `parents` slot in the schema:
 
 ```yaml
  Phenotype:
@@ -224,9 +245,13 @@ hierarchy in the data, by adding a `parents` slot in the schema:
     parents:
       range: Phenotype
       multiavalued: true
+      slot_uri: rdfs:subClassOf
 ```
 
-which allows:
+Note we could call this whatever we like. We include a [https://w3id.org/linkml/slot_uri](slot_uri) declaration
+to indicate that this is equivalent to `rdfs:subClassOf`.
+
+This modified schema allows data like:
 
 ```yaml
 phenotypes:
@@ -246,10 +271,10 @@ associations and the ontology hierarchy together to perform rollup
 operations, etc.
 
 The fact that we have two classification systems co-existing (LinkML
-is_a hierarchy and ontology hierarchy as data) should not be a cause
+is_a hierarchy and ontology hierarchy as data) is not be a cause
 for concern.
 
-## Ontology classes may be LinkML instances
+### Ontology classes may be LinkML instances
 
 So far, so good. This should so far be familiar to people who have
 modeled this kind of ontological association in JSON-Schema, or
@@ -267,12 +292,7 @@ But here we are modeling HP:0001250 as an *instance*. What's going on?
 In fact this is quite straightforward - ontology classes (typically
 formalized in OWL) and classes in LinkML are not the same thing,
 despite the name "class". And instances in LinkML and instances in
-realist OBO ontologies are not the same thing.
-
-So long as we realize this, there isn't any issue. Again, this is
-usually quite straightforward for data modelers coming from a
-traditional data modeling background, but some people coming from an
-ontology background might get tripped up.
+"realist" OBO ontologies are not the same thing.
 
 ## Ontology class hierarchies and LinkML class hierarchies need not be mirrored
 
