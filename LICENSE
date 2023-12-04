@@ -1,11 +1,6 @@
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+## License
 
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+This repository is dual licensed [Apache License, Version 2.0 (the "License")](LICENSE-Apache2.md) and [CC0 1.0](LICENSE-CC0.md),
+meaning any repository content can be used under either license. This licensing arrangement ensures source code
+is available under an [OSI-approved License](https://opensource.org/licenses/alphabetical),
+while non-code content — such as figures, data, and documentation — is maximally reusable under a public domain dedication.
