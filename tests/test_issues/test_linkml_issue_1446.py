@@ -22,14 +22,14 @@ def cli_runner():
     ],
 )
 def test_valid_yaml(cli_runner, target_class, schema, data, valid):
-    """Tests https://github.com/linkml/linkml/issues/1432"""
+    """Tests https://github.com/linkml/linkml/issues/1446"""
 
     schema_path = str(TEST_INPUTS_DIR / f"{schema}.yaml")
     data_path = str(TEST_INPUTS_DIR / f"{data}.yaml")
-    result = cli_runner.invoke(cli, ["-S", schema_path, "-T", target_class, data_path])
+    result = cli_runner.invoke(cli, ["-s", schema_path, "-C", target_class, data_path])
     if valid:
         assert result.exception is None
-        assert result.output == "No issues found!\n"
+        assert result.output.startswith("No issues found")
         assert result.exit_code == 0
     else:
         assert result.exit_code != 0
