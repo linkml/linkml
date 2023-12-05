@@ -1,0 +1,31 @@
+# dummy.yaml
+id: https://example.org
+prefixes:
+  linkml: https://w3id.org/linkml/
+  base: https://example.org/base/
+  extension: https://example.org/extension/
+imports:
+  - extension
+default_prefix: extension
+
+classes:
+  DummyName:
+    is_a: Name
+  DummyHuman:
+    is_a: Human
+    slot_usage:
+      identifiers:
+        range: PersonalIdentityCard
+  PersonalIdentityCard:
+    is_a: Identifier
+    slots:
+      - personal_number
+  DummyHumanIdentifier:
+    is_a: HumanIdentifier
+    slot_usage:
+      name:
+        range: DummyName
+
+slots:
+  personal_number:
+    identifier: true
