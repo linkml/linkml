@@ -29,15 +29,15 @@ class ExcelGenerator(Generator):
         self.logger = logging.getLogger(__name__)
         self.schemaview = SchemaView(self.schema)
 
-    def create_workbook(self, workbook_name: Path) -> Workbook:
+    def create_workbook(self, workbook_path: Path) -> Workbook:
         """
         Creates an Excel workbook using the openpyxl library and returns it.
 
-        :param workbook_name: Path of the workbook to be created.
+        :param workbook_path: Path of the workbook to be created.
         :return: An openpyxl Workbook object representing the newly created workbook.
         """
         workbook = Workbook()
-        workbook.save(workbook_name)
+        workbook.save(workbook_path)
         return workbook
 
     def create_workbook_and_worksheets(self, output_path: Path, classes: List[str]) -> None:
