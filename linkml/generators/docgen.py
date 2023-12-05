@@ -337,7 +337,7 @@ class DocGenerator(Generator):
                 curie = self.schemaview.get_uri(element)
                 if curie:
                     return curie.split(":")[1]
-                
+
             return camelcase(element.name)
         else:
             return camelcase(element.name)
@@ -906,7 +906,17 @@ class DocGenerator(Generator):
 )
 @click.version_option(__version__, "-V", "--version")
 @click.command()
-def cli(yamlfile, directory, index_name, dialect, template_directory, use_slot_uris, use_class_uris, hierarchical_class_view, **args):
+def cli(
+    yamlfile,
+    directory,
+    index_name,
+    dialect,
+    template_directory,
+    use_slot_uris,
+    use_class_uris,
+    hierarchical_class_view,
+    **args,
+):
     """Generate documentation folder from a LinkML YAML schema
 
     Currently a default set of templates for markdown is provided (see the
