@@ -1,6 +1,6 @@
 import logging
-import os
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import List
 
 import click
@@ -16,7 +16,7 @@ from linkml.utils.generator import Generator, shared_arguments
 @dataclass
 class ExcelGenerator(Generator):
     # ClassVars
-    generatorname = os.path.basename(__file__)
+    generatorname = Path(__file__).name
     generatorversion = "0.1.1"
     valid_formats = ["xlsx"]
     uses_schemaloader = False
@@ -29,18 +29,18 @@ class ExcelGenerator(Generator):
         self.logger = logging.getLogger(__name__)
         self.schemaview = SchemaView(self.schema)
 
-    def create_workbook(self, workbook_name: str) -> Workbook:
+    def create_workbook(self, workbook_name: Path) -> Workbook:
         """
         Creates an Excel workbook using the openpyxl library and returns it.
 
-        :param workbook_name: Name of the workbook to be created.
+        :param workbook_name: Path of the workbook to be created.
         :return: An openpyxl Workbook object representing the newly created workbook.
         """
         workbook = Workbook()
         workbook.save(workbook_name)
         return workbook
 
-    def create_workbook_and_worksheets(self, output_path: str, classes: List[str]) -> None:
+    def create_workbook_and_worksheets(self, output_path: Path, classes: List[str]) -> None:
         """
         Creates a workbook with worksheets for each class.
 
@@ -62,16 +62,16 @@ class ExcelGenerator(Generator):
                 workbook.save(output_path)
 
                 # Add enum validation for columns with enum types
-                enum_list = [e_name for e_name, _ in sv.all_enums(imports=self.mergeimports).items()]
+                enum_list = [e_name for e_name in sv.all_enums(imports=self.mergeimports).items()]
                 for s in sv.class_induced_slots(cls_name, self.mergeimports):
                     if s.range in enum_list:
-                        pv_list = [pv_name for pv_name, _ in sv.get_enum(s.range).permissible_values.items()]
+                        pv_list = [pv_name for pv_name in sv.get_enum(s.range).permissible_values.items()]
                         self.column_enum_validation(workbook, cls_name, s.name, pv_list)
                     workbook.save(output_path)
 
         workbook.save(output_path)
         if self.split_workbook_by_class:
-            self.logger.info(f"The Excel workbook has been written to {output_path}")
+            self.logger.info(f"The Excel workbooks have been written to {output_path}")
 
     def add_columns_to_worksheet(self, workbook: Workbook, worksheet_name: str, sheet_headings: List[str]) -> None:
         """
@@ -126,20 +126,23 @@ class ExcelGenerator(Generator):
         ]
 
         if self.split_workbook_by_class:
-            self.output = os.path.abspath(self.schema.name + "_worksheets") if not self.output else self.output
+            output_path = Path(self.schema.name + "_worksheets") if not self.output else Path(self.output)
+            output_path = output_path.absolute()
 
-            os.makedirs(self.output, exist_ok=True)
+            if not output_path.is_dir():
+                output_path.mkdir(parents=True, exist_ok=True)
 
             for cls_name in classes_to_process:
-                cls_output_path = os.path.join(self.output, f"{cls_name}.xlsx")
+                cls_output_path = output_path.joinpath(f"{cls_name}.xlsx")
                 self.create_workbook_and_worksheets(cls_output_path, [cls_name])
                 self.logger.info(f"The Excel workbook for class '{cls_name}' has been written to {cls_output_path}")
         else:
-            self.output = os.path.abspath(self.schema.name + ".xlsx") if not self.output else self.output
+            output_path = Path(self.schema.name + ".xlsx") if not self.output else Path(self.output)
+            output_path = output_path.absolute()
 
-            self.create_workbook_and_worksheets(self.output, classes_to_process)
+            self.create_workbook_and_worksheets(output_path, classes_to_process)
 
-            self.logger.info(f"The Excel workbook has been written to {self.output}")
+            self.logger.info(f"The Excel workbook has been written to {output_path}")
 
 
 @shared_arguments(ExcelGenerator)
@@ -154,12 +157,12 @@ class ExcelGenerator(Generator):
     "-o",
     "--output",
     type=click.Path(),
-    help="""Name of Excel spreadsheet to be created, or name of directory to create split worksheets in""",
+    help="""Name of Excel spreadsheet to be created, or name of directory to create split workbooks in""",
 )
 @click.version_option(__version__, "-V", "--version")
-def cli(yamlfile, split_workbook_by_class, output, **kwargs):
+def cli(yamlfile, split_workbook_by_class, **kwargs):
     """Generate Excel representation of a LinkML model"""
-    ExcelGenerator(yamlfile, split_workbook_by_class, output, **kwargs).serialize(**kwargs)
+    ExcelGenerator(yamlfile, split_workbook_by_class=split_workbook_by_class, **kwargs).serialize(**kwargs)
 
 
 if __name__ == "__main__":
