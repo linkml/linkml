@@ -72,7 +72,7 @@ class ConfiguredBaseModel(WeakRefShimBaseModel,
                 validate_assignment = True,
                 validate_all = True,
                 underscore_attrs_are_private = True,
-                extra = {extra_fields},
+                extra = '{extra_fields}',
                 arbitrary_types_allowed = True,
                 use_enum_values = True):
     pass
@@ -83,7 +83,7 @@ class ConfiguredBaseModel(BaseModel):
     model_config = ConfigDict(
         validate_assignment=True,
         validate_default=True,
-        extra = {extra_fields},
+        extra = '{extra_fields}',
         arbitrary_types_allowed=True,
         use_enum_values = True)
 """
