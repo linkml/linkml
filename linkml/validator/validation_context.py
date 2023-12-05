@@ -56,7 +56,10 @@ class ValidationContext:
 
     @lru_cache
     def _pydantic_module(self, *closed: bool):
-        return PydanticGenerator(self._schema, allow_extra=not closed).compile_module()
+        return PydanticGenerator(
+            self._schema,
+            extra_fields="forbid" if closed else "ignore" if closed is None else "allow",
+            ).compile_module()
 
     def _get_target_class(self, target_class: Optional[str] = None) -> str:
         if target_class is None:

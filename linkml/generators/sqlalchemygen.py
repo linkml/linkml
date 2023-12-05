@@ -161,7 +161,7 @@ class SQLAlchemyGenerator(Generator):
             # concatenate the python dataclasses with the sqla code
             if pydantic:
                 # mixin inheritance doesn't get along with SQLAlchemy's imperative (aka classical) mapping
-                pygen = PydanticGenerator(self.original_schema, allow_extra=True, gen_mixin_inheritance=False)
+                pygen = PydanticGenerator(self.original_schema, extra_fields="allow", gen_mixin_inheritance=False)
             else:
                 pygen = PythonGenerator(self.original_schema)
             dc_code = pygen.serialize()
