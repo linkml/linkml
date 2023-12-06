@@ -1,23 +1,7 @@
 from linkml.generators.javagen import JavaGenerator
+from tests.utils.fileutils import assert_file_contains
 
 PACKAGE = "org.sink.kitchen"
-
-
-# TODO: move this somewhere reusable
-def assert_file_contains(filename, text, after=None, description=None) -> None:
-    found = False
-    is_after = False  # have we reached the after mark?
-    with open(filename) as stream:
-        for line in stream.readlines():
-            if text in line:
-                if after is None:
-                    found = True
-                else:
-                    if is_after:
-                        found = True
-            if after is not None and after in line:
-                is_after = True
-    assert found
 
 
 def test_javagen_records(kitchen_sink_path, tmp_path):

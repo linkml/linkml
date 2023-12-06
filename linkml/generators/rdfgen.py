@@ -36,7 +36,7 @@ class RDFGenerator(Generator):
     context: List[str] = None
 
     def _data(self, g: Graph) -> str:
-        return g.serialize(format="turtle" if self.format == "ttl" else self.format).decode()
+        return g.serialize(format="turtle" if self.format == "ttl" else self.format)
 
     def end_schema(self, output: Optional[str] = None, context: str = None, **_) -> None:
         gen = JSONLDGenerator(

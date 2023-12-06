@@ -5,8 +5,8 @@ package {{ doc.package }};
 import java.math.BigDecimal;{% endif -%}
 {% if f.range.startswith('Instant') %}
 import java.time.Instant;{% endif -%}
-{% if f.range.startswith('LocalDateTime') %}
-import java.time.LocalDateTime;{% endif -%}
+{% if f.range.startswith('LocalDate') %}
+import java.time.LocalDate;{% endif -%}
 {% if f.range.startswith('ZonedDateTime') %}
 import java.time.ZonedDateTime;{% endif -%}
 {% if f.range.startswith('List') %}

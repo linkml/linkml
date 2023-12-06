@@ -156,7 +156,7 @@ class GenJSONLDTestCase(ClickTestCase):
         g.load(tmp_jsonld_path, format="json-ld")
         g.serialize(tmp_rdf_path, format="ttl")
         g.bind("meta", METAMODEL_NAMESPACE)
-        new_ttl = g.serialize(format="turtle").decode()
+        new_ttl = g.serialize(format="turtle")
 
         # Make sure that the generated TTL matches the JSON-LD (probably not really needed, as this is more of a test
         # of rdflib than our tooling but it doesn't hurt

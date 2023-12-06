@@ -65,19 +65,23 @@ class JsonSchema(UserDict):
             identifier_name = self._lax_forward_refs.pop(canonical_name)
             self.add_lax_def(canonical_name, identifier_name)
 
-    def add_lax_def(self, name: str, identifier_name: str) -> None:
+    def add_lax_def(self, names: Union[str, List[str]], identifier_name: str) -> None:
         # JSON-Schema does not have inheritance,
         # so we duplicate slots from inherited parents and mixins
         # Maps e.g. Person --> Person__identifier_optional
         # for use when Person is a range of an inlined-as-dict slot
-        canonical_name = camelcase(name)
+        if isinstance(names, str):
+            names = [names]
 
-        if "$defs" not in self or canonical_name not in self["$defs"]:
-            self._lax_forward_refs[canonical_name] = identifier_name
-        else:
-            lax_cls = deepcopy(self["$defs"][canonical_name])
-            lax_cls["required"].remove(identifier_name)
-            self["$defs"][canonical_name + self.OPTIONAL_IDENTIFIER_SUFFIX] = lax_cls
+        for name in names:
+            canonical_name = camelcase(name)
+
+            if "$defs" not in self or canonical_name not in self["$defs"]:
+                self._lax_forward_refs[canonical_name] = identifier_name
+            else:
+                lax_cls = deepcopy(self["$defs"][canonical_name])
+                lax_cls["required"].remove(identifier_name)
+                self["$defs"][canonical_name + self.OPTIONAL_IDENTIFIER_SUFFIX] = lax_cls
 
     def add_property(self, name: str, subschema: "JsonSchema", required: bool = False) -> None:
         canonical_name = underscore(name)

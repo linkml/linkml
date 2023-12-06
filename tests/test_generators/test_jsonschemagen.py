@@ -132,6 +132,17 @@ def test_class_inheritance(subtests, input_path):
     )
 
 
+def test_class_inheritance_multivalued(subtests, input_path):
+    """Tests that a class hierarchy is accounted for when the hierarchy root is used
+    as the range of a multivalued (either inlined or inlined_as_list) slot."""
+
+    external_file_test(
+        subtests,
+        input_path("jsonschema_class_inheritance_multivalued.yaml"),
+        {"not_closed": False, "include_range_class_descendants": True},
+    )
+
+
 def test_top_class_identifier(subtests, input_path):
     """Test that an identifier slot on the top_class becomes a required
     property in the JSON Schema."""

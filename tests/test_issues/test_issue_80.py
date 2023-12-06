@@ -20,5 +20,5 @@ def test_issue_80(input_path, snapshot):
     jsonld_context_output = ContextGenerator(input_path("issue_80.yaml")).serialize()
     assert jsonld_context_output == snapshot("issue_80.context.jsonld")
 
-    rdf_output = as_rdf(example, contexts=jsonld_context_output).serialize(format="turtle").decode()
+    rdf_output = as_rdf(example, contexts=jsonld_context_output).serialize(format="turtle")
     assert rdf_output == snapshot("issue_80.ttl")

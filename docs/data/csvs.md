@@ -2,7 +2,7 @@
 
 LinkML can support both complex interlinked normalized relational data as well as flat/denormalized data as typically found in spreadsheets and in CSVs used by data scientists.
 
-Our philosophy is "always have a schema" even when working with simple tabular data
+Our philosophy is "always have a schema" even when working with simple tabular data.
 
 ## Conversion
 
@@ -17,7 +17,7 @@ if your schema has a certain "shape" and you provide sufficient hints.
 
 ### Container objects
 
-See [part 2 of the tutorial](../intro/tutorial02) for more on container objects.
+See [part 2 of the tutorial](../intro/tutorial02) for an introduction to container objects.
 
 To serialize your data objects as TSVs, it's assumed that you have a
 class in your schema that serves the role of *container*. It can be
@@ -38,7 +38,7 @@ their best to guess the index slot and the container, but if there is
 no unambiguous choice, then have to provide these using the following
 arguments:
 
-```
+```text
   -C, --target-class TEXT         name of class in datamodel that the root
                                   node instantiates
 
@@ -58,13 +58,9 @@ Note that currently serializing the person objects won't work, as the Person cla
 
 The [json-flattener/](https://github.com/cmungall/json-flattener/) library is used to do on-the-fly denormalizations. For example:
 
- - multivalued slots are serialized using a `|` separator
- - nested slots are flattened to paths, e.g if Container has a slot persons, and Person has a slot name, then the path with be `persons_name`
+* multivalued slots are serialized using a `|` separator
+* nested slots are flattened to paths, e.g if Container has a slot persons, and Person has a slot name, then the path with be `persons_name`
 
 ## Inference of schemas from tabular data
 
 Use `generalize-tsv` command in the [schema-automator](https://github.com/linkml/schema-automator)
-
-
-
-

@@ -51,12 +51,12 @@ class ShaclGenerator(Generator):
         if self.schema.version:
             print(f"# version: {self.schema.version}")
 
-    def serialize(self, **args) -> None:
+    def serialize(self, **args) -> str:
         g = self.as_graph()
-        data = g.serialize(format="turtle" if self.format in ["owl", "ttl"] else self.format).decode()
+        data = g.serialize(format="turtle" if self.format in ["owl", "ttl"] else self.format)
         return data
 
-    def as_graph(self) -> None:
+    def as_graph(self) -> Graph:
         sv = self.schemaview
         g = Graph()
         g.bind("sh", SH)
