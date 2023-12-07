@@ -31,7 +31,7 @@ In this guide we draw from:
 
 ### Version Control Your Schema
 
-(adapted from [O3 guidelines](https://osf.io/vuzt3/)))
+(adapted from [O3 guidelines](https://osf.io/vuzt3/))
 
 Version control systems like git track changes in files and enable multiple users to collaborate. They are widely used for maintaining code,
 but can (and should) also be used to maintain and manage data, metadata, ontologies, schemas, and other semantic artifacts.
@@ -42,7 +42,7 @@ store or a repository like Zenodo or Figshare.
 
 ### Permissively License Your Code and Data
 
-(adapted from [O3 guidelines](https://osf.io/vuzt3/)))
+(adapted from [O3 guidelines](https://osf.io/vuzt3/))
 
 Using recognizable, permissive licenses (e.g., CC0, CC BY) encourages contribution and ensures content longevity.
 Non-permissive licenses or custom terms can hinder reuse and engagement.
@@ -50,7 +50,7 @@ Permissive licensing doesn't typically lead to a lack of credit for the original
 
 ### Use Technical Workflows (Automation) and Social Workflows
 
-(adapted from [O3 guidelines](https://osf.io/vuzt3/)))
+(adapted from [O3 guidelines](https://osf.io/vuzt3/))
 
 Automating quality control, generation of artifacts, releases, and deployment helps in maintaining and contributing to projects.
 This includes using continuous integration for quality checks, automating the generation of data views, and packaging data and code for easy deployment.
