@@ -16,7 +16,7 @@ predictable and consistent form.
 __NOTE__ In this guide we use the term *structural form* to
 indicate a broad pattern to which the data conforms. These
 are sometimes called data *shapes* but we avoid this term
-where it could be confused wth [RDF Shape Languages](https://www.w3.org/TR/shacl/).
+where it could be confused with [RDF Shape Languages](https://www.w3.org/TR/shacl/).
 
 
 ### The Main Schema Structural Forms
