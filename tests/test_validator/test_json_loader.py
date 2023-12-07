@@ -1,35 +1,33 @@
 import json
-import tempfile
-import unittest
+
+import pytest
 
 from linkml.validator.loaders import JsonLoader
 
 
-class TestJsonLoader(unittest.TestCase):
-    def test_load_object(self):
-        with tempfile.NamedTemporaryFile(mode="w+") as json_file:
-            test_data = {
-                "hello": "world",
-                "number": 1,
-                "boolean": True,
-                "array": ["of", "strings"],
-            }
-            json.dump(test_data, json_file)
-            json_file.seek(0)
+def test_load_object(tmp_file_factory):
+    test_data = {
+        "hello": "world",
+        "number": 1,
+        "boolean": True,
+        "array": ["of", "strings"],
+    }
+    json_file = tmp_file_factory("data.json", json.dumps(test_data))
 
-            loader = JsonLoader(json_file)
-            instances = loader.iter_instances()
-            self.assertEqual(next(instances), test_data)
-            self.assertRaises(StopIteration, lambda: next(instances))
+    loader = JsonLoader(json_file)
+    instances = loader.iter_instances()
+    assert next(instances) == test_data
+    with pytest.raises(StopIteration):
+        next(instances)
 
-    def test_load_list_of_objects(self):
-        with tempfile.NamedTemporaryFile(mode="w+") as json_file:
-            test_data = [{"id": 1}, {"id": 2}]
-            json.dump(test_data, json_file)
-            json_file.seek(0)
 
-            loader = JsonLoader(json_file)
-            instances = loader.iter_instances()
-            self.assertEqual(next(instances), test_data[0])
-            self.assertEqual(next(instances), test_data[1])
-            self.assertRaises(StopIteration, lambda: next(instances))
+def test_load_list_of_objects(tmp_file_factory):
+    test_data = [{"id": 1}, {"id": 2}]
+    json_file = tmp_file_factory("data.json", json.dumps(test_data))
+
+    loader = JsonLoader(json_file)
+    instances = loader.iter_instances()
+    assert next(instances) == test_data[0]
+    assert next(instances) == test_data[1]
+    with pytest.raises(StopIteration):
+        next(instances)
