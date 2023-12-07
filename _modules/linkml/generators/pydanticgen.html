@@ -335,7 +335,7 @@
 <span class="kn">from</span> <span class="nn">linkml.utils.ifabsent_functions</span> <span class="kn">import</span> <span class="n">ifabsent_value_declaration</span>
 
 
-<div class="viewcode-block" id="default_template"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.pydanticgen.default_template">[docs]</a><span class="k">def</span> <span class="nf">default_template</span><span class="p">(</span><span class="n">pydantic_ver</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;1&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="viewcode-block" id="default_template"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.pydanticgen.default_template">[docs]</a><span class="k">def</span> <span class="nf">default_template</span><span class="p">(</span><span class="n">pydantic_ver</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="n">extra_fields</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;forbid&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Constructs a default template for pydantic classes based on the version of pydantic&quot;&quot;&quot;</span>
     <span class="c1">### HEADER ###</span>
     <span class="n">template</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
@@ -367,7 +367,7 @@
 <span class="s2">&quot;&quot;&quot;</span>
     <span class="c1">### BASE MODEL ###</span>
     <span class="k">if</span> <span class="n">pydantic_ver</span> <span class="o">==</span> <span class="s2">&quot;1&quot;</span><span class="p">:</span>
-        <span class="n">template</span> <span class="o">+=</span> <span class="s2">&quot;&quot;&quot;</span>
+        <span class="n">template</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">class WeakRefShimBaseModel(BaseModel):</span>
 <span class="s2">   __slots__ = &#39;__weakref__&#39;</span>
 
@@ -375,18 +375,18 @@
 <span class="s2">                validate_assignment = True,</span>
 <span class="s2">                validate_all = True,</span>
 <span class="s2">                underscore_attrs_are_private = True,</span>
-<span class="s2">                extra = {</span><span class="si">% i</span><span class="s2">f allow_extra %}&#39;allow&#39;{</span><span class="si">% e</span><span class="s2">lse %}&#39;forbid&#39;{</span><span class="si">% e</span><span class="s2">ndif %},</span>
+<span class="s2">                extra = &#39;</span><span class="si">{</span><span class="n">extra_fields</span><span class="si">}</span><span class="s2">&#39;,</span>
 <span class="s2">                arbitrary_types_allowed = True,</span>
 <span class="s2">                use_enum_values = True):</span>
 <span class="s2">    pass</span>
 <span class="s2">&quot;&quot;&quot;</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">template</span> <span class="o">+=</span> <span class="s2">&quot;&quot;&quot;</span>
+        <span class="n">template</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">class ConfiguredBaseModel(BaseModel):</span>
 <span class="s2">    model_config = ConfigDict(</span>
 <span class="s2">        validate_assignment=True,</span>
 <span class="s2">        validate_default=True,</span>
-<span class="s2">        extra={</span><span class="si">% i</span><span class="s2">f allow_extra %}&#39;allow&#39;{</span><span class="si">% e</span><span class="s2">lse %}&#39;forbid&#39;{</span><span class="si">% e</span><span class="s2">ndif %},</span>
+<span class="s2">        extra = &#39;</span><span class="si">{</span><span class="n">extra_fields</span><span class="si">}</span><span class="s2">&#39;,</span>
 <span class="s2">        arbitrary_types_allowed=True,</span>
 <span class="s2">        use_enum_values = True)</span>
 <span class="s2">&quot;&quot;&quot;</span>
@@ -499,7 +499,7 @@
     <span class="c1"># ObjectVars</span>
     <span class="n">pydantic_version</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">PYDANTIC_VERSION</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
     <span class="n">template_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">allow_extra</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="kc">False</span><span class="p">)</span>
+    <span class="n">extra_fields</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="s2">&quot;forbid&quot;</span><span class="p">)</span>
     <span class="n">gen_mixin_inheritance</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="kc">True</span><span class="p">)</span>
 
     <span class="c1"># ObjectVars (identical to pythongen)</span>
@@ -757,7 +757,7 @@
             <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">template_file</span><span class="p">)</span> <span class="k">as</span> <span class="n">template_file</span><span class="p">:</span>
                 <span class="n">template_obj</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="n">template_file</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">template_obj</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="n">default_template</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pydantic_version</span><span class="p">))</span>
+            <span class="n">template_obj</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="n">default_template</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pydantic_version</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">extra_fields</span><span class="p">))</span>
 
         <span class="n">sv</span><span class="p">:</span> <span class="n">SchemaView</span>
         <span class="n">sv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span>
@@ -839,7 +839,7 @@
             <span class="n">underscore</span><span class="o">=</span><span class="n">underscore</span><span class="p">,</span>
             <span class="n">enums</span><span class="o">=</span><span class="n">enums</span><span class="p">,</span>
             <span class="n">predefined_slot_values</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_predefined_slot_values</span><span class="p">(),</span>
-            <span class="n">allow_extra</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">allow_extra</span><span class="p">,</span>
+            <span class="n">extra_fields</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">extra_fields</span><span class="p">,</span>
             <span class="n">metamodel_version</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">metamodel_version</span><span class="p">,</span>
             <span class="n">version</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">version</span><span class="p">,</span>
             <span class="n">class_isa_plus_mixins</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_class_isa_plus_mixins</span><span class="p">(),</span>
@@ -851,12 +851,18 @@
 
 
 <span class="nd">@shared_arguments</span><span class="p">(</span><span class="n">PydanticGenerator</span><span class="p">)</span>
-<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&quot;--template_file&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Optional jinja2 template to use for class generation&quot;</span><span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&quot;--template-file&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Optional jinja2 template to use for class generation&quot;</span><span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
-    <span class="s2">&quot;--pydantic_version&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;--pydantic-version&quot;</span><span class="p">,</span>
     <span class="nb">type</span><span class="o">=</span><span class="n">click</span><span class="o">.</span><span class="n">Choice</span><span class="p">([</span><span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="s2">&quot;2&quot;</span><span class="p">]),</span>
     <span class="n">default</span><span class="o">=</span><span class="s2">&quot;1&quot;</span><span class="p">,</span>
     <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Pydantic version to use (1 or 2)&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
+    <span class="s2">&quot;--extra-fields&quot;</span><span class="p">,</span>
+    <span class="nb">type</span><span class="o">=</span><span class="n">click</span><span class="o">.</span><span class="n">Choice</span><span class="p">([</span><span class="s2">&quot;allow&quot;</span><span class="p">,</span> <span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="s2">&quot;forbid&quot;</span><span class="p">],</span> <span class="n">case_sensitive</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+    <span class="n">default</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">,</span>
+    <span class="n">help</span><span class="o">=</span><span class="s2">&quot;How to handle extra fields in BaseModel.&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">version_option</span><span class="p">(</span><span class="n">__version__</span><span class="p">,</span> <span class="s2">&quot;-V&quot;</span><span class="p">,</span> <span class="s2">&quot;--version&quot;</span><span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">command</span><span class="p">()</span>
@@ -869,6 +875,7 @@
     <span class="n">classvars</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">pydantic_version</span><span class="o">=</span><span class="s2">&quot;1&quot;</span><span class="p">,</span>
+    <span class="n">extra_fields</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">,</span>
     <span class="o">**</span><span class="n">args</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate pydantic classes to represent a LinkML model&quot;&quot;&quot;</span>
@@ -876,6 +883,7 @@
         <span class="n">yamlfile</span><span class="p">,</span>
         <span class="n">template_file</span><span class="o">=</span><span class="n">template_file</span><span class="p">,</span>
         <span class="n">pydantic_version</span><span class="o">=</span><span class="n">pydantic_version</span><span class="p">,</span>
+        <span class="n">extra_fields</span><span class="o">=</span><span class="n">extra_fields</span><span class="p">,</span>
         <span class="n">emit_metadata</span><span class="o">=</span><span class="n">head</span><span class="p">,</span>
         <span class="n">genmeta</span><span class="o">=</span><span class="n">genmeta</span><span class="p">,</span>
         <span class="n">gen_classvars</span><span class="o">=</span><span class="n">classvars</span><span class="p">,</span>
