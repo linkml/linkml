@@ -150,6 +150,7 @@ class DocGenerator(Generator):
     gen_slots: bool = field(default_factory=lambda: True)
     no_types_dir: bool = field(default_factory=lambda: False)
     use_slot_uris: bool = field(default_factory=lambda: False)
+    use_class_uris: bool = field(default_factory=lambda: False)
     hierarchical_class_view: bool = field(default_factory=lambda: False)
 
     def __post_init__(self):
@@ -331,6 +332,13 @@ class DocGenerator(Generator):
                     return curie.split(":")[1]
 
             return underscore(element.name)
+        elif type(element).class_name == "class_definition":
+            if self.use_class_uris:
+                curie = self.schemaview.get_uri(element)
+                if curie:
+                    return curie.split(":")[1]
+
+            return camelcase(element.name)
         else:
             return camelcase(element.name)
 
@@ -374,6 +382,10 @@ class DocGenerator(Generator):
         if self._is_external(e):
             return self.uri_link(e)
         elif isinstance(e, ClassDefinition):
+            if self.use_class_uris:
+                curie = self.schemaview.get_uri(e)
+                if curie is not None:
+                    return self._markdown_link(n=curie.split(":")[1], name=e.name)
             return self._markdown_link(camelcase(e.name))
         elif isinstance(e, EnumDefinition):
             return self._markdown_link(camelcase(e.name))
@@ -474,7 +486,7 @@ class DocGenerator(Generator):
     ) -> str:
         indent = " " * depth * 4
 
-        if self.use_slot_uris:
+        if self.use_slot_uris or self.use_class_uris:
             name = self.schemaview.get_element(element).name
         else:
             name = self.name(element)
@@ -879,6 +891,11 @@ class DocGenerator(Generator):
     help="Use IDs from slot_uri instead of names",
 )
 @click.option(
+    "--use-class-uris/--no-use-class-uris",
+    default=False,
+    help="Use IDs from class_uri instead of names",
+)
+@click.option(
     "--hierarchical-class-view/--no-hierarchical-class-view",
     default=True,
     help="Render class table on index page in a hierarchically indented view",
@@ -889,7 +906,17 @@ class DocGenerator(Generator):
 )
 @click.version_option(__version__, "-V", "--version")
 @click.command()
-def cli(yamlfile, directory, index_name, dialect, template_directory, use_slot_uris, hierarchical_class_view, **args):
+def cli(
+    yamlfile,
+    directory,
+    index_name,
+    dialect,
+    template_directory,
+    use_slot_uris,
+    use_class_uris,
+    hierarchical_class_view,
+    **args,
+):
     """Generate documentation folder from a LinkML YAML schema
 
     Currently a default set of templates for markdown is provided (see the
@@ -915,6 +942,7 @@ def cli(yamlfile, directory, index_name, dialect, template_directory, use_slot_u
         dialect=dialect,
         template_directory=template_directory,
         use_slot_uris=use_slot_uris,
+        use_class_uris=use_class_uris,
         hierarchical_class_view=hierarchical_class_view,
         index_name=index_name,
         **args,

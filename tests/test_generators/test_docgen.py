@@ -608,7 +608,7 @@ def test_use_slot_uris(kitchen_sink_path, input_path, tmp_path):
     gen.serialize(directory=str(tmp_path))
 
     # this is a markdown file created from slot_uri
-    assert_mdfile_contains(tmp_path / "actedOnBehalfOf.md", "Slot: actedOnBehalfOf")
+    assert_mdfile_contains(tmp_path / "actedOnBehalfOf.md", "Slot: acted on behalf of")
 
     # check label and link of documents in inheritance tree
     # A.md
@@ -621,6 +621,26 @@ def test_use_slot_uris(kitchen_sink_path, input_path, tmp_path):
         after="[tree_slot_A](A.md)",
         # followed_by="* [tree_slot_C](C.md) [ [mixin_slot_I](mixin_slot_I.md)]",
     )
+
+
+def test_use_class_uris(kitchen_sink_path, input_path, tmp_path):
+    tdir = input_path("docgen_html_templates")
+    gen = DocGenerator(
+        kitchen_sink_path,
+        mergeimports=True,
+        no_types_dir=True,
+        template_directory=str(tdir),
+        use_class_uris=True,
+    )
+
+    gen.serialize(directory=str(tmp_path))
+
+    # this is a markdown file created from class_uri
+    assert_mdfile_contains(tmp_path / "Any.md", "Class: AnyObject")
+
+    # check that the classes table on index page has correct class names and
+    # are linked to the correct class doc pages
+    assert_mdfile_contains(tmp_path / "index.md", "[AnyObject](Any.md)")
 
 
 def test_hierarchical_class_view(kitchen_sink_path, tmp_path):

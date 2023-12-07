@@ -1,7 +1,11 @@
 {%- if element.title %}
     {%- set title = element.title ~ ' (' ~ element.name ~ ')' -%}
 {%- else %}
-    {%- set title = gen.name(element) -%}
+    {%- if gen.use_slot_uris -%}
+        {%- set title = element.name -%}
+    {%- else -%}
+        {%- set title = gen.name(element) -%}
+    {%- endif -%}
 {%- endif -%}
 
 # Slot: {{ title }}
