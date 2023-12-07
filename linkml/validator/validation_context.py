@@ -51,12 +51,15 @@ class ValidationContext:
         return jsonschema_gen.generate()
 
     def pydantic_model(self, *, closed: bool):
-        module = self._pydantic_module(closed)
+        module = self._pydantic_module(closed=closed)
         return module.__dict__[self._target_class]
 
     @lru_cache
-    def _pydantic_module(self, *closed: bool):
-        return PydanticGenerator(self._schema, allow_extra=not closed).compile_module()
+    def _pydantic_module(self, *, closed: bool):
+        return PydanticGenerator(
+            self._schema,
+            extra_fields="forbid" if closed else "ignore" if closed is None else "allow",
+        ).compile_module()
 
     def _get_target_class(self, target_class: Optional[str] = None) -> str:
         if target_class is None:
