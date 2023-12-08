@@ -1,6 +1,7 @@
 from linkml_runtime.utils.compile_python import compile_python
-from tests.test_base.environment import env
+
 from linkml.generators.pythongen import PythonGenerator
+from tests.test_base.environment import env
 
 # Define the schema as a YAML string
 schema_yaml = """
@@ -57,4 +58,3 @@ def test_mixin_inheritance_interface():
     # print(env.meta_yaml)
     gen = PythonGenerator(env.meta_yaml, importmap=env.import_map, genmeta=True)
     gen.serialize()
-
