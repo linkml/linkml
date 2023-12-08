@@ -1,6 +1,6 @@
 
 Classes: 41
-	Referenced by: 24 classes, 222 slots, 0 types, 0 enums 
+	Referenced by: 24 classes, 223 slots, 0 types, 0 enums 
 	Root: 27
 	Leaf: 35
 	Standalone: 40
@@ -9,24 +9,22 @@ Classes: 41
 		enum_expression
 	Abstract: 5
 
-Slots: 253
+Slots: 254
 	Referenced by: 37 classes, 61 slots, 0 types, 0 enums 
-	Root: 192
-	Leaf: 225
-	Standalone: 252
+	Root: 193
+	Leaf: 227
+	Standalone: 254
 	Declared mixin: 0
 	Undeclared mixin: 0
 	Abstract: 8
-	* Unowned slots: contributors, disjoint_with, inapplicable, inlined_as_simple_dict, owned_by, publisher, relational_logical_characteristic, rules, structured_imports, union_of
-	Not in domain: 15
+	* Unowned slots: disjoint_with, inapplicable, inlined_as_simple_dict, owned_by, publisher, relational_logical_characteristic, rules, structured_imports, union_of
+	Not in domain: 13
 		slot.name: slot.domain
 		---------  -----------
 		"children_are_mutually_disjoint": "definition"
-		"contributors": "element"
 		"disjoint_with": "definition"
 		"inapplicable": "slot_definition"
 		"inlined_as_simple_dict": "slot_definition"
-		"keywords": "element"
 		"owned_by": "element"
 		"pattern": "definition"
 		"publisher": "element"
@@ -45,7 +43,7 @@ Slots: 253
 			ncname: 7
 			string: 53
 			uri: 3
-			uriorcurie: 37
+			uriorcurie: 38
 		Class:
 			AnyValue: 1
 			Anything: 1
@@ -86,7 +84,7 @@ Slots: 253
 			relational_role_enum: 1
 
 Types: 19
-	Referenced by: 0 classes, 152 slots, 0 types, 0 enums 
+	Referenced by: 0 classes, 153 slots, 0 types, 0 enums 
 	Bases:
 		Bool:
 			boolean

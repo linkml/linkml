@@ -1,5 +1,5 @@
-# Auto generated from ifabsents3.yaml by pythongen.py version: 0.0.1
-# Generation date: 2023-09-25T16:06:42
+# Auto generated from ifabsents2.yaml by pythongen.py version: 0.0.1
+# Generation date: 2000-01-01T00:00:00
 # Schema: ifabsent
 #
 # id: http://example.org/tests/ifabsent
@@ -31,7 +31,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
 
 # Namespaces
 SKOS = CurieNamespace('skos', 'http://www.w3.org/2004/02/skos/core#')
-TEST = CurieNamespace('test', 'http://example.org/tests/ifabsent/')
+TEST = CurieNamespace('test', 'http://example.org/test/')
 XSD = CurieNamespace('xsd', 'http://example.org/UNKNOWN/xsd/')
 DEFAULT_ = TEST
 
