@@ -62,10 +62,10 @@ class ExcelGenerator(Generator):
                 workbook.save(output_path)
 
                 # Add enum validation for columns with enum types
-                enum_list = [e_name for e_name in sv.all_enums(imports=self.mergeimports).items()]
+                enum_list = list(sv.all_enums(imports=self.mergeimports).keys())
                 for s in sv.class_induced_slots(cls_name, self.mergeimports):
                     if s.range in enum_list:
-                        pv_list = [pv_name for pv_name in sv.get_enum(s.range).permissible_values.items()]
+                        pv_list = list(sv.get_enum(s.range).permissible_values.keys())
                         self.column_enum_validation(workbook, cls_name, s.name, pv_list)
                     workbook.save(output_path)
 
