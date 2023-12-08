@@ -133,6 +133,7 @@ class {{ c.name }}
     {%- endif -%}
     {%- if attr.title != None %}, title="{{attr.title}}"{% endif -%}
     {%- if attr.description %}, description=\"\"\"{{attr.description}}\"\"\"{% endif -%}
+    {%- if attr.pattern %}, pattern=\"{{attr.pattern}}\"{% endif -%}
     {%- if attr.equals_number != None %}, le={{attr.equals_number}}, ge={{attr.equals_number}}
     {%- else -%}
      {%- if attr.minimum_value != None %}, ge={{attr.minimum_value}}{% endif -%}
