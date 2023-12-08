@@ -412,7 +412,8 @@
 <span class="s2">{</span><span class="si">% e</span><span class="s2">ndfor %}</span>
 <span class="s2">&quot;&quot;&quot;</span>
     <span class="c1">### CLASSES ###</span>
-    <span class="n">template</span> <span class="o">+=</span> <span class="s2">&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">pydantic_ver</span> <span class="o">==</span> <span class="s2">&quot;1&quot;</span><span class="p">:</span>
+        <span class="n">template</span> <span class="o">+=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">{</span><span class="si">%- f</span><span class="s2">or c in schema.classes.values() %}</span>
 <span class="s2">class {{ c.name }}</span>
 <span class="s2">    {</span><span class="si">%- i</span><span class="s2">f class_isa_plus_mixins[c.name] -%}</span>
@@ -437,6 +438,7 @@
 <span class="s2">    {</span><span class="si">%- e</span><span class="s2">ndif -%}</span>
 <span class="s2">    {</span><span class="si">%- i</span><span class="s2">f attr.title != None %}, title=&quot;{{attr.title}}&quot;{</span><span class="si">% e</span><span class="s2">ndif -%}</span>
 <span class="s2">    {</span><span class="si">%- i</span><span class="s2">f attr.description %}, description=</span><span class="se">\&quot;\&quot;\&quot;</span><span class="s2">{{attr.description}}</span><span class="se">\&quot;\&quot;\&quot;</span><span class="s2">{</span><span class="si">% e</span><span class="s2">ndif -%}</span>
+<span class="s2">    {</span><span class="si">%- i</span><span class="s2">f attr.pattern %}, regex=</span><span class="se">\&quot;</span><span class="s2">{{attr.pattern}}</span><span class="se">\&quot;</span><span class="s2">{</span><span class="si">% e</span><span class="s2">ndif -%}</span>
 <span class="s2">    {</span><span class="si">%- i</span><span class="s2">f attr.equals_number != None %}, le={{attr.equals_number}}, ge={{attr.equals_number}}</span>
 <span class="s2">    {</span><span class="si">%- e</span><span class="s2">lse -%}</span>
 <span class="s2">     {</span><span class="si">%- i</span><span class="s2">f attr.minimum_value != None %}, ge={{attr.minimum_value}}{</span><span class="si">% e</span><span class="s2">ndif -%}</span>
@@ -448,6 +450,45 @@
 <span class="s2">    {</span><span class="si">% e</span><span class="s2">ndfor %}</span>
 <span class="s2">{</span><span class="si">% e</span><span class="s2">ndfor %}</span>
 <span class="s2">&quot;&quot;&quot;</span>
+    <span class="k">elif</span> <span class="n">pydantic_ver</span> <span class="o">==</span> <span class="s2">&quot;2&quot;</span><span class="p">:</span>
+        <span class="n">template</span> <span class="o">+=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">{</span><span class="si">%- f</span><span class="s2">or c in schema.classes.values() %}</span>
+<span class="s2">class {{ c.name }}</span>
+<span class="s2">    {</span><span class="si">%- i</span><span class="s2">f class_isa_plus_mixins[c.name] -%}</span>
+<span class="s2">        ({{class_isa_plus_mixins[c.name]|join(&#39;, &#39;)}})</span>
+<span class="s2">    {</span><span class="si">%- e</span><span class="s2">lse -%}</span>
+<span class="s2">        (ConfiguredBaseModel)</span>
+<span class="s2">    {</span><span class="si">%- e</span><span class="s2">ndif -%}</span>
+<span class="s2">                  :</span>
+<span class="s2">    {</span><span class="si">% i</span><span class="s2">f c.description -%}</span>
+<span class="s2">    </span><span class="se">\&quot;\&quot;\&quot;</span>
+<span class="s2">    {{ c.description }}</span>
+<span class="s2">    </span><span class="se">\&quot;\&quot;\&quot;</span>
+<span class="s2">    {</span><span class="si">%- e</span><span class="s2">ndif %}</span>
+<span class="s2">    {</span><span class="si">% f</span><span class="s2">or attr in c.attributes.values() if c.attributes -%}</span>
+<span class="s2">    {{attr.name}}: {{ attr.annotations[&#39;python_range&#39;].value }} = Field(</span>
+<span class="s2">    {</span><span class="si">%- i</span><span class="s2">f predefined_slot_values[c.name][attr.name] -%}</span>
+<span class="s2">        {{ predefined_slot_values[c.name][attr.name] }}</span>
+<span class="s2">    {</span><span class="si">%- e</span><span class="s2">lif (attr.required or attr.identifier or attr.key) -%}</span>
+<span class="s2">        ...</span>
+<span class="s2">    {</span><span class="si">%- e</span><span class="s2">lse -%}</span>
+<span class="s2">        None</span>
+<span class="s2">    {</span><span class="si">%- e</span><span class="s2">ndif -%}</span>
+<span class="s2">    {</span><span class="si">%- i</span><span class="s2">f attr.title != None %}, title=&quot;{{attr.title}}&quot;{</span><span class="si">% e</span><span class="s2">ndif -%}</span>
+<span class="s2">    {</span><span class="si">%- i</span><span class="s2">f attr.description %}, description=</span><span class="se">\&quot;\&quot;\&quot;</span><span class="s2">{{attr.description}}</span><span class="se">\&quot;\&quot;\&quot;</span><span class="s2">{</span><span class="si">% e</span><span class="s2">ndif -%}</span>
+<span class="s2">    {</span><span class="si">%- i</span><span class="s2">f attr.pattern %}, pattern=</span><span class="se">\&quot;</span><span class="s2">{{attr.pattern}}</span><span class="se">\&quot;</span><span class="s2">{</span><span class="si">% e</span><span class="s2">ndif -%}</span>
+<span class="s2">    {</span><span class="si">%- i</span><span class="s2">f attr.equals_number != None %}, le={{attr.equals_number}}, ge={{attr.equals_number}}</span>
+<span class="s2">    {</span><span class="si">%- e</span><span class="s2">lse -%}</span>
+<span class="s2">     {</span><span class="si">%- i</span><span class="s2">f attr.minimum_value != None %}, ge={{attr.minimum_value}}{</span><span class="si">% e</span><span class="s2">ndif -%}</span>
+<span class="s2">     {</span><span class="si">%- i</span><span class="s2">f attr.maximum_value != None %}, le={{attr.maximum_value}}{</span><span class="si">% e</span><span class="s2">ndif -%}</span>
+<span class="s2">    {</span><span class="si">%- e</span><span class="s2">ndif -%}</span>
+<span class="s2">    )</span>
+<span class="s2">    {</span><span class="si">% e</span><span class="s2">lse -%}</span>
+<span class="s2">    None</span>
+<span class="s2">    {</span><span class="si">% e</span><span class="s2">ndfor %}</span>
+<span class="s2">{</span><span class="si">% e</span><span class="s2">ndfor %}</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
     <span class="c1">### FWD REFS / REBUILD MODEL ###</span>
     <span class="k">if</span> <span class="n">pydantic_ver</span> <span class="o">==</span> <span class="s2">&quot;1&quot;</span><span class="p">:</span>
         <span class="n">template</span> <span class="o">+=</span> <span class="s2">&quot;&quot;&quot;</span>
