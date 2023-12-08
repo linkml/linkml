@@ -52,9 +52,6 @@ URI: [linkml:Element](https://w3id.org/linkml/Element)
  * [implements](implements.md)  <sub>0..\*</sub>
      * Description: An element in another schema which this element conforms to. The referenced element is not imported into the schema for the implementing element. However, the referenced schema may be used to check conformance of the implementing element.
      * Range: [Uriorcurie](types/Uriorcurie.md)
- * [instantiates](instantiates.md)  <sub>0..\*</sub>
-     * Description: An element in another schema which this element instantiates.
-     * Range: [Uriorcurie](types/Uriorcurie.md)
 
 ### Mixed in from extensible:
 
@@ -234,13 +231,6 @@ URI: [linkml:Element](https://w3id.org/linkml/Element)
 
 ### Mixed in from common_metadata:
 
- * [contributors](contributors.md)  <sub>0..\*</sub>
-     * Description: agent that contributed to the element
-     * Range: [Uriorcurie](types/Uriorcurie.md)
-     * in subsets: (BasicSubset)
-
-### Mixed in from common_metadata:
-
  * [created_on](created_on.md)  <sub>0..1</sub>
      * Description: time at which the element was created
      * Range: [Datetime](types/Datetime.md)
@@ -274,20 +264,6 @@ URI: [linkml:Element](https://w3id.org/linkml/Element)
      * Description: the relative order in which the element occurs, lower values are given precedence
      * Range: [Integer](types/Integer.md)
      * in subsets: (SpecificationSubset,BasicSubset)
-
-### Mixed in from common_metadata:
-
- * [categories](categories.md)  <sub>0..\*</sub>
-     * Description: Controlled terms used to categorize an element.
-     * Range: [Uriorcurie](types/Uriorcurie.md)
-     * in subsets: (BasicSubset)
-
-### Mixed in from common_metadata:
-
- * [keywords](keywords.md)  <sub>0..\*</sub>
-     * Description: Keywords or tags used to describe the element
-     * Range: [String](types/String.md)
-     * in subsets: (BasicSubset)
 
 ## Other properties
 

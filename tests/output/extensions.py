@@ -1,5 +1,5 @@
 # Auto generated from extensions.yaml by pythongen.py version: 0.0.1
-# Generation date: 2023-12-01T17:13:09
+# Generation date: 2023-09-25T15:55:10
 # Schema: extensions
 #
 # id: https://w3id.org/linkml/extensions
@@ -20,7 +20,7 @@ from linkml_runtime.utils.formatutils import camelcase, underscore, sfx
 from linkml_runtime.utils.enumerations import EnumDefinitionImpl
 from rdflib import Namespace, URIRef
 from linkml_runtime.utils.curienamespace import CurieNamespace
-from .types import Uriorcurie
+from .types import String, Uriorcurie
 from linkml_runtime.utils.metamodelcore import URIorCURIE
 
 metamodel_version = "1.7.0"
@@ -41,8 +41,6 @@ class ExtensionTag(URIorCURIE):
     pass
 
 
-AnyValue = Any
-
 @dataclass
 class Extension(YAMLRoot):
     """
@@ -56,7 +54,7 @@ class Extension(YAMLRoot):
     class_model_uri: ClassVar[URIRef] = LINKML.Extension
 
     tag: Union[str, ExtensionTag] = None
-    value: Union[dict, AnyValue] = None
+    value: str = None
     extensions: Optional[Union[Dict[Union[str, ExtensionTag], Union[dict, "Extension"]], List[Union[dict, "Extension"]]]] = empty_dict()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
@@ -64,6 +62,11 @@ class Extension(YAMLRoot):
             self.MissingRequiredField("tag")
         if not isinstance(self.tag, ExtensionTag):
             self.tag = ExtensionTag(self.tag)
+
+        if self._is_empty(self.value):
+            self.MissingRequiredField("value")
+        if not isinstance(self.value, str):
+            self.value = str(self.value)
 
         self._normalize_inlined_as_dict(slot_name="extensions", slot_type=Extension, key_name="tag", keyed=True)
 
@@ -104,4 +107,4 @@ slots.extension_tag = Slot(uri=LINKML.tag, name="extension_tag", curie=LINKML.cu
                    model_uri=LINKML.extension_tag, domain=Extension, range=Union[str, ExtensionTag])
 
 slots.extension_value = Slot(uri=LINKML.value, name="extension_value", curie=LINKML.curie('value'),
-                   model_uri=LINKML.extension_value, domain=Extension, range=Union[dict, AnyValue])
+                   model_uri=LINKML.extension_value, domain=Extension, range=str)
