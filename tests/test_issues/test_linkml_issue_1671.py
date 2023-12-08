@@ -1,7 +1,6 @@
 from linkml_runtime.utils.compile_python import compile_python
 
 from linkml.generators.pythongen import PythonGenerator
-from tests.test_base.environment import env
 
 # Define the schema as a YAML string
 schema_yaml = """
