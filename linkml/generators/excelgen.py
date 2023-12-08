@@ -66,15 +66,17 @@ class ExcelGenerator(Generator):
                 for s in sv.class_induced_slots(cls_name, self.mergeimports):
                     if s.range in enum_list:
                         pv_list = list(sv.get_enum(s.range).permissible_values.keys())
-                        
+
                         # Check if the total length of permissible values is <= 255 characters
                         enum_length = sum(len(value) for value in pv_list)
                         if enum_length <= 255:
                             self.column_enum_validation(workbook, cls_name, s.name, pv_list)
                         else:
-                            self.logger.warning(f"'{s.range}' has permissible values with total " \
-                                                "length > 255 characters. Dropdowns may not work properly " \
-                                                f"in {output_path}")
+                            self.logger.warning(
+                                f"'{s.range}' has permissible values with total "
+                                "length > 255 characters. Dropdowns may not work properly "
+                                f"in {output_path}"
+                            )
                     workbook.save(output_path)
 
         workbook.save(output_path)
