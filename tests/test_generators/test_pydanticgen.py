@@ -326,3 +326,14 @@ def test_multiline_module(input_path):
     )
 
     assert 'INTERNAL "REORGANIZATION"' in gen.schema.enums["EmploymentEventType"].permissible_values
+
+
+def test_pydantic_pattern(kitchen_sink_path, tmp_path, input_path):
+    """Generate pydantic classes"""
+    gen = PydanticGenerator(kitchen_sink_path, package=PACKAGE)
+    code = gen.serialize()
+    module = compile_python(code, PACKAGE)
+    p1 = module.Person(id="01", name="John Doe")
+    assert p1.name == "John Doe"
+    with pytest.raises(ValidationError):
+        module.Person(id="01", name="x")

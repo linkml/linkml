@@ -108,7 +108,8 @@ class {{ e.name }}(str{% if e['values'] %}, Enum{% endif %}):
 {% endfor %}
 """
     ### CLASSES ###
-    template += """
+    if pydantic_ver == "1":
+        template += """
 {%- for c in schema.classes.values() %}
 class {{ c.name }}
     {%- if class_isa_plus_mixins[c.name] -%}
@@ -133,6 +134,7 @@ class {{ c.name }}
     {%- endif -%}
     {%- if attr.title != None %}, title="{{attr.title}}"{% endif -%}
     {%- if attr.description %}, description=\"\"\"{{attr.description}}\"\"\"{% endif -%}
+    {%- if attr.pattern %}, regex=\"{{attr.pattern}}\"{% endif -%}
     {%- if attr.equals_number != None %}, le={{attr.equals_number}}, ge={{attr.equals_number}}
     {%- else -%}
      {%- if attr.minimum_value != None %}, ge={{attr.minimum_value}}{% endif -%}
@@ -144,6 +146,45 @@ class {{ c.name }}
     {% endfor %}
 {% endfor %}
 """
+    elif pydantic_ver == "2":
+        template += """
+{%- for c in schema.classes.values() %}
+class {{ c.name }}
+    {%- if class_isa_plus_mixins[c.name] -%}
+        ({{class_isa_plus_mixins[c.name]|join(', ')}})
+    {%- else -%}
+        (ConfiguredBaseModel)
+    {%- endif -%}
+                  :
+    {% if c.description -%}
+    \"\"\"
+    {{ c.description }}
+    \"\"\"
+    {%- endif %}
+    {% for attr in c.attributes.values() if c.attributes -%}
+    {{attr.name}}: {{ attr.annotations['python_range'].value }} = Field(
+    {%- if predefined_slot_values[c.name][attr.name] -%}
+        {{ predefined_slot_values[c.name][attr.name] }}
+    {%- elif (attr.required or attr.identifier or attr.key) -%}
+        ...
+    {%- else -%}
+        None
+    {%- endif -%}
+    {%- if attr.title != None %}, title="{{attr.title}}"{% endif -%}
+    {%- if attr.description %}, description=\"\"\"{{attr.description}}\"\"\"{% endif -%}
+    {%- if attr.pattern %}, pattern=\"{{attr.pattern}}\"{% endif -%}
+    {%- if attr.equals_number != None %}, le={{attr.equals_number}}, ge={{attr.equals_number}}
+    {%- else -%}
+     {%- if attr.minimum_value != None %}, ge={{attr.minimum_value}}{% endif -%}
+     {%- if attr.maximum_value != None %}, le={{attr.maximum_value}}{% endif -%}
+    {%- endif -%}
+    )
+    {% else -%}
+    None
+    {% endfor %}
+{% endfor %}
+"""
+
     ### FWD REFS / REBUILD MODEL ###
     if pydantic_ver == "1":
         template += """
