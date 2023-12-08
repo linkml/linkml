@@ -1,10 +1,25 @@
+"""
+Tests the generic generator framework
+
+Note: I am skipping any test that overrides ClassVars
+
+As part of this refactor:
+https://github.com/linkml/linkml/pull/924
+
+We are separating class vars and object vars; it is not possible to override ClassVars; see
+
+https://stackoverflow.com/questions/52099029/change-in-behaviour-of-dataclasses
+
+If these tests are reinstated then it will be necessary to create distinct subClasses of TestGenerator
+
+"""
 import logging
 import os
-import unittest
 from dataclasses import dataclass, field
 from io import StringIO
 from typing import TextIO, Union, cast
 
+import pytest
 from linkml_runtime.linkml_model.meta import (
     ClassDefinition,
     ClassDefinitionName,
@@ -19,7 +34,6 @@ from linkml_runtime.linkml_model.meta import (
 
 from linkml import LOCAL_METAMODEL_YAML_FILE
 from linkml.utils.generator import Generator
-from tests.test_utils.environment import env
 
 
 @dataclass
@@ -53,7 +67,7 @@ class GeneratorTest(Generator):
             logger.removeHandler(handler)
         logger.addHandler(logging.StreamHandler(self.logstream))
         logger.setLevel(logging.INFO)
-        super().__init__(schema, fmt, emit_metadata, logger=logger, importmap=env.import_map)
+        super().__init__(schema, fmt, emit_metadata, logger=logger)
 
     def __post_init__(self) -> None:
         self.logstream = StringIO()
@@ -360,48 +374,32 @@ expected5 = [
 ]
 
 
-class BaseGeneratorTestCase(unittest.TestCase):
-    """
-    Tests the generic generator framework
+@pytest.mark.skip("See above")
+def test_visitors(input_path):
+    """Test the generator visitor functions"""
+    gen = GeneratorTest(str(input_path("generator1.yaml")))
+    gen.serialize()
+    assert expected1 == gen.visited
+    gen.visit_all_class_slots = False
+    gen.serialize()
+    assert expected2 == gen.visited
+    gen.visit_all_class_slots = True
+    gen.visits_are_sorted = True
+    gen.serialize()
+    assert expected3 == gen.visited
+    gen.visits_are_sorted = False
+    gen.sort_class_slots = True
+    gen.serialize()
+    assert expected4 == gen.visited
+    gen.sort_class_slots = False
+    gen.visit_class_return = False
+    gen.serialize()
+    assert expected5 == gen.visited
 
-    Note: I am skipping any test that overrides ClassVars
 
-    As part of this refactor:
-    https://github.com/linkml/linkml/pull/924
-
-    We are separating class vars and object vars; it is not possible to override ClassVars; see
-
-    https://stackoverflow.com/questions/52099029/change-in-behaviour-of-dataclasses
-
-    If these tests are reinstated then it will be necessary to create distinct subClasses of TestGenerator
-
-    """
-
-    @unittest.skip("See above")
-    def test_visitors(self):
-        """Test the generator visitor functions"""
-        gen = GeneratorTest(env.input_path("generator1.yaml"))
-        gen.serialize()
-        self.assertEqual(expected1, gen.visited)
-        gen.visit_all_class_slots = False
-        gen.serialize()
-        self.assertEqual(expected2, gen.visited)
-        gen.visit_all_class_slots = True
-        gen.visits_are_sorted = True
-        gen.serialize()
-        self.assertEqual(expected3, gen.visited)
-        gen.visits_are_sorted = False
-        gen.sort_class_slots = True
-        gen.serialize()
-        self.assertEqual(expected4, gen.visited)
-        gen.sort_class_slots = False
-        gen.visit_class_return = False
-        gen.serialize()
-        self.assertEqual(expected5, gen.visited)
-
-    def test_default_prefix(self):
-        """Test default prefix utility"""
-        model = """
+def test_default_prefix():
+    """Test default prefix utility"""
+    model = """
 id: http://example.org/test/t1
 name: t1
 
@@ -416,18 +414,19 @@ prefixes:
     AAA: http://example.org/test/aaa/
     BBB: http://example.org/test/bbb/
 """
-        gen = GeneratorTest(model + "\n\ndefault_prefix: AAA")
-        self.assertEqual("http://example.org/test/aaa/", gen.default_prefix())
+    gen = GeneratorTest(model + "\n\ndefault_prefix: AAA")
+    assert "http://example.org/test/aaa/" == gen.default_prefix()
 
-        gen = GeneratorTest(model + "\n\ndefault_prefix: http://example.org/test/default/")
-        self.assertEqual("http://example.org/test/default/", gen.default_prefix())
+    gen = GeneratorTest(model + "\n\ndefault_prefix: http://example.org/test/default/")
+    assert "http://example.org/test/default/" == gen.default_prefix()
 
-        with self.assertRaises(ValueError):
-            GeneratorTest(model + "\n\ndefault_prefix: CCCC")
+    with pytest.raises(ValueError):
+        GeneratorTest(model + "\n\ndefault_prefix: CCCC")
 
-    def test_duplicate_names(self):
-        """Test duplicate name for slot and type detection"""
-        model = """
+
+def test_duplicate_names():
+    """Test duplicate name for slot and type detection"""
+    model = """
 id: http://example.org/test/t1
 name: t1
 default_range: string
@@ -447,12 +446,13 @@ classes:
 
     dup name:
 """
-        with self.assertRaises(ValueError):
-            GeneratorTest(model)
+    with pytest.raises(ValueError):
+        GeneratorTest(model)
 
-    def test_element_name(self):
-        """Test formatted_element_name"""
-        model = """
+
+def test_element_name():
+    """Test formatted_element_name"""
+    model = """
 id: http://example.org/test/t1
 name: t1
 
@@ -484,187 +484,118 @@ slots:
 classes:
     class c1:
 """
-        gen = GeneratorTest(model)
-        gentext = gen.logstream.getvalue().strip()
+    gen = GeneratorTest(model)
+    gentext = gen.logstream.getvalue().strip()
 
-        self.assertIn("Overlapping type and slot names: dup name", gentext)
-        self.assertIn("Overlapping subset and slot names: dup name", gentext)
-        self.assertIn("Overlapping subset and type names: dup name", gentext)
+    assert "Overlapping type and slot names: dup name" in gentext
+    assert "Overlapping subset and slot names: dup name" in gentext
+    assert "Overlapping subset and type names: dup name" in gentext
 
-        self.assertEqual("dup_name", gen.formatted_element_name(cast(ElementName, "dup name"), False))
-        self.assertEqual("int", gen.formatted_element_name(cast(ElementName, "dup name"), True))
-        self.assertEqual("str", gen.formatted_element_name(cast(ElementName, "str"), True))
-        self.assertIsNone(gen.formatted_element_name(cast(ElementName, "class c1"), False))
-        self.assertEqual("ClassC1", gen.formatted_element_name(cast(ElementName, "class c1"), True))
-        self.assertEqual(
-            "SubsetSs1",
-            gen.formatted_element_name(cast(ElementName, "subset ss1"), False),
-        )
-        self.assertEqual("Unknown_ClassC2", gen.class_or_type_name(cast(ElementName, "class c2")))
-        self.assertEqual("int", gen.class_or_type_name(cast(ElementName, "dup name")))
-        self.assertEqual("int", gen.class_or_type_name(cast(ElementName, "type t1")))
-        self.assertEqual("unknown_slot_s2", gen.slot_name(cast(SlotDefinitionName, "slot s2")))
-        self.assertEqual("Unknown_SS", gen.subset_name(cast(ElementName, "s s")))
+    assert "dup_name" == gen.formatted_element_name(cast(ElementName, "dup name"), False)
+    assert "int" == gen.formatted_element_name(cast(ElementName, "dup name"), True)
+    assert "str" == gen.formatted_element_name(cast(ElementName, "str"), True)
+    assert gen.formatted_element_name(cast(ElementName, "class c1"), False) is None
+    assert "ClassC1" == gen.formatted_element_name(cast(ElementName, "class c1"), True)
+    assert "SubsetSs1" == gen.formatted_element_name(cast(ElementName, "subset ss1"), False)
+    assert "Unknown_ClassC2" == gen.class_or_type_name(cast(ElementName, "class c2"))
+    assert "int" == gen.class_or_type_name(cast(ElementName, "dup name"))
+    assert "int" == gen.class_or_type_name(cast(ElementName, "type t1"))
+    assert "unknown_slot_s2" == gen.slot_name(cast(SlotDefinitionName, "slot s2"))
+    assert "Unknown_SS" == gen.subset_name(cast(ElementName, "s s"))
 
-        self.assertEqual(
-            "dup_name",
-            gen.formatted_element_name(gen.schema.slots[cast(ElementName, "dup name")]),
-        )
-        self.assertEqual(
-            "int",
-            gen.formatted_element_name(gen.schema.types[cast(ElementName, "dup name")]),
-        )
-        self.assertEqual(
-            "DupName",
-            gen.formatted_element_name(gen.schema.subsets[cast(ElementName, "dup name")]),
-        )
-        self.assertEqual(
-            "ClassC1",
-            gen.formatted_element_name(gen.schema.classes[cast(ElementName, "class c1")]),
-        )
-        self.assertIsNone(gen.formatted_element_name(cast(Element, gen)))
+    assert "dup_name" == gen.formatted_element_name(gen.schema.slots[cast(ElementName, "dup name")])
+    assert "int" == gen.formatted_element_name(gen.schema.types[cast(ElementName, "dup name")])
+    assert "DupName" == gen.formatted_element_name(gen.schema.subsets[cast(ElementName, "dup name")])
+    assert "ClassC1" == gen.formatted_element_name(gen.schema.classes[cast(ElementName, "class c1")])
+    assert gen.formatted_element_name(cast(Element, gen)) is None
 
-    @unittest.skip("See above")
-    def test_own_slots(self):
-        """Test the generator own_slots and all_slots helper functions"""
-        gen = GeneratorTest(env.input_path("ownalltest.yaml"))
-        gen.sort_class_slots = True
 
-        self.assertEqual(["s6"], [s.name for s in gen.own_slots(cast(ClassDefinitionName, "at1"))])
-        self.assertEqual(["s6"], [s.name for s in gen.all_slots(cast(ClassDefinitionName, "at1"))])
-        self.assertEqual(
-            ["s6"],
-            [s.name for s in gen.all_slots(cast(ClassDefinitionName, "at1"), cls_slots_first=True)],
-        )
+@pytest.mark.skip(reason="See above")
+def test_own_slots(input_path):
+    """Test the generator own_slots and all_slots helper functions"""
+    gen = GeneratorTest(str(input_path("ownalltest.yaml")))
+    gen.sort_class_slots = True
 
-        self.assertEqual(
-            ["s5", "s6"],
-            [s.name for s in gen.own_slots(cast(ClassDefinitionName, "m2"))],
-        )
-        self.assertEqual(
-            ["s5", "s6"],
-            [s.name for s in gen.all_slots(cast(ClassDefinitionName, "m2"))],
-        )
-        self.assertEqual(
-            ["s5", "s6"],
-            [s.name for s in gen.all_slots(cast(ClassDefinitionName, "m2"), cls_slots_first=True)],
-        )
+    assert ["s6"] == [s.name for s in gen.own_slots(cast(ClassDefinitionName, "at1"))]
+    assert ["s6"] == [s.name for s in gen.all_slots(cast(ClassDefinitionName, "at1"))]
+    assert ["s6"] == [s.name for s in gen.all_slots(cast(ClassDefinitionName, "at1"), cls_slots_first=True)]
 
-        self.assertEqual(["s4"], [s.name for s in gen.own_slots(cast(ClassDefinitionName, "m1"))])
-        self.assertEqual(["s4"], [s.name for s in gen.all_slots(cast(ClassDefinitionName, "m1"))])
-        self.assertEqual(
-            ["s4"],
-            [s.name for s in gen.all_slots(cast(ClassDefinitionName, "m1"), cls_slots_first=True)],
-        )
+    assert ["s5", "s6"] == [s.name for s in gen.own_slots(cast(ClassDefinitionName, "m2"))]
+    assert ["s5", "s6"] == [s.name for s in gen.all_slots(cast(ClassDefinitionName, "m2"))]
+    assert ["s5", "s6"] == [s.name for s in gen.all_slots(cast(ClassDefinitionName, "m2"), cls_slots_first=True)]
 
-        self.assertEqual(
-            ["s1", "s3"],
-            [s.name for s in gen.own_slots(cast(ClassDefinitionName, "c1"))],
-        )
-        self.assertEqual(
-            ["s1", "s3"],
-            [s.name for s in gen.all_slots(cast(ClassDefinitionName, "c1"))],
-        )
-        self.assertEqual(
-            ["s1", "s3"],
-            [s.name for s in gen.all_slots(cast(ClassDefinitionName, "c1"), cls_slots_first=True)],
-        )
+    assert ["s4"] == [s.name for s in gen.own_slots(cast(ClassDefinitionName, "m1"))]
+    assert ["s4"] == [s.name for s in gen.all_slots(cast(ClassDefinitionName, "m1"))]
+    assert ["s4"] == [s.name for s in gen.all_slots(cast(ClassDefinitionName, "m1"), cls_slots_first=True)]
 
-        self.assertEqual(
-            ["s2", "s4"],
-            [s.name for s in gen.own_slots(cast(ClassDefinitionName, "c2"))],
-        )
-        self.assertEqual(
-            ["s1", "s2", "s3", "s4"],
-            [s.name for s in gen.all_slots(cast(ClassDefinitionName, "c2"))],
-        )
-        self.assertEqual(
-            ["s2", "s4", "s1", "s3"],
-            [s.name for s in gen.all_slots(cast(ClassDefinitionName, "c2"), cls_slots_first=True)],
-        )
+    assert ["s1", "s3"] == [s.name for s in gen.own_slots(cast(ClassDefinitionName, "c1"))]
+    assert ["s1", "s3"] == [s.name for s in gen.all_slots(cast(ClassDefinitionName, "c1"))]
+    assert ["s1", "s3"] == [s.name for s in gen.all_slots(cast(ClassDefinitionName, "c1"), cls_slots_first=True)]
 
-        self.assertEqual(
-            ["s5", "s6"],
-            [s.name for s in gen.own_slots(cast(ClassDefinitionName, "c3"))],
-        )
-        self.assertEqual(
-            ["s1", "s2", "s3", "s4", "s5", "s6"],
-            [s.name for s in gen.all_slots(cast(ClassDefinitionName, "c3"))],
-        )
-        self.assertEqual(
-            ["s5", "s6", "s2", "s4", "s1", "s3"],
-            [s.name for s in gen.all_slots(cast(ClassDefinitionName, "c3"), cls_slots_first=True)],
-        )
+    assert ["s2", "s4"] == [s.name for s in gen.own_slots(cast(ClassDefinitionName, "c2"))]
+    assert ["s1", "s2", "s3", "s4"] == [s.name for s in gen.all_slots(cast(ClassDefinitionName, "c2"))]
+    assert ["s2", "s4", "s1", "s3"] == [
+        s.name for s in gen.all_slots(cast(ClassDefinitionName, "c2"), cls_slots_first=True)
+    ]
 
-        self.assertEqual(
-            ["c4_s1", "c4_s5", "c4_s6"],
-            [s.name for s in gen.own_slots(cast(ClassDefinitionName, "c4"))],
-        )
-        self.assertEqual(
-            ["c4_s1", "c4_s5", "c4_s6", "s2", "s3", "s4"],
-            [s.name for s in gen.all_slots(cast(ClassDefinitionName, "c4"))],
-        )
-        self.assertEqual(
-            ["c4_s1", "c4_s5", "c4_s6", "s2", "s4", "s3"],
-            [s.name for s in gen.all_slots(cast(ClassDefinitionName, "c4"), cls_slots_first=True)],
-        )
+    assert ["s5", "s6"] == [s.name for s in gen.own_slots(cast(ClassDefinitionName, "c3"))]
+    assert ["s1", "s2", "s3", "s4", "s5", "s6"] == [s.name for s in gen.all_slots(cast(ClassDefinitionName, "c3"))]
+    assert ["s5", "s6", "s2", "s4", "s1", "s3"] == [
+        s.name for s in gen.all_slots(cast(ClassDefinitionName, "c3"), cls_slots_first=True)
+    ]
 
-        self.assertEqual(
-            ["c5_s1", "c5_s6"],
-            [s.name for s in gen.own_slots(cast(ClassDefinitionName, "c5"))],
-        )
-        self.assertEqual(
-            ["c4_s5", "c5_s1", "c5_s6", "s2", "s3", "s4"],
-            [s.name for s in gen.all_slots(cast(ClassDefinitionName, "c5"))],
-        )
-        self.assertEqual(
-            ["c5_s1", "c5_s6", "c4_s5", "s2", "s4", "s3"],
-            [s.name for s in gen.all_slots(cast(ClassDefinitionName, "c5"), cls_slots_first=True)],
-        )
+    assert ["c4_s1", "c4_s5", "c4_s6"] == [s.name for s in gen.own_slots(cast(ClassDefinitionName, "c4"))]
+    assert ["c4_s1", "c4_s5", "c4_s6", "s2", "s3", "s4"] == [
+        s.name for s in gen.all_slots(cast(ClassDefinitionName, "c4"))
+    ]
+    assert ["c4_s1", "c4_s5", "c4_s6", "s2", "s4", "s3"] == [
+        s.name for s in gen.all_slots(cast(ClassDefinitionName, "c4"), cls_slots_first=True)
+    ]
 
-    @unittest.skip("See above")
-    def test_slot_class_paths(self):
-        """Test for aliased slot name, class identifier path and slot type path"""
-        gen = GeneratorTest(env.input_path("ownalltest.yaml"))
-        gen.sort_class_slots = True
-        self.assertEqual(
-            ["s1", "s5", "s6", "s2", "s3", "s4"],
-            [gen.aliased_slot_name(s.name) for s in gen.all_slots(cast(ClassDefinitionName, "c4"))],
-        )
-        self.assertEqual(
-            ["s5", "s1", "s6", "s2", "s3", "s4"],
-            [gen.aliased_slot_name(s) for s in gen.all_slots(cast(ClassDefinitionName, "c5"))],
-        )
-        self.assertEqual(
-            {
-                "c4_s1": ["int"],
-                "c4_s5": ["Bool", "T5"],
-                "c4_s6": ["int", "C1S1", "C2S1", "C3S1", "C4S1"],
-                "s2": ["int", "C1S1"],
-                "s3": ["int", "T2", "T3"],
-                "s4": ["Bool"],
-            },
-            {s.name: gen.slot_range_path(s) for s in gen.all_slots(cast(ClassDefinitionName, "c4"))},
-        )
-        self.assertEqual(
-            {
-                "c4_s5": ["Bool", "T5"],
-                "c5_s1": ["int"],
-                "c5_s6": ["str"],
-                "s2": ["int", "C1S1"],
-                "s3": ["int", "T2", "T3"],
-                "s4": ["Bool"],
-            },
-            {s.name: gen.slot_range_path(s) for s in gen.all_slots(cast(ClassDefinitionName, "c5"))},
-        )
-        self.assertEqual(
-            {"s1": ["int"], "s3": ["int", "T2", "T3"]},
-            {s.name: gen.slot_range_path(s) for s in gen.all_slots(cast(ClassDefinitionName, "c1"))},
-        )
+    assert ["c5_s1", "c5_s6"] == [s.name for s in gen.own_slots(cast(ClassDefinitionName, "c5"))]
+    assert ["c4_s5", "c5_s1", "c5_s6", "s2", "s3", "s4"] == [
+        s.name for s in gen.all_slots(cast(ClassDefinitionName, "c5"))
+    ]
+    assert ["c5_s1", "c5_s6", "c4_s5", "s2", "s4", "s3"] == [
+        s.name for s in gen.all_slots(cast(ClassDefinitionName, "c5"), cls_slots_first=True)
+    ]
 
-    def test_ancestors(self):
-        """Test ancestors function and duplicate name detection"""
-        model = """
+
+@pytest.mark.skip(reason="See above")
+def test_slot_class_paths(input_path):
+    """Test for aliased slot name, class identifier path and slot type path"""
+    gen = GeneratorTest(str(input_path("ownalltest.yaml")))
+    gen.sort_class_slots = True
+    assert ["s1", "s5", "s6", "s2", "s3", "s4"] == [
+        gen.aliased_slot_name(s.name) for s in gen.all_slots(cast(ClassDefinitionName, "c4"))
+    ]
+    assert ["s5", "s1", "s6", "s2", "s3", "s4"] == [
+        gen.aliased_slot_name(s) for s in gen.all_slots(cast(ClassDefinitionName, "c5"))
+    ]
+    assert {
+        "c4_s1": ["int"],
+        "c4_s5": ["Bool", "T5"],
+        "c4_s6": ["int", "C1S1", "C2S1", "C3S1", "C4S1"],
+        "s2": ["int", "C1S1"],
+        "s3": ["int", "T2", "T3"],
+        "s4": ["Bool"],
+    } == {s.name: gen.slot_range_path(s) for s in gen.all_slots(cast(ClassDefinitionName, "c4"))}
+    assert {
+        "c4_s5": ["Bool", "T5"],
+        "c5_s1": ["int"],
+        "c5_s6": ["str"],
+        "s2": ["int", "C1S1"],
+        "s3": ["int", "T2", "T3"],
+        "s4": ["Bool"],
+    } == {s.name: gen.slot_range_path(s) for s in gen.all_slots(cast(ClassDefinitionName, "c5"))}
+    assert {"s1": ["int"], "s3": ["int", "T2", "T3"]} == {
+        s.name: gen.slot_range_path(s) for s in gen.all_slots(cast(ClassDefinitionName, "c1"))
+    }
+
+
+def test_ancestors():
+    """Test ancestors function and duplicate name detection"""
+    model = """
 id: http://example.org/test/t1
 name: t1
 
@@ -698,32 +629,21 @@ classes:
         is_a: slot s1
 """
 
-        gen = GeneratorTest(model)
-        self.assertIn(
-            "Overlapping slot and class names: slot s1",
-            gen.logstream.getvalue().strip(),
-        )
-        gen.logstream.truncate(0)
-        gen.logstream.seek(0)
+    gen = GeneratorTest(model)
+    assert "Overlapping slot and class names: slot s1" in gen.logstream.getvalue().strip()
+    gen.logstream.truncate(0)
+    gen.logstream.seek(0)
 
-        self.assertEqual(["slot s1"], gen.ancestors(gen.schema.slots["slot s1"]))
-        self.assertEqual(
-            ["slot s2", "slot s1"],
-            gen.ancestors(gen.schema.slots[cast(ElementName, "slot s2")]),
-        )
-        self.assertEqual(
-            ["slot s3", "slot s2", "slot s1"],
-            gen.ancestors(gen.schema.slots["slot s3"]),
-        )
-        self.assertEqual(
-            ["slot s4", "slot s2", "slot s1"],
-            gen.ancestors(gen.schema.slots["slot s4"]),
-        )
-        self.assertEqual(["slot s1"], gen.ancestors(gen.schema.classes["slot s1"]))
-        self.assertEqual(["class c2", "slot s1"], gen.ancestors(gen.schema.classes["class c2"]))
+    assert ["slot s1"] == gen.ancestors(gen.schema.slots["slot s1"])
+    assert ["slot s2", "slot s1"] == gen.ancestors(gen.schema.slots[cast(ElementName, "slot s2")])
+    assert ["slot s3", "slot s2", "slot s1"] == gen.ancestors(gen.schema.slots["slot s3"])
+    assert ["slot s4", "slot s2", "slot s1"] == gen.ancestors(gen.schema.slots["slot s4"])
+    assert ["slot s1"] == gen.ancestors(gen.schema.classes["slot s1"])
+    assert ["class c2", "slot s1"] == gen.ancestors(gen.schema.classes["class c2"])
 
-    def test_range_type_path(self):
-        model = """
+
+def test_range_type_path():
+    model = """
 id: http://example.org/test/t1
 name: t1
 
@@ -742,14 +662,15 @@ types:
     type 3:
         typeof: type 2
 """
-        gen = GeneratorTest(model)
-        self.assertEqual(["int"], gen.range_type_path(gen.schema.types["type 1"]))
-        self.assertEqual(["int", "Type2"], gen.range_type_path(gen.schema.types["type 2"]))
-        self.assertEqual(["int", "Type2", "Type3"], gen.range_type_path(gen.schema.types["type 3"]))
+    gen = GeneratorTest(model)
+    assert ["int"] == gen.range_type_path(gen.schema.types["type 1"])
+    assert ["int", "Type2"] == gen.range_type_path(gen.schema.types["type 2"])
+    assert ["int", "Type2", "Type3"] == gen.range_type_path(gen.schema.types["type 3"])
 
-    def test_identifier_path(self):
-        """Test the case of an implicitly inlined class"""
-        model = """
+
+def test_identifier_path():
+    """Test the case of an implicitly inlined class"""
+    model = """
 id: http://example.org/test/t1
 name: t1
 
@@ -775,41 +696,32 @@ classes:
     c2:
 
 """
-        gen = GeneratorTest(model)
-        self.assertEqual(
-            {"s1": ["dict", "C2"], "s2": ["str"]},
-            {s.name: gen.slot_range_path(s) for s in gen.schema.slots.values()},
-        )
-
-    # TODO: rewrite to be less rigid. See https://github.com/linkml/linkml/issues/562
-    def test_meta_neighborhood(self):
-        """Test the neighborhood function in the metamodel"""
-        gen = GeneratorTest(LOCAL_METAMODEL_YAML_FILE)
-        gen.neighborhood([cast(ElementName, "Definition")])
-        self.assertEqual(
-            "neighborhood(Definition) - Definition is undefined",
-            gen.logstream.getvalue().strip(),
-        )
-        gen.logstream.truncate(0)
-        gen.logstream.seek(0)
-
-        neighbor_refs = gen.neighborhood("definition")
-        # see see https://github.com/linkml/linkml/issues/562
-        # in 1.2 series of the data model, 'integer' becomes a neighbor of 'definition'
-        if "integer" in neighbor_refs.typerefs:
-            neighbor_refs.typerefs.remove("integer")
-        assert "class_definition" in neighbor_refs.classrefs
-        assert "is_a" in neighbor_refs.slotrefs
-        assert "string" in neighbor_refs.typerefs
-
-        # skipping this test as it is too rigid: it needs modified every time the metamodel changes
-        # self.assertEqual(References(classrefs={'element', 'subset_definition', 'slot_definition', 'local_name',
-        #                                       'extension', 'example', 'class_definition', 'definition',
-        #                                       'alt_description', 'annotation'},
-        #                            slotrefs={'is_a', 'apply_to', 'mixins', 'owner'},
-        #                            typerefs={'boolean', 'datetime', 'uri', 'string', 'uriorcurie', 'ncname'},
-        #                            subsetrefs=set()), neighbor_refs)
+    gen = GeneratorTest(model)
+    assert {"s1": ["dict", "C2"], "s2": ["str"]} == {s.name: gen.slot_range_path(s) for s in gen.schema.slots.values()}
 
 
-if __name__ == "__main__":
-    unittest.main()
+# TODO: rewrite to be less rigid. See https://github.com/linkml/linkml/issues/562
+def test_meta_neighborhood():
+    """Test the neighborhood function in the metamodel"""
+    gen = GeneratorTest(LOCAL_METAMODEL_YAML_FILE)
+    gen.neighborhood([cast(ElementName, "Definition")])
+    assert "neighborhood(Definition) - Definition is undefined" == gen.logstream.getvalue().strip()
+    gen.logstream.truncate(0)
+    gen.logstream.seek(0)
+
+    neighbor_refs = gen.neighborhood("definition")
+    # see see https://github.com/linkml/linkml/issues/562
+    # in 1.2 series of the data model, 'integer' becomes a neighbor of 'definition'
+    if "integer" in neighbor_refs.typerefs:
+        neighbor_refs.typerefs.remove("integer")
+    assert "class_definition" in neighbor_refs.classrefs
+    assert "is_a" in neighbor_refs.slotrefs
+    assert "string" in neighbor_refs.typerefs
+
+    # skipping this test as it is too rigid: it needs modified every time the metamodel changes
+    # self.assertEqual(References(classrefs={'element', 'subset_definition', 'slot_definition', 'local_name',
+    #                                       'extension', 'example', 'class_definition', 'definition',
+    #                                       'alt_description', 'annotation'},
+    #                            slotrefs={'is_a', 'apply_to', 'mixins', 'owner'},
+    #                            typerefs={'boolean', 'datetime', 'uri', 'string', 'uriorcurie', 'ncname'},
+    #                            subsetrefs=set()), neighbor_refs)

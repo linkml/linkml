@@ -397,6 +397,6 @@ classes:
     class_uri: http://example.org/multi_usages_2/ChildClass3
 metamodel_version: 1.7.0
 source_file: multi_usages_2.yaml
-source_file_date: '2021-03-16T10:36:28'
-source_file_size: 989
-generation_date: '2023-09-25T16:06:43'
+source_file_date: '2000-01-01T00:00:00'
+source_file_size: 1
+generation_date: '2000-01-01T00:00:00'
