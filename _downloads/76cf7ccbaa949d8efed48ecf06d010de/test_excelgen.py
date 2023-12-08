@@ -1,8 +1,8 @@
+import os
+
 from openpyxl import load_workbook
 
 from linkml.generators.excelgen import ExcelGenerator
-
-# path to example organization schema
 
 
 def test_excel_generation(input_path, tmp_path):
@@ -60,3 +60,62 @@ def test_excel_generation(input_path, tmp_path):
         organization_cols_list.append(cell_obj.value)
 
     assert sorted(organization_cols_list) == ["has boss", "id", "name"]
+
+
+def test_multiple_excel_workbooks_generation(input_path, tmp_path):
+    organization_schema = str(input_path("organization.yaml"))
+    excel_files_folder = str(tmp_path)
+
+    ExcelGenerator(organization_schema, split_workbook_by_class=True, output=excel_files_folder).serialize()
+
+    _, _, files = next(os.walk(excel_files_folder))
+    file_count = len(files)
+
+    assert file_count == 3
+
+    expected_files = ["employee.xlsx", "manager.xlsx", "organization.xlsx"]
+    assert sorted(files) == expected_files
+
+    def verify_workbook_columns(excel_file_path, worksheet_name):
+        wb_obj = load_workbook(excel_file_path)
+        worksheet = wb_obj[worksheet_name]
+
+        column_names = []
+        max_col = worksheet.max_column
+
+        for i in range(1, max_col + 1):
+            cell_obj = worksheet.cell(row=1, column=i)
+            column_names.append(cell_obj.value)
+
+        return column_names
+
+    for file in files:
+        file_path = os.path.join(excel_files_folder, file)
+        wb_obj = load_workbook(file_path)
+        worksheet_count = len(wb_obj.sheetnames)
+        assert worksheet_count == 1
+
+        if file == "employee.xlsx":
+            column_names = verify_workbook_columns(file_path, "employee")
+            assert sorted(column_names) == [
+                "age in years",
+                "aliases",
+                "first name",
+                "id",
+                "last name",
+            ]
+
+        if file == "manager.xlsx":
+            column_names = verify_workbook_columns(file_path, "manager")
+            assert sorted(column_names) == [
+                "age in years",
+                "aliases",
+                "first name",
+                "has employees",
+                "id",
+                "last name",
+            ]
+
+        if file == "organization.xlsx":
+            column_names = verify_workbook_columns(file_path, "organization")
+            assert sorted(column_names) == ["has boss", "id", "name"]

@@ -328,10 +328,20 @@ from the LinkML schema.</p>
 <p>The generator also supports validation at the enum level. In that, each slot with a range property
 that is of enum type will have associated drop downs for all cells corresponding to that slot in the excel spreadsheet.</p>
 <p>Note: It works best for “flat” or denormalized schemas.</p>
+<p>Caveat:
+One of the features of <code class="docutils literal notranslate"><span class="pre">gen-doc</span></code> is that it has the ability to add Data Validation to columns
+that have a range of an enumeration type in the form of dropdowns. A caveat within Microsoft Excel
+is that the Data Validation list formula is limited to 255 characters, meaning, if the length of
+all strings (permissible values) in your enumeration exceed 255 characters (combined), then it will
+result in the creation of a “corrputed” Excel file. You will notice this when you try to open up
+the Excel file, and Excel will prompt you with an error message saying: <em>We found a problem with some
+content in ‘xyz.xlsx’. Do you want us to try to recover as much as we can?</em> In order to avoid any
+warning pop ups, we are simply turning off dropdown Data Validation for columns constrained by
+enumerations with total length &gt; 255 characters.</p>
 <p>Additional validation support to be added:</p>
 <ul class="simple">
 <li><p>Color schemes to indicate whether a field is required or recommended</p></li>
-<li><p>Constraints based on the range of a slot, e.g. constraining int fields to be numbers</p></li>
+<li><p>Constraints based on the range of a slot, e.g. constraining Integer fields to be numbers</p></li>
 <li><p>Tooltip notes describing what each field indicates</p></li>
 </ul>
 </section>
@@ -347,9 +357,15 @@ that is of enum type will have associated drop downs for all cells corresponding
 </div>
 <p class="rubric">Options</p>
 <dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-excel-split-workbook-by-class">
+<span class="sig-name descname"><span class="pre">--split-workbook-by-class</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-excel-split-workbook-by-class" title="Permalink to this definition">#</a></dt>
+<dd><p>Split model into separate Excel workbooks/files, one for each class</p>
+</dd></dl>
+
+<dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-gen-excel-o">
 <span id="cmdoption-gen-excel-output"></span><span class="sig-name descname"><span class="pre">-o</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--output</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;output&gt;</span></span><a class="headerlink" href="#cmdoption-gen-excel-o" title="Permalink to this definition">#</a></dt>
-<dd><p>Name of Excel spreadsheet to be created</p>
+<dd><p>Name of Excel spreadsheet to be created, or name of directory to create split workbooks in</p>
 </dd></dl>
 
 <dl class="std option">

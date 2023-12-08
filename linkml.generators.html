@@ -535,7 +535,7 @@ for any class that is inherited (class itself, is_a, mixin, apply_to).  Otherwis
 <span id="linkml-generators-excelgen-module"></span><h2>linkml.generators.excelgen module<a class="headerlink" href="#module-linkml.generators.excelgen" title="Permalink to this heading">#</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="linkml.generators.excelgen.ExcelGenerator">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linkml.generators.excelgen.</span></span><span class="sig-name descname"><span class="pre">ExcelGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">schema:</span> <span class="pre">Union[str,</span> <span class="pre">TextIO,</span> <span class="pre">linkml_runtime.linkml_model.meta.SchemaDefinition,</span> <span class="pre">ForwardRef('Generator')],</span> <span class="pre">schemaview:</span> <span class="pre">Optional[linkml_runtime.utils.schemaview.SchemaView]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">format:</span> <span class="pre">Optional[str]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">metadata:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">useuris:</span> <span class="pre">Optional[bool]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">log_level:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">30,</span> <span class="pre">mergeimports:</span> <span class="pre">Optional[bool]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">source_file_date:</span> <span class="pre">Optional[str]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">source_file_size:</span> <span class="pre">Optional[int]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">logger:</span> <span class="pre">Optional[logging.Logger]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">verbose:</span> <span class="pre">Optional[bool]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">output:</span> <span class="pre">Optional[str]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">namespaces:</span> <span class="pre">Optional[linkml_runtime.utils.namespaces.Namespaces]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">directory_output:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False,</span> <span class="pre">base_dir:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">metamodel_name_map:</span> <span class="pre">Dict[str,</span> <span class="pre">str]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">importmap:</span> <span class="pre">Union[str,</span> <span class="pre">Mapping[str,</span> <span class="pre">str],</span> <span class="pre">NoneType]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">emit_prefixes:</span> <span class="pre">Set[str]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">metamodel:</span> <span class="pre">linkml.utils.schemaloader.SchemaLoader</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">stacktrace:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False,</span> <span class="pre">**_kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/linkml/generators/excelgen.html#ExcelGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.excelgen.ExcelGenerator" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linkml.generators.excelgen.</span></span><span class="sig-name descname"><span class="pre">ExcelGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">schema:</span> <span class="pre">Union[str,</span> <span class="pre">TextIO,</span> <span class="pre">linkml_runtime.linkml_model.meta.SchemaDefinition,</span> <span class="pre">ForwardRef('Generator')],</span> <span class="pre">schemaview:</span> <span class="pre">Optional[linkml_runtime.utils.schemaview.SchemaView]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">format:</span> <span class="pre">Optional[str]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">metadata:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">useuris:</span> <span class="pre">Optional[bool]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">log_level:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">30,</span> <span class="pre">mergeimports:</span> <span class="pre">Optional[bool]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">source_file_date:</span> <span class="pre">Optional[str]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">source_file_size:</span> <span class="pre">Optional[int]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">logger:</span> <span class="pre">Optional[logging.Logger]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">verbose:</span> <span class="pre">Optional[bool]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">output:</span> <span class="pre">Optional[str]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">namespaces:</span> <span class="pre">Optional[linkml_runtime.utils.namespaces.Namespaces]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">directory_output:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False,</span> <span class="pre">base_dir:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">metamodel_name_map:</span> <span class="pre">Dict[str,</span> <span class="pre">str]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">importmap:</span> <span class="pre">Union[str,</span> <span class="pre">Mapping[str,</span> <span class="pre">str],</span> <span class="pre">NoneType]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">emit_prefixes:</span> <span class="pre">Set[str]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">metamodel:</span> <span class="pre">linkml.utils.schemaloader.SchemaLoader</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">stacktrace:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False,</span> <span class="pre">split_workbook_by_class:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">**_kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/linkml/generators/excelgen.html#ExcelGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.excelgen.ExcelGenerator" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="linkml.utils.html#linkml.utils.generator.Generator" title="linkml.utils.generator.Generator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generator</span></code></a></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="linkml.generators.excelgen.ExcelGenerator.add_columns_to_worksheet">
@@ -570,24 +570,12 @@ based on a list of values.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="linkml.generators.excelgen.ExcelGenerator.create_schema_worksheets">
-<span class="sig-name descname"><span class="pre">create_schema_worksheets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workbook</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/linkml/generators/excelgen.html#ExcelGenerator.create_schema_worksheets"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.excelgen.ExcelGenerator.create_schema_worksheets" title="Permalink to this definition">#</a></dt>
-<dd><p>Creates worksheets in a given Excel workbook based on the classes in the
-schema.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>workbook</strong> – The workbook to which the worksheet should be added.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="linkml.generators.excelgen.ExcelGenerator.create_workbook">
-<span class="sig-name descname"><span class="pre">create_workbook</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workbook_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Workbook</span></span></span><a class="reference internal" href="_modules/linkml/generators/excelgen.html#ExcelGenerator.create_workbook"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.excelgen.ExcelGenerator.create_workbook" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">create_workbook</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workbook_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Workbook</span></span></span><a class="reference internal" href="_modules/linkml/generators/excelgen.html#ExcelGenerator.create_workbook"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.excelgen.ExcelGenerator.create_workbook" title="Permalink to this definition">#</a></dt>
 <dd><p>Creates an Excel workbook using the openpyxl library and returns it.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>workbook_name</strong> – Name of the workbook to be created.</p>
+<dd class="field-odd"><p><strong>workbook_path</strong> – Path of the workbook to be created.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>An openpyxl Workbook object representing the newly created workbook.</p>
@@ -596,23 +584,17 @@ schema.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="linkml.generators.excelgen.ExcelGenerator.create_worksheet">
-<span class="sig-name descname"><span class="pre">create_worksheet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workbook</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Workbook</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">worksheet_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Worksheet</span></span></span><a class="reference internal" href="_modules/linkml/generators/excelgen.html#ExcelGenerator.create_worksheet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.excelgen.ExcelGenerator.create_worksheet" title="Permalink to this definition">#</a></dt>
-<dd><p>Creates an Excel worksheet with the given name in the given workbook.</p>
+<dt class="sig sig-object py" id="linkml.generators.excelgen.ExcelGenerator.create_workbook_and_worksheets">
+<span class="sig-name descname"><span class="pre">create_workbook_and_worksheets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">classes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/linkml/generators/excelgen.html#ExcelGenerator.create_workbook_and_worksheets"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.excelgen.ExcelGenerator.create_workbook_and_worksheets" title="Permalink to this definition">#</a></dt>
+<dd><p>Creates a workbook with worksheets for each class.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>workbook</strong> – The workbook to which the worksheet should be added.</p></li>
-<li><p><strong>worksheet_name</strong> – Name of the worksheet to be created.</p></li>
+<li><p><strong>output_path</strong> – The path where the workbook should be created.</p></li>
+<li><p><strong>classes</strong> – List of class names for which worksheets should be created.</p></li>
 </ul>
 </dd>
 </dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.generators.excelgen.ExcelGenerator.emit_prefixes">
-<span class="sig-name descname"><span class="pre">emit_prefixes</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#linkml.generators.excelgen.ExcelGenerator.emit_prefixes" title="Permalink to this definition">#</a></dt>
-<dd><p>Prefixes to emit, for RDF-based generators</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -627,49 +609,10 @@ schema.</p>
 <dd><p>Version of the generator. Consider deprecating and instead use overall linkml version</p>
 </dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="linkml.generators.excelgen.ExcelGenerator.get_workbook_name">
-<span class="sig-name descname"><span class="pre">get_workbook_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workbook</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Workbook</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/linkml/generators/excelgen.html#ExcelGenerator.get_workbook_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.excelgen.ExcelGenerator.get_workbook_name" title="Permalink to this definition">#</a></dt>
-<dd><p>Returns the name of the given workbook.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>workbook</strong> – The workbook whose name should be returned.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Name of the workbook.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.generators.excelgen.ExcelGenerator.mergeimports">
-<span class="sig-name descname"><span class="pre">mergeimports</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#linkml.generators.excelgen.ExcelGenerator.mergeimports" title="Permalink to this definition">#</a></dt>
-<dd><p>True means merge non-linkml sources into importing package.  False means separate packages</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.generators.excelgen.ExcelGenerator.metadata">
-<span class="sig-name descname"><span class="pre">metadata</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#linkml.generators.excelgen.ExcelGenerator.metadata" title="Permalink to this definition">#</a></dt>
-<dd><p>True means include date, generator, etc. information in source header if appropriate</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="linkml.generators.excelgen.ExcelGenerator.remove_worksheet_by_name">
-<span class="sig-name descname"><span class="pre">remove_worksheet_by_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workbook</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Workbook</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">worksheet_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/linkml/generators/excelgen.html#ExcelGenerator.remove_worksheet_by_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.excelgen.ExcelGenerator.remove_worksheet_by_name" title="Permalink to this definition">#</a></dt>
-<dd><p>Remove worksheet from workbook by name.</p>
-</dd></dl>
-
 <dl class="py attribute">
 <dt class="sig sig-object py" id="linkml.generators.excelgen.ExcelGenerator.requires_metamodel">
 <span class="sig-name descname"><span class="pre">requires_metamodel</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#linkml.generators.excelgen.ExcelGenerator.requires_metamodel" title="Permalink to this definition">#</a></dt>
 <dd><p>Generator queries an instance of the metamodel</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.generators.excelgen.ExcelGenerator.schema">
-<span class="sig-name descname"><span class="pre">schema</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">TextIO</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.SchemaDefinition" title="linkml_runtime.linkml_model.meta.SchemaDefinition"><span class="pre">SchemaDefinition</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="linkml.utils.html#linkml.utils.generator.Generator" title="linkml.utils.generator.Generator"><span class="pre">Generator</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#linkml.generators.excelgen.ExcelGenerator.schema" title="Permalink to this definition">#</a></dt>
-<dd><p>metamodel compliant schema.  Can be URI, file name, actual schema, another generator, an
-open file or a pre-parsed schema</p>
 </dd></dl>
 
 <dl class="py method">
@@ -685,6 +628,11 @@ open file or a pre-parsed schema</p>
 </dd>
 </dl>
 </dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="linkml.generators.excelgen.ExcelGenerator.split_workbook_by_class">
+<span class="sig-name descname"><span class="pre">split_workbook_by_class</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#linkml.generators.excelgen.ExcelGenerator.split_workbook_by_class" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="linkml.generators.excelgen.ExcelGenerator.uses_schemaloader">
@@ -6080,19 +6028,13 @@ open file or a pre-parsed schema</p>
 <li><a class="reference internal" href="#linkml.generators.excelgen.ExcelGenerator"><code class="docutils literal notranslate"><span class="pre">ExcelGenerator</span></code></a><ul>
 <li><a class="reference internal" href="#linkml.generators.excelgen.ExcelGenerator.add_columns_to_worksheet"><code class="docutils literal notranslate"><span class="pre">ExcelGenerator.add_columns_to_worksheet()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.excelgen.ExcelGenerator.column_enum_validation"><code class="docutils literal notranslate"><span class="pre">ExcelGenerator.column_enum_validation()</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.excelgen.ExcelGenerator.create_schema_worksheets"><code class="docutils literal notranslate"><span class="pre">ExcelGenerator.create_schema_worksheets()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.excelgen.ExcelGenerator.create_workbook"><code class="docutils literal notranslate"><span class="pre">ExcelGenerator.create_workbook()</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.excelgen.ExcelGenerator.create_worksheet"><code class="docutils literal notranslate"><span class="pre">ExcelGenerator.create_worksheet()</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.excelgen.ExcelGenerator.emit_prefixes"><code class="docutils literal notranslate"><span class="pre">ExcelGenerator.emit_prefixes</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.excelgen.ExcelGenerator.create_workbook_and_worksheets"><code class="docutils literal notranslate"><span class="pre">ExcelGenerator.create_workbook_and_worksheets()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.excelgen.ExcelGenerator.generatorname"><code class="docutils literal notranslate"><span class="pre">ExcelGenerator.generatorname</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.excelgen.ExcelGenerator.generatorversion"><code class="docutils literal notranslate"><span class="pre">ExcelGenerator.generatorversion</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.excelgen.ExcelGenerator.get_workbook_name"><code class="docutils literal notranslate"><span class="pre">ExcelGenerator.get_workbook_name()</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.excelgen.ExcelGenerator.mergeimports"><code class="docutils literal notranslate"><span class="pre">ExcelGenerator.mergeimports</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.excelgen.ExcelGenerator.metadata"><code class="docutils literal notranslate"><span class="pre">ExcelGenerator.metadata</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.excelgen.ExcelGenerator.remove_worksheet_by_name"><code class="docutils literal notranslate"><span class="pre">ExcelGenerator.remove_worksheet_by_name()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.excelgen.ExcelGenerator.requires_metamodel"><code class="docutils literal notranslate"><span class="pre">ExcelGenerator.requires_metamodel</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.excelgen.ExcelGenerator.schema"><code class="docutils literal notranslate"><span class="pre">ExcelGenerator.schema</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.excelgen.ExcelGenerator.serialize"><code class="docutils literal notranslate"><span class="pre">ExcelGenerator.serialize()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.excelgen.ExcelGenerator.split_workbook_by_class"><code class="docutils literal notranslate"><span class="pre">ExcelGenerator.split_workbook_by_class</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.excelgen.ExcelGenerator.uses_schemaloader"><code class="docutils literal notranslate"><span class="pre">ExcelGenerator.uses_schemaloader</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.excelgen.ExcelGenerator.valid_formats"><code class="docutils literal notranslate"><span class="pre">ExcelGenerator.valid_formats</span></code></a></li>
 </ul>
