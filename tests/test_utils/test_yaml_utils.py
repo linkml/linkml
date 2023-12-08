@@ -23,12 +23,12 @@ def test_dupcheck_loader(input_path):
 
 
 def test_as_json(input_path, snapshot):
-    schema = load_raw_schema(input_path("schema6.yaml"))
+    schema = load_raw_schema(input_path("schema6.yaml"), emit_metadata=False)
     assert as_json(schema) == snapshot("schema6.json")
 
 
 @pytest.mark.skip(reason="MULTI-Schema test -- re-enable if necessary")
 def test_as_yaml(input_path, snapshot):
     """Test the YAML output representation"""
-    schema = load_raw_schema(input_path("schema4.yaml"))
+    schema = load_raw_schema(input_path("schema4.yaml"), emit_metadata=False)
     assert as_yaml(schema) == snapshot("schema4.yaml")

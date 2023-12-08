@@ -29,7 +29,6 @@
       }
    ],
    "metamodel_version": "1.7.0",
-   "source_file": "/Users/PAKalita/Work/linkml/tests/test_utils/input/schema6.yaml",
    "source_file_date": "2000-01-01T00:00:00",
    "source_file_size": 1,
    "generation_date": "2000-01-01T00:00:00"

@@ -35,7 +35,7 @@ def test_mergeerror1(input_path):
 
 def test_imports(input_path, snapshot):
     loader = SchemaLoader(input_path("base.yaml"))
-    assert as_json(loader.resolve()) == snapshot("merge1.json")
+    assert as_json(loader.resolve()) == snapshot("base.json")
     assert loader.synopsis.errors() == []
 
 
