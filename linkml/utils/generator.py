@@ -767,11 +767,13 @@ class Generator(metaclass=abc.ABCMeta):
             mixin_ancestors = []
             if cls.mixins:
                 for mixin in cls.mixins:
-                    for ancestor in self.schemaview.class_ancestors(mixin):
-                        mixin_ancestors.append(ancestor)
+                    for ancestor in self.schemaview.class_ancestors(mixin, mixins=False):
+                        if ancestor not in mixin_ancestors:
+                            mixin_ancestors.append(ancestor)
 
             for mixin_ancestor in mixin_ancestors:
-                cls.mixins.append(mixin_ancestor)
+                if mixin_ancestor not in cls.mixins:
+                    cls.mixins.append(mixin_ancestor)
 
             # Check if the class is in the domain of the slot or if any of its mixins are in the domain
             if cls.name in slot.domain_of or (set(cls.mixins).intersection(slot.domain_of)):

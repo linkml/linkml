@@ -1,5 +1,5 @@
 from linkml_runtime.utils.compile_python import compile_python
-
+from tests.test_base.environment import env
 from linkml.generators.pythongen import PythonGenerator
 
 # Define the schema as a YAML string
@@ -47,10 +47,14 @@ slots:
 def test_mixin_inheritance_interface():
     gen = PythonGenerator(schema_yaml)
     output = gen.serialize()
-    print(output)
     mod = compile_python(output, "testschema")
     """Test if Person1 inherits attributes from Interface"""
     assert hasattr(mod.Person1, "test_aliases"), "Person1 should inherit 'aliases' attribute from Interface"
     assert hasattr(mod.HasAliases, "test_aliases"), "HasAliases should inherit 'aliases' attribute from Interface"
     assert hasattr(mod.Person2, "test_aliases"), "Person2 should inherit 'aliases' attribute from HasAliases"
     assert hasattr(mod.Person3, "test_aliases"), "Person2 should inherit 'aliases' attribute from HasAliases"
+    #
+    # print(env.meta_yaml)
+    gen = PythonGenerator(env.meta_yaml, importmap=env.import_map, genmeta=True)
+    gen.serialize()
+
