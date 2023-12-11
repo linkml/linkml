@@ -527,7 +527,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="n">SchemaDefinition</span><span class="p">):</span>
                 <span class="c1"># schemaloader based methods require schemas to have been created via SchemaLoader,</span>
-                <span class="c1"># which prepopulates some fields (e.g definition_url). If the schema has not been processed through the</span>
+                <span class="c1"># which prepopulates some fields (e.g. definition_url). If the schema has not been processed through the</span>
                 <span class="c1"># loader, then roundtrip</span>
                 <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">schema</span><span class="o">.</span><span class="n">classes</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">c</span><span class="o">.</span><span class="n">definition_uri</span><span class="p">):</span>
                     <span class="n">schema</span> <span class="o">=</span> <span class="n">yaml_dumper</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span>
@@ -643,11 +643,11 @@
 
 <div class="viewcode-block" id="Generator.visit_class_slot"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.generator.Generator.visit_class_slot">[docs]</a>    <span class="k">def</span> <span class="nf">visit_class_slot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">aliased_slot_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Visited for each slot in a class.  If class level visit_all_slots is true, this is visited once</span>
-<span class="sd">        for any class that is inherited (class itself, is_a, mixin, apply_to).  Otherwise just the own slots.</span>
+<span class="sd">        for any class that is inherited (class itself, is_a, mixin, apply_to).  Otherwise, just the own slots.</span>
 
 <span class="sd">        @param cls: containing class</span>
 <span class="sd">        @param aliased_slot_name: Aliased slot name.  May not be unique across all class slots</span>
-<span class="sd">        @param slot: slot being visited</span>
+<span class="sd">        @param slot: being visited</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="o">...</span></div>
 
@@ -1062,11 +1062,28 @@
     <span class="c1"># TODO: add lru cache once we get identity into the classes</span>
 <div class="viewcode-block" id="Generator.domain_slots"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.generator.Generator.domain_slots">[docs]</a>    <span class="k">def</span> <span class="nf">domain_slots</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">SlotDefinition</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return all slots in the class definition that are owned by the class&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">[</span>
-            <span class="n">slot</span>
-            <span class="k">for</span> <span class="n">slot</span> <span class="ow">in</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">slots</span><span class="p">[</span><span class="n">sn</span><span class="p">]</span> <span class="k">for</span> <span class="n">sn</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">slots</span><span class="p">]</span>
-            <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">slot</span><span class="o">.</span><span class="n">domain_of</span> <span class="ow">or</span> <span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">mixins</span><span class="p">)</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">domain_of</span><span class="p">))</span>
-        <span class="p">]</span></div>
+        <span class="n">domain_slots</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">slot_name</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">slots</span><span class="p">:</span>
+            <span class="n">slot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">slots</span><span class="p">[</span><span class="n">slot_name</span><span class="p">]</span>
+
+            <span class="c1"># add any mixin ancestors here so that slots will be distributed to descendents correctly via mixin</span>
+            <span class="c1"># hierarchy.</span>
+            <span class="n">mixin_ancestors</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">mixins</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">mixin</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">mixins</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">ancestor</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">class_ancestors</span><span class="p">(</span><span class="n">mixin</span><span class="p">,</span> <span class="n">mixins</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+                        <span class="k">if</span> <span class="n">ancestor</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">mixin_ancestors</span><span class="p">:</span>
+                            <span class="n">mixin_ancestors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ancestor</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">mixin_ancestor</span> <span class="ow">in</span> <span class="n">mixin_ancestors</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">mixin_ancestor</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">mixins</span><span class="p">:</span>
+                    <span class="bp">cls</span><span class="o">.</span><span class="n">mixins</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mixin_ancestor</span><span class="p">)</span>
+
+            <span class="c1"># Check if the class is in the domain of the slot or if any of its mixins are in the domain</span>
+            <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">slot</span><span class="o">.</span><span class="n">domain_of</span> <span class="ow">or</span> <span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">mixins</span><span class="p">)</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">domain_of</span><span class="p">)):</span>
+                <span class="n">domain_slots</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">slot</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">domain_slots</span></div>
 
 <div class="viewcode-block" id="Generator.add_mappings"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.generator.Generator.add_mappings">[docs]</a>    <span class="k">def</span> <span class="nf">add_mappings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">defn</span><span class="p">:</span> <span class="n">Definition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>

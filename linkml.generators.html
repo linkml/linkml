@@ -515,10 +515,10 @@ and has largely been supplanted by schemasheets</p>
 <dt class="sig sig-object py" id="linkml.generators.dotgen.DotGenerator.visit_class_slot">
 <span class="sig-name descname"><span class="pre">visit_class_slot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.ClassDefinition" title="linkml_runtime.linkml_model.meta.ClassDefinition"><span class="pre">ClassDefinition</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">aliased_slot_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slot</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.SlotDefinition" title="linkml_runtime.linkml_model.meta.SlotDefinition"><span class="pre">SlotDefinition</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/linkml/generators/dotgen.html#DotGenerator.visit_class_slot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.dotgen.DotGenerator.visit_class_slot" title="Permalink to this definition">#</a></dt>
 <dd><p>Visited for each slot in a class.  If class level visit_all_slots is true, this is visited once
-for any class that is inherited (class itself, is_a, mixin, apply_to).  Otherwise just the own slots.</p>
+for any class that is inherited (class itself, is_a, mixin, apply_to).  Otherwise, just the own slots.</p>
 <p>&#64;param cls: containing class
 &#64;param aliased_slot_name: Aliased slot name.  May not be unique across all class slots
-&#64;param slot: slot being visited</p>
+&#64;param slot: being visited</p>
 </dd></dl>
 
 <dl class="py method">
@@ -809,10 +809,10 @@ based on a list of values.</p>
 <dt class="sig sig-object py" id="linkml.generators.golrgen.GolrSchemaGenerator.visit_class_slot">
 <span class="sig-name descname"><span class="pre">visit_class_slot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.ClassDefinition" title="linkml_runtime.linkml_model.meta.ClassDefinition"><span class="pre">ClassDefinition</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">aliased_slot_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slot</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.SlotDefinition" title="linkml_runtime.linkml_model.meta.SlotDefinition"><span class="pre">SlotDefinition</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/linkml/generators/golrgen.html#GolrSchemaGenerator.visit_class_slot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.golrgen.GolrSchemaGenerator.visit_class_slot" title="Permalink to this definition">#</a></dt>
 <dd><p>Visited for each slot in a class.  If class level visit_all_slots is true, this is visited once
-for any class that is inherited (class itself, is_a, mixin, apply_to).  Otherwise just the own slots.</p>
+for any class that is inherited (class itself, is_a, mixin, apply_to).  Otherwise, just the own slots.</p>
 <p>&#64;param cls: containing class
 &#64;param aliased_slot_name: Aliased slot name.  May not be unique across all class slots
-&#64;param slot: slot being visited</p>
+&#64;param slot: being visited</p>
 </dd></dl>
 
 <dl class="py method">
@@ -916,10 +916,10 @@ open file or a pre-parsed schema</p>
 <dt class="sig sig-object py" id="linkml.generators.graphqlgen.GraphqlGenerator.visit_class_slot">
 <span class="sig-name descname"><span class="pre">visit_class_slot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.ClassDefinition" title="linkml_runtime.linkml_model.meta.ClassDefinition"><span class="pre">ClassDefinition</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">aliased_slot_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slot</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.SlotDefinition" title="linkml_runtime.linkml_model.meta.SlotDefinition"><span class="pre">SlotDefinition</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/linkml/generators/graphqlgen.html#GraphqlGenerator.visit_class_slot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.graphqlgen.GraphqlGenerator.visit_class_slot" title="Permalink to this definition">#</a></dt>
 <dd><p>Visited for each slot in a class.  If class level visit_all_slots is true, this is visited once
-for any class that is inherited (class itself, is_a, mixin, apply_to).  Otherwise just the own slots.</p>
+for any class that is inherited (class itself, is_a, mixin, apply_to).  Otherwise, just the own slots.</p>
 <p>&#64;param cls: containing class
 &#64;param aliased_slot_name: Aliased slot name.  May not be unique across all class slots
-&#64;param slot: slot being visited</p>
+&#64;param slot: being visited</p>
 </dd></dl>
 
 </dd></dl>
@@ -2623,10 +2623,10 @@ allow a property to be both.</p>
 <dt class="sig sig-object py" id="linkml.generators.protogen.ProtoGenerator.visit_class_slot">
 <span class="sig-name descname"><span class="pre">visit_class_slot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.ClassDefinition" title="linkml_runtime.linkml_model.meta.ClassDefinition"><span class="pre">ClassDefinition</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">aliased_slot_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slot</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.SlotDefinition" title="linkml_runtime.linkml_model.meta.SlotDefinition"><span class="pre">SlotDefinition</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/linkml/generators/protogen.html#ProtoGenerator.visit_class_slot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.protogen.ProtoGenerator.visit_class_slot" title="Permalink to this definition">#</a></dt>
 <dd><p>Visited for each slot in a class.  If class level visit_all_slots is true, this is visited once
-for any class that is inherited (class itself, is_a, mixin, apply_to).  Otherwise just the own slots.</p>
+for any class that is inherited (class itself, is_a, mixin, apply_to).  Otherwise, just the own slots.</p>
 <p>&#64;param cls: containing class
 &#64;param aliased_slot_name: Aliased slot name.  May not be unique across all class slots
-&#64;param slot: slot being visited</p>
+&#64;param slot: being visited</p>
 </dd></dl>
 
 </dd></dl>
@@ -2822,7 +2822,7 @@ identifier slot</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="linkml.generators.pythongen.PythonGenerator.class_reference_type">
 <span class="sig-name descname"><span class="pre">class_reference_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slot</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.SlotDefinition" title="linkml_runtime.linkml_model.meta.SlotDefinition"><span class="pre">SlotDefinition</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">cls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.ClassDefinition" title="linkml_runtime.linkml_model.meta.ClassDefinition"><span class="pre">ClassDefinition</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/linkml/generators/pythongen.html#PythonGenerator.class_reference_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.pythongen.PythonGenerator.class_reference_type" title="Permalink to this definition">#</a></dt>
-<dd><p>Return the type of a slot referencing a class</p>
+<dd><p>Return the type of slot referencing a class</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -2941,7 +2941,16 @@ Note that apply_to classes are transformed to mixins</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="linkml.generators.pythongen.PythonGenerator.gen_constructor">
 <span class="sig-name descname"><span class="pre">gen_constructor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.ClassDefinition" title="linkml_runtime.linkml_model.meta.ClassDefinition"><span class="pre">ClassDefinition</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/linkml/generators/pythongen.html#PythonGenerator.gen_constructor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.pythongen.PythonGenerator.gen_constructor" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>Generate python constructor for class</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>cls</strong> – class to generate constructor for</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>python constructor</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="linkml.generators.pythongen.PythonGenerator.gen_enum">
@@ -3460,10 +3469,10 @@ any LinkML element</p>
 <dt class="sig sig-object py" id="linkml.generators.shexgen.ShExGenerator.visit_class_slot">
 <span class="sig-name descname"><span class="pre">visit_class_slot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.ClassDefinition" title="linkml_runtime.linkml_model.meta.ClassDefinition"><span class="pre">ClassDefinition</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">aliased_slot_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SlotDefinitionName</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slot</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.SlotDefinition" title="linkml_runtime.linkml_model.meta.SlotDefinition"><span class="pre">SlotDefinition</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/linkml/generators/shexgen.html#ShExGenerator.visit_class_slot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.shexgen.ShExGenerator.visit_class_slot" title="Permalink to this definition">#</a></dt>
 <dd><p>Visited for each slot in a class.  If class level visit_all_slots is true, this is visited once
-for any class that is inherited (class itself, is_a, mixin, apply_to).  Otherwise just the own slots.</p>
+for any class that is inherited (class itself, is_a, mixin, apply_to).  Otherwise, just the own slots.</p>
 <p>&#64;param cls: containing class
 &#64;param aliased_slot_name: Aliased slot name.  May not be unique across all class slots
-&#64;param slot: slot being visited</p>
+&#64;param slot: being visited</p>
 </dd></dl>
 
 <dl class="py method">
@@ -3793,10 +3802,10 @@ then create a table user_aliases, with two columns (1) alias [a string] and (2) 
 <dt class="sig sig-object py" id="linkml.generators.sqlddlgen.SQLDDLGenerator.visit_class_slot">
 <span class="sig-name descname"><span class="pre">visit_class_slot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.ClassDefinition" title="linkml_runtime.linkml_model.meta.ClassDefinition"><span class="pre">ClassDefinition</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">aliased_slot_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slot</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.SlotDefinition" title="linkml_runtime.linkml_model.meta.SlotDefinition"><span class="pre">SlotDefinition</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/linkml/generators/sqlddlgen.html#SQLDDLGenerator.visit_class_slot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.sqlddlgen.SQLDDLGenerator.visit_class_slot" title="Permalink to this definition">#</a></dt>
 <dd><p>Visited for each slot in a class.  If class level visit_all_slots is true, this is visited once
-for any class that is inherited (class itself, is_a, mixin, apply_to).  Otherwise just the own slots.</p>
+for any class that is inherited (class itself, is_a, mixin, apply_to).  Otherwise, just the own slots.</p>
 <p>&#64;param cls: containing class
 &#64;param aliased_slot_name: Aliased slot name.  May not be unique across all class slots
-&#64;param slot: slot being visited</p>
+&#64;param slot: being visited</p>
 </dd></dl>
 
 <dl class="py method">
@@ -3972,10 +3981,10 @@ with redirect_stdout(output):</p>
 <dt class="sig sig-object py" id="linkml.generators.summarygen.SummaryGenerator.visit_class_slot">
 <span class="sig-name descname"><span class="pre">visit_class_slot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.ClassDefinition" title="linkml_runtime.linkml_model.meta.ClassDefinition"><span class="pre">ClassDefinition</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">aliased_slot_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slot</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.SlotDefinition" title="linkml_runtime.linkml_model.meta.SlotDefinition"><span class="pre">SlotDefinition</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/linkml/generators/summarygen.html#SummaryGenerator.visit_class_slot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.summarygen.SummaryGenerator.visit_class_slot" title="Permalink to this definition">#</a></dt>
 <dd><p>Visited for each slot in a class.  If class level visit_all_slots is true, this is visited once
-for any class that is inherited (class itself, is_a, mixin, apply_to).  Otherwise just the own slots.</p>
+for any class that is inherited (class itself, is_a, mixin, apply_to).  Otherwise, just the own slots.</p>
 <p>&#64;param cls: containing class
 &#64;param aliased_slot_name: Aliased slot name.  May not be unique across all class slots
-&#64;param slot: slot being visited</p>
+&#64;param slot: being visited</p>
 </dd></dl>
 
 <dl class="py method">
@@ -5004,7 +5013,7 @@ open file or a pre-parsed schema</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="linkml.generators.PythonGenerator.class_reference_type">
 <span class="sig-name descname"><span class="pre">class_reference_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slot</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.SlotDefinition" title="linkml_runtime.linkml_model.meta.SlotDefinition"><span class="pre">SlotDefinition</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">cls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.ClassDefinition" title="linkml_runtime.linkml_model.meta.ClassDefinition"><span class="pre">ClassDefinition</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/linkml/generators/pythongen.html#PythonGenerator.class_reference_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.PythonGenerator.class_reference_type" title="Permalink to this definition">#</a></dt>
-<dd><p>Return the type of a slot referencing a class</p>
+<dd><p>Return the type of slot referencing a class</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -5129,7 +5138,16 @@ Note that apply_to classes are transformed to mixins</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="linkml.generators.PythonGenerator.gen_constructor">
 <span class="sig-name descname"><span class="pre">gen_constructor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.ClassDefinition" title="linkml_runtime.linkml_model.meta.ClassDefinition"><span class="pre">ClassDefinition</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/linkml/generators/pythongen.html#PythonGenerator.gen_constructor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.PythonGenerator.gen_constructor" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>Generate python constructor for class</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>cls</strong> – class to generate constructor for</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>python constructor</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="linkml.generators.PythonGenerator.gen_enum">
@@ -5826,10 +5844,10 @@ open file or a pre-parsed schema</p>
 <dt class="sig sig-object py" id="linkml.generators.ShExGenerator.visit_class_slot">
 <span class="sig-name descname"><span class="pre">visit_class_slot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.ClassDefinition" title="linkml_runtime.linkml_model.meta.ClassDefinition"><span class="pre">ClassDefinition</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">aliased_slot_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SlotDefinitionName</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slot</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.SlotDefinition" title="linkml_runtime.linkml_model.meta.SlotDefinition"><span class="pre">SlotDefinition</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/linkml/generators/shexgen.html#ShExGenerator.visit_class_slot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.ShExGenerator.visit_class_slot" title="Permalink to this definition">#</a></dt>
 <dd><p>Visited for each slot in a class.  If class level visit_all_slots is true, this is visited once
-for any class that is inherited (class itself, is_a, mixin, apply_to).  Otherwise just the own slots.</p>
+for any class that is inherited (class itself, is_a, mixin, apply_to).  Otherwise, just the own slots.</p>
 <p>&#64;param cls: containing class
 &#64;param aliased_slot_name: Aliased slot name.  May not be unique across all class slots
-&#64;param slot: slot being visited</p>
+&#64;param slot: being visited</p>
 </dd></dl>
 
 <dl class="py method">
