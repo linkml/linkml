@@ -348,14 +348,14 @@
 <span class="s2">from datetime import datetime, date</span>
 <span class="s2">from enum import Enum</span>
 <span class="s2">from typing import List, Dict, Optional, Any, Union&quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">pydantic_ver</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">pydantic_ver</span> <span class="o">==</span> <span class="s2">&quot;1&quot;</span><span class="p">:</span>
         <span class="n">template</span> <span class="o">+=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">from pydantic import BaseModel as BaseModel, Field&quot;&quot;&quot;</span>
-    <span class="k">else</span><span class="p">:</span>
+<span class="s2">from pydantic import BaseModel as BaseModel, Field, validator&quot;&quot;&quot;</span>
+    <span class="k">elif</span> <span class="n">pydantic_ver</span> <span class="o">==</span> <span class="s2">&quot;2&quot;</span><span class="p">:</span>
         <span class="n">template</span> <span class="o">+=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">from pydantic import BaseModel as BaseModel, ConfigDict, Field&quot;&quot;&quot;</span>
-
+<span class="s2">from pydantic import BaseModel as BaseModel, ConfigDict,  Field, field_validator&quot;&quot;&quot;</span>
     <span class="n">template</span> <span class="o">+=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">import re</span>
 <span class="s2">import sys</span>
 <span class="s2">if sys.version_info &gt;= (3, 8):</span>
 <span class="s2">    from typing import Literal</span>
@@ -438,7 +438,6 @@
 <span class="s2">    {</span><span class="si">%- e</span><span class="s2">ndif -%}</span>
 <span class="s2">    {</span><span class="si">%- i</span><span class="s2">f attr.title != None %}, title=&quot;{{attr.title}}&quot;{</span><span class="si">% e</span><span class="s2">ndif -%}</span>
 <span class="s2">    {</span><span class="si">%- i</span><span class="s2">f attr.description %}, description=</span><span class="se">\&quot;\&quot;\&quot;</span><span class="s2">{{attr.description}}</span><span class="se">\&quot;\&quot;\&quot;</span><span class="s2">{</span><span class="si">% e</span><span class="s2">ndif -%}</span>
-<span class="s2">    {</span><span class="si">%- i</span><span class="s2">f attr.pattern %}, regex=</span><span class="se">\&quot;</span><span class="s2">{{attr.pattern}}</span><span class="se">\&quot;</span><span class="s2">{</span><span class="si">% e</span><span class="s2">ndif -%}</span>
 <span class="s2">    {</span><span class="si">%- i</span><span class="s2">f attr.equals_number != None %}, le={{attr.equals_number}}, ge={{attr.equals_number}}</span>
 <span class="s2">    {</span><span class="si">%- e</span><span class="s2">lse -%}</span>
 <span class="s2">     {</span><span class="si">%- i</span><span class="s2">f attr.minimum_value != None %}, ge={{attr.minimum_value}}{</span><span class="si">% e</span><span class="s2">ndif -%}</span>
@@ -448,6 +447,21 @@
 <span class="s2">    {</span><span class="si">% e</span><span class="s2">lse -%}</span>
 <span class="s2">    None</span>
 <span class="s2">    {</span><span class="si">% e</span><span class="s2">ndfor %}</span>
+<span class="s2">    {</span><span class="si">% f</span><span class="s2">or attr in c.attributes.values() if c.attributes -%}</span>
+<span class="s2">    {</span><span class="si">%- i</span><span class="s2">f attr.pattern %}</span>
+<span class="s2">    @validator(&#39;{{attr.name}}&#39;, allow_reuse=True)</span>
+<span class="s2">    def pattern_{{attr.name}}(cls, v):</span>
+<span class="s2">        pattern=re.compile(r&quot;{{attr.pattern}}&quot;)</span>
+<span class="s2">        if isinstance(v,list):</span>
+<span class="s2">            for element in v:</span>
+<span class="s2">                if not pattern.match(element):</span>
+<span class="s2">                    raise ValueError(f&quot;Invalid {{attr.name}} format: </span><span class="si">{element}</span><span class="s2">&quot;)</span>
+<span class="s2">        elif isinstance(v,str):</span>
+<span class="s2">            if not pattern.match(v):</span>
+<span class="s2">                raise ValueError(f&quot;Invalid {{attr.name}} format: </span><span class="si">{v}</span><span class="s2">&quot;)</span>
+<span class="s2">        return v</span>
+<span class="s2">    {</span><span class="si">% e</span><span class="s2">ndif -%}</span>
+<span class="s2">    {</span><span class="si">% e</span><span class="s2">ndfor %}    </span>
 <span class="s2">{</span><span class="si">% e</span><span class="s2">ndfor %}</span>
 <span class="s2">&quot;&quot;&quot;</span>
     <span class="k">elif</span> <span class="n">pydantic_ver</span> <span class="o">==</span> <span class="s2">&quot;2&quot;</span><span class="p">:</span>
@@ -476,7 +490,6 @@
 <span class="s2">    {</span><span class="si">%- e</span><span class="s2">ndif -%}</span>
 <span class="s2">    {</span><span class="si">%- i</span><span class="s2">f attr.title != None %}, title=&quot;{{attr.title}}&quot;{</span><span class="si">% e</span><span class="s2">ndif -%}</span>
 <span class="s2">    {</span><span class="si">%- i</span><span class="s2">f attr.description %}, description=</span><span class="se">\&quot;\&quot;\&quot;</span><span class="s2">{{attr.description}}</span><span class="se">\&quot;\&quot;\&quot;</span><span class="s2">{</span><span class="si">% e</span><span class="s2">ndif -%}</span>
-<span class="s2">    {</span><span class="si">%- i</span><span class="s2">f attr.pattern %}, pattern=</span><span class="se">\&quot;</span><span class="s2">{{attr.pattern}}</span><span class="se">\&quot;</span><span class="s2">{</span><span class="si">% e</span><span class="s2">ndif -%}</span>
 <span class="s2">    {</span><span class="si">%- i</span><span class="s2">f attr.equals_number != None %}, le={{attr.equals_number}}, ge={{attr.equals_number}}</span>
 <span class="s2">    {</span><span class="si">%- e</span><span class="s2">lse -%}</span>
 <span class="s2">     {</span><span class="si">%- i</span><span class="s2">f attr.minimum_value != None %}, ge={{attr.minimum_value}}{</span><span class="si">% e</span><span class="s2">ndif -%}</span>
@@ -486,6 +499,21 @@
 <span class="s2">    {</span><span class="si">% e</span><span class="s2">lse -%}</span>
 <span class="s2">    None</span>
 <span class="s2">    {</span><span class="si">% e</span><span class="s2">ndfor %}</span>
+<span class="s2">    {</span><span class="si">% f</span><span class="s2">or attr in c.attributes.values() if c.attributes -%}</span>
+<span class="s2">    {</span><span class="si">%- i</span><span class="s2">f attr.pattern %}</span>
+<span class="s2">    @field_validator(&#39;{{attr.name}}&#39;)</span>
+<span class="s2">    def pattern_{{attr.name}}(cls, v):</span>
+<span class="s2">        pattern=re.compile(r&quot;{{attr.pattern}}&quot;)</span>
+<span class="s2">        if isinstance(v,list):</span>
+<span class="s2">            for element in v:</span>
+<span class="s2">                if not pattern.match(element):</span>
+<span class="s2">                    raise ValueError(f&quot;Invalid {{attr.name}} format: </span><span class="si">{element}</span><span class="s2">&quot;)</span>
+<span class="s2">        elif isinstance(v,str):</span>
+<span class="s2">            if not pattern.match(v):</span>
+<span class="s2">                raise ValueError(f&quot;Invalid {{attr.name}} format: </span><span class="si">{v}</span><span class="s2">&quot;)</span>
+<span class="s2">        return v</span>
+<span class="s2">    {</span><span class="si">% e</span><span class="s2">ndif -%}</span>
+<span class="s2">    {</span><span class="si">% e</span><span class="s2">ndfor %}    </span>
 <span class="s2">{</span><span class="si">% e</span><span class="s2">ndfor %}</span>
 <span class="s2">&quot;&quot;&quot;</span>
 
