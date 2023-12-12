@@ -157,8 +157,6 @@ class {{ c.name }}
                 raise ValueError(f"Invalid {{attr.name}} format: {v}")
         return v
     {% endif -%}
-    {% else -%}
-    None
     {% endfor %}    
 {% endfor %}
 """
@@ -211,8 +209,6 @@ class {{ c.name }}
                 raise ValueError(f"Invalid {{attr.name}} format: {v}")
         return v
     {% endif -%}
-    {% else -%}
-    None
     {% endfor %}    
 {% endfor %}
 """
