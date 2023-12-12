@@ -46,12 +46,13 @@ from enum import Enum
 from typing import List, Dict, Optional, Any, Union"""
     if pydantic_ver == 1:
         template += """
-from pydantic import BaseModel as BaseModel, Field"""
+from pydantic import BaseModel as BaseModel, Field, validator"""
     else:
         template += """
-from pydantic import BaseModel as BaseModel, ConfigDict, Field"""
+from pydantic import BaseModel as BaseModel, ConfigDict, field_validator, Field"""
 
     template += """
+import re
 import sys
 if sys.version_info >= (3, 8):
     from typing import Literal
@@ -134,7 +135,6 @@ class {{ c.name }}
     {%- endif -%}
     {%- if attr.title != None %}, title="{{attr.title}}"{% endif -%}
     {%- if attr.description %}, description=\"\"\"{{attr.description}}\"\"\"{% endif -%}
-    {%- if attr.pattern %}, regex=\"{{attr.pattern}}\"{% endif -%}
     {%- if attr.equals_number != None %}, le={{attr.equals_number}}, ge={{attr.equals_number}}
     {%- else -%}
      {%- if attr.minimum_value != None %}, ge={{attr.minimum_value}}{% endif -%}
@@ -144,6 +144,24 @@ class {{ c.name }}
     {% else -%}
     None
     {% endfor %}
+    {% for attr in c.attributes.values() if c.attributes -%}
+    {%- if attr.pattern %}
+    @validator('{{attr.name}}')
+    def pattern_{{attr.name}}(cls, v):
+        pattern=re.compile(r"{{attr.pattern}}")
+        if isinstance(v,list):
+            # [raise ValueError(f"Invalid name format: {element}") for element in v if not pattern.match(element)]
+            for element in v:
+                if not pattern.match(element):
+                    raise ValueError(f"Invalid {{attr.name}} format: {element}")
+        elif isinstance(v,str):
+            if not pattern.match(v):
+                raise ValueError(f"Invalid {{attr.name}} format: {v}")
+        return v
+    {% endif -%}
+    {% else -%}
+    None
+    {% endfor %}    
 {% endfor %}
 """
     elif pydantic_ver == "2":
@@ -172,7 +190,6 @@ class {{ c.name }}
     {%- endif -%}
     {%- if attr.title != None %}, title="{{attr.title}}"{% endif -%}
     {%- if attr.description %}, description=\"\"\"{{attr.description}}\"\"\"{% endif -%}
-    {%- if attr.pattern %}, pattern=\"{{attr.pattern}}\"{% endif -%}
     {%- if attr.equals_number != None %}, le={{attr.equals_number}}, ge={{attr.equals_number}}
     {%- else -%}
      {%- if attr.minimum_value != None %}, ge={{attr.minimum_value}}{% endif -%}
@@ -182,9 +199,28 @@ class {{ c.name }}
     {% else -%}
     None
     {% endfor %}
+    {% for attr in c.attributes.values() if c.attributes -%}
+    {%- if attr.pattern %}
+    @field_validator('{{attr.name}}')
+    def pattern_{{attr.name}}(cls, v):
+        pattern=re.compile(r"{{attr.pattern}}")
+        if isinstance(v,list):
+            # [raise ValueError(f"Invalid name format: {element}") for element in v if not pattern.match(element)]
+            for element in v:
+                if not pattern.match(element):
+                    raise ValueError(f"Invalid {{attr.name}} format: {element}")
+        elif isinstance(v,str):
+            if not pattern.match(v):
+                raise ValueError(f"Invalid {{attr.name}} format: {v}")
+        return v
+    {% endif -%}
+    {% else -%}
+    None
+    {% endfor %}    
 {% endfor %}
 """
-
+        
+        
     ### FWD REFS / REBUILD MODEL ###
     if pydantic_ver == "1":
         template += """
