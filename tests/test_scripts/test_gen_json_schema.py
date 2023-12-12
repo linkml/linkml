@@ -1,67 +1,62 @@
-import unittest
+import re
 
-import click
+import pytest
 from click.testing import CliRunner
 
-from linkml.generators import jsonschemagen
-from tests.test_scripts.environment import env
-from tests.utils.clicktestcase import ClickTestCase
+from linkml import LOCAL_METAMODEL_YAML_FILE
+from linkml.generators.jsonschemagen import cli
 
 
-class GenJSONSchemaTestCase(ClickTestCase):
-    testdir = "genjsonschema"
-    click_ep = jsonschemagen.cli
-    prog_name = "gen-json-schema"
-    env = env
-
-    def test_help(self):
-        self.do_test("--help", "help")
-
-    def test_meta(self):
-        self.do_test([], "meta.json")
-        self.do_test("-f json", "meta.json")
-        self.do_test("-f xsv", "meta_error", expected_error=click.exceptions.BadParameter)
-        self.do_test("-i", "meta_inline.json")
-
-    def test_tree_root(self):
-        self.do_test([env.input_path("roottest.yaml")], "rootttest.jsonld", add_yaml=False)
-
-    def test_tree_root_args(self):
-        self.do_test(
-            [env.input_path("roottest.yaml"), "-t", "c2"],
-            "rootttest2.jsonld",
-            add_yaml=False,
-        )
-
-    def test_tree_root_closed(self):
-        self.do_test(
-            [env.input_path("roottest.yaml"), "--closed"],
-            "rootttest3.jsonld",
-            add_yaml=False,
-        )
-
-    def test_tree_root_not_closed(self):
-        self.do_test(
-            [env.input_path("roottest.yaml"), "--not-closed"],
-            "rootttest4.jsonld",
-            add_yaml=False,
-        )
-
-    def test_indent_option(self):
-        runner = CliRunner()
-
-        # the default is to pretty-print with new lines + 4 spaces
-        result = runner.invoke(self.click_ep, [env.input_path("roottest.yaml")])
-        self.assertRegex(result.output, r'^{\n    "\$defs"')
-
-        # test custom indent level with 2 spaces
-        result = runner.invoke(self.click_ep, ["--indent", 2, env.input_path("roottest.yaml")])
-        self.assertRegex(result.output, r'^{\n  "\$defs"')
-
-        # test no newlines or spaces when indent = 0
-        result = runner.invoke(self.click_ep, ["--indent", 0, env.input_path("roottest.yaml")])
-        self.assertRegex(result.output, r'^{"\$defs"')
+def test_help():
+    runner = CliRunner()
+    result = runner.invoke(cli, ["--help"])
+    assert "Generate JSON Schema representation of a LinkML model" in result.output
 
 
-if __name__ == "__main__":
-    unittest.main()
+@pytest.mark.parametrize(
+    "arguments,snapshot_file",
+    [
+        ("", "meta.json"),
+        ("-f json", "meta.json"),
+        ("-i", "meta_inline.json"),
+    ],
+)
+def test_metamodel_valid_calls(arguments, snapshot_file, snapshot):
+    runner = CliRunner()
+    result = runner.invoke(cli, f"{arguments} {LOCAL_METAMODEL_YAML_FILE}")
+    assert result.exit_code == 0
+    assert result.output == snapshot(f"genjsonschema/{snapshot_file}")
+
+
+@pytest.mark.parametrize(
+    "arguments,snapshot_file",
+    [
+        ("", "roottest.json"),
+        ("-t c2", "roottest2.json"),
+        ("--closed", "roottest3.json"),
+        ("--not-closed", "roottest4.json"),
+    ],
+)
+def test_tree_root(arguments, snapshot_file, input_path, snapshot):
+    schema = input_path("roottest.yaml")
+    runner = CliRunner()
+    result = runner.invoke(cli, f"{arguments} {schema}")
+    assert result.exit_code == 0
+    assert result.output == snapshot(f"genjsonschema/{snapshot_file}")
+
+
+def test_indent_option(input_path):
+    schema = str(input_path("roottest.yaml"))
+    runner = CliRunner()
+
+    # the default is to pretty-print with new lines + 4 spaces
+    result = runner.invoke(cli, [schema])
+    assert re.search(r'^{\n {4}"\$defs"', result.output)
+
+    # test custom indent level with 2 spaces
+    result = runner.invoke(cli, ["--indent", 2, schema])
+    assert re.search(r'^{\n {2}"\$defs"', result.output)
+
+    # test no newlines or spaces when indent = 0
+    result = runner.invoke(cli, ["--indent", 0, schema])
+    assert re.search(r'^{"\$defs"', result.output)

@@ -1,19 +1,9 @@
-import unittest
+from click.testing import CliRunner
 
-from linkml.generators import shaclgen
-from tests.test_scripts.environment import env
-from tests.utils.clicktestcase import ClickTestCase
+from linkml.generators.shaclgen import cli
 
 
-class GenShaclTestCase(ClickTestCase):
-    testdir = "genshacl"
-    click_ep = shaclgen.cli
-    prog_name = "gen-shacl"
-    env = env
-
-    def test_help(self):
-        self.do_test("--help", "help")
-
-
-if __name__ == "__main__":
-    unittest.main()
+def test_help():
+    runner = CliRunner()
+    result = runner.invoke(cli, "--help")
+    assert "Generate SHACL turtle from a LinkML model" in result.output
