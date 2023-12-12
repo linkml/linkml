@@ -1,44 +1,46 @@
-import unittest
-from typing import Optional
+""" Tests for various parts of the schema synopsis file """
+from pathlib import Path
+from typing import Union
 
+from linkml import LOCAL_METAMODEL_YAML_FILE
 from linkml.utils.schemaloader import SchemaLoader
-from tests.test_utils.environment import env
-from tests.utils.test_environment import TestEnvironmentTestCase
 
 
-class SchemaSynopsisTestCase(TestEnvironmentTestCase):
-    env = env
+def eval_synopsis(source: Union[str, Path], errs_snapshot, synopsis_snapshot) -> str:
+    schema = SchemaLoader(source)
+    schema.resolve()
 
-    """ Tests for various parts of the schema synopsis file """
+    errs = "\n".join(schema.synopsis.errors())
+    assert errs == errs_snapshot
 
-    def eval_synopsis(self, base_name: str, source: Optional[str] = None) -> None:
-        schema = SchemaLoader(
-            source if source else env.input_path(base_name + ".yaml"),
-            importmap=env.import_map,
-        )
-        schema.resolve()
-        self.summary = schema.synopsis.summary()
+    assert schema.synopsis.summary() == synopsis_snapshot
 
-        self.env.generate_single_file(
-            base_name + ".errs",
-            lambda: "\n".join(schema.synopsis.errors()),
-            value_is_returned=True,
-        )
-        self.env.generate_single_file(base_name + ".synopsis", lambda: self.summary, value_is_returned=True)
-
-    def test_meta_synopsis(self):
-        """Raise a flag if the number of classes, slots, types or other elements change in the model"""
-        self.eval_synopsis("meta", source=env.meta_yaml)
-
-    def test_unitialized_domain(self):
-        self.eval_synopsis("synopsis1")
-        # Double check because it is easy to lose the target in the file updates
-        self.assertIn("Domain unspecified: 1", self.summary)
-
-    def test_applyto(self):
-        self.eval_synopsis("synopsis2")
-        self.assertIn("* Unowned slots: s1, s2", self.summary)
+    return schema.synopsis.summary()
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_meta_synopsis(input_path, snapshot):
+    """Raise a flag if the number of classes, slots, types or other elements change in the model"""
+    eval_synopsis(
+        source=LOCAL_METAMODEL_YAML_FILE,
+        errs_snapshot=snapshot("meta.errs"),
+        synopsis_snapshot=snapshot("meta.synopsis"),
+    )
+
+
+def test_unitialized_domain(input_path, snapshot):
+    summary = eval_synopsis(
+        source=input_path("synopsis1.yaml"),
+        errs_snapshot=snapshot("synopsis1.errs"),
+        synopsis_snapshot=snapshot("synopsis1.synopsis"),
+    )
+    # Double check because it is easy to lose the target in the file updates
+    assert "Domain unspecified: 1" in summary
+
+
+def test_applyto(input_path, snapshot):
+    summary = eval_synopsis(
+        source=input_path("synopsis2.yaml"),
+        errs_snapshot=snapshot("synopsis2.errs"),
+        synopsis_snapshot=snapshot("synopsis2.synopsis"),
+    )
+    assert "* Unowned slots: s1, s2" in summary

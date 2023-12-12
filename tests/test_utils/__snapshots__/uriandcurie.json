@@ -174,9 +174,9 @@
   ],
   "metamodel_version": "1.7.0",
   "source_file": "uriandcurie.yaml",
-  "source_file_date": "2021-10-27T23:28:23",
-  "source_file_size": 1427,
-  "generation_date": "2021-10-27T23:37:17",
+  "source_file_date": "2000-01-01T00:00:00",
+  "source_file_size": 1,
+  "generation_date": "2000-01-01T00:00:00",
   "@type": "SchemaDefinition",
   "@context": [
     "https://w3id.org/linkml/meta.context.jsonld",

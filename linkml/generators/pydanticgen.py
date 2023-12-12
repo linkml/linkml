@@ -44,14 +44,14 @@ from __future__ import annotations
 from datetime import datetime, date
 from enum import Enum
 from typing import List, Dict, Optional, Any, Union"""
-    if pydantic_ver == 1:
+    if pydantic_ver == "1":
         template += """
-from pydantic import BaseModel as BaseModel, Field"""
-    else:
+from pydantic import BaseModel as BaseModel, Field, validator"""
+    elif pydantic_ver == "2":
         template += """
-from pydantic import BaseModel as BaseModel, ConfigDict, Field"""
-
+from pydantic import BaseModel as BaseModel, ConfigDict,  Field, field_validator"""
     template += """
+import re
 import sys
 if sys.version_info >= (3, 8):
     from typing import Literal
@@ -108,7 +108,8 @@ class {{ e.name }}(str{% if e['values'] %}, Enum{% endif %}):
 {% endfor %}
 """
     ### CLASSES ###
-    template += """
+    if pydantic_ver == "1":
+        template += """
 {%- for c in schema.classes.values() %}
 class {{ c.name }}
     {%- if class_isa_plus_mixins[c.name] -%}
@@ -142,8 +143,76 @@ class {{ c.name }}
     {% else -%}
     None
     {% endfor %}
+    {% for attr in c.attributes.values() if c.attributes -%}
+    {%- if attr.pattern %}
+    @validator('{{attr.name}}', allow_reuse=True)
+    def pattern_{{attr.name}}(cls, v):
+        pattern=re.compile(r"{{attr.pattern}}")
+        if isinstance(v,list):
+            for element in v:
+                if not pattern.match(element):
+                    raise ValueError(f"Invalid {{attr.name}} format: {element}")
+        elif isinstance(v,str):
+            if not pattern.match(v):
+                raise ValueError(f"Invalid {{attr.name}} format: {v}")
+        return v
+    {% endif -%}
+    {% endfor %}    
 {% endfor %}
 """
+    elif pydantic_ver == "2":
+        template += """
+{%- for c in schema.classes.values() %}
+class {{ c.name }}
+    {%- if class_isa_plus_mixins[c.name] -%}
+        ({{class_isa_plus_mixins[c.name]|join(', ')}})
+    {%- else -%}
+        (ConfiguredBaseModel)
+    {%- endif -%}
+                  :
+    {% if c.description -%}
+    \"\"\"
+    {{ c.description }}
+    \"\"\"
+    {%- endif %}
+    {% for attr in c.attributes.values() if c.attributes -%}
+    {{attr.name}}: {{ attr.annotations['python_range'].value }} = Field(
+    {%- if predefined_slot_values[c.name][attr.name] -%}
+        {{ predefined_slot_values[c.name][attr.name] }}
+    {%- elif (attr.required or attr.identifier or attr.key) -%}
+        ...
+    {%- else -%}
+        None
+    {%- endif -%}
+    {%- if attr.title != None %}, title="{{attr.title}}"{% endif -%}
+    {%- if attr.description %}, description=\"\"\"{{attr.description}}\"\"\"{% endif -%}
+    {%- if attr.equals_number != None %}, le={{attr.equals_number}}, ge={{attr.equals_number}}
+    {%- else -%}
+     {%- if attr.minimum_value != None %}, ge={{attr.minimum_value}}{% endif -%}
+     {%- if attr.maximum_value != None %}, le={{attr.maximum_value}}{% endif -%}
+    {%- endif -%}
+    )
+    {% else -%}
+    None
+    {% endfor %}
+    {% for attr in c.attributes.values() if c.attributes -%}
+    {%- if attr.pattern %}
+    @field_validator('{{attr.name}}')
+    def pattern_{{attr.name}}(cls, v):
+        pattern=re.compile(r"{{attr.pattern}}")
+        if isinstance(v,list):
+            for element in v:
+                if not pattern.match(element):
+                    raise ValueError(f"Invalid {{attr.name}} format: {element}")
+        elif isinstance(v,str):
+            if not pattern.match(v):
+                raise ValueError(f"Invalid {{attr.name}} format: {v}")
+        return v
+    {% endif -%}
+    {% endfor %}    
+{% endfor %}
+"""
+
     ### FWD REFS / REBUILD MODEL ###
     if pydantic_ver == "1":
         template += """

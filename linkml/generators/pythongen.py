@@ -509,6 +509,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
         initializers += [self.gen_class_variable(cls, slot, False) for slot in slot_variables]
 
         # Followed by everything else
+
         slot_variables = self._slot_iter(cls, lambda slot: not slot.required and slot in domain_slots)
         initializers += [self.gen_class_variable(cls, slot, False) for slot in slot_variables]
 
@@ -604,7 +605,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
 
     def class_reference_type(self, slot: SlotDefinition, cls: Optional[ClassDefinition]) -> Tuple[str, str, str]:
         """
-        Return the type of a slot referencing a class
+        Return the type of slot referencing a class
 
         :param slot: slot to be typed
         :param cls: owning class.  Used for generating key references
@@ -734,6 +735,12 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
         return typ_name
 
     def gen_constructor(self, cls: ClassDefinition) -> Optional[str]:
+        """
+        Generate python constructor for class
+
+        :param cls: class to generate constructor for
+        :return: python constructor
+        """
         rlines: List[str] = []
         designators = [x for x in self.domain_slots(cls) if x.designates_type]
         if len(designators) > 0:
@@ -845,7 +852,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
         elif slot.inlined:
             slot_range_cls = self.schema.classes[slot.range]
             identifier = self.class_identifier(slot_range_cls)
-            # If we don't have an identifier and we are expecting to be inlined first class elements
+            # If we don't have an identifier, and we are expecting to be inlined first class elements
             # (inlined_as_list is not True), we will use the first required field as the key.
             #  Note that this may not always work, but the workaround is straight forward -- set inlined_as_list to
             #  True

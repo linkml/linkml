@@ -28,9 +28,8 @@
          "from_schema": "http://example.org/schema6.fuzz"
       }
    ],
-   "metamodel_version": "0.5.0",
-   "source_file": "schema6.yaml",
-   "source_file_date": "2018-12-31 17:23",
-   "source_file_size": 259,
-   "generation_date": "2018-12-31 17:23"
+   "metamodel_version": "1.7.0",
+   "source_file_date": "2000-01-01T00:00:00",
+   "source_file_size": 1,
+   "generation_date": "2000-01-01T00:00:00"
 }
