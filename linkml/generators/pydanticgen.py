@@ -149,7 +149,6 @@ class {{ c.name }}
     def pattern_{{attr.name}}(cls, v):
         pattern=re.compile(r"{{attr.pattern}}")
         if isinstance(v,list):
-            # [raise ValueError(f"Invalid name format: {element}") for element in v if not pattern.match(element)]
             for element in v:
                 if not pattern.match(element):
                     raise ValueError(f"Invalid {{attr.name}} format: {element}")
@@ -204,7 +203,6 @@ class {{ c.name }}
     def pattern_{{attr.name}}(cls, v):
         pattern=re.compile(r"{{attr.pattern}}")
         if isinstance(v,list):
-            # [raise ValueError(f"Invalid name format: {element}") for element in v if not pattern.match(element)]
             for element in v:
                 if not pattern.match(element):
                     raise ValueError(f"Invalid {{attr.name}} format: {element}")
