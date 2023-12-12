@@ -49,8 +49,8 @@ from typing import List, Dict, Optional, Any, Union"""
 from pydantic import BaseModel as BaseModel, Field, validator"""
     else:
         template += """
-from pydantic import BaseModel as BaseModel, ConfigDict, field_validator, Field"""
-
+from pydantic import BaseModel as BaseModel, ConfigDict,  Field
+from pydantic.functional_validators import field_validator"""
     template += """
 import re
 import sys
