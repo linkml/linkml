@@ -329,10 +329,11 @@ def test_multiline_module(input_path):
 
 
 def test_pydantic_pattern(kitchen_sink_path, tmp_path, input_path):
-    """Generate pydantic classes"""
+    """Check if regex patterns are enforced. Only checks scalar case"""
     gen = PydanticGenerator(kitchen_sink_path, package=PACKAGE)
     code = gen.serialize()
     module = compile_python(code, PACKAGE)
+    #scalar pattern enforcement
     p1 = module.Person(id="01", name="John Doe")
     assert p1.name == "John Doe"
     with pytest.raises(ValidationError):
