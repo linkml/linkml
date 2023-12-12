@@ -110,12 +110,16 @@ class Attribute(YAMLRoot):
     A property or characteristic of an entity
     """
     id: Union[str, AttributeId] = None
+    name: Optional[Union[str, LabelType]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
             self.MissingRequiredField("id")
         if not isinstance(self.id, AttributeId):
             self.id = AttributeId(self.id)
+
+        if self.name is not None and not isinstance(self.name, LabelType):
+            self.name = LabelType(self.name)
 
         super().__post_init__(**kwargs)
 
