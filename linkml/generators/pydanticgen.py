@@ -44,13 +44,12 @@ from __future__ import annotations
 from datetime import datetime, date
 from enum import Enum
 from typing import List, Dict, Optional, Any, Union"""
-    if pydantic_ver == 1:
+    if pydantic_ver == '1':
         template += """
 from pydantic import BaseModel as BaseModel, Field, validator"""
-    else:
+    elif pydantic_ver == '2':
         template += """
-from pydantic import BaseModel as BaseModel, ConfigDict,  Field
-from pydantic.functional_validators import field_validator"""
+from pydantic import BaseModel as BaseModel, ConfigDict,  Field, field_validator"""
     template += """
 import re
 import sys
