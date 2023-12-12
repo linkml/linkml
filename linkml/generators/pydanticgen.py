@@ -598,7 +598,6 @@ class PydanticGenerator(OOCodeGenerator):
     type=click.Choice(["1", "2"]),
     default="1",
     help="DEPRECATED: Use --pydantic-version instead. Pydantic version to use (1 or 2)."
-
 )
 @click.option(
     "--extra-fields",
@@ -620,12 +619,7 @@ def cli(
     extra_fields="forbid",
     **args,
 ):
-    if pydantic_version:
-        warnings.warn(
-            "The --pydantic_version option is deprecated and will be removed in a future version. "
-            "Please use --pydantic-version instead.",
-            DeprecationWarning
-        )
+
     """Generate pydantic classes to represent a LinkML model"""
     gen = PydanticGenerator(
         yamlfile,

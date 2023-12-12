@@ -30,17 +30,20 @@ def test_cli_with_pydantic_version_1(runner, kitchen_sink_path):
 
 def test_cli_with_pydantic_version_2(runner, kitchen_sink_path):
     result = runner.invoke(cli, [kitchen_sink_path, '--pydantic-version', '2'])
+    print(result.output)
     assert result.exit_code == 0
     # Validate behavior for pydantic version 2
 
 def test_cli_with_pydantic_underscore_version_1(runner, kitchen_sink_path):
     result = runner.invoke(cli, [kitchen_sink_path, '--pydantic_version', '1'])
     assert result.exit_code == 0
+    print(result.output)
     # Validate behavior for pydantic version 1
 
 def test_cli_with_pydantic_underscore_version_2(runner, kitchen_sink_path):
     result = runner.invoke(cli, [kitchen_sink_path, '--pydantic_version', '2'])
     assert result.exit_code == 0
+    print(result.output)
     # Validate behavior for pydantic version 1
 
 def test_cli_with_extra_fields_allow(runner, kitchen_sink_path):
