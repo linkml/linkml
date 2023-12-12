@@ -6,6 +6,7 @@ from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.linkml_model import SlotDefinition
 from linkml_runtime.utils.compile_python import compile_python
 from pydantic import ValidationError
+
 from linkml.generators.pydanticgen import PydanticGenerator, cli
 from linkml.utils.schema_builder import SchemaBuilder
 
@@ -15,7 +16,6 @@ PACKAGE = "kitchen_sink"
 @pytest.fixture
 def runner():
     return CliRunner()
-
 
 
 @pytest.mark.parametrize(
