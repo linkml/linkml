@@ -219,8 +219,7 @@ class {{ c.name }}
     {% endfor %}    
 {% endfor %}
 """
-        
-        
+
     ### FWD REFS / REBUILD MODEL ###
     if pydantic_ver == "1":
         template += """

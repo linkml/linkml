@@ -333,7 +333,7 @@ def test_pydantic_pattern(kitchen_sink_path, tmp_path, input_path):
     gen = PydanticGenerator(kitchen_sink_path, package=PACKAGE)
     code = gen.serialize()
     module = compile_python(code, PACKAGE)
-    #scalar pattern enforcement
+    # scalar pattern enforcement
     p1 = module.Person(id="01", name="John Doe")
     assert p1.name == "John Doe"
     with pytest.raises(ValidationError):
