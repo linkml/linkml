@@ -2,7 +2,7 @@ import pytest
 from click.testing import CliRunner
 from rdflib import Graph, URIRef
 
-from linkml import LOCAL_METAMODEL_LDCONTEXT_FILE, LOCAL_METAMODEL_YAML_FILE, METAMODEL_NAMESPACE
+from linkml import LOCAL_METAMODEL_YAML_FILE, METAMODEL_NAMESPACE
 from linkml.generators.jsonldcontextgen import ContextGenerator
 from linkml.generators.jsonldgen import JSONLDGenerator, cli
 
@@ -23,17 +23,21 @@ def test_help():
 )
 def test_metamodel_valid_calls(arguments, snapshot_file, snapshot):
     """Test generation of meta.yaml JSON"""
+
+    # This path is not actually used by the generator other than being injected into the final
+    # output. We use a mock relative path here so that snapshots don't fail due to comparing
+    # absolute paths
+    mock_context_path = "file:./context.jsonld"
+
     runner = CliRunner()
-    result = runner.invoke(cli, f"{arguments} --context {LOCAL_METAMODEL_LDCONTEXT_FILE} {LOCAL_METAMODEL_YAML_FILE}")
+    result = runner.invoke(cli, f"{arguments} --context {mock_context_path} {LOCAL_METAMODEL_YAML_FILE}")
     assert result.exit_code == 0
     assert result.output == snapshot(f"genjsonld/{snapshot_file}")
 
 
 def test_metamodel_invalid_calls():
     runner = CliRunner()
-    result = runner.invoke(
-        cli, f"-f xsv --context {LOCAL_METAMODEL_LDCONTEXT_FILE} {LOCAL_METAMODEL_YAML_FILE}", standalone_mode=False
-    )
+    result = runner.invoke(cli, f"-f xsv {LOCAL_METAMODEL_YAML_FILE}", standalone_mode=False)
     assert result.exit_code == 1
     assert "xsv" in str(result.exception)
 
