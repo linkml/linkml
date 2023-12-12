@@ -145,7 +145,7 @@ class {{ c.name }}
     {% endfor %}
     {% for attr in c.attributes.values() if c.attributes -%}
     {%- if attr.pattern %}
-    @validator('{{attr.name}}')
+    @validator('{{attr.name}}', allow_reuse=True)
     def pattern_{{attr.name}}(cls, v):
         pattern=re.compile(r"{{attr.pattern}}")
         if isinstance(v,list):
