@@ -5,11 +5,9 @@ from copy import deepcopy
 from dataclasses import dataclass, field
 from types import ModuleType
 from typing import Dict, List, Optional, Set
-
+import warnings
 import click
 from jinja2 import Template
-
-# from linkml.generators import pydantic_GEN_VERSION
 from linkml_runtime.linkml_model.meta import (
     Annotation,
     ClassDefinition,
@@ -21,7 +19,6 @@ from linkml_runtime.utils.compile_python import compile_python
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.schemaview import SchemaView
 from pydantic.version import VERSION as PYDANTIC_VERSION
-
 from linkml._version import __version__
 from linkml.generators.common.type_designators import (
     get_accepted_type_designator_values,
@@ -591,10 +588,17 @@ class PydanticGenerator(OOCodeGenerator):
 @shared_arguments(PydanticGenerator)
 @click.option("--template-file", help="Optional jinja2 template to use for class generation")
 @click.option(
-    "--pydantic-version",
+    "--pydantic-version", "pydantic_version",
     type=click.Choice(["1", "2"]),
     default="1",
     help="Pydantic version to use (1 or 2)",
+)
+@click.option(
+    "--pydantic_version", "pydantic_version",
+    type=click.Choice(["1", "2"]),
+    default="1",
+    help="DEPRECATED: Use --pydantic-version instead. Pydantic version to use (1 or 2)."
+
 )
 @click.option(
     "--extra-fields",
@@ -616,6 +620,12 @@ def cli(
     extra_fields="forbid",
     **args,
 ):
+    if pydantic_version:
+        warnings.warn(
+            "The --pydantic_version option is deprecated and will be removed in a future version. "
+            "Please use --pydantic-version instead.",
+            DeprecationWarning
+        )
     """Generate pydantic classes to represent a LinkML model"""
     gen = PydanticGenerator(
         yamlfile,
