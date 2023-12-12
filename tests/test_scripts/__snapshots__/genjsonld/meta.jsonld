@@ -8019,7 +8019,7 @@
   "generation_date": "2000-01-01T00:00:00",
   "@type": "SchemaDefinition",
   "@context": [
-    "file:///Users/PAKalita/Work/linkml/.venv/lib/python3.10/site-packages/linkml_runtime/linkml_model/jsonld/meta.context.jsonld",
+    "file:./context.jsonld",
     "https://w3id.org/linkml/types.context.jsonld",
     "https://w3id.org/linkml/mappings.context.jsonld",
     "https://w3id.org/linkml/extensions.context.jsonld",
