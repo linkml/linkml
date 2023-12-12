@@ -1,47 +1,64 @@
-import unittest
+import pytest
+from click.testing import CliRunner
 
-import click
-
-from linkml.generators import yumlgen
-from tests.test_scripts.environment import env
-from tests.utils.clicktestcase import ClickTestCase
+from linkml import LOCAL_METAMODEL_YAML_FILE
+from linkml.generators.yumlgen import YumlGenerator, cli
 
 
-class GenYUMLTestCase(ClickTestCase):
-    testdir = "genyuml"
-    click_ep = yumlgen.cli
-    prog_name = "gen-yuml"
-    env = env
-
-    def test_help(self):
-        self.do_test("--help", "help")
-
-    def test_meta(self):
-        self.temp_file_path("meta.yuml")
-        self.do_test([], "meta.yuml")
-        self.do_test("-f yuml", "meta.yuml")
-        self.do_test("-f xsv", "meta_error", expected_error=click.exceptions.BadParameter)
-        self.do_test("-c definition", "definition.yuml")
-        self.do_test("-c definition -c element", "definition_element.yuml")
-        self.do_test("-c noclass", "definition.yuml", expected_error=ValueError)
-
-        self.do_test(["-c", "schema_definition"], "meta", is_directory=True)
-        self.do_test(["-c", "definition"], "meta1", is_directory=True)
-        self.do_test(["-c", "element"], "meta2", is_directory=True)
-
-        # Directory tests
-        for fmt in yumlgen.YumlGenerator.valid_formats:
-            if fmt != "yuml":
-                self.do_test(
-                    ["-f", fmt, "-c", "schema_definition"],
-                    "meta_" + fmt,
-                    is_directory=True,
-                )
-
-    def test_specified_diagram_name(self):
-        self.temp_file_path("specified_name.svg")
-        self.do_test(["--diagram-name", "specified_name"], "specified_name_dir", is_directory=True)
+def test_help():
+    runner = CliRunner()
+    result = runner.invoke(cli, "--help")
+    assert "Generate a UML representation of a LinkML model" in result.output
 
 
-if __name__ == "__main__":
-    unittest.main()
+@pytest.mark.parametrize(
+    "arguments,snapshot_file",
+    [
+        ("", "meta.yuml"),
+        ("-c definition", "definition.yuml"),
+        ("-c definition -c element", "definition_element.yuml"),
+    ],
+)
+def test_metamodel(arguments, snapshot_file, snapshot):
+    runner = CliRunner()
+    result = runner.invoke(cli, f"{arguments} {LOCAL_METAMODEL_YAML_FILE}")
+    assert result.exit_code == 0
+    assert result.output == snapshot(f"genyuml/{snapshot_file}")
+
+
+@pytest.mark.network
+@pytest.mark.parametrize(
+    "arguments,snapshot_dir",
+    [
+        ("-c schema_definition", "meta"),
+        ("-c definition", "meta1"),
+        ("-c element", "meta2"),
+    ],
+)
+def test_metamodel_output_directory(arguments, snapshot_dir, snapshot, tmp_path):
+    runner = CliRunner()
+    result = runner.invoke(cli, f"{arguments} -d {tmp_path} {LOCAL_METAMODEL_YAML_FILE}")
+    assert result.exit_code == 0
+    assert tmp_path == snapshot(f"genyuml/{snapshot_dir}")
+
+
+def test_invalid_classname():
+    runner = CliRunner()
+    result = runner.invoke(cli, f"-c noclass {LOCAL_METAMODEL_YAML_FILE}", standalone_mode=False)
+    assert result.exit_code != 0
+    assert "noclass" in str(result.exception)
+
+
+@pytest.mark.parametrize("format", YumlGenerator.valid_formats)
+def test_formats(format, tmp_path, snapshot):
+    runner = CliRunner()
+    result = runner.invoke(cli, f"-f {format} -c schema_definition -d {tmp_path} {LOCAL_METAMODEL_YAML_FILE}")
+    assert result.exit_code == 0
+    assert tmp_path == snapshot(f"genyuml/meta_{format}")
+
+
+def test_specified_diagram_name(tmp_path, snapshot):
+    runner = CliRunner()
+    result = runner.invoke(cli, f"--diagram-name specified_name -d {tmp_path} {LOCAL_METAMODEL_YAML_FILE}")
+    assert result.exit_code == 0
+    assert tmp_path == snapshot("genyuml/specified_name_dir")

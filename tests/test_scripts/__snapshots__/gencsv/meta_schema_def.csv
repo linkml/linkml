@@ -1,0 +1,6 @@
+# metamodel_version: 1.7.0
+# version: 2.0.0
+id,mappings,description
+element,,A named element in the model
+schema_definition,,A collection of definitions that make up a schema or a data model.
+

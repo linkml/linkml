@@ -1,26 +1,17 @@
-import unittest
+from click.testing import CliRunner
 
-import click
-
-from linkml.generators import protogen
-from tests.test_scripts.environment import env
-from tests.utils.clicktestcase import ClickTestCase
+from linkml import LOCAL_METAMODEL_YAML_FILE
+from linkml.generators.protogen import cli
 
 
-class GenProtoTestCase(ClickTestCase):
-    testdir = "genproto"
-    click_ep = protogen.cli
-    prog_name = "gen-proto"
-    env = env
-
-    def test_help(self):
-        self.do_test("--help", "help")
-
-    def test_meta(self):
-        self.do_test([], "meta.proto")
-        self.do_test("-f proto", "meta.proto")
-        self.do_test("-f xsv", "meta_error", expected_error=click.exceptions.BadParameter)
+def test_help():
+    runner = CliRunner()
+    result = runner.invoke(cli, "--help")
+    assert "Generate proto representation of LinkML model" in result.output
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_metamodel(snapshot):
+    runner = CliRunner()
+    result = runner.invoke(cli, LOCAL_METAMODEL_YAML_FILE)
+    assert result.exit_code == 0
+    assert result.output == snapshot("genproto/meta.proto")
