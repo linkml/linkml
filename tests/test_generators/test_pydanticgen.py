@@ -63,6 +63,11 @@ def test_cli_with_version_option(runner, kitchen_sink_path):
     # Validate version output
 
 
+def test_non_functional_cli_options(runner, kitchen_sink_path):
+    result = runner.invoke(cli, [kitchen_sink_path, "--weird_parameter", "foo"])
+    assert result.exit_code == 2
+
+
 def test_pydantic(kitchen_sink_path, tmp_path, input_path):
     """Generate pydantic classes"""
     gen = PydanticGenerator(kitchen_sink_path, package=PACKAGE)
