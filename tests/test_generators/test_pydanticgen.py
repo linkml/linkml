@@ -31,7 +31,7 @@ def runner():
 )
 def test_metamodel_valid_cli_arguments(arguments, kitchen_sink_path):
     runner = CliRunner()
-    arguments_str = ' '.join(arguments)
+    arguments_str = " ".join(arguments)
     result = runner.invoke(pydanticgen.cli, f"{arguments_str} {kitchen_sink_path}")
     assert result.exit_code == 0
 
