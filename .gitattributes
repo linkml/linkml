@@ -1,0 +1,7 @@
+# Default behavior
+* text=auto
+
+# When the files that are compared to these snapshots are produced they
+# always have Unix line endings. Therefore we need to always check out
+# the corresponding snapshots with Unix line endings
+tests/test_scripts/__snapshots__/**/*.svg text eol=lf
