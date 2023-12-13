@@ -364,6 +364,8 @@ enums:
     is_a: OtherEnum
     permissible_values:
       CAT:
+      TABBY:
+        is_a: CAT
       LION:
         is_a: CAT
       ANGRY_LION:

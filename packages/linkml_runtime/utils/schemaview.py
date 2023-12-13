@@ -624,13 +624,15 @@ class SchemaView(object):
         """
         :param enum_name: parent enum name
         :param permissible_value: permissible value
-        :return: all direct child enum names (is_a)
+        :return: all direct child permissible values (is_a)
 
         CAT:
         LION:
           is_a: CAT
         ANGRY_LION:
           is_a: LION
+        TABBY:
+          is_a: CAT
         BIRD:
         EAGLE:
           is_a: BIRD
@@ -638,13 +640,15 @@ class SchemaView(object):
         """
 
         enum = self.get_enum(enum_name, strict=True)
+        children = []
         if enum:
             if permissible_value in enum.permissible_values:
                 pv = enum.permissible_values[permissible_value]
                 for isapv in enum.permissible_values:
                     isapv_entity = enum.permissible_values[isapv]
                     if isapv_entity.is_a and pv.text == isapv_entity.is_a:
-                        return [isapv]
+                        children.append(isapv)
+                return children
         else:
             return []
 
