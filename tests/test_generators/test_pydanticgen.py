@@ -21,17 +21,17 @@ def runner():
 @pytest.mark.parametrize(
     "arguments",
     [
-        "--pydantic-version 1",
-        "--pydantic-version 2",
-        "--pydantic_version 1",
-        "--pydantic_version 2",
-        "--extra-fields allow",
+        ["--pydantic-version", "1"],
+        ["--pydantic-version", "2"],
+        ["--pydantic_version", "1"],
+        ["--pydantic_version", "2"],
+        ["--extra-fields", "allow"],
     ],
 )
-def test_metamodel_valid_cli_calls(arguments, kitchen_sink_path):
+def test_metamodel_valid_cli_arguments(arguments, kitchen_sink_path):
     runner = CliRunner()
-    print(f"{arguments} {kitchen_sink_path}")
-    result = runner.invoke(cli, f"{arguments} {kitchen_sink_path}")
+    arguments_str = ' '.join(arguments)
+    result = runner.invoke(cli, f"{arguments_str} {kitchen_sink_path}")
     assert result.exit_code == 0
 
 
