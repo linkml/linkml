@@ -650,7 +650,7 @@ class SchemaView(object):
                         children.append(isapv)
                 return children
         else:
-            return []
+            raise ValueError(f'No such enum as "{enum_name}"')
 
     @lru_cache()
     def slot_parents(self, slot_name: SLOT_NAME, imports=True, mixins=True, is_a=True) -> List[SlotDefinitionName]:

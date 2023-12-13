@@ -47,6 +47,8 @@ class SchemaViewTestCase(unittest.TestCase):
 
     def test_schemaview_enums(self):
         view = SchemaView(SCHEMA_NO_IMPORTS)
+        with self.assertRaises(ValueError):
+            view.permissible_value_parent("not_a_pv", "not_an_enum")
         for en, e in view.all_enums().items():
             if e.name == "Animals":
                 for pv, v in e.permissible_values.items():
