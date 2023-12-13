@@ -11,6 +11,10 @@ from tests.utils.compare_rdf import compare_rdf
 from tests.utils.dirutils import are_dir_trees_equal
 
 
+def normalize_line_endings(string: str):
+    return string.replace("\r\n", "\n").replace("\r", "\n")
+
+
 class Snapshot(ABC):
     def __init__(self, path: Path, config: pytest.Config) -> None:
         self.path = path
@@ -74,7 +78,7 @@ class SnapshotFile(Snapshot):
             self.eq_state = compare_rdf(expected, actual, fmt=self.rdf_format if self.rdf_format else "turtle")
             return self.eq_state is None
         else:
-            is_eq = actual == expected
+            is_eq = normalize_line_endings(actual) == expected
             if not is_eq:
                 # TODO: probably better to use something other than this pytest
                 # private method. See https://docs.python.org/3/library/difflib.html
