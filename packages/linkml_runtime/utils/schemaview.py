@@ -619,6 +619,36 @@ class SchemaView(object):
             return []
 
     @lru_cache()
+    def permissible_value_children(self, permissible_value: str, enum_name: ENUM_NAME) -> Union[
+        str, PermissibleValueText, None, ValueError]:
+        """
+        :param enum_name: parent enum name
+        :param permissible_value: permissible value
+        :return: all direct child enum names (is_a)
+
+        CAT:
+        LION:
+          is_a: CAT
+        ANGRY_LION:
+          is_a: LION
+        BIRD:
+        EAGLE:
+          is_a: BIRD
+
+        """
+
+        enum = self.get_enum(enum_name, strict=True)
+        if enum:
+            if permissible_value in enum.permissible_values:
+                pv = enum.permissible_values[permissible_value]
+                for isapv in enum.permissible_values:
+                    isapv_entity = enum.permissible_values[isapv]
+                    if isapv_entity.is_a and pv.text == isapv_entity.is_a:
+                        return [isapv]
+        else:
+            return []
+
+    @lru_cache()
     def slot_parents(self, slot_name: SLOT_NAME, imports=True, mixins=True, is_a=True) -> List[SlotDefinitionName]:
         """
         :param slot_name: child slot name
@@ -715,6 +745,22 @@ class SchemaView(object):
         """
 
         return _closure(lambda x: self.permissible_value_parent(x, enum_name),
+                        permissible_value_text,
+                        reflexive=reflexive,
+                        depth_first=depth_first)
+
+    @lru_cache()
+    def permissible_value_descendants(self, permissible_value_text: str,
+                                    enum_name: ENUM_NAME,
+                                    reflexive=True,
+                                    depth_first=True) -> List[str]:
+        """
+        Closure of permissible_value_children method
+        :enum
+        """
+
+
+        return _closure(lambda x: self.permissible_value_children(x, enum_name),
                         permissible_value_text,
                         reflexive=reflexive,
                         depth_first=depth_first)

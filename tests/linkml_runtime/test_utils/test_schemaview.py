@@ -53,9 +53,15 @@ class SchemaViewTestCase(unittest.TestCase):
                     if pv == "CAT":
                         self.assertEqual(view.permissible_value_parent(pv, e.name), None)
                         self.assertEqual(view.permissible_value_ancestors(pv, e.name), ['CAT'])
+                        self.assertIn("LION", view.permissible_value_descendants(pv, e.name))
+                        self.assertIn("ANGRY_LION", view.permissible_value_descendants(pv, e.name))
+                        self.assertNotIn("EAGLE", view.permissible_value_descendants(pv, e.name))
+                    if pv == "LION":
+                        self.assertIn("ANGRY_LION", view.permissible_value_children(pv, e.name))
                     if pv == "ANGRY_LION":
                         self.assertEqual(view.permissible_value_parent(pv, e.name), ['LION'])
                         self.assertEqual(view.permissible_value_ancestors(pv, e.name), ['ANGRY_LION', 'LION', 'CAT'])
+                        self.assertEquals(["ANGRY_LION"], view.permissible_value_descendants(pv, e.name))
         for cn, c in view.all_classes().items():
             if c.name == "Adult":
                 self.assertEqual(view.class_ancestors(c.name), ['Adult', 'Person', 'HasAliases', 'Thing'])
