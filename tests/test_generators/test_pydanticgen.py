@@ -7,7 +7,8 @@ from linkml_runtime.linkml_model import SlotDefinition
 from linkml_runtime.utils.compile_python import compile_python
 from pydantic import ValidationError
 
-from linkml.generators.pydanticgen import PydanticGenerator, cli
+from linkml.generators import pydanticgen
+from linkml.generators.pydanticgen import PydanticGenerator
 from linkml.utils.schema_builder import SchemaBuilder
 
 PACKAGE = "kitchen_sink"
@@ -31,12 +32,12 @@ def runner():
 def test_metamodel_valid_cli_arguments(arguments, kitchen_sink_path):
     runner = CliRunner()
     arguments_str = ' '.join(arguments)
-    result = runner.invoke(cli, f"{arguments_str} {kitchen_sink_path}")
+    result = runner.invoke(pydanticgen.cli, f"{arguments_str} {kitchen_sink_path}")
     assert result.exit_code == 0
 
 
 def test_non_functional_cli_options(runner, kitchen_sink_path):
-    result = runner.invoke(cli, [kitchen_sink_path, "--weird_parameter", "foo"])
+    result = runner.invoke(pydanticgen.cli, [kitchen_sink_path, "--weird_parameter", "foo"])
     assert result.exit_code == 2
 
 
