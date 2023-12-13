@@ -8,6 +8,7 @@ from requests.structures import CaseInsensitiveDict
 from prefixmaps.io.parser import load_context
 
 from linkml_runtime.utils.yamlutils import TypedNode
+from linkml_runtime.utils.uri_validator import validate_uri
 
 META_NS = "meta"
 META_URI = "https://w3id.org/linkml/meta"
@@ -142,7 +143,7 @@ class Namespaces(CaseInsensitiveDict):
         @param default_ok: True means the default prefix is ok. Otherwise, we have to have a real prefix
         @param pythonform: True means take the python/rdflib uppercase format
         """
-        if ':' in uri and ':/' not in uri:
+        if not validate_uri(uri):
             raise ValueError(f"{TypedNode.yaml_loc(uri)}Not a valid URI: {uri}")
 
         if pythonform:
