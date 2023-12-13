@@ -931,7 +931,6 @@ class SchemaView(object):
                 if schema == None:
                     raise ValueError(f'Cannot find {e.from_schema} in schema_map')
             else:
-                logging.warning(f'from_schema not populated for element {e.name}')
                 schema = self.schema_map[self.in_schema(e.name)]
             pfx = schema.default_prefix
             uri = f'{pfx}:{e_name}'
