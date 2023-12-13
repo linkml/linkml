@@ -20,17 +20,17 @@ def test_help():
 @pytest.mark.parametrize(
     "arguments,snapshot_file",
     [
-        ("", "metashex.shex"),
-        ("-f json", "metashex.json"),
-        ("-f rdf", "metashex.ttl"),
-        ("-f shex", "metashex.shex"),
-        ("--metauris", "metashexn.shex"),
+        ([], "metashex.shex"),
+        (["-f", "json"], "metashex.json"),
+        (["-f", "rdf"], "metashex.ttl"),
+        (["-f", "shex"], "metashex.shex"),
+        (["--metauris"], "metashexn.shex"),
     ],
 )
 def test_meta(arguments, snapshot_file, snapshot):
     """Generate various forms of the metamodel in ShEx"""
     runner = CliRunner()
-    result = runner.invoke(cli, f"{arguments} {LOCAL_METAMODEL_YAML_FILE}")
+    result = runner.invoke(cli, arguments + [LOCAL_METAMODEL_YAML_FILE])
     assert result.exit_code == 0
     assert result.output == snapshot(f"genshex/{snapshot_file}")
 

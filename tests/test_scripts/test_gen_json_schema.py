@@ -16,14 +16,14 @@ def test_help():
 @pytest.mark.parametrize(
     "arguments,snapshot_file",
     [
-        ("", "meta.json"),
-        ("-f json", "meta.json"),
-        ("-i", "meta_inline.json"),
+        ([], "meta.json"),
+        (["-f", "json"], "meta.json"),
+        (["-i"], "meta_inline.json"),
     ],
 )
 def test_metamodel_valid_calls(arguments, snapshot_file, snapshot):
     runner = CliRunner()
-    result = runner.invoke(cli, f"{arguments} {LOCAL_METAMODEL_YAML_FILE}")
+    result = runner.invoke(cli, arguments + [LOCAL_METAMODEL_YAML_FILE])
     assert result.exit_code == 0
     assert result.output == snapshot(f"genjsonschema/{snapshot_file}")
 
@@ -31,16 +31,16 @@ def test_metamodel_valid_calls(arguments, snapshot_file, snapshot):
 @pytest.mark.parametrize(
     "arguments,snapshot_file",
     [
-        ("", "roottest.json"),
-        ("-t c2", "roottest2.json"),
-        ("--closed", "roottest3.json"),
-        ("--not-closed", "roottest4.json"),
+        ([], "roottest.json"),
+        (["-t", "c2"], "roottest2.json"),
+        (["--closed"], "roottest3.json"),
+        (["--not-closed"], "roottest4.json"),
     ],
 )
 def test_tree_root(arguments, snapshot_file, input_path, snapshot):
     schema = input_path("roottest.yaml")
     runner = CliRunner()
-    result = runner.invoke(cli, f"{arguments} {schema}")
+    result = runner.invoke(cli, arguments + [str(schema)])
     assert result.exit_code == 0
     assert result.output == snapshot(f"genjsonschema/{snapshot_file}")
 

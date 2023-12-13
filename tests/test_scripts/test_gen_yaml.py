@@ -13,7 +13,7 @@ def test_help():
 def test_metamodel(snapshot):
     """Test emitting a YAML file"""
     runner = CliRunner()
-    result = runner.invoke(cli, LOCAL_METAMODEL_YAML_FILE)
+    result = runner.invoke(cli, [LOCAL_METAMODEL_YAML_FILE])
     assert result.exit_code == 0
     assert result.output == snapshot("genyaml/meta.yaml")
 

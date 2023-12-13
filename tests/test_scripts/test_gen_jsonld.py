@@ -16,9 +16,9 @@ def test_help():
 @pytest.mark.parametrize(
     "arguments,snapshot_file",
     [
-        ("", "meta.jsonld"),
-        ("-f jsonld", "meta.jsonld"),
-        ("-f json", "meta.json"),
+        ([], "meta.jsonld"),
+        (["-f", "jsonld"], "meta.jsonld"),
+        (["-f", "json"], "meta.json"),
     ],
 )
 def test_metamodel_valid_calls(arguments, snapshot_file, snapshot):
@@ -30,14 +30,14 @@ def test_metamodel_valid_calls(arguments, snapshot_file, snapshot):
     mock_context_path = "file:./context.jsonld"
 
     runner = CliRunner()
-    result = runner.invoke(cli, f"{arguments} --context {mock_context_path} {LOCAL_METAMODEL_YAML_FILE}")
+    result = runner.invoke(cli, arguments + ["--context", mock_context_path, LOCAL_METAMODEL_YAML_FILE])
     assert result.exit_code == 0
     assert result.output == snapshot(f"genjsonld/{snapshot_file}")
 
 
 def test_metamodel_invalid_calls():
     runner = CliRunner()
-    result = runner.invoke(cli, f"-f xsv {LOCAL_METAMODEL_YAML_FILE}", standalone_mode=False)
+    result = runner.invoke(cli, ["-f", "xsv", LOCAL_METAMODEL_YAML_FILE], standalone_mode=False)
     assert result.exit_code == 1
     assert "xsv" in str(result.exception)
 
@@ -55,7 +55,7 @@ def test_simple_uris(input_path, snapshot):
     assert output == snapshot("genjsonld/simple_uri_test.context.jsonld")
 
     runner = CliRunner()
-    result = runner.invoke(cli, [input_path("simple_uri_test.yaml")])
+    result = runner.invoke(cli, [str(input_path("simple_uri_test.yaml"))])
     assert result.exit_code == 0
     assert result.output == snapshot("genjsonld/simple_uri_test.jsonld")
 
