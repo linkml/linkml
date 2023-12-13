@@ -1,0 +1,16 @@
+# metamodel_version: 1.7.0# version: 2.0.0id: match_query
+schema_generating: true
+description: A query that is used on an enum expression to dynamically obtain a set
+  of permissivle values via a query that  matches on properties of the external concepts.
+display_name: match_query
+document_category: match_query
+weight: 20
+fields:
+- id: identifier_pattern
+  description: A regular expression that is used to obtain a set of identifiers from
+    a source_ontology to construct a set of permissible values
+  display_name: identifier_pattern
+- id: source_ontology
+  description: An ontology or vocabulary or terminology that is used in a query to
+    obtain a set of permissible values
+  display_name: source_ontology

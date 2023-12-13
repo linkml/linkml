@@ -1,0 +1,45 @@
+# metamodel_version: 1.7.0
+# version: 2.0.0
+id,mappings,description
+alt_description,,an attributed description
+annotatable,,mixin for classes that support annotations
+annotation,,a tag/value pair with the semantics of OWL Annotation
+anonymous_class_expression,,
+anonymous_enum_expression,,An enum_expression that is not named
+anonymous_expression,,An abstract parent class for any nested expression
+anonymous_slot_expression,,
+anonymous_type_expression,,A type expression that is not a top-level named type definition. Used for nesting.
+Anything,,
+AnyValue,,
+class_definition,,an element whose instances are complex objects that may have slot-value assignments
+class_expression,,A boolean expression that can be used to dynamically determine membership of a class
+class_level_rule,,A rule that is applied to classes
+class_rule,,A rule that applies to instances of a class
+common_metadata,,Generic metadata shared across definitions
+definition,,abstract base class for core metaclasses
+element,,A named element in the model
+enum_definition,,an element whose instances must be drawn from a specified set of permissible values
+enum_expression,,An expression that constrains the range of a slot
+example,,usage example and description
+expression,,general mixin for any class that can represent some form of expression
+extensible,,mixin for classes that support extension
+extension,,a tag/value pair used to add non-model information to an entry
+import_expression,,an expression describing an import
+local_name,,an attributed label
+match_query,,A query that is used on an enum expression to dynamically obtain a set of permissivle values via a query that  matches on properties of the external concepts.
+path_expression,,An expression that describes an abstract path from an object to another through a sequence of slot lookups
+pattern_expression,,a regular expression pattern used to evaluate conformance of a string
+permissible_value,,"a permissible value, accompanied by intended text and an optional mapping to a concept URI"
+prefix,,prefix URI tuple
+reachability_query,,A query that is used on an enum expression to dynamically obtain a set of permissible values via walking from a  set of source nodes to a set of descendants or ancestors over a set of relationship types.
+schema_definition,,A collection of definitions that make up a schema or a data model.
+setting,,assignment of a key to a value
+slot_definition,,an element that describes how instances are related to other instances
+slot_expression,,an expression that constrains the range of values a slot can take
+structured_alias,,"object that contains meta data about a synonym or alias including where it came from (source) and its scope (narrow, broad, etc.)"
+subset_definition,,an element that can be used to group other metamodel elements
+type_definition,,an element that whose instances are atomic scalar values that can be mapped to primitive types
+type_expression,,An abstract class grouping named types and anonymous type expressions
+unique_key,,a collection of slots whose values uniquely identify an instance of a class
+UnitOfMeasure,,"A unit of measure, or unit, is a particular quantity value that has been chosen as a scale for  measuring other quantities the same kind (more generally of equivalent dimension)."
+

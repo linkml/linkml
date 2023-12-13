@@ -1,45 +1,30 @@
-import unittest
+from click.testing import CliRunner
 
 from linkml import LOCAL_METAMODEL_YAML_FILE
-from linkml.generators import yamlgen
-from tests.test_scripts.environment import env
-from tests.utils.clicktestcase import ClickTestCase
-from tests.utils.filters import yaml_filter
+from linkml.generators.yamlgen import cli
 
 
-class GenYUMLTestCase(ClickTestCase):
-    testdir = "genyaml"
-    click_ep = yamlgen.cli
-    prog_name = "gen-yaml"
-    env = env
-
-    def test_help(self):
-        self.do_test("--help", "help")
-
-    def test_emit_yaml(self):
-        """Test emitting a YAML file"""
-        self.do_test(
-            [LOCAL_METAMODEL_YAML_FILE, "--importmap", self.env.import_map, "-g"],
-            "meta.yaml",
-            add_yaml=False,
-            filtr=yaml_filter,
-        )
-
-    def test_validate_yaml(self):
-        """Test YAML file validation"""
-        self.do_test(
-            [env.input_path("yaml_validate_clean.yaml"), "-v"],
-            "clean.txt",
-            add_yaml=False,
-        )
-        with self.assertRaises(ValueError) as e:
-            self.do_test(
-                [env.input_path("yaml_validate_invalid.yaml"), "-v"],
-                "invalid.txt",
-                add_yaml=False,
-            )
-        self.assertIn("slot: k - unrecognized range (none)", str(e.exception))
+def test_help():
+    runner = CliRunner()
+    result = runner.invoke(cli, "--help")
+    assert "Validate input and produce fully resolved yaml equivalent" in result.output
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_metamodel(snapshot):
+    """Test emitting a YAML file"""
+    runner = CliRunner()
+    result = runner.invoke(cli, [LOCAL_METAMODEL_YAML_FILE])
+    assert result.exit_code == 0
+    assert result.output == snapshot("genyaml/meta.yaml")
+
+
+def test_validate_yaml(input_path, snapshot):
+    """Test YAML file validation"""
+    runner = CliRunner()
+    result = runner.invoke(cli, [input_path("yaml_validate_clean.yaml"), "-v"])
+    assert result.exit_code == 0
+    assert result.output == snapshot("genyaml/clean.yaml")
+
+    result = runner.invoke(cli, [input_path("yaml_validate_invalid.yaml"), "-v"], standalone_mode=False)
+    assert result.exit_code != 0
+    assert "slot: k - unrecognized range (none)" in str(result.exception)

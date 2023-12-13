@@ -1,30 +1,24 @@
-import unittest
+from click.testing import CliRunner
 
-import click
-
+from linkml import LOCAL_METAMODEL_YAML_FILE
 from linkml.generators import golrgen
-from tests.test_scripts.environment import env
-from tests.utils.clicktestcase import ClickTestCase
 
 
-class GolrViewTestCase(ClickTestCase):
-    testdir = "gengolr"
-    click_ep = golrgen.cli
-    prog_name = "gen-golr-views"
-    env = env
-
-    def test_help(self):
-        self.do_test("--help", "help")
-
-    def test_meta(self):
-        self.do_test([], "meta", is_directory=True)
-        self.do_test(
-            "-f xsv",
-            "error",
-            is_directory=True,
-            expected_error=click.exceptions.BadParameter,
-        )
+def test_help():
+    runner = CliRunner()
+    result = runner.invoke(golrgen.cli, ["--help"])
+    assert "Generate GOLR representation of a LinkML model" in result.output
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_metamodel_valid_call(tmp_path, snapshot):
+    runner = CliRunner()
+    result = runner.invoke(golrgen.cli, ["-d", tmp_path, LOCAL_METAMODEL_YAML_FILE])
+    assert result.exit_code == 0
+    assert tmp_path == snapshot("gengolr/meta")
+
+
+def test_metamodel_invalid_call(tmp_path):
+    runner = CliRunner()
+    result = runner.invoke(golrgen.cli, ["-f", "xsv", "-d", tmp_path, LOCAL_METAMODEL_YAML_FILE], standalone_mode=False)
+    assert result.exit_code != 0
+    assert "xsv" in str(result.exception)
