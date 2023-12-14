@@ -1,5 +1,5 @@
 # Auto generated from meta.yaml by namespacegen.py version: 0.0.1
-# Generation date: 2023-09-25T16:04:45
+# Generation date: 2023-11-15T08:56:13
 # Schema: meta
 #
 # id: https://w3id.org/linkml/meta
@@ -44,6 +44,7 @@ class BiolinkNameSpace:
         CurieNamespace('NCIT', 'http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#'),
         CurieNamespace('OIO', 'http://www.geneontology.org/formats/oboInOwl#'),
         CurieNamespace('bibo', 'http://purl.org/ontology/bibo/'),
+        CurieNamespace('cdisc', 'http://rdf.cdisc.org/mms#'),
         CurieNamespace('dcterms', 'http://purl.org/dc/terms/'),
         CurieNamespace('linkml', 'https://w3id.org/linkml/'),
         CurieNamespace('oslc', 'http://open-services.net/ns/core#'),

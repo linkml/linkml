@@ -45,11 +45,14 @@ message AnonymousClassExpression
  repeated  uriorcurie narrowMappings = 0
  repeated  uriorcurie broadMappings = 0
   uriorcurie createdBy = 0
+ repeated  uriorcurie contributors = 0
   datetime createdOn = 0
   datetime lastUpdatedOn = 0
   uriorcurie modifiedBy = 0
   uriorcurie status = 0
   integer rank = 51
+ repeated  uriorcurie categories = 0
+ repeated  string keywords = 0
   definition isA = 11
  repeated  anonymousClassExpression anyOf = 101
  repeated  anonymousClassExpression exactlyOneOf = 103
@@ -101,11 +104,14 @@ message AnonymousSlotExpression
  repeated  uriorcurie narrowMappings = 0
  repeated  uriorcurie broadMappings = 0
   uriorcurie createdBy = 0
+ repeated  uriorcurie contributors = 0
   datetime createdOn = 0
   datetime lastUpdatedOn = 0
   uriorcurie modifiedBy = 0
   uriorcurie status = 0
   integer rank = 51
+ repeated  uriorcurie categories = 0
+ repeated  string keywords = 0
   element range = 0
   anonymousClassExpression rangeExpression = 0
   enumExpression enumRange = 0
@@ -159,6 +165,7 @@ message ClassDefinition
  repeated  localName localNames = 0
   string conformsTo = 0
  repeated  uriorcurie implements = 0
+ repeated  uriorcurie instantiates = 0
  repeated  extension extensions = 0
  repeated  annotation annotations = 0
   string description = 5
@@ -186,11 +193,14 @@ message ClassDefinition
  repeated  uriorcurie narrowMappings = 0
  repeated  uriorcurie broadMappings = 0
   uriorcurie createdBy = 0
+ repeated  uriorcurie contributors = 0
   datetime createdOn = 0
   datetime lastUpdatedOn = 0
   uriorcurie modifiedBy = 0
   uriorcurie status = 0
   integer rank = 51
+ repeated  uriorcurie categories = 0
+ repeated  string keywords = 0
   boolean abstract = 0
   boolean mixin = 0
  repeated  uriorcurie valuesFrom = 0
@@ -256,10 +266,13 @@ message ClassRule
  repeated  uriorcurie narrowMappings = 0
  repeated  uriorcurie broadMappings = 0
   uriorcurie createdBy = 0
+ repeated  uriorcurie contributors = 0
   datetime createdOn = 0
   datetime lastUpdatedOn = 0
   uriorcurie modifiedBy = 0
   uriorcurie status = 0
+ repeated  uriorcurie categories = 0
+ repeated  string keywords = 0
  }
 // an element whose instances must be drawn from a specified set of permissible values
 message EnumDefinition
@@ -270,6 +283,7 @@ message EnumDefinition
  repeated  localName localNames = 0
   string conformsTo = 0
  repeated  uriorcurie implements = 0
+ repeated  uriorcurie instantiates = 0
  repeated  extension extensions = 0
  repeated  annotation annotations = 0
   string description = 5
@@ -297,11 +311,14 @@ message EnumDefinition
  repeated  uriorcurie narrowMappings = 0
  repeated  uriorcurie broadMappings = 0
   uriorcurie createdBy = 0
+ repeated  uriorcurie contributors = 0
   datetime createdOn = 0
   datetime lastUpdatedOn = 0
   uriorcurie modifiedBy = 0
   uriorcurie status = 0
   integer rank = 51
+ repeated  uriorcurie categories = 0
+ repeated  string keywords = 0
   definition isA = 11
   boolean abstract = 0
   boolean mixin = 0
@@ -384,11 +401,14 @@ message ImportExpression
  repeated  uriorcurie narrowMappings = 0
  repeated  uriorcurie broadMappings = 0
   uriorcurie createdBy = 0
+ repeated  uriorcurie contributors = 0
   datetime createdOn = 0
   datetime lastUpdatedOn = 0
   uriorcurie modifiedBy = 0
   uriorcurie status = 0
   integer rank = 51
+ repeated  uriorcurie categories = 0
+ repeated  string keywords = 0
  }
 // an attributed label
 message LocalName
@@ -396,7 +416,7 @@ message LocalName
   ncname localNameSource = 0
   string localNameValue = 0
  }
-// A query that is used on an enum expression to dynamically obtain a set of permissivle values via a query that matches on properties of the external concepts
+// A query that is used on an enum expression to dynamically obtain a set of permissivle values via a query that  matches on properties of the external concepts.
 message MatchQuery
  {
   string identifierPattern = 0
@@ -440,11 +460,14 @@ message PathExpression
  repeated  uriorcurie narrowMappings = 0
  repeated  uriorcurie broadMappings = 0
   uriorcurie createdBy = 0
+ repeated  uriorcurie contributors = 0
   datetime createdOn = 0
   datetime lastUpdatedOn = 0
   uriorcurie modifiedBy = 0
   uriorcurie status = 0
   integer rank = 51
+ repeated  uriorcurie categories = 0
+ repeated  string keywords = 0
  }
 // a regular expression pattern used to evaluate conformance of a string
 message PatternExpression
@@ -479,11 +502,14 @@ message PatternExpression
  repeated  uriorcurie narrowMappings = 0
  repeated  uriorcurie broadMappings = 0
   uriorcurie createdBy = 0
+ repeated  uriorcurie contributors = 0
   datetime createdOn = 0
   datetime lastUpdatedOn = 0
   uriorcurie modifiedBy = 0
   uriorcurie status = 0
   integer rank = 51
+ repeated  uriorcurie categories = 0
+ repeated  string keywords = 0
  }
 // a permissible value, accompanied by intended text and an optional mapping to a concept URI
 message PermissibleValue
@@ -520,11 +546,14 @@ message PermissibleValue
  repeated  uriorcurie narrowMappings = 0
  repeated  uriorcurie broadMappings = 0
   uriorcurie createdBy = 0
+ repeated  uriorcurie contributors = 0
   datetime createdOn = 0
   datetime lastUpdatedOn = 0
   uriorcurie modifiedBy = 0
   uriorcurie status = 0
   integer rank = 51
+ repeated  uriorcurie categories = 0
+ repeated  string keywords = 0
  }
 // prefix URI tuple
 message Prefix
@@ -532,7 +561,7 @@ message Prefix
   ncname prefixPrefix = 1
   uri prefixReference = 2
  }
-// A query that is used on an enum expression to dynamically obtain a set of permissible values via walking from a set of source nodes to a set of descendants or ancestors over a set of relationship types
+// A query that is used on an enum expression to dynamically obtain a set of permissible values via walking from a  set of source nodes to a set of descendants or ancestors over a set of relationship types.
 message ReachabilityQuery
  {
   uriorcurie sourceOntology = 0
@@ -550,6 +579,7 @@ message SchemaDefinition
  repeated  localName localNames = 0
   string conformsTo = 0
  repeated  uriorcurie implements = 0
+ repeated  uriorcurie instantiates = 0
  repeated  extension extensions = 0
  repeated  annotation annotations = 0
   string description = 5
@@ -577,11 +607,14 @@ message SchemaDefinition
  repeated  uriorcurie narrowMappings = 0
  repeated  uriorcurie broadMappings = 0
   uriorcurie createdBy = 0
+ repeated  uriorcurie contributors = 0
   datetime createdOn = 0
   datetime lastUpdatedOn = 0
   uriorcurie modifiedBy = 0
   uriorcurie status = 0
   integer rank = 51
+ repeated  uriorcurie categories = 0
+ repeated  string keywords = 0
   uri id = 0
   string version = 0
  repeated  uriorcurie imports = 21
@@ -603,8 +636,6 @@ message SchemaDefinition
   datetime generationDate = 0
   boolean slotNamesUnique = 0
  repeated  setting settings = 20
- repeated  uriorcurie categories = 0
- repeated  string keywords = 0
   ncname name = 1
  }
 // assignment of a key to a value
@@ -622,6 +653,7 @@ message SlotDefinition
  repeated  localName localNames = 0
   string conformsTo = 0
  repeated  uriorcurie implements = 0
+ repeated  uriorcurie instantiates = 0
  repeated  extension extensions = 0
  repeated  annotation annotations = 0
   string description = 5
@@ -649,11 +681,14 @@ message SlotDefinition
  repeated  uriorcurie narrowMappings = 0
  repeated  uriorcurie broadMappings = 0
   uriorcurie createdBy = 0
+ repeated  uriorcurie contributors = 0
   datetime createdOn = 0
   datetime lastUpdatedOn = 0
   uriorcurie modifiedBy = 0
   uriorcurie status = 0
   integer rank = 51
+ repeated  uriorcurie categories = 0
+ repeated  string keywords = 0
   boolean abstract = 0
   boolean mixin = 0
  repeated  uriorcurie valuesFrom = 0
@@ -758,11 +793,13 @@ message StructuredAlias
  repeated  uriorcurie narrowMappings = 0
  repeated  uriorcurie broadMappings = 0
   uriorcurie createdBy = 0
+ repeated  uriorcurie contributors = 0
   datetime createdOn = 0
   datetime lastUpdatedOn = 0
   uriorcurie modifiedBy = 0
   uriorcurie status = 0
   integer rank = 51
+ repeated  string keywords = 0
  }
 // an element that can be used to group other metamodel elements
 message SubsetDefinition
@@ -773,6 +810,7 @@ message SubsetDefinition
  repeated  localName localNames = 0
   string conformsTo = 0
  repeated  uriorcurie implements = 0
+ repeated  uriorcurie instantiates = 0
  repeated  extension extensions = 0
  repeated  annotation annotations = 0
   string description = 5
@@ -800,11 +838,14 @@ message SubsetDefinition
  repeated  uriorcurie narrowMappings = 0
  repeated  uriorcurie broadMappings = 0
   uriorcurie createdBy = 0
+ repeated  uriorcurie contributors = 0
   datetime createdOn = 0
   datetime lastUpdatedOn = 0
   uriorcurie modifiedBy = 0
   uriorcurie status = 0
   integer rank = 51
+ repeated  uriorcurie categories = 0
+ repeated  string keywords = 0
  }
 // an element that whose instances are atomic scalar values that can be mapped to primitive types
 message TypeDefinition
@@ -815,6 +856,7 @@ message TypeDefinition
  repeated  localName localNames = 0
   string conformsTo = 0
  repeated  uriorcurie implements = 0
+ repeated  uriorcurie instantiates = 0
  repeated  extension extensions = 0
  repeated  annotation annotations = 0
   string description = 5
@@ -842,11 +884,14 @@ message TypeDefinition
  repeated  uriorcurie narrowMappings = 0
  repeated  uriorcurie broadMappings = 0
   uriorcurie createdBy = 0
+ repeated  uriorcurie contributors = 0
   datetime createdOn = 0
   datetime lastUpdatedOn = 0
   uriorcurie modifiedBy = 0
   uriorcurie status = 0
   integer rank = 51
+ repeated  uriorcurie categories = 0
+ repeated  string keywords = 0
   typeDefinition typeof = 7
   string base = 8
   uriorcurie uri = 2
@@ -899,11 +944,14 @@ message UniqueKey
  repeated  uriorcurie narrowMappings = 0
  repeated  uriorcurie broadMappings = 0
   uriorcurie createdBy = 0
+ repeated  uriorcurie contributors = 0
   datetime createdOn = 0
   datetime lastUpdatedOn = 0
   uriorcurie modifiedBy = 0
   uriorcurie status = 0
   integer rank = 51
+ repeated  uriorcurie categories = 0
+ repeated  string keywords = 0
  }
 // A unit of measure, or unit, is a particular quantity value that has been chosen as a scale for  measuring other quantities the same kind (more generally of equivalent dimension).
 message UnitOfMeasure

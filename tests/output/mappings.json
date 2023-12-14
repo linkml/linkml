@@ -467,9 +467,9 @@
   ],
   "metamodel_version": "1.7.0",
   "source_file": "mappings.yaml",
-  "source_file_date": "2023-09-22T17:28:09",
-  "source_file_size": 2755,
-  "generation_date": "2023-09-25T15:54:11",
+  "source_file_date": "2023-09-28T16:52:24",
+  "source_file_size": 2753,
+  "generation_date": "2023-11-15T08:36:59",
   "@type": "SchemaDefinition",
   "@context": [
     "https://w3id.org/linkml/meta.context.jsonld",

@@ -7,7 +7,7 @@ a regular expression pattern used to evaluate conformance of a string
 URI: [linkml:PatternExpression](https://w3id.org/linkml/PatternExpression)
 
 
-[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[SubsetDefinition],[StructuredAlias],[TypeExpression]++-%20structured_pattern%200..1>[PatternExpression&#124;syntax:string%20%3F;interpolated:boolean%20%3F;partial_match:boolean%20%3F;description:string%20%3F;title:string%20%3F;deprecated:string%20%3F;todos:string%20*;notes:string%20*;comments:string%20*;from_schema:uri%20%3F;imported_from:string%20%3F;source:uriorcurie%20%3F;in_language:string%20%3F;see_also:uriorcurie%20*;deprecated_element_has_exact_replacement:uriorcurie%20%3F;deprecated_element_has_possible_replacement:uriorcurie%20%3F;aliases:string%20*;mappings:uriorcurie%20*;exact_mappings:uriorcurie%20*;close_mappings:uriorcurie%20*;related_mappings:uriorcurie%20*;narrow_mappings:uriorcurie%20*;broad_mappings:uriorcurie%20*;created_by:uriorcurie%20%3F;created_on:datetime%20%3F;last_updated_on:datetime%20%3F;modified_by:uriorcurie%20%3F;status:uriorcurie%20%3F;rank:integer%20%3F],[SlotExpression]++-%20structured_pattern%200..1>[PatternExpression],[PatternExpression]uses%20-.->[Extensible],[PatternExpression]uses%20-.->[Annotatable],[PatternExpression]uses%20-.->[CommonMetadata],[TypeExpression],[SlotExpression],[Extension],[Extensible],[Example],[Definition],[CommonMetadata],[Annotation],[Annotatable],[AltDescription])](https://yuml.me/diagram/nofunky;dir:TB/class/[SubsetDefinition],[StructuredAlias],[TypeExpression]++-%20structured_pattern%200..1>[PatternExpression&#124;syntax:string%20%3F;interpolated:boolean%20%3F;partial_match:boolean%20%3F;description:string%20%3F;title:string%20%3F;deprecated:string%20%3F;todos:string%20*;notes:string%20*;comments:string%20*;from_schema:uri%20%3F;imported_from:string%20%3F;source:uriorcurie%20%3F;in_language:string%20%3F;see_also:uriorcurie%20*;deprecated_element_has_exact_replacement:uriorcurie%20%3F;deprecated_element_has_possible_replacement:uriorcurie%20%3F;aliases:string%20*;mappings:uriorcurie%20*;exact_mappings:uriorcurie%20*;close_mappings:uriorcurie%20*;related_mappings:uriorcurie%20*;narrow_mappings:uriorcurie%20*;broad_mappings:uriorcurie%20*;created_by:uriorcurie%20%3F;created_on:datetime%20%3F;last_updated_on:datetime%20%3F;modified_by:uriorcurie%20%3F;status:uriorcurie%20%3F;rank:integer%20%3F],[SlotExpression]++-%20structured_pattern%200..1>[PatternExpression],[PatternExpression]uses%20-.->[Extensible],[PatternExpression]uses%20-.->[Annotatable],[PatternExpression]uses%20-.->[CommonMetadata],[TypeExpression],[SlotExpression],[Extension],[Extensible],[Example],[Definition],[CommonMetadata],[Annotation],[Annotatable],[AltDescription])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[SubsetDefinition],[StructuredAlias],[TypeExpression]++-%20structured_pattern%200..1>[PatternExpression&#124;syntax:string%20%3F;interpolated:boolean%20%3F;partial_match:boolean%20%3F;description:string%20%3F;title:string%20%3F;deprecated:string%20%3F;todos:string%20*;notes:string%20*;comments:string%20*;from_schema:uri%20%3F;imported_from:string%20%3F;source:uriorcurie%20%3F;in_language:string%20%3F;see_also:uriorcurie%20*;deprecated_element_has_exact_replacement:uriorcurie%20%3F;deprecated_element_has_possible_replacement:uriorcurie%20%3F;aliases:string%20*;mappings:uriorcurie%20*;exact_mappings:uriorcurie%20*;close_mappings:uriorcurie%20*;related_mappings:uriorcurie%20*;narrow_mappings:uriorcurie%20*;broad_mappings:uriorcurie%20*;created_by:uriorcurie%20%3F;contributors:uriorcurie%20*;created_on:datetime%20%3F;last_updated_on:datetime%20%3F;modified_by:uriorcurie%20%3F;status:uriorcurie%20%3F;rank:integer%20%3F;categories:uriorcurie%20*;keywords:string%20*],[SlotExpression]++-%20structured_pattern%200..1>[PatternExpression],[PatternExpression]uses%20-.->[Extensible],[PatternExpression]uses%20-.->[Annotatable],[PatternExpression]uses%20-.->[CommonMetadata],[TypeExpression],[SlotExpression],[Extension],[Extensible],[Example],[Definition],[CommonMetadata],[Annotation],[Annotatable],[AltDescription])](https://yuml.me/diagram/nofunky;dir:TB/class/[SubsetDefinition],[StructuredAlias],[TypeExpression]++-%20structured_pattern%200..1>[PatternExpression&#124;syntax:string%20%3F;interpolated:boolean%20%3F;partial_match:boolean%20%3F;description:string%20%3F;title:string%20%3F;deprecated:string%20%3F;todos:string%20*;notes:string%20*;comments:string%20*;from_schema:uri%20%3F;imported_from:string%20%3F;source:uriorcurie%20%3F;in_language:string%20%3F;see_also:uriorcurie%20*;deprecated_element_has_exact_replacement:uriorcurie%20%3F;deprecated_element_has_possible_replacement:uriorcurie%20%3F;aliases:string%20*;mappings:uriorcurie%20*;exact_mappings:uriorcurie%20*;close_mappings:uriorcurie%20*;related_mappings:uriorcurie%20*;narrow_mappings:uriorcurie%20*;broad_mappings:uriorcurie%20*;created_by:uriorcurie%20%3F;contributors:uriorcurie%20*;created_on:datetime%20%3F;last_updated_on:datetime%20%3F;modified_by:uriorcurie%20%3F;status:uriorcurie%20%3F;rank:integer%20%3F;categories:uriorcurie%20*;keywords:string%20*],[SlotExpression]++-%20structured_pattern%200..1>[PatternExpression],[PatternExpression]uses%20-.->[Extensible],[PatternExpression]uses%20-.->[Annotatable],[PatternExpression]uses%20-.->[CommonMetadata],[TypeExpression],[SlotExpression],[Extension],[Extensible],[Example],[Definition],[CommonMetadata],[Annotation],[Annotatable],[AltDescription])
 
 ## Uses Mixin
 
@@ -33,7 +33,7 @@ URI: [linkml:PatternExpression](https://w3id.org/linkml/PatternExpression)
      * Range: [Boolean](Boolean.md)
      * in subsets: (SpecificationSubset)
  * [partial_match](partial_match.md)  <sub>0..1</sub>
-     * Description: if true then the pattern must match the whole string, as if enclosed in ^...$
+     * Description: if not true then the pattern must match the whole string, as if enclosed in ^...$
      * Range: [Boolean](Boolean.md)
      * in subsets: (SpecificationSubset)
 
@@ -215,6 +215,13 @@ URI: [linkml:PatternExpression](https://w3id.org/linkml/PatternExpression)
 
 ### Mixed in from common_metadata:
 
+ * [contributors](contributors.md)  <sub>0..\*</sub>
+     * Description: agent that contributed to the element
+     * Range: [Uriorcurie](Uriorcurie.md)
+     * in subsets: (BasicSubset)
+
+### Mixed in from common_metadata:
+
  * [created_on](created_on.md)  <sub>0..1</sub>
      * Description: time at which the element was created
      * Range: [Datetime](Datetime.md)
@@ -248,3 +255,17 @@ URI: [linkml:PatternExpression](https://w3id.org/linkml/PatternExpression)
      * Description: the relative order in which the element occurs, lower values are given precedence
      * Range: [Integer](Integer.md)
      * in subsets: (SpecificationSubset,BasicSubset)
+
+### Mixed in from common_metadata:
+
+ * [categories](categories.md)  <sub>0..\*</sub>
+     * Description: Controlled terms used to categorize an element.
+     * Range: [Uriorcurie](Uriorcurie.md)
+     * in subsets: (BasicSubset)
+
+### Mixed in from common_metadata:
+
+ * [keywords](keywords.md)  <sub>0..\*</sub>
+     * Description: Keywords or tags used to describe the element
+     * Range: [String](String.md)
+     * in subsets: (BasicSubset)

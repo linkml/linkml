@@ -26,6 +26,10 @@ fields:
     the referenced schema may be used to check conformance of the implementing element.
   display_name: implements
   cardinality: multi
+- id: instantiates
+  description: An element in another schema which this element instantiates.
+  display_name: instantiates
+  cardinality: multi
 - id: extensions
   description: a tag/text tuple attached to an arbitrary element
   display_name: extensions
@@ -140,6 +144,10 @@ fields:
 - id: created_by
   description: agent that created the element
   display_name: created_by
+- id: contributors
+  description: agent that contributed to the element
+  display_name: contributors
+  cardinality: multi
 - id: created_on
   description: time at which the element was created
   display_name: created_on
@@ -156,6 +164,14 @@ fields:
   description: the relative order in which the element occurs, lower values are given
     precedence
   display_name: rank
+- id: categories
+  description: Controlled terms used to categorize an element.
+  display_name: categories
+  cardinality: multi
+- id: keywords
+  description: Keywords or tags used to describe the element
+  display_name: keywords
+  cardinality: multi
 - id: id
   description: The official schema URI
   display_name: id
@@ -234,14 +250,6 @@ fields:
 - id: settings
   description: A collection of global variable settings
   display_name: settings
-  cardinality: multi
-- id: categories
-  description: Controlled terms used to categorize an element.
-  display_name: categories
-  cardinality: multi
-- id: keywords
-  description: Keywords or tags used to describe the element
-  display_name: keywords
   cardinality: multi
 - id: name
   description: a unique name for the schema that is both human-readable and consists

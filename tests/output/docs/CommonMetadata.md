@@ -118,6 +118,10 @@ URI: [linkml:CommonMetadata](https://w3id.org/linkml/CommonMetadata)
      * Description: agent that created the element
      * Range: [Uriorcurie](types/Uriorcurie.md)
      * in subsets: (BasicSubset)
+ * [contributors](contributors.md)  <sub>0..\*</sub>
+     * Description: agent that contributed to the element
+     * Range: [Uriorcurie](types/Uriorcurie.md)
+     * in subsets: (BasicSubset)
  * [created_on](created_on.md)  <sub>0..1</sub>
      * Description: time at which the element was created
      * Range: [Datetime](types/Datetime.md)
@@ -139,6 +143,14 @@ URI: [linkml:CommonMetadata](https://w3id.org/linkml/CommonMetadata)
      * Description: the relative order in which the element occurs, lower values are given precedence
      * Range: [Integer](types/Integer.md)
      * in subsets: (SpecificationSubset,BasicSubset)
+ * [categories](categories.md)  <sub>0..\*</sub>
+     * Description: Controlled terms used to categorize an element.
+     * Range: [Uriorcurie](types/Uriorcurie.md)
+     * in subsets: (BasicSubset)
+ * [keywords](keywords.md)  <sub>0..\*</sub>
+     * Description: Keywords or tags used to describe the element
+     * Range: [String](types/String.md)
+     * in subsets: (BasicSubset)
 
 ## Other properties
 

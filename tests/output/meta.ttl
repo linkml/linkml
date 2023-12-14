@@ -1,6 +1,7 @@
 @prefix NCIT: <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#> .
 @prefix OIO: <http://www.geneontology.org/formats/oboInOwl#> .
 @prefix bibo: <http://purl.org/ontology/bibo/> .
+@prefix cdisc: <http://rdf.cdisc.org/mms#> .
 @prefix dcterms: <http://purl.org/dc/terms/> .
 @prefix linkml: <https://w3id.org/linkml/> .
 @prefix oslc: <http://open-services.net/ns/core#> .
@@ -271,7 +272,7 @@ linkml:class_definition_mixins a linkml:SlotDefinition ;
     skos:altLabel "traits" ;
     skos:definition "A collection of secondary parent mixin classes from which inheritable metaslots are propagated" ;
     skos:inScheme linkml:meta ;
-    skos:note "mixins act in the same way as parents (is_a). They allow a model to have a primary strict hierachy, while keeping the benefits of multiple inheritance" ;
+    skos:note "mixins act in the same way as parents (is_a). They allow a model to have a primary strict hierarchy, while keeping the benefits of multiple inheritance" ;
     skos:prefLabel "mixins" ;
     sh:order 13 ;
     linkml:definition_uri linkml:mixins ;
@@ -445,7 +446,7 @@ linkml:permissible_value_mixins a linkml:SlotDefinition ;
     skos:altLabel "traits" ;
     skos:definition "A collection of secondary parent classes or slots from which inheritable metaslots are propagated from." ;
     skos:inScheme linkml:meta ;
-    skos:note "mixins act in the same way as parents (is_a). They allow a model to have a primary strict hierachy, while keeping the benefits of multiple inheritance" ;
+    skos:note "mixins act in the same way as parents (is_a). They allow a model to have a primary strict hierarchy, while keeping the benefits of multiple inheritance" ;
     skos:prefLabel "mixins" ;
     sh:order 13 ;
     linkml:definition_uri linkml:mixins ;
@@ -579,7 +580,7 @@ linkml:slot_definition_mixins a linkml:SlotDefinition ;
     skos:altLabel "traits" ;
     skos:definition "A collection of secondary parent mixin slots from which inheritable metaslots are propagated" ;
     skos:inScheme linkml:meta ;
-    skos:note "mixins act in the same way as parents (is_a). They allow a model to have a primary strict hierachy, while keeping the benefits of multiple inheritance" ;
+    skos:note "mixins act in the same way as parents (is_a). They allow a model to have a primary strict hierarchy, while keeping the benefits of multiple inheritance" ;
     skos:prefLabel "mixins" ;
     sh:order 13 ;
     linkml:definition_uri linkml:mixins ;
@@ -731,18 +732,6 @@ linkml:alt_description_text a linkml:SlotDefinition ;
     linkml:range linkml:string ;
     linkml:required true ;
     linkml:slot_uri linkml:description .
-
-linkml:contributors a linkml:SlotDefinition ;
-    OIO:inSubset linkml:BasicSubset ;
-    skos:definition "agent that contributed to the element" ;
-    skos:inScheme linkml:meta ;
-    skos:mappingRelation dcterms:contributor ;
-    linkml:definition_uri linkml:contributors ;
-    linkml:domain linkml:Element ;
-    linkml:multivalued true ;
-    linkml:owner linkml:contributors ;
-    linkml:range linkml:uriorcurie ;
-    linkml:slot_uri dcterms:contributor .
 
 linkml:deactivated a linkml:SlotDefinition ;
     skos:definition "a deactivated rule is not executed by the rules engine" ;
@@ -951,7 +940,7 @@ linkml:slot_group a linkml:SlotDefinition ;
     linkml:slot_uri sh:group .
 
 linkml:subproperty_of a linkml:SlotDefinition ;
-    skos:definition "Ontology property which this slot is a subproperty of.  Note: setting this property on a slot does not guarantee an expansion of the ontological hiearchy into an enumerated list of possible values in every serialization of the model." ;
+    skos:definition "Ontology property which this slot is a subproperty of.  Note: setting this property on a slot does not guarantee an expansion of the ontological hierarchy into an enumerated list of possible values in every serialization of the model." ;
     skos:inScheme linkml:meta ;
     skos:mappingRelation rdfs:subPropertyOf ;
     linkml:definition_uri linkml:subproperty_of ;
@@ -1076,7 +1065,7 @@ linkml:base a linkml:SlotDefinition ;
     skos:definition "python base type in the LinkML runtime that implements this type definition" ;
     skos:inScheme linkml:meta ;
     skos:note "every root type must have a base",
-        "the base is inherited by child types but may be overriden.  Base compatibility is not checked." ;
+        "the base is inherited by child types but may be overridden.  Base compatibility is not checked." ;
     sh:order 8 ;
     linkml:definition_uri linkml:base ;
     linkml:domain linkml:TypeDefinition ;
@@ -1495,8 +1484,7 @@ linkml:ifabsent a linkml:SlotDefinition ;
     OIO:inSubset linkml:SpecificationSubset ;
     rdfs:seeAlso linkml:equals_expression ;
     skos:closeMatch sh:defaultValue ;
-    skos:definition """function that provides a default value for the slot.  Possible values for this slot are defined in
-linkml.utils.ifabsent_functions.default_library:
+    skos:definition """function that provides a default value for the slot.  Possible values for this slot are defined in linkml.utils.ifabsent_functions.default_library:
   * [Tt]rue -- boolean True
   * [Ff]alse -- boolean False
   * bnode -- blank node identifier
@@ -1694,20 +1682,6 @@ linkml:key a linkml:SlotDefinition ;
     linkml:range linkml:boolean ;
     linkml:slot_uri linkml:key .
 
-linkml:keywords a linkml:SlotDefinition ;
-    OIO:inSubset linkml:BasicSubset ;
-    skos:definition "Keywords or tags used to describe the element" ;
-    skos:inScheme linkml:meta ;
-    skos:mappingRelation schema:keywords ;
-    linkml:definition_uri linkml:keywords ;
-    linkml:domain linkml:Element ;
-    linkml:domain_of linkml:SchemaDefinition ;
-    linkml:multivalued true ;
-    linkml:owner linkml:keywords ;
-    linkml:range linkml:string ;
-    linkml:singular_name "keyword" ;
-    linkml:slot_uri schema:keywords .
-
 linkml:list_elements_ordered a linkml:SlotDefinition ;
     bibo:status linkml:testing ;
     OIO:inSubset linkml:SpecificationSubset ;
@@ -1840,7 +1814,7 @@ linkml:owner a linkml:SlotDefinition ;
 
 linkml:partial_match a linkml:SlotDefinition ;
     OIO:inSubset linkml:SpecificationSubset ;
-    skos:definition "if true then the pattern must match the whole string, as if enclosed in ^...$" ;
+    skos:definition "if not true then the pattern must match the whole string, as if enclosed in ^...$" ;
     skos:inScheme linkml:meta ;
     linkml:definition_uri linkml:partial_match ;
     linkml:domain linkml:PatternExpression ;
@@ -1850,7 +1824,7 @@ linkml:partial_match a linkml:SlotDefinition ;
     linkml:slot_uri linkml:partial_match .
 
 linkml:path_rule a linkml:SlotDefinition ;
-    skos:definition "a rule for inferring a slot assignment based on evaluating a path through a sequence of slot assignemnts" ;
+    skos:definition "a rule for inferring a slot assignment based on evaluating a path through a sequence of slot assignments" ;
     skos:inScheme linkml:meta ;
     linkml:definition_uri linkml:path_rule ;
     linkml:domain linkml:SlotDefinition ;
@@ -2184,7 +2158,7 @@ linkml:source_file a linkml:SlotDefinition ;
     linkml:domain_of linkml:SchemaDefinition ;
     linkml:owner linkml:SchemaDefinition ;
     linkml:range linkml:string ;
-    linkml:readonly "suppplied by the schema loader" ;
+    linkml:readonly "supplied by the schema loader" ;
     linkml:slot_uri linkml:source_file .
 
 linkml:source_file_date a linkml:SlotDefinition ;
@@ -2565,8 +2539,10 @@ linkml:AnonymousExpression a linkml:ClassDefinition ;
         linkml:alt_descriptions,
         linkml:annotations,
         linkml:broad_mappings,
+        linkml:categories,
         linkml:close_mappings,
         linkml:comments,
+        linkml:contributors,
         linkml:created_by,
         linkml:created_on,
         linkml:deprecated,
@@ -2580,6 +2556,7 @@ linkml:AnonymousExpression a linkml:ClassDefinition ;
         linkml:imported_from,
         linkml:in_language,
         linkml:in_subset,
+        linkml:keywords,
         linkml:last_updated_on,
         linkml:mappings,
         linkml:modified_by,
@@ -2593,21 +2570,6 @@ linkml:AnonymousExpression a linkml:ClassDefinition ;
         linkml:structured_aliases,
         linkml:title,
         linkml:todos .
-
-linkml:categories a linkml:SlotDefinition ;
-    OIO:inSubset linkml:BasicSubset ;
-    skos:definition "Controlled terms used to categorize an element." ;
-    skos:inScheme linkml:meta ;
-    skos:mappingRelation dcterms:subject ;
-    skos:note "if you wish to use uncontrolled terms or terms that lack identifiers then use the keywords element" ;
-    linkml:definition_uri linkml:categories ;
-    linkml:domain_of linkml:SchemaDefinition,
-        linkml:StructuredAlias ;
-    linkml:multivalued true ;
-    linkml:owner linkml:StructuredAlias ;
-    linkml:range linkml:uriorcurie ;
-    linkml:singular_name "category" ;
-    linkml:slot_uri dcterms:subject .
 
 linkml:class_uri a linkml:SlotDefinition ;
     OIO:inSubset linkml:BasicSubset,
@@ -2885,7 +2847,6 @@ linkml:matches a linkml:SlotDefinition ;
     linkml:slot_uri linkml:matches .
 
 linkml:maximum_cardinality a linkml:SlotDefinition ;
-    bibo:status linkml:testing ;
     OIO:inSubset linkml:SpecificationSubset ;
     skos:definition "the maximum number of entries for a multivalued slot" ;
     skos:inScheme linkml:meta ;
@@ -2898,7 +2859,6 @@ linkml:maximum_cardinality a linkml:SlotDefinition ;
     linkml:slot_uri linkml:maximum_cardinality .
 
 linkml:minimum_cardinality a linkml:SlotDefinition ;
-    bibo:status linkml:testing ;
     OIO:inSubset linkml:SpecificationSubset ;
     skos:definition "the minimum number of entries for a multivalued slot" ;
     skos:inScheme linkml:meta ;
@@ -2928,6 +2888,7 @@ linkml:permissible_values a linkml:SlotDefinition ;
         linkml:SpecificationSubset ;
     skos:altLabel "coded values" ;
     skos:definition "A list of possible values for a slot range" ;
+    skos:exactMatch cdisc:PermissibleValue ;
     skos:inScheme linkml:meta ;
     linkml:definition_uri linkml:permissible_values ;
     linkml:domain linkml:EnumExpression ;
@@ -3225,7 +3186,7 @@ linkml:value_presence a linkml:SlotDefinition ;
 
 linkml:values_from a linkml:SlotDefinition ;
     bibo:status linkml:testing ;
-    skos:definition "The identifier of a \"value set\" -- a set of identifiers that form the possible values for the range of a slot. Note: this is different than 'subproperty_of' in that 'subproperty_of' is intended to be a single ontology term while 'values_from' is the identifier of an entire value set.  Additionally, this is different than an enumeration in that in an enumeration, the values of the enumeration are listed directly in the model itself. Setting this property on a slot does not guarantee an expansion of the ontological hiearchy into an enumerated list of possible values in every serialization of the model." ;
+    skos:definition "The identifier of a \"value set\" -- a set of identifiers that form the possible values for the range of a slot. Note: this is different than 'subproperty_of' in that 'subproperty_of' is intended to be a single ontology term while 'values_from' is the identifier of an entire value set.  Additionally, this is different than an enumeration in that in an enumeration, the values of the enumeration are listed directly in the model itself. Setting this property on a slot does not guarantee an expansion of the ontological hierarchy into an enumerated list of possible values in every serialization of the model." ;
     skos:inScheme linkml:meta ;
     linkml:definition_uri linkml:values_from ;
     linkml:domain linkml:Definition ;
@@ -3246,11 +3207,13 @@ linkml:EnumDefinition a linkml:ClassDefinition ;
         "concept set",
         "enum",
         "term set",
+        "value domain",
         "value set" ;
     skos:closeMatch skos:ConceptScheme ;
     skos:definition "an element whose instances must be drawn from a specified set of permissible values" ;
     skos:exactMatch NCIT:C113497,
-        qb:HierarchicalCodeList ;
+        qb:HierarchicalCodeList,
+        cdisc:ValueDomain ;
     skos:inScheme linkml:meta ;
     sh:order 5 ;
     linkml:class_uri linkml:EnumDefinition ;
@@ -3264,6 +3227,7 @@ linkml:EnumDefinition a linkml:ClassDefinition ;
         linkml:annotations,
         linkml:apply_to,
         linkml:broad_mappings,
+        linkml:categories,
         linkml:close_mappings,
         linkml:code_set,
         linkml:code_set_tag,
@@ -3271,6 +3235,7 @@ linkml:EnumDefinition a linkml:ClassDefinition ;
         linkml:comments,
         linkml:concepts,
         linkml:conforms_to,
+        linkml:contributors,
         linkml:created_by,
         linkml:created_on,
         linkml:definition_uri,
@@ -3290,7 +3255,9 @@ linkml:EnumDefinition a linkml:ClassDefinition ;
         linkml:in_subset,
         linkml:include,
         linkml:inherits,
+        linkml:instantiates,
         linkml:is_a,
+        linkml:keywords,
         linkml:last_updated_on,
         linkml:local_names,
         linkml:mappings,
@@ -3318,7 +3285,7 @@ linkml:EnumDefinition a linkml:ClassDefinition ;
 
 linkml:MatchQuery a linkml:ClassDefinition ;
     OIO:inSubset linkml:SpecificationSubset ;
-    skos:definition "A query that is used on an enum expression to dynamically obtain a set of permissivle values via a query that matches on properties of the external concepts" ;
+    skos:definition "A query that is used on an enum expression to dynamically obtain a set of permissivle values via a query that  matches on properties of the external concepts." ;
     skos:inScheme linkml:meta ;
     linkml:class_uri linkml:MatchQuery ;
     linkml:definition_uri linkml:MatchQuery ;
@@ -3348,8 +3315,10 @@ linkml:AnonymousSlotExpression a linkml:ClassDefinition ;
         linkml:alt_descriptions,
         linkml:annotations,
         linkml:broad_mappings,
+        linkml:categories,
         linkml:close_mappings,
         linkml:comments,
+        linkml:contributors,
         linkml:created_by,
         linkml:created_on,
         linkml:deprecated,
@@ -3372,6 +3341,7 @@ linkml:AnonymousSlotExpression a linkml:ClassDefinition ;
         linkml:in_subset,
         linkml:inlined,
         linkml:inlined_as_list,
+        linkml:keywords,
         linkml:last_updated_on,
         linkml:mappings,
         linkml:maximum_cardinality,
@@ -3632,9 +3602,11 @@ linkml:SubsetDefinition a linkml:ClassDefinition ;
         linkml:alt_descriptions,
         linkml:annotations,
         linkml:broad_mappings,
+        linkml:categories,
         linkml:close_mappings,
         linkml:comments,
         linkml:conforms_to,
+        linkml:contributors,
         linkml:created_by,
         linkml:created_on,
         linkml:definition_uri,
@@ -3651,6 +3623,8 @@ linkml:SubsetDefinition a linkml:ClassDefinition ;
         linkml:imported_from,
         linkml:in_language,
         linkml:in_subset,
+        linkml:instantiates,
+        linkml:keywords,
         linkml:last_updated_on,
         linkml:local_names,
         linkml:mappings,
@@ -3696,6 +3670,17 @@ linkml:id_prefixes a linkml:SlotDefinition ;
     linkml:owner linkml:Element ;
     linkml:range linkml:ncname ;
     linkml:slot_uri linkml:id_prefixes .
+
+linkml:instantiates a linkml:SlotDefinition ;
+    skos:definition "An element in another schema which this element instantiates." ;
+    skos:inScheme linkml:meta ;
+    linkml:definition_uri linkml:instantiates ;
+    linkml:domain linkml:Element ;
+    linkml:domain_of linkml:Element ;
+    linkml:multivalued true ;
+    linkml:owner linkml:Element ;
+    linkml:range linkml:uriorcurie ;
+    linkml:slot_uri linkml:instantiates .
 
 linkml:local_names a linkml:SlotDefinition ;
     skos:inScheme linkml:meta ;
@@ -3769,8 +3754,10 @@ linkml:ImportExpression a linkml:ClassDefinition ;
         linkml:alt_descriptions,
         linkml:annotations,
         linkml:broad_mappings,
+        linkml:categories,
         linkml:close_mappings,
         linkml:comments,
+        linkml:contributors,
         linkml:created_by,
         linkml:created_on,
         linkml:deprecated,
@@ -3787,6 +3774,7 @@ linkml:ImportExpression a linkml:ClassDefinition ;
         linkml:imported_from,
         linkml:in_language,
         linkml:in_subset,
+        linkml:keywords,
         linkml:last_updated_on,
         linkml:mappings,
         linkml:modified_by,
@@ -3814,8 +3802,10 @@ linkml:PatternExpression a linkml:ClassDefinition ;
         linkml:alt_descriptions,
         linkml:annotations,
         linkml:broad_mappings,
+        linkml:categories,
         linkml:close_mappings,
         linkml:comments,
+        linkml:contributors,
         linkml:created_by,
         linkml:created_on,
         linkml:deprecated,
@@ -3830,6 +3820,7 @@ linkml:PatternExpression a linkml:ClassDefinition ;
         linkml:in_language,
         linkml:in_subset,
         linkml:interpolated,
+        linkml:keywords,
         linkml:last_updated_on,
         linkml:mappings,
         linkml:modified_by,
@@ -3863,9 +3854,11 @@ linkml:UniqueKey a linkml:ClassDefinition ;
         linkml:alt_descriptions,
         linkml:annotations,
         linkml:broad_mappings,
+        linkml:categories,
         linkml:close_mappings,
         linkml:comments,
         linkml:consider_nulls_inequal,
+        linkml:contributors,
         linkml:created_by,
         linkml:created_on,
         linkml:deprecated,
@@ -3879,6 +3872,7 @@ linkml:UniqueKey a linkml:ClassDefinition ;
         linkml:imported_from,
         linkml:in_language,
         linkml:in_subset,
+        linkml:keywords,
         linkml:last_updated_on,
         linkml:mappings,
         linkml:modified_by,
@@ -3952,6 +3946,7 @@ linkml:StructuredAlias a linkml:ClassDefinition ;
         linkml:broad_mappings,
         linkml:close_mappings,
         linkml:comments,
+        linkml:contributors,
         linkml:created_by,
         linkml:created_on,
         linkml:deprecated,
@@ -3965,6 +3960,7 @@ linkml:StructuredAlias a linkml:ClassDefinition ;
         linkml:imported_from,
         linkml:in_language,
         linkml:in_subset,
+        linkml:keywords,
         linkml:last_updated_on,
         linkml:literal_form,
         linkml:mappings,
@@ -3990,7 +3986,7 @@ linkml:mixins a linkml:SlotDefinition ;
     skos:altLabel "traits" ;
     skos:definition "A collection of secondary parent classes or slots from which inheritable metaslots are propagated from." ;
     skos:inScheme linkml:meta ;
-    skos:note "mixins act in the same way as parents (is_a). They allow a model to have a primary strict hierachy, while keeping the benefits of multiple inheritance" ;
+    skos:note "mixins act in the same way as parents (is_a). They allow a model to have a primary strict hierarchy, while keeping the benefits of multiple inheritance" ;
     sh:order 13 ;
     linkml:definition_uri linkml:mixins ;
     linkml:domain linkml:Definition ;
@@ -4166,12 +4162,14 @@ linkml:AnonymousClassExpression a linkml:ClassDefinition ;
         linkml:alt_descriptions,
         linkml:annotations,
         linkml:broad_mappings,
+        linkml:categories,
         linkml:class_expression_all_of,
         linkml:class_expression_any_of,
         linkml:class_expression_exactly_one_of,
         linkml:class_expression_none_of,
         linkml:close_mappings,
         linkml:comments,
+        linkml:contributors,
         linkml:created_by,
         linkml:created_on,
         linkml:deprecated,
@@ -4186,6 +4184,7 @@ linkml:AnonymousClassExpression a linkml:ClassDefinition ;
         linkml:in_language,
         linkml:in_subset,
         linkml:is_a,
+        linkml:keywords,
         linkml:last_updated_on,
         linkml:mappings,
         linkml:modified_by,
@@ -4220,8 +4219,10 @@ linkml:ClassRule a linkml:ClassDefinition ;
         linkml:annotations,
         linkml:bidirectional,
         linkml:broad_mappings,
+        linkml:categories,
         linkml:close_mappings,
         linkml:comments,
+        linkml:contributors,
         linkml:created_by,
         linkml:created_on,
         linkml:deactivated,
@@ -4237,6 +4238,7 @@ linkml:ClassRule a linkml:ClassDefinition ;
         linkml:imported_from,
         linkml:in_language,
         linkml:in_subset,
+        linkml:keywords,
         linkml:last_updated_on,
         linkml:mappings,
         linkml:modified_by,
@@ -4272,8 +4274,10 @@ linkml:PermissibleValue a linkml:ClassDefinition ;
         linkml:alt_descriptions,
         linkml:annotations,
         linkml:broad_mappings,
+        linkml:categories,
         linkml:close_mappings,
         linkml:comments,
+        linkml:contributors,
         linkml:created_by,
         linkml:created_on,
         linkml:deprecated,
@@ -4287,6 +4291,7 @@ linkml:PermissibleValue a linkml:ClassDefinition ;
         linkml:imported_from,
         linkml:in_language,
         linkml:in_subset,
+        linkml:keywords,
         linkml:last_updated_on,
         linkml:mappings,
         linkml:meaning,
@@ -4308,7 +4313,7 @@ linkml:PermissibleValue a linkml:ClassDefinition ;
 
 linkml:ReachabilityQuery a linkml:ClassDefinition ;
     OIO:inSubset linkml:SpecificationSubset ;
-    skos:definition "A query that is used on an enum expression to dynamically obtain a set of permissible values via walking from a set of source nodes to a set of descendants or ancestors over a set of relationship types" ;
+    skos:definition "A query that is used on an enum expression to dynamically obtain a set of permissible values via walking from a  set of source nodes to a set of descendants or ancestors over a set of relationship types." ;
     skos:inScheme linkml:meta ;
     linkml:class_uri linkml:ReachabilityQuery ;
     linkml:definition_uri linkml:ReachabilityQuery ;
@@ -4417,6 +4422,21 @@ linkml:structured_aliases a linkml:SlotDefinition ;
     linkml:range linkml:StructuredAlias ;
     linkml:slot_uri skosxl:altLabel .
 
+linkml:categories a linkml:SlotDefinition ;
+    OIO:inSubset linkml:BasicSubset ;
+    skos:definition "Controlled terms used to categorize an element." ;
+    skos:inScheme linkml:meta ;
+    skos:mappingRelation dcterms:subject ;
+    skos:note "if you wish to use uncontrolled terms or terms that lack identifiers then use the keywords element" ;
+    linkml:definition_uri linkml:categories ;
+    linkml:domain_of linkml:CommonMetadata,
+        linkml:StructuredAlias ;
+    linkml:multivalued true ;
+    linkml:owner linkml:StructuredAlias ;
+    linkml:range linkml:uriorcurie ;
+    linkml:singular_name "category" ;
+    linkml:slot_uri dcterms:subject .
+
 linkml:comments a linkml:SlotDefinition ;
     OIO:inSubset linkml:BasicSubset ;
     skos:definition "notes and comments about an element intended primarily for external consumption" ;
@@ -4430,6 +4450,19 @@ linkml:comments a linkml:SlotDefinition ;
     linkml:owner linkml:comments ;
     linkml:range linkml:string ;
     linkml:slot_uri skos:note .
+
+linkml:contributors a linkml:SlotDefinition ;
+    OIO:inSubset linkml:BasicSubset ;
+    skos:definition "agent that contributed to the element" ;
+    skos:inScheme linkml:meta ;
+    skos:mappingRelation dcterms:contributor ;
+    linkml:definition_uri linkml:contributors ;
+    linkml:domain linkml:Element ;
+    linkml:domain_of linkml:CommonMetadata ;
+    linkml:multivalued true ;
+    linkml:owner linkml:contributors ;
+    linkml:range linkml:uriorcurie ;
+    linkml:slot_uri dcterms:contributor .
 
 linkml:created_by a linkml:SlotDefinition ;
     OIO:inSubset linkml:BasicSubset ;
@@ -4504,6 +4537,20 @@ linkml:in_subset a linkml:SlotDefinition ;
     linkml:owner linkml:in_subset ;
     linkml:range linkml:SubsetDefinition ;
     linkml:slot_uri OIO:inSubset .
+
+linkml:keywords a linkml:SlotDefinition ;
+    OIO:inSubset linkml:BasicSubset ;
+    skos:definition "Keywords or tags used to describe the element" ;
+    skos:inScheme linkml:meta ;
+    skos:mappingRelation schema:keywords ;
+    linkml:definition_uri linkml:keywords ;
+    linkml:domain linkml:Element ;
+    linkml:domain_of linkml:CommonMetadata ;
+    linkml:multivalued true ;
+    linkml:owner linkml:keywords ;
+    linkml:range linkml:string ;
+    linkml:singular_name "keyword" ;
+    linkml:slot_uri schema:keywords .
 
 linkml:last_updated_on a linkml:SlotDefinition ;
     OIO:inSubset linkml:BasicSubset ;
@@ -4591,13 +4638,13 @@ linkml:UnitOfMeasure a linkml:ClassDefinition ;
     skos:inScheme linkml:units ;
     skos:mappingRelation qudt:Unit ;
     linkml:any_of [ a linkml:AnonymousClassExpression ;
-            linkml:slot_conditions linkml:symbol ],
+            linkml:slot_conditions linkml:ucum_code ],
         [ a linkml:AnonymousClassExpression ;
             linkml:slot_conditions linkml:exact_mappings ],
         [ a linkml:AnonymousClassExpression ;
             linkml:slot_conditions linkml:iec61360code ],
         [ a linkml:AnonymousClassExpression ;
-            linkml:slot_conditions linkml:ucum_code ] ;
+            linkml:slot_conditions linkml:symbol ] ;
     linkml:class_uri qudt:Unit ;
     linkml:definition_uri linkml:UnitOfMeasure ;
     linkml:imported_from "linkml:units" ;
@@ -4854,8 +4901,10 @@ linkml:PathExpression a linkml:ClassDefinition ;
         linkml:alt_descriptions,
         linkml:annotations,
         linkml:broad_mappings,
+        linkml:categories,
         linkml:close_mappings,
         linkml:comments,
+        linkml:contributors,
         linkml:created_by,
         linkml:created_on,
         linkml:deprecated,
@@ -4869,6 +4918,7 @@ linkml:PathExpression a linkml:ClassDefinition ;
         linkml:imported_from,
         linkml:in_language,
         linkml:in_subset,
+        linkml:keywords,
         linkml:last_updated_on,
         linkml:mappings,
         linkml:modified_by,
@@ -4907,9 +4957,11 @@ linkml:Definition a linkml:ClassDefinition ;
         linkml:annotations,
         linkml:apply_to,
         linkml:broad_mappings,
+        linkml:categories,
         linkml:close_mappings,
         linkml:comments,
         linkml:conforms_to,
+        linkml:contributors,
         linkml:created_by,
         linkml:created_on,
         linkml:definition_uri,
@@ -4926,7 +4978,9 @@ linkml:Definition a linkml:ClassDefinition ;
         linkml:imported_from,
         linkml:in_language,
         linkml:in_subset,
+        linkml:instantiates,
         linkml:is_a,
+        linkml:keywords,
         linkml:last_updated_on,
         linkml:local_names,
         linkml:mappings,
@@ -4963,16 +5017,6 @@ linkml:mappings a linkml:SlotDefinition ;
     linkml:range linkml:uriorcurie ;
     linkml:slot_uri skos:mappingRelation .
 
-linkml:uriorcurie a linkml:TypeDefinition ;
-    skos:definition "a URI or a CURIE" ;
-    skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"uriorcurie\"." ;
-    skos:inScheme linkml:types ;
-    linkml:base "URIorCURIE" ;
-    linkml:definition_uri linkml:Uriorcurie ;
-    linkml:imported_from "linkml:types" ;
-    linkml:repr "str" ;
-    linkml:uri xsd:anyURI .
-
 linkml:EnumExpression a linkml:ClassDefinition ;
     skos:definition "An expression that constrains the range of a slot" ;
     skos:inScheme linkml:meta ;
@@ -4991,6 +5035,16 @@ linkml:EnumExpression a linkml:ClassDefinition ;
         linkml:permissible_values,
         linkml:pv_formula,
         linkml:reachable_from .
+
+linkml:uriorcurie a linkml:TypeDefinition ;
+    skos:definition "a URI or a CURIE" ;
+    skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"uriorcurie\"." ;
+    skos:inScheme linkml:types ;
+    linkml:base "URIorCURIE" ;
+    linkml:definition_uri linkml:Uriorcurie ;
+    linkml:imported_from "linkml:types" ;
+    linkml:repr "str" ;
+    linkml:uri xsd:anyURI .
 
 linkml:boolean a linkml:TypeDefinition ;
     skos:definition "A binary (true or false) value" ;
@@ -5020,9 +5074,11 @@ linkml:TypeDefinition a linkml:ClassDefinition ;
         linkml:annotations,
         linkml:base,
         linkml:broad_mappings,
+        linkml:categories,
         linkml:close_mappings,
         linkml:comments,
         linkml:conforms_to,
+        linkml:contributors,
         linkml:created_by,
         linkml:created_on,
         linkml:definition_uri,
@@ -5043,6 +5099,8 @@ linkml:TypeDefinition a linkml:ClassDefinition ;
         linkml:imported_from,
         linkml:in_language,
         linkml:in_subset,
+        linkml:instantiates,
+        linkml:keywords,
         linkml:last_updated_on,
         linkml:local_names,
         linkml:mappings,
@@ -5083,8 +5141,10 @@ linkml:CommonMetadata a linkml:ClassDefinition ;
     linkml:slots linkml:aliases,
         linkml:alt_descriptions,
         linkml:broad_mappings,
+        linkml:categories,
         linkml:close_mappings,
         linkml:comments,
+        linkml:contributors,
         linkml:created_by,
         linkml:created_on,
         linkml:deprecated,
@@ -5097,6 +5157,7 @@ linkml:CommonMetadata a linkml:ClassDefinition ;
         linkml:imported_from,
         linkml:in_language,
         linkml:in_subset,
+        linkml:keywords,
         linkml:last_updated_on,
         linkml:mappings,
         linkml:modified_by,
@@ -5129,9 +5190,11 @@ linkml:Element a linkml:ClassDefinition ;
         linkml:alt_descriptions,
         linkml:annotations,
         linkml:broad_mappings,
+        linkml:categories,
         linkml:close_mappings,
         linkml:comments,
         linkml:conforms_to,
+        linkml:contributors,
         linkml:created_by,
         linkml:created_on,
         linkml:definition_uri,
@@ -5148,6 +5211,8 @@ linkml:Element a linkml:ClassDefinition ;
         linkml:imported_from,
         linkml:in_language,
         linkml:in_subset,
+        linkml:instantiates,
+        linkml:keywords,
         linkml:last_updated_on,
         linkml:local_names,
         linkml:mappings,
@@ -5241,6 +5306,7 @@ linkml:SchemaDefinition a linkml:ClassDefinition ;
         linkml:close_mappings,
         linkml:comments,
         linkml:conforms_to,
+        linkml:contributors,
         linkml:created_by,
         linkml:created_on,
         linkml:default_curi_maps,
@@ -5265,6 +5331,7 @@ linkml:SchemaDefinition a linkml:ClassDefinition ;
         linkml:imports,
         linkml:in_language,
         linkml:in_subset,
+        linkml:instantiates,
         linkml:keywords,
         linkml:last_updated_on,
         linkml:license,
@@ -5322,6 +5389,7 @@ linkml:ClassDefinition a linkml:ClassDefinition ;
         linkml:annotations,
         linkml:attributes,
         linkml:broad_mappings,
+        linkml:categories,
         linkml:children_are_mutually_disjoint,
         linkml:class_definition_apply_to,
         linkml:class_definition_disjoint_with,
@@ -5338,6 +5406,7 @@ linkml:ClassDefinition a linkml:ClassDefinition ;
         linkml:close_mappings,
         linkml:comments,
         linkml:conforms_to,
+        linkml:contributors,
         linkml:created_by,
         linkml:created_on,
         linkml:defining_slots,
@@ -5355,6 +5424,8 @@ linkml:ClassDefinition a linkml:ClassDefinition ;
         linkml:imported_from,
         linkml:in_language,
         linkml:in_subset,
+        linkml:instantiates,
+        linkml:keywords,
         linkml:last_updated_on,
         linkml:local_names,
         linkml:mappings,
@@ -5434,38 +5505,40 @@ There are many subsets of *profiles* of the metamodel, for different purposes:
 For canonical reference documentation on any metamodel construct,
 refer to the official URI for each construct, e.g.
 [https://w3id.org/linkml/is_a](https://w3id.org/linkml/is_a)""" ;
-    sh:declare [ sh:namespace qb: ;
+    sh:declare [ sh:namespace skosxl: ;
+            sh:prefix "skosxl" ],
+        [ sh:namespace prov: ;
+            sh:prefix "prov" ],
+        [ sh:namespace skos: ;
+            sh:prefix "skos" ],
+        [ sh:namespace pav: ;
+            sh:prefix "pav" ],
+        [ sh:namespace qb: ;
             sh:prefix "qb" ],
+        [ sh:namespace oslc: ;
+            sh:prefix "oslc" ],
+        [ sh:namespace linkml: ;
+            sh:prefix "linkml" ],
+        [ sh:namespace OIO: ;
+            sh:prefix "OIO" ],
+        [ sh:namespace swrl: ;
+            sh:prefix "swrl" ],
+        [ sh:namespace qudt: ;
+            sh:prefix "qudt" ],
+        [ sh:namespace cdisc: ;
+            sh:prefix "cdisc" ],
+        [ sh:namespace sh: ;
+            sh:prefix "sh" ],
+        [ sh:namespace owl: ;
+            sh:prefix "owl" ],
+        [ sh:namespace schema: ;
+            sh:prefix "schema" ],
         [ sh:namespace bibo: ;
             sh:prefix "bibo" ],
         [ sh:namespace vann: ;
             sh:prefix "vann" ],
         [ sh:namespace NCIT: ;
-            sh:prefix "NCIT" ],
-        [ sh:namespace owl: ;
-            sh:prefix "owl" ],
-        [ sh:namespace schema: ;
-            sh:prefix "schema" ],
-        [ sh:namespace skos: ;
-            sh:prefix "skos" ],
-        [ sh:namespace sh: ;
-            sh:prefix "sh" ],
-        [ sh:namespace pav: ;
-            sh:prefix "pav" ],
-        [ sh:namespace skosxl: ;
-            sh:prefix "skosxl" ],
-        [ sh:namespace swrl: ;
-            sh:prefix "swrl" ],
-        [ sh:namespace linkml: ;
-            sh:prefix "linkml" ],
-        [ sh:namespace OIO: ;
-            sh:prefix "OIO" ],
-        [ sh:namespace prov: ;
-            sh:prefix "prov" ],
-        [ sh:namespace qudt: ;
-            sh:prefix "qudt" ],
-        [ sh:namespace oslc: ;
-            sh:prefix "oslc" ] ;
+            sh:prefix "NCIT" ] ;
     linkml:classes linkml:AltDescription,
         linkml:Annotatable,
         linkml:Annotation,
@@ -5524,7 +5597,7 @@ refer to the official URI for each construct, e.g.
         linkml:presence_enum,
         linkml:pv_formula_options,
         linkml:relational_role_enum ;
-    linkml:generation_date "2023-09-25T15:55:00"^^xsd:dateTime ;
+    linkml:generation_date "2023-11-15T08:38:30"^^xsd:dateTime ;
     linkml:id linkml:meta ;
     linkml:imports linkml:annotations,
         linkml:extensions,
@@ -5638,6 +5711,7 @@ refer to the official URI for each construct, e.g.
         linkml:inlined,
         linkml:inlined_as_list,
         linkml:inlined_as_simple_dict,
+        linkml:instantiates,
         linkml:interpolated,
         linkml:inverse,
         linkml:irreflexive,
@@ -5786,8 +5860,8 @@ refer to the official URI for each construct, e.g.
         linkml:values_from,
         linkml:version ;
     linkml:source_file "meta.yaml" ;
-    linkml:source_file_date "2023-09-22T17:28:09"^^xsd:dateTime ;
-    linkml:source_file_size 89120 ;
+    linkml:source_file_date "2023-09-28T16:52:24"^^xsd:dateTime ;
+    linkml:source_file_size 89472 ;
     linkml:subsets linkml:BasicSubset,
         linkml:MinimalSubset,
         linkml:ObjectOrientedProfile,
@@ -5843,10 +5917,12 @@ linkml:SlotDefinition a linkml:ClassDefinition ;
         linkml:annotations,
         linkml:asymmetric,
         linkml:broad_mappings,
+        linkml:categories,
         linkml:children_are_mutually_disjoint,
         linkml:close_mappings,
         linkml:comments,
         linkml:conforms_to,
+        linkml:contributors,
         linkml:created_by,
         linkml:created_on,
         linkml:definition_uri,
@@ -5878,12 +5954,14 @@ linkml:SlotDefinition a linkml:ClassDefinition ;
         linkml:inherited,
         linkml:inlined,
         linkml:inlined_as_list,
+        linkml:instantiates,
         linkml:inverse,
         linkml:irreflexive,
         linkml:is_class_field,
         linkml:is_grouping_slot,
         linkml:is_usage_slot,
         linkml:key,
+        linkml:keywords,
         linkml:last_updated_on,
         linkml:list_elements_ordered,
         linkml:list_elements_unique,

@@ -43,6 +43,9 @@ URI: [linkml:SubsetDefinition](https://w3id.org/linkml/SubsetDefinition)
  * [implements](implements.md)  <sub>0..\*</sub>
      * Description: An element in another schema which this element conforms to. The referenced element is not imported into the schema for the implementing element. However, the referenced schema may be used to check conformance of the implementing element.
      * Range: [Uriorcurie](types/Uriorcurie.md)
+ * [instantiates](instantiates.md)  <sub>0..\*</sub>
+     * Description: An element in another schema which this element instantiates.
+     * Range: [Uriorcurie](types/Uriorcurie.md)
 
 ## Other properties
 

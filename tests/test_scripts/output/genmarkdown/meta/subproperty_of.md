@@ -2,7 +2,7 @@
 # Slot: subproperty_of
 
 
-Ontology property which this slot is a subproperty of.  Note: setting this property on a slot does not guarantee an expansion of the ontological hiearchy into an enumerated list of possible values in every serialization of the model.
+Ontology property which this slot is a subproperty of.  Note: setting this property on a slot does not guarantee an expansion of the ontological hierarchy into an enumerated list of possible values in every serialization of the model.
 
 URI: [linkml:subproperty_of](https://w3id.org/linkml/subproperty_of)
 

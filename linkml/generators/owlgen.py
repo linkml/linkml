@@ -2,6 +2,7 @@
 import logging
 import os
 from collections import defaultdict
+from copy import copy
 from dataclasses import dataclass, field
 from enum import Enum, unique
 from typing import Any, List, Mapping, Optional, Set, Tuple, Union
@@ -403,6 +404,48 @@ class OwlSchemaGenerator(Generator):
             else:
                 self.graph.add((subject_expr, RDFS.subClassOf, superclass_expr))
 
+    def get_own_slots(self, cls: Union[ClassDefinition, AnonymousClassExpression]) -> List[SlotDefinition]:
+        """
+        Get the slots that are defined on a class, excluding those that are inherited.
+
+        :param cls:
+        :return:
+        """
+        sv = self.schemaview
+        if isinstance(cls, ClassDefinition):
+            own_slots = (
+                list(cls.slot_usage.values()) + list(cls.attributes.values()) + list(cls.slot_conditions.values())
+            )
+            for slot_name in cls.slots:
+                # if slot_name not in cls.slot_usage:
+                slot = sv.get_slot(slot_name)
+                if slot:
+                    own_slots.append(slot)
+                else:
+                    logging.warning(f"Unknown top-level slot {slot_name}")
+        else:
+            own_slots = []
+        own_slots.extend(cls.slot_conditions.values())
+        # merge slots with the same name
+        slot_map = {}
+        for slot in own_slots:
+            if slot.name in slot_map:
+                for k, v in slot.__dict__.items():
+                    curr = slot_map[slot.name].get(k, None)
+                    # print(f"MERGE={slot.name}.{k} = {v} // CURR={curr}")
+                    if v and not curr:
+                        slot_map[slot.name][k] = v
+                        # print(f"OVERRIDE={slot.name}, k={k}, v={v}")
+            else:
+                slot_map[slot.name] = copy(slot.__dict__)
+                # print(f"INIT={slot.name}, vals={slot_map[slot.name]}")
+
+            # print(f"SN={slot.name}, vals={slot_map[slot.name]}")
+        own_slots = [SlotDefinition(**v) for v in slot_map.values()]
+        # sort by name
+        own_slots.sort(key=lambda x: x.name)
+        return own_slots
+
     def transform_class_expression(
         self,
         cls: Union[ClassDefinition, AnonymousClassExpression],
@@ -420,20 +463,7 @@ class OwlSchemaGenerator(Generator):
         """
         graph = self.graph
         sv = self.schemaview
-        if isinstance(cls, ClassDefinition):
-            own_slots = (
-                list(cls.slot_usage.values()) + list(cls.attributes.values()) + list(cls.slot_conditions.values())
-            )
-            for slot_name in cls.slots:
-                if slot_name not in cls.slot_usage:
-                    slot = sv.get_slot(slot_name)
-                    if slot:
-                        own_slots.append(slot)
-        else:
-            own_slots = []
-        own_slots.extend(cls.slot_conditions.values())
-        # sort by name
-        own_slots.sort(key=lambda x: x.name)
+        own_slots = self.get_own_slots(cls)
         owl_exprs = []
         if cls.any_of:
             owl_exprs.append(self._union_of([self.transform_class_expression(x) for x in cls.any_of]))

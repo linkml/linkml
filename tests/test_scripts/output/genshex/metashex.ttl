@@ -560,6 +560,10 @@
                 shex:min 0 ;
                 shex:predicate <http://purl.org/pav/createdBy> ;
                 shex:valueExpr <https://w3id.org/linkml/Uriorcurie> ] [ a shex:TripleConstraint ;
+                shex:max -1 ;
+                shex:min 0 ;
+                shex:predicate <http://purl.org/dc/terms/contributor> ;
+                shex:valueExpr <https://w3id.org/linkml/Uriorcurie> ] [ a shex:TripleConstraint ;
                 shex:max 1 ;
                 shex:min 0 ;
                 shex:predicate <http://purl.org/pav/createdOn> ;
@@ -575,7 +579,15 @@
                 shex:max 1 ;
                 shex:min 0 ;
                 shex:predicate <http://purl.org/ontology/bibo/status> ;
-                shex:valueExpr <https://w3id.org/linkml/Uriorcurie> ] ) .
+                shex:valueExpr <https://w3id.org/linkml/Uriorcurie> ] [ a shex:TripleConstraint ;
+                shex:max -1 ;
+                shex:min 0 ;
+                shex:predicate <http://purl.org/dc/terms/subject> ;
+                shex:valueExpr <https://w3id.org/linkml/Uriorcurie> ] [ a shex:TripleConstraint ;
+                shex:max -1 ;
+                shex:min 0 ;
+                shex:predicate <http://schema.org/keywords> ;
+                shex:valueExpr <https://w3id.org/linkml/String> ] ) .
 
 <https://w3id.org/linkml/Curie> a shex:NodeConstraint ;
     shex:datatype xsd:string .
@@ -827,6 +839,10 @@
                 shex:min 0 ;
                 shex:predicate <http://purl.org/pav/createdBy> ;
                 shex:valueExpr <https://w3id.org/linkml/Uriorcurie> ] [ a shex:TripleConstraint ;
+                shex:max -1 ;
+                shex:min 0 ;
+                shex:predicate <http://purl.org/dc/terms/contributor> ;
+                shex:valueExpr <https://w3id.org/linkml/Uriorcurie> ] [ a shex:TripleConstraint ;
                 shex:max 1 ;
                 shex:min 0 ;
                 shex:predicate <http://purl.org/pav/createdOn> ;
@@ -846,7 +862,15 @@
                 shex:max 1 ;
                 shex:min 0 ;
                 shex:predicate <http://www.w3.org/ns/shacl#order> ;
-                shex:valueExpr <https://w3id.org/linkml/Integer> ] ) .
+                shex:valueExpr <https://w3id.org/linkml/Integer> ] [ a shex:TripleConstraint ;
+                shex:max -1 ;
+                shex:min 0 ;
+                shex:predicate <http://purl.org/dc/terms/subject> ;
+                shex:valueExpr <https://w3id.org/linkml/Uriorcurie> ] [ a shex:TripleConstraint ;
+                shex:max -1 ;
+                shex:min 0 ;
+                shex:predicate <http://schema.org/keywords> ;
+                shex:valueExpr <https://w3id.org/linkml/String> ] ) .
 
 <https://w3id.org/linkml/Jsonpath> a shex:NodeConstraint ;
     shex:datatype xsd:string .
@@ -1040,6 +1064,10 @@
                 shex:min 0 ;
                 shex:predicate <http://purl.org/pav/createdBy> ;
                 shex:valueExpr <https://w3id.org/linkml/Uriorcurie> ] [ a shex:TripleConstraint ;
+                shex:max -1 ;
+                shex:min 0 ;
+                shex:predicate <http://purl.org/dc/terms/contributor> ;
+                shex:valueExpr <https://w3id.org/linkml/Uriorcurie> ] [ a shex:TripleConstraint ;
                 shex:max 1 ;
                 shex:min 0 ;
                 shex:predicate <http://purl.org/pav/createdOn> ;
@@ -1059,7 +1087,15 @@
                 shex:max 1 ;
                 shex:min 0 ;
                 shex:predicate <http://www.w3.org/ns/shacl#order> ;
-                shex:valueExpr <https://w3id.org/linkml/Integer> ] ) .
+                shex:valueExpr <https://w3id.org/linkml/Integer> ] [ a shex:TripleConstraint ;
+                shex:max -1 ;
+                shex:min 0 ;
+                shex:predicate <http://purl.org/dc/terms/subject> ;
+                shex:valueExpr <https://w3id.org/linkml/Uriorcurie> ] [ a shex:TripleConstraint ;
+                shex:max -1 ;
+                shex:min 0 ;
+                shex:predicate <http://schema.org/keywords> ;
+                shex:valueExpr <https://w3id.org/linkml/String> ] ) .
 
 <https://w3id.org/linkml/PatternExpression_tes> a shex:EachOf ;
     shex:expressions ( <https://w3id.org/linkml/Extensible_tes> [ a shex:TripleConstraint ;
@@ -1195,6 +1231,10 @@
                 shex:min 0 ;
                 shex:predicate <http://purl.org/pav/createdBy> ;
                 shex:valueExpr <https://w3id.org/linkml/Uriorcurie> ] [ a shex:TripleConstraint ;
+                shex:max -1 ;
+                shex:min 0 ;
+                shex:predicate <http://purl.org/dc/terms/contributor> ;
+                shex:valueExpr <https://w3id.org/linkml/Uriorcurie> ] [ a shex:TripleConstraint ;
                 shex:max 1 ;
                 shex:min 0 ;
                 shex:predicate <http://purl.org/pav/createdOn> ;
@@ -1214,7 +1254,15 @@
                 shex:max 1 ;
                 shex:min 0 ;
                 shex:predicate <http://www.w3.org/ns/shacl#order> ;
-                shex:valueExpr <https://w3id.org/linkml/Integer> ] ) .
+                shex:valueExpr <https://w3id.org/linkml/Integer> ] [ a shex:TripleConstraint ;
+                shex:max -1 ;
+                shex:min 0 ;
+                shex:predicate <http://purl.org/dc/terms/subject> ;
+                shex:valueExpr <https://w3id.org/linkml/Uriorcurie> ] [ a shex:TripleConstraint ;
+                shex:max -1 ;
+                shex:min 0 ;
+                shex:predicate <http://schema.org/keywords> ;
+                shex:valueExpr <https://w3id.org/linkml/String> ] ) .
 
 <https://w3id.org/linkml/PermissibleValue_tes> a shex:EachOf ;
     shex:expressions ( <https://w3id.org/linkml/Extensible_tes> [ a shex:TripleConstraint ;
@@ -1350,6 +1398,10 @@
                 shex:min 0 ;
                 shex:predicate <http://purl.org/pav/createdBy> ;
                 shex:valueExpr <https://w3id.org/linkml/Uriorcurie> ] [ a shex:TripleConstraint ;
+                shex:max -1 ;
+                shex:min 0 ;
+                shex:predicate <http://purl.org/dc/terms/contributor> ;
+                shex:valueExpr <https://w3id.org/linkml/Uriorcurie> ] [ a shex:TripleConstraint ;
                 shex:max 1 ;
                 shex:min 0 ;
                 shex:predicate <http://purl.org/pav/createdOn> ;
@@ -1369,7 +1421,15 @@
                 shex:max 1 ;
                 shex:min 0 ;
                 shex:predicate <http://www.w3.org/ns/shacl#order> ;
-                shex:valueExpr <https://w3id.org/linkml/Integer> ] ) .
+                shex:valueExpr <https://w3id.org/linkml/Integer> ] [ a shex:TripleConstraint ;
+                shex:max -1 ;
+                shex:min 0 ;
+                shex:predicate <http://purl.org/dc/terms/subject> ;
+                shex:valueExpr <https://w3id.org/linkml/Uriorcurie> ] [ a shex:TripleConstraint ;
+                shex:max -1 ;
+                shex:min 0 ;
+                shex:predicate <http://schema.org/keywords> ;
+                shex:valueExpr <https://w3id.org/linkml/String> ] ) .
 
 <https://w3id.org/linkml/Prefix_tes> a shex:EachOf ;
     shex:expressions ( [ a shex:TripleConstraint ;
@@ -1498,15 +1558,7 @@
                 shex:max -1 ;
                 shex:min 0 ;
                 shex:predicate <https://w3id.org/linkml/settings> ;
-                shex:valueExpr <https://w3id.org/linkml/Setting> ] [ a shex:TripleConstraint ;
-                shex:max -1 ;
-                shex:min 0 ;
-                shex:predicate <http://purl.org/dc/terms/subject> ;
-                shex:valueExpr <https://w3id.org/linkml/Uriorcurie> ] [ a shex:TripleConstraint ;
-                shex:max -1 ;
-                shex:min 0 ;
-                shex:predicate <http://schema.org/keywords> ;
-                shex:valueExpr <https://w3id.org/linkml/String> ] ) .
+                shex:valueExpr <https://w3id.org/linkml/Setting> ] ) .
 
 <https://w3id.org/linkml/Setting_tes> a shex:EachOf ;
     shex:expressions ( [ a shex:TripleConstraint ;
@@ -1931,6 +1983,10 @@
                 shex:min 0 ;
                 shex:predicate <http://purl.org/pav/createdBy> ;
                 shex:valueExpr <https://w3id.org/linkml/Uriorcurie> ] [ a shex:TripleConstraint ;
+                shex:max -1 ;
+                shex:min 0 ;
+                shex:predicate <http://purl.org/dc/terms/contributor> ;
+                shex:valueExpr <https://w3id.org/linkml/Uriorcurie> ] [ a shex:TripleConstraint ;
                 shex:max 1 ;
                 shex:min 0 ;
                 shex:predicate <http://purl.org/pav/createdOn> ;
@@ -1950,7 +2006,11 @@
                 shex:max 1 ;
                 shex:min 0 ;
                 shex:predicate <http://www.w3.org/ns/shacl#order> ;
-                shex:valueExpr <https://w3id.org/linkml/Integer> ] ) .
+                shex:valueExpr <https://w3id.org/linkml/Integer> ] [ a shex:TripleConstraint ;
+                shex:max -1 ;
+                shex:min 0 ;
+                shex:predicate <http://schema.org/keywords> ;
+                shex:valueExpr <https://w3id.org/linkml/String> ] ) .
 
 <https://w3id.org/linkml/SubsetDefinition_tes> a shex:EachOf ;
     shex:expressions ( <https://w3id.org/linkml/Element_tes> [ a shex:TripleConstraint ;
@@ -2179,6 +2239,10 @@
                 shex:min 0 ;
                 shex:predicate <http://purl.org/pav/createdBy> ;
                 shex:valueExpr <https://w3id.org/linkml/Uriorcurie> ] [ a shex:TripleConstraint ;
+                shex:max -1 ;
+                shex:min 0 ;
+                shex:predicate <http://purl.org/dc/terms/contributor> ;
+                shex:valueExpr <https://w3id.org/linkml/Uriorcurie> ] [ a shex:TripleConstraint ;
                 shex:max 1 ;
                 shex:min 0 ;
                 shex:predicate <http://purl.org/pav/createdOn> ;
@@ -2198,7 +2262,15 @@
                 shex:max 1 ;
                 shex:min 0 ;
                 shex:predicate <http://www.w3.org/ns/shacl#order> ;
-                shex:valueExpr <https://w3id.org/linkml/Integer> ] ) .
+                shex:valueExpr <https://w3id.org/linkml/Integer> ] [ a shex:TripleConstraint ;
+                shex:max -1 ;
+                shex:min 0 ;
+                shex:predicate <http://purl.org/dc/terms/subject> ;
+                shex:valueExpr <https://w3id.org/linkml/Uriorcurie> ] [ a shex:TripleConstraint ;
+                shex:max -1 ;
+                shex:min 0 ;
+                shex:predicate <http://schema.org/keywords> ;
+                shex:valueExpr <https://w3id.org/linkml/String> ] ) .
 
 <https://w3id.org/linkml/UnitOfMeasure_tes> a shex:EachOf ;
     shex:expressions ( [ a shex:TripleConstraint ;
@@ -2411,6 +2483,10 @@
                 shex:min 0 ;
                 shex:predicate <http://purl.org/pav/createdBy> ;
                 shex:valueExpr <https://w3id.org/linkml/Uriorcurie> ] [ a shex:TripleConstraint ;
+                shex:max -1 ;
+                shex:min 0 ;
+                shex:predicate <http://purl.org/dc/terms/contributor> ;
+                shex:valueExpr <https://w3id.org/linkml/Uriorcurie> ] [ a shex:TripleConstraint ;
                 shex:max 1 ;
                 shex:min 0 ;
                 shex:predicate <http://purl.org/pav/createdOn> ;
@@ -2430,7 +2506,15 @@
                 shex:max 1 ;
                 shex:min 0 ;
                 shex:predicate <http://www.w3.org/ns/shacl#order> ;
-                shex:valueExpr <https://w3id.org/linkml/Integer> ] ) .
+                shex:valueExpr <https://w3id.org/linkml/Integer> ] [ a shex:TripleConstraint ;
+                shex:max -1 ;
+                shex:min 0 ;
+                shex:predicate <http://purl.org/dc/terms/subject> ;
+                shex:valueExpr <https://w3id.org/linkml/Uriorcurie> ] [ a shex:TripleConstraint ;
+                shex:max -1 ;
+                shex:min 0 ;
+                shex:predicate <http://schema.org/keywords> ;
+                shex:valueExpr <https://w3id.org/linkml/String> ] ) .
 
 <https://w3id.org/linkml/ClassExpression_tes> a shex:EachOf ;
     shex:expressions ( [ a shex:TripleConstraint ;
@@ -2819,6 +2903,10 @@
                 shex:valueExpr <https://w3id.org/linkml/Uriorcurie> ] [ a shex:TripleConstraint ;
                 shex:max -1 ;
                 shex:min 0 ;
+                shex:predicate <https://w3id.org/linkml/instantiates> ;
+                shex:valueExpr <https://w3id.org/linkml/Uriorcurie> ] [ a shex:TripleConstraint ;
+                shex:max -1 ;
+                shex:min 0 ;
                 shex:predicate <https://w3id.org/linkml/extensions> ;
                 shex:valueExpr <https://w3id.org/linkml/Extension> ] [ a shex:TripleConstraint ;
                 shex:max -1 ;
@@ -2925,6 +3013,10 @@
                 shex:min 0 ;
                 shex:predicate <http://purl.org/pav/createdBy> ;
                 shex:valueExpr <https://w3id.org/linkml/Uriorcurie> ] [ a shex:TripleConstraint ;
+                shex:max -1 ;
+                shex:min 0 ;
+                shex:predicate <http://purl.org/dc/terms/contributor> ;
+                shex:valueExpr <https://w3id.org/linkml/Uriorcurie> ] [ a shex:TripleConstraint ;
                 shex:max 1 ;
                 shex:min 0 ;
                 shex:predicate <http://purl.org/pav/createdOn> ;
@@ -2944,7 +3036,15 @@
                 shex:max 1 ;
                 shex:min 0 ;
                 shex:predicate <http://www.w3.org/ns/shacl#order> ;
-                shex:valueExpr <https://w3id.org/linkml/Integer> ] ) .
+                shex:valueExpr <https://w3id.org/linkml/Integer> ] [ a shex:TripleConstraint ;
+                shex:max -1 ;
+                shex:min 0 ;
+                shex:predicate <http://purl.org/dc/terms/subject> ;
+                shex:valueExpr <https://w3id.org/linkml/Uriorcurie> ] [ a shex:TripleConstraint ;
+                shex:max -1 ;
+                shex:min 0 ;
+                shex:predicate <http://schema.org/keywords> ;
+                shex:valueExpr <https://w3id.org/linkml/String> ] ) .
 
 <https://w3id.org/linkml/MatchQuery> a shex:Shape ;
     shex:closed true ;
@@ -3182,6 +3282,10 @@
                 shex:min 0 ;
                 shex:predicate <http://purl.org/pav/createdBy> ;
                 shex:valueExpr <https://w3id.org/linkml/Uriorcurie> ] [ a shex:TripleConstraint ;
+                shex:max -1 ;
+                shex:min 0 ;
+                shex:predicate <http://purl.org/dc/terms/contributor> ;
+                shex:valueExpr <https://w3id.org/linkml/Uriorcurie> ] [ a shex:TripleConstraint ;
                 shex:max 1 ;
                 shex:min 0 ;
                 shex:predicate <http://purl.org/pav/createdOn> ;
@@ -3201,7 +3305,15 @@
                 shex:max 1 ;
                 shex:min 0 ;
                 shex:predicate <http://www.w3.org/ns/shacl#order> ;
-                shex:valueExpr <https://w3id.org/linkml/Integer> ] ) .
+                shex:valueExpr <https://w3id.org/linkml/Integer> ] [ a shex:TripleConstraint ;
+                shex:max -1 ;
+                shex:min 0 ;
+                shex:predicate <http://purl.org/dc/terms/subject> ;
+                shex:valueExpr <https://w3id.org/linkml/Uriorcurie> ] [ a shex:TripleConstraint ;
+                shex:max -1 ;
+                shex:min 0 ;
+                shex:predicate <http://schema.org/keywords> ;
+                shex:valueExpr <https://w3id.org/linkml/String> ] ) .
 
 <https://w3id.org/linkml/Extensible_tes> a shex:TripleConstraint ;
     shex:max -1 ;

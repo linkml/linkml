@@ -2,16 +2,14 @@ Usage: gen-owl [OPTIONS] YAMLFILE
 
   Generate an OWL representation of a LinkML model
 
-  Examples:
+  Generate OWL using default parameters:
 
-      Generate OWL using default parameters:
+      gen-owl my_schema.yaml
 
-          gen-owl --no-metaclasses --no-type-objects my_schema.yaml
+  Note that in previous versions of this generator, the default was to use
+  type objects and to include metaclasses. To restore this behavior:
 
-      Generate OWL utilizing datatype properties for type slots and excluding
-      metaclasses:
-
-          gen-owl --no-metaclasses --no-type-objects my_schema.yaml
+      gen-owl --metaclasses --type-objects my_schema.yaml
 
   For more info, see: https://linkml.io/linkml/generators/owl
 
@@ -28,6 +26,10 @@ Options:
                                   If true, include linkml metamodel classes as
                                   metaclasses. Note this introduces punning in
                                   OWL-DL  [default: no-metaclasses]
+  --add-root-classes / --no-add-root-classes
+                                  If true, include linkml metamodel classes as
+                                  superclasses.  [default: no-add-root-
+                                  classes]
   --add-ols-annotations / --no-add-ols-annotations
                                   If true, auto-include annotations from
                                   https://www.ebi.ac.uk/ols/docs/installation-
@@ -38,6 +40,10 @@ Options:
                                   If true, add owl:equivalentClass between a
                                   class and a class_uri  [default: no-assert-
                                   equivalent-classes]
+  --mixins-as-expressions / --no-mixins-as-expressions
+                                  If true, then mixins are represented as
+                                  existential expressions  [default: no-
+                                  mixins-as-expressions]
   -V, --version                   Show the version and exit.
   -f, --format [owl|ttl|json-ld|xml|n3|turtle|ttl|ntriples|nt|nt11|nquads|trix|trig|hext]
                                   Output format  [default: owl]

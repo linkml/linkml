@@ -481,7 +481,7 @@
   "source_file": "simple_uri_test.yaml",
   "source_file_date": "2021-06-07T23:18:56",
   "source_file_size": 480,
-  "generation_date": "2023-09-25T16:04:27",
+  "generation_date": "2023-11-15T08:55:56",
   "@type": "SchemaDefinition",
   "@context": [
     "https://w3id.org/linkml/extensions.context.jsonld",

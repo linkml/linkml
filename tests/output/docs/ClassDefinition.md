@@ -122,6 +122,9 @@ URI: [linkml:ClassDefinition](https://w3id.org/linkml/ClassDefinition)
  * [implements](implements.md)  <sub>0..\*</sub>
      * Description: An element in another schema which this element conforms to. The referenced element is not imported into the schema for the implementing element. However, the referenced schema may be used to check conformance of the implementing element.
      * Range: [Uriorcurie](types/Uriorcurie.md)
+ * [instantiates](instantiates.md)  <sub>0..\*</sub>
+     * Description: An element in another schema which this element instantiates.
+     * Range: [Uriorcurie](types/Uriorcurie.md)
  * [abstract](abstract.md)  <sub>0..1</sub>
      * Description: Indicates the class or slot cannot be directly instantiated and is intended for grouping purposes.
      * Range: [Boolean](types/Boolean.md)
@@ -131,7 +134,7 @@ URI: [linkml:ClassDefinition](https://w3id.org/linkml/ClassDefinition)
      * Range: [Boolean](types/Boolean.md)
      * in subsets: (SpecificationSubset,BasicSubset,ObjectOrientedProfile)
  * [values_from](values_from.md)  <sub>0..\*</sub>
-     * Description: The identifier of a "value set" -- a set of identifiers that form the possible values for the range of a slot. Note: this is different than 'subproperty_of' in that 'subproperty_of' is intended to be a single ontology term while 'values_from' is the identifier of an entire value set.  Additionally, this is different than an enumeration in that in an enumeration, the values of the enumeration are listed directly in the model itself. Setting this property on a slot does not guarantee an expansion of the ontological hiearchy into an enumerated list of possible values in every serialization of the model.
+     * Description: The identifier of a "value set" -- a set of identifiers that form the possible values for the range of a slot. Note: this is different than 'subproperty_of' in that 'subproperty_of' is intended to be a single ontology term while 'values_from' is the identifier of an entire value set.  Additionally, this is different than an enumeration in that in an enumeration, the values of the enumeration are listed directly in the model itself. Setting this property on a slot does not guarantee an expansion of the ontological hierarchy into an enumerated list of possible values in every serialization of the model.
      * Range: [Uriorcurie](types/Uriorcurie.md)
  * [string_serialization](string_serialization.md)  <sub>0..1</sub>
      * Description: Used on a slot that stores the string serialization of the containing object. The syntax follows python formatted strings, with slot names enclosed in {}s. These are expanded using the values of those slots.

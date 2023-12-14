@@ -61,12 +61,12 @@ refer to the official URI for each construct, e.g.
      * [Annotation](Annotation.md) - a tag/value pair with the semantics of OWL Annotation
  * [ImportExpression](ImportExpression.md) - an expression describing an import
  * [LocalName](LocalName.md) - an attributed label
- * [MatchQuery](MatchQuery.md) - A query that is used on an enum expression to dynamically obtain a set of permissivle values via a query that matches on properties of the external concepts
+ * [MatchQuery](MatchQuery.md) - A query that is used on an enum expression to dynamically obtain a set of permissivle values via a query that  matches on properties of the external concepts.
  * [PathExpression](PathExpression.md) - An expression that describes an abstract path from an object to another through a sequence of slot lookups
  * [PatternExpression](PatternExpression.md) - a regular expression pattern used to evaluate conformance of a string
  * [PermissibleValue](PermissibleValue.md) - a permissible value, accompanied by intended text and an optional mapping to a concept URI
  * [Prefix](Prefix.md) - prefix URI tuple
- * [ReachabilityQuery](ReachabilityQuery.md) - A query that is used on an enum expression to dynamically obtain a set of permissible values via walking from a set of source nodes to a set of descendants or ancestors over a set of relationship types
+ * [ReachabilityQuery](ReachabilityQuery.md) - A query that is used on an enum expression to dynamically obtain a set of permissible values via walking from a  set of source nodes to a set of descendants or ancestors over a set of relationship types.
  * [Setting](Setting.md) - assignment of a key to a value
  * [StructuredAlias](StructuredAlias.md) - object that contains meta data about a synonym or alias including where it came from (source) and its scope (narrow, broad, etc.)
  * [UniqueKey](UniqueKey.md) - a collection of slots whose values uniquely identify an instance of a class
@@ -175,7 +175,7 @@ refer to the official URI for each construct, e.g.
  * [identifier](identifier.md) - True means that the key slot(s) uniquely identifies the elements. There can be at most one identifier or key per container
  * [identifier_pattern](identifier_pattern.md) - A regular expression that is used to obtain a set of identifiers from a source_ontology to construct a set of permissible values
  * [iec61360code](iec61360code.md)
- * [ifabsent](ifabsent.md) - function that provides a default value for the slot.  Possible values for this slot are defined in
+ * [ifabsent](ifabsent.md) - function that provides a default value for the slot.  Possible values for this slot are defined in linkml.utils.ifabsent_functions.default_library:
  * [implements](implements.md) - An element in another schema which this element conforms to. The referenced element is not imported into the schema for the implementing element. However, the referenced schema may be used to check conformance of the implementing element.
  * [implicit_prefix](implicit_prefix.md) - Causes the slot value to be interpreted as a uriorcurie after prefixing with this string
  * [import_as](import_as.md)
@@ -193,6 +193,7 @@ refer to the official URI for each construct, e.g.
  * [inlined](inlined.md) - True means that keyed or identified slot appears in an outer structure by value.  False means that only the key or identifier for the slot appears within the domain, referencing a structure that appears elsewhere.
  * [inlined_as_list](inlined_as_list.md) - True means that an inlined slot is represented as a list of range instances.  False means that an inlined slot is represented as a dictionary, whose key is the slot key or identifier and whose value is the range instance.
  * [inlined_as_simple_dict](inlined_as_simple_dict.md) - True means that an inlined slot is represented as a simple dict whose values are all atoms
+ * [instantiates](instantiates.md) - An element in another schema which this element instantiates.
  * [interpolated](interpolated.md) - if true then the pattern is first string interpolated
  * [inverse](inverse.md) - indicates that any instance of d s r implies that there is also an instance of r s' d
  * [is_a](is_a.md) - A primary parent class or slot from which inheritable metaslots are propagated from. While multiple inheritance is not allowed, mixins can be provided effectively providing the same thing. The semantics are the same when translated to formalisms that allow MI (e.g. RDFS/OWL). When translating to a SI framework (e.g. java classes, python classes) then is a is used. When translating a framework without polymorphism (e.g. json-schema, solr document schema) then is a and mixins are recursively unfolded
@@ -250,8 +251,8 @@ refer to the official URI for each construct, e.g.
  * [open_world](open_world.md) - if true, the the postconditions may be omitted in instance data, but it is valid for an inference engine to add these
  * [owned_by](owned_by.md) - agent that owns or is the steward of the element
  * [owner](owner.md) - the "owner" of the slot. It is the class if it appears in the slots list, otherwise the declaring slot
- * [partial_match](partial_match.md) - if true then the pattern must match the whole string, as if enclosed in ^...$
- * [path_rule](path_rule.md) - a rule for inferring a slot assignment based on evaluating a path through a sequence of slot assignemnts
+ * [partial_match](partial_match.md) - if not true then the pattern must match the whole string, as if enclosed in ^...$
+ * [path_rule](path_rule.md) - a rule for inferring a slot assignment based on evaluating a path through a sequence of slot assignments
  * [pattern](pattern.md) - the string value of the slot must conform to this regular expression expressed in the string
  * [permissible_values](permissible_values.md) - A list of possible values for a slot range
  * [postconditions](postconditions.md) - an expression that must hold for an instance of the class, if the preconditions hold
@@ -308,7 +309,7 @@ refer to the official URI for each construct, e.g.
  * [structured_imports](structured_imports.md) - A list of specifications for how to import elements from external schemas
  * [structured_pattern](structured_pattern.md) - the string value of the slot must conform to the regular expression in the pattern expression
  * [subclass_of](subclass_of.md) - DEPRECATED -- rdfs:subClassOf to be emitted in OWL generation
- * [subproperty_of](subproperty_of.md) - Ontology property which this slot is a subproperty of.  Note: setting this property on a slot does not guarantee an expansion of the ontological hiearchy into an enumerated list of possible values in every serialization of the model.
+ * [subproperty_of](subproperty_of.md) - Ontology property which this slot is a subproperty of.  Note: setting this property on a slot does not guarantee an expansion of the ontological hierarchy into an enumerated list of possible values in every serialization of the model.
  * [subsets](subsets.md) - An index to the collection of all subset definitions in the schema
  * [symbol](symbol.md) - name of the unit encoded as a symbol
  * [syntax](syntax.md) - the string value of the slot must conform to this regular expression expressed in the string. May be interpolated.
@@ -337,7 +338,7 @@ refer to the official URI for each construct, e.g.
  * [example➞description](value_description.md) - description of what the value is doing
  * [example➞object](value_object.md) - direct object representation of the example
  * [value_specification_constant](value_specification_constant.md) - Grouping for metamodel slots that constrain the a slot value to equal a specified constant
- * [values_from](values_from.md) - The identifier of a "value set" -- a set of identifiers that form the possible values for the range of a slot. Note: this is different than 'subproperty_of' in that 'subproperty_of' is intended to be a single ontology term while 'values_from' is the identifier of an entire value set.  Additionally, this is different than an enumeration in that in an enumeration, the values of the enumeration are listed directly in the model itself. Setting this property on a slot does not guarantee an expansion of the ontological hiearchy into an enumerated list of possible values in every serialization of the model.
+ * [values_from](values_from.md) - The identifier of a "value set" -- a set of identifiers that form the possible values for the range of a slot. Note: this is different than 'subproperty_of' in that 'subproperty_of' is intended to be a single ontology term while 'values_from' is the identifier of an entire value set.  Additionally, this is different than an enumeration in that in an enumeration, the values of the enumeration are listed directly in the model itself. Setting this property on a slot does not guarantee an expansion of the ontological hierarchy into an enumerated list of possible values in every serialization of the model.
  * [version](version.md) - particular version of schema
 
 ### Enums

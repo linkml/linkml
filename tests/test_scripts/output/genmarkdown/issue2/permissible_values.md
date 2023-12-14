@@ -30,4 +30,5 @@ enum_expression &#8594;  <sub>0..\*</sub> permissible_value
 | **Aliases:** | | coded values |
 | **In Subsets:** | | SpecificationSubset |
 |  | | BasicSubset |
+| **Exact Mappings:** | | cdisc:PermissibleValue |
 

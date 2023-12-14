@@ -76,6 +76,10 @@
     {
       "prefix_prefix": "qudt",
       "prefix_reference": "http://qudt.org/schema/qudt/"
+    },
+    {
+      "prefix_prefix": "cdisc",
+      "prefix_reference": "http://rdf.cdisc.org/mms#"
     }
   ],
   "emit_prefixes": [
@@ -679,6 +683,21 @@
       "@type": "SlotDefinition"
     },
     {
+      "name": "instantiates",
+      "definition_uri": "https://w3id.org/linkml/instantiates",
+      "description": "An element in another schema which this element instantiates.",
+      "from_schema": "https://w3id.org/linkml/meta",
+      "domain": "Element",
+      "slot_uri": "https://w3id.org/linkml/instantiates",
+      "multivalued": true,
+      "owner": "Element",
+      "domain_of": [
+        "Element"
+      ],
+      "range": "uriorcurie",
+      "@type": "SlotDefinition"
+    },
+    {
       "name": "categories",
       "definition_uri": "https://w3id.org/linkml/categories",
       "description": "Controlled terms used to categorize an element.",
@@ -697,7 +716,7 @@
       "multivalued": true,
       "owner": "StructuredAlias",
       "domain_of": [
-        "SchemaDefinition",
+        "CommonMetadata",
         "StructuredAlias"
       ],
       "range": "uriorcurie",
@@ -720,7 +739,7 @@
       "multivalued": true,
       "owner": "keywords",
       "domain_of": [
-        "SchemaDefinition"
+        "CommonMetadata"
       ],
       "range": "string",
       "@type": "SlotDefinition"
@@ -1085,6 +1104,9 @@
       "slot_uri": "http://purl.org/dc/terms/contributor",
       "multivalued": true,
       "owner": "contributors",
+      "domain_of": [
+        "CommonMetadata"
+      ],
       "range": "uriorcurie",
       "@type": "SlotDefinition"
     },
@@ -1362,7 +1384,7 @@
       "definition_uri": "https://w3id.org/linkml/mixins",
       "description": "A collection of secondary parent classes or slots from which inheritable metaslots are propagated from.",
       "comments": [
-        "mixins act in the same way as parents (is_a). They allow a model to have a primary strict hierachy, while keeping the benefits of multiple inheritance"
+        "mixins act in the same way as parents (is_a). They allow a model to have a primary strict hierarchy, while keeping the benefits of multiple inheritance"
       ],
       "in_subset": [
         "SpecificationSubset",
@@ -1407,7 +1429,7 @@
     {
       "name": "values_from",
       "definition_uri": "https://w3id.org/linkml/values_from",
-      "description": "The identifier of a \"value set\" -- a set of identifiers that form the possible values for the range of a slot. Note: this is different than 'subproperty_of' in that 'subproperty_of' is intended to be a single ontology term while 'values_from' is the identifier of an entire value set.  Additionally, this is different than an enumeration in that in an enumeration, the values of the enumeration are listed directly in the model itself. Setting this property on a slot does not guarantee an expansion of the ontological hiearchy into an enumerated list of possible values in every serialization of the model.",
+      "description": "The identifier of a \"value set\" -- a set of identifiers that form the possible values for the range of a slot. Note: this is different than 'subproperty_of' in that 'subproperty_of' is intended to be a single ontology term while 'values_from' is the identifier of an entire value set.  Additionally, this is different than an enumeration in that in an enumeration, the values of the enumeration are listed directly in the model itself. Setting this property on a slot does not guarantee an expansion of the ontological hierarchy into an enumerated list of possible values in every serialization of the model.",
       "from_schema": "https://w3id.org/linkml/meta",
       "status": "testing",
       "domain": "Definition",
@@ -1511,6 +1533,9 @@
       "from_schema": "https://w3id.org/linkml/meta",
       "aliases": [
         "coded values"
+      ],
+      "exact_mappings": [
+        "http://rdf.cdisc.org/mms#PermissibleValue"
       ],
       "domain": "EnumExpression",
       "slot_uri": "https://w3id.org/linkml/permissible_values",
@@ -2181,7 +2206,7 @@
       "from_schema": "https://w3id.org/linkml/meta",
       "domain": "SchemaDefinition",
       "slot_uri": "https://w3id.org/linkml/source_file",
-      "readonly": "suppplied by the schema loader",
+      "readonly": "supplied by the schema loader",
       "owner": "SchemaDefinition",
       "domain_of": [
         "SchemaDefinition"
@@ -3073,7 +3098,7 @@
     {
       "name": "ifabsent",
       "definition_uri": "https://w3id.org/linkml/ifabsent",
-      "description": "function that provides a default value for the slot.  Possible values for this slot are defined in\nlinkml.utils.ifabsent_functions.default_library:\n  * [Tt]rue -- boolean True\n  * [Ff]alse -- boolean False\n  * bnode -- blank node identifier\n  * class_curie -- CURIE for the containing class\n  * class_uri -- URI for the containing class\n  * default_ns -- schema default namespace\n  * default_range -- schema default range\n  * int(value) -- integer value\n  * slot_uri -- URI for the slot\n  * slot_curie -- CURIE for the slot\n  * string(value) -- string value",
+      "description": "function that provides a default value for the slot.  Possible values for this slot are defined in linkml.utils.ifabsent_functions.default_library:\n  * [Tt]rue -- boolean True\n  * [Ff]alse -- boolean False\n  * bnode -- blank node identifier\n  * class_curie -- CURIE for the containing class\n  * class_uri -- URI for the containing class\n  * default_ns -- schema default namespace\n  * default_range -- schema default range\n  * int(value) -- integer value\n  * slot_uri -- URI for the slot\n  * slot_curie -- CURIE for the slot\n  * string(value) -- string value",
       "in_subset": [
         "SpecificationSubset"
       ],
@@ -3224,7 +3249,6 @@
         "SpecificationSubset"
       ],
       "from_schema": "https://w3id.org/linkml/meta",
-      "status": "testing",
       "is_a": "list_value_specification_constant",
       "slot_uri": "https://w3id.org/linkml/minimum_cardinality",
       "inherited": true,
@@ -3243,7 +3267,6 @@
         "SpecificationSubset"
       ],
       "from_schema": "https://w3id.org/linkml/meta",
-      "status": "testing",
       "is_a": "list_value_specification_constant",
       "slot_uri": "https://w3id.org/linkml/maximum_cardinality",
       "inherited": true,
@@ -3744,7 +3767,7 @@
     {
       "name": "subproperty_of",
       "definition_uri": "https://w3id.org/linkml/subproperty_of",
-      "description": "Ontology property which this slot is a subproperty of.  Note: setting this property on a slot does not guarantee an expansion of the ontological hiearchy into an enumerated list of possible values in every serialization of the model.",
+      "description": "Ontology property which this slot is a subproperty of.  Note: setting this property on a slot does not guarantee an expansion of the ontological hierarchy into an enumerated list of possible values in every serialization of the model.",
       "examples": [
         {
           "value": "RO:HOM0000001",
@@ -4094,7 +4117,7 @@
     {
       "name": "partial_match",
       "definition_uri": "https://w3id.org/linkml/partial_match",
-      "description": "if true then the pattern must match the whole string, as if enclosed in ^...$",
+      "description": "if not true then the pattern must match the whole string, as if enclosed in ^...$",
       "in_subset": [
         "SpecificationSubset"
       ],
@@ -4220,7 +4243,7 @@
       "description": "python base type in the LinkML runtime that implements this type definition",
       "comments": [
         "every root type must have a base",
-        "the base is inherited by child types but may be overriden.  Base compatibility is not checked."
+        "the base is inherited by child types but may be overridden.  Base compatibility is not checked."
       ],
       "in_subset": [
         "SpecificationSubset",
@@ -4750,7 +4773,7 @@
     {
       "name": "path_rule",
       "definition_uri": "https://w3id.org/linkml/path_rule",
-      "description": "a rule for inferring a slot assignment based on evaluating a path through a sequence of slot assignemnts",
+      "description": "a rule for inferring a slot assignment based on evaluating a path through a sequence of slot assignments",
       "from_schema": "https://w3id.org/linkml/meta",
       "domain": "SlotDefinition",
       "slot_uri": "https://w3id.org/linkml/path_rule",
@@ -5696,7 +5719,7 @@
       "definition_uri": "https://w3id.org/linkml/mixins",
       "description": "A collection of secondary parent mixin slots from which inheritable metaslots are propagated",
       "comments": [
-        "mixins act in the same way as parents (is_a). They allow a model to have a primary strict hierachy, while keeping the benefits of multiple inheritance"
+        "mixins act in the same way as parents (is_a). They allow a model to have a primary strict hierarchy, while keeping the benefits of multiple inheritance"
       ],
       "in_subset": [
         "SpecificationSubset",
@@ -5945,7 +5968,7 @@
       "definition_uri": "https://w3id.org/linkml/mixins",
       "description": "A collection of secondary parent mixin classes from which inheritable metaslots are propagated",
       "comments": [
-        "mixins act in the same way as parents (is_a). They allow a model to have a primary strict hierachy, while keeping the benefits of multiple inheritance"
+        "mixins act in the same way as parents (is_a). They allow a model to have a primary strict hierarchy, while keeping the benefits of multiple inheritance"
       ],
       "in_subset": [
         "SpecificationSubset",
@@ -6100,7 +6123,7 @@
       "definition_uri": "https://w3id.org/linkml/mixins",
       "description": "A collection of secondary parent classes or slots from which inheritable metaslots are propagated from.",
       "comments": [
-        "mixins act in the same way as parents (is_a). They allow a model to have a primary strict hierachy, while keeping the benefits of multiple inheritance"
+        "mixins act in the same way as parents (is_a). They allow a model to have a primary strict hierarchy, while keeping the benefits of multiple inheritance"
       ],
       "in_subset": [
         "SpecificationSubset",
@@ -6204,11 +6227,14 @@
         "narrow_mappings",
         "broad_mappings",
         "created_by",
+        "contributors",
         "created_on",
         "last_updated_on",
         "modified_by",
         "status",
-        "rank"
+        "rank",
+        "categories",
+        "keywords"
       ],
       "slot_usage": {},
       "class_uri": "https://w3id.org/linkml/CommonMetadata",
@@ -6242,6 +6268,7 @@
         "local_names",
         "conforms_to",
         "implements",
+        "instantiates",
         "extensions",
         "annotations",
         "description",
@@ -6269,11 +6296,14 @@
         "narrow_mappings",
         "broad_mappings",
         "created_by",
+        "contributors",
         "created_on",
         "last_updated_on",
         "modified_by",
         "status",
-        "rank"
+        "rank",
+        "categories",
+        "keywords"
       ],
       "slot_usage": {},
       "class_uri": "https://w3id.org/linkml/Element",
@@ -6315,6 +6345,7 @@
         "local_names",
         "conforms_to",
         "implements",
+        "instantiates",
         "extensions",
         "annotations",
         "description",
@@ -6342,11 +6373,14 @@
         "narrow_mappings",
         "broad_mappings",
         "created_by",
+        "contributors",
         "created_on",
         "last_updated_on",
         "modified_by",
         "status",
         "rank",
+        "categories",
+        "keywords",
         "id",
         "version",
         "imports",
@@ -6368,8 +6402,6 @@
         "generation_date",
         "slot_names_unique",
         "settings",
-        "categories",
-        "keywords",
         "schema_definition_name"
       ],
       "slot_usage": {},
@@ -6452,6 +6484,7 @@
         "local_names",
         "conforms_to",
         "implements",
+        "instantiates",
         "extensions",
         "annotations",
         "description",
@@ -6479,11 +6512,14 @@
         "narrow_mappings",
         "broad_mappings",
         "created_by",
+        "contributors",
         "created_on",
         "last_updated_on",
         "modified_by",
         "status",
         "rank",
+        "categories",
+        "keywords",
         "typeof",
         "base",
         "type_uri",
@@ -6525,6 +6561,7 @@
         "local_names",
         "conforms_to",
         "implements",
+        "instantiates",
         "extensions",
         "annotations",
         "description",
@@ -6552,11 +6589,14 @@
         "narrow_mappings",
         "broad_mappings",
         "created_by",
+        "contributors",
         "created_on",
         "last_updated_on",
         "modified_by",
         "status",
-        "rank"
+        "rank",
+        "categories",
+        "keywords"
       ],
       "slot_usage": {},
       "class_uri": "https://w3id.org/linkml/SubsetDefinition",
@@ -6582,6 +6622,7 @@
         "local_names",
         "conforms_to",
         "implements",
+        "instantiates",
         "extensions",
         "annotations",
         "description",
@@ -6609,11 +6650,14 @@
         "narrow_mappings",
         "broad_mappings",
         "created_by",
+        "contributors",
         "created_on",
         "last_updated_on",
         "modified_by",
         "status",
         "rank",
+        "categories",
+        "keywords",
         "is_a",
         "abstract",
         "mixin",
@@ -6692,11 +6736,13 @@
         "term set",
         "concept set",
         "Terminology Value Set",
-        "answer list"
+        "answer list",
+        "value domain"
       ],
       "exact_mappings": [
         "qb:HierarchicalCodeList",
-        "NCIT:C113497"
+        "NCIT:C113497",
+        "cdisc:ValueDomain"
       ],
       "close_mappings": [
         "skos:ConceptScheme"
@@ -6713,6 +6759,7 @@
         "local_names",
         "conforms_to",
         "implements",
+        "instantiates",
         "extensions",
         "annotations",
         "description",
@@ -6740,11 +6787,14 @@
         "narrow_mappings",
         "broad_mappings",
         "created_by",
+        "contributors",
         "created_on",
         "last_updated_on",
         "modified_by",
         "status",
         "rank",
+        "categories",
+        "keywords",
         "is_a",
         "abstract",
         "mixin",
@@ -6772,7 +6822,7 @@
     {
       "name": "MatchQuery",
       "definition_uri": "https://w3id.org/linkml/MatchQuery",
-      "description": "A query that is used on an enum expression to dynamically obtain a set of permissivle values via a query that matches on properties of the external concepts",
+      "description": "A query that is used on an enum expression to dynamically obtain a set of permissivle values via a query that  matches on properties of the external concepts.",
       "in_subset": [
         "SpecificationSubset"
       ],
@@ -6788,7 +6838,7 @@
     {
       "name": "ReachabilityQuery",
       "definition_uri": "https://w3id.org/linkml/ReachabilityQuery",
-      "description": "A query that is used on an enum expression to dynamically obtain a set of permissible values via walking from a set of source nodes to a set of descendants or ancestors over a set of relationship types",
+      "description": "A query that is used on an enum expression to dynamically obtain a set of permissible values via walking from a  set of source nodes to a set of descendants or ancestors over a set of relationship types.",
       "in_subset": [
         "SpecificationSubset"
       ],
@@ -6850,11 +6900,13 @@
         "narrow_mappings",
         "broad_mappings",
         "created_by",
+        "contributors",
         "created_on",
         "last_updated_on",
         "modified_by",
         "status",
-        "rank"
+        "rank",
+        "keywords"
       ],
       "slot_usage": {},
       "class_uri": "http://www.w3.org/2008/05/skos-xl#Label",
@@ -6914,11 +6966,14 @@
         "narrow_mappings",
         "broad_mappings",
         "created_by",
+        "contributors",
         "created_on",
         "last_updated_on",
         "modified_by",
         "status",
-        "rank"
+        "rank",
+        "categories",
+        "keywords"
       ],
       "slot_usage": {},
       "class_uri": "https://w3id.org/linkml/AnonymousExpression",
@@ -6971,11 +7026,14 @@
         "narrow_mappings",
         "broad_mappings",
         "created_by",
+        "contributors",
         "created_on",
         "last_updated_on",
         "modified_by",
         "status",
-        "rank"
+        "rank",
+        "categories",
+        "keywords"
       ],
       "slot_usage": {},
       "class_uri": "https://w3id.org/linkml/PathExpression",
@@ -7056,11 +7114,14 @@
         "narrow_mappings",
         "broad_mappings",
         "created_by",
+        "contributors",
         "created_on",
         "last_updated_on",
         "modified_by",
         "status",
         "rank",
+        "categories",
+        "keywords",
         "range",
         "range_expression",
         "enum_range",
@@ -7127,6 +7188,7 @@
         "local_names",
         "conforms_to",
         "implements",
+        "instantiates",
         "extensions",
         "annotations",
         "description",
@@ -7154,11 +7216,14 @@
         "narrow_mappings",
         "broad_mappings",
         "created_by",
+        "contributors",
         "created_on",
         "last_updated_on",
         "modified_by",
         "status",
         "rank",
+        "categories",
+        "keywords",
         "abstract",
         "mixin",
         "values_from",
@@ -7287,11 +7352,14 @@
         "narrow_mappings",
         "broad_mappings",
         "created_by",
+        "contributors",
         "created_on",
         "last_updated_on",
         "modified_by",
         "status",
         "rank",
+        "categories",
+        "keywords",
         "is_a",
         "class_expression_any_of",
         "class_expression_exactly_one_of",
@@ -7338,6 +7406,7 @@
         "local_names",
         "conforms_to",
         "implements",
+        "instantiates",
         "extensions",
         "annotations",
         "description",
@@ -7365,11 +7434,14 @@
         "narrow_mappings",
         "broad_mappings",
         "created_by",
+        "contributors",
         "created_on",
         "last_updated_on",
         "modified_by",
         "status",
         "rank",
+        "categories",
+        "keywords",
         "abstract",
         "mixin",
         "values_from",
@@ -7468,10 +7540,13 @@
         "narrow_mappings",
         "broad_mappings",
         "created_by",
+        "contributors",
         "created_on",
         "last_updated_on",
         "modified_by",
-        "status"
+        "status",
+        "categories",
+        "keywords"
       ],
       "slot_usage": {},
       "class_uri": "https://w3id.org/linkml/ClassRule",
@@ -7518,11 +7593,14 @@
         "narrow_mappings",
         "broad_mappings",
         "created_by",
+        "contributors",
         "created_on",
         "last_updated_on",
         "modified_by",
         "status",
-        "rank"
+        "rank",
+        "categories",
+        "keywords"
       ],
       "slot_usage": {},
       "class_uri": "https://w3id.org/linkml/PatternExpression",
@@ -7570,11 +7648,14 @@
         "narrow_mappings",
         "broad_mappings",
         "created_by",
+        "contributors",
         "created_on",
         "last_updated_on",
         "modified_by",
         "status",
-        "rank"
+        "rank",
+        "categories",
+        "keywords"
       ],
       "slot_usage": {},
       "class_uri": "https://w3id.org/linkml/ImportExpression",
@@ -7717,11 +7798,14 @@
         "narrow_mappings",
         "broad_mappings",
         "created_by",
+        "contributors",
         "created_on",
         "last_updated_on",
         "modified_by",
         "status",
-        "rank"
+        "rank",
+        "categories",
+        "keywords"
       ],
       "slot_usage": {},
       "class_uri": "https://w3id.org/linkml/PermissibleValue",
@@ -7774,11 +7858,14 @@
         "narrow_mappings",
         "broad_mappings",
         "created_by",
+        "contributors",
         "created_on",
         "last_updated_on",
         "modified_by",
         "status",
-        "rank"
+        "rank",
+        "categories",
+        "keywords"
       ],
       "slot_usage": {},
       "class_uri": "https://w3id.org/linkml/UniqueKey",
@@ -7927,9 +8014,9 @@
   ],
   "metamodel_version": "1.7.0",
   "source_file": "meta.yaml",
-  "source_file_date": "2023-09-22T17:28:09",
-  "source_file_size": 89120,
-  "generation_date": "2023-09-25T16:04:21",
+  "source_file_date": "2023-09-28T16:52:24",
+  "source_file_size": 89472,
+  "generation_date": "2023-11-15T08:55:51",
   "@type": "SchemaDefinition",
   "@context": [
     "file:./output/gencontext/meta.jsonld",

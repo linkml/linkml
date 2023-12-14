@@ -26,12 +26,12 @@ extensible,,mixin for classes that support extension
 extension,,a tag/value pair used to add non-model information to an entry
 import_expression,,an expression describing an import
 local_name,,an attributed label
-match_query,,A query that is used on an enum expression to dynamically obtain a set of permissivle values via a query that matches on properties of the external concepts
+match_query,,A query that is used on an enum expression to dynamically obtain a set of permissivle values via a query that  matches on properties of the external concepts.
 path_expression,,An expression that describes an abstract path from an object to another through a sequence of slot lookups
 pattern_expression,,a regular expression pattern used to evaluate conformance of a string
 permissible_value,,"a permissible value, accompanied by intended text and an optional mapping to a concept URI"
 prefix,,prefix URI tuple
-reachability_query,,A query that is used on an enum expression to dynamically obtain a set of permissible values via walking from a set of source nodes to a set of descendants or ancestors over a set of relationship types
+reachability_query,,A query that is used on an enum expression to dynamically obtain a set of permissible values via walking from a  set of source nodes to a set of descendants or ancestors over a set of relationship types.
 schema_definition,,A collection of definitions that make up a schema or a data model.
 setting,,assignment of a key to a value
 slot_definition,,an element that describes how instances are related to other instances

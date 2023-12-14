@@ -2,7 +2,7 @@
 # Slot: partial_match
 
 
-if true then the pattern must match the whole string, as if enclosed in ^...$
+if not true then the pattern must match the whole string, as if enclosed in ^...$
 
 URI: [linkml:partial_match](https://w3id.org/linkml/partial_match)
 

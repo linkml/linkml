@@ -1,5 +1,5 @@
 # Auto generated from default_namespace.yaml by pythongen.py version: 0.0.1
-# Generation date: 2023-09-25T16:05:01
+# Generation date: 2023-11-15T08:56:59
 # Schema: namespace
 #
 # id: http://example.org/tests/namespace

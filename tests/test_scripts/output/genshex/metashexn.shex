@@ -142,11 +142,14 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <narrow_mappings> @<Uriorcurie> * ;
           <broad_mappings> @<Uriorcurie> * ;
           <created_by> @<Uriorcurie> ? ;
+          <contributors> @<Uriorcurie> * ;
           <created_on> @<Datetime> ? ;
           <last_updated_on> @<Datetime> ? ;
           <modified_by> @<Uriorcurie> ? ;
           <status> @<Uriorcurie> ? ;
-          <rank> @<Integer> ?
+          <rank> @<Integer> ? ;
+          <categories> @<Uriorcurie> * ;
+          <keywords> @<String> *
        ) ;
        rdf:type [ <AnonymousExpression> ] ?
     )
@@ -315,10 +318,13 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <narrow_mappings> @<Uriorcurie> * ;
           <broad_mappings> @<Uriorcurie> * ;
           <created_by> @<Uriorcurie> ? ;
+          <contributors> @<Uriorcurie> * ;
           <created_on> @<Datetime> ? ;
           <last_updated_on> @<Datetime> ? ;
           <modified_by> @<Uriorcurie> ? ;
-          <status> @<Uriorcurie> ?
+          <status> @<Uriorcurie> ? ;
+          <categories> @<Uriorcurie> * ;
+          <keywords> @<String> *
        ) ;
        rdf:type [ <ClassRule> ] ?
     )
@@ -350,11 +356,14 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <narrow_mappings> @<Uriorcurie> * ;
           <broad_mappings> @<Uriorcurie> * ;
           <created_by> @<Uriorcurie> ? ;
+          <contributors> @<Uriorcurie> * ;
           <created_on> @<Datetime> ? ;
           <last_updated_on> @<Datetime> ? ;
           <modified_by> @<Uriorcurie> ? ;
           <status> @<Uriorcurie> ? ;
-          <rank> @<Integer> ?
+          <rank> @<Integer> ? ;
+          <categories> @<Uriorcurie> * ;
+          <keywords> @<String> *
        ) ;
        rdf:type [ <CommonMetadata> ] ?
     )
@@ -394,6 +403,7 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <local_names> @<LocalName> * ;
           <conforms_to> @<String> ? ;
           <implements> @<Uriorcurie> * ;
+          <instantiates> @<Uriorcurie> * ;
           <extensions> @<Extension> * ;
           <annotations> @<Annotation> * ;
           <description> @<String> ? ;
@@ -421,11 +431,14 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <narrow_mappings> @<Uriorcurie> * ;
           <broad_mappings> @<Uriorcurie> * ;
           <created_by> @<Uriorcurie> ? ;
+          <contributors> @<Uriorcurie> * ;
           <created_on> @<Datetime> ? ;
           <last_updated_on> @<Datetime> ? ;
           <modified_by> @<Uriorcurie> ? ;
           <status> @<Uriorcurie> ? ;
-          <rank> @<Integer> ?
+          <rank> @<Integer> ? ;
+          <categories> @<Uriorcurie> * ;
+          <keywords> @<String> *
        ) ;
        rdf:type [ <Element> ]
     )
@@ -545,11 +558,14 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <narrow_mappings> @<Uriorcurie> * ;
           <broad_mappings> @<Uriorcurie> * ;
           <created_by> @<Uriorcurie> ? ;
+          <contributors> @<Uriorcurie> * ;
           <created_on> @<Datetime> ? ;
           <last_updated_on> @<Datetime> ? ;
           <modified_by> @<Uriorcurie> ? ;
           <status> @<Uriorcurie> ? ;
-          <rank> @<Integer> ?
+          <rank> @<Integer> ? ;
+          <categories> @<Uriorcurie> * ;
+          <keywords> @<String> *
        ) ;
        rdf:type [ <ImportExpression> ] ?
     )
@@ -615,11 +631,14 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <narrow_mappings> @<Uriorcurie> * ;
           <broad_mappings> @<Uriorcurie> * ;
           <created_by> @<Uriorcurie> ? ;
+          <contributors> @<Uriorcurie> * ;
           <created_on> @<Datetime> ? ;
           <last_updated_on> @<Datetime> ? ;
           <modified_by> @<Uriorcurie> ? ;
           <status> @<Uriorcurie> ? ;
-          <rank> @<Integer> ?
+          <rank> @<Integer> ? ;
+          <categories> @<Uriorcurie> * ;
+          <keywords> @<String> *
        ) ;
        rdf:type [ <PathExpression> ] ?
     )
@@ -662,11 +681,14 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <narrow_mappings> @<Uriorcurie> * ;
           <broad_mappings> @<Uriorcurie> * ;
           <created_by> @<Uriorcurie> ? ;
+          <contributors> @<Uriorcurie> * ;
           <created_on> @<Datetime> ? ;
           <last_updated_on> @<Datetime> ? ;
           <modified_by> @<Uriorcurie> ? ;
           <status> @<Uriorcurie> ? ;
-          <rank> @<Integer> ?
+          <rank> @<Integer> ? ;
+          <categories> @<Uriorcurie> * ;
+          <keywords> @<String> *
        ) ;
        rdf:type [ <PatternExpression> ] ?
     )
@@ -709,11 +731,14 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <narrow_mappings> @<Uriorcurie> * ;
           <broad_mappings> @<Uriorcurie> * ;
           <created_by> @<Uriorcurie> ? ;
+          <contributors> @<Uriorcurie> * ;
           <created_on> @<Datetime> ? ;
           <last_updated_on> @<Datetime> ? ;
           <modified_by> @<Uriorcurie> ? ;
           <status> @<Uriorcurie> ? ;
-          <rank> @<Integer> ?
+          <rank> @<Integer> ? ;
+          <categories> @<Uriorcurie> * ;
+          <keywords> @<String> *
        ) ;
        rdf:type [ <PermissibleValue> ]
     )
@@ -762,9 +787,7 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <source_file_size> @<Integer> ? ;
           <generation_date> @<Datetime> ? ;
           <slot_names_unique> @<Boolean> ? ;
-          <settings> @<Setting> * ;
-          <categories> @<Uriorcurie> * ;
-          <keywords> @<String> *
+          <settings> @<Setting> *
        ) ;
        rdf:type [ <SchemaDefinition> ]
     )
@@ -926,11 +949,13 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <narrow_mappings> @<Uriorcurie> * ;
           <broad_mappings> @<Uriorcurie> * ;
           <created_by> @<Uriorcurie> ? ;
+          <contributors> @<Uriorcurie> * ;
           <created_on> @<Datetime> ? ;
           <last_updated_on> @<Datetime> ? ;
           <modified_by> @<Uriorcurie> ? ;
           <status> @<Uriorcurie> ? ;
-          <rank> @<Integer> ?
+          <rank> @<Integer> ? ;
+          <keywords> @<String> *
        ) ;
        rdf:type [ <StructuredAlias> ] ?
     )
@@ -1030,11 +1055,14 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <narrow_mappings> @<Uriorcurie> * ;
           <broad_mappings> @<Uriorcurie> * ;
           <created_by> @<Uriorcurie> ? ;
+          <contributors> @<Uriorcurie> * ;
           <created_on> @<Datetime> ? ;
           <last_updated_on> @<Datetime> ? ;
           <modified_by> @<Uriorcurie> ? ;
           <status> @<Uriorcurie> ? ;
-          <rank> @<Integer> ?
+          <rank> @<Integer> ? ;
+          <categories> @<Uriorcurie> * ;
+          <keywords> @<String> *
        ) ;
        rdf:type [ <UniqueKey> ]
     )

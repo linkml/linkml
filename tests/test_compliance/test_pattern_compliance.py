@@ -36,8 +36,8 @@ def test_pattern(framework, schema_name, pattern, data_name, value):
     Pattern slots allow for regular expression constraints.
     Currently not supported for validation by python frameworks.
 
-    :param framework: not supported by python frameworks
-    :param schema_name: the name reflects which constraints are implementd
+    :param framework: not supported by python dataclasses
+    :param schema_name: the name reflects which constraints are implemented
     :param pattern: regular expression
     :param value: value to check
     :return:

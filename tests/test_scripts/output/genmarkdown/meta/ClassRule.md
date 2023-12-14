@@ -7,7 +7,7 @@ A rule that applies to instances of a class
 URI: [linkml:ClassRule](https://w3id.org/linkml/ClassRule)
 
 
-[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[SubsetDefinition],[StructuredAlias],[Extension],[Extensible],[Example],[CommonMetadata],[AnonymousClassExpression]<elseconditions%200..1-++[ClassRule&#124;bidirectional:boolean%20%3F;open_world:boolean%20%3F;rank:integer%20%3F;deactivated:boolean%20%3F;description:string%20%3F;title:string%20%3F;deprecated:string%20%3F;todos:string%20*;notes:string%20*;comments:string%20*;from_schema:uri%20%3F;imported_from:string%20%3F;source:uriorcurie%20%3F;in_language:string%20%3F;see_also:uriorcurie%20*;deprecated_element_has_exact_replacement:uriorcurie%20%3F;deprecated_element_has_possible_replacement:uriorcurie%20%3F;aliases:string%20*;mappings:uriorcurie%20*;exact_mappings:uriorcurie%20*;close_mappings:uriorcurie%20*;related_mappings:uriorcurie%20*;narrow_mappings:uriorcurie%20*;broad_mappings:uriorcurie%20*;created_by:uriorcurie%20%3F;created_on:datetime%20%3F;last_updated_on:datetime%20%3F;modified_by:uriorcurie%20%3F;status:uriorcurie%20%3F],[AnonymousClassExpression]<postconditions%200..1-++[ClassRule],[AnonymousClassExpression]<preconditions%200..1-++[ClassRule],[ClassDefinition]++-%20rules%200..*>[ClassRule],[ClassDefinition]++-%20rules(i)%200..*>[ClassRule],[ClassRule]uses%20-.->[Extensible],[ClassRule]uses%20-.->[Annotatable],[ClassRule]uses%20-.->[CommonMetadata],[ClassLevelRule]^-[ClassRule],[ClassLevelRule],[ClassDefinition],[AnonymousClassExpression],[Annotation],[Annotatable],[AltDescription])](https://yuml.me/diagram/nofunky;dir:TB/class/[SubsetDefinition],[StructuredAlias],[Extension],[Extensible],[Example],[CommonMetadata],[AnonymousClassExpression]<elseconditions%200..1-++[ClassRule&#124;bidirectional:boolean%20%3F;open_world:boolean%20%3F;rank:integer%20%3F;deactivated:boolean%20%3F;description:string%20%3F;title:string%20%3F;deprecated:string%20%3F;todos:string%20*;notes:string%20*;comments:string%20*;from_schema:uri%20%3F;imported_from:string%20%3F;source:uriorcurie%20%3F;in_language:string%20%3F;see_also:uriorcurie%20*;deprecated_element_has_exact_replacement:uriorcurie%20%3F;deprecated_element_has_possible_replacement:uriorcurie%20%3F;aliases:string%20*;mappings:uriorcurie%20*;exact_mappings:uriorcurie%20*;close_mappings:uriorcurie%20*;related_mappings:uriorcurie%20*;narrow_mappings:uriorcurie%20*;broad_mappings:uriorcurie%20*;created_by:uriorcurie%20%3F;created_on:datetime%20%3F;last_updated_on:datetime%20%3F;modified_by:uriorcurie%20%3F;status:uriorcurie%20%3F],[AnonymousClassExpression]<postconditions%200..1-++[ClassRule],[AnonymousClassExpression]<preconditions%200..1-++[ClassRule],[ClassDefinition]++-%20rules%200..*>[ClassRule],[ClassDefinition]++-%20rules(i)%200..*>[ClassRule],[ClassRule]uses%20-.->[Extensible],[ClassRule]uses%20-.->[Annotatable],[ClassRule]uses%20-.->[CommonMetadata],[ClassLevelRule]^-[ClassRule],[ClassLevelRule],[ClassDefinition],[AnonymousClassExpression],[Annotation],[Annotatable],[AltDescription])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[SubsetDefinition],[StructuredAlias],[Extension],[Extensible],[Example],[CommonMetadata],[AnonymousClassExpression]<elseconditions%200..1-++[ClassRule&#124;bidirectional:boolean%20%3F;open_world:boolean%20%3F;rank:integer%20%3F;deactivated:boolean%20%3F;description:string%20%3F;title:string%20%3F;deprecated:string%20%3F;todos:string%20*;notes:string%20*;comments:string%20*;from_schema:uri%20%3F;imported_from:string%20%3F;source:uriorcurie%20%3F;in_language:string%20%3F;see_also:uriorcurie%20*;deprecated_element_has_exact_replacement:uriorcurie%20%3F;deprecated_element_has_possible_replacement:uriorcurie%20%3F;aliases:string%20*;mappings:uriorcurie%20*;exact_mappings:uriorcurie%20*;close_mappings:uriorcurie%20*;related_mappings:uriorcurie%20*;narrow_mappings:uriorcurie%20*;broad_mappings:uriorcurie%20*;created_by:uriorcurie%20%3F;contributors:uriorcurie%20*;created_on:datetime%20%3F;last_updated_on:datetime%20%3F;modified_by:uriorcurie%20%3F;status:uriorcurie%20%3F;categories:uriorcurie%20*;keywords:string%20*],[AnonymousClassExpression]<postconditions%200..1-++[ClassRule],[AnonymousClassExpression]<preconditions%200..1-++[ClassRule],[ClassDefinition]++-%20rules%200..*>[ClassRule],[ClassDefinition]++-%20rules(i)%200..*>[ClassRule],[ClassRule]uses%20-.->[Extensible],[ClassRule]uses%20-.->[Annotatable],[ClassRule]uses%20-.->[CommonMetadata],[ClassLevelRule]^-[ClassRule],[ClassLevelRule],[ClassDefinition],[AnonymousClassExpression],[Annotation],[Annotatable],[AltDescription])](https://yuml.me/diagram/nofunky;dir:TB/class/[SubsetDefinition],[StructuredAlias],[Extension],[Extensible],[Example],[CommonMetadata],[AnonymousClassExpression]<elseconditions%200..1-++[ClassRule&#124;bidirectional:boolean%20%3F;open_world:boolean%20%3F;rank:integer%20%3F;deactivated:boolean%20%3F;description:string%20%3F;title:string%20%3F;deprecated:string%20%3F;todos:string%20*;notes:string%20*;comments:string%20*;from_schema:uri%20%3F;imported_from:string%20%3F;source:uriorcurie%20%3F;in_language:string%20%3F;see_also:uriorcurie%20*;deprecated_element_has_exact_replacement:uriorcurie%20%3F;deprecated_element_has_possible_replacement:uriorcurie%20%3F;aliases:string%20*;mappings:uriorcurie%20*;exact_mappings:uriorcurie%20*;close_mappings:uriorcurie%20*;related_mappings:uriorcurie%20*;narrow_mappings:uriorcurie%20*;broad_mappings:uriorcurie%20*;created_by:uriorcurie%20%3F;contributors:uriorcurie%20*;created_on:datetime%20%3F;last_updated_on:datetime%20%3F;modified_by:uriorcurie%20%3F;status:uriorcurie%20%3F;categories:uriorcurie%20*;keywords:string%20*],[AnonymousClassExpression]<postconditions%200..1-++[ClassRule],[AnonymousClassExpression]<preconditions%200..1-++[ClassRule],[ClassDefinition]++-%20rules%200..*>[ClassRule],[ClassDefinition]++-%20rules(i)%200..*>[ClassRule],[ClassRule]uses%20-.->[Extensible],[ClassRule]uses%20-.->[Annotatable],[ClassRule]uses%20-.->[CommonMetadata],[ClassLevelRule]^-[ClassRule],[ClassLevelRule],[ClassDefinition],[AnonymousClassExpression],[Annotation],[Annotatable],[AltDescription])
 
 ## Parents
 
@@ -235,6 +235,13 @@ URI: [linkml:ClassRule](https://w3id.org/linkml/ClassRule)
 
 ### Mixed in from common_metadata:
 
+ * [contributors](contributors.md)  <sub>0..\*</sub>
+     * Description: agent that contributed to the element
+     * Range: [Uriorcurie](types/Uriorcurie.md)
+     * in subsets: (BasicSubset)
+
+### Mixed in from common_metadata:
+
  * [created_on](created_on.md)  <sub>0..1</sub>
      * Description: time at which the element was created
      * Range: [Datetime](types/Datetime.md)
@@ -260,6 +267,20 @@ URI: [linkml:ClassRule](https://w3id.org/linkml/ClassRule)
      * Description: status of the element
      * Range: [Uriorcurie](types/Uriorcurie.md)
      * Example: bibo:draft None
+     * in subsets: (BasicSubset)
+
+### Mixed in from common_metadata:
+
+ * [categories](categories.md)  <sub>0..\*</sub>
+     * Description: Controlled terms used to categorize an element.
+     * Range: [Uriorcurie](types/Uriorcurie.md)
+     * in subsets: (BasicSubset)
+
+### Mixed in from common_metadata:
+
+ * [keywords](keywords.md)  <sub>0..\*</sub>
+     * Description: Keywords or tags used to describe the element
+     * Range: [String](types/String.md)
      * in subsets: (BasicSubset)
 
 ## Other properties
