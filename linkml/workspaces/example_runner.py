@@ -133,7 +133,7 @@ class ExampleRunner:
             input_examples = glob.glob(os.path.join(str(input_dir), f"*.{fmt}"))
             input_counter_examples = glob.glob(os.path.join(str(counter_example_dir), f"*.{fmt}"))
             if not input_counter_examples:
-                logging.warning(f"No counter examples found in {self.counter_example_input_directory}")
+                logging.warning(f"No counter examples found in {counter_example_dir}")
             self.process_examples_from_list(input_examples, fmt, False)
             self.process_examples_from_list(input_counter_examples, fmt, True)
 
