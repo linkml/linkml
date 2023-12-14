@@ -161,7 +161,8 @@ def test_attributes_to_slots_remove_redundant():
     assert s.slots[DESC].name == DESC
 
 
-def test_fix_element_names():
+@pytest.mark.parametrize("preserve_original_using", [None, "title"])
+def test_fix_element_names(preserve_original_using):
     b = SchemaBuilder()
     slots = {
         "a b": "a_b",
@@ -180,9 +181,14 @@ def test_fix_element_names():
     b.add_defaults()
     fixer = SchemaFixer()
     schema = b.schema
-    fixed_schema = fixer.fix_element_names(schema)
+    fixed_schema = fixer.fix_element_names(schema, preserve_original_using=preserve_original_using)
     for v in slots.values():
         assert v in fixed_schema.slots
     for v in classes.values():
         assert v in fixed_schema.classes
+        cls = fixed_schema.classes[v]
+        if preserve_original_using:
+            orig = getattr(cls, preserve_original_using)
+            # print(cls.name, preserve_original_using, orig)
+            assert classes[orig] == cls.name
     assert "FooBar" == fixed_schema.slots["foo_bar_ref"].range
