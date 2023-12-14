@@ -51,12 +51,10 @@ from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.namespaces import Namespaces
 
 from linkml import LOCAL_METAMODEL_YAML_FILE
+from linkml.utils.cli_utils import DEFAULT_LOG_LEVEL_INT, log_level_option
 from linkml.utils.mergeutils import alias_root
 from linkml.utils.schemaloader import SchemaLoader
 from linkml.utils.typereferences import References
-
-DEFAULT_LOG_LEVEL: str = "WARNING"
-DEFAULT_LOG_LEVEL_INT: int = logging.WARNING
 
 
 @lru_cache
@@ -872,31 +870,15 @@ class Generator(metaclass=abc.ABCMeta):
 
 
 def shared_arguments(g: Type[Generator]) -> Callable[[Command], Command]:
-    _LOG_LEVEL_STRINGS = ["CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG"]
-
-    def _log_level_string_to_int(log_level_string: str) -> int:
-        log_level_string = log_level_string.upper()
-        level = [e for e in log_level_string if e.startswith(log_level_string)]
-        if not level:
-            pass
-        log_level_int = getattr(logging, log_level_string[0], logging.INFO)
-        assert isinstance(log_level_int, int)
-        return log_level_int
-
     def verbosity_callback(ctx, param, verbose):
         if verbose >= 2:
-            logging.basicConfig(level=logging.DEBUG)
+            logging.basicConfig(level=logging.DEBUG, force=True)
         elif verbose == 1:
-            logging.basicConfig(level=logging.INFO)
-        else:
-            logging.basicConfig(level=logging.WARNING)
+            logging.basicConfig(level=logging.INFO, force=True)
 
     def stacktrace_callback(ctx, param, stacktrace):
         if not stacktrace:
             sys.tracebacklimit = 0
-
-    def log_level_callback(ctx, param, value):
-        logging.basicConfig(level=_log_level_string_to_int(value))
 
     def decorator(f: Command) -> Command:
         f.params.append(Argument(("yamlfile",), type=click.Path(exists=True, dir_okay=False)))
@@ -926,21 +908,12 @@ def shared_arguments(g: Type[Generator]) -> Callable[[Command], Command]:
             )
         )
         f.params.append(Option(("--importmap", "-im"), type=click.File(), help="Import mapping file"))
-        f.params.append(
-            Option(
-                ("--log_level",),
-                type=click.Choice(_LOG_LEVEL_STRINGS),
-                help="Logging level",
-                default=DEFAULT_LOG_LEVEL,
-                show_default=True,
-                callback=log_level_callback,
-            )
-        )
+        log_level_option(f)
         f.params.append(
             Option(
                 ("--verbose", "-v"),
                 count=True,
-                help="verbosity",
+                help="Verbosity. Takes precedence over --log_level.",
                 callback=verbosity_callback,
             )
         )
