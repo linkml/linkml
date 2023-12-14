@@ -802,6 +802,11 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
             if self.is_class_unconstrained(self.schema.classes[slot.range]):
                 return ""
 
+        if slot.range in self.schema.enums:
+            # Open enum
+            if not self.schema.enums[slot.range].permissible_values:
+                return ""
+
         aliased_slot_name = self.slot_name(slot.name)  # Mangled name by which the slot is known in python
         _, _, base_type_name = self.class_reference_type(slot, cls)
 

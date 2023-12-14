@@ -20,6 +20,11 @@ from tests.test_compliance.test_compliance import (
     CLASS_U1,
     CLASS_U2,
     CORE_FRAMEWORKS,
+    ENUM_E,
+    ENUM_F,
+    PV_1,
+    PV_2,
+    PV_3,
     SLOT_ID,
     SLOT_S1,
     SLOT_S2,
@@ -44,9 +49,9 @@ from tests.test_compliance.test_compliance import (
     ],
 )
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
-def test_any_of(framework, data_name, value, is_valid, use_any_type, use_default_range):
+def test_slot_any_of(framework, data_name, value, is_valid, use_any_type, use_default_range):
     """
-    Tests behavior of any_of.
+    Tests behavior of any_of at the slot level.
 
     This test creates a test schema with a slot S1 whose values
     are either an integer or an inlined instance of class D.
@@ -109,7 +114,7 @@ def test_any_of(framework, data_name, value, is_valid, use_any_type, use_default
         classes[CLASS_C]["attributes"][SLOT_S1]["range"] = CLASS_ANY
 
     schema = validated_schema(
-        test_any_of,
+        test_slot_any_of,
         f"DefaultRangeEQ_{default_range}_AnyTypeEQ_{use_any_type}",
         framework,
         classes=classes,
@@ -152,9 +157,9 @@ def test_any_of(framework, data_name, value, is_valid, use_any_type, use_default
     ],
 )
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
-def test_exactly_one_of(framework, data_name, value, is_valid):
+def test_slot_exactly_one_of(framework, data_name, value, is_valid):
     """
-    Tests behavior of exactly_one_of.
+    Tests behavior of exactly_one_of at the slot level.
 
     This test creates a test schema with a slot S1 whose values
     are either an integer in the range [1, 15] or an integer in the range [10, 30].
@@ -185,7 +190,7 @@ def test_exactly_one_of(framework, data_name, value, is_valid):
         },
     }
     schema = validated_schema(
-        test_exactly_one_of,
+        test_slot_exactly_one_of,
         "default",
         framework,
         classes=classes,
@@ -218,9 +223,9 @@ def test_exactly_one_of(framework, data_name, value, is_valid):
     ],
 )
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
-def test_all_of(framework, data_name, value, is_valid):
+def test_slot_all_of(framework, data_name, value, is_valid):
     """
-    Tests behavior of all_of.
+    Tests behavior of all_of at the slot level.
 
     This test creates a test schema with a slot S1 whose values
     are an integer in the range [1, 15] AND an integer in the range [10, 30].
@@ -264,7 +269,7 @@ def test_all_of(framework, data_name, value, is_valid):
         },
     }
     schema = validated_schema(
-        test_all_of,
+        test_slot_all_of,
         "default",
         framework,
         classes=classes,
@@ -297,9 +302,9 @@ def test_all_of(framework, data_name, value, is_valid):
     ],
 )
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
-def test_none_of(framework, data_name, value, is_valid):
+def test_slot_none_of(framework, data_name, value, is_valid):
     """
-    Tests behavior of none_of.
+    Tests behavior of none_of at the slot level.
 
     This test creates a test schema with a slot S1 whose values
     are NOT an integer in the range [1, 10] AND NOT an integer in the range [21, 30].
@@ -330,7 +335,7 @@ def test_none_of(framework, data_name, value, is_valid):
         },
     }
     schema = validated_schema(
-        test_none_of,
+        test_slot_none_of,
         "default",
         framework,
         classes=classes,
@@ -1095,6 +1100,69 @@ def test_class_boolean_with_expressions(
 @pytest.mark.parametrize(
     "schema_name,range,op,expression1,expression2,data_name,value,is_valid",
     [
+        # any-type
+        (
+            "any_of_anytype",
+            "Any",
+            "any_of",
+            {"range": "string", "equals_string": "x"},
+            {"range": "string", "equals_string": "y"},
+            "matches_one",
+            "x",
+            True,
+        ),
+        (
+            "any_of_anytype",
+            "Any",
+            "any_of",
+            {"range": "string", "equals_string": "x"},
+            {"range": "string", "equals_string": "y"},
+            "matches_none",
+            "z",
+            False,
+        ),
+        (
+            "mixed",
+            "Any",
+            "any_of",
+            {"range": "integer", "minimum_value": 5},
+            {"range": "string", "equals_string": "y"},
+            "matches_str",
+            "x",
+            True,
+        ),
+        (
+            "mixed",
+            "Any",
+            "any_of",
+            {"range": "integer", "minimum_value": 5},
+            {"range": "string", "equals_string": "y"},
+            "matches_int",
+            8,
+            True,
+        ),
+        (
+            "mixed",
+            "Any",
+            "any_of",
+            {"range": "integer", "minimum_value": 5},
+            {"range": "string", "equals_string": "y"},
+            "matches_none",
+            1,
+            False,
+        ),
+        ("mixed_cls_int", "Any", "any_of", {"range": CLASS_D}, {"range": "integer"}, "matches_int", 1, True),
+        ("mixed_cls_int", "Any", "any_of", {"range": CLASS_D}, {"range": "integer"}, "matches_obj", "test:x", True),
+        ("mixed_enum_int", "Any", "any_of", {"range": ENUM_E}, {"range": "integer"}, "matches_int", 1, True),
+        ("mixed_enum_int", "Any", "any_of", {"range": ENUM_E}, {"range": "integer"}, "matches_pv", PV_1, True),
+        ("mixed_enum_int", "Any", "any_of", {"range": ENUM_E}, {"range": "integer"}, "matches_none", "z", False),
+        ("mixed_all_of_enum_enum", "Any", "all_of", {"range": ENUM_E}, {"range": ENUM_F}, "matches_pv", PV_2, True),
+        ("mixed_all_of_enum_enum", "Any", "all_of", {"range": ENUM_E}, {"range": ENUM_F}, "matches_pv", PV_1, False),
+        ("mixed_all_of_enum_enum", "Any", "all_of", {"range": ENUM_E}, {"range": ENUM_F}, "matches_pv", PV_3, False),
+        ("mixed_all_of_enum_enum", "Any", "all_of", {"range": ENUM_E}, {"range": ENUM_F}, "matches_pv", "z", False),
+        # mixed cardinality; not yet allowed at expression level
+        # ("todo, "string", "any_of", {"multivalued": True}, {"multivalued": False}, "match_sv", "x", True),
+        # ("todo", "string", "any_of", {"multivalued": True}, {"multivalued": False}, "match_mv", ["x"], True),
         # strings
         ("any_of_streq", "string", "any_of", {"equals_string": "x"}, {"equals_string": "y"}, "none", None, True),
         ("any_of_streq", "string", "any_of", {"equals_string": "x"}, {"equals_string": "y"}, "matches", "x", True),
@@ -1133,7 +1201,7 @@ def test_class_boolean_with_expressions(
         # strings, object reference
         (
             "any_of_streq_ref",
-            "D",
+            CLASS_D,
             "any_of",
             {"equals_string": "TEST:x"},
             {"equals_string": "TEST:y"},
@@ -1143,7 +1211,7 @@ def test_class_boolean_with_expressions(
         ),
         (
             "any_of_streq_ref",
-            "D",
+            CLASS_D,
             "any_of",
             {"equals_string": "TEST:x"},
             {"equals_string": "TEST:y"},
@@ -1153,7 +1221,7 @@ def test_class_boolean_with_expressions(
         ),
         (
             "any_of_streq_ref",
-            "D",
+            CLASS_D,
             "any_of",
             {"equals_string": "TEST:x"},
             {"equals_string": "TEST:y"},
@@ -1187,7 +1255,7 @@ def test_slot_boolean_with_expressions(
 
     :param framework: generator to test
     :param schema_name: unique name of generated schema
-    :param range: range of slot
+    :param range: range of slot; a "*" indicates multivalued
     :param op: linkml boolean operation to use (combines expression1 and expression2)
     :param expression1: first expression
     :param expression2: second expression
@@ -1230,6 +1298,15 @@ def test_slot_boolean_with_expressions(
             },
         },
     }
+    enums = {}
+    if expression1.get("range", None) == ENUM_E or expression2.get("range", None) == ENUM_E:
+        enums[ENUM_E] = {
+            "permissible_values": {PV_1: {}, PV_2: {}},
+        }
+    if expression1.get("range", None) == ENUM_F or expression2.get("range", None) == ENUM_F:
+        enums[ENUM_F] = {
+            "permissible_values": {PV_2: {}, PV_3: {}},
+        }
     schema = validated_schema(
         test_slot_boolean_with_expressions,
         schema_name,
@@ -1239,6 +1316,7 @@ def test_slot_boolean_with_expressions(
         },
         classes=classes,
         slots=slots,
+        enums=enums,
         core_elements=["any_of", "ClassDefinition"],
     )
     expected_behavior = ValidationBehavior.IMPLEMENTS
@@ -1252,10 +1330,15 @@ def test_slot_boolean_with_expressions(
         if range == "float":
             # TODO: investigate this
             expected_behavior = ValidationBehavior.FALSE_POSITIVE
-        if range == "D":
+        if range == CLASS_D:
             # expected: OWL is open world
             expected_behavior = ValidationBehavior.INCOMPLETE
 
+    exclude_rdf = False
+    if range == "Any":
+        exclude_rdf = True
+        if framework in [JSON_SCHEMA, SQL_DDL_SQLITE]:
+            expected_behavior = ValidationBehavior.INCOMPLETE
     check_data(
         schema,
         f"{schema_name}-{data_name}",
@@ -1265,7 +1348,7 @@ def test_slot_boolean_with_expressions(
         target_class=CLASS_C,
         expected_behavior=expected_behavior,
         description=f"validity {is_valid} check for value {value}",
-        # exclude_rdf=True,
+        exclude_rdf=exclude_rdf,
     )
 
 
