@@ -47,15 +47,26 @@ class SchemaViewTestCase(unittest.TestCase):
 
     def test_schemaview_enums(self):
         view = SchemaView(SCHEMA_NO_IMPORTS)
+        with self.assertRaises(ValueError):
+            view.permissible_value_parent("not_a_pv", "not_an_enum")
         for en, e in view.all_enums().items():
             if e.name == "Animals":
                 for pv, v in e.permissible_values.items():
                     if pv == "CAT":
                         self.assertEqual(view.permissible_value_parent(pv, e.name), None)
                         self.assertEqual(view.permissible_value_ancestors(pv, e.name), ['CAT'])
+                        self.assertIn("LION", view.permissible_value_descendants(pv, e.name))
+                        self.assertIn("ANGRY_LION", view.permissible_value_descendants(pv, e.name))
+                        self.assertIn("TABBY", view.permissible_value_descendants(pv, e.name))
+                        self.assertIn("TABBY", view.permissible_value_children(pv, e.name))
+                        self.assertIn("LION", view.permissible_value_children(pv, e.name))
+                        self.assertNotIn("EAGLE", view.permissible_value_descendants(pv, e.name))
+                    if pv == "LION":
+                        self.assertIn("ANGRY_LION", view.permissible_value_children(pv, e.name))
                     if pv == "ANGRY_LION":
                         self.assertEqual(view.permissible_value_parent(pv, e.name), ['LION'])
                         self.assertEqual(view.permissible_value_ancestors(pv, e.name), ['ANGRY_LION', 'LION', 'CAT'])
+                        self.assertEquals(["ANGRY_LION"], view.permissible_value_descendants(pv, e.name))
         for cn, c in view.all_classes().items():
             if c.name == "Adult":
                 self.assertEqual(view.class_ancestors(c.name), ['Adult', 'Person', 'HasAliases', 'Thing'])
