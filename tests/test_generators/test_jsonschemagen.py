@@ -246,6 +246,12 @@ def test_empty_inlined_as_dict_objects(subtests, input_path):
     external_file_test(subtests, input_path("jsonschema_empty_inlined_as_dict_objects.yaml"))
 
 
+def test_required_slot_condition_in_rule(subtests, input_path):
+    """Tests required: true/false on slot conditions in rules"""
+
+    external_file_test(subtests, input_path("jsonschema_required_slot_condition_in_rule.yaml"))
+
+
 def test_missing_top_class(input_path, caplog):
     JsonSchemaGenerator(input_path("kitchen_sink.yaml"), top_class="NotARealClass")
     assert "No class in schema named NotARealClass" in caplog.text

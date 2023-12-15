@@ -1,0 +1,47 @@
+schema:
+  id: test
+  name: test
+
+  prefixes:
+    linkml: https://w3id.org/linkml/
+  imports:
+    - linkml:types
+  default_range: string
+
+  slots:
+    drivers_license_number:
+    role:
+
+  classes:
+    CarOccupant:
+      tree_root: true
+      slots:
+        - role
+        - drivers_license_number
+      rules:
+        - title: drivers need licenses
+          preconditions:
+            slot_conditions:
+              role:
+                equals_string: driver
+          postconditions:
+            slot_conditions:
+              drivers_license_number:
+                required: true
+          elseconditions:
+            slot_conditions:
+              drivers_license_number:
+                required: false
+
+data_cases:
+  - data:
+      role: driver
+      drivers_license_number: ABC123
+  - data:
+      role: driver
+    error_message: "required"
+  - data:
+      role: passenger
+      drivers_license_number: ABC123
+  - data:
+      role: passenger

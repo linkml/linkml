@@ -294,6 +294,8 @@ class JsonSchemaGenerator(Generator):
                     prop["enum"] = []
                 else:
                     this_properties_required = False
+            elif slot.required is not None:
+                this_properties_required = slot.required
             else:
                 this_properties_required = properties_required
             subschema.add_property(self.aliased_slot_name(slot), prop, this_properties_required)
