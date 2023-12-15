@@ -737,6 +737,8 @@ def check_data(
             if not exclude_rdf:
                 ttl_path = out_dir / f"{data_name}.ttl"
                 _convert_data_to_rdf(schema, object_to_validate, target_class, ttl_path)
+                # if not ttl_path.exists():
+                #    raise ValueError(f"Could not convert {object_to_validate} to RDF")
                 coherent = robot_check_coherency(ttl_path, output_path, str(ttl_path) + ".reasoned.owl")
                 if coherent is not None:
                     if valid:
