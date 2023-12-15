@@ -1106,6 +1106,11 @@
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_class_unconstrained</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">classes</span><span class="p">[</span><span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="p">]):</span>
                 <span class="k">return</span> <span class="s2">&quot;&quot;</span>
 
+        <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">enums</span><span class="p">:</span>
+            <span class="c1"># Open enum</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">enums</span><span class="p">[</span><span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="p">]</span><span class="o">.</span><span class="n">permissible_values</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+
         <span class="n">aliased_slot_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">slot_name</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>  <span class="c1"># Mangled name by which the slot is known in python</span>
         <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">base_type_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">class_reference_type</span><span class="p">(</span><span class="n">slot</span><span class="p">,</span> <span class="bp">cls</span><span class="p">)</span>
 

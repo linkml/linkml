@@ -2223,6 +2223,20 @@ representation, consult <a class="reference external" href="https://www.w3.org/T
 <dd><p>Version of the generator. Consider deprecating and instead use overall linkml version</p>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml.generators.owlgen.OwlSchemaGenerator.get_own_slots">
+<span class="sig-name descname"><span class="pre">get_own_slots</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.ClassDefinition" title="linkml_runtime.linkml_model.meta.ClassDefinition"><span class="pre">ClassDefinition</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">AnonymousClassExpression</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.SlotDefinition" title="linkml_runtime.linkml_model.meta.SlotDefinition"><span class="pre">SlotDefinition</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/linkml/generators/owlgen.html#OwlSchemaGenerator.get_own_slots"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.owlgen.OwlSchemaGenerator.get_own_slots" title="Permalink to this definition">#</a></dt>
+<dd><p>Get the slots that are defined on a class, excluding those that are inherited.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>cls</strong> – </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="linkml.generators.owlgen.OwlSchemaGenerator.graph">
 <span class="sig-name descname"><span class="pre">graph</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Graph</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#linkml.generators.owlgen.OwlSchemaGenerator.graph" title="Permalink to this definition">#</a></dt>
@@ -4606,6 +4620,20 @@ representation, consult <a class="reference external" href="https://www.w3.org/T
 <dd><p>Version of the generator. Consider deprecating and instead use overall linkml version</p>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml.generators.OwlSchemaGenerator.get_own_slots">
+<span class="sig-name descname"><span class="pre">get_own_slots</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.ClassDefinition" title="linkml_runtime.linkml_model.meta.ClassDefinition"><span class="pre">ClassDefinition</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">AnonymousClassExpression</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.SlotDefinition" title="linkml_runtime.linkml_model.meta.SlotDefinition"><span class="pre">SlotDefinition</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/linkml/generators/owlgen.html#OwlSchemaGenerator.get_own_slots"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.OwlSchemaGenerator.get_own_slots" title="Permalink to this definition">#</a></dt>
+<dd><p>Get the slots that are defined on a class, excluding those that are inherited.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>cls</strong> – </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="linkml.generators.OwlSchemaGenerator.graph">
 <span class="sig-name descname"><span class="pre">graph</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Graph</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#linkml.generators.OwlSchemaGenerator.graph" title="Permalink to this definition">#</a></dt>
@@ -6378,6 +6406,7 @@ open file or a pre-parsed schema</p>
 <li><a class="reference internal" href="#linkml.generators.owlgen.OwlSchemaGenerator.file_extension"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.file_extension</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.owlgen.OwlSchemaGenerator.generatorname"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.generatorname</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.owlgen.OwlSchemaGenerator.generatorversion"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.generatorversion</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.owlgen.OwlSchemaGenerator.get_own_slots"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.get_own_slots()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.owlgen.OwlSchemaGenerator.graph"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.graph</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.owlgen.OwlSchemaGenerator.has_profile"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.has_profile()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.owlgen.OwlSchemaGenerator.metaclasses"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.metaclasses</span></code></a></li>
@@ -6801,6 +6830,7 @@ open file or a pre-parsed schema</p>
 <li><a class="reference internal" href="#linkml.generators.OwlSchemaGenerator.file_extension"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.file_extension</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.OwlSchemaGenerator.generatorname"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.generatorname</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.OwlSchemaGenerator.generatorversion"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.generatorversion</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.OwlSchemaGenerator.get_own_slots"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.get_own_slots()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.OwlSchemaGenerator.graph"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.graph</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.OwlSchemaGenerator.has_profile"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.has_profile()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.OwlSchemaGenerator.mergeimports"><code class="docutils literal notranslate"><span class="pre">OwlSchemaGenerator.mergeimports</span></code></a></li>
