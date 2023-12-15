@@ -71,7 +71,7 @@ This should report no errors.
 
 ## Visualizing
 
-We can use yUML to visualize the schema. The `gen-yuml` command can generate REST URLs that can be fed into:
+We can use yUML to visualize the schema. The `gen-yuml` command can generate REST URLs.
 
 ```bash
 gen-yuml -f yuml personinfo.yaml
@@ -83,15 +83,19 @@ Outputs:
 https://yuml.me/diagram/nofunky;dir:TB/class/[Container]++- persons 0..*>[Person|id:string %3F;full_name:string %3F;aliases:string %3F;phone:string %3F;age:string %3F],[Container]
 ```
 
-Which renders as:
+Requesting the URL gives the schema as svg image:
 
 ![img](https://yuml.me/diagram/nofunky;dir:TB/class/[Container]++-%20persons%200..*>[Person|id:string%20%3F;full_name:string%20%3F;aliases:string%20%3F;phone:string%20%3F;age:string%20%3F],[Container])
 
-You can also generate a png directly:
+We can alternatively let yUML generate the visualization in png, jpg or pdf format.
+In this case a download directory must be passed to  the command.
+To get the visualization as file `personinfo.png` downloaded to the current directory run
 
 ```bash
-gen-yuml -f png personinfo.yaml  > personinfo.png
+gen-yuml -f png -d . personinfo.yaml
 ```
+
+Besides yUML, linkML supports visualizations with [Mermaid](#../generators/erdiagram) (`gen-erdiagram`) and [plantuml](https://plantuml.com/) (`gen-plantuml`).
 
 ## Exercises
 

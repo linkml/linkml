@@ -392,7 +392,7 @@ However, it is good practice to nevertheless mark the root class explicitly.</p>
 </section>
 <section id="visualizing">
 <h2>Visualizing<a class="headerlink" href="#visualizing" title="Permalink to this heading">#</a></h2>
-<p>We can use yUML to visualize the schema. The <code class="docutils literal notranslate"><span class="pre">gen-yuml</span></code> command can generate REST URLs that can be fed into:</p>
+<p>We can use yUML to visualize the schema. The <code class="docutils literal notranslate"><span class="pre">gen-yuml</span></code> command can generate REST URLs.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gen-yuml<span class="w"> </span>-f<span class="w"> </span>yuml<span class="w"> </span>personinfo.yaml
 </pre></div>
 </div>
@@ -400,12 +400,15 @@ However, it is good practice to nevertheless mark the root class explicitly.</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>https://yuml.me/diagram/nofunky;dir:TB/class/[Container]++- persons 0..*&gt;[Person|id:string %3F;full_name:string %3F;aliases:string %3F;phone:string %3F;age:string %3F],[Container]
 </pre></div>
 </div>
-<p>Which renders as:</p>
+<p>Requesting the URL gives the schema as svg image:</p>
 <p><img alt="img" src="https://yuml.me/diagram/nofunky;dir:TB/class/%5BContainer%5D++-%20persons%200..*%3E%5BPerson%7Cid:string%20%3F;full_name:string%20%3F;aliases:string%20%3F;phone:string%20%3F;age:string%20%3F%5D,%5BContainer%5D" /></p>
-<p>You can also generate a png directly:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gen-yuml<span class="w"> </span>-f<span class="w"> </span>png<span class="w"> </span>personinfo.yaml<span class="w">  </span>&gt;<span class="w"> </span>personinfo.png
+<p>We can alternatively let yUML generate the visualization in png, jpg or pdf format.
+In this case a download directory must be passed to  the command.
+To get the visualization as file <code class="docutils literal notranslate"><span class="pre">personinfo.png</span></code> downloaded to the current directory run</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gen-yuml<span class="w"> </span>-f<span class="w"> </span>png<span class="w"> </span>-d<span class="w"> </span>.<span class="w"> </span>personinfo.yaml
 </pre></div>
 </div>
+<p>Besides yUML, linkML supports visualizations with <a class="reference internal" href="../generators/erdiagram.html"><span class="doc std std-doc">Mermaid</span></a> (<code class="docutils literal notranslate"><span class="pre">gen-erdiagram</span></code>) and <a class="reference external" href="https://plantuml.com/">plantuml</a> (<code class="docutils literal notranslate"><span class="pre">gen-plantuml</span></code>).</p>
 </section>
 <section id="exercises">
 <h2>Exercises<a class="headerlink" href="#exercises" title="Permalink to this heading">#</a></h2>
