@@ -327,6 +327,7 @@
 <span class="kn">from</span> <span class="nn">linkml.generators.shaclgen</span> <span class="kn">import</span> <span class="n">ShaclGenerator</span>
 <span class="kn">from</span> <span class="nn">linkml.generators.shexgen</span> <span class="kn">import</span> <span class="n">ShExGenerator</span>
 <span class="kn">from</span> <span class="nn">linkml.generators.sqlddlgen</span> <span class="kn">import</span> <span class="n">SQLDDLGenerator</span>
+<span class="kn">from</span> <span class="nn">linkml.utils.cli_utils</span> <span class="kn">import</span> <span class="n">log_level_option</span>
 <span class="kn">from</span> <span class="nn">linkml.utils.generator</span> <span class="kn">import</span> <span class="n">Generator</span>
 
 <span class="n">PATH_FSTRING</span> <span class="o">=</span> <span class="nb">str</span>
@@ -407,7 +408,7 @@
             <span class="n">all_schemas</span> <span class="o">=</span> <span class="p">[</span><span class="n">schema_path</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">all_schemas</span> <span class="o">=</span> <span class="n">get_local_imports</span><span class="p">(</span><span class="n">schema_path</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">schema_path</span><span class="p">))</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ALL_SCHEMAS = </span><span class="si">{</span><span class="n">all_schemas</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ALL_SCHEMAS = </span><span class="si">{</span><span class="n">all_schemas</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">gen_name</span><span class="p">,</span> <span class="p">(</span><span class="n">gen_cls</span><span class="p">,</span> <span class="n">gen_path_fmt</span><span class="p">,</span> <span class="n">default_gen_args</span><span class="p">)</span> <span class="ow">in</span> <span class="n">GEN_MAP</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">includes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">config</span><span class="o">.</span><span class="n">includes</span> <span class="o">!=</span> <span class="p">[]</span> <span class="ow">and</span> <span class="n">gen_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">includes</span><span class="p">:</span>
                 <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Skipping </span><span class="si">{</span><span class="n">gen_name</span><span class="si">}</span><span class="s2"> as not in inclusion list: </span><span class="si">{</span><span class="n">config</span><span class="o">.</span><span class="n">includes</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -482,6 +483,7 @@
     <span class="n">show_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Merge imports into source file&quot;</span><span class="p">,</span>
 <span class="p">)</span>
+<span class="nd">@log_level_option</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">argument</span><span class="p">(</span><span class="s2">&quot;yamlfile&quot;</span><span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">version_option</span><span class="p">(</span><span class="n">__version__</span><span class="p">,</span> <span class="s2">&quot;-V&quot;</span><span class="p">,</span> <span class="s2">&quot;--version&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">cli</span><span class="p">(</span>
@@ -525,7 +527,6 @@
 <span class="sd">            top_class: Container</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
     <span class="n">project_config</span> <span class="o">=</span> <span class="n">ProjectConfiguration</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">config_file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">config_file</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>

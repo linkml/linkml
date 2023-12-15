@@ -355,12 +355,10 @@
 <span class="kn">from</span> <span class="nn">linkml_runtime.utils.namespaces</span> <span class="kn">import</span> <span class="n">Namespaces</span>
 
 <span class="kn">from</span> <span class="nn">linkml</span> <span class="kn">import</span> <span class="n">LOCAL_METAMODEL_YAML_FILE</span>
+<span class="kn">from</span> <span class="nn">linkml.utils.cli_utils</span> <span class="kn">import</span> <span class="n">DEFAULT_LOG_LEVEL_INT</span><span class="p">,</span> <span class="n">log_level_option</span>
 <span class="kn">from</span> <span class="nn">linkml.utils.mergeutils</span> <span class="kn">import</span> <span class="n">alias_root</span>
 <span class="kn">from</span> <span class="nn">linkml.utils.schemaloader</span> <span class="kn">import</span> <span class="n">SchemaLoader</span>
 <span class="kn">from</span> <span class="nn">linkml.utils.typereferences</span> <span class="kn">import</span> <span class="n">References</span>
-
-<span class="n">DEFAULT_LOG_LEVEL</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;WARNING&quot;</span>
-<span class="n">DEFAULT_LOG_LEVEL_INT</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span>
 
 
 <span class="nd">@lru_cache</span>
@@ -1176,31 +1174,15 @@
 
 
 <div class="viewcode-block" id="shared_arguments"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.generator.shared_arguments">[docs]</a><span class="k">def</span> <span class="nf">shared_arguments</span><span class="p">(</span><span class="n">g</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">Generator</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Command</span><span class="p">],</span> <span class="n">Command</span><span class="p">]:</span>
-    <span class="n">_LOG_LEVEL_STRINGS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;CRITICAL&quot;</span><span class="p">,</span> <span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;WARNING&quot;</span><span class="p">,</span> <span class="s2">&quot;INFO&quot;</span><span class="p">,</span> <span class="s2">&quot;DEBUG&quot;</span><span class="p">]</span>
-
-    <span class="k">def</span> <span class="nf">_log_level_string_to_int</span><span class="p">(</span><span class="n">log_level_string</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="n">log_level_string</span> <span class="o">=</span> <span class="n">log_level_string</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
-        <span class="n">level</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">log_level_string</span> <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">log_level_string</span><span class="p">)]</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">level</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="n">log_level_int</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">logging</span><span class="p">,</span> <span class="n">log_level_string</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
-        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">log_level_int</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">log_level_int</span>
-
     <span class="k">def</span> <span class="nf">verbosity_callback</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">param</span><span class="p">,</span> <span class="n">verbose</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">verbose</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">:</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">verbose</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">)</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">stacktrace_callback</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">param</span><span class="p">,</span> <span class="n">stacktrace</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">stacktrace</span><span class="p">:</span>
             <span class="n">sys</span><span class="o">.</span><span class="n">tracebacklimit</span> <span class="o">=</span> <span class="mi">0</span>
-
-    <span class="k">def</span> <span class="nf">log_level_callback</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">param</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">_log_level_string_to_int</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span><span class="n">f</span><span class="p">:</span> <span class="n">Command</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Command</span><span class="p">:</span>
         <span class="n">f</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Argument</span><span class="p">((</span><span class="s2">&quot;yamlfile&quot;</span><span class="p">,),</span> <span class="nb">type</span><span class="o">=</span><span class="n">click</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">exists</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dir_okay</span><span class="o">=</span><span class="kc">False</span><span class="p">)))</span>
@@ -1230,21 +1212,12 @@
             <span class="p">)</span>
         <span class="p">)</span>
         <span class="n">f</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Option</span><span class="p">((</span><span class="s2">&quot;--importmap&quot;</span><span class="p">,</span> <span class="s2">&quot;-im&quot;</span><span class="p">),</span> <span class="nb">type</span><span class="o">=</span><span class="n">click</span><span class="o">.</span><span class="n">File</span><span class="p">(),</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Import mapping file&quot;</span><span class="p">))</span>
-        <span class="n">f</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-            <span class="n">Option</span><span class="p">(</span>
-                <span class="p">(</span><span class="s2">&quot;--log_level&quot;</span><span class="p">,),</span>
-                <span class="nb">type</span><span class="o">=</span><span class="n">click</span><span class="o">.</span><span class="n">Choice</span><span class="p">(</span><span class="n">_LOG_LEVEL_STRINGS</span><span class="p">),</span>
-                <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Logging level&quot;</span><span class="p">,</span>
-                <span class="n">default</span><span class="o">=</span><span class="n">DEFAULT_LOG_LEVEL</span><span class="p">,</span>
-                <span class="n">show_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                <span class="n">callback</span><span class="o">=</span><span class="n">log_level_callback</span><span class="p">,</span>
-            <span class="p">)</span>
-        <span class="p">)</span>
+        <span class="n">log_level_option</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
         <span class="n">f</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
             <span class="n">Option</span><span class="p">(</span>
                 <span class="p">(</span><span class="s2">&quot;--verbose&quot;</span><span class="p">,</span> <span class="s2">&quot;-v&quot;</span><span class="p">),</span>
                 <span class="n">count</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                <span class="n">help</span><span class="o">=</span><span class="s2">&quot;verbosity&quot;</span><span class="p">,</span>
+                <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Verbosity. Takes precedence over --log_level.&quot;</span><span class="p">,</span>
                 <span class="n">callback</span><span class="o">=</span><span class="n">verbosity_callback</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="p">)</span>
