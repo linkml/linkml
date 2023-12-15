@@ -181,6 +181,10 @@ class JsonSchemaGenerator(Generator):
 
         super().__post_init__()
 
+        if self.top_class:
+            if self.schemaview.get_class(self.top_class) is None:
+                logging.warning(f"No class in schema named {self.top_class}")
+
     def start_schema(self, inline: bool = False) -> JsonSchema:
         self.inline = inline
 
