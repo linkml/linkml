@@ -108,7 +108,7 @@ jsonld = json_dumper.dumps(joe_smith, cntxt)
 print(jsonld)
 g = Graph()
 g.parse(data=jsonld, format="json-ld")
-print(g.serialize(format="turtle").decode())
+print(g.serialize(format="turtle"))
 
 
 shex = ShExGenerator(yaml).serialize(collections=False)

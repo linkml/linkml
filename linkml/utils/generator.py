@@ -51,12 +51,10 @@ from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.namespaces import Namespaces
 
 from linkml import LOCAL_METAMODEL_YAML_FILE
+from linkml.utils.cli_utils import DEFAULT_LOG_LEVEL_INT, log_level_option
 from linkml.utils.mergeutils import alias_root
 from linkml.utils.schemaloader import SchemaLoader
 from linkml.utils.typereferences import References
-
-DEFAULT_LOG_LEVEL: str = "WARNING"
-DEFAULT_LOG_LEVEL_INT: int = logging.WARNING
 
 
 @lru_cache
@@ -223,7 +221,7 @@ class Generator(metaclass=abc.ABCMeta):
         else:
             if isinstance(schema, SchemaDefinition):
                 # schemaloader based methods require schemas to have been created via SchemaLoader,
-                # which prepopulates some fields (e.g definition_url). If the schema has not been processed through the
+                # which prepopulates some fields (e.g. definition_url). If the schema has not been processed through the
                 # loader, then roundtrip
                 if any(c for c in schema.classes.values() if not c.definition_uri):
                     schema = yaml_dumper.dumps(schema)
@@ -339,11 +337,11 @@ class Generator(metaclass=abc.ABCMeta):
 
     def visit_class_slot(self, cls: ClassDefinition, aliased_slot_name: str, slot: SlotDefinition) -> None:
         """Visited for each slot in a class.  If class level visit_all_slots is true, this is visited once
-        for any class that is inherited (class itself, is_a, mixin, apply_to).  Otherwise just the own slots.
+        for any class that is inherited (class itself, is_a, mixin, apply_to).  Otherwise, just the own slots.
 
         @param cls: containing class
         @param aliased_slot_name: Aliased slot name.  May not be unique across all class slots
-        @param slot: slot being visited
+        @param slot: being visited
         """
         ...
 
@@ -758,11 +756,28 @@ class Generator(metaclass=abc.ABCMeta):
     # TODO: add lru cache once we get identity into the classes
     def domain_slots(self, cls: ClassDefinition) -> List[SlotDefinition]:
         """Return all slots in the class definition that are owned by the class"""
-        return [
-            slot
-            for slot in [self.schema.slots[sn] for sn in cls.slots]
-            if cls.name in slot.domain_of or (set(cls.mixins).intersection(slot.domain_of))
-        ]
+        domain_slots = []
+        for slot_name in cls.slots:
+            slot = self.schema.slots[slot_name]
+
+            # add any mixin ancestors here so that slots will be distributed to descendents correctly via mixin
+            # hierarchy.
+            mixin_ancestors = []
+            if cls.mixins:
+                for mixin in cls.mixins:
+                    for ancestor in self.schemaview.class_ancestors(mixin, mixins=False):
+                        if ancestor not in mixin_ancestors:
+                            mixin_ancestors.append(ancestor)
+
+            for mixin_ancestor in mixin_ancestors:
+                if mixin_ancestor not in cls.mixins:
+                    cls.mixins.append(mixin_ancestor)
+
+            # Check if the class is in the domain of the slot or if any of its mixins are in the domain
+            if cls.name in slot.domain_of or (set(cls.mixins).intersection(slot.domain_of)):
+                domain_slots.append(slot)
+
+        return domain_slots
 
     def add_mappings(self, defn: Definition) -> None:
         """
@@ -855,31 +870,15 @@ class Generator(metaclass=abc.ABCMeta):
 
 
 def shared_arguments(g: Type[Generator]) -> Callable[[Command], Command]:
-    _LOG_LEVEL_STRINGS = ["CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG"]
-
-    def _log_level_string_to_int(log_level_string: str) -> int:
-        log_level_string = log_level_string.upper()
-        level = [e for e in log_level_string if e.startswith(log_level_string)]
-        if not level:
-            pass
-        log_level_int = getattr(logging, log_level_string[0], logging.INFO)
-        assert isinstance(log_level_int, int)
-        return log_level_int
-
     def verbosity_callback(ctx, param, verbose):
         if verbose >= 2:
-            logging.basicConfig(level=logging.DEBUG)
+            logging.basicConfig(level=logging.DEBUG, force=True)
         elif verbose == 1:
-            logging.basicConfig(level=logging.INFO)
-        else:
-            logging.basicConfig(level=logging.WARNING)
+            logging.basicConfig(level=logging.INFO, force=True)
 
     def stacktrace_callback(ctx, param, stacktrace):
         if not stacktrace:
             sys.tracebacklimit = 0
-
-    def log_level_callback(ctx, param, value):
-        logging.basicConfig(level=_log_level_string_to_int(value))
 
     def decorator(f: Command) -> Command:
         f.params.append(Argument(("yamlfile",), type=click.Path(exists=True, dir_okay=False)))
@@ -909,21 +908,12 @@ def shared_arguments(g: Type[Generator]) -> Callable[[Command], Command]:
             )
         )
         f.params.append(Option(("--importmap", "-im"), type=click.File(), help="Import mapping file"))
-        f.params.append(
-            Option(
-                ("--log_level",),
-                type=click.Choice(_LOG_LEVEL_STRINGS),
-                help="Logging level",
-                default=DEFAULT_LOG_LEVEL,
-                show_default=True,
-                callback=log_level_callback,
-            )
-        )
+        log_level_option(f)
         f.params.append(
             Option(
                 ("--verbose", "-v"),
                 count=True,
-                help="verbosity",
+                help="Verbosity. Takes precedence over --log_level.",
                 callback=verbosity_callback,
             )
         )

@@ -1,3 +1,9 @@
+"""
+The ``linkml.validator.loaders`` package contain classes which are responsible for yielding data
+instance from a source. Instances of these classes are passed to
+:meth:`linkml.validator.Validator.validate_source` and
+:meth:`linkml.validator.Validator.iter_results_from_source`
+"""
 import os
 from typing import Union
 

@@ -1,6 +1,7 @@
 import pytest
 
 from tests.test_compliance.helper import (
+    OWL,
     PYTHON_DATACLASSES,
     SQL_DDL_SQLITE,
     ValidationBehavior,
@@ -31,6 +32,8 @@ from tests.test_compliance.test_compliance import (
 def test_identifier(framework, description, ids, is_valid, additional_slot_values):
     """
     Tests basic behavior of identifiers.
+
+    Identifiers should be unique.
 
     :param framework: all should support attributes
     :param description: description of the test data
@@ -167,6 +170,11 @@ def test_unique_keys(framework, description, objects, is_valid, is_valid_if_null
             },
             "_mappings": {
                 SQL_DDL_SQLITE: f"UNIQUE ({SLOT_S1}, {SLOT_S2})",
+                OWL: (
+                    "@prefix ex: <http://example.org/> ."
+                    "@prefix owl: <http://www.w3.org/2002/07/owl#> ."
+                    "ex:C owl:hasKey (ex:s1 ex:s2) , (ex:s1 ex:s3) ."
+                ),
             },
         },
     }
@@ -186,6 +194,11 @@ def test_unique_keys(framework, description, objects, is_valid, is_valid_if_null
                 expected_behavior = ValidationBehavior.IMPLEMENTS
             else:
                 expected_behavior = ValidationBehavior.INCOMPLETE
+        elif framework == OWL:
+            # TODO: by its open world nature, OWL will not consider clashes to be a violation
+            # unless Unique Name Assumptions are explicitly asserted. This is currently outside
+            # of the scope of the limited OWL support in this test suite.
+            expected_behavior = ValidationBehavior.INCOMPLETE
         else:
             # only supported in SQL backends
             expected_behavior = ValidationBehavior.INCOMPLETE

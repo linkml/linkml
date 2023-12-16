@@ -18,6 +18,7 @@ from tests.test_compliance.test_compliance import (
     CLASS_MC2,
     CLASS_X,
     CLASS_Y,
+    CLASS_Z,
     CORE_FRAMEWORKS,
     EXAMPLE_STRING_VALUE_1,
     EXAMPLE_STRING_VALUE_2,
@@ -143,7 +144,13 @@ def test_basic_class_inheritance(framework, description, cls: str, object, is_va
         if framework in [PYDANTIC, PYTHON_DATACLASSES, SQL_DDL_SQLITE, OWL]:
             # currently lax about instantiating abstract classes
             expected_behavior = ValidationBehavior.INCOMPLETE
-    schema = validated_schema(test_basic_class_inheritance, f"ABS{parent_is_abstract}", framework, classes=classes)
+    schema = validated_schema(
+        test_basic_class_inheritance,
+        f"ABS{parent_is_abstract}",
+        framework,
+        classes=classes,
+        core_elements=["is_a", "abstract"],
+    )
     check_data(
         schema,
         description.replace(" ", "_"),
@@ -261,7 +268,7 @@ def test_mixins(framework, description, cls, object, is_valid):
             },
         },
     }
-    schema = validated_schema(test_mixins, "default", framework, classes=classes)
+    schema = validated_schema(test_mixins, "default", framework, classes=classes, core_elements=["mixins", "mixin"])
     expected_behavior = ValidationBehavior.IMPLEMENTS
     if cls != CLASS_C:
         if framework in [PYDANTIC, PYTHON_DATACLASSES, SQL_DDL_SQLITE, OWL]:
@@ -367,21 +374,48 @@ def test_refine_attributes(framework, description, cls, object, is_valid):
     "description,cls,object,is_valid",
     [
         (
+            "basic slot usage, slots are inherited",
+            CLASS_X,
+            {
+                SLOT_S2: 5,
+                SLOT_S3: 5,
+            },
+            True,
+        ),
+        (
+            "basic slot usage, slots not inherited upwards",
+            CLASS_Y,
+            {
+                SLOT_S3: 5,
+            },
+            False,
+        ),
+        (
             "slot_usage is inherited",
             CLASS_C,
             {
                 SLOT_S1: {
-                    SLOT_S3: EXAMPLE_STRING_VALUE_3,
+                    SLOT_S3: 5,
                 },
             },
             True,
+        ),
+        (
+            "minimum_value inheritance",
+            CLASS_C,
+            {
+                SLOT_S1: {
+                    SLOT_S2: 1,
+                },
+            },
+            False,
         ),
         (
             "slot_usage is not inherited upwards",
             CLASS_D,
             {
                 SLOT_S1: {
-                    SLOT_S3: EXAMPLE_STRING_VALUE_3,
+                    SLOT_S3: 5,
                 },
             },
             False,
@@ -389,11 +423,11 @@ def test_refine_attributes(framework, description, cls, object, is_valid):
     ],
 )
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
-def test_slot_usage(framework, description, cls, object, is_valid):
+def test_slot_usage(framework, description, cls: str, object, is_valid):
     """
     Tests slot usage inheritance.
 
-    * C is_a D, and refines s1 from Y to X
+    * C is_a D, and refines range of s1 from Y to X
     * X is_a Y
 
     :param framework:
@@ -403,9 +437,18 @@ def test_slot_usage(framework, description, cls, object, is_valid):
     :return:
     """
     slots = {
-        SLOT_S1: {},
-        SLOT_S2: {},
-        SLOT_S3: {},
+        SLOT_S1: {
+            "description": "Example of a slot with class (X/Y/Z) as a range",
+            "range": CLASS_Z,
+        },
+        SLOT_S2: {
+            "description": "A slot on X with a type (integer) range",
+            "range": "integer",
+        },
+        SLOT_S3: {
+            "description": "A slot on Y with a type (integer) range",
+            "range": "integer",
+        },
     }
     classes = {
         CLASS_D: {
@@ -424,20 +467,35 @@ def test_slot_usage(framework, description, cls, object, is_valid):
                 },
             },
         },
+        CLASS_Z: {
+            "abstract": True,
+        },
         CLASS_Y: {
             "slots": [SLOT_S2],
+            "is_a": CLASS_Z,
             "slot_usage": {
-                SLOT_S2: {},
+                SLOT_S2: {
+                    "minimum_value": 0,
+                },
             },
         },
         CLASS_X: {
             "slots": [SLOT_S3],
             "is_a": CLASS_Y,
             "slot_usage": {
-                SLOT_S3: {},
+                SLOT_S2: {
+                    "minimum_value": 5,
+                },
+                SLOT_S3: {
+                    "minimum_value": 0,
+                },
             },
         },
     }
+    expected_behavior = ValidationBehavior.IMPLEMENTS
+    if description == "minimum_value inheritance":
+        if framework in [PYTHON_DATACLASSES, SQL_DDL_SQLITE]:
+            expected_behavior = ValidationBehavior.INCOMPLETE
     schema = validated_schema(
         test_slot_usage,
         "default",
@@ -452,6 +510,7 @@ def test_slot_usage(framework, description, cls, object, is_valid):
         framework,
         object,
         is_valid,
+        expected_behavior=expected_behavior,
         target_class=cls,
         description="pattern",
     )

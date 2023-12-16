@@ -36,8 +36,8 @@ def test_pattern(framework, schema_name, pattern, data_name, value):
     Pattern slots allow for regular expression constraints.
     Currently not supported for validation by python frameworks.
 
-    :param framework: not supported by python frameworks
-    :param schema_name: the name reflects which constraints are implementd
+    :param framework: not supported by python dataclasses
+    :param schema_name: the name reflects which constraints are implemented
     :param pattern: regular expression
     :param value: value to check
     :return:
@@ -54,7 +54,7 @@ def test_pattern(framework, schema_name, pattern, data_name, value):
     schema = validated_schema(test_pattern, schema_name, framework, classes=classes, core_elements=["pattern"])
     implementation_status = ValidationBehavior.IMPLEMENTS
     is_valid = bool(re.match(pattern, value))
-    if framework in [PYDANTIC, PYTHON_DATACLASSES, SQL_DDL_SQLITE]:
+    if framework in [PYTHON_DATACLASSES, SQL_DDL_SQLITE]:
         if not is_valid:
             implementation_status = ValidationBehavior.INCOMPLETE
     if framework == OWL:

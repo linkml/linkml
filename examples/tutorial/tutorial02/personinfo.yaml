@@ -14,7 +14,9 @@ classes:
       aliases:
       phone:
       age:
+        range: integer
   Container:
+    tree_root: true
     attributes:
       persons:
         multivalued: true

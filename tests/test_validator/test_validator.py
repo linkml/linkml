@@ -1,6 +1,6 @@
-import unittest
 from typing import Iterable
 
+import pytest
 from linkml_runtime.linkml_model import ClassDefinition, SchemaDefinition
 
 from linkml.validator import Validator
@@ -50,78 +50,125 @@ class TestDataLoader(Loader):
             yield {"id": i}
 
 
-class TestValidator(unittest.TestCase):
-    def test_validate_valid_instance(self):
-        plugins = [AcceptAnythingValidationPlugin()]
-        validator = Validator(SCHEMA, plugins)
-        report = validator.validate({"foo": "bar"})
-        self.assertEqual(len(report.results), 0)
+def test_validate_valid_instance():
+    plugins = [AcceptAnythingValidationPlugin()]
+    validator = Validator(SCHEMA, plugins)
+    report = validator.validate({"foo": "bar"})
+    assert len(report.results) == 0
 
-    def test_validate_invalid_instance(self):
-        plugins = [AcceptNothingValidationPlugin(10)]
-        validator = Validator(SCHEMA, plugins)
-        report = validator.validate({"foo": "bar"})
-        self.assertEqual(len(report.results), 10)
 
-    def test_validate_multiple_plugins(self):
-        plugins = [
-            AcceptAnythingValidationPlugin(),
-            AcceptNothingValidationPlugin(5),
-            AcceptNothingValidationPlugin(10),
-        ]
-        validator = Validator(SCHEMA, plugins)
-        report = validator.validate({"foo": "bar"})
-        self.assertEqual(len(report.results), 15)
+def test_validate_invalid_instance():
+    plugins = [AcceptNothingValidationPlugin(10)]
+    validator = Validator(SCHEMA, plugins)
+    report = validator.validate({"foo": "bar"})
+    assert len(report.results) == 10
 
-    def test_iter_results_valid_instance(self):
-        plugins = [AcceptAnythingValidationPlugin()]
-        validator = Validator(SCHEMA, plugins)
-        results = validator.iter_results({"foo": "bar"})
-        self.assertRaises(StopIteration, lambda: next(results))
 
-    def test_iter_results_invalid_instance(self):
-        plugins = [AcceptNothingValidationPlugin(2)]
-        validator = Validator(SCHEMA, plugins)
-        results = validator.iter_results({"foo": "bar"})
-        self.assertIn("0", next(results).message)
-        self.assertIn("1", next(results).message)
-        self.assertRaises(StopIteration, lambda: next(results))
+def test_validate_multiple_plugins():
+    plugins = [
+        AcceptAnythingValidationPlugin(),
+        AcceptNothingValidationPlugin(5),
+        AcceptNothingValidationPlugin(10),
+    ]
+    validator = Validator(SCHEMA, plugins)
+    report = validator.validate({"foo": "bar"})
+    assert len(report.results) == 15
 
-    def test_provides_default_target_class_in_context(self):
-        plugins = [AcceptNothingValidationPlugin(1)]
-        validator = Validator(SCHEMA, plugins)
-        results = validator.iter_results({"foo": "bar"})
-        result = next(results)
-        self.assertEqual(result.instantiates, "TreeRoot")
 
-    def test_provides_custom_target_class_in_context(self):
-        plugins = [AcceptNothingValidationPlugin(1)]
-        validator = Validator(SCHEMA, plugins)
-        target_class = "OtherClass"
-        results = validator.iter_results({"foo": "bar"}, target_class)
-        result = next(results)
-        self.assertEqual(result.instantiates, target_class)
+def test_iter_results_valid_instance():
+    plugins = [AcceptAnythingValidationPlugin()]
+    validator = Validator(SCHEMA, plugins)
+    results = validator.iter_results({"foo": "bar"})
+    with pytest.raises(StopIteration):
+        next(results)
 
-    def test_error_on_missing_target_class(self):
-        plugins = [AcceptNothingValidationPlugin(1)]
-        validator = Validator(SCHEMA, plugins)
-        self.assertRaises(ValueError, lambda: validator.validate({"foo": "bar"}, "NonExistentClass"))
 
-    def test_validate_source(self):
-        plugins = [AcceptNothingValidationPlugin(3)]
-        validator = Validator(SCHEMA, plugins)
-        loader = TestDataLoader(None, 4)
-        report = validator.validate_source(loader)
-        self.assertEqual(len(report.results), 12)
+def test_iter_results_invalid_instance():
+    plugins = [AcceptNothingValidationPlugin(2)]
+    validator = Validator(SCHEMA, plugins)
+    results = validator.iter_results({"foo": "bar"})
+    assert "0" in next(results).message
+    assert "1" in next(results).message
+    with pytest.raises(StopIteration):
+        next(results)
 
-    def test_iter_results_from_source(self):
-        plugins = [AcceptNothingValidationPlugin(2)]
-        validator = Validator(SCHEMA, plugins)
-        loader = TestDataLoader(None, 5)
-        results = list(validator.iter_results_from_source(loader))
-        self.assertEqual(len(results), 10)
 
-    def test_no_plugins(self):
-        validator = Validator(SCHEMA)
-        report = validator.validate({"foo": "bar"})
-        self.assertEqual(report.results, [])
+def test_provides_default_target_class_in_context():
+    plugins = [AcceptNothingValidationPlugin(1)]
+    validator = Validator(SCHEMA, plugins)
+    results = validator.iter_results({"foo": "bar"})
+    result = next(results)
+    assert result.instantiates == "TreeRoot"
+
+
+def test_provides_custom_target_class_in_context():
+    plugins = [AcceptNothingValidationPlugin(1)]
+    validator = Validator(SCHEMA, plugins)
+    target_class = "OtherClass"
+    results = validator.iter_results({"foo": "bar"}, target_class)
+    result = next(results)
+    assert result.instantiates == target_class
+
+
+def test_error_on_missing_target_class():
+    plugins = [AcceptNothingValidationPlugin(1)]
+    validator = Validator(SCHEMA, plugins)
+    with pytest.raises(ValueError):
+        validator.validate({"foo": "bar"}, "NonExistentClass")
+
+
+def test_validate_source():
+    plugins = [AcceptNothingValidationPlugin(3)]
+    validator = Validator(SCHEMA, plugins)
+    loader = TestDataLoader(None, 4)
+    report = validator.validate_source(loader)
+    assert len(report.results) == 12
+
+
+def test_iter_results_from_source():
+    plugins = [AcceptNothingValidationPlugin(2)]
+    validator = Validator(SCHEMA, plugins)
+    loader = TestDataLoader(None, 5)
+    results = list(validator.iter_results_from_source(loader))
+    assert len(results) == 10
+
+
+def test_no_plugins():
+    validator = Validator(SCHEMA)
+    report = validator.validate({"foo": "bar"})
+    assert report.results == []
+
+
+def test_load_schema_from_path(tmp_file_factory):
+    # https://github.com/linkml/linkml/issues/1694
+    main_path = tmp_file_factory(
+        "main.yaml",
+        """id: http://example.org/test_load_schema_from_path/main
+prefixes:
+  linkml: https://w3id.org/linkml/
+default_range: string
+imports:
+  - base
+""",
+    )
+    tmp_file_factory(
+        "base.yaml",
+        """id: http://example.org/base
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+default_range: string
+
+classes:
+  AClass:
+    attributes:
+      an_attribute:
+""",
+    )
+
+    validator = Validator(main_path, [AcceptAnythingValidationPlugin()])
+    assert validator._schema.source_file == main_path
+
+    report = validator.validate({"an_attribute": "something"})
+    assert report.results == []

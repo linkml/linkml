@@ -24,12 +24,12 @@ The `linkml-lint` command can be configured with a YAML configuration file. The 
 linkml-lint --config myconfig.yaml myschema.yaml
 ```
 
-Alternatively, if there is a file named `.linkmllint.yaml` in the current working directory when you run `linkml-lint` that file will automatically be loaded as the configuration file. If all or most of the schema files in a project can be checked with the same rules, storing the configuration at the root of the project in a `.linkmllink.yaml` file can make it more convenient to check them without having to pass the `--config` option.
+Alternatively, if there is a file named `.linkmllint.yaml` in the current working directory when you run `linkml-lint` that file will automatically be loaded as the configuration file. If all or most of the schema files in a project can be checked with the same rules, storing the configuration at the root of the project in a `.linkmllint.yaml` file can make it more convenient to check them without having to pass the `--config` option.
 
-Here is an example of a configuration file which includes all of the recommended rules and enables an additional rule named `no_empty_title`:
+Here is an example of a configuration file which includes all the recommended rules and enables an additional rule named `no_empty_title`:
 
 ```yaml
-# Use all of the recommended rule and also enable the no_empty_title rule
+# Use all the recommended rules and also enable the no_empty_title rule
 extends: recommended
 rules:
   no_empty_title:

@@ -6,13 +6,11 @@ class Loader(ABC):
     """Abstract base class for instance data loaders.
 
     Subclasses must implement the iter_instances method.
+
+    :param source: Path or URL to load instances from
     """
 
     def __init__(self, source) -> None:
-        """Constructor method
-
-        :param source: Path or URL to load instances from
-        """
         self.source = source
 
     @abstractmethod

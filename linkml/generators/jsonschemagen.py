@@ -65,19 +65,23 @@ class JsonSchema(UserDict):
             identifier_name = self._lax_forward_refs.pop(canonical_name)
             self.add_lax_def(canonical_name, identifier_name)
 
-    def add_lax_def(self, name: str, identifier_name: str) -> None:
+    def add_lax_def(self, names: Union[str, List[str]], identifier_name: str) -> None:
         # JSON-Schema does not have inheritance,
         # so we duplicate slots from inherited parents and mixins
         # Maps e.g. Person --> Person__identifier_optional
         # for use when Person is a range of an inlined-as-dict slot
-        canonical_name = camelcase(name)
+        if isinstance(names, str):
+            names = [names]
 
-        if "$defs" not in self or canonical_name not in self["$defs"]:
-            self._lax_forward_refs[canonical_name] = identifier_name
-        else:
-            lax_cls = deepcopy(self["$defs"][canonical_name])
-            lax_cls["required"].remove(identifier_name)
-            self["$defs"][canonical_name + self.OPTIONAL_IDENTIFIER_SUFFIX] = lax_cls
+        for name in names:
+            canonical_name = camelcase(name)
+
+            if "$defs" not in self or canonical_name not in self["$defs"]:
+                self._lax_forward_refs[canonical_name] = identifier_name
+            else:
+                lax_cls = deepcopy(self["$defs"][canonical_name])
+                lax_cls["required"].remove(identifier_name)
+                self["$defs"][canonical_name + self.OPTIONAL_IDENTIFIER_SUFFIX] = lax_cls
 
     def add_property(self, name: str, subschema: "JsonSchema", required: bool = False) -> None:
         canonical_name = underscore(name)
@@ -118,7 +122,10 @@ class JsonSchema(UserDict):
             return JsonSchema({"$ref": f"#/$defs/{def_name}{def_suffix}"})
 
         if isinstance(class_name, list):
-            return JsonSchema({"anyOf": [_ref(name) for name in class_name]})
+            if len(class_name) == 1:
+                return _ref(class_name[0])
+            else:
+                return JsonSchema({"anyOf": [_ref(name) for name in class_name]})
         else:
             return _ref(class_name)
 
@@ -157,7 +164,7 @@ class JsonSchemaGenerator(Generator):
     indent: int = 4
 
     inline: bool = False
-    top_class: Optional[ClassDefinitionName] = None  # JSON object is one instance of this
+    top_class: Optional[Union[ClassDefinitionName, str]] = None  # JSON object is one instance of this
     """Class instantiated by the root node of the document tree"""
 
     include_range_class_descendants: bool = field(default_factory=lambda: False)
@@ -173,6 +180,10 @@ class JsonSchemaGenerator(Generator):
             self.top_class = self.topClass
 
         super().__post_init__()
+
+        if self.top_class:
+            if self.schemaview.get_class(self.top_class) is None:
+                logging.warning(f"No class in schema named {self.top_class}")
 
     def start_schema(self, inline: bool = False) -> JsonSchema:
         self.inline = inline

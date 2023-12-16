@@ -88,7 +88,7 @@ print(shex)
 # print(jsonld)
 # g = Graph()
 # g.parse(data=jsonld, format="json-ld")
-# print(g.serialize(format="turtle").decode())
+# print(g.serialize(format="turtle"))
 #
 # from pyshex.evaluate import evaluate
 #

@@ -4,6 +4,7 @@ Tests generation of markdown and similar documents
 Note that docgen replaces markdowngen
 """
 import logging
+import os
 from collections import Counter
 from copy import copy
 from typing import List
@@ -426,6 +427,15 @@ def test_custom_directory(kitchen_sink_path, input_path, tmp_path):
     assert_mdfile_contains(tmp_path / "Organization.md", "FAKE TEMPLATE")
 
 
+def test_gen_custom_named_index(kitchen_sink_path, tmp_path):
+    """Tests that the name of the index page can be customized"""
+    gen = DocGenerator(kitchen_sink_path, index_name="custom-index")
+    gen.serialize(directory=str(tmp_path))
+    assert_mdfile_contains(tmp_path / "custom-index.md", "# Kitchen Sink Schema")
+    # Additionally test that the default index.md has NOT been created
+    assert not os.path.exists(tmp_path / "index.md")
+
+
 def test_html(kitchen_sink_path, input_path, tmp_path):
     """
     Tests ability to specify a complete new set of templates in a different format
@@ -598,7 +608,7 @@ def test_use_slot_uris(kitchen_sink_path, input_path, tmp_path):
     gen.serialize(directory=str(tmp_path))
 
     # this is a markdown file created from slot_uri
-    assert_mdfile_contains(tmp_path / "actedOnBehalfOf.md", "Slot: actedOnBehalfOf")
+    assert_mdfile_contains(tmp_path / "actedOnBehalfOf.md", "Slot: acted on behalf of")
 
     # check label and link of documents in inheritance tree
     # A.md
@@ -611,6 +621,26 @@ def test_use_slot_uris(kitchen_sink_path, input_path, tmp_path):
         after="[tree_slot_A](A.md)",
         # followed_by="* [tree_slot_C](C.md) [ [mixin_slot_I](mixin_slot_I.md)]",
     )
+
+
+def test_use_class_uris(kitchen_sink_path, input_path, tmp_path):
+    tdir = input_path("docgen_html_templates")
+    gen = DocGenerator(
+        kitchen_sink_path,
+        mergeimports=True,
+        no_types_dir=True,
+        template_directory=str(tdir),
+        use_class_uris=True,
+    )
+
+    gen.serialize(directory=str(tmp_path))
+
+    # this is a markdown file created from class_uri
+    assert_mdfile_contains(tmp_path / "Any.md", "Class: AnyObject")
+
+    # check that the classes table on index page has correct class names and
+    # are linked to the correct class doc pages
+    assert_mdfile_contains(tmp_path / "index.md", "[AnyObject](Any.md)")
 
 
 def test_hierarchical_class_view(kitchen_sink_path, tmp_path):

@@ -3,15 +3,34 @@
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 ex:C1 a owl:Class,
         linkml:ClassDefinition ;
     rdfs:label "c1" ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:allValuesFrom linkml:String ;
+            owl:onProperty ex:s1 ],
+        [ a owl:Restriction ;
+            owl:maxCardinality 1 ;
+            owl:onProperty ex:s1 ],
+        [ a owl:Restriction ;
+            owl:minCardinality 0 ;
+            owl:onProperty ex:s1 ] ;
     skos:inScheme <http://example.org/sample/example163c> .
 
 ex:C2 a owl:Class,
         linkml:ClassDefinition ;
     rdfs:label "c2" ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:maxCardinality 1 ;
+            owl:onProperty ex:s2 ],
+        [ a owl:Restriction ;
+            owl:minCardinality 0 ;
+            owl:onProperty ex:s2 ],
+        [ a owl:Restriction ;
+            owl:allValuesFrom linkml:Uriorcurie ;
+            owl:onProperty ex:s2 ] ;
     skos:inScheme <http://example.org/sample/example163c> .
 
 ex:s1 a owl:ObjectProperty,

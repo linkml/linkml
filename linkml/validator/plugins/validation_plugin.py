@@ -8,7 +8,7 @@ from linkml.validator.validation_context import ValidationContext
 class ValidationPlugin(ABC):
     """Abstract base class for validation plugins.
 
-    Subclasses must implement a `process` method.
+    Subclasses must implement a ``process`` method.
     """
 
     def pre_process(self, context: ValidationContext) -> None:

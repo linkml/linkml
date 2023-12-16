@@ -32,7 +32,7 @@ from linkml.utils.generator import shared_arguments
 from linkml.utils.ifabsent_functions import ifabsent_value_declaration
 
 
-def default_template(pydantic_ver: str = "1") -> str:
+def default_template(pydantic_ver: str = "1", extra_fields: str = "forbid") -> str:
     """Constructs a default template for pydantic classes based on the version of pydantic"""
     ### HEADER ###
     template = """
@@ -47,14 +47,14 @@ from enum import Enum
 import numpy as np
 {%- endif %}
 from typing import List, Dict, Optional, Any, Union"""
-    if pydantic_ver == 1:
+    if pydantic_ver == "1":
         template += """
-from pydantic import BaseModel as BaseModel, Field"""
-    else:
+from pydantic import BaseModel as BaseModel, Field, validator"""
+    elif pydantic_ver == "2":
         template += """
-from pydantic import BaseModel as BaseModel, ConfigDict, Field"""
-
+from pydantic import BaseModel as BaseModel, ConfigDict,  Field, field_validator"""
     template += """
+import re
 import sys
 if sys.version_info >= (3, 8):
     from typing import Literal
@@ -67,7 +67,7 @@ version = "{{version if version else None}}"
 """
     ### BASE MODEL ###
     if pydantic_ver == "1":
-        template += """
+        template += f"""
 class WeakRefShimBaseModel(BaseModel):
    __slots__ = '__weakref__'
 
@@ -75,18 +75,18 @@ class ConfiguredBaseModel(WeakRefShimBaseModel,
                 validate_assignment = True,
                 validate_all = True,
                 underscore_attrs_are_private = True,
-                extra = {% if allow_extra %}'allow'{% else %}'forbid'{% endif %},
+                extra = '{extra_fields}',
                 arbitrary_types_allowed = True,
                 use_enum_values = True):
     pass
 """
     else:
-        template += """
+        template += f"""
 class ConfiguredBaseModel(BaseModel):
     model_config = ConfigDict(
         validate_assignment=True,
         validate_default=True,
-        extra={% if allow_extra %}'allow'{% else %}'forbid'{% endif %},
+        extra = '{extra_fields}',
         arbitrary_types_allowed=True,
         use_enum_values = True)
 
@@ -120,7 +120,7 @@ class NDArrayProxy():
     ### ENUMS ###
     template += """
 {% for e in enums.values() %}
-class {{ e.name }}(str, Enum):
+class {{ e.name }}(str{% if e['values'] %}, Enum{% endif %}):
     {% if e.description -%}
     \"\"\"
     {{ e.description }}
@@ -138,7 +138,8 @@ class {{ e.name }}(str, Enum):
 {% endfor %}
 """
     ### CLASSES ###
-    template += """
+    if pydantic_ver == "1":
+        template += """
 {%- for c in schema.classes.values() %}
 class {{ c.name }}
     {%- if class_isa_plus_mixins[c.name] -%}
@@ -163,14 +164,85 @@ class {{ c.name }}
     {%- endif -%}
     {%- if attr.title != None %}, title="{{attr.title}}"{% endif -%}
     {%- if attr.description %}, description=\"\"\"{{attr.description}}\"\"\"{% endif -%}
-    {%- if attr.minimum_value != None %}, ge={{attr.minimum_value}}{% endif -%}
-    {%- if attr.maximum_value != None %}, le={{attr.maximum_value}}{% endif -%}
+    {%- if attr.equals_number != None %}, le={{attr.equals_number}}, ge={{attr.equals_number}}
+    {%- else -%}
+     {%- if attr.minimum_value != None %}, ge={{attr.minimum_value}}{% endif -%}
+     {%- if attr.maximum_value != None %}, le={{attr.maximum_value}}{% endif -%}
+    {%- endif -%}
     )
     {% else -%}
     None
     {% endfor %}
+    {% for attr in c.attributes.values() if c.attributes -%}
+    {%- if attr.pattern %}
+    @validator('{{attr.name}}', allow_reuse=True)
+    def pattern_{{attr.name}}(cls, v):
+        pattern=re.compile(r"{{attr.pattern}}")
+        if isinstance(v,list):
+            for element in v:
+                if not pattern.match(element):
+                    raise ValueError(f"Invalid {{attr.name}} format: {element}")
+        elif isinstance(v,str):
+            if not pattern.match(v):
+                raise ValueError(f"Invalid {{attr.name}} format: {v}")
+        return v
+    {% endif -%}
+    {% endfor %}    
 {% endfor %}
 """
+    elif pydantic_ver == "2":
+        template += """
+{%- for c in schema.classes.values() %}
+class {{ c.name }}
+    {%- if class_isa_plus_mixins[c.name] -%}
+        ({{class_isa_plus_mixins[c.name]|join(', ')}})
+    {%- else -%}
+        (ConfiguredBaseModel)
+    {%- endif -%}
+                  :
+    {% if c.description -%}
+    \"\"\"
+    {{ c.description }}
+    \"\"\"
+    {%- endif %}
+    {% for attr in c.attributes.values() if c.attributes -%}
+    {{attr.name}}: {{ attr.annotations['python_range'].value }} = Field(
+    {%- if predefined_slot_values[c.name][attr.name] -%}
+        {{ predefined_slot_values[c.name][attr.name] }}
+    {%- elif (attr.required or attr.identifier or attr.key) -%}
+        ...
+    {%- else -%}
+        None
+    {%- endif -%}
+    {%- if attr.title != None %}, title="{{attr.title}}"{% endif -%}
+    {%- if attr.description %}, description=\"\"\"{{attr.description}}\"\"\"{% endif -%}
+    {%- if attr.equals_number != None %}, le={{attr.equals_number}}, ge={{attr.equals_number}}
+    {%- else -%}
+     {%- if attr.minimum_value != None %}, ge={{attr.minimum_value}}{% endif -%}
+     {%- if attr.maximum_value != None %}, le={{attr.maximum_value}}{% endif -%}
+    {%- endif -%}
+    )
+    {% else -%}
+    None
+    {% endfor %}
+    {% for attr in c.attributes.values() if c.attributes -%}
+    {%- if attr.pattern %}
+    @field_validator('{{attr.name}}')
+    def pattern_{{attr.name}}(cls, v):
+        pattern=re.compile(r"{{attr.pattern}}")
+        if isinstance(v,list):
+            for element in v:
+                if not pattern.match(element):
+                    raise ValueError(f"Invalid {{attr.name}} format: {element}")
+        elif isinstance(v,str):
+            if not pattern.match(v):
+                raise ValueError(f"Invalid {{attr.name}} format: {v}")
+        return v
+    {% endif -%}
+    {% endfor %}    
+{% endfor %}
+"""
+
     ### FWD REFS / REBUILD MODEL ###
     if pydantic_ver == "1":
         template += """
@@ -223,7 +295,7 @@ class PydanticGenerator(OOCodeGenerator):
     # ObjectVars
     pydantic_version: str = field(default_factory=lambda: PYDANTIC_VERSION[0])
     template_file: str = None
-    allow_extra: bool = field(default_factory=lambda: False)
+    extra_fields: str = field(default_factory=lambda: "forbid")
     gen_mixin_inheritance: bool = field(default_factory=lambda: True)
 
     # ObjectVars (identical to pythongen)
@@ -483,7 +555,7 @@ class PydanticGenerator(OOCodeGenerator):
             with open(self.template_file) as template_file:
                 template_obj = Template(template_file.read())
         else:
-            template_obj = Template(default_template(self.pydantic_version))
+            template_obj = Template(default_template(self.pydantic_version, self.extra_fields))
 
         sv: SchemaView
         sv = self.schemaview
@@ -530,18 +602,10 @@ class PydanticGenerator(OOCodeGenerator):
 
                 # Confirm that the original slot range (ignoring the default that comes in from
                 # induced_slot) isn't in addition to setting any_of
-                if len(s.any_of) > 0 and sv.get_slot(sn).range is not None:
-                    base_range_subsumes_any_of = False
-                    base_range = sv.get_slot(sn).range
-                    base_range_cls = sv.get_class(base_range, strict=False)
-                    if base_range_cls is not None and base_range_cls.class_uri == "linkml:Any":
-                        base_range_subsumes_any_of = True
-                    if not base_range_subsumes_any_of:
-                        raise ValueError("Slot cannot have both range and any_of defined")
-
-                if s.any_of is not None and len(s.any_of) > 0:
+                any_of_ranges = [a.range if a.range else s.range for a in s.any_of]
+                if any_of_ranges:
                     # list comprehension here is pulling ranges from within AnonymousSlotExpression
-                    slot_ranges.extend([r.range for r in s.any_of])
+                    slot_ranges.extend(any_of_ranges)
                 else:
                     slot_ranges.append(s.range)
 
@@ -583,7 +647,7 @@ class PydanticGenerator(OOCodeGenerator):
             underscore=underscore,
             enums=enums,
             predefined_slot_values=self.get_predefined_slot_values(),
-            allow_extra=self.allow_extra,
+            extra_fields=self.extra_fields,
             metamodel_version=self.schema.metamodel_version,
             version=self.schema.version,
             class_isa_plus_mixins=self.get_class_isa_plus_mixins(),
@@ -596,12 +660,18 @@ class PydanticGenerator(OOCodeGenerator):
 
 
 @shared_arguments(PydanticGenerator)
-@click.option("--template_file", help="Optional jinja2 template to use for class generation")
+@click.option("--template-file", help="Optional jinja2 template to use for class generation")
 @click.option(
-    "--pydantic_version",
+    "--pydantic-version",
     type=click.Choice(["1", "2"]),
     default="1",
     help="Pydantic version to use (1 or 2)",
+)
+@click.option(
+    "--extra-fields",
+    type=click.Choice(["allow", "ignore", "forbid"], case_sensitive=False),
+    default="forbid",
+    help="How to handle extra fields in BaseModel.",
 )
 @click.version_option(__version__, "-V", "--version")
 @click.command()
@@ -614,6 +684,7 @@ def cli(
     classvars=True,
     slots=True,
     pydantic_version="1",
+    extra_fields="forbid",
     **args,
 ):
     """Generate pydantic classes to represent a LinkML model"""
@@ -621,6 +692,7 @@ def cli(
         yamlfile,
         template_file=template_file,
         pydantic_version=pydantic_version,
+        extra_fields=extra_fields,
         emit_metadata=head,
         genmeta=genmeta,
         gen_classvars=classvars,
