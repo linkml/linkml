@@ -598,6 +598,8 @@
                     <span class="n">prop</span><span class="p">[</span><span class="s2">&quot;enum&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">this_properties_required</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">elif</span> <span class="n">slot</span><span class="o">.</span><span class="n">required</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">this_properties_required</span> <span class="o">=</span> <span class="n">slot</span><span class="o">.</span><span class="n">required</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">this_properties_required</span> <span class="o">=</span> <span class="n">properties_required</span>
             <span class="n">subschema</span><span class="o">.</span><span class="n">add_property</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">aliased_slot_name</span><span class="p">(</span><span class="n">slot</span><span class="p">),</span> <span class="n">prop</span><span class="p">,</span> <span class="n">this_properties_required</span><span class="p">)</span>
