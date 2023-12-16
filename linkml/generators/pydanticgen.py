@@ -89,8 +89,12 @@ class ConfiguredBaseModel(BaseModel):
         extra = '{extra_fields}',
         arbitrary_types_allowed=True,
         use_enum_values = True)
+    pass
+"""
 
-
+    # TODO use the numpy typing
+    # TODO handle dask array, zarr array, etc.
+    template += f"""
 class NDArrayProxy():
     \"\"\"
     Thin proxy to numpy arrays stored within hdf5 files,

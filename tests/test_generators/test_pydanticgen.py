@@ -333,49 +333,80 @@ def test_pydantic_arrays():
 
     unit_test_schema = """
 id: https://example.org/arrays
-name: arrays-example
+name: arrays-temperature-example
+title: Array Temperature Example
+description: |-
+  Example LinkML schema to demonstrate a 3D DataArray of temperature values with labeled axes
+license: MIT
+
 prefixes:
   linkml: https://w3id.org/linkml/
+  wgs84: http://www.w3.org/2003/01/geo/wgs84_pos#
   example: https://example.org/
-  default_prefix: example
+
+default_prefix: example
+
 imports:
-- linkml:types
+  - linkml:types
 
 classes:
-  TemperatureMatrix:
+
+  TemperatureDataset:
     tree_root: true
     implements:
-      - linkml:ThreeDimensionalArray
-      - linkml:RowOrderedArray
+      - linkml:DataArray
     attributes:
-      x:
+      name:
+        identifier: true
+        range: string
+      latitude_in_deg:
         implements:
-          - linkml:axis0
+          - linkml:axis
         range: LatitudeSeries
         required: true
-      y:
+        annotations:
+          axis_index: 0
+      longitude_in_deg:
         implements:
-          - linkml:axis1
+          - linkml:axis
         range: LongitudeSeries
         required: true
-      time:
+        annotations:
+          axis_index: 1
+      time_in_d:
         implements:
-          - linkml:axis2
+          - linkml:axis
         range: DaySeries
         required: true
-      temperatures:
+        annotations:
+          axis_index: 2
+      temperatures_in_K:
+        implements:
+          - linkml:array
+        range: TemperatureMatrix
+        required: true
+
+  TemperatureMatrix:
+    description: A 3D array of temperatures
+    implements:
+      - linkml:NDArray
+      - linkml:RowOrderedArray
+    attributes:
+      values:
+        range: float
+        multivalued: true
         implements:
           - linkml:elements
-        multivalued: true
-        range: float
         required: true
         unit:
           ucum_code: K
+    annotations:
+      dimensions: 3
 
   LatitudeSeries:
     description: A series whose values represent latitude
     implements:
-      - linkml:OneDimensionalSeries
+      - linkml:NDArray
     attributes:
       values:
         range: float
@@ -385,11 +416,13 @@ classes:
         required: true
         unit:
           ucum_code: deg
+    annotations:
+      dimensions: 1
 
   LongitudeSeries:
     description: A series whose values represent longitude
     implements:
-      - linkml:OneDimensionalSeries
+      - linkml:NDArray
     attributes:
       values:
         range: float
@@ -399,11 +432,13 @@ classes:
         required: true
         unit:
           ucum_code: deg
+    annotations:
+      dimensions: 1
 
   DaySeries:
     description: A series whose values represent the days since the start of the measurement period
     implements:
-      - linkml:OneDimensionalSeries
+      - linkml:NDArray
     attributes:
       values:
         range: float
@@ -412,7 +447,9 @@ classes:
           - linkml:elements
         required: true
         unit:
-            ucum_code: d
+          ucum_code: d
+    annotations:
+      dimensions: 1
   """
 
     gen = PydanticGenerator(schema=unit_test_schema)
@@ -429,16 +466,21 @@ classes:
     np.testing.assert_array_equal(lon.values, np.array([4, 5, 6]))
     day = mod.DaySeries(values=np.array([7, 8, 9]))
     np.testing.assert_array_equal(day.values, np.array([7, 8, 9]))
-    temperature = mod.TemperatureMatrix(
-        x=lat,
-        y=lon,
-        time=day,
-        temperatures=np.ones((3, 3, 3)),
+    temperatures = mod.TemperatureMatrix(values=np.ones((3, 3, 3)))
+    np.testing.assert_array_equal(temperatures.values, np.ones((3, 3, 3)))
+
+    temperature_dataset = mod.TemperatureDataset(
+        name="temperatures",
+        latitude_in_deg=lat,
+        longitude_in_deg=lon,
+        time_in_d=day,
+        temperatures_in_K=temperatures,
     )
-    assert temperature.x == lat
-    assert temperature.y == lon
-    assert temperature.time == day
-    np.testing.assert_array_equal(temperature.temperatures, np.ones((3, 3, 3)))
+    assert temperature_dataset.name == "temperatures"
+    assert temperature_dataset.latitude_in_deg == lat
+    assert temperature_dataset.longitude_in_deg == lon
+    assert temperature_dataset.time_in_d == day
+    assert temperature_dataset.temperatures_in_K == temperatures
 
 
 def test_column_ordered_array_not_supported():
@@ -456,19 +498,9 @@ classes:
   TemperatureMatrix:
     tree_root: true
     implements:
-      - linkml:TwoDimensionalArray
+      - linkml:NDArray
       - linkml:ColumnOrderedArray
     attributes:
-      x:
-        implements:
-          - linkml:axis0
-        range: LatitudeSeries
-        required: true
-      y:
-        implements:
-          - linkml:axis1
-        range: LongitudeSeries
-        required: true
       temperatures:
         implements:
           - linkml:elements
@@ -477,30 +509,8 @@ classes:
         required: true
         unit:
           ucum_code: K
-
-  LatitudeSeries:
-    description: A series whose values represent latitude
-    implements:
-      - linkml:OneDimensionalSeries
-    attributes:
-      values:
-        range: float
-        multivalued: true
-        implements:
-          - linkml:elements
-        required: true
-
-  LongitudeSeries:
-    description: A series whose values represent longitude
-    implements:
-      - linkml:OneDimensionalSeries
-    attributes:
-      values:
-        range: float
-        multivalued: true
-        implements:
-          - linkml:elements
-        required: true
+    annotations:
+      dimensions: 2
 """
 
     gen = PydanticGenerator(schema=unit_test_schema)
