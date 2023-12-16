@@ -1,6 +1,7 @@
+from importlib.metadata import version
+
 import pytest
 import yaml
-from importlib.metadata import version
 from linkml_runtime import SchemaView
 from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.linkml_model import SlotDefinition
@@ -370,7 +371,7 @@ classes:
     mod = compile_python(code, PACKAGE)
 
     # and we check that we haven't lost defaults when they are set
-    pydantic_major_version = int(version('pydantic').split('.')[0])
+    pydantic_major_version = int(version("pydantic").split(".")[0])
     if pydantic_major_version >= 2:
         assert mod.BadClass.model_fields["keys"].default is None
         assert mod.BadClass.model_fields["values"].default == 1
