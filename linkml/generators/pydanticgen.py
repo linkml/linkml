@@ -89,6 +89,33 @@ class ConfiguredBaseModel(BaseModel):
         extra={% if allow_extra %}'allow'{% else %}'forbid'{% endif %},
         arbitrary_types_allowed=True,
         use_enum_values = True)
+
+
+class NDArrayProxy():
+    \"\"\"
+    Thin proxy to numpy arrays stored within hdf5 files,
+    only read into memory when accessed, but otherwise
+    passthrough all attempts to access attributes.
+    \"\"\"
+    def __init__(self, h5f_file: Path|str, path: str):
+        \"\"\"
+        Args:
+            h5f_file (:class:`pathlib.Path`): Path to source HDF5 file
+            path (str): Location within HDF5 file where this array is located
+        \"\"\"
+        self.h5f_file = Path(h5f_file)
+        self.path = path
+
+    def __getattr__(self, item):
+        with h5py.File(self.h5f_file, 'r') as h5f:
+            obj = h5f.get(self.path)
+            return getattr(obj, item)
+    def __getitem__(self, slice) -> np.ndarray:
+        with h5py.File(self.h5f_file, 'r') as h5f:
+            obj = h5f.get(self.path)
+            return obj[slice]
+    def __setitem__(self, slice, value):
+        raise NotImplementedError(f"Cant write into an arrayproxy yet!")
 """
     ### ENUMS ###
     template += """
@@ -532,7 +559,7 @@ class PydanticGenerator(OOCodeGenerator):
 
                 if "linkml:elements" in s.implements:
                     # TODO add support for xarray
-                    pyrange = "np.ndarray"
+                    pyrange = "Union[np.ndarray, NDArrayProxy]"
                     if "linkml:ColumnOrderedArray" in class_def.implements:
                         raise NotImplementedError(
                             "Cannot generate Pydantic code for ColumnOrderedArrays."
