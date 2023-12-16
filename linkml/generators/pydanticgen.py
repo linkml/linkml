@@ -155,7 +155,7 @@ class {{ c.name }}
     {%- endif %}
     {% for attr in c.attributes.values() if c.attributes -%}
     {{attr.name}}: {{ attr.annotations['python_range'].value }} = Field(
-    {%- if predefined_slot_values[c.name][attr.name] -%}
+    {%- if predefined_slot_values[c.name][attr.name] is string -%}
         {{ predefined_slot_values[c.name][attr.name] }}
     {%- elif (attr.required or attr.identifier or attr.key) -%}
         ...
@@ -187,7 +187,7 @@ class {{ c.name }}
                 raise ValueError(f"Invalid {{attr.name}} format: {v}")
         return v
     {% endif -%}
-    {% endfor %}    
+    {% endfor %}
 {% endfor %}
 """
     elif pydantic_ver == "2":
@@ -239,7 +239,7 @@ class {{ c.name }}
                 raise ValueError(f"Invalid {{attr.name}} format: {v}")
         return v
     {% endif -%}
-    {% endfor %}    
+    {% endfor %}
 {% endfor %}
 """
 
