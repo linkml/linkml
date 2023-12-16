@@ -356,7 +356,8 @@ classes:
         range: string
       values:
         name: values
-        range: string
+        range: integer
+        ifabsent: int(1)
     """
     gen = PydanticGenerator(bad_schema, package=PACKAGE)
     code = gen.serialize()
@@ -365,3 +366,7 @@ classes:
     # doesn't generate a field like
     # keys: Optional[str] = Field(<built-in method keys of dict object at 0x10f1f13c0>)
     mod = compile_python(code, PACKAGE)
+
+    # and we check that we haven't lost defaults when they are set
+    assert mod.BadClass.model_fields['keys'].default is None
+    assert mod.BadClass.model_fields['values'].default == 1
