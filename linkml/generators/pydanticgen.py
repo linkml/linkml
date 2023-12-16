@@ -159,7 +159,7 @@ class {{ c.name }}
     {%- endif %}
     {% for attr in c.attributes.values() if c.attributes -%}
     {{attr.name}}: {{ attr.annotations['python_range'].value }} = Field(
-    {%- if predefined_slot_values[c.name][attr.name] is string -%}
+    {%- if predefined_slot_values[c.name][attr.name] is not callable -%}
         {{ predefined_slot_values[c.name][attr.name] }}
     {%- elif (attr.required or attr.identifier or attr.key) -%}
         ...
@@ -211,7 +211,7 @@ class {{ c.name }}
     {%- endif %}
     {% for attr in c.attributes.values() if c.attributes -%}
     {{attr.name}}: {{ attr.annotations['python_range'].value }} = Field(
-    {%- if predefined_slot_values[c.name][attr.name] -%}
+    {%- if predefined_slot_values[c.name][attr.name] is not callable -%}
         {{ predefined_slot_values[c.name][attr.name] }}
     {%- elif (attr.required or attr.identifier or attr.key) -%}
         ...
