@@ -119,7 +119,7 @@ class NDArrayProxy():
             obj = h5f.get(self.path)
             return obj[slice]
     def __setitem__(self, slice, value):
-        raise NotImplementedError(f"Cant write into an arrayproxy yet!")
+        raise NotImplementedError(f"Can't write into an arrayproxy yet!")
 """
     ### ENUMS ###
     template += """
