@@ -338,3 +338,30 @@ def test_pydantic_pattern(kitchen_sink_path, tmp_path, input_path):
     assert p1.name == "John Doe"
     with pytest.raises(ValidationError):
         module.Person(id="01", name="x")
+
+def test_pydantic_template_1666():
+    """
+    Regression test for https://github.com/linkml/linkml/issues/1666
+    """
+    bad_schema = """
+name: BadSchema
+id: BadSchema
+imports:
+- linkml:types
+classes:
+  BadClass:
+    attributes:
+      keys:
+        name: keys
+        range: string
+      values:
+        name: values
+        range: string
+    """
+    gen = PydanticGenerator(bad_schema, package=PACKAGE)
+    code = gen.serialize()
+    # test fails here if "is_string" check not applied
+    # so the test is just that this completes successfully and
+    # doesn't generate a field like
+    # keys: Optional[str] = Field(<built-in method keys of dict object at 0x10f1f13c0>)
+    mod = compile_python(code, PACKAGE)
