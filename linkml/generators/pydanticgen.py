@@ -94,7 +94,7 @@ class ConfiguredBaseModel(BaseModel):
 
     # TODO use the numpy typing
     # TODO handle dask array, zarr array, etc.
-    template += f"""
+    template += """
 class NDArrayProxy():
     \"\"\"
     Thin proxy to numpy arrays stored within hdf5 files,
