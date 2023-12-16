@@ -339,6 +339,7 @@ def test_pydantic_pattern(kitchen_sink_path, tmp_path, input_path):
     with pytest.raises(ValidationError):
         module.Person(id="01", name="x")
 
+
 def test_pydantic_template_1666():
     """
     Regression test for https://github.com/linkml/linkml/issues/1666
@@ -368,5 +369,5 @@ classes:
     mod = compile_python(code, PACKAGE)
 
     # and we check that we haven't lost defaults when they are set
-    assert mod.BadClass.model_fields['keys'].default is None
-    assert mod.BadClass.model_fields['values'].default == 1
+    assert mod.BadClass.model_fields["keys"].default is None
+    assert mod.BadClass.model_fields["values"].default == 1
