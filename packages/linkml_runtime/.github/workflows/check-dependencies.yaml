@@ -2,7 +2,7 @@ name: Build and test linkml-runtime package dependencies
 
 on:
   schedule:
-    - cron: '0 5 * * *'  # once per day at midnight ET
+    - cron: '0 5 * * 1'  # once per week on Monday at 05:00 UTC
   workflow_dispatch:
   # Allows you to run this workflow manually from the Actions tab
     types: trigger-run-check-dependencies
