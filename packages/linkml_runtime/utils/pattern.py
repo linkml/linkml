@@ -31,7 +31,7 @@ class PatternResolver():
 
     # regular expression capturing the various use cases
     # for the optionally dot separated, curly braces bound, pattern syntax
-    var_name = re.compile("{([a-z0-9_-]+([\.-_ ][a-z0-9]+)*)}", re.IGNORECASE)
+    var_name = re.compile(r"{([a-z0-9_-]+([\.-_ ][a-z0-9]+)*)}", re.IGNORECASE)
 
     def __init__(self, schema_view):
         # fetch settings from schema_view
