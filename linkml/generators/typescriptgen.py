@@ -72,16 +72,14 @@ export interface {{gen.name(c)}} {%- if parents %} extends {{parents|join(', ')}
 }
 
 export function is{{gen.name(c)}}(o: object): o is {{gen.name(c)}} {
-    {%- set rcs = gen.decorate_strings(gen.required_slots(c), '"', '" in o') %}
-    {%- if rcs %}
+    {%- set rcs = gen.required_slots(c) %}
+    {%- set comp = "&&" if rcs else "||" %}
+    {%- set cs = rcs if rcs else view.class_slots(c.name, direct=False) %}
     return {
-        {{rcs|join(" &&\n        ")}}
+        {%- for sn in cs %}
+        "{{sn}}" in o {%- if not loop.last %} {{comp}}{% endif -%}
+        {%- endfor %}
     }
-    {%- else %}
-    return {
-        {{gen.decorate_strings(view.class_slots(c.name, direct=False), '"', '" in o')|join(" ||\n        ")}}
-     }
-    {%- endif %}
 }
 
 export function to{{gen.name(c)}}(o: {{gen.name(c)}}): {{gen.name(c)}} {
@@ -212,10 +210,6 @@ class TypescriptGenerator(OOCodeGenerator):
 
     def required_slots(self, cls: ClassDefinition) -> List[SlotDefinitionName]:
         return [s for s in self.schemaview.class_slots(cls.name) if self.schemaview.induced_slot(s, cls.name).required]
-
-    @staticmethod
-    def decorate_strings(ss: [str], pre: str, post: str) -> [str]:
-        return [f"{pre}{s}{post}" for s in ss]
 
 
 @shared_arguments(TypescriptGenerator)
