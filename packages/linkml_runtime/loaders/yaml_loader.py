@@ -9,6 +9,7 @@ from linkml_runtime.loaders.loader_root import Loader
 from linkml_runtime.utils.yamlutils import YAMLRoot, DupCheckYamlLoader
 from pydantic import BaseModel
 
+
 class YAMLLoader(Loader):
     """
     A Loader that is capable of instantiating LinkML data objects from a YAML file
@@ -34,7 +35,7 @@ class YAMLLoader(Loader):
 
     def load_any(self,
                  source: Union[str, dict, TextIO],
-                 target_class: Union[Type[YAMLRoot],Type[BaseModel]],
+                 target_class: Union[Type[YAMLRoot], Type[BaseModel]],
                  *, base_dir: Optional[str] = None,
                  metadata: Optional[FileInfo] = None, **_) -> Union[YAMLRoot, List[YAMLRoot]]:
         data_as_dict = self.load_as_dict(source, base_dir=base_dir, metadata=metadata)
