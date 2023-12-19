@@ -10,6 +10,7 @@ from linkml_runtime.linkml_model.meta import (
     ClassDefinitionName,
     Element,
     SlotDefinition,
+    SlotDefinitionName,
 )
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.schemaview import SchemaView
@@ -68,7 +69,29 @@ export interface {{gen.name(c)}} {%- if parents %} extends {{parents|join(', ')}
     {% endif -%}
     {{gen.name(s)}}{%- if not s.required -%}?{%- endif -%}: {{gen.range(s)}},
     {%- endfor %}
-};
+}
+
+export function is{{gen.name(c)}}(o: object): o is {{gen.name(c)}} {
+    {%- set rcs = gen.decorate_strings(gen.required_slots(c), '"', '" in o') %}
+    {%- if rcs %}
+    return {
+        {{rcs|join(" &&\n        ")}}
+    }
+    {%- else %}
+    return {
+        {{gen.decorate_strings(view.class_slots(c.name, direct=False), '"', '" in o')|join(" ||\n        ")}}
+     }
+    {%- endif %}
+}
+
+export function to{{gen.name(c)}}(o: {{gen.name(c)}}): {{gen.name(c)}} {
+    return {
+        {%- for sn in view.class_slots(c.name, direct=False) %}
+        {%- set s = view.induced_slot(sn, c.name) %}
+        {{sn}}: o.{{sn}} ?? []{%- if not loop.last %},{%- endif -%}
+        {%- endfor %}
+    }
+}
 {% endfor %}
 """
 
@@ -186,6 +209,13 @@ class TypescriptGenerator(OOCodeGenerator):
 
     def default_value_for_type(self, typ: str) -> str:
         pass
+
+    def required_slots(self, cls: ClassDefinition) -> List[SlotDefinitionName]:
+        return [s for s in self.schemaview.class_slots(cls.name) if self.schemaview.induced_slot(s, cls.name).required]
+
+    @staticmethod
+    def decorate_strings(ss: [str], pre: str, post: str) -> [str]:
+        return [f"{pre}{s}{post}" for s in ss]
 
 
 @shared_arguments(TypescriptGenerator)
