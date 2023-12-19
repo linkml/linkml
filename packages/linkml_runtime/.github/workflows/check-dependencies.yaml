@@ -1,4 +1,4 @@
-name: Build and test linkml-runtime package dependencies
+name: Build and test linkml-runtime with latest dependency versions
 
 on:
   schedule:
@@ -13,7 +13,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest]
-        python-version: ["3.7", "3.8", "3.9", "3.10"]
+        python-version: ["3.8", "3.9", "3.10"]
         exclude:
         - os: windows-latest
           python-version: "3.7"
