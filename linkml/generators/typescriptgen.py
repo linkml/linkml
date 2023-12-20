@@ -27,6 +27,14 @@ type_map = {
     "XSDDate": "date",
 }
 
+type_init_map = {
+    "str": "''",
+    "int": "0",
+    "Bool": "false",
+    "float": "0.0",
+    "XSDDate": "new Date()",
+}
+
 default_template = """
 {%- for c in view.all_classes().values() -%}
 {%- set cref = gen.classref(c) -%}
@@ -77,7 +85,7 @@ export function is{{gen.name(c)}}(o: object): o is {{gen.name(c)}} {
     {%- set cs = rcs if rcs else view.class_slots(c.name, direct=False) %}
     return {
         {%- for sn in cs %}
-        "{{sn}}" in o {%- if not loop.last %} {{comp}}{% endif -%}
+        '{{sn}}' in o {%- if not loop.last %} {{comp}}{% endif -%}
         {%- endfor %}
     }
 }
@@ -86,7 +94,7 @@ export function to{{gen.name(c)}}(o: {{gen.name(c)}}): {{gen.name(c)}} {
     return {
         {%- for sn in view.class_slots(c.name, direct=False) %}
         {%- set s = view.induced_slot(sn, c.name) %}
-        {{sn}}: o.{{sn}} ?? []{%- if not loop.last %},{%- endif -%}
+        {{sn}}: o.{{sn}} ?? {{gen.init_range(s)}}{%- if not loop.last %},{%- endif -%}
         {%- endfor %}
     }
 }
@@ -198,7 +206,40 @@ class TypescriptGenerator(OOCodeGenerator):
                 return tsrange
             return "string"
 
-    def parents(self, cls: ClassDefinition) -> List[ClassDefinitionName]:
+    def init_range(self, slot: SlotDefinition) -> str:
+        sv = self.schemaview
+        r = slot.range
+        if r in sv.all_classes():
+            id_slot = self.get_identifier_or_key_slot(r)
+            if slot.multivalued:
+                if not id_slot or slot.inlined:
+                    if slot.inlined_as_list or not id_slot:
+                        return "[]"
+                    else:
+                        return "{}"
+                else:
+                    return "[]"
+            else:
+                if not id_slot or slot.inlined:
+                    return "{}"
+                else:
+                    return "null"
+        else:
+            if r in sv.all_types():
+                t = sv.get_type(r)
+                if slot.multivalued:
+                    return "[]"
+                elif t.base and t.base in type_map:
+                    return type_init_map[t.base]
+                elif t.typeof and t.typeof in type_map:
+                    return type_init_map[t.typeof]
+                else:
+                    logging.warning(f"Unknown type.base: {t.name}")
+                return "null"
+            return "null"
+
+    @staticmethod
+    def parents(cls: ClassDefinition) -> List[ClassDefinitionName]:
         if cls.is_a:
             parents = [cls.is_a]
         else:
