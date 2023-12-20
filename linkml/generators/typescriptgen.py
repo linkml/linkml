@@ -79,6 +79,7 @@ export interface {{gen.name(c)}} {%- if parents %} extends {{parents|join(', ')}
     {%- endfor %}
 }
 
+{% if gen.gen_type_utils %}
 export function is{{gen.name(c)}}(o: object): o is {{gen.name(c)}} {
     {%- set rcs = gen.required_slots(c) %}
     {%- set comp = "&&" if rcs else "||" %}
@@ -98,6 +99,7 @@ export function to{{gen.name(c)}}(o: {{gen.name(c)}}): {{gen.name(c)}} {
         {%- endfor %}
     }
 }
+{% endif %}
 {% endfor %}
 """
 
@@ -113,6 +115,9 @@ class TypescriptGenerator(OOCodeGenerator):
     generatorversion = "0.0.1"
     valid_formats = ["text"]
     uses_schemaloader = False
+
+    # ObjectVars
+    gen_type_utils: bool = False
 
     def serialize(self) -> str:
         """Serialize a schema to typescript string"""
@@ -255,13 +260,15 @@ class TypescriptGenerator(OOCodeGenerator):
 
 @shared_arguments(TypescriptGenerator)
 @click.version_option(__version__, "-V", "--version")
+@click.option("--gen-type-utils/", "-u", help="Generate Type checking utils", is_flag=True)
 @click.command()
-def cli(yamlfile, **args):
+def cli(yamlfile, gen_type_utils=False, **args):
     """Generate typescript interfaces and types
 
     See https://github.com/linkml/linkml-runtime.js
     """
-    gen = TypescriptGenerator(yamlfile, **args)
+    gen = TypescriptGenerator(yamlfile, gen_type_utils=gen_type_utils, **args)
+    # print(gen.serialize(gen_utils=gen_utils))
     print(gen.serialize())
 
 

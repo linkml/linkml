@@ -26,11 +26,17 @@ def test_required_slots():
     description = SlotDefinition(name="description", multivalued=False, range="string")
     sb.add_class("Person", slots=[id, description])
     schema = sb.schema
-    tss = TypescriptGenerator(schema, mergeimports=True).serialize()
+    tss = TypescriptGenerator(schema, gen_type_utils=True, mergeimports=True).serialize()
     assert "id: string" in tss
     assert "'id' in o" in tss
     assert "description?: string" in tss
     assert "description: o.description ?? ''" in tss
+
+    tss = TypescriptGenerator(schema, mergeimports=True).serialize()
+    assert "id: string" in tss
+    assert "'id' in o" not in tss
+    assert "description?: string" in tss
+    assert "description: o.description ?? ''" not in tss
 
 
 def test_mutlivalued_string():
@@ -42,11 +48,17 @@ def test_mutlivalued_string():
     descriptions = SlotDefinition(name="descriptions", multivalued=True, range="string", required=True)
     sb.add_class("Person", slots=[aliases, descriptions])
     schema = sb.schema
-    tss = TypescriptGenerator(schema, mergeimports=True).serialize()
+    tss = TypescriptGenerator(schema, gen_type_utils=True, mergeimports=True).serialize()
     assert "aliases?: string[]" in tss
     assert "descriptions: string[]" in tss
     assert "'descriptions' in o" in tss
     assert "descriptions: o.descriptions ?? []" in tss
+
+    tss = TypescriptGenerator(schema, mergeimports=True).serialize()
+    assert "aliases?: string[]" in tss
+    assert "descriptions: string[]" in tss
+    assert "'descriptions' in o" not in tss
+    assert "descriptions: o.descriptions ?? []" not in tss
 
 
 def test_enums():
