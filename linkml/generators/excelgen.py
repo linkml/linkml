@@ -23,6 +23,7 @@ class ExcelGenerator(Generator):
     requires_metamodel = False
 
     split_workbook_by_class: bool = field(default_factory=lambda: False)
+    include_mixins: bool = field(default_factory=lambda: False)
 
     def __post_init__(self) -> None:
         super().__post_init__()
@@ -52,37 +53,35 @@ class ExcelGenerator(Generator):
         sv = self.schemaview
 
         for cls_name in classes:
-            cls = sv.get_class(class_name=cls_name, imports=self.mergeimports)
-            if not cls.mixin and not cls.abstract:
-                workbook.create_sheet(cls_name)
+            workbook.create_sheet(cls_name)
 
-                # Add columns to the worksheet for the current class
-                slots = [s.name for s in sv.class_induced_slots(cls_name, self.mergeimports)]
-                self.add_columns_to_worksheet(workbook, cls_name, slots)
+            # Add columns to the worksheet for the current class
+            slots = [s.name for s in sv.class_induced_slots(cls_name, self.mergeimports)]
+            self.add_columns_to_worksheet(workbook, cls_name, slots)
+            workbook.save(output_path)
+
+            # Add enum validation for columns with enum types
+            enum_list = list(sv.all_enums(imports=self.mergeimports).keys())
+            for s in sv.class_induced_slots(cls_name, self.mergeimports):
+                if s.range in enum_list:
+                    pv_list = list(sv.get_enum(s.range).permissible_values.keys())
+
+                    # Data Validation formula to be applied to the column and
+                    # which will be used to create the dropdown
+                    dv_formula = f'"{",".join(pv_list)}"'
+
+                    # Check if the total length of the data validation formula
+                    # including the separators is <= 255 characters
+                    enum_length = len(dv_formula)
+                    if enum_length <= 255:
+                        self.column_enum_validation(workbook, cls_name, s.name, dv_formula)
+                    else:
+                        self.logger.warning(
+                            f"'{s.range}' has permissible values with total "
+                            "length > 255 characters. Dropdowns may not work properly "
+                            f"in {output_path}"
+                        )
                 workbook.save(output_path)
-
-                # Add enum validation for columns with enum types
-                enum_list = list(sv.all_enums(imports=self.mergeimports).keys())
-                for s in sv.class_induced_slots(cls_name, self.mergeimports):
-                    if s.range in enum_list:
-                        pv_list = list(sv.get_enum(s.range).permissible_values.keys())
-
-                        # Data Validation formula to be applied to the column and
-                        # which will be used to create the dropdown
-                        dv_formula = f'"{",".join(pv_list)}"'
-
-                        # Check if the total length of the data validation formula
-                        # including the separators is <= 255 characters
-                        enum_length = len(dv_formula)
-                        if enum_length <= 255:
-                            self.column_enum_validation(workbook, cls_name, s.name, dv_formula)
-                        else:
-                            self.logger.warning(
-                                f"'{s.range}' has permissible values with total "
-                                "length > 255 characters. Dropdowns may not work properly "
-                                f"in {output_path}"
-                            )
-                    workbook.save(output_path)
 
         workbook.save(output_path)
         if self.split_workbook_by_class:
@@ -134,11 +133,18 @@ class ExcelGenerator(Generator):
 
     def serialize(self, **kwargs) -> str:
         sv = self.schemaview
-        classes_to_process = [
-            cls_name
-            for cls_name, cls in sv.all_classes(imports=self.mergeimports).items()
-            if not cls.mixin and not cls.abstract
-        ]
+
+        if self.include_mixins:
+            classes_to_process = [
+                cls_name for cls_name, cls in sv.all_classes(imports=self.mergeimports).items() 
+                if not cls.abstract
+            ]
+        else:
+            classes_to_process = [
+                cls_name
+                for cls_name, cls in sv.all_classes(imports=self.mergeimports).items()
+                if not cls.mixin and not cls.abstract
+            ]
 
         if self.split_workbook_by_class:
             output_path = Path(self.schema.name + "_worksheets") if not self.output else Path(self.output)
@@ -156,7 +162,6 @@ class ExcelGenerator(Generator):
             output_path = output_path.absolute()
 
             self.create_workbook_and_worksheets(output_path, classes_to_process)
-
             self.logger.info(f"The Excel workbook has been written to {output_path}")
 
 
@@ -169,15 +174,23 @@ class ExcelGenerator(Generator):
     help="""Split model into separate Excel workbooks/files, one for each class""",
 )
 @click.option(
+    "--include-mixins",
+    is_flag=True,
+    default=False,
+    help="""Include mixin classes in the generated Excel workbook/workbooks""",
+)
+@click.option(
     "-o",
     "--output",
     type=click.Path(),
     help="""Name of Excel spreadsheet to be created, or name of directory to create split workbooks in""",
 )
 @click.version_option(__version__, "-V", "--version")
-def cli(yamlfile, split_workbook_by_class, **kwargs):
+def cli(yamlfile, split_workbook_by_class, include_mixins, **kwargs):
     """Generate Excel representation of a LinkML model"""
-    ExcelGenerator(yamlfile, split_workbook_by_class=split_workbook_by_class, **kwargs).serialize(**kwargs)
+    ExcelGenerator(
+        yamlfile, split_workbook_by_class=split_workbook_by_class, include_mixins=include_mixins, **kwargs
+    ).serialize(**kwargs)
 
 
 if __name__ == "__main__":
