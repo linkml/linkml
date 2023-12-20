@@ -70,7 +70,7 @@ export enum {{e.name}} {
 {%- endif -%}
 {% set parents = gen.parents(c) %}
 export interface {{gen.name(c)}} {%- if parents %} extends {{parents|join(', ')}} {%- endif %} {
-    {%- for sn in view.class_slots(c.name, direct=False) %}
+    {%- for sn in view.class_slots(c.name, direct=not(gen.include_induced_slots)) %}
     {% set s = view.induced_slot(sn, c.name) %}
     {%- if s.description -%}
     /** {{s.description}} */
@@ -118,6 +118,7 @@ class TypescriptGenerator(OOCodeGenerator):
 
     # ObjectVars
     gen_type_utils: bool = False
+    include_induced_slots: bool = False
 
     def serialize(self) -> str:
         """Serialize a schema to typescript string"""
@@ -261,14 +262,16 @@ class TypescriptGenerator(OOCodeGenerator):
 @shared_arguments(TypescriptGenerator)
 @click.version_option(__version__, "-V", "--version")
 @click.option("--gen-type-utils/", "-u", help="Generate Type checking utils", is_flag=True)
+@click.option("--include-induced-slots/", help="Generate slots induced through inheritance", is_flag=True)
 @click.command()
-def cli(yamlfile, gen_type_utils=False, **args):
+def cli(yamlfile, gen_type_utils=False, include_induced_slots=False, **args):
     """Generate typescript interfaces and types
 
     See https://github.com/linkml/linkml-runtime.js
     """
-    gen = TypescriptGenerator(yamlfile, gen_type_utils=gen_type_utils, **args)
-    # print(gen.serialize(gen_utils=gen_utils))
+    gen = TypescriptGenerator(
+        yamlfile, gen_type_utils=gen_type_utils, include_induced_slots=include_induced_slots, **args
+    )
     print(gen.serialize())
 
 
