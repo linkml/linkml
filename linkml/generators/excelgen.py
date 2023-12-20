@@ -136,8 +136,7 @@ class ExcelGenerator(Generator):
 
         if self.include_mixins:
             classes_to_process = [
-                cls_name for cls_name, cls in sv.all_classes(imports=self.mergeimports).items() 
-                if not cls.abstract
+                cls_name for cls_name, cls in sv.all_classes(imports=self.mergeimports).items() if not cls.abstract
             ]
         else:
             classes_to_process = [
