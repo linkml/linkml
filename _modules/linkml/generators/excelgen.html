@@ -371,10 +371,15 @@
                     <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">range</span> <span class="ow">in</span> <span class="n">enum_list</span><span class="p">:</span>
                         <span class="n">pv_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">sv</span><span class="o">.</span><span class="n">get_enum</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">range</span><span class="p">)</span><span class="o">.</span><span class="n">permissible_values</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
 
-                        <span class="c1"># Check if the total length of permissible values is &lt;= 255 characters</span>
-                        <span class="n">enum_length</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">pv_list</span><span class="p">)</span>
+                        <span class="c1"># Data Validation formula to be applied to the column and</span>
+                        <span class="c1"># which will be used to create the dropdown</span>
+                        <span class="n">dv_formula</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">pv_list</span><span class="p">)</span><span class="si">}</span><span class="s1">&quot;&#39;</span>
+
+                        <span class="c1"># Check if the total length of the data validation formula</span>
+                        <span class="c1"># including the separators is &lt;= 255 characters</span>
+                        <span class="n">enum_length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">dv_formula</span><span class="p">)</span>
                         <span class="k">if</span> <span class="n">enum_length</span> <span class="o">&lt;=</span> <span class="mi">255</span><span class="p">:</span>
-                            <span class="bp">self</span><span class="o">.</span><span class="n">column_enum_validation</span><span class="p">(</span><span class="n">workbook</span><span class="p">,</span> <span class="n">cls_name</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">pv_list</span><span class="p">)</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">column_enum_validation</span><span class="p">(</span><span class="n">workbook</span><span class="p">,</span> <span class="n">cls_name</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">dv_formula</span><span class="p">)</span>
                         <span class="k">else</span><span class="p">:</span>
                             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
                                 <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">s</span><span class="o">.</span><span class="n">range</span><span class="si">}</span><span class="s2">&#39; has permissible values with total &quot;</span>
@@ -407,7 +412,7 @@
         <span class="n">workbook</span><span class="p">:</span> <span class="n">Workbook</span><span class="p">,</span>
         <span class="n">worksheet_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">column_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">dropdown_values</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">dv_formula</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get worksheet by name and add a dropdown to a specific column in it</span>
@@ -416,7 +421,7 @@
 <span class="sd">        :param workbook: The workbook to which the worksheet should be added.</span>
 <span class="sd">        :param worksheet_name: Name of the worksheet to add the column dropdown to.</span>
 <span class="sd">        :param column_name: Name of the worksheet column to add the dropdown to.</span>
-<span class="sd">        :param dropdown_values: List of dropdown values to add to a column in a worksheet.</span>
+<span class="sd">        :param dv_formula: Validation formula (as a literal) to be used for the dropdown.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">worksheet</span> <span class="o">=</span> <span class="n">workbook</span><span class="p">[</span><span class="n">worksheet_name</span><span class="p">]</span>
 
@@ -425,7 +430,7 @@
         <span class="n">column_letter</span> <span class="o">=</span> <span class="n">get_column_letter</span><span class="p">(</span><span class="n">column_number</span><span class="p">)</span>
 
         <span class="c1"># Create the data validation object and set the dropdown values</span>
-        <span class="n">dv</span> <span class="o">=</span> <span class="n">DataValidation</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;list&quot;</span><span class="p">,</span> <span class="n">formula1</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dropdown_values</span><span class="p">)</span><span class="si">}</span><span class="s1">&quot;&#39;</span><span class="p">,</span> <span class="n">allow_blank</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">dv</span> <span class="o">=</span> <span class="n">DataValidation</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;list&quot;</span><span class="p">,</span> <span class="n">formula1</span><span class="o">=</span><span class="n">dv_formula</span><span class="p">,</span> <span class="n">allow_blank</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
         <span class="n">worksheet</span><span class="o">.</span><span class="n">add_data_validation</span><span class="p">(</span><span class="n">dv</span><span class="p">)</span>
 
