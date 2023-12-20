@@ -15,6 +15,8 @@ from linkml_runtime.linkml_model import (
 from linkml_runtime.utils.schemaview import SchemaView, SlotDefinitionName
 from sqlalchemy import Enum
 
+from linkml.transformers.model_transformer import ModelTransformer
+
 
 class RelationalAnnotations(Enum):
     PRIMARY_KEY = "primary_key"
@@ -134,12 +136,11 @@ class TransformationResult:
 
 
 @dataclass
-class RelationalModelTransformer:
+class RelationalModelTransformer(ModelTransformer):
     """
     Transforms the source schema into a relational schema
     """
 
-    schemaview: SchemaView = None
     # dialect: str = field(default_factory=lambda : 'sqlite')
     skip_tree_root: bool = field(default_factory=lambda: False)
     skip_abstract: bool = field(default_factory=lambda: True)
