@@ -67,10 +67,15 @@ class ExcelGenerator(Generator):
                     if s.range in enum_list:
                         pv_list = list(sv.get_enum(s.range).permissible_values.keys())
 
-                        # Check if the total length of permissible values is <= 255 characters
-                        enum_length = sum(len(value) for value in pv_list)
+                        # Data Validation formula to be applied to the column and
+                        # which will be used to create the dropdown
+                        dv_formula = f'"{",".join(pv_list)}"'
+
+                        # Check if the total length of the data validation formula
+                        # including the separators is <= 255 characters
+                        enum_length = len(dv_formula)
                         if enum_length <= 255:
-                            self.column_enum_validation(workbook, cls_name, s.name, pv_list)
+                            self.column_enum_validation(workbook, cls_name, s.name, dv_formula)
                         else:
                             self.logger.warning(
                                 f"'{s.range}' has permissible values with total "
@@ -103,7 +108,7 @@ class ExcelGenerator(Generator):
         workbook: Workbook,
         worksheet_name: str,
         column_name: str,
-        dropdown_values: List[str],
+        dv_formula: str,
     ) -> None:
         """
         Get worksheet by name and add a dropdown to a specific column in it
@@ -112,7 +117,7 @@ class ExcelGenerator(Generator):
         :param workbook: The workbook to which the worksheet should be added.
         :param worksheet_name: Name of the worksheet to add the column dropdown to.
         :param column_name: Name of the worksheet column to add the dropdown to.
-        :param dropdown_values: List of dropdown values to add to a column in a worksheet.
+        :param dv_formula: Validation formula (as a literal) to be used for the dropdown.
         """
         worksheet = workbook[worksheet_name]
 
@@ -121,7 +126,7 @@ class ExcelGenerator(Generator):
         column_letter = get_column_letter(column_number)
 
         # Create the data validation object and set the dropdown values
-        dv = DataValidation(type="list", formula1=f'"{",".join(dropdown_values)}"', allow_blank=True)
+        dv = DataValidation(type="list", formula1=dv_formula, allow_blank=True)
 
         worksheet.add_data_validation(dv)
 
