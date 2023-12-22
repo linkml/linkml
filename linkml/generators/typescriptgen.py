@@ -84,11 +84,11 @@ export function is{{gen.name(c)}}(o: object): o is {{gen.name(c)}} {
     {%- set rcs = gen.required_slots(c) %}
     {%- set comp = "&&" if rcs else "||" %}
     {%- set cs = rcs if rcs else view.class_slots(c.name, direct=False) %}
-    return {
+    return (
         {%- for sn in cs %}
         '{{sn}}' in o {%- if not loop.last %} {{comp}}{% endif -%}
         {%- endfor %}
-    }
+    )
 }
 
 export function to{{gen.name(c)}}(o: {{gen.name(c)}}): {{gen.name(c)}} {
