@@ -33,15 +33,15 @@ that is of enum type will have associated drop downs for all cells corresponding
 Note: It works best for "flat" or denormalized schemas.
 
 Caveat:
-One of the features of ``gen-doc`` is that it has the ability to add Data Validation to columns 
+One of the features of ``gen-excel`` is that it has the ability to add Data Validation to columns 
 that have a range of an enumeration type in the form of dropdowns. A caveat within Microsoft Excel 
 is that the Data Validation list formula is limited to 255 characters, meaning, if the length of 
-all strings (permissible values) in your enumeration exceed 255 characters (combined), then it will 
-result in the creation of a "corrputed" Excel file. You will notice this when you try to open up 
-the Excel file, and Excel will prompt you with an error message saying: *We found a problem with some 
-content in 'xyz.xlsx'. Do you want us to try to recover as much as we can?* In order to avoid any 
-warning pop ups, we are simply turning off dropdown Data Validation for columns constrained by 
-enumerations with total length > 255 characters.
+all strings (permissible values) in your enumeration exceed 255 characters (combined, with separators), 
+then it will result in the creation of a "corrputed" Excel file. You will notice this when you try to 
+open up the Excel file, and Excel will prompt you with an error message saying: *We found a problem 
+with some content in 'xyz.xlsx'. Do you want us to try to recover as much as we can?* In order to 
+avoid any warning pop ups, we are simply turning off dropdown Data Validation for columns constrained 
+by enumerations with total length > 255 characters.
 
 Additional validation support to be added:
 

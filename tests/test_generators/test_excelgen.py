@@ -119,3 +119,34 @@ def test_multiple_excel_workbooks_generation(input_path, tmp_path):
         if file == "organization.xlsx":
             column_names = verify_workbook_columns(file_path, "organization")
             assert sorted(column_names) == ["has boss", "id", "name"]
+
+
+def test_file_generation_for_mixins(input_path, tmp_path):
+    kitchen_sink_schema = str(input_path("kitchen_sink.yaml"))
+    excel_files_folder = str(tmp_path)
+
+    # Call ExcelGenerator generator class without including mixins
+    ExcelGenerator(kitchen_sink_schema, split_workbook_by_class=True, output=excel_files_folder).serialize()
+
+    _, _, files = next(os.walk(excel_files_folder))
+    file_count = len(files)
+
+    # Check that HasAliases.xlsx and WithLocation.xlsx have not been generated
+    assert file_count == 25
+
+    assert "HasAliases.xlsx" not in files
+    assert "WithLocation.xlsx" not in files
+
+    # Call ExcelGenerator generator class with mixins
+    ExcelGenerator(
+        kitchen_sink_schema, split_workbook_by_class=True, output=excel_files_folder, include_mixins=True
+    ).serialize()
+
+    _, _, files = next(os.walk(excel_files_folder))
+    file_count = len(files)
+
+    # Check if HasAliases.xlsx and WithLocation.xlsx have been generated
+    assert file_count == 27
+
+    assert "HasAliases.xlsx" in files
+    assert "WithLocation.xlsx" in files
