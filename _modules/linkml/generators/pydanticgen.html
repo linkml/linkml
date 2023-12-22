@@ -429,7 +429,7 @@
 <span class="s2">    {</span><span class="si">%- e</span><span class="s2">ndif %}</span>
 <span class="s2">    {</span><span class="si">% f</span><span class="s2">or attr in c.attributes.values() if c.attributes -%}</span>
 <span class="s2">    {{attr.name}}: {{ attr.annotations[&#39;python_range&#39;].value }} = Field(</span>
-<span class="s2">    {</span><span class="si">%- i</span><span class="s2">f predefined_slot_values[c.name][attr.name] -%}</span>
+<span class="s2">    {</span><span class="si">%- i</span><span class="s2">f predefined_slot_values[c.name][attr.name] is not callable -%}</span>
 <span class="s2">        {{ predefined_slot_values[c.name][attr.name] }}</span>
 <span class="s2">    {</span><span class="si">%- e</span><span class="s2">lif (attr.required or attr.identifier or attr.key) -%}</span>
 <span class="s2">        ...</span>
@@ -481,7 +481,7 @@
 <span class="s2">    {</span><span class="si">%- e</span><span class="s2">ndif %}</span>
 <span class="s2">    {</span><span class="si">% f</span><span class="s2">or attr in c.attributes.values() if c.attributes -%}</span>
 <span class="s2">    {{attr.name}}: {{ attr.annotations[&#39;python_range&#39;].value }} = Field(</span>
-<span class="s2">    {</span><span class="si">%- i</span><span class="s2">f predefined_slot_values[c.name][attr.name] -%}</span>
+<span class="s2">    {</span><span class="si">%- i</span><span class="s2">f predefined_slot_values[c.name][attr.name] is not callable -%}</span>
 <span class="s2">        {{ predefined_slot_values[c.name][attr.name] }}</span>
 <span class="s2">    {</span><span class="si">%- e</span><span class="s2">lif (attr.required or attr.identifier or attr.key) -%}</span>
 <span class="s2">        ...</span>
