@@ -1,3 +1,5 @@
+from importlib.metadata import version
+
 import pytest
 import yaml
 from linkml_runtime import SchemaView
@@ -338,3 +340,41 @@ def test_pydantic_pattern(kitchen_sink_path, tmp_path, input_path):
     assert p1.name == "John Doe"
     with pytest.raises(ValidationError):
         module.Person(id="01", name="x")
+
+
+def test_pydantic_template_1666():
+    """
+    Regression test for https://github.com/linkml/linkml/issues/1666
+    """
+    bad_schema = """
+name: BadSchema
+id: BadSchema
+imports:
+- linkml:types
+classes:
+  BadClass:
+    attributes:
+      keys:
+        name: keys
+        range: string
+      values:
+        name: values
+        range: integer
+        ifabsent: int(1)
+    """
+    gen = PydanticGenerator(bad_schema, package=PACKAGE)
+    code = gen.serialize()
+    # test fails here if "is_string" check not applied
+    # so the test is just that this completes successfully and
+    # doesn't generate a field like
+    # keys: Optional[str] = Field(<built-in method keys of dict object at 0x10f1f13c0>)
+    mod = compile_python(code, PACKAGE)
+
+    # and we check that we haven't lost defaults when they are set
+    pydantic_major_version = int(version("pydantic").split(".")[0])
+    if pydantic_major_version >= 2:
+        assert mod.BadClass.model_fields["keys"].default is None
+        assert mod.BadClass.model_fields["values"].default == 1
+    else:
+        assert mod.BadClass.__fields__["keys"].default is None
+        assert mod.BadClass.__fields__["values"].default == 1
