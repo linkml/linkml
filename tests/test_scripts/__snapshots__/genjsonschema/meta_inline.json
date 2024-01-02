@@ -871,13 +871,25 @@
             "additionalProperties": true,
             "description": "",
             "title": "AnyValue",
-            "type": "object"
+            "type": [
+                "null",
+                "boolean",
+                "object",
+                "number",
+                "string"
+            ]
         },
         "Anything": {
             "additionalProperties": true,
             "description": "",
             "title": "Anything",
-            "type": "object"
+            "type": [
+                "null",
+                "boolean",
+                "object",
+                "number",
+                "string"
+            ]
         },
         "ClassDefinition": {
             "additionalProperties": false,
