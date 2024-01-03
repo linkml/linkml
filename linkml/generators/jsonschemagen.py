@@ -189,7 +189,7 @@ class JsonSchemaGenerator(Generator):
 
         self.top_level_schema = JsonSchema(
             {
-                "$schema": "http://json-schema.org/draft-07/schema#",
+                "$schema": "https://json-schema.org/draft/2019-09/schema",
                 "$id": self.schema.id,
                 "metamodel_version": metamodel_version,
                 "version": self.schema.version if self.schema.version else None,

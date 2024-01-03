@@ -113,7 +113,7 @@ def test_compliance_cases(kitchen_sink_path, input_path, subtests):
                 jsonschema.validate(
                     dataset,
                     schema,
-                    format_checker=jsonschema.Draft7Validator.FORMAT_CHECKER,
+                    format_checker=jsonschema.Draft201909Validator.FORMAT_CHECKER,
                 )
 
             if expected_valid:

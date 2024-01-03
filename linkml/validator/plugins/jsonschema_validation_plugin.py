@@ -1,7 +1,6 @@
 import os
 from typing import Any, Iterator, Optional
 
-import jsonschema
 from jsonschema.exceptions import best_match
 
 from linkml.validator.plugins.validation_plugin import ValidationPlugin
@@ -41,12 +40,11 @@ class JsonschemaValidationPlugin(ValidationPlugin):
         :return: Iterator over validation results
         :rtype: Iterator[ValidationResult]
         """
-        json_schema = context.json_schema(
+        validator = context.json_schema_validator(
             closed=self.closed,
             include_range_class_descendants=self.include_range_class_descendants,
             path_override=self.json_schema_path,
         )
-        validator = jsonschema.Draft7Validator(json_schema, format_checker=jsonschema.Draft7Validator.FORMAT_CHECKER)
         for error in validator.iter_errors(instance):
             best_error = best_match([error])
             yield ValidationResult(
