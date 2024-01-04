@@ -257,6 +257,12 @@ def test_missing_top_class(input_path, caplog):
     assert "No class in schema named NotARealClass" in caplog.text
 
 
+def test_rule_inheritance(subtests, input_path):
+    """Tests that rules are inherited from superclasses"""
+
+    external_file_test(subtests, input_path("jsonschema_rule_inheritance.yaml"))
+
+
 # **********************************************************
 #
 #    Utility functions

@@ -1,0 +1,43 @@
+schema:
+  id: https://example.org/test
+  name: test
+
+  prefixes:
+    linkml: https://w3id.org/linkml/
+  imports:
+    - linkml:types
+
+  default_range: integer
+
+  classes:
+    MyClass:
+      attributes:
+        a:
+        b:
+      rules:
+        - description: if a is big then b is small
+          preconditions:
+            slot_conditions:
+              a:
+                minimum_value: 100
+          postconditions:
+            slot_conditions:
+              b:
+                maximum_value: 10
+    MySubClass:
+      is_a: MyClass
+      tree_root: true
+      attributes:
+        c:
+
+data_cases:
+  - data:
+      a: 1000
+      b: 1
+  - data:
+      a: 1
+      b: 1000
+  - data:
+      a: 1000
+      b: 2000
+    error_message: "2000 is greater than the maximum"
