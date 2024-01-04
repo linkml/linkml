@@ -305,7 +305,6 @@
 <span></span><span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">Optional</span>
 
-<span class="kn">import</span> <span class="nn">jsonschema</span>
 <span class="kn">from</span> <span class="nn">jsonschema.exceptions</span> <span class="kn">import</span> <span class="n">best_match</span>
 
 <span class="kn">from</span> <span class="nn">linkml.validator.plugins.validation_plugin</span> <span class="kn">import</span> <span class="n">ValidationPlugin</span>
@@ -345,12 +344,11 @@
 <span class="sd">        :return: Iterator over validation results</span>
 <span class="sd">        :rtype: Iterator[ValidationResult]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">json_schema</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">json_schema</span><span class="p">(</span>
+        <span class="n">validator</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">json_schema_validator</span><span class="p">(</span>
             <span class="n">closed</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">closed</span><span class="p">,</span>
             <span class="n">include_range_class_descendants</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">include_range_class_descendants</span><span class="p">,</span>
             <span class="n">path_override</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">json_schema_path</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="n">validator</span> <span class="o">=</span> <span class="n">jsonschema</span><span class="o">.</span><span class="n">Draft7Validator</span><span class="p">(</span><span class="n">json_schema</span><span class="p">,</span> <span class="n">format_checker</span><span class="o">=</span><span class="n">jsonschema</span><span class="o">.</span><span class="n">Draft7Validator</span><span class="o">.</span><span class="n">FORMAT_CHECKER</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">error</span> <span class="ow">in</span> <span class="n">validator</span><span class="o">.</span><span class="n">iter_errors</span><span class="p">(</span><span class="n">instance</span><span class="p">):</span>
             <span class="n">best_error</span> <span class="o">=</span> <span class="n">best_match</span><span class="p">([</span><span class="n">error</span><span class="p">])</span>
             <span class="k">yield</span> <span class="n">ValidationResult</span><span class="p">(</span>
