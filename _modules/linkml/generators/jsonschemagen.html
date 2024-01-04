@@ -387,7 +387,9 @@
                 <span class="n">lax_cls</span><span class="p">[</span><span class="s2">&quot;required&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">identifier_name</span><span class="p">)</span>
                 <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;$defs&quot;</span><span class="p">][</span><span class="n">canonical_name</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">OPTIONAL_IDENTIFIER_SUFFIX</span><span class="p">]</span> <span class="o">=</span> <span class="n">lax_cls</span></div>
 
-<div class="viewcode-block" id="JsonSchema.add_property"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.jsonschemagen.JsonSchema.add_property">[docs]</a>    <span class="k">def</span> <span class="nf">add_property</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">subschema</span><span class="p">:</span> <span class="s2">&quot;JsonSchema&quot;</span><span class="p">,</span> <span class="n">required</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="JsonSchema.add_property"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.jsonschemagen.JsonSchema.add_property">[docs]</a>    <span class="k">def</span> <span class="nf">add_property</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">subschema</span><span class="p">:</span> <span class="s2">&quot;JsonSchema&quot;</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">value_required</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">value_disallowed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">canonical_name</span> <span class="o">=</span> <span class="n">underscore</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="s2">&quot;properties&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
@@ -395,11 +397,31 @@
 
         <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;properties&quot;</span><span class="p">][</span><span class="n">canonical_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">subschema</span>
 
-        <span class="k">if</span> <span class="n">required</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">value_required</span><span class="p">:</span>
             <span class="k">if</span> <span class="s2">&quot;required&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
                 <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;required&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
 
-            <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;required&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">canonical_name</span><span class="p">)</span></div>
+            <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;required&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">canonical_name</span><span class="p">)</span>
+
+        <span class="c1"># JSON Schema does not have a very natural way to express that a property cannot be present.</span>
+        <span class="c1"># The apparent best way to do it is to use:</span>
+        <span class="c1"># {</span>
+        <span class="c1">#   properties: {</span>
+        <span class="c1">#     foo: ...</span>
+        <span class="c1">#   },</span>
+        <span class="c1">#   not: {</span>
+        <span class="c1">#     required: [&#39;foo&#39;]</span>
+        <span class="c1">#   }</span>
+        <span class="c1"># }</span>
+        <span class="c1"># The {required: [foo]} subschema evaluates to true if the foo property is present with any</span>
+        <span class="c1"># value. Wrapping that in a `not` keyword inverts that condition.</span>
+        <span class="k">if</span> <span class="n">value_disallowed</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s2">&quot;not&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+                <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;not&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">if</span> <span class="s2">&quot;required&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;not&quot;</span><span class="p">]:</span>
+                <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;not&quot;</span><span class="p">][</span><span class="s2">&quot;required&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+            <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;not&quot;</span><span class="p">][</span><span class="s2">&quot;required&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">canonical_name</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="JsonSchema.add_keyword"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.jsonschemagen.JsonSchema.add_keyword">[docs]</a>    <span class="k">def</span> <span class="nf">add_keyword</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">keyword</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -524,42 +546,44 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">handle_class_slot</span><span class="p">(</span><span class="n">subschema</span><span class="o">=</span><span class="n">class_subschema</span><span class="p">,</span> <span class="bp">cls</span><span class="o">=</span><span class="bp">cls</span><span class="p">,</span> <span class="n">slot</span><span class="o">=</span><span class="n">slot_definition</span><span class="p">)</span>
 
         <span class="n">rule_subschemas</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">rule</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">rules</span><span class="p">:</span>
-            <span class="n">subschema</span> <span class="o">=</span> <span class="n">JsonSchema</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">ancestor_class_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">class_ancestors</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">):</span>
+            <span class="n">ancestor_class</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">get_class</span><span class="p">(</span><span class="n">ancestor_class_name</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">rule</span> <span class="ow">in</span> <span class="n">ancestor_class</span><span class="o">.</span><span class="n">rules</span><span class="p">:</span>
+                <span class="n">subschema</span> <span class="o">=</span> <span class="n">JsonSchema</span><span class="p">()</span>
 
-            <span class="n">open_world</span> <span class="o">=</span> <span class="n">rule</span><span class="o">.</span><span class="n">open_world</span>
-            <span class="k">if</span> <span class="n">open_world</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">open_world</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="n">open_world</span> <span class="o">=</span> <span class="n">rule</span><span class="o">.</span><span class="n">open_world</span>
+                <span class="k">if</span> <span class="n">open_world</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">open_world</span> <span class="o">=</span> <span class="kc">False</span>
 
-            <span class="n">if_subschema</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_subschema_for_anonymous_class</span><span class="p">(</span><span class="n">rule</span><span class="o">.</span><span class="n">preconditions</span><span class="p">,</span> <span class="n">properties_required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">if_subschema</span><span class="p">:</span>
-                <span class="n">subschema</span><span class="p">[</span><span class="s2">&quot;if&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">if_subschema</span>
-
-            <span class="n">then_subschema</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_subschema_for_anonymous_class</span><span class="p">(</span>
-                <span class="n">rule</span><span class="o">.</span><span class="n">postconditions</span><span class="p">,</span> <span class="n">properties_required</span><span class="o">=</span><span class="ow">not</span> <span class="n">open_world</span>
-            <span class="p">)</span>
-            <span class="k">if</span> <span class="n">then_subschema</span><span class="p">:</span>
-                <span class="n">subschema</span><span class="p">[</span><span class="s2">&quot;then&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">then_subschema</span>
-
-            <span class="c1"># same as required requirements as postconditions?</span>
-            <span class="n">else_subschema</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_subschema_for_anonymous_class</span><span class="p">(</span>
-                <span class="n">rule</span><span class="o">.</span><span class="n">elseconditions</span><span class="p">,</span> <span class="n">properties_required</span><span class="o">=</span><span class="ow">not</span> <span class="n">open_world</span>
-            <span class="p">)</span>
-            <span class="k">if</span> <span class="n">else_subschema</span><span class="p">:</span>
-                <span class="n">subschema</span><span class="p">[</span><span class="s2">&quot;else&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">else_subschema</span>
-
-            <span class="n">rule_subschemas</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">subschema</span><span class="p">)</span>
-
-            <span class="k">if</span> <span class="n">rule</span><span class="o">.</span><span class="n">bidirectional</span><span class="p">:</span>
-                <span class="n">inverse_subschema</span> <span class="o">=</span> <span class="n">JsonSchema</span><span class="p">()</span>
-
-                <span class="k">if</span> <span class="n">then_subschema</span><span class="p">:</span>
-                    <span class="n">inverse_subschema</span><span class="p">[</span><span class="s2">&quot;if&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">then_subschema</span>
-
+                <span class="n">if_subschema</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_subschema_for_anonymous_class</span><span class="p">(</span><span class="n">rule</span><span class="o">.</span><span class="n">preconditions</span><span class="p">,</span> <span class="n">properties_required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">if_subschema</span><span class="p">:</span>
-                    <span class="n">inverse_subschema</span><span class="p">[</span><span class="s2">&quot;then&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">if_subschema</span>
+                    <span class="n">subschema</span><span class="p">[</span><span class="s2">&quot;if&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">if_subschema</span>
 
-                <span class="n">rule_subschemas</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">inverse_subschema</span><span class="p">)</span>
+                <span class="n">then_subschema</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_subschema_for_anonymous_class</span><span class="p">(</span>
+                    <span class="n">rule</span><span class="o">.</span><span class="n">postconditions</span><span class="p">,</span> <span class="n">properties_required</span><span class="o">=</span><span class="ow">not</span> <span class="n">open_world</span>
+                <span class="p">)</span>
+                <span class="k">if</span> <span class="n">then_subschema</span><span class="p">:</span>
+                    <span class="n">subschema</span><span class="p">[</span><span class="s2">&quot;then&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">then_subschema</span>
+
+                <span class="c1"># same as required requirements as postconditions?</span>
+                <span class="n">else_subschema</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_subschema_for_anonymous_class</span><span class="p">(</span>
+                    <span class="n">rule</span><span class="o">.</span><span class="n">elseconditions</span><span class="p">,</span> <span class="n">properties_required</span><span class="o">=</span><span class="ow">not</span> <span class="n">open_world</span>
+                <span class="p">)</span>
+                <span class="k">if</span> <span class="n">else_subschema</span><span class="p">:</span>
+                    <span class="n">subschema</span><span class="p">[</span><span class="s2">&quot;else&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">else_subschema</span>
+
+                <span class="n">rule_subschemas</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">subschema</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">rule</span><span class="o">.</span><span class="n">bidirectional</span><span class="p">:</span>
+                    <span class="n">inverse_subschema</span> <span class="o">=</span> <span class="n">JsonSchema</span><span class="p">()</span>
+
+                    <span class="k">if</span> <span class="n">then_subschema</span><span class="p">:</span>
+                        <span class="n">inverse_subschema</span><span class="p">[</span><span class="s2">&quot;if&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">then_subschema</span>
+
+                    <span class="k">if</span> <span class="n">if_subschema</span><span class="p">:</span>
+                        <span class="n">inverse_subschema</span><span class="p">[</span><span class="s2">&quot;then&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">if_subschema</span>
+
+                    <span class="n">rule_subschemas</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">inverse_subschema</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">rule_subschemas</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">class_subschema</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">rule_subschemas</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
@@ -589,20 +613,20 @@
         <span class="n">subschema</span> <span class="o">=</span> <span class="n">JsonSchema</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">slot</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">slot_conditions</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="n">prop</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_subschema_for_slot</span><span class="p">(</span><span class="n">slot</span><span class="p">,</span> <span class="n">omit_type</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">value_required</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">value_disallowed</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">value_presence</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">value_presence</span> <span class="o">==</span> <span class="n">PresenceEnum</span><span class="p">(</span><span class="n">PresenceEnum</span><span class="o">.</span><span class="n">PRESENT</span><span class="p">):</span>
-                    <span class="n">this_properties_required</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="n">value_required</span> <span class="o">=</span> <span class="kc">True</span>
                 <span class="k">elif</span> <span class="n">slot</span><span class="o">.</span><span class="n">value_presence</span> <span class="o">==</span> <span class="n">PresenceEnum</span><span class="p">(</span><span class="n">PresenceEnum</span><span class="o">.</span><span class="n">ABSENT</span><span class="p">):</span>
-                    <span class="n">this_properties_required</span> <span class="o">=</span> <span class="kc">False</span>
-                    <span class="c1"># make the slot unsatisfiable</span>
-                    <span class="n">prop</span><span class="p">[</span><span class="s2">&quot;enum&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">this_properties_required</span> <span class="o">=</span> <span class="kc">False</span>
+                    <span class="n">value_disallowed</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="k">elif</span> <span class="n">slot</span><span class="o">.</span><span class="n">required</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">this_properties_required</span> <span class="o">=</span> <span class="n">slot</span><span class="o">.</span><span class="n">required</span>
+                <span class="n">value_required</span> <span class="o">=</span> <span class="n">slot</span><span class="o">.</span><span class="n">required</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">this_properties_required</span> <span class="o">=</span> <span class="n">properties_required</span>
-            <span class="n">subschema</span><span class="o">.</span><span class="n">add_property</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">aliased_slot_name</span><span class="p">(</span><span class="n">slot</span><span class="p">),</span> <span class="n">prop</span><span class="p">,</span> <span class="n">this_properties_required</span><span class="p">)</span>
+                <span class="n">value_required</span> <span class="o">=</span> <span class="n">properties_required</span>
+            <span class="n">subschema</span><span class="o">.</span><span class="n">add_property</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">aliased_slot_name</span><span class="p">(</span><span class="n">slot</span><span class="p">),</span> <span class="n">prop</span><span class="p">,</span> <span class="n">value_required</span><span class="o">=</span><span class="n">value_required</span><span class="p">,</span> <span class="n">value_disallowed</span><span class="o">=</span><span class="n">value_disallowed</span>
+            <span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">any_of</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">any_of</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">subschema</span><span class="p">[</span><span class="s2">&quot;anyOf&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">get_subschema_for_anonymous_class</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">properties_required</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">any_of</span><span class="p">]</span>
@@ -647,7 +671,9 @@
             <span class="n">enum_schema</span><span class="p">[</span><span class="s2">&quot;enum&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">permissible_values_texts</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">top_level_schema</span><span class="o">.</span><span class="n">add_def</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">enum_schema</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="JsonSchemaGenerator.get_type_info_for_slot_subschema"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.jsonschemagen.JsonSchemaGenerator.get_type_info_for_slot_subschema">[docs]</a>    <span class="k">def</span> <span class="nf">get_type_info_for_slot_subschema</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">AnonymousSlotExpression</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]:</span>
+<div class="viewcode-block" id="JsonSchemaGenerator.get_type_info_for_slot_subschema"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.jsonschemagen.JsonSchemaGenerator.get_type_info_for_slot_subschema">[docs]</a>    <span class="k">def</span> <span class="nf">get_type_info_for_slot_subschema</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">SlotDefinition</span><span class="p">,</span> <span class="n">AnonymousSlotExpression</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]:</span>
         <span class="c1"># JSON Schema type (https://json-schema.org/understanding-json-schema/reference/type.html)</span>
         <span class="n">typ</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="c1"># Reference to a JSON schema entity (https://json-schema.org/understanding-json-schema/structuring.html#ref)</span>
@@ -683,7 +709,7 @@
 
         <span class="k">return</span> <span class="p">(</span><span class="n">typ</span><span class="p">,</span> <span class="n">fmt</span><span class="p">,</span> <span class="n">reference</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="JsonSchemaGenerator.get_value_constraints_for_slot"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.jsonschemagen.JsonSchemaGenerator.get_value_constraints_for_slot">[docs]</a>    <span class="k">def</span> <span class="nf">get_value_constraints_for_slot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">AnonymousSlotExpression</span><span class="p">,</span> <span class="kc">None</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">JsonSchema</span><span class="p">:</span>
+<div class="viewcode-block" id="JsonSchemaGenerator.get_value_constraints_for_slot"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.jsonschemagen.JsonSchemaGenerator.get_value_constraints_for_slot">[docs]</a>    <span class="k">def</span> <span class="nf">get_value_constraints_for_slot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">SlotDefinition</span><span class="p">,</span> <span class="n">AnonymousSlotExpression</span><span class="p">,</span> <span class="kc">None</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">JsonSchema</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">slot</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">JsonSchema</span><span class="p">()</span>
 
@@ -701,11 +727,6 @@
         <span class="n">constraints</span><span class="o">.</span><span class="n">add_keyword</span><span class="p">(</span><span class="s2">&quot;maximum&quot;</span><span class="p">,</span> <span class="n">slot</span><span class="o">.</span><span class="n">maximum_value</span><span class="p">)</span>
         <span class="n">constraints</span><span class="o">.</span><span class="n">add_keyword</span><span class="p">(</span><span class="s2">&quot;const&quot;</span><span class="p">,</span> <span class="n">slot</span><span class="o">.</span><span class="n">equals_string</span><span class="p">)</span>
         <span class="n">constraints</span><span class="o">.</span><span class="n">add_keyword</span><span class="p">(</span><span class="s2">&quot;const&quot;</span><span class="p">,</span> <span class="n">slot</span><span class="o">.</span><span class="n">equals_number</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">value_presence</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">value_presence</span> <span class="o">==</span> <span class="n">PresenceEnum</span><span class="p">(</span><span class="n">PresenceEnum</span><span class="o">.</span><span class="n">PRESENT</span><span class="p">):</span>
-                <span class="n">constraints</span><span class="o">.</span><span class="n">add_keyword</span><span class="p">(</span><span class="s2">&quot;required&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="n">slot</span><span class="o">.</span><span class="n">value_presence</span> <span class="o">==</span> <span class="n">PresenceEnum</span><span class="p">(</span><span class="n">PresenceEnum</span><span class="o">.</span><span class="n">ABSENT</span><span class="p">):</span>
-                <span class="n">constraints</span><span class="o">.</span><span class="n">add_keyword</span><span class="p">(</span><span class="s2">&quot;enum&quot;</span><span class="p">,</span> <span class="p">[])</span>
         <span class="k">return</span> <span class="n">constraints</span></div>
 
 <div class="viewcode-block" id="JsonSchemaGenerator.get_subschema_for_slot"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.jsonschemagen.JsonSchemaGenerator.get_subschema_for_slot">[docs]</a>    <span class="k">def</span> <span class="nf">get_subschema_for_slot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">,</span> <span class="n">omit_type</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JsonSchema</span><span class="p">:</span>
@@ -807,11 +828,16 @@
 
 <div class="viewcode-block" id="JsonSchemaGenerator.handle_class_slot"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.jsonschemagen.JsonSchemaGenerator.handle_class_slot">[docs]</a>    <span class="k">def</span> <span class="nf">handle_class_slot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subschema</span><span class="p">:</span> <span class="n">JsonSchema</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">class_id_slot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">get_identifier_slot</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">use_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="n">slot_is_required</span> <span class="o">=</span> <span class="n">slot</span><span class="o">.</span><span class="n">required</span> <span class="ow">or</span> <span class="n">slot</span> <span class="o">==</span> <span class="n">class_id_slot</span>
+        <span class="n">value_required</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">slot</span><span class="o">.</span><span class="n">required</span> <span class="ow">or</span> <span class="n">slot</span> <span class="o">==</span> <span class="n">class_id_slot</span> <span class="ow">or</span> <span class="n">slot</span><span class="o">.</span><span class="n">value_presence</span> <span class="o">==</span> <span class="n">PresenceEnum</span><span class="p">(</span><span class="n">PresenceEnum</span><span class="o">.</span><span class="n">PRESENT</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">value_disallowed</span> <span class="o">=</span> <span class="n">slot</span><span class="o">.</span><span class="n">value_presence</span> <span class="o">==</span> <span class="n">PresenceEnum</span><span class="p">(</span><span class="n">PresenceEnum</span><span class="o">.</span><span class="n">ABSENT</span><span class="p">)</span>
 
         <span class="n">aliased_slot_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">aliased_slot_name</span><span class="p">(</span><span class="n">slot</span><span class="p">)</span>
         <span class="n">prop</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_subschema_for_slot</span><span class="p">(</span><span class="n">slot</span><span class="p">)</span>
-        <span class="n">subschema</span><span class="o">.</span><span class="n">add_property</span><span class="p">(</span><span class="n">aliased_slot_name</span><span class="p">,</span> <span class="n">prop</span><span class="p">,</span> <span class="n">slot_is_required</span><span class="p">)</span>
+        <span class="n">subschema</span><span class="o">.</span><span class="n">add_property</span><span class="p">(</span>
+            <span class="n">aliased_slot_name</span><span class="p">,</span> <span class="n">prop</span><span class="p">,</span> <span class="n">value_required</span><span class="o">=</span><span class="n">value_required</span><span class="p">,</span> <span class="n">value_disallowed</span><span class="o">=</span><span class="n">value_disallowed</span>
+        <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">designates_type</span><span class="p">:</span>
             <span class="n">type_value</span> <span class="o">=</span> <span class="n">get_type_designator_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="p">,</span> <span class="n">slot</span><span class="p">,</span> <span class="bp">cls</span><span class="p">)</span>
