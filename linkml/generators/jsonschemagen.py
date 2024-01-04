@@ -1,7 +1,6 @@
 import json
 import logging
 import os
-from collections import UserDict
 from copy import deepcopy
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Tuple, Union
@@ -43,7 +42,7 @@ json_schema_types: Dict[str, Tuple[str, Optional[str]]] = {
 }
 
 
-class JsonSchema(UserDict):
+class JsonSchema(dict):
     OPTIONAL_IDENTIFIER_SUFFIX = "__identifier_optional"
 
     def __init__(self, *args, **kwargs):
@@ -134,7 +133,7 @@ class JsonSchema(UserDict):
         return self.get("type") == "object"
 
     def to_json(self, **kwargs) -> str:
-        return json.dumps(self.data, default=lambda d: d.data, **kwargs)
+        return json.dumps(self, **kwargs)
 
     @classmethod
     def ref_for(cls, class_name: Union[str, List[str]], identifier_optional: bool = False):
@@ -212,7 +211,7 @@ class JsonSchemaGenerator(Generator):
 
         self.top_level_schema = JsonSchema(
             {
-                "$schema": "http://json-schema.org/draft-07/schema#",
+                "$schema": "https://json-schema.org/draft/2019-09/schema",
                 "$id": self.schema.id,
                 "metamodel_version": metamodel_version,
                 "version": self.schema.version if self.schema.version else None,
@@ -226,13 +225,15 @@ class JsonSchemaGenerator(Generator):
         if cls.mixin or cls.abstract:
             return
 
+        subschema_type = "object"
         additional_properties = False
         if self.is_class_unconstrained(cls):
+            subschema_type = ["null", "boolean", "object", "number", "string"]
             additional_properties = True
 
         class_subschema = JsonSchema(
             {
-                "type": "object",
+                "type": subschema_type,
                 "additionalProperties": additional_properties,
                 "description": be(cls.description),
             }
@@ -539,7 +540,7 @@ class JsonSchemaGenerator(Generator):
             type_value = get_type_designator_value(self.schemaview, slot, cls)
             prop["enum"] = [type_value]
 
-    def generate(self) -> dict:
+    def generate(self) -> JsonSchema:
         self.start_schema()
         for enum_definition in self.schemaview.all_enums().values():
             self.handle_enum(enum_definition)

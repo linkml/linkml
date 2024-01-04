@@ -871,13 +871,25 @@
             "additionalProperties": true,
             "description": "",
             "title": "AnyValue",
-            "type": "object"
+            "type": [
+                "null",
+                "boolean",
+                "object",
+                "number",
+                "string"
+            ]
         },
         "Anything": {
             "additionalProperties": true,
             "description": "",
             "title": "Anything",
-            "type": "object"
+            "type": [
+                "null",
+                "boolean",
+                "object",
+                "number",
+                "string"
+            ]
         },
         "ClassDefinition": {
             "additionalProperties": false,
@@ -7901,7 +7913,7 @@
         }
     },
     "$id": "https://w3id.org/linkml/meta",
-    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$schema": "https://json-schema.org/draft/2019-09/schema",
     "additionalProperties": true,
     "description": "A collection of definitions that make up a schema or a data model.",
     "metamodel_version": "1.7.0",

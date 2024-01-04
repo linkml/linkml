@@ -1,5 +1,4 @@
 import inspect
-import json
 from copy import deepcopy
 from dataclasses import dataclass
 from functools import lru_cache
@@ -38,8 +37,9 @@ def get_named_config(name: str) -> Dict[str, Any]:
 @lru_cache
 def get_metamodel_validator() -> jsonschema.Validator:
     meta_json_gen = JsonSchemaGenerator(LOCAL_METAMODEL_YAML_FILE, not_closed=False)
-    meta_json_schema = json.loads(meta_json_gen.serialize())
-    validator = jsonschema.Draft7Validator(meta_json_schema)
+    meta_json_schema = meta_json_gen.generate()
+    validator_cls = jsonschema.validators.validator_for(meta_json_schema, default=jsonschema.Draft7Validator)
+    validator = validator_cls(meta_json_schema, format_checker=validator_cls.FORMAT_CHECKER)
     return validator
 
 

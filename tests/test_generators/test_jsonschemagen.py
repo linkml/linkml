@@ -65,7 +65,16 @@ def test_class_uri_any(kitchen_sink_path, subtests):
     See also https://github.com/linkml/linkml/issues/579
     """
 
-    assert_schema_validates(subtests, kitchen_sink_path, {"$defs": {"AnyObject": {"additionalProperties": True}}})
+    expected_json_schema_subset = {"$defs": {"AnyObject": {"additionalProperties": True}}}
+    data_cases = [
+        {"data": {"metadata": {"anything": {"goes": "here"}}}},
+        {"data": {"metadata": "anything goes here"}},
+        {"data": {"metadata": 0}},
+        {"data": {"metadata": None}},
+        {"data": {"metadata": True}},
+        {"data": {"metadata": ["array", "not", "allowed"]}, "error_message": "is not of type"},
+    ]
+    assert_schema_validates(subtests, kitchen_sink_path, expected_json_schema_subset, data_cases)
 
 
 def test_compliance_cases(kitchen_sink_path, input_path, subtests):
@@ -104,7 +113,7 @@ def test_compliance_cases(kitchen_sink_path, input_path, subtests):
                 jsonschema.validate(
                     dataset,
                     schema,
-                    format_checker=jsonschema.Draft7Validator.FORMAT_CHECKER,
+                    format_checker=jsonschema.Draft201909Validator.FORMAT_CHECKER,
                 )
 
             if expected_valid:

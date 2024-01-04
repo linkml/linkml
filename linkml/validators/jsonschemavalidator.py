@@ -105,7 +105,8 @@ class JsonSchemaDataValidator(DataValidator):
         jsonschema_obj = _generate_jsonschema(
             self._hashable_schema, target_class_name, closed, self.include_range_class_descendants
         )
-        validator = jsonschema.Draft7Validator(jsonschema_obj, format_checker=jsonschema.Draft7Validator.FORMAT_CHECKER)
+        validator_cls = jsonschema.validators.validator_for(jsonschema_obj, default=jsonschema.Draft7Validator)
+        validator = validator_cls(jsonschema_obj, format_checker=validator_cls.FORMAT_CHECKER)
         for error in validator.iter_errors(data):
             best_error = best_match([error])
             # TODO: This should return some kind of standard validation result
