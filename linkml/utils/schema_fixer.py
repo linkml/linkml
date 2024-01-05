@@ -3,7 +3,7 @@ import re
 from collections import defaultdict
 from copy import copy
 from dataclasses import dataclass
-from typing import Any, Callable, Dict, List, Union
+from typing import Any, Callable, Dict, List, Optional, Union
 
 import click
 import yaml
@@ -319,15 +319,16 @@ class SchemaFixer:
         schema_dict: Dict[str, Any] = None,
         rules: Dict[str, Callable] = None,
         imports=False,
+        preserve_original_using: Optional[str] = None,
     ) -> Union[YAMLRoot, Dict]:
         """
         Changes element names to conform to naming conventions.
-
 
         :param schema: input schema
         :param schema_dict: if specified, the transformation will happen on this dictionary object
         :param rules: mappings between index slots and functions that normalize names
         :param imports: if True, all that imported modules are also fixed
+        :param preserve_original_using: if specified, the original name will be preserved in this slot
         :return:
         """
         if rules is None:
@@ -339,6 +340,7 @@ class SchemaFixer:
             }
         fixes = {}
         sv = SchemaView(schema)
+        preserved = []
         for n, e in sv.all_elements(imports=imports).items():
             if e.from_schema == "https://w3id.org/linkml/types":
                 continue
@@ -348,9 +350,35 @@ class SchemaFixer:
                 normalized = func(n)
                 if normalized != n:
                     fixes[n] = normalized
+                if preserve_original_using is not None:
+                    preserved.append((typ, normalized, n))
+                # if preserve_original_using is not None:
+                #    setattr(e, preserve_original_using, n)
+                #    print(f"SETTING {typ} {e.name}.{preserve_original_using} = {n}")
         if schema_dict is not None:
             schema = schema_dict
-        return yaml_rewrite(schema, fixes)
+        schema = yaml_rewrite(schema, fixes)
+        for typ, normalized, original in preserved:
+            pathmap = {
+                ClassDefinition.__name__: "classes",
+                TypeDefinition.__name__: "types",
+                SlotDefinition.__name__: "slots",
+                EnumDefinition.__name__: "enums",
+            }
+            if isinstance(schema, dict):
+                path = schema[pathmap[typ]]
+                if normalized not in path:
+                    logger.warning(f"Cannot find {typ} {normalized} in {pathmap[typ]}")
+                    continue
+                e = path[normalized]
+                if preserve_original_using not in e:
+                    path[normalized][preserve_original_using] = original
+            else:
+                path = getattr(schema, pathmap[typ])
+                e = path[normalized]
+                if not getattr(e, preserve_original_using, None):
+                    setattr(e, preserve_original_using, original)
+        return schema
 
 
 @click.group()
@@ -375,6 +403,13 @@ def main(verbose: int, quiet: bool):
     default=False,
     show_default=True,
     help="Apply fix to referenced elements from modules",
+)
+@click.option(
+    "--preserve-original-using",
+    "-P",
+    default=None,
+    show_default=True,
+    help="If specified, original name will be preserved in this slot (e.g. title)",
 )
 def fix_names(input_schema, **kwargs):
     """Fix element names to conform to naming conventions"""

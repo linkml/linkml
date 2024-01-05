@@ -23,6 +23,7 @@ from linkml.generators.pythongen import PythonGenerator
 from linkml.generators.shaclgen import ShaclGenerator
 from linkml.generators.shexgen import ShExGenerator
 from linkml.generators.sqlddlgen import SQLDDLGenerator
+from linkml.utils.cli_utils import log_level_option
 from linkml.utils.generator import Generator
 
 PATH_FSTRING = str
@@ -103,7 +104,7 @@ class ProjectGenerator:
             all_schemas = [schema_path]
         else:
             all_schemas = get_local_imports(schema_path, os.path.dirname(schema_path))
-        print(f"ALL_SCHEMAS = {all_schemas}")
+        logging.debug(f"ALL_SCHEMAS = {all_schemas}")
         for gen_name, (gen_cls, gen_path_fmt, default_gen_args) in GEN_MAP.items():
             if config.includes is not None and config.includes != [] and gen_name not in config.includes:
                 logging.info(f"Skipping {gen_name} as not in inclusion list: {config.includes}")
@@ -178,6 +179,7 @@ class ProjectGenerator:
     show_default=True,
     help="Merge imports into source file",
 )
+@log_level_option
 @click.argument("yamlfile")
 @click.version_option(__version__, "-V", "--version")
 def cli(
@@ -221,7 +223,6 @@ def cli(
             top_class: Container
 
     """
-    logging.basicConfig(level=logging.INFO)
     project_config = ProjectConfiguration()
     if config_file is not None:
         for k, v in yaml.safe_load(config_file).items():

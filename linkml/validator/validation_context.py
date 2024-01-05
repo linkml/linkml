@@ -3,6 +3,7 @@ import os
 from functools import lru_cache
 from typing import Optional
 
+import jsonschema
 from linkml_runtime import SchemaView
 from linkml_runtime.linkml_model import SchemaDefinition
 
@@ -29,26 +30,29 @@ class ValidationContext:
         return self._target_class
 
     @lru_cache
-    def json_schema(
+    def json_schema_validator(
         self,
         *,
         closed: bool,
         include_range_class_descendants: bool,
         path_override: Optional[os.PathLike] = None,
-    ):
+    ) -> jsonschema.Validator:
         if path_override:
             with open(path_override) as json_schema_file:
-                return json.load(json_schema_file)
+                json_schema = json.load(json_schema_file)
+        else:
+            not_closed = not closed
+            jsonschema_gen = JsonSchemaGenerator(
+                schema=self._schema,
+                mergeimports=True,
+                top_class=self._target_class,
+                not_closed=not_closed,
+                include_range_class_descendants=include_range_class_descendants,
+            )
+            json_schema = jsonschema_gen.generate()
 
-        not_closed = not closed
-        jsonschema_gen = JsonSchemaGenerator(
-            schema=self._schema,
-            mergeimports=True,
-            top_class=self._target_class,
-            not_closed=not_closed,
-            include_range_class_descendants=include_range_class_descendants,
-        )
-        return jsonschema_gen.generate()
+        validator_cls = jsonschema.validators.validator_for(json_schema, default=jsonschema.Draft7Validator)
+        return validator_cls(json_schema, format_checker=validator_cls.FORMAT_CHECKER)
 
     def pydantic_model(self, *, closed: bool):
         module = self._pydantic_module(closed=closed)

@@ -43,6 +43,9 @@ def default_template(pydantic_ver: str = "1", extra_fields: str = "forbid") -> s
 from __future__ import annotations
 from datetime import datetime, date
 from enum import Enum
+{% if uses_numpy -%}
+import numpy as np
+{%- endif %}
 from typing import List, Dict, Optional, Any, Union"""
     if pydantic_ver == "1":
         template += """
@@ -86,7 +89,9 @@ class ConfiguredBaseModel(BaseModel):
         extra = '{extra_fields}',
         arbitrary_types_allowed=True,
         use_enum_values = True)
+    pass
 """
+
     ### ENUMS ###
     template += """
 {% for e in enums.values() %}
@@ -125,7 +130,7 @@ class {{ c.name }}
     {%- endif %}
     {% for attr in c.attributes.values() if c.attributes -%}
     {{attr.name}}: {{ attr.annotations['python_range'].value }} = Field(
-    {%- if predefined_slot_values[c.name][attr.name] -%}
+    {%- if predefined_slot_values[c.name][attr.name] is not callable -%}
         {{ predefined_slot_values[c.name][attr.name] }}
     {%- elif (attr.required or attr.identifier or attr.key) -%}
         ...
@@ -157,7 +162,7 @@ class {{ c.name }}
                 raise ValueError(f"Invalid {{attr.name}} format: {v}")
         return v
     {% endif -%}
-    {% endfor %}    
+    {% endfor %}
 {% endfor %}
 """
     elif pydantic_ver == "2":
@@ -177,7 +182,7 @@ class {{ c.name }}
     {%- endif %}
     {% for attr in c.attributes.values() if c.attributes -%}
     {{attr.name}}: {{ attr.annotations['python_range'].value }} = Field(
-    {%- if predefined_slot_values[c.name][attr.name] -%}
+    {%- if predefined_slot_values[c.name][attr.name] is not callable -%}
         {{ predefined_slot_values[c.name][attr.name] }}
     {%- elif (attr.required or attr.identifier or attr.key) -%}
         ...
@@ -209,7 +214,7 @@ class {{ c.name }}
                 raise ValueError(f"Invalid {{attr.name}} format: {v}")
         return v
     {% endif -%}
-    {% endfor %}    
+    {% endfor %}
 {% endfor %}
 """
 
@@ -344,6 +349,8 @@ class PydanticGenerator(OOCodeGenerator):
                 # Multivalued slots that are either not inlined (just an identifier) or are
                 # inlined as lists should get default_factory list, if they're inlined but
                 # not as a list, that means a dictionary
+                elif "linkml:elements" in slot.implements:
+                    slot_values[camelcase(class_def.name)][slot.name] = None
                 elif slot.multivalued:
                     has_identifier_slot = self.range_class_has_identifier_slot(slot)
 
@@ -535,6 +542,8 @@ class PydanticGenerator(OOCodeGenerator):
         )
         enums = self.generate_enums(sv.all_enums())
 
+        uses_numpy = False
+
         sorted_classes = self.sort_classes(list(sv.all_classes().values()))
         self.sorted_class_names = [camelcase(c.name) for c in sorted_classes]
 
@@ -587,7 +596,13 @@ class PydanticGenerator(OOCodeGenerator):
                 else:
                     raise Exception(f"Could not generate python range for {class_name}.{s.name}")
 
-                if s.multivalued:
+                if "linkml:elements" in s.implements:
+                    # TODO add support for xarray
+                    pyrange = "np.ndarray"
+                    if "linkml:ColumnOrderedArray" in class_def.implements:
+                        raise NotImplementedError("Cannot generate Pydantic code for ColumnOrderedArrays.")
+                    uses_numpy = True
+                elif s.multivalued:
                     if s.inlined or s.inlined_as_list:
                         collection_key = self.generate_collection_key(slot_ranges, s, class_def)
                     else:
@@ -609,6 +624,7 @@ class PydanticGenerator(OOCodeGenerator):
             metamodel_version=self.schema.metamodel_version,
             version=self.schema.version,
             class_isa_plus_mixins=self.get_class_isa_plus_mixins(),
+            uses_numpy=uses_numpy,
         )
         return code
 

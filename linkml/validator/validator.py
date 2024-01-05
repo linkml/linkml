@@ -1,3 +1,4 @@
+from functools import lru_cache
 from pathlib import Path
 from typing import Any, Iterator, List, Optional, TextIO, Union
 
@@ -95,7 +96,7 @@ class Validator:
         if not self._validation_plugins:
             return []
 
-        context = ValidationContext(self._schema, target_class)
+        context = self._context(target_class)
 
         for plugin in self._validation_plugins:
             plugin.pre_process(context)
@@ -117,3 +118,7 @@ class Validator:
 
         for plugin in self._validation_plugins:
             plugin.post_process(context)
+
+    @lru_cache
+    def _context(self, target_class: Optional[str] = None) -> ValidationContext:
+        return ValidationContext(self._schema, target_class)

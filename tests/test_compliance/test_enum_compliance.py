@@ -105,9 +105,11 @@ def test_enum(framework, enum_name, enum_desc, pvs, value, include_meaning):
         # SQLite does not support enums
         expected_behavior = ValidationBehavior.INCOMPLETE
     if pvs == [] and framework not in [JSON_SCHEMA]:
-        # only JSON Schema supports empty enums
-        # pydantiggen will generate a string extension, but
-        # with pydantic2, automatic casting doesn't behave the same way
+        # only JSON Schema and pydantic1 supports empty enums
+        # (pydantiggen will generate a string extension, but
+        # with pydantic2, automatic casting doesn't behave the same way;
+        # see https://github.com/linkml/linkml/issues/1792)
+        # Currently OWL validation depends on python->ttl
         expected_behavior = ValidationBehavior.FALSE_POSITIVE
     check_data(
         schema,

@@ -65,7 +65,16 @@ def test_class_uri_any(kitchen_sink_path, subtests):
     See also https://github.com/linkml/linkml/issues/579
     """
 
-    assert_schema_validates(subtests, kitchen_sink_path, {"$defs": {"AnyObject": {"additionalProperties": True}}})
+    expected_json_schema_subset = {"$defs": {"AnyObject": {"additionalProperties": True}}}
+    data_cases = [
+        {"data": {"metadata": {"anything": {"goes": "here"}}}},
+        {"data": {"metadata": "anything goes here"}},
+        {"data": {"metadata": 0}},
+        {"data": {"metadata": None}},
+        {"data": {"metadata": True}},
+        {"data": {"metadata": ["array", "not", "allowed"]}, "error_message": "is not of type"},
+    ]
+    assert_schema_validates(subtests, kitchen_sink_path, expected_json_schema_subset, data_cases)
 
 
 def test_compliance_cases(kitchen_sink_path, input_path, subtests):
@@ -104,7 +113,7 @@ def test_compliance_cases(kitchen_sink_path, input_path, subtests):
                 jsonschema.validate(
                     dataset,
                     schema,
-                    format_checker=jsonschema.Draft7Validator.FORMAT_CHECKER,
+                    format_checker=jsonschema.Draft201909Validator.FORMAT_CHECKER,
                 )
 
             if expected_valid:
@@ -244,6 +253,23 @@ def test_empty_inlined_as_dict_objects(subtests, input_path):
     """Tests that inlined objects with no non-key required slots can be null/empty"""
 
     external_file_test(subtests, input_path("jsonschema_empty_inlined_as_dict_objects.yaml"))
+
+
+def test_required_slot_condition_in_rule(subtests, input_path):
+    """Tests required: true/false on slot conditions in rules"""
+
+    external_file_test(subtests, input_path("jsonschema_required_slot_condition_in_rule.yaml"))
+
+
+def test_missing_top_class(input_path, caplog):
+    JsonSchemaGenerator(input_path("kitchen_sink.yaml"), top_class="NotARealClass")
+    assert "No class in schema named NotARealClass" in caplog.text
+
+
+def test_rule_inheritance(subtests, input_path):
+    """Tests that rules are inherited from superclasses"""
+
+    external_file_test(subtests, input_path("jsonschema_rule_inheritance.yaml"))
 
 
 # **********************************************************
