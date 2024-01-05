@@ -1,7 +1,9 @@
+from pprint import pprint
+
 import pytest
 import rdflib
 from rdflib import Graph
-from pprint import pprint
+
 from linkml.generators.rdfgen import RDFGenerator
 
 schema = """
@@ -49,11 +51,12 @@ JSONLD = """
   ]
 }"""
 
+
 def test_annotation_extensions():
     """Test that annotation extensions are properly serialized"""
     s = RDFGenerator(schema, mergeimports=False).serialize()
     rdf_graph = Graph()
-    rdf_graph.parse(data=s, format='turtle')
+    rdf_graph.parse(data=s, format="turtle")
 
     # Query for annotations in the ClassDefinition
     query = """
@@ -75,6 +78,7 @@ def test_annotation_extensions():
         assert isinstance(example, rdflib.Literal)
         assert isinstance(tag, rdflib.URIRef)
 
+
 @pytest.mark.skip("TODO")
 def test_rdfgen(kitchen_sink_path):
     """rdf"""
@@ -82,7 +86,6 @@ def test_rdfgen(kitchen_sink_path):
     g = Graph()
     g.parse(data=s)
     pprint(s)
-
 
 
 @pytest.mark.skip("TODO")
