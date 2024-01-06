@@ -1,5 +1,3 @@
-from pprint import pprint
-
 import pytest
 import rdflib
 from rdflib import Graph
@@ -85,7 +83,6 @@ def test_rdfgen(kitchen_sink_path):
     s = RDFGenerator(kitchen_sink_path, mergeimports=False).serialize()
     g = Graph()
     g.parse(data=s)
-    pprint(s)
 
 
 @pytest.mark.skip("TODO")
