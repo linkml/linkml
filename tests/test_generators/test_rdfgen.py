@@ -82,7 +82,7 @@ def test_rdfgen(kitchen_sink_path):
     """rdf"""
     s = RDFGenerator(kitchen_sink_path, mergeimports=False).serialize()
     g = Graph()
-    g.parse(data=s)
+    g.parse(data=s, format="turtle")
 
 
 @pytest.mark.skip("TODO")
