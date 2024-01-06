@@ -235,13 +235,6 @@ URI: [linkml:ClassRule](https://w3id.org/linkml/ClassRule)
 
 ### Mixed in from common_metadata:
 
- * [contributors](contributors.md)  <sub>0..\*</sub>
-     * Description: agent that contributed to the element
-     * Range: [Uriorcurie](types/Uriorcurie.md)
-     * in subsets: (BasicSubset)
-
-### Mixed in from common_metadata:
-
  * [created_on](created_on.md)  <sub>0..1</sub>
      * Description: time at which the element was created
      * Range: [Datetime](types/Datetime.md)
@@ -267,20 +260,6 @@ URI: [linkml:ClassRule](https://w3id.org/linkml/ClassRule)
      * Description: status of the element
      * Range: [Uriorcurie](types/Uriorcurie.md)
      * Example: bibo:draft None
-     * in subsets: (BasicSubset)
-
-### Mixed in from common_metadata:
-
- * [categories](categories.md)  <sub>0..\*</sub>
-     * Description: Controlled terms used to categorize an element.
-     * Range: [Uriorcurie](types/Uriorcurie.md)
-     * in subsets: (BasicSubset)
-
-### Mixed in from common_metadata:
-
- * [keywords](keywords.md)  <sub>0..\*</sub>
-     * Description: Keywords or tags used to describe the element
-     * Range: [String](types/String.md)
      * in subsets: (BasicSubset)
 
 ## Other properties

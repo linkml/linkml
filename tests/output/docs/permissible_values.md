@@ -30,5 +30,4 @@ URI: [linkml:permissible_values](https://w3id.org/linkml/permissible_values)
 | **Aliases:** | | coded values |
 | **In Subsets:** | | SpecificationSubset |
 |  | | BasicSubset |
-| **Exact Mappings:** | | cdisc:PermissibleValue |
 

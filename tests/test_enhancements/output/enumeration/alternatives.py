@@ -1,5 +1,5 @@
 # Auto generated from alternatives.yaml by pythongen.py version: 0.0.1
-# Generation date: 2024-01-05T15:56:37
+# Generation date: 2023-09-22T11:49:25
 # Schema: alternatives
 #
 # id: http://example.org/test/alternatives
@@ -78,8 +78,26 @@ class AllEnums(YAMLRoot):
             self.code_1 = [self.code_1] if self.code_1 is not None else []
         self.code_1 = [v if isinstance(v, OpenEnum) else OpenEnum(v) for v in self.code_1]
 
+        if self.code_2 is not None and not isinstance(self.code_2, ConstrainedEnum2):
+            self.code_2 = ConstrainedEnum2(self.code_2)
+
+        if self.code_3 is not None and not isinstance(self.code_3, ConstrainedEnum3):
+            self.code_3 = ConstrainedEnum3(self.code_3)
+
+        if self.code_4 is not None and not isinstance(self.code_4, ConstrainedEnum4):
+            self.code_4 = ConstrainedEnum4(self.code_4)
+
+        if self.code_5 is not None and not isinstance(self.code_5, ConstrainedEnum4):
+            self.code_5 = ConstrainedEnum4(self.code_5)
+
+        if self.code_6 is not None and not isinstance(self.code_6, ConstrainedEnum4):
+            self.code_6 = ConstrainedEnum4(self.code_6)
+
         if self.code_7 is not None and not isinstance(self.code_7, ConstrainedEvidence):
             self.code_7 = ConstrainedEvidence(self.code_7)
+
+        if self.code_8 is not None and not isinstance(self.code_8, MappedEvidence):
+            self.code_8 = MappedEvidence(self.code_8)
 
         super().__post_init__(**kwargs)
 

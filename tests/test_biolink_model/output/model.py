@@ -1,5 +1,5 @@
 # Auto generated from biolink-model.yaml by pythongen.py version: 0.0.1
-# Generation date: 2024-01-05T15:47:50
+# Generation date: 2023-09-22T11:48:12
 # Schema: Biolink-Model
 #
 # id: https://w3id.org/biolink/biolink-model
@@ -1394,6 +1394,9 @@ class PredicateMapping(YAMLRoot):
         if self.causal_mechanism_qualifier is not None and not isinstance(self.causal_mechanism_qualifier, str):
             self.causal_mechanism_qualifier = str(self.causal_mechanism_qualifier)
 
+        if self.anatomical_context_qualifier is not None and not isinstance(self.anatomical_context_qualifier, AnatomicalContextQualifierEnum):
+            self.anatomical_context_qualifier = AnatomicalContextQualifierEnum(self.anatomical_context_qualifier)
+
         if self.species_context_qualifier is not None and not isinstance(self.species_context_qualifier, OrganismTaxonId):
             self.species_context_qualifier = OrganismTaxonId(self.species_context_qualifier)
 
@@ -1604,31 +1607,6 @@ class Entity(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-    def __new__(cls, *args, **kwargs):
-
-        type_designator = "category"
-        if not type_designator in kwargs:
-            return super().__new__(cls,*args,**kwargs)
-        else:
-            type_designator_value = kwargs[type_designator]
-            target_cls = cls._class_for("class_class_curie", type_designator_value)
-
-
-            if target_cls is None:
-                target_cls = cls._class_for("class_class_uri", type_designator_value)
-
-
-            if target_cls is None:
-                target_cls = cls._class_for("class_model_uri", type_designator_value)
-
-
-            if target_cls is None:
-                raise ValueError(f"Wrong type designator value: class {cls.__name__} "
-                                 f"has no subclass with ['class_class_curie', 'class_class_uri', 'class_model_uri']='{kwargs[type_designator]}'")
-            return super().__new__(target_cls,*args,**kwargs)
-
-
-
 @dataclass
 class NamedThing(Entity):
     """
@@ -1667,36 +1645,6 @@ class NamedThing(Entity):
         self.xref = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.xref]
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
-
-
-    def __new__(cls, *args, **kwargs):
-
-        type_designator = "category"
-        if not type_designator in kwargs:
-            return super().__new__(cls,*args,**kwargs)
-        else:
-            type_designator_value = kwargs[type_designator]
-            target_cls = cls._class_for("class_class_curie", type_designator_value)
-
-
-            if target_cls is None:
-                target_cls = cls._class_for("class_class_uri", type_designator_value)
-
-
-            if target_cls is None:
-                target_cls = cls._class_for("class_model_uri", type_designator_value)
-
-
-            if target_cls is None:
-                raise ValueError(f"Wrong type designator value: class {cls.__name__} "
-                                 f"has no subclass with ['class_class_curie', 'class_class_uri', 'class_model_uri']='{kwargs[type_designator]}'")
-            return super().__new__(target_cls,*args,**kwargs)
-
 
 
 @dataclass
@@ -1745,11 +1693,6 @@ class Attribute(NamedThing):
             self.iri = IriType(self.iri)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -1775,11 +1718,6 @@ class ChemicalRole(Attribute):
             self.id = ChemicalRoleId(self.id)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -1802,11 +1740,6 @@ class BiologicalSex(Attribute):
             self.id = BiologicalSexId(self.id)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -1832,11 +1765,6 @@ class PhenotypicSex(BiologicalSex):
             self.id = PhenotypicSexId(self.id)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -1863,11 +1791,6 @@ class GenotypicSex(BiologicalSex):
             self.id = GenotypicSexId(self.id)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -1893,11 +1816,6 @@ class SeverityValue(Attribute):
             self.id = SeverityValueId(self.id)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -1973,11 +1891,6 @@ class OrganismTaxon(NamedThing):
             self.has_taxonomic_rank = TaxonomicRankId(self.has_taxonomic_rank)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -2002,11 +1915,6 @@ class Event(NamedThing):
             self.id = EventId(self.id)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -2020,16 +1928,6 @@ class AdministrativeEntity(NamedThing):
 
     id: Union[str, AdministrativeEntityId] = None
     category: Union[Union[str, CategoryType], List[Union[str, CategoryType]]] = None
-
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-
-        super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
-
 
 @dataclass
 class Agent(AdministrativeEntity):
@@ -2066,11 +1964,6 @@ class Agent(AdministrativeEntity):
             self.name = LabelType(self.name)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -2106,11 +1999,6 @@ class InformationContentEntity(NamedThing):
             self.creation_date = XSDDate(self.creation_date)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -2129,16 +2017,6 @@ class StudyResult(InformationContentEntity):
 
     id: Union[str, StudyResultId] = None
     category: Union[Union[str, CategoryType], List[Union[str, CategoryType]]] = None
-
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-
-        super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
-
 
 @dataclass
 class Study(InformationContentEntity):
@@ -2162,11 +2040,6 @@ class Study(InformationContentEntity):
             self.id = StudyId(self.id)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -2191,11 +2064,6 @@ class StudyVariable(InformationContentEntity):
             self.id = StudyVariableId(self.id)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -2222,11 +2090,6 @@ class CommonDataElement(InformationContentEntity):
             self.id = CommonDataElementId(self.id)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -2251,11 +2114,6 @@ class ConceptCountAnalysisResult(StudyResult):
             self.id = ConceptCountAnalysisResultId(self.id)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -2280,11 +2138,6 @@ class ObservedExpectedFrequencyAnalysisResult(StudyResult):
             self.id = ObservedExpectedFrequencyAnalysisResultId(self.id)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -2309,11 +2162,6 @@ class RelativeFrequencyAnalysisResult(StudyResult):
             self.id = RelativeFrequencyAnalysisResultId(self.id)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -2338,11 +2186,6 @@ class TextMiningResult(StudyResult):
             self.id = TextMiningResultId(self.id)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -2367,11 +2210,6 @@ class ChiSquaredAnalysisResult(StudyResult):
             self.id = ChiSquaredAnalysisResultId(self.id)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -2396,11 +2234,6 @@ class Dataset(InformationContentEntity):
             self.id = DatasetId(self.id)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -2429,11 +2262,6 @@ class DatasetDistribution(InformationContentEntity):
             self.distribution_download_url = str(self.distribution_download_url)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -2470,11 +2298,6 @@ class DatasetVersion(InformationContentEntity):
             self.has_distribution = DatasetDistributionId(self.has_distribution)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -2507,11 +2330,6 @@ class DatasetSummary(InformationContentEntity):
             self.source_logo = str(self.source_logo)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -2536,11 +2354,6 @@ class ConfidenceLevel(InformationContentEntity):
             self.id = ConfidenceLevelId(self.id)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -2565,11 +2378,6 @@ class EvidenceType(InformationContentEntity):
             self.id = EvidenceTypeId(self.id)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -2598,11 +2406,6 @@ class InformationResource(InformationContentEntity):
             self.id = InformationResourceId(self.id)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -2669,11 +2472,6 @@ class Publication(InformationContentEntity):
             self.name = LabelType(self.name)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -2704,11 +2502,6 @@ class Book(Publication):
             self.type = str(self.type)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -2745,11 +2538,6 @@ class BookChapter(Publication):
             self.chapter = str(self.chapter)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -2792,11 +2580,6 @@ class Serial(Publication):
             self.issue = str(self.issue)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -2837,11 +2620,6 @@ class Article(Publication):
             self.issue = str(self.issue)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 class PhysicalEssenceOrOccurrent(YAMLRoot):
@@ -2890,11 +2668,6 @@ class PhysicalEntity(NamedThing):
             self.id = PhysicalEntityId(self.id)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 class Occurrent(PhysicalEssenceOrOccurrent):
@@ -2944,11 +2717,6 @@ class Activity(NamedThing):
             self.id = ActivityId(self.id)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -2973,11 +2741,6 @@ class Procedure(NamedThing):
             self.id = ProcedureId(self.id)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -3002,11 +2765,6 @@ class Phenomenon(NamedThing):
             self.id = PhenomenonId(self.id)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -3031,11 +2789,6 @@ class Device(NamedThing):
             self.id = DeviceId(self.id)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 class SubjectOfInvestigation(YAMLRoot):
@@ -3074,11 +2827,6 @@ class MaterialSample(PhysicalEntity):
             self.id = MaterialSampleId(self.id)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -3103,11 +2851,6 @@ class PlanetaryEntity(NamedThing):
             self.id = PlanetaryEntityId(self.id)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -3129,11 +2872,6 @@ class EnvironmentalProcess(PlanetaryEntity):
             self.id = EnvironmentalProcessId(self.id)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -3155,11 +2893,6 @@ class EnvironmentalFeature(PlanetaryEntity):
             self.id = EnvironmentalFeatureId(self.id)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -3192,11 +2925,6 @@ class GeographicLocation(PlanetaryEntity):
             self.longitude = float(self.longitude)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -3225,11 +2953,6 @@ class GeographicLocationAtTime(GeographicLocation):
             self.timepoint = TimeType(self.timepoint)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -3274,11 +2997,6 @@ class BiologicalEntity(NamedThing):
         self.in_taxon = [v if isinstance(v, OrganismTaxonId) else OrganismTaxonId(v) for v in self.in_taxon]
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -3361,11 +3079,6 @@ class ChemicalEntity(NamedThing):
         self.has_chemical_role = [v if isinstance(v, ChemicalRoleId) else ChemicalRoleId(v) for v in self.has_chemical_role]
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -3394,11 +3107,6 @@ class MolecularEntity(ChemicalEntity):
             self.is_metabolite = Bool(self.is_metabolite)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -3426,11 +3134,6 @@ class SmallMolecule(MolecularEntity):
             self.id = SmallMoleculeId(self.id)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -3472,11 +3175,6 @@ class ChemicalMixture(ChemicalEntity):
         self.routes_of_delivery = [v if isinstance(v, DrugDeliveryEnum) else DrugDeliveryEnum(v) for v in self.routes_of_delivery]
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -3512,11 +3210,6 @@ class NucleicAcidEntity(MolecularEntity):
         self.in_taxon = [v if isinstance(v, OrganismTaxonId) else OrganismTaxonId(v) for v in self.in_taxon]
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -3542,11 +3235,6 @@ class MolecularMixture(ChemicalMixture):
             self.id = MolecularMixtureId(self.id)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -3572,11 +3260,6 @@ class ComplexMolecularMixture(ChemicalMixture):
             self.id = ComplexMolecularMixtureId(self.id)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -3617,11 +3300,6 @@ class BiologicalProcessOrActivity(BiologicalEntity):
         self.enabled_by = [v if isinstance(v, PhysicalEntityId) else PhysicalEntityId(v) for v in self.enabled_by]
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -3661,11 +3339,6 @@ class MolecularActivity(BiologicalProcessOrActivity):
         self.enabled_by = [v if isinstance(v, MacromolecularMachineMixin) else MacromolecularMachineMixin(**as_dict(v)) for v in self.enabled_by]
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -3690,11 +3363,6 @@ class BiologicalProcess(BiologicalProcessOrActivity):
             self.id = BiologicalProcessId(self.id)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -3716,11 +3384,6 @@ class Pathway(BiologicalProcess):
             self.id = PathwayId(self.id)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -3742,11 +3405,6 @@ class PhysiologicalProcess(BiologicalProcess):
             self.id = PhysiologicalProcessId(self.id)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -3768,11 +3426,6 @@ class Behavior(BiologicalProcess):
             self.id = BehaviorId(self.id)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -3798,11 +3451,6 @@ class ProcessedMaterial(ChemicalMixture):
             self.id = ProcessedMaterialId(self.id)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -3827,11 +3475,6 @@ class Drug(MolecularMixture):
             self.id = DrugId(self.id)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -3853,11 +3496,6 @@ class EnvironmentalFoodContaminant(ChemicalEntity):
             self.id = EnvironmentalFoodContaminantId(self.id)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -3879,11 +3517,6 @@ class FoodAdditive(ChemicalEntity):
             self.id = FoodAdditiveId(self.id)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -3908,11 +3541,6 @@ class Food(ChemicalMixture):
             self.id = FoodId(self.id)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -3938,11 +3566,6 @@ class OrganismAttribute(Attribute):
             self.id = OrganismAttributeId(self.id)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -3968,11 +3591,6 @@ class PhenotypicQuality(OrganismAttribute):
             self.id = PhenotypicQualityId(self.id)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -3998,11 +3616,6 @@ class GeneticInheritance(BiologicalEntity):
             self.id = GeneticInheritanceId(self.id)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -4028,11 +3641,6 @@ class OrganismalEntity(BiologicalEntity):
         self.has_attribute = [v if isinstance(v, AttributeId) else AttributeId(v) for v in self.has_attribute]
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -4057,11 +3665,6 @@ class Virus(OrganismalEntity):
             self.id = VirusId(self.id)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -4083,11 +3686,6 @@ class CellularOrganism(OrganismalEntity):
             self.id = CellularOrganismId(self.id)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -4112,11 +3710,6 @@ class LifeStage(OrganismalEntity):
             self.id = LifeStageId(self.id)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -4142,11 +3735,6 @@ class IndividualOrganism(OrganismalEntity):
             self.id = IndividualOrganismId(self.id)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -4172,11 +3760,6 @@ class PopulationOfIndividualOrganisms(OrganismalEntity):
             self.id = PopulationOfIndividualOrganismsId(self.id)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -4201,11 +3784,6 @@ class StudyPopulation(PopulationOfIndividualOrganisms):
             self.id = StudyPopulationId(self.id)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -4233,11 +3811,6 @@ class DiseaseOrPhenotypicFeature(BiologicalEntity):
             self.id = DiseaseOrPhenotypicFeatureId(self.id)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -4264,11 +3837,6 @@ class Disease(DiseaseOrPhenotypicFeature):
             self.id = DiseaseId(self.id)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -4294,11 +3862,6 @@ class PhenotypicFeature(DiseaseOrPhenotypicFeature):
             self.id = PhenotypicFeatureId(self.id)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -4323,11 +3886,6 @@ class BehavioralFeature(PhenotypicFeature):
             self.id = BehavioralFeatureId(self.id)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -4352,11 +3910,6 @@ class AnatomicalEntity(OrganismalEntity):
             self.id = AnatomicalEntityId(self.id)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -4381,11 +3934,6 @@ class CellularComponent(AnatomicalEntity):
             self.id = CellularComponentId(self.id)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -4407,11 +3955,6 @@ class Cell(AnatomicalEntity):
             self.id = CellId(self.id)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -4433,11 +3976,6 @@ class CellLine(OrganismalEntity):
             self.id = CellLineId(self.id)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -4459,11 +3997,6 @@ class GrossAnatomicalStructure(AnatomicalEntity):
             self.id = GrossAnatomicalStructureId(self.id)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 class ChemicalEntityOrGeneOrGeneProduct(YAMLRoot):
@@ -4541,7 +4074,6 @@ class Gene(BiologicalEntity):
 
     id: Union[str, GeneId] = None
     category: Union[Union[str, CategoryType], List[Union[str, CategoryType]]] = None
-    name: Optional[Union[str, LabelType]] = None
     symbol: Optional[str] = None
     synonym: Optional[Union[Union[str, LabelType], List[Union[str, LabelType]]]] = empty_list()
     xref: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
@@ -4552,9 +4084,6 @@ class Gene(BiologicalEntity):
             self.MissingRequiredField("id")
         if not isinstance(self.id, GeneId):
             self.id = GeneId(self.id)
-
-        if self.name is not None and not isinstance(self.name, LabelType):
-            self.name = LabelType(self.name)
 
         if self.symbol is not None and not isinstance(self.symbol, str):
             self.symbol = str(self.symbol)
@@ -4571,11 +4100,6 @@ class Gene(BiologicalEntity):
             self.has_biological_sequence = BiologicalSequence(self.has_biological_sequence)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -4647,11 +4171,6 @@ class MacromolecularComplex(BiologicalEntity):
             self.name = LabelType(self.name)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -4669,9 +4188,6 @@ class NucleosomeModification(BiologicalEntity):
 
     id: Union[str, NucleosomeModificationId] = None
     category: Union[Union[str, CategoryType], List[Union[str, CategoryType]]] = None
-    name: Optional[Union[str, LabelType]] = None
-    xref: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
-    synonym: Optional[Union[Union[str, LabelType], List[Union[str, LabelType]]]] = empty_list()
     has_biological_sequence: Optional[Union[str, BiologicalSequence]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
@@ -4680,26 +4196,10 @@ class NucleosomeModification(BiologicalEntity):
         if not isinstance(self.id, NucleosomeModificationId):
             self.id = NucleosomeModificationId(self.id)
 
-        if self.name is not None and not isinstance(self.name, LabelType):
-            self.name = LabelType(self.name)
-
-        if not isinstance(self.xref, list):
-            self.xref = [self.xref] if self.xref is not None else []
-        self.xref = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.xref]
-
-        if not isinstance(self.synonym, list):
-            self.synonym = [self.synonym] if self.synonym is not None else []
-        self.synonym = [v if isinstance(v, LabelType) else LabelType(v) for v in self.synonym]
-
         if self.has_biological_sequence is not None and not isinstance(self.has_biological_sequence, BiologicalSequence):
             self.has_biological_sequence = BiologicalSequence(self.has_biological_sequence)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -4728,11 +4228,6 @@ class Genome(BiologicalEntity):
             self.has_biological_sequence = BiologicalSequence(self.has_biological_sequence)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -4758,11 +4253,6 @@ class Exon(NucleicAcidEntity):
             self.id = ExonId(self.id)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -4787,11 +4277,6 @@ class Transcript(NucleicAcidEntity):
             self.id = TranscriptId(self.id)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -4813,11 +4298,6 @@ class CodingSequence(NucleicAcidEntity):
             self.id = CodingSequenceId(self.id)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -4844,11 +4324,6 @@ class Polypeptide(BiologicalEntity):
             self.id = PolypeptideId(self.id)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -4866,7 +4341,6 @@ class Protein(Polypeptide):
 
     id: Union[str, ProteinId] = None
     category: Union[Union[str, CategoryType], List[Union[str, CategoryType]]] = None
-    name: Optional[Union[str, LabelType]] = None
     xref: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
     synonym: Optional[Union[Union[str, LabelType], List[Union[str, LabelType]]]] = empty_list()
 
@@ -4875,9 +4349,6 @@ class Protein(Polypeptide):
             self.MissingRequiredField("id")
         if not isinstance(self.id, ProteinId):
             self.id = ProteinId(self.id)
-
-        if self.name is not None and not isinstance(self.name, LabelType):
-            self.name = LabelType(self.name)
 
         if not isinstance(self.xref, list):
             self.xref = [self.xref] if self.xref is not None else []
@@ -4888,11 +4359,6 @@ class Protein(Polypeptide):
         self.synonym = [v if isinstance(v, LabelType) else LabelType(v) for v in self.synonym]
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -4910,9 +4376,6 @@ class ProteinIsoform(Protein):
 
     id: Union[str, ProteinIsoformId] = None
     category: Union[Union[str, CategoryType], List[Union[str, CategoryType]]] = None
-    name: Optional[Union[str, LabelType]] = None
-    xref: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
-    synonym: Optional[Union[Union[str, LabelType], List[Union[str, LabelType]]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
@@ -4920,23 +4383,7 @@ class ProteinIsoform(Protein):
         if not isinstance(self.id, ProteinIsoformId):
             self.id = ProteinIsoformId(self.id)
 
-        if self.name is not None and not isinstance(self.name, LabelType):
-            self.name = LabelType(self.name)
-
-        if not isinstance(self.xref, list):
-            self.xref = [self.xref] if self.xref is not None else []
-        self.xref = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.xref]
-
-        if not isinstance(self.synonym, list):
-            self.synonym = [self.synonym] if self.synonym is not None else []
-        self.synonym = [v if isinstance(v, LabelType) else LabelType(v) for v in self.synonym]
-
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -4968,11 +4415,6 @@ class ProteinDomain(BiologicalEntity):
         self.has_gene_or_gene_product = [v if isinstance(v, GeneId) else GeneId(v) for v in self.has_gene_or_gene_product]
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -4990,9 +4432,6 @@ class PosttranslationalModification(BiologicalEntity):
 
     id: Union[str, PosttranslationalModificationId] = None
     category: Union[Union[str, CategoryType], List[Union[str, CategoryType]]] = None
-    name: Optional[Union[str, LabelType]] = None
-    xref: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
-    synonym: Optional[Union[Union[str, LabelType], List[Union[str, LabelType]]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
@@ -5000,23 +4439,7 @@ class PosttranslationalModification(BiologicalEntity):
         if not isinstance(self.id, PosttranslationalModificationId):
             self.id = PosttranslationalModificationId(self.id)
 
-        if self.name is not None and not isinstance(self.name, LabelType):
-            self.name = LabelType(self.name)
-
-        if not isinstance(self.xref, list):
-            self.xref = [self.xref] if self.xref is not None else []
-        self.xref = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.xref]
-
-        if not isinstance(self.synonym, list):
-            self.synonym = [self.synonym] if self.synonym is not None else []
-        self.synonym = [v if isinstance(v, LabelType) else LabelType(v) for v in self.synonym]
-
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -5043,11 +4466,6 @@ class ProteinFamily(BiologicalEntity):
         self.has_gene_or_gene_product = [v if isinstance(v, GeneId) else GeneId(v) for v in self.has_gene_or_gene_product]
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -5073,11 +4491,6 @@ class NucleicAcidSequenceMotif(BiologicalEntity):
             self.id = NucleicAcidSequenceMotifId(self.id)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -5091,7 +4504,6 @@ class RNAProduct(Transcript):
 
     id: Union[str, RNAProductId] = None
     category: Union[Union[str, CategoryType], List[Union[str, CategoryType]]] = None
-    name: Optional[Union[str, LabelType]] = None
     xref: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
     synonym: Optional[Union[Union[str, LabelType], List[Union[str, LabelType]]]] = empty_list()
 
@@ -5100,9 +4512,6 @@ class RNAProduct(Transcript):
             self.MissingRequiredField("id")
         if not isinstance(self.id, RNAProductId):
             self.id = RNAProductId(self.id)
-
-        if self.name is not None and not isinstance(self.name, LabelType):
-            self.name = LabelType(self.name)
 
         if not isinstance(self.xref, list):
             self.xref = [self.xref] if self.xref is not None else []
@@ -5113,11 +4522,6 @@ class RNAProduct(Transcript):
         self.synonym = [v if isinstance(v, LabelType) else LabelType(v) for v in self.synonym]
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -5134,9 +4538,6 @@ class RNAProductIsoform(RNAProduct):
 
     id: Union[str, RNAProductIsoformId] = None
     category: Union[Union[str, CategoryType], List[Union[str, CategoryType]]] = None
-    name: Optional[Union[str, LabelType]] = None
-    xref: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
-    synonym: Optional[Union[Union[str, LabelType], List[Union[str, LabelType]]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
@@ -5144,23 +4545,7 @@ class RNAProductIsoform(RNAProduct):
         if not isinstance(self.id, RNAProductIsoformId):
             self.id = RNAProductIsoformId(self.id)
 
-        if self.name is not None and not isinstance(self.name, LabelType):
-            self.name = LabelType(self.name)
-
-        if not isinstance(self.xref, list):
-            self.xref = [self.xref] if self.xref is not None else []
-        self.xref = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.xref]
-
-        if not isinstance(self.synonym, list):
-            self.synonym = [self.synonym] if self.synonym is not None else []
-        self.synonym = [v if isinstance(v, LabelType) else LabelType(v) for v in self.synonym]
-
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -5182,11 +4567,6 @@ class NoncodingRNAProduct(RNAProduct):
             self.id = NoncodingRNAProductId(self.id)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -5208,11 +4588,6 @@ class MicroRNA(NoncodingRNAProduct):
             self.id = MicroRNAId(self.id)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -5239,11 +4614,6 @@ class SiRNA(NoncodingRNAProduct):
             self.id = SiRNAId(self.id)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -5295,11 +4665,6 @@ class GeneFamily(BiologicalEntity):
         self.has_gene_or_gene_product = [v if isinstance(v, GeneId) else GeneId(v) for v in self.has_gene_or_gene_product]
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -5322,11 +4687,6 @@ class Zygosity(Attribute):
             self.id = ZygosityId(self.id)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -5360,11 +4720,6 @@ class Genotype(BiologicalEntity):
             self.has_biological_sequence = BiologicalSequence(self.has_biological_sequence)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -5393,11 +4748,6 @@ class Haplotype(BiologicalEntity):
             self.has_biological_sequence = BiologicalSequence(self.has_biological_sequence)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -5431,11 +4781,6 @@ class SequenceVariant(BiologicalEntity):
             self.has_biological_sequence = BiologicalSequence(self.has_biological_sequence)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -5460,11 +4805,6 @@ class Snv(SequenceVariant):
             self.id = SnvId(self.id)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -5494,11 +4834,6 @@ class ReagentTargetedGene(BiologicalEntity):
             self.has_biological_sequence = BiologicalSequence(self.has_biological_sequence)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -5524,11 +4859,6 @@ class ClinicalAttribute(Attribute):
             self.id = ClinicalAttributeId(self.id)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -5560,11 +4890,6 @@ class ClinicalMeasurement(ClinicalAttribute):
             self.has_attribute_type = OntologyClassId(self.has_attribute_type)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -5591,11 +4916,6 @@ class ClinicalModifier(ClinicalAttribute):
             self.id = ClinicalModifierId(self.id)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -5622,11 +4942,6 @@ class ClinicalCourse(ClinicalAttribute):
             self.id = ClinicalCourseId(self.id)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -5652,11 +4967,6 @@ class Onset(ClinicalCourse):
             self.id = OnsetId(self.id)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -5682,11 +4992,6 @@ class ClinicalEntity(NamedThing):
             self.id = ClinicalEntityId(self.id)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -5708,11 +5013,6 @@ class ClinicalTrial(ClinicalEntity):
             self.id = ClinicalTrialId(self.id)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -5734,11 +5034,6 @@ class ClinicalIntervention(ClinicalEntity):
             self.id = ClinicalInterventionId(self.id)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -5769,11 +5064,6 @@ class ClinicalFinding(PhenotypicFeature):
         self.has_attribute = [v if isinstance(v, ClinicalAttributeId) else ClinicalAttributeId(v) for v in self.has_attribute]
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -5795,11 +5085,6 @@ class Hospitalization(ClinicalIntervention):
             self.id = HospitalizationId(self.id)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -5825,11 +5110,6 @@ class SocioeconomicAttribute(Attribute):
             self.id = SocioeconomicAttributeId(self.id)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -5854,11 +5134,6 @@ class Case(IndividualOrganism):
             self.id = CaseId(self.id)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -5884,11 +5159,6 @@ class Cohort(StudyPopulation):
             self.id = CohortId(self.id)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -5957,11 +5227,6 @@ class GenomicBackgroundExposure(Attribute):
         self.in_taxon = [v if isinstance(v, OrganismTaxonId) else OrganismTaxonId(v) for v in self.in_taxon]
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 class PathologicalEntityMixin(YAMLRoot):
@@ -5999,11 +5264,6 @@ class PathologicalProcess(BiologicalProcess):
             self.id = PathologicalProcessId(self.id)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -6034,11 +5294,6 @@ class PathologicalProcessExposure(Attribute):
             self.timepoint = TimeType(self.timepoint)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -6064,11 +5319,6 @@ class PathologicalAnatomicalStructure(AnatomicalEntity):
             self.id = PathologicalAnatomicalStructureId(self.id)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -6099,11 +5349,6 @@ class PathologicalAnatomicalExposure(Attribute):
             self.timepoint = TimeType(self.timepoint)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -6135,11 +5380,6 @@ class DiseaseOrPhenotypicFeatureExposure(Attribute):
             self.timepoint = TimeType(self.timepoint)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -6174,11 +5414,6 @@ class ChemicalExposure(Attribute):
             self.timepoint = TimeType(self.timepoint)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -6204,11 +5439,6 @@ class ComplexChemicalExposure(Attribute):
             self.id = ComplexChemicalExposureId(self.id)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -6238,11 +5468,6 @@ class DrugExposure(ChemicalExposure):
             self.timepoint = TimeType(self.timepoint)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -6274,11 +5499,6 @@ class DrugToGeneInteractionExposure(DrugExposure):
         self.has_gene_or_gene_product = [v if isinstance(v, GeneId) else GeneId(v) for v in self.has_gene_or_gene_product]
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -6323,11 +5543,6 @@ class Treatment(NamedThing):
             self.timepoint = TimeType(self.timepoint)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -6357,11 +5572,6 @@ class BioticExposure(Attribute):
             self.timepoint = TimeType(self.timepoint)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -6392,11 +5602,6 @@ class EnvironmentalExposure(Attribute):
             self.timepoint = TimeType(self.timepoint)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -6426,11 +5631,6 @@ class GeographicExposure(EnvironmentalExposure):
             self.timepoint = TimeType(self.timepoint)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -6460,11 +5660,6 @@ class BehavioralExposure(Attribute):
             self.timepoint = TimeType(self.timepoint)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -6502,11 +5697,6 @@ class SocioeconomicExposure(Attribute):
             self.timepoint = TimeType(self.timepoint)
 
         super().__post_init__(**kwargs)
-        if self._is_empty(self.category):
-            self.MissingRequiredField("category")
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 class Outcome(YAMLRoot):
@@ -6717,34 +5907,6 @@ class Association(Entity):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
         super().__post_init__(**kwargs)
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
-
-
-    def __new__(cls, *args, **kwargs):
-
-        type_designator = "category"
-        if not type_designator in kwargs:
-            return super().__new__(cls,*args,**kwargs)
-        else:
-            type_designator_value = kwargs[type_designator]
-            target_cls = cls._class_for("class_class_curie", type_designator_value)
-
-
-            if target_cls is None:
-                target_cls = cls._class_for("class_class_uri", type_designator_value)
-
-
-            if target_cls is None:
-                target_cls = cls._class_for("class_model_uri", type_designator_value)
-
-
-            if target_cls is None:
-                raise ValueError(f"Wrong type designator value: class {cls.__name__} "
-                                 f"has no subclass with ['class_class_curie', 'class_class_uri', 'class_model_uri']='{kwargs[type_designator]}'")
-            return super().__new__(target_cls,*args,**kwargs)
-
 
 
 @dataclass
@@ -6783,9 +5945,6 @@ class ChemicalEntityAssessesNamedThingAssociation(Association):
             self.predicate = PredicateType(self.predicate)
 
         super().__post_init__(**kwargs)
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -6832,9 +5991,6 @@ class ContributorAssociation(Association):
         self.qualifiers = [v if isinstance(v, OntologyClassId) else OntologyClassId(v) for v in self.qualifiers]
 
         super().__post_init__(**kwargs)
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -6876,9 +6032,6 @@ class GenotypeToGenotypePartAssociation(Association):
             self.object = GenotypeId(self.object)
 
         super().__post_init__(**kwargs)
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -6921,9 +6074,6 @@ class GenotypeToGeneAssociation(Association):
             self.object = GeneId(self.object)
 
         super().__post_init__(**kwargs)
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -6965,9 +6115,6 @@ class GenotypeToVariantAssociation(Association):
             self.object = SequenceVariantId(self.object)
 
         super().__post_init__(**kwargs)
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -7000,9 +6147,6 @@ class GeneToGeneAssociation(Association):
             self.object = GeneOrGeneProduct(**as_dict(self.object))
 
         super().__post_init__(**kwargs)
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -7045,9 +6189,6 @@ class GeneToGeneHomologyAssociation(GeneToGeneAssociation):
             self.object = GeneOrGeneProduct(**as_dict(self.object))
 
         super().__post_init__(**kwargs)
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -7091,9 +6232,6 @@ class GeneToGeneFamilyAssociation(Association):
             self.predicate = PredicateType(self.predicate)
 
         super().__post_init__(**kwargs)
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -7175,9 +6313,6 @@ class GeneToGeneCoexpressionAssociation(GeneToGeneAssociation):
             self.phenotypic_state = DiseaseOrPhenotypicFeatureId(self.phenotypic_state)
 
         super().__post_init__(**kwargs)
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -7210,9 +6345,6 @@ class PairwiseGeneToGeneInteraction(GeneToGeneAssociation):
             self.predicate = PredicateType(self.predicate)
 
         super().__post_init__(**kwargs)
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -7258,9 +6390,6 @@ class PairwiseMolecularInteraction(PairwiseGeneToGeneInteraction):
             self.interacting_molecules_category = OntologyClassId(self.interacting_molecules_category)
 
         super().__post_init__(**kwargs)
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -7316,9 +6445,6 @@ class CellLineToDiseaseOrPhenotypicFeatureAssociation(Association):
             self.subject = DiseaseOrPhenotypicFeatureId(self.subject)
 
         super().__post_init__(**kwargs)
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -7443,9 +6569,6 @@ class ChemicalToChemicalAssociation(Association):
             self.object = ChemicalEntityId(self.object)
 
         super().__post_init__(**kwargs)
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -7486,9 +6609,6 @@ class ReactionToParticipantAssociation(ChemicalToChemicalAssociation):
             self.reaction_side = ReactionSideEnum(self.reaction_side)
 
         super().__post_init__(**kwargs)
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -7517,9 +6637,6 @@ class ReactionToCatalystAssociation(ReactionToParticipantAssociation):
             self.object = GeneOrGeneProduct(**as_dict(self.object))
 
         super().__post_init__(**kwargs)
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -7574,9 +6691,6 @@ class ChemicalToChemicalDerivationAssociation(ChemicalToChemicalAssociation):
         self.catalyst_qualifier = [v if isinstance(v, MacromolecularMachineMixin) else MacromolecularMachineMixin(**as_dict(v)) for v in self.catalyst_qualifier]
 
         super().__post_init__(**kwargs)
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -7609,9 +6723,6 @@ class ChemicalToDiseaseOrPhenotypicFeatureAssociation(Association):
             self.object = DiseaseOrPhenotypicFeatureId(self.object)
 
         super().__post_init__(**kwargs)
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -7648,9 +6759,6 @@ class ChemicalOrDrugOrTreatmentToDiseaseOrPhenotypicFeatureAssociation(Associati
             self.FDA_adverse_event_level = FDAIDAAdverseEventEnum(self.FDA_adverse_event_level)
 
         super().__post_init__(**kwargs)
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -7683,9 +6791,6 @@ class ChemicalOrDrugOrTreatmentSideEffectDiseaseOrPhenotypicFeatureAssociation(C
             self.predicate = PredicateType(self.predicate)
 
         super().__post_init__(**kwargs)
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -7722,9 +6827,6 @@ class GeneToPathwayAssociation(Association):
             self.object = PathwayId(self.object)
 
         super().__post_init__(**kwargs)
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -7766,9 +6868,6 @@ class MolecularActivityToPathwayAssociation(Association):
             self.predicate = PredicateType(self.predicate)
 
         super().__post_init__(**kwargs)
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -7805,9 +6904,6 @@ class ChemicalToPathwayAssociation(Association):
             self.object = PathwayId(self.object)
 
         super().__post_init__(**kwargs)
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -7852,9 +6948,6 @@ class NamedThingAssociatedWithLikelihoodOfNamedThingAssociation(Association):
             self.object_context_qualifier = OntologyClassId(self.object_context_qualifier)
 
         super().__post_init__(**kwargs)
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -7930,9 +7023,6 @@ class ChemicalGeneInteractionAssociation(Association):
             self.anatomical_context_qualifier = AnatomicalEntityId(self.anatomical_context_qualifier)
 
         super().__post_init__(**kwargs)
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -8035,9 +7125,6 @@ class ChemicalAffectsGeneAssociation(Association):
             self.species_context_qualifier = OrganismTaxonId(self.species_context_qualifier)
 
         super().__post_init__(**kwargs)
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -8069,9 +7156,6 @@ class DrugToGeneAssociation(Association):
             self.object = GeneOrGeneProduct(**as_dict(self.object))
 
         super().__post_init__(**kwargs)
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -8136,9 +7220,6 @@ class MaterialSampleDerivationAssociation(Association):
             self.predicate = PredicateType(self.predicate)
 
         super().__post_init__(**kwargs)
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -8165,9 +7246,6 @@ class MaterialSampleToDiseaseOrPhenotypicFeatureAssociation(Association):
             self.id = MaterialSampleToDiseaseOrPhenotypicFeatureAssociationId(self.id)
 
         super().__post_init__(**kwargs)
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -8237,9 +7315,6 @@ class DiseaseToExposureEventAssociation(Association):
             self.id = DiseaseToExposureEventAssociationId(self.id)
 
         super().__post_init__(**kwargs)
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -8297,9 +7372,6 @@ class ExposureEventToOutcomeAssociation(Association):
             self.temporal_context_qualifier = TimeType(self.temporal_context_qualifier)
 
         super().__post_init__(**kwargs)
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -8432,9 +7504,6 @@ class InformationContentEntityToNamedThingAssociation(Association):
             self.predicate = PredicateType(self.predicate)
 
         super().__post_init__(**kwargs)
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -8510,9 +7579,6 @@ class DiseaseOrPhenotypicFeatureToLocationAssociation(Association):
             self.object = AnatomicalEntityId(self.object)
 
         super().__post_init__(**kwargs)
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -8549,9 +7615,6 @@ class DiseaseOrPhenotypicFeatureToGeneticInheritanceAssociation(Association):
             self.object = GeneticInheritanceId(self.object)
 
         super().__post_init__(**kwargs)
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -8611,9 +7674,6 @@ class GenotypeToPhenotypicFeatureAssociation(Association):
     object: Union[str, NamedThingId] = None
     predicate: Union[str, PredicateType] = None
     subject: Union[str, GenotypeId] = None
-    frequency_qualifier: Optional[Union[str, FrequencyValue]] = None
-    severity_qualifier: Optional[Union[str, SeverityValueId]] = None
-    onset_qualifier: Optional[Union[str, OnsetId]] = None
     sex_qualifier: Optional[Union[str, BiologicalSexId]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
@@ -8632,22 +7692,10 @@ class GenotypeToPhenotypicFeatureAssociation(Association):
         if not isinstance(self.subject, GenotypeId):
             self.subject = GenotypeId(self.subject)
 
-        if self.frequency_qualifier is not None and not isinstance(self.frequency_qualifier, FrequencyValue):
-            self.frequency_qualifier = FrequencyValue(self.frequency_qualifier)
-
-        if self.severity_qualifier is not None and not isinstance(self.severity_qualifier, SeverityValueId):
-            self.severity_qualifier = SeverityValueId(self.severity_qualifier)
-
-        if self.onset_qualifier is not None and not isinstance(self.onset_qualifier, OnsetId):
-            self.onset_qualifier = OnsetId(self.onset_qualifier)
-
         if self.sex_qualifier is not None and not isinstance(self.sex_qualifier, BiologicalSexId):
             self.sex_qualifier = BiologicalSexId(self.sex_qualifier)
 
         super().__post_init__(**kwargs)
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -8667,9 +7715,6 @@ class ExposureEventToPhenotypicFeatureAssociation(Association):
     predicate: Union[str, PredicateType] = None
     object: Union[str, NamedThingId] = None
     subject: Union[str, ExposureEventId] = None
-    frequency_qualifier: Optional[Union[str, FrequencyValue]] = None
-    severity_qualifier: Optional[Union[str, SeverityValueId]] = None
-    onset_qualifier: Optional[Union[str, OnsetId]] = None
     sex_qualifier: Optional[Union[str, BiologicalSexId]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
@@ -8683,22 +7728,10 @@ class ExposureEventToPhenotypicFeatureAssociation(Association):
         if not isinstance(self.subject, ExposureEventId):
             self.subject = ExposureEventId(self.subject)
 
-        if self.frequency_qualifier is not None and not isinstance(self.frequency_qualifier, FrequencyValue):
-            self.frequency_qualifier = FrequencyValue(self.frequency_qualifier)
-
-        if self.severity_qualifier is not None and not isinstance(self.severity_qualifier, SeverityValueId):
-            self.severity_qualifier = SeverityValueId(self.severity_qualifier)
-
-        if self.onset_qualifier is not None and not isinstance(self.onset_qualifier, OnsetId):
-            self.onset_qualifier = OnsetId(self.onset_qualifier)
-
         if self.sex_qualifier is not None and not isinstance(self.sex_qualifier, BiologicalSexId):
             self.sex_qualifier = BiologicalSexId(self.sex_qualifier)
 
         super().__post_init__(**kwargs)
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -8718,9 +7751,6 @@ class DiseaseToPhenotypicFeatureAssociation(Association):
     predicate: Union[str, PredicateType] = None
     subject: Union[str, DiseaseId] = None
     object: Union[str, PhenotypicFeatureId] = None
-    frequency_qualifier: Optional[Union[str, FrequencyValue]] = None
-    severity_qualifier: Optional[Union[str, SeverityValueId]] = None
-    onset_qualifier: Optional[Union[str, OnsetId]] = None
     sex_qualifier: Optional[Union[str, BiologicalSexId]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
@@ -8739,22 +7769,10 @@ class DiseaseToPhenotypicFeatureAssociation(Association):
         if not isinstance(self.object, PhenotypicFeatureId):
             self.object = PhenotypicFeatureId(self.object)
 
-        if self.frequency_qualifier is not None and not isinstance(self.frequency_qualifier, FrequencyValue):
-            self.frequency_qualifier = FrequencyValue(self.frequency_qualifier)
-
-        if self.severity_qualifier is not None and not isinstance(self.severity_qualifier, SeverityValueId):
-            self.severity_qualifier = SeverityValueId(self.severity_qualifier)
-
-        if self.onset_qualifier is not None and not isinstance(self.onset_qualifier, OnsetId):
-            self.onset_qualifier = OnsetId(self.onset_qualifier)
-
         if self.sex_qualifier is not None and not isinstance(self.sex_qualifier, BiologicalSexId):
             self.sex_qualifier = BiologicalSexId(self.sex_qualifier)
 
         super().__post_init__(**kwargs)
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -8774,9 +7792,6 @@ class CaseToPhenotypicFeatureAssociation(Association):
     subject: Union[str, NamedThingId] = None
     predicate: Union[str, PredicateType] = None
     object: Union[str, NamedThingId] = None
-    frequency_qualifier: Optional[Union[str, FrequencyValue]] = None
-    severity_qualifier: Optional[Union[str, SeverityValueId]] = None
-    onset_qualifier: Optional[Union[str, OnsetId]] = None
     sex_qualifier: Optional[Union[str, BiologicalSexId]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
@@ -8785,22 +7800,10 @@ class CaseToPhenotypicFeatureAssociation(Association):
         if not isinstance(self.id, CaseToPhenotypicFeatureAssociationId):
             self.id = CaseToPhenotypicFeatureAssociationId(self.id)
 
-        if self.frequency_qualifier is not None and not isinstance(self.frequency_qualifier, FrequencyValue):
-            self.frequency_qualifier = FrequencyValue(self.frequency_qualifier)
-
-        if self.severity_qualifier is not None and not isinstance(self.severity_qualifier, SeverityValueId):
-            self.severity_qualifier = SeverityValueId(self.severity_qualifier)
-
-        if self.onset_qualifier is not None and not isinstance(self.onset_qualifier, OnsetId):
-            self.onset_qualifier = OnsetId(self.onset_qualifier)
-
         if self.sex_qualifier is not None and not isinstance(self.sex_qualifier, BiologicalSexId):
             self.sex_qualifier = BiologicalSexId(self.sex_qualifier)
 
         super().__post_init__(**kwargs)
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -8820,9 +7823,6 @@ class BehaviorToBehavioralFeatureAssociation(Association):
     predicate: Union[str, PredicateType] = None
     subject: Union[str, BehaviorId] = None
     object: Union[str, BehavioralFeatureId] = None
-    frequency_qualifier: Optional[Union[str, FrequencyValue]] = None
-    severity_qualifier: Optional[Union[str, SeverityValueId]] = None
-    onset_qualifier: Optional[Union[str, OnsetId]] = None
     sex_qualifier: Optional[Union[str, BiologicalSexId]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
@@ -8841,22 +7841,10 @@ class BehaviorToBehavioralFeatureAssociation(Association):
         if not isinstance(self.object, BehavioralFeatureId):
             self.object = BehavioralFeatureId(self.object)
 
-        if self.frequency_qualifier is not None and not isinstance(self.frequency_qualifier, FrequencyValue):
-            self.frequency_qualifier = FrequencyValue(self.frequency_qualifier)
-
-        if self.severity_qualifier is not None and not isinstance(self.severity_qualifier, SeverityValueId):
-            self.severity_qualifier = SeverityValueId(self.severity_qualifier)
-
-        if self.onset_qualifier is not None and not isinstance(self.onset_qualifier, OnsetId):
-            self.onset_qualifier = OnsetId(self.onset_qualifier)
-
         if self.sex_qualifier is not None and not isinstance(self.sex_qualifier, BiologicalSexId):
             self.sex_qualifier = BiologicalSexId(self.sex_qualifier)
 
         super().__post_init__(**kwargs)
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -8912,9 +7900,6 @@ class GeneToPhenotypicFeatureAssociation(Association):
     predicate: Union[str, PredicateType] = None
     subject: Union[dict, GeneOrGeneProduct] = None
     object: Union[str, PhenotypicFeatureId] = None
-    frequency_qualifier: Optional[Union[str, FrequencyValue]] = None
-    severity_qualifier: Optional[Union[str, SeverityValueId]] = None
-    onset_qualifier: Optional[Union[str, OnsetId]] = None
     sex_qualifier: Optional[Union[str, BiologicalSexId]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
@@ -8933,22 +7918,10 @@ class GeneToPhenotypicFeatureAssociation(Association):
         if not isinstance(self.object, PhenotypicFeatureId):
             self.object = PhenotypicFeatureId(self.object)
 
-        if self.frequency_qualifier is not None and not isinstance(self.frequency_qualifier, FrequencyValue):
-            self.frequency_qualifier = FrequencyValue(self.frequency_qualifier)
-
-        if self.severity_qualifier is not None and not isinstance(self.severity_qualifier, SeverityValueId):
-            self.severity_qualifier = SeverityValueId(self.severity_qualifier)
-
-        if self.onset_qualifier is not None and not isinstance(self.onset_qualifier, OnsetId):
-            self.onset_qualifier = OnsetId(self.onset_qualifier)
-
         if self.sex_qualifier is not None and not isinstance(self.sex_qualifier, BiologicalSexId):
             self.sex_qualifier = BiologicalSexId(self.sex_qualifier)
 
         super().__post_init__(**kwargs)
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -8964,9 +7937,6 @@ class GeneToDiseaseAssociation(Association):
     predicate: Union[str, PredicateType] = None
     subject: Union[dict, GeneOrGeneProduct] = None
     object: Union[str, DiseaseId] = None
-    frequency_qualifier: Optional[Union[str, FrequencyValue]] = None
-    severity_qualifier: Optional[Union[str, SeverityValueId]] = None
-    onset_qualifier: Optional[Union[str, OnsetId]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
@@ -8984,19 +7954,7 @@ class GeneToDiseaseAssociation(Association):
         if not isinstance(self.object, DiseaseId):
             self.object = DiseaseId(self.object)
 
-        if self.frequency_qualifier is not None and not isinstance(self.frequency_qualifier, FrequencyValue):
-            self.frequency_qualifier = FrequencyValue(self.frequency_qualifier)
-
-        if self.severity_qualifier is not None and not isinstance(self.severity_qualifier, SeverityValueId):
-            self.severity_qualifier = SeverityValueId(self.severity_qualifier)
-
-        if self.onset_qualifier is not None and not isinstance(self.onset_qualifier, OnsetId):
-            self.onset_qualifier = OnsetId(self.onset_qualifier)
-
         super().__post_init__(**kwargs)
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -9012,9 +7970,6 @@ class DruggableGeneToDiseaseAssociation(GeneToDiseaseAssociation):
     object: Union[str, DiseaseId] = None
     subject: Union[dict, GeneOrGeneProduct] = None
     predicate: Union[str, PredicateType] = None
-    frequency_qualifier: Optional[Union[str, FrequencyValue]] = None
-    severity_qualifier: Optional[Union[str, SeverityValueId]] = None
-    onset_qualifier: Optional[Union[str, OnsetId]] = None
     has_evidence: Optional[Union[Union[str, "DruggableGeneCategoryEnum"], List[Union[str, "DruggableGeneCategoryEnum"]]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
@@ -9033,23 +7988,11 @@ class DruggableGeneToDiseaseAssociation(GeneToDiseaseAssociation):
         if not isinstance(self.predicate, PredicateType):
             self.predicate = PredicateType(self.predicate)
 
-        if self.frequency_qualifier is not None and not isinstance(self.frequency_qualifier, FrequencyValue):
-            self.frequency_qualifier = FrequencyValue(self.frequency_qualifier)
-
-        if self.severity_qualifier is not None and not isinstance(self.severity_qualifier, SeverityValueId):
-            self.severity_qualifier = SeverityValueId(self.severity_qualifier)
-
-        if self.onset_qualifier is not None and not isinstance(self.onset_qualifier, OnsetId):
-            self.onset_qualifier = OnsetId(self.onset_qualifier)
-
         if not isinstance(self.has_evidence, list):
             self.has_evidence = [self.has_evidence] if self.has_evidence is not None else []
         self.has_evidence = [v if isinstance(v, DruggableGeneCategoryEnum) else DruggableGeneCategoryEnum(v) for v in self.has_evidence]
 
         super().__post_init__(**kwargs)
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -9087,9 +8030,6 @@ class VariantToGeneAssociation(Association):
             self.predicate = PredicateType(self.predicate)
 
         super().__post_init__(**kwargs)
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -9137,9 +8077,6 @@ class VariantToGeneExpressionAssociation(VariantToGeneAssociation):
             self.phenotypic_state = DiseaseOrPhenotypicFeatureId(self.phenotypic_state)
 
         super().__post_init__(**kwargs)
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -9196,9 +8133,6 @@ class VariantToPopulationAssociation(Association):
             self.frequency_qualifier = FrequencyValue(self.frequency_qualifier)
 
         super().__post_init__(**kwargs)
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -9240,9 +8174,6 @@ class PopulationToPopulationAssociation(Association):
             self.predicate = PredicateType(self.predicate)
 
         super().__post_init__(**kwargs)
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -9258,9 +8189,6 @@ class VariantToPhenotypicFeatureAssociation(Association):
     predicate: Union[str, PredicateType] = None
     object: Union[str, NamedThingId] = None
     subject: Union[str, SequenceVariantId] = None
-    frequency_qualifier: Optional[Union[str, FrequencyValue]] = None
-    severity_qualifier: Optional[Union[str, SeverityValueId]] = None
-    onset_qualifier: Optional[Union[str, OnsetId]] = None
     sex_qualifier: Optional[Union[str, BiologicalSexId]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
@@ -9274,22 +8202,10 @@ class VariantToPhenotypicFeatureAssociation(Association):
         if not isinstance(self.subject, SequenceVariantId):
             self.subject = SequenceVariantId(self.subject)
 
-        if self.frequency_qualifier is not None and not isinstance(self.frequency_qualifier, FrequencyValue):
-            self.frequency_qualifier = FrequencyValue(self.frequency_qualifier)
-
-        if self.severity_qualifier is not None and not isinstance(self.severity_qualifier, SeverityValueId):
-            self.severity_qualifier = SeverityValueId(self.severity_qualifier)
-
-        if self.onset_qualifier is not None and not isinstance(self.onset_qualifier, OnsetId):
-            self.onset_qualifier = OnsetId(self.onset_qualifier)
-
         if self.sex_qualifier is not None and not isinstance(self.sex_qualifier, BiologicalSexId):
             self.sex_qualifier = BiologicalSexId(self.sex_qualifier)
 
         super().__post_init__(**kwargs)
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -9305,9 +8221,6 @@ class VariantToDiseaseAssociation(Association):
     subject: Union[str, NamedThingId] = None
     predicate: Union[str, PredicateType] = None
     object: Union[str, NamedThingId] = None
-    frequency_qualifier: Optional[Union[str, FrequencyValue]] = None
-    severity_qualifier: Optional[Union[str, SeverityValueId]] = None
-    onset_qualifier: Optional[Union[str, OnsetId]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
@@ -9330,19 +8243,7 @@ class VariantToDiseaseAssociation(Association):
         if not isinstance(self.object, NamedThingId):
             self.object = NamedThingId(self.object)
 
-        if self.frequency_qualifier is not None and not isinstance(self.frequency_qualifier, FrequencyValue):
-            self.frequency_qualifier = FrequencyValue(self.frequency_qualifier)
-
-        if self.severity_qualifier is not None and not isinstance(self.severity_qualifier, SeverityValueId):
-            self.severity_qualifier = SeverityValueId(self.severity_qualifier)
-
-        if self.onset_qualifier is not None and not isinstance(self.onset_qualifier, OnsetId):
-            self.onset_qualifier = OnsetId(self.onset_qualifier)
-
         super().__post_init__(**kwargs)
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -9358,9 +8259,6 @@ class GenotypeToDiseaseAssociation(Association):
     subject: Union[str, NamedThingId] = None
     predicate: Union[str, PredicateType] = None
     object: Union[str, NamedThingId] = None
-    frequency_qualifier: Optional[Union[str, FrequencyValue]] = None
-    severity_qualifier: Optional[Union[str, SeverityValueId]] = None
-    onset_qualifier: Optional[Union[str, OnsetId]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
@@ -9383,19 +8281,7 @@ class GenotypeToDiseaseAssociation(Association):
         if not isinstance(self.object, NamedThingId):
             self.object = NamedThingId(self.object)
 
-        if self.frequency_qualifier is not None and not isinstance(self.frequency_qualifier, FrequencyValue):
-            self.frequency_qualifier = FrequencyValue(self.frequency_qualifier)
-
-        if self.severity_qualifier is not None and not isinstance(self.severity_qualifier, SeverityValueId):
-            self.severity_qualifier = SeverityValueId(self.severity_qualifier)
-
-        if self.onset_qualifier is not None and not isinstance(self.onset_qualifier, OnsetId):
-            self.onset_qualifier = OnsetId(self.onset_qualifier)
-
         super().__post_init__(**kwargs)
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -9442,9 +8328,6 @@ class GeneAsAModelOfDiseaseAssociation(GeneToDiseaseAssociation):
     predicate: Union[str, PredicateType] = None
     object: Union[str, DiseaseId] = None
     subject: Union[dict, GeneOrGeneProduct] = None
-    frequency_qualifier: Optional[Union[str, FrequencyValue]] = None
-    severity_qualifier: Optional[Union[str, SeverityValueId]] = None
-    onset_qualifier: Optional[Union[str, OnsetId]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
@@ -9457,19 +8340,7 @@ class GeneAsAModelOfDiseaseAssociation(GeneToDiseaseAssociation):
         if not isinstance(self.subject, GeneOrGeneProduct):
             self.subject = GeneOrGeneProduct(**as_dict(self.subject))
 
-        if self.frequency_qualifier is not None and not isinstance(self.frequency_qualifier, FrequencyValue):
-            self.frequency_qualifier = FrequencyValue(self.frequency_qualifier)
-
-        if self.severity_qualifier is not None and not isinstance(self.severity_qualifier, SeverityValueId):
-            self.severity_qualifier = SeverityValueId(self.severity_qualifier)
-
-        if self.onset_qualifier is not None and not isinstance(self.onset_qualifier, OnsetId):
-            self.onset_qualifier = OnsetId(self.onset_qualifier)
-
         super().__post_init__(**kwargs)
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -9485,9 +8356,6 @@ class VariantAsAModelOfDiseaseAssociation(VariantToDiseaseAssociation):
     predicate: Union[str, PredicateType] = None
     object: Union[str, NamedThingId] = None
     subject: Union[str, SequenceVariantId] = None
-    frequency_qualifier: Optional[Union[str, FrequencyValue]] = None
-    severity_qualifier: Optional[Union[str, SeverityValueId]] = None
-    onset_qualifier: Optional[Union[str, OnsetId]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
@@ -9500,19 +8368,7 @@ class VariantAsAModelOfDiseaseAssociation(VariantToDiseaseAssociation):
         if not isinstance(self.subject, SequenceVariantId):
             self.subject = SequenceVariantId(self.subject)
 
-        if self.frequency_qualifier is not None and not isinstance(self.frequency_qualifier, FrequencyValue):
-            self.frequency_qualifier = FrequencyValue(self.frequency_qualifier)
-
-        if self.severity_qualifier is not None and not isinstance(self.severity_qualifier, SeverityValueId):
-            self.severity_qualifier = SeverityValueId(self.severity_qualifier)
-
-        if self.onset_qualifier is not None and not isinstance(self.onset_qualifier, OnsetId):
-            self.onset_qualifier = OnsetId(self.onset_qualifier)
-
         super().__post_init__(**kwargs)
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -9528,9 +8384,6 @@ class GenotypeAsAModelOfDiseaseAssociation(GenotypeToDiseaseAssociation):
     predicate: Union[str, PredicateType] = None
     object: Union[str, NamedThingId] = None
     subject: Union[str, GenotypeId] = None
-    frequency_qualifier: Optional[Union[str, FrequencyValue]] = None
-    severity_qualifier: Optional[Union[str, SeverityValueId]] = None
-    onset_qualifier: Optional[Union[str, OnsetId]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
@@ -9543,19 +8396,7 @@ class GenotypeAsAModelOfDiseaseAssociation(GenotypeToDiseaseAssociation):
         if not isinstance(self.subject, GenotypeId):
             self.subject = GenotypeId(self.subject)
 
-        if self.frequency_qualifier is not None and not isinstance(self.frequency_qualifier, FrequencyValue):
-            self.frequency_qualifier = FrequencyValue(self.frequency_qualifier)
-
-        if self.severity_qualifier is not None and not isinstance(self.severity_qualifier, SeverityValueId):
-            self.severity_qualifier = SeverityValueId(self.severity_qualifier)
-
-        if self.onset_qualifier is not None and not isinstance(self.onset_qualifier, OnsetId):
-            self.onset_qualifier = OnsetId(self.onset_qualifier)
-
         super().__post_init__(**kwargs)
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -9571,9 +8412,6 @@ class CellLineAsAModelOfDiseaseAssociation(CellLineToDiseaseOrPhenotypicFeatureA
     predicate: Union[str, PredicateType] = None
     object: Union[str, NamedThingId] = None
     subject: Union[str, CellLineId] = None
-    frequency_qualifier: Optional[Union[str, FrequencyValue]] = None
-    severity_qualifier: Optional[Union[str, SeverityValueId]] = None
-    onset_qualifier: Optional[Union[str, OnsetId]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
@@ -9586,19 +8424,7 @@ class CellLineAsAModelOfDiseaseAssociation(CellLineToDiseaseOrPhenotypicFeatureA
         if not isinstance(self.subject, CellLineId):
             self.subject = CellLineId(self.subject)
 
-        if self.frequency_qualifier is not None and not isinstance(self.frequency_qualifier, FrequencyValue):
-            self.frequency_qualifier = FrequencyValue(self.frequency_qualifier)
-
-        if self.severity_qualifier is not None and not isinstance(self.severity_qualifier, SeverityValueId):
-            self.severity_qualifier = SeverityValueId(self.severity_qualifier)
-
-        if self.onset_qualifier is not None and not isinstance(self.onset_qualifier, OnsetId):
-            self.onset_qualifier = OnsetId(self.onset_qualifier)
-
         super().__post_init__(**kwargs)
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -9614,9 +8440,6 @@ class OrganismalEntityAsAModelOfDiseaseAssociation(Association):
     predicate: Union[str, PredicateType] = None
     object: Union[str, NamedThingId] = None
     subject: Union[str, OrganismalEntityId] = None
-    frequency_qualifier: Optional[Union[str, FrequencyValue]] = None
-    severity_qualifier: Optional[Union[str, SeverityValueId]] = None
-    onset_qualifier: Optional[Union[str, OnsetId]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
@@ -9629,19 +8452,7 @@ class OrganismalEntityAsAModelOfDiseaseAssociation(Association):
         if not isinstance(self.subject, OrganismalEntityId):
             self.subject = OrganismalEntityId(self.subject)
 
-        if self.frequency_qualifier is not None and not isinstance(self.frequency_qualifier, FrequencyValue):
-            self.frequency_qualifier = FrequencyValue(self.frequency_qualifier)
-
-        if self.severity_qualifier is not None and not isinstance(self.severity_qualifier, SeverityValueId):
-            self.severity_qualifier = SeverityValueId(self.severity_qualifier)
-
-        if self.onset_qualifier is not None and not isinstance(self.onset_qualifier, OnsetId):
-            self.onset_qualifier = OnsetId(self.onset_qualifier)
-
         super().__post_init__(**kwargs)
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -9675,9 +8486,6 @@ class OrganismToOrganismAssociation(Association):
             self.object = IndividualOrganismId(self.object)
 
         super().__post_init__(**kwargs)
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -9711,9 +8519,6 @@ class TaxonToTaxonAssociation(Association):
             self.object = OrganismTaxonId(self.object)
 
         super().__post_init__(**kwargs)
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -9756,9 +8561,6 @@ class GeneHasVariantThatContributesToDiseaseAssociation(GeneToDiseaseAssociation
             self.subject_form_or_variant_qualifier = str(self.subject_form_or_variant_qualifier)
 
         super().__post_init__(**kwargs)
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -9808,9 +8610,6 @@ class GeneToExpressionSiteAssociation(Association):
             self.quantifier_qualifier = OntologyClassId(self.quantifier_qualifier)
 
         super().__post_init__(**kwargs)
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -9843,9 +8642,6 @@ class SequenceVariantModulatesTreatmentAssociation(Association):
             self.object = TreatmentId(self.object)
 
         super().__post_init__(**kwargs)
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -9883,9 +8679,6 @@ class FunctionalAssociation(Association):
             self.object = OntologyClassId(self.object)
 
         super().__post_init__(**kwargs)
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -9942,9 +8735,6 @@ class MacromolecularMachineToMolecularActivityAssociation(FunctionalAssociation)
             self.object = MolecularActivityId(self.object)
 
         super().__post_init__(**kwargs)
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -9978,9 +8768,6 @@ class MacromolecularMachineToBiologicalProcessAssociation(FunctionalAssociation)
             self.object = BiologicalProcessId(self.object)
 
         super().__post_init__(**kwargs)
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -10014,9 +8801,6 @@ class MacromolecularMachineToCellularComponentAssociation(FunctionalAssociation)
             self.object = CellularComponentId(self.object)
 
         super().__post_init__(**kwargs)
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -10054,9 +8838,6 @@ class MolecularActivityToChemicalEntityAssociation(Association):
             self.object = ChemicalEntityId(self.object)
 
         super().__post_init__(**kwargs)
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -10094,9 +8875,6 @@ class MolecularActivityToMolecularActivityAssociation(Association):
             self.object = MolecularActivityId(self.object)
 
         super().__post_init__(**kwargs)
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -10130,9 +8908,6 @@ class GeneToGoTermAssociation(FunctionalAssociation):
             self.object = OntologyClassId(self.object)
 
         super().__post_init__(**kwargs)
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -10160,9 +8935,6 @@ class EntityToDiseaseAssociation(Association):
             self.FDA_approval_status = FDAApprovalStatusEnum(self.FDA_approval_status)
 
         super().__post_init__(**kwargs)
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -10190,9 +8962,6 @@ class EntityToPhenotypicFeatureAssociation(Association):
             self.FDA_approval_status = FDAApprovalStatusEnum(self.FDA_approval_status)
 
         super().__post_init__(**kwargs)
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -10219,9 +8988,6 @@ class SequenceAssociation(Association):
             self.id = SequenceAssociationId(self.id)
 
         super().__post_init__(**kwargs)
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -10284,9 +9050,6 @@ class GenomicSequenceLocalization(SequenceAssociation):
             self.phase = PhaseEnum(self.phase)
 
         super().__post_init__(**kwargs)
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -10323,9 +9086,6 @@ class SequenceFeatureRelationship(Association):
             self.object = NucleicAcidEntityId(self.object)
 
         super().__post_init__(**kwargs)
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -10362,9 +9122,6 @@ class TranscriptToGeneRelationship(SequenceFeatureRelationship):
             self.object = GeneId(self.object)
 
         super().__post_init__(**kwargs)
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -10406,9 +9163,6 @@ class GeneToGeneProductRelationship(SequenceFeatureRelationship):
             self.predicate = PredicateType(self.predicate)
 
         super().__post_init__(**kwargs)
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -10445,9 +9199,6 @@ class ExonToTranscriptRelationship(SequenceFeatureRelationship):
             self.object = TranscriptId(self.object)
 
         super().__post_init__(**kwargs)
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -10493,9 +9244,6 @@ class ChemicalEntityOrGeneOrGeneProductRegulatesGeneAssociation(Association):
             self.object_direction_qualifier = DirectionQualifierEnum(self.object_direction_qualifier)
 
         super().__post_init__(**kwargs)
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -10524,9 +9272,6 @@ class AnatomicalEntityToAnatomicalEntityAssociation(Association):
             self.object = AnatomicalEntityId(self.object)
 
         super().__post_init__(**kwargs)
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -10570,9 +9315,6 @@ class AnatomicalEntityToAnatomicalEntityPartOfAssociation(AnatomicalEntityToAnat
             self.predicate = PredicateType(self.predicate)
 
         super().__post_init__(**kwargs)
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -10616,9 +9358,6 @@ class AnatomicalEntityToAnatomicalEntityOntogenicAssociation(AnatomicalEntityToA
             self.predicate = PredicateType(self.predicate)
 
         super().__post_init__(**kwargs)
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -10673,9 +9412,6 @@ class OrganismTaxonToOrganismTaxonAssociation(Association):
             self.object = OrganismTaxonId(self.object)
 
         super().__post_init__(**kwargs)
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -10717,9 +9453,6 @@ class OrganismTaxonToOrganismTaxonSpecialization(OrganismTaxonToOrganismTaxonAss
             self.predicate = PredicateType(self.predicate)
 
         super().__post_init__(**kwargs)
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -10767,9 +9500,6 @@ class OrganismTaxonToOrganismTaxonInteraction(OrganismTaxonToOrganismTaxonAssoci
             self.associated_environmental_context = str(self.associated_environmental_context)
 
         super().__post_init__(**kwargs)
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -10803,9 +9533,6 @@ class OrganismTaxonToEnvironmentAssociation(Association):
             self.predicate = PredicateType(self.predicate)
 
         super().__post_init__(**kwargs)
-        if not isinstance(self.category, list):
-            self.category = [self.category] if self.category is not None else []
-        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 # Enumerations

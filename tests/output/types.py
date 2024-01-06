@@ -1,5 +1,5 @@
 # Auto generated from types.yaml by pythongen.py version: 0.0.1
-# Generation date: 2024-01-05T15:46:14
+# Generation date: 2023-09-25T15:55:13
 # Schema: types
 #
 # id: https://w3id.org/linkml/types
@@ -87,8 +87,8 @@ class Decimal(Decimal):
 
 class Time(XSDTime):
     """ A time object represents a (local) time of day, independent of any particular day """
-    type_class_uri = XSD.time
-    type_class_curie = "xsd:time"
+    type_class_uri = XSD.dateTime
+    type_class_curie = "xsd:dateTime"
     type_name = "time"
     type_model_uri = LINKML.Time
 
@@ -163,30 +163,6 @@ class Nodeidentifier(NodeIdentifier):
     type_class_curie = "shex:nonLiteral"
     type_name = "nodeidentifier"
     type_model_uri = LINKML.Nodeidentifier
-
-
-class Jsonpointer(str):
-    """ A string encoding a JSON Pointer. The value of the string MUST conform to JSON Point syntax and SHOULD dereference to a valid object within the current instance document when encoded in tree form. """
-    type_class_uri = XSD.string
-    type_class_curie = "xsd:string"
-    type_name = "jsonpointer"
-    type_model_uri = LINKML.Jsonpointer
-
-
-class Jsonpath(str):
-    """ A string encoding a JSON Path. The value of the string MUST conform to JSON Point syntax and SHOULD dereference to zero or more valid objects within the current instance document when encoded in tree form. """
-    type_class_uri = XSD.string
-    type_class_curie = "xsd:string"
-    type_name = "jsonpath"
-    type_model_uri = LINKML.Jsonpath
-
-
-class Sparqlpath(str):
-    """ A string encoding a SPARQL Property Path. The value of the string MUST conform to SPARQL syntax and SHOULD dereference to zero or more valid objects within the current instance document when encoded as RDF. """
-    type_class_uri = XSD.string
-    type_class_curie = "xsd:string"
-    type_name = "sparqlpath"
-    type_model_uri = LINKML.Sparqlpath
 
 
 # Class references
