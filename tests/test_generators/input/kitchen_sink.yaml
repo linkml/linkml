@@ -71,6 +71,14 @@ classes:
         slot_uri: skos:altLabel
         multivalued: true
 
+  HasNames:
+    mixin: true
+    is_a: HasAliases
+    attributes:
+      names:
+        slot_uri: skos:prefLabel
+        multivalued: true
+
   Friend:
     abstract: true
     slots:
@@ -83,6 +91,7 @@ classes:
       - subset A
     mixins:
       - HasAliases
+      - HasNames
     slots:
       - id
       - name
@@ -125,8 +134,6 @@ classes:
        * and
        * a
        * list
-
-
     mixins:
       - HasAliases
     slots:
@@ -184,6 +191,8 @@ classes:
   FamilialRelationship:
     rank: 5
     is_a: Relationship
+    mixins:
+      - HasAliases
     slots:
       - cordialness
     slot_usage:
@@ -207,6 +216,8 @@ classes:
     slots:
       - employed at
       - type
+    mixins:
+      - HasNames
     slot_usage:
       type:
         range: EmploymentEventType

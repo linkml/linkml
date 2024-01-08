@@ -566,7 +566,19 @@ def test_fetch_slots_of_class(kitchen_sink_path, input_path):
     # test assertion for inherited attributes of a class
     cls = sv.get_class("EmploymentEvent")
     actual_result = [s.name for s in gen.get_indirect_slots(cls)]
-    expected_result = ["ended at time", "metadata", "started at time", "is current"]
+    expected_result = ["ended at time", "metadata", "started at time", "is current", "aliases", "names"]
+
+    assert Counter(expected_result) == Counter(actual_result)
+
+    cls = sv.get_class("FamilialRelationship")
+    actual_result = [s.name for s in gen.get_indirect_slots(cls)]
+    expected_result = ["ended at time", "started at time", "aliases", "related to", "type"]
+
+    assert Counter(expected_result) == Counter(actual_result)
+
+    cls = sv.get_class("Person")
+    actual_result = [s.name for s in gen.get_indirect_slots(cls)]
+    expected_result = ["aliases", "names"]
 
     assert Counter(expected_result) == Counter(actual_result)
 

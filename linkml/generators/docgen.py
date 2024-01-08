@@ -791,20 +791,33 @@ class DocGenerator(Generator):
             self.inject_slot_info(self.schemaview.induced_slot(sn, cls.name)) for sn in self.get_direct_slot_names(cls)
         ]
 
-    def get_indirect_slots(self, cls: ClassDefinition) -> List[SlotDefinition]:
-        """Fetch list of all inherited attributes of a class, i.e.,
-        all slots that belong to the domain of a class.
+    def get_indirect_slots(self, cls: ClassDefinition, mixins=True) -> List[SlotDefinition]:
+        """
+        Fetch list of all inherited attributes of a class, from is_ancestors and mixin ancestors
 
         :param cls: class for which we want to determine the attributes
+        :param mixins: if true, include mixins
         :return: list of all own attributes of a class
         """
         sv = self.schemaview
         direct_slot_names = self.get_direct_slot_names(cls)
-        return [
-            self.inject_slot_info(slot)
-            for slot in sv.class_induced_slots(cls.name)
+        indirect_slot_names = set()
+
+        if mixins:
+            mixin_slots = (mixin for mixin in cls.mixins if mixin)
+            mixin_and_induced_slots = (sv.class_induced_slots(mixin_class.name) for mixin_class in
+                                       map(sv.get_class, mixin_slots))
+            indirect_slot_names.update(
+                slot.name for slots in mixin_and_induced_slots for slot in slots
+                if slot.name not in direct_slot_names
+            )
+
+        indirect_slot_names.update(
+            slot.name for slot in sv.class_induced_slots(cls.name)
             if slot.name not in direct_slot_names
-        ]
+        )
+
+        return [self.inject_slot_info(sv.get_slot(slot)) for slot in indirect_slot_names]
 
     def get_slot_inherited_from(
         self, class_name: ClassDefinitionName, slot_name: SlotDefinitionName
