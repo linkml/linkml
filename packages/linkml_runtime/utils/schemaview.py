@@ -1515,11 +1515,14 @@ class SchemaView(object):
         :param enum_name: enum in consideration
         :return: list of slots, either schem or both class attribute defined
         """
-        enum_slots = [s for s in self.all_slots().values() if s.range == enum_name]
+        enum_slots = []
+        for s in self.all_slots().values():
+            if s.range == enum_name and s not in enum_slots:
+                enum_slots.append(s)
         for class_definition in self.all_classes().values():
             if class_definition.slot_usage:
                 for slot_definition in class_definition.slot_usage.values():
-                    if slot_definition.range == enum_name:
+                    if slot_definition.range == enum_name and slot_definition not in enum_slots:
                         enum_slots.append(slot_definition)
         return enum_slots
 

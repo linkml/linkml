@@ -1,43 +1,98 @@
-import logging
-import unittest
-from unittest import TestCase
+import pytest
 from linkml_runtime.utils.schemaview import SchemaView
 
-from tests.test_issues.environment import env
+schema = """
+id: https://w3id.org/linkml/examples/personinfo
+name: personinfo
+prefixes:
+  linkml: https://w3id.org/linkml/
+  schema: http://schema.org/
+imports:
+  - linkml:types
+default_range: string
+
+classes:
+  Person:
+    class_uri: schema:Person
+    attributes:
+      id:
+        identifier: true
+      employed:
+        range: EmploymentStatusEnum
+      past_relationship:
+        range: RelationshipStatusEnum
+    slots:
+      - type
+      - past_employer
+  Programmer:
+    attributes:
+        employed:
+            range: EmploymentStatusEnum
+    slots:
+      - type
+      - past_employer
+    slot_usage:
+      type:
+        range: TypeEnum
+      
+slots:
+    status:
+      range: PersonStatusEnum
+    relationship:
+      range: RelationshipStatusEnum
+    type:
+    past_employer:
+        range: EmploymentStatusEnum
+enums:
+  PersonStatusEnum:
+    permissible_values:
+      ALIVE:
+      DEAD:
+      UNKNOWN:
+  EmployedStatusEnum:
+    permissible_values:
+      EMPLOYED:
+      UNEMPLOYED:
+      UNKNOWN:
+  RelationshipStatusEnum:
+    permissible_values:
+      UNKNOWN:
+  TypeEnum:
+    permissible_values:
+      UNKNOWN:
+"""
 
 
-class Issue998TestCase(TestCase):
-    """
-    https://github.com/linkml/linkml/issues/998
-    """
-    env = env
-
-    def test_issue_998_schema_slot(self):
-        view = SchemaView(env.input_path('linkml_issue_998.yaml'))
-        enum_slots = view.get_slots_by_enum("PersonStatusEnum")
-        # assert type(enum_slots) is List[SlotDefinition]
-        assert len(enum_slots) == 1
-        assert enum_slots[0].name == "status"
-
-    def test_issue_998_attribute_slot(self):
-        view = SchemaView(env.input_path('linkml_issue_998.yaml'))
-        enum_slots = view.get_slots_by_enum("EmploymentStatusEnum")
-        assert len(enum_slots) == 1
-        assert enum_slots[0].name == "employed"
-
-    def test_issue_998_schema_and_atribute_slots(self):
-        view = SchemaView(env.input_path('linkml_issue_998.yaml'))
-        enum_slots = view.get_slots_by_enum("RelationshipStatusEnum")
-        assert len(enum_slots) == 2
-        assert enum_slots[0].name == "relationship"
-        assert enum_slots[1].name == "past_relationship"
-
-    def test_issue_998_slot_usage_range(self):
-        view = SchemaView(env.input_path('linkml_issue_998.yaml'))
-        enum_slots = view.get_slots_by_enum("TypeEnum")
-        assert len(enum_slots) == 1
-        assert enum_slots[0].name == "type"
+@pytest.fixture
+def view():
+    return SchemaView(schema)
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_issue_998_schema_slot(view):
+    enum_slots = view.get_slots_by_enum("EmploymentStatusEnum")
+    assert len(enum_slots) == 2
+
+
+def test_slots_are_not_duplicated(view):
+    enum_slots = view.get_slots_by_enum("PersonStatusEnum")
+    assert len(enum_slots) == 1
+    assert enum_slots[0].name == "status"
+
+
+def test_issue_998_attribute_slot(view):
+    enum_slots = view.get_slots_by_enum("EmploymentStatusEnum")
+    assert len(enum_slots) == 1
+    assert enum_slots[0].name == "employed"
+
+
+def test_issue_998_schema_and_attribute_slots(view):
+    enum_slots = view.get_slots_by_enum("RelationshipStatusEnum")
+    assert len(enum_slots) == 2
+    assert enum_slots[0].name == "relationship"
+    assert enum_slots[1].name == "past_relationship"
+
+
+def test_issue_998_slot_usage_range(view):
+    enum_slots = view.get_slots_by_enum("TypeEnum")
+    assert len(enum_slots) == 1
+    assert enum_slots[0].name == "type"
