@@ -1,7 +1,7 @@
 PlantUML Diagram Generator
 ==========================
 
-Similar to `Mermaid <https://mermaid.js.org/>`, PlantUML is yet another diagramming tool that 
+Similar to `Mermaid <https://mermaid.js.org/>`_, PlantUML is yet another diagramming tool that 
 can be used to create UML diagrams from simple textual descriptions.
 
 Usage:
