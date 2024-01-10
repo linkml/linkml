@@ -715,5 +715,5 @@ def test_uml_diagram_classr(kitchen_sink_path, tmp_path):
     assert_mdfile_contains(
         tmp_path / "Person.md",
         "# Class: Person",
-        followed_by=["```puml", "@startuml", "class \"Person\" {", "@enduml"],
+        followed_by=["```puml", "@startuml", 'class "Person" {', "@enduml"],
     )
