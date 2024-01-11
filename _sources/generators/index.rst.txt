@@ -62,6 +62,7 @@ published on static hosting sites.
    docgen
    erdiagram
    yuml
+   plantumlgen
    project-generator
    
    

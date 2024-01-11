@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Python" href="python.html" /><link rel="prev" title="PlantUML Diagram Generator" href="plantumlgen.html" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Project Generator" href="project-generator.html" /><link rel="prev" title="ER Diagrams" href="erdiagram.html" />
 
     <link rel="shortcut icon" href="https://linkml.io/uploads/linkml-logo_color-no-words.png"/><!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
-        <title>Project Generator - linkml documentation</title>
+        <title>PlantUML Diagram Generator - linkml documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
@@ -134,7 +134,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -212,8 +212,8 @@
 <li class="toctree-l2"><a class="reference internal" href="owl.html">OWL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="markdown.html">Markdown</a></li>
 <li class="toctree-l2"><a class="reference internal" href="erdiagram.html">ER Diagrams</a></li>
-<li class="toctree-l2"><a class="reference internal" href="plantumlgen.html">PlantUML Diagram Generator</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Project Generator</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">PlantUML Diagram Generator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="project-generator.html">Project Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="python.html">Python</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pydantic.html">Pydantic</a></li>
 <li class="toctree-l2"><a class="reference internal" href="java.html">Java</a></li>
@@ -298,147 +298,41 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
-          <section id="project-generator">
-<h1>Project Generator<a class="headerlink" href="#project-generator" title="Permalink to this heading">#</a></h1>
-<section id="overview">
-<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this heading">#</a></h2>
-<p>The ProjectGenerator is a wrapper for all other generators, and will
-generate a complete project folder, with subfolders for jsonschema,
-python, etc</p>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p><a class="reference external" href="https://github.com/linkml/linkml-model-template">linkml-model-template</a></p>
-</div>
-</section>
-<section id="docs">
-<h2>Docs<a class="headerlink" href="#docs" title="Permalink to this heading">#</a></h2>
-<section id="command-line">
-<h3>Command Line<a class="headerlink" href="#command-line" title="Permalink to this heading">#</a></h3>
-<section id="gen-project">
-<h4>gen-project<a class="headerlink" href="#gen-project" title="Permalink to this heading">#</a></h4>
-<p>Generate an entire project LinkML schema</p>
-<p>Generate all downstream artefacts using default configuration:</p>
-<blockquote>
-<div><p>gen-project -d . personinfo.yaml</p>
-</div></blockquote>
-<p>Exclusion lists: all except ShEx:</p>
-<blockquote>
-<div><p>gen-project –exclude shex -d . personinfo.yaml</p>
-</div></blockquote>
-<p>Inclusion lists: only jsonschema and python:</p>
-<blockquote>
-<div><p>gen-project -I python -I jsonschema -d . personinfo.yaml</p>
-</div></blockquote>
-<p>Configuration, on command line:</p>
-<blockquote>
-<div><p>gen-project -A ‘jsonschema: {top_class: Container}’ -d . personinfo.yaml</p>
-</div></blockquote>
-<p>Configuration, via yaml file:</p>
-<blockquote>
-<div><p>gen-project –config config.yaml personinfo.yaml</p>
-</div></blockquote>
-<p>config.yaml:</p>
-<blockquote>
-<div><p>directory: .
-generator_args:</p>
-<blockquote>
-<div><dl class="simple">
-<dt>json_schema:</dt><dd><p>top_class: Container</p>
-</dd>
-</dl>
-</div></blockquote>
-</div></blockquote>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>gen-project<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>YAMLFILE
+          <section id="plantuml-diagram-generator">
+<h1>PlantUML Diagram Generator<a class="headerlink" href="#plantuml-diagram-generator" title="Permalink to this heading">#</a></h1>
+<p>Similar to <a class="reference external" href="https://mermaid.js.org/">Mermaid</a>, PlantUML is yet another diagramming tool that
+can be used to create UML diagrams from simple textual descriptions.</p>
+<p>Usage:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gen-plantuml<span class="w"> </span>~/path/to/linkml_schema.yaml<span class="w"> </span>--classes<span class="w"> </span>&lt;class-one&gt;<span class="w"> </span>--classes<span class="w"> </span>&lt;class-two&gt;<span class="w"> </span>--directory<span class="w"> </span>~/path/to/output-directory
 </pre></div>
 </div>
-<p class="rubric">Options</p>
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-project-d">
-<span id="cmdoption-gen-project-dir"></span><span class="sig-name descname"><span class="pre">-d</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--dir</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;dir&gt;</span></span><a class="headerlink" href="#cmdoption-gen-project-d" title="Permalink to this definition">#</a></dt>
-<dd><p>directory in which to place generated files. E.g. linkml_model, biolink_model</p>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-project-A">
-<span id="cmdoption-gen-project-a"></span><span id="cmdoption-gen-project-generator-arguments"></span><span class="sig-name descname"><span class="pre">-A</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--generator-arguments</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;generator_arguments&gt;</span></span><a class="headerlink" href="#cmdoption-gen-project-A" title="Permalink to this definition">#</a></dt>
-<dd><p>yaml configuration for generators</p>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-project-C">
-<span id="cmdoption-gen-project-c"></span><span id="cmdoption-gen-project-config-file"></span><span class="sig-name descname"><span class="pre">-C</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--config-file</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;config_file&gt;</span></span><a class="headerlink" href="#cmdoption-gen-project-C" title="Permalink to this definition">#</a></dt>
-<dd><p>path to yaml configuration</p>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-project-X">
-<span id="cmdoption-gen-project-x"></span><span id="cmdoption-gen-project-exclude"></span><span class="sig-name descname"><span class="pre">-X</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--exclude</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;exclude&gt;</span></span><a class="headerlink" href="#cmdoption-gen-project-X" title="Permalink to this definition">#</a></dt>
-<dd><p>list of artefacts to be excluded</p>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-project-I">
-<span id="cmdoption-gen-project-i"></span><span id="cmdoption-gen-project-include"></span><span class="sig-name descname"><span class="pre">-I</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--include</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;include&gt;</span></span><a class="headerlink" href="#cmdoption-gen-project-I" title="Permalink to this definition">#</a></dt>
-<dd><p>list of artefacts to be included. If not set, defaults to all</p>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-project-mergeimports">
-<span id="cmdoption-gen-project-no-mergeimports"></span><span class="sig-name descname"><span class="pre">--mergeimports</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-mergeimports</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-project-mergeimports" title="Permalink to this definition">#</a></dt>
-<dd><p>Merge imports into source file</p>
-<dl class="field-list simple">
-<dt class="field-odd">Default<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-project-log_level">
-<span id="cmdoption-gen-project-log-level"></span><span class="sig-name descname"><span class="pre">--log_level</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;log_level&gt;</span></span><a class="headerlink" href="#cmdoption-gen-project-log_level" title="Permalink to this definition">#</a></dt>
-<dd><p>Logging level</p>
-<dl class="field-list simple">
-<dt class="field-odd">Default<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">WARNING</span></code></p>
-</dd>
-<dt class="field-even">Options<span class="colon">:</span></dt>
-<dd class="field-even"><p>CRITICAL | ERROR | WARNING | INFO | DEBUG</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-project-V">
-<span id="cmdoption-gen-project-v"></span><span id="cmdoption-gen-project-version"></span><span class="sig-name descname"><span class="pre">-V</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--version</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-project-V" title="Permalink to this definition">#</a></dt>
-<dd><p>Show the version and exit.</p>
-</dd></dl>
-
-<p class="rubric">Arguments</p>
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-project-arg-YAMLFILE">
-<span id="cmdoption-gen-project-arg-yamlfile"></span><span class="sig-name descname"><span class="pre">YAMLFILE</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-project-arg-YAMLFILE" title="Permalink to this definition">#</a></dt>
-<dd><p>Required argument</p>
-</dd></dl>
-
-</section>
-</section>
-<section id="code">
-<h3>Code<a class="headerlink" href="#code" title="Permalink to this heading">#</a></h3>
-<dl class="py class">
-<dt class="sig sig-object py" id="linkml.generators.projectgen.ProjectGenerator">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linkml.generators.projectgen.</span></span><span class="sig-name descname"><span class="pre">ProjectGenerator</span></span><a class="reference internal" href="../_modules/linkml/generators/projectgen.html#ProjectGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.projectgen.ProjectGenerator" title="Permalink to this definition">#</a></dt>
-<dd><p>Generates complete project folders</p>
-<p>Note this doesn’t conform to overall generator framework, as it is a meta-generator</p>
-</dd></dl>
-
-</section>
-</section>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">--classes</span></code> optional argument can take multiple values. To generate PlantUML diagrams
+for multiple classes pass values to <code class="docutils literal notranslate"><span class="pre">gen-plantuml</span></code> like above. The above example illustrates
+running the generator with only two classes but you can follow the same pattern and run the
+generator with as many classes as you want. If you want to generate the diagram for one class
+only then do not specify <code class="docutils literal notranslate"><span class="pre">--classes</span></code> multiple times.</p>
+</div>
+<p>In the context of <code class="docutils literal notranslate"><span class="pre">gen-doc</span></code>:</p>
+<p>PlantUML has the capability to create a number of UML diagrams (sequence, use case, class,
+activity, etc.) much like it’s Mermaid counterpart. <em>Mermaid</em> is the default diagramming tool with
+which UML class diagrams are rendered on schema (class) documentation pages. However, while
+generating documentation pages you have the option to choose which of the two UML diagramming
+tools you want to use to create your UML class diagrams — <em>Mermaid</em>, or <em>PlantUML</em>.</p>
+<p>To generate your documentation pages with PlantUML diagrams, use <code class="docutils literal notranslate"><span class="pre">gen-doc</span></code> like this:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gen-doc<span class="w"> </span>~/path/to/linkml_schema.yaml<span class="w"> </span>--diagram-type<span class="w"> </span>plantuml_class_diagram<span class="w"> </span>--directory<span class="w"> </span>~/path/to/output-directory
+</pre></div>
+</div>
+<p>Example output:</p>
+<p>This is what the PlantUML class diagram looks like for the <code class="docutils literal notranslate"><span class="pre">Person</span></code> class.</p>
+<img alt="../_images/Person_plantuml.png" src="../_images/Person_plantuml.png" />
 </section>
 
         </article>
@@ -446,23 +340,23 @@ generator_args:</p>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="python.html">
+          <a class="next-page" href="project-generator.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Python</div>
+                <div class="title">Project Generator</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="plantumlgen.html">
+          <a class="prev-page" href="erdiagram.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">PlantUML Diagram Generator</div>
+                <div class="title">ER Diagrams</div>
                 
               </div>
             </a>
@@ -484,38 +378,8 @@ generator_args:</p>
         
       </footer>
     </div>
-    <aside class="toc-drawer">
+    <aside class="toc-drawer no-toc">
       
-      
-      <div class="toc-sticky toc-scroll">
-        <div class="toc-title-container">
-          <span class="toc-title">
-            On this page
-          </span>
-        </div>
-        <div class="toc-tree-container">
-          <div class="toc-tree">
-            <ul>
-<li><a class="reference internal" href="#">Project Generator</a><ul>
-<li><a class="reference internal" href="#overview">Overview</a></li>
-<li><a class="reference internal" href="#docs">Docs</a><ul>
-<li><a class="reference internal" href="#command-line">Command Line</a><ul>
-<li><a class="reference internal" href="#gen-project">gen-project</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#code">Code</a><ul>
-<li><a class="reference internal" href="#linkml.generators.projectgen.ProjectGenerator"><code class="docutils literal notranslate"><span class="pre">ProjectGenerator</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-          </div>
-        </div>
-      </div>
       
       
     </aside>
