@@ -28,6 +28,7 @@ from linkml_runtime.utils.schemaview import SchemaView
 
 from linkml._version import __version__
 from linkml.generators.erdiagramgen import ERDiagramGenerator
+from linkml.generators.plantumlgen import PlantumlGenerator
 from linkml.utils.generator import Generator, shared_arguments
 from linkml.workspaces.example_runner import ExampleRunner
 
@@ -38,7 +39,8 @@ class MarkdownDialect(Enum):
 
 
 class DiagramType(Enum):
-    uml_class_diagram = "uml_class_diagram"
+    mermaid_class_diagram = "mermaid_class_diagram"
+    plantuml_class_diagram = "plantuml_class_diagram"
     er_diagram = "er_diagram"
 
 
@@ -593,8 +595,13 @@ class DocGenerator(Generator):
                 return erdgen.serialize_classes(class_names, follow_references=True, max_hops=2)
             else:
                 return erdgen.serialize()
-        elif self.diagram_type.value == DiagramType.uml_class_diagram.value:
+        elif self.diagram_type.value == DiagramType.mermaid_class_diagram.value:
             self.logger.info("This is currently handled in the jinja templates")
+        elif self.diagram_type.value == DiagramType.plantuml_class_diagram.value:
+            plantumlgen = PlantumlGenerator(self.schema)
+            plantuml_diagram = plantumlgen.serialize(classes=class_names)
+            self.logger.debug(f"Created PlantUML diagram for class: {class_names}")
+            return plantuml_diagram
         else:
             raise NotImplementedError(f"Diagram type {self.diagram_type} not implemented")
 

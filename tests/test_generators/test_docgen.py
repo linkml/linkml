@@ -689,7 +689,7 @@ def test_uml_diagram_classr(kitchen_sink_path, tmp_path):
     gen = DocGenerator(
         kitchen_sink_path,
         mergeimports=True,
-        diagram_type="uml_class_diagram",
+        diagram_type="mermaid_class_diagram",
     )
 
     gen.serialize(directory=str(tmp_path))
@@ -700,4 +700,20 @@ def test_uml_diagram_classr(kitchen_sink_path, tmp_path):
         tmp_path / "Person.md",
         "# Class: Person",
         followed_by=["```mermaid", "classDiagram", "Person"],
+    )
+
+    gen = DocGenerator(
+        kitchen_sink_path,
+        mergeimports=True,
+        diagram_type="plantuml_class_diagram",
+    )
+
+    gen.serialize(directory=str(tmp_path))
+
+    # pick a random class documentation markdown file and check if there
+    # is a mermaid class diagram in it
+    assert_mdfile_contains(
+        tmp_path / "Person.md",
+        "# Class: Person",
+        followed_by=["```puml", "@startuml", 'class "Person" {', "@enduml"],
     )

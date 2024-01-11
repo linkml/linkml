@@ -33,6 +33,10 @@ URI: {{ gen.uri_link(element) }}
 ```{{ gen.mermaid_directive() }}
 {{ gen.mermaid_diagram([element.name]) }}
 ```
+{% elif diagram_type == "plantuml_class_diagram" %}
+```puml
+{{ gen.mermaid_diagram([element.name]) }}
+```
 {% else %}
 {% include "class_diagram.md.jinja2" %}
 {% endif %}
