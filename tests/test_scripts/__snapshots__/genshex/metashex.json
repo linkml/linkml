@@ -365,7 +365,15 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/linkml/pv_formula",
-                        "valueExpr": "https://w3id.org/linkml/PvFormulaOptions",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/linkml/PvFormulaOptions#CODE",
+                              "https://w3id.org/linkml/PvFormulaOptions#CURIE",
+                              "https://w3id.org/linkml/PvFormulaOptions#URI",
+                              "https://w3id.org/linkml/PvFormulaOptions#FHIR_CODING"
+                           ]
+                        },
                         "min": 0,
                         "max": 1
                      },
@@ -891,7 +899,14 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/linkml/value_presence",
-                        "valueExpr": "https://w3id.org/linkml/PresenceEnum",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/linkml/PresenceEnum#UNCOMMITTED",
+                              "https://w3id.org/linkml/PresenceEnum#PRESENT",
+                              "https://w3id.org/linkml/PresenceEnum#ABSENT"
+                           ]
+                        },
                         "min": 0,
                         "max": 1
                      },
@@ -2618,7 +2633,15 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/linkml/pv_formula",
-                        "valueExpr": "https://w3id.org/linkml/PvFormulaOptions",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/linkml/PvFormulaOptions#CODE",
+                              "https://w3id.org/linkml/PvFormulaOptions#CURIE",
+                              "https://w3id.org/linkml/PvFormulaOptions#URI",
+                              "https://w3id.org/linkml/PvFormulaOptions#FHIR_CODING"
+                           ]
+                        },
                         "min": 0,
                         "max": 1
                      },
@@ -2734,7 +2757,15 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/linkml/pv_formula",
-                        "valueExpr": "https://w3id.org/linkml/PvFormulaOptions",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/linkml/PvFormulaOptions#CODE",
+                              "https://w3id.org/linkml/PvFormulaOptions#CURIE",
+                              "https://w3id.org/linkml/PvFormulaOptions#URI",
+                              "https://w3id.org/linkml/PvFormulaOptions#FHIR_CODING"
+                           ]
+                        },
                         "min": 0,
                         "max": 1
                      },
@@ -5001,7 +5032,16 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/linkml/relational_role",
-                        "valueExpr": "https://w3id.org/linkml/RelationalRoleEnum",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "http://www.w3.org/1999/02/22-rdf-syntax-ns#subject",
+                              "http://www.w3.org/1999/02/22-rdf-syntax-ns#object",
+                              "http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate",
+                              "https://w3id.org/linkml/RelationalRoleEnum#NODE",
+                              "https://w3id.org/linkml/RelationalRoleEnum#OTHER_ROLE"
+                           ]
+                        },
                         "min": 0,
                         "max": 1
                      },
@@ -5155,7 +5195,14 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/linkml/value_presence",
-                        "valueExpr": "https://w3id.org/linkml/PresenceEnum",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/linkml/PresenceEnum#UNCOMMITTED",
+                              "https://w3id.org/linkml/PresenceEnum#PRESENT",
+                              "https://w3id.org/linkml/PresenceEnum#ABSENT"
+                           ]
+                        },
                         "min": 0,
                         "max": 1
                      },
@@ -5376,7 +5423,14 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/linkml/value_presence",
-                        "valueExpr": "https://w3id.org/linkml/PresenceEnum",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/linkml/PresenceEnum#UNCOMMITTED",
+                              "https://w3id.org/linkml/PresenceEnum#PRESENT",
+                              "https://w3id.org/linkml/PresenceEnum#ABSENT"
+                           ]
+                        },
                         "min": 0,
                         "max": 1
                      },
@@ -5549,7 +5603,15 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate",
-                        "valueExpr": "https://w3id.org/linkml/AliasPredicateEnum",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "http://www.w3.org/2004/02/skos/core#exactMatch",
+                              "http://www.w3.org/2004/02/skos/core#relatedMatch",
+                              "http://www.w3.org/2004/02/skos/core#broaderMatch",
+                              "http://www.w3.org/2004/02/skos/core#narrowerMatch"
+                           ]
+                        },
                         "min": 0,
                         "max": 1
                      },
