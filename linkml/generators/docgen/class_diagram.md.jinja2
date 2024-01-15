@@ -13,7 +13,7 @@
       {% for s in schemaview.class_induced_slots(element.name)|sort(attribute='name') -%}
         {{ gen.name(element) }} : {{gen.name(s)}}
         {% if s.range not in gen.all_type_object_names() %}
-          {{ gen.name(element) }} --|> {{ s.range }} : {{ gen.name(s) }}
+          {{ gen.name(element) }} --> {{ s.range }} : {{ gen.name(s) }}
         {% endif %}
       {% endfor %}
 ```
@@ -27,7 +27,7 @@
       {% for s in schemaview.class_induced_slots(element.name)|sort(attribute='name') -%}
         {{ gen.name(element) }} : {{gen.name(s)}}
         {% if s.range not in gen.all_type_object_names() %}
-          {{ gen.name(element) }} --|> {{ s.range }} : {{ gen.name(s) }}
+          {{ gen.name(element) }} --> {{ s.range }} : {{ gen.name(s) }}
         {% endif %}
       {% endfor %}
 ```
@@ -41,7 +41,7 @@
       {% for s in schemaview.class_induced_slots(element.name)|sort(attribute='name') -%}
         {{ gen.name(element) }} : {{gen.name(s)}}
         {% if s.range not in gen.all_type_object_names() %}
-          {{ gen.name(element) }} --|> {{ s.range }} : {{ gen.name(s) }}
+          {{ gen.name(element) }} --> {{ s.range }} : {{ gen.name(s) }}
         {% endif %}
       {% endfor %}
 ```
@@ -52,7 +52,7 @@
       {% for s in schemaview.class_induced_slots(element.name)|sort(attribute='name') -%}
         {{ gen.name(element) }} : {{gen.name(s)}}
         {% if s.range not in gen.all_type_object_names() %}
-          {{ gen.name(element) }} --|> {{ s.range }} : {{ gen.name(s) }}
+          {{ gen.name(element) }} --> {{ s.range }} : {{ gen.name(s) }}
         {% endif %}
       {% endfor %}
 ```
