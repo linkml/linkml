@@ -1,6 +1,7 @@
 # metamodel_version: 1.7.0
 # version: 2.0.0
 BASE <https://w3id.org/linkml/>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
@@ -89,7 +90,8 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <code_set> @<Uriorcurie> ? ;
           <code_set_tag> @<String> ? ;
           <code_set_version> @<String> ? ;
-          <pv_formula> @<PvFormulaOptions> ? ;
+          <pv_formula> [ <https://w3id.org/linkml/PvFormulaOptions#CODE> <https://w3id.org/linkml/PvFormulaOptions#CURIE>
+             <https://w3id.org/linkml/PvFormulaOptions#URI> <https://w3id.org/linkml/PvFormulaOptions#FHIR_CODING> ] ? ;
           <permissible_values> @<PermissibleValue> * ;
           <include> @<AnonymousEnumExpression> * ;
           <minus> @<AnonymousEnumExpression> * ;
@@ -173,7 +175,8 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <structured_pattern> @<PatternExpression> ? ;
           <unit> @<UnitOfMeasure> ? ;
           <implicit_prefix> @<String> ? ;
-          <value_presence> @<PresenceEnum> ? ;
+          <value_presence> [ <https://w3id.org/linkml/PresenceEnum#UNCOMMITTED> <https://w3id.org/linkml/PresenceEnum#PRESENT>
+             <https://w3id.org/linkml/PresenceEnum#ABSENT> ] ? ;
           <equals_string> @<String> ? ;
           <equals_string_in> @<String> * ;
           <equals_number> @<Integer> ? ;
@@ -453,7 +456,8 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <code_set> @<Uriorcurie> ? ;
           <code_set_tag> @<String> ? ;
           <code_set_version> @<String> ? ;
-          <pv_formula> @<PvFormulaOptions> ? ;
+          <pv_formula> [ <https://w3id.org/linkml/PvFormulaOptions#CODE> <https://w3id.org/linkml/PvFormulaOptions#CURIE>
+             <https://w3id.org/linkml/PvFormulaOptions#URI> <https://w3id.org/linkml/PvFormulaOptions#FHIR_CODING> ] ? ;
           <permissible_values> @<PermissibleValue> * ;
           <include> @<AnonymousEnumExpression> * ;
           <minus> @<AnonymousEnumExpression> * ;
@@ -472,7 +476,8 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <code_set> @<Uriorcurie> ? ;
           <code_set_tag> @<String> ? ;
           <code_set_version> @<String> ? ;
-          <pv_formula> @<PvFormulaOptions> ? ;
+          <pv_formula> [ <https://w3id.org/linkml/PvFormulaOptions#CODE> <https://w3id.org/linkml/PvFormulaOptions#CURIE>
+             <https://w3id.org/linkml/PvFormulaOptions#URI> <https://w3id.org/linkml/PvFormulaOptions#FHIR_CODING> ] ? ;
           <permissible_values> @<PermissibleValue> * ;
           <include> @<AnonymousEnumExpression> * ;
           <minus> @<AnonymousEnumExpression> * ;
@@ -836,7 +841,8 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <role> @<String> ? ;
           <is_usage_slot> @<Boolean> ? ;
           <usage_slot_name> @<String> ? ;
-          <relational_role> @<RelationalRoleEnum> ? ;
+          <relational_role> [ rdf:subject rdf:object rdf:predicate <https://w3id.org/linkml/RelationalRoleEnum#NODE>
+             <https://w3id.org/linkml/RelationalRoleEnum#OTHER_ROLE> ] ? ;
           <slot_group> @<SlotDefinition> ? ;
           <is_grouping_slot> @<Boolean> ? ;
           <path_rule> @<PathExpression> ? ;
@@ -858,7 +864,8 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <structured_pattern> @<PatternExpression> ? ;
           <unit> @<UnitOfMeasure> ? ;
           <implicit_prefix> @<String> ? ;
-          <value_presence> @<PresenceEnum> ? ;
+          <value_presence> [ <https://w3id.org/linkml/PresenceEnum#UNCOMMITTED> <https://w3id.org/linkml/PresenceEnum#PRESENT>
+             <https://w3id.org/linkml/PresenceEnum#ABSENT> ] ? ;
           <equals_string> @<String> ? ;
           <equals_string_in> @<String> * ;
           <equals_number> @<Integer> ? ;
@@ -892,7 +899,8 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <structured_pattern> @<PatternExpression> ? ;
           <unit> @<UnitOfMeasure> ? ;
           <implicit_prefix> @<String> ? ;
-          <value_presence> @<PresenceEnum> ? ;
+          <value_presence> [ <https://w3id.org/linkml/PresenceEnum#UNCOMMITTED> <https://w3id.org/linkml/PresenceEnum#PRESENT>
+             <https://w3id.org/linkml/PresenceEnum#ABSENT> ] ? ;
           <equals_string> @<String> ? ;
           <equals_string_in> @<String> * ;
           <equals_number> @<Integer> ? ;
@@ -920,7 +928,7 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           &<CommonMetadata_tes> ;
           rdf:type [ <CommonMetadata> ] ? ;
           <literal_form> @<String> ;
-          <predicate> @<AliasPredicateEnum> ? ;
+          <predicate> [ skos:exactMatch skos:relatedMatch skos:broaderMatch skos:narrowerMatch ] ? ;
           <categories> @<Uriorcurie> * ;
           <extensions> @<Extension> * ;
           <annotations> @<Annotation> * ;

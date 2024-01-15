@@ -87,7 +87,8 @@
                 shex:max 1 ;
                 shex:min 0 ;
                 shex:predicate <https://w3id.org/linkml/pv_formula> ;
-                shex:valueExpr <https://w3id.org/linkml/PvFormulaOptions> ] [ a shex:TripleConstraint ;
+                shex:valueExpr [ a shex:NodeConstraint ;
+                        shex:values ( <https://w3id.org/linkml/PvFormulaOptions#CODE> <https://w3id.org/linkml/PvFormulaOptions#CURIE> <https://w3id.org/linkml/PvFormulaOptions#URI> <https://w3id.org/linkml/PvFormulaOptions#FHIR_CODING> ) ] ] [ a shex:TripleConstraint ;
                 shex:max -1 ;
                 shex:min 0 ;
                 shex:predicate <https://w3id.org/linkml/permissible_values> ;
@@ -191,7 +192,8 @@
                 shex:max 1 ;
                 shex:min 0 ;
                 shex:predicate <https://w3id.org/linkml/value_presence> ;
-                shex:valueExpr <https://w3id.org/linkml/PresenceEnum> ] [ a shex:TripleConstraint ;
+                shex:valueExpr [ a shex:NodeConstraint ;
+                        shex:values ( <https://w3id.org/linkml/PresenceEnum#UNCOMMITTED> <https://w3id.org/linkml/PresenceEnum#PRESENT> <https://w3id.org/linkml/PresenceEnum#ABSENT> ) ] ] [ a shex:TripleConstraint ;
                 shex:max 1 ;
                 shex:min 0 ;
                 shex:predicate <https://w3id.org/linkml/equals_string> ;
@@ -651,7 +653,8 @@
                 shex:max 1 ;
                 shex:min 0 ;
                 shex:predicate <https://w3id.org/linkml/pv_formula> ;
-                shex:valueExpr <https://w3id.org/linkml/PvFormulaOptions> ] [ a shex:TripleConstraint ;
+                shex:valueExpr [ a shex:NodeConstraint ;
+                        shex:values ( <https://w3id.org/linkml/PvFormulaOptions#CODE> <https://w3id.org/linkml/PvFormulaOptions#CURIE> <https://w3id.org/linkml/PvFormulaOptions#URI> <https://w3id.org/linkml/PvFormulaOptions#FHIR_CODING> ) ] ] [ a shex:TripleConstraint ;
                 shex:max -1 ;
                 shex:min 0 ;
                 shex:predicate <https://w3id.org/linkml/permissible_values> ;
@@ -1707,7 +1710,8 @@
                 shex:max 1 ;
                 shex:min 0 ;
                 shex:predicate <https://w3id.org/linkml/relational_role> ;
-                shex:valueExpr <https://w3id.org/linkml/RelationalRoleEnum> ] [ a shex:TripleConstraint ;
+                shex:valueExpr [ a shex:NodeConstraint ;
+                        shex:values ( rdf:subject rdf:object rdf:predicate <https://w3id.org/linkml/RelationalRoleEnum#NODE> <https://w3id.org/linkml/RelationalRoleEnum#OTHER_ROLE> ) ] ] [ a shex:TripleConstraint ;
                 shex:max 1 ;
                 shex:min 0 ;
                 shex:predicate sh:group ;
@@ -1795,7 +1799,8 @@
                 shex:max 1 ;
                 shex:min 0 ;
                 shex:predicate <https://w3id.org/linkml/value_presence> ;
-                shex:valueExpr <https://w3id.org/linkml/PresenceEnum> ] [ a shex:TripleConstraint ;
+                shex:valueExpr [ a shex:NodeConstraint ;
+                        shex:values ( <https://w3id.org/linkml/PresenceEnum#UNCOMMITTED> <https://w3id.org/linkml/PresenceEnum#PRESENT> <https://w3id.org/linkml/PresenceEnum#ABSENT> ) ] ] [ a shex:TripleConstraint ;
                 shex:max 1 ;
                 shex:min 0 ;
                 shex:predicate <https://w3id.org/linkml/equals_string> ;
@@ -1873,7 +1878,8 @@
                 shex:max 1 ;
                 shex:min 0 ;
                 shex:predicate rdf:predicate ;
-                shex:valueExpr <https://w3id.org/linkml/AliasPredicateEnum> ] [ a shex:TripleConstraint ;
+                shex:valueExpr [ a shex:NodeConstraint ;
+                        shex:values ( skos:exactMatch skos:relatedMatch skos:broaderMatch skos:narrowerMatch ) ] ] [ a shex:TripleConstraint ;
                 shex:max -1 ;
                 shex:min 0 ;
                 shex:predicate dcterms:subject ;
@@ -2573,7 +2579,8 @@
                 shex:max 1 ;
                 shex:min 0 ;
                 shex:predicate <https://w3id.org/linkml/pv_formula> ;
-                shex:valueExpr <https://w3id.org/linkml/PvFormulaOptions> ] [ a shex:TripleConstraint ;
+                shex:valueExpr [ a shex:NodeConstraint ;
+                        shex:values ( <https://w3id.org/linkml/PvFormulaOptions#CODE> <https://w3id.org/linkml/PvFormulaOptions#CURIE> <https://w3id.org/linkml/PvFormulaOptions#URI> <https://w3id.org/linkml/PvFormulaOptions#FHIR_CODING> ) ] ] [ a shex:TripleConstraint ;
                 shex:max -1 ;
                 shex:min 0 ;
                 shex:predicate <https://w3id.org/linkml/permissible_values> ;
@@ -2691,7 +2698,8 @@
                 shex:max 1 ;
                 shex:min 0 ;
                 shex:predicate <https://w3id.org/linkml/value_presence> ;
-                shex:valueExpr <https://w3id.org/linkml/PresenceEnum> ] [ a shex:TripleConstraint ;
+                shex:valueExpr [ a shex:NodeConstraint ;
+                        shex:values ( <https://w3id.org/linkml/PresenceEnum#UNCOMMITTED> <https://w3id.org/linkml/PresenceEnum#PRESENT> <https://w3id.org/linkml/PresenceEnum#ABSENT> ) ] ] [ a shex:TripleConstraint ;
                 shex:max 1 ;
                 shex:min 0 ;
                 shex:predicate <https://w3id.org/linkml/equals_string> ;
