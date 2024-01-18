@@ -217,6 +217,108 @@ slots:
             self.assertIn(str(schema_b), result.stdout)
             self.assertIn("Slot has name 'a slot'", result.stdout)
 
+    def test_ignores_dot_file_in_directory_when_all_option_omitted(self):
+        schema_dir = Path("schemas")
+        schema_a = schema_dir / "schema_a.yaml"
+        schema_b = schema_dir / ".schema_b.yaml"
+        with self.runner.isolated_filesystem():
+            schema_dir.mkdir()
+            schema_a.write_text(
+                """
+id: http://example.org/test_a
+name: test_a
+
+classes:
+  person:
+    description: An individual human
+"""
+            )
+            schema_b.write_text(
+                """
+id: http://example.org/test_b
+name: test_b
+
+slots:
+  a slot:
+    description: A slot to hold thing
+"""
+            )
+
+            result = self.runner.invoke(main, [str(schema_dir)])
+            self.assertEqual(result.exit_code, 1)
+            self.assertIn(str(schema_a), result.stdout)
+            self.assertIn("Class has name 'person'", result.stdout)
+            self.assertNotIn(str(schema_b), result.stdout)
+            self.assertNotIn("Slot has name 'a slot'", result.stdout)
+
+    def test_processes_dot_files_in_directory_when_a_option_provided(self):
+        schema_dir = Path("schemas")
+        schema_a = schema_dir / "schema_a.yaml"
+        schema_b = schema_dir / ".schema_b.yaml"
+        with self.runner.isolated_filesystem():
+            schema_dir.mkdir()
+            schema_a.write_text(
+                """
+id: http://example.org/test_a
+name: test_a
+
+classes:
+  person:
+    description: An individual human
+"""
+            )
+            schema_b.write_text(
+                """
+id: http://example.org/test_b
+name: test_b
+
+slots:
+  a slot:
+    description: A slot to hold thing
+"""
+            )
+
+            result = self.runner.invoke(main, ["-a", str(schema_dir)])
+            self.assertEqual(result.exit_code, 1)
+            self.assertIn(str(schema_a), result.stdout)
+            self.assertIn("Class has name 'person'", result.stdout)
+            self.assertIn(str(schema_b), result.stdout)
+            self.assertIn("Slot has name 'a slot'", result.stdout)
+
+    def test_processes_dot_files_in_directory_when_all_option_provided(self):
+        schema_dir = Path("schemas")
+        schema_a = schema_dir / "schema_a.yaml"
+        schema_b = schema_dir / ".schema_b.yaml"
+        with self.runner.isolated_filesystem():
+            schema_dir.mkdir()
+            schema_a.write_text(
+                """
+id: http://example.org/test_a
+name: test_a
+
+classes:
+  person:
+    description: An individual human
+"""
+            )
+            schema_b.write_text(
+                """
+id: http://example.org/test_b
+name: test_b
+
+slots:
+  a slot:
+    description: A slot to hold thing
+"""
+            )
+
+            result = self.runner.invoke(main, ["--all", str(schema_dir)])
+            self.assertEqual(result.exit_code, 1)
+            self.assertIn(str(schema_a), result.stdout)
+            self.assertIn("Class has name 'person'", result.stdout)
+            self.assertIn(str(schema_b), result.stdout)
+            self.assertIn("Slot has name 'a slot'", result.stdout)
+
     def test_validate_schema(self):
         with self.runner.isolated_filesystem():
             with open(SCHEMA_FILE, "w") as f:
