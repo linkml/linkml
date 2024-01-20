@@ -193,6 +193,9 @@ class JsonSchemaGenerator(Generator):
     Note that if the range of a slot has a type designator, descendants will always be included.
     """
 
+    title_from: str = "name"
+    """The slot from which to populate JSONSchema title annotation."""
+
     top_level_schema: JsonSchema = None
 
     def __post_init__(self):
@@ -215,7 +218,7 @@ class JsonSchemaGenerator(Generator):
                 "$id": self.schema.id,
                 "metamodel_version": metamodel_version,
                 "version": self.schema.version if self.schema.version else None,
-                "title": self.schema.name,
+                "title": self.schema.title if self.title_from == "title" and self.schema.title else self.schema.name,
                 "type": "object",
                 "additionalProperties": self.not_closed,
             }
@@ -238,6 +241,8 @@ class JsonSchemaGenerator(Generator):
                 "description": be(cls.description),
             }
         )
+        if self.title_from == "title" and cls.title:
+            class_subschema["title"] = cls.title
 
         for slot_definition in self.schemaview.class_induced_slots(cls.name):
             self.handle_class_slot(subschema=class_subschema, cls=cls, slot=slot_definition)
@@ -364,6 +369,9 @@ class JsonSchemaGenerator(Generator):
                 "description": be(enum.description),
             }
         )
+        if self.title_from == "title" and enum.title:
+            enum_schema["title"] = enum.title
+
         if permissible_values_texts:
             enum_schema["enum"] = permissible_values_texts
         self.top_level_schema.add_def(enum.name, enum_schema)
@@ -480,6 +488,8 @@ class JsonSchemaGenerator(Generator):
                     prop = JsonSchema.array_of(prop)
 
         prop.add_keyword("description", slot.description)
+        if self.title_from == "title" and slot.title:
+            prop.add_keyword("title", slot.title)
 
         own_constraints = self.get_value_constraints_for_slot(slot)
 
@@ -617,6 +627,14 @@ When handling range constraints, include all descendants of the range class inst
     help="""
 If this is a positive number the resulting JSON will be pretty-printed with that indent level. Set to 0 to
 disable pretty-printing and return the most compact JSON representation
+""",
+)
+@click.option(
+    "--title-from",
+    type=click.Choice(["name", "title"], case_sensitive=False),
+    default="name",
+    help="""
+Specify from which slot are JSON Schema 'title' annotations generated.
 """,
 )
 @click.version_option(__version__, "-V", "--version")
