@@ -16,7 +16,7 @@ YAML_SUFFIXES = [".yml", ".yaml"]
 DEFAULT_CONFIG_FILES = [".linkmllint.yaml", ".linkmllint.yml"]
 
 
-def get_yaml_files(root: Path) -> Iterable[str]:
+def get_yaml_files(root: Path, accept_dot_files: bool) -> Iterable[str]:
     if root.is_file():
         if root.suffix not in YAML_SUFFIXES:
             raise click.UsageError("SCHEMA must be a YAML file")
@@ -25,6 +25,8 @@ def get_yaml_files(root: Path) -> Iterable[str]:
         for dir, _, files in os.walk(root):
             for file in files:
                 if file in DEFAULT_CONFIG_FILES:
+                    continue
+                if file.startswith(".") and not accept_dot_files:
                     continue
                 path = Path(dir, file)
                 if path.suffix in YAML_SUFFIXES:
@@ -36,6 +38,7 @@ def get_yaml_files(root: Path) -> Iterable[str]:
     "schema",
     type=click.Path(exists=True, dir_okay=True, file_okay=True, resolve_path=True, path_type=Path),
 )
+@click.option("-a", "--all", is_flag=True, default=False, help="Process files that start with '.'.")
 @click.option(
     "-c",
     "--config",
@@ -82,6 +85,7 @@ def get_yaml_files(root: Path) -> Iterable[str]:
 def main(
     schema: Path,
     fix: bool,
+    all: bool,
     config: str,
     format: str,
     validate: bool,
@@ -124,7 +128,7 @@ def main(
     error_count = 0
     warning_count = 0
     formatter.start_report()
-    for path in get_yaml_files(schema):
+    for path in get_yaml_files(schema, all):
         formatter.start_schema(path)
         report = linter.lint(path, fix=fix, validate_schema=validate, validate_only=validate_only)
         for problem in report:
