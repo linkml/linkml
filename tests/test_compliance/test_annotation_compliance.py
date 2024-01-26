@@ -4,14 +4,19 @@ Note these tests differ from other compliance tests in that
 there is no instance data to test.
 """
 from copy import copy
-from typing import Optional
+from typing import Any, Dict, Optional
 
 import pytest
+import rdflib
 
 from tests.test_compliance.helper import (
+    OWL,
     validated_schema,
 )
 from tests.test_compliance.test_compliance import CLASS_C, CORE_FRAMEWORKS, SLOT_S1
+
+# use rdflib to create a namespace
+EX = rdflib.Namespace("http://example.org/")
 
 
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
@@ -28,7 +33,13 @@ from tests.test_compliance.test_compliance import CLASS_C, CORE_FRAMEWORKS, SLOT
     ],
 )
 @pytest.mark.parametrize("is_valid", [True, False])
-def test_annotation(framework, name, slot_annotations, class_annotations, is_valid):
+def test_annotation(
+    framework: str,
+    name: str,
+    slot_annotations: Optional[Dict[str, Any]],
+    class_annotations: Optional[Dict[str, Any]],
+    is_valid: bool,
+):
     """
     Tests behavior of annotations.
 
@@ -55,6 +66,17 @@ def test_annotation(framework, name, slot_annotations, class_annotations, is_val
             return None
         return {k: {"tag": k, **{"value": v if v else {}}} for k, v in tvs.items()}
 
+    # expected triples in OWL serialization
+    triples = []
+    if class_annotations:
+        for k, v in class_annotations.items():
+            if v:
+                triples.append((EX[CLASS_C], EX[k], rdflib.Literal(v)))
+    if slot_annotations:
+        for k, v in slot_annotations.items():
+            if v:
+                triples.append((EX[SLOT_S1], EX[k], rdflib.Literal(v)))
+
     if is_valid:
         class_annotations = copy(class_annotations) or {}
         class_annotations["class_metaslot"] = "..."
@@ -76,6 +98,9 @@ def test_annotation(framework, name, slot_annotations, class_annotations, is_val
             },
             "annotations": anns(class_annotations),
             "instantiates": ["MetaclassM"],
+            "_mappings": {
+                OWL: triples,
+            },
         },
     }
 

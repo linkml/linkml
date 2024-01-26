@@ -3,8 +3,10 @@ import csv
 import enum
 import json
 import logging
+import os
 import shutil
 import subprocess
+import tempfile
 from collections import defaultdict
 from copy import deepcopy
 from functools import lru_cache
@@ -37,7 +39,8 @@ from linkml.generators import (
 )
 from linkml.utils.generator import Generator
 from linkml.utils.sqlutils import SQLStore
-from linkml.validators import JsonSchemaDataValidator
+from linkml.validator import JsonschemaValidationPlugin, Validator
+from linkml.validator.plugins.shacl_validation_plugin import ShaclValidationPlugin
 from tests.output.types import Decimal
 
 THIS_DIR = Path(__file__).parent
@@ -52,8 +55,10 @@ PYDANTIC = "pydantic"
 PYDANTIC_STRICT = "pydantic_strict"  ## TODO: https://docs.pydantic.dev/latest/usage/types/strict_types/
 PYTHON_DATACLASSES = "python_dataclasses"
 JSON_SCHEMA = "jsonschema"
+JAVA = "java"
 SHACL = "shacl"
 SHEX = "shex"
+JSONLD_CONTEXT = "jsonld_context"
 SQL_ALCHEMY_IMPERATIVE = "sqlalchemy_imperative"
 SQL_ALCHEMY_DECLARATIVE = "sqlalchemy_declarative"
 SQL_DDL_SQLITE = "sql_ddl_sqlite"
@@ -62,9 +67,11 @@ OWL = "owl"
 GENERATORS: Dict[FRAMEWORK, Union[Type[Generator], Tuple[Type[Generator], Dict[str, Any]]]] = {
     PYDANTIC: generators.PydanticGenerator,
     PYTHON_DATACLASSES: generators.PythonGenerator,
+    JAVA: generators.JavaGenerator,
     JSON_SCHEMA: generators.JsonSchemaGenerator,
     SHACL: generators.ShaclGenerator,
     SHEX: generators.ShExGenerator,
+    JSONLD_CONTEXT: generators.ContextGenerator,
     SQL_ALCHEMY_IMPERATIVE: (
         generators.SQLAlchemyGenerator,
         {"template": sqlalchemygen.TemplateEnum.IMPERATIVE},
@@ -267,7 +274,18 @@ def _generate_framework_output(schema: Dict, framework: str, mappings: List = No
         else:
             gen_args = {}
         gen = gen_class(schema=yaml.dump(schema), **gen_args)
-        output = gen.serialize()
+        if framework == JAVA:
+            temp_dir = tempfile.TemporaryDirectory()
+            gen.serialize(temp_dir.name)
+            # walk all files in temp_dir and concatenate them
+            output = ""
+            for root, _dirs, files in os.walk(temp_dir.name):
+                for file in files:
+                    path = os.path.join(root, file)
+                    with open(path, "r") as stream:
+                        output += stream.read()
+        else:
+            output = gen.serialize()
         out_dir = _schema_out_path(schema) / "generated"
         out_dir.mkdir(parents=True, exist_ok=True)
         out_path = out_dir / f"{framework}.{gen.file_extension}"
@@ -667,6 +685,7 @@ def check_data(
     with open(out_dir / f"{data_name}.yaml", "w", encoding="utf-8") as stream:
         yaml.safe_dump(object_to_validate, stream)
     notes = None
+    plugins = []
     if isinstance(expected_behavior, tuple):
         expected_behavior, notes = expected_behavior
     if expected_behavior is None:
@@ -690,6 +709,7 @@ def check_data(
             if valid:
                 py_inst = py_cls(**object_to_validate)
             else:
+                # TODO: to move this to a validator plugin, the plugin architecture must deal with coercion
                 if expected_behavior == ValidationBehavior.COERCES:
                     try:
                         py_inst = py_cls(**object_to_validate)
@@ -721,19 +741,9 @@ def check_data(
             logging.info(f"fwk: {framework}, cls: {target_class}, inst: {object_to_validate}, valid: {valid}")
 
         elif isinstance(gen, JsonSchemaGenerator):
-            validator = JsonSchemaDataValidator(schema=yaml.dump(schema))
-            errors = list(validator.iter_validate_dict(_clean_dict(object_to_validate), target_class, closed=True))
-            logging.info(f"Expecting {valid}, Validating {object_to_validate} against {target_class}, errors: {errors}")
-            if valid:
-                assert errors == [], f"Errors found in json schema validation: {errors}"
-            else:
-                if expected_behavior == ValidationBehavior.ACCEPTS:
-                    logging.info("Does not flag exception for borderline case (e.g. matching an int to a float)")
-                else:
-                    assert errors != [], "Expected errors in json schema validation, but none found"
-            if should_warn:
-                logging.warning("TODO: check for warnings")
+            plugins = [JsonschemaValidationPlugin(closed=True, include_range_class_descendants=False)]
         elif isinstance(gen, OwlSchemaGenerator):
+            # TODO: make this a validator
             if not exclude_rdf:
                 ttl_path = out_dir / f"{data_name}.ttl"
                 _convert_data_to_rdf(schema, object_to_validate, target_class, ttl_path)
@@ -750,12 +760,18 @@ def check_data(
             else:
                 expected_behavior = ValidationBehavior.UNTESTED
         elif isinstance(gen, ShaclGenerator):
-            # TODO: use pyshacl
-            expected_behavior = ValidationBehavior.UNTESTED
+            # TODO: enable this when the shacl plugin can accept arbitrary objects.
+            # currently requires translating via python objects
+            if not exclude_rdf:
+                plugins = [ShaclValidationPlugin(closed=True)]
+            else:
+                expected_behavior = ValidationBehavior.UNTESTED
+            # expected_behavior = ValidationBehavior.UNTESTED
         elif isinstance(gen, ShExGenerator):
             # TODO: use pyshex
             expected_behavior = ValidationBehavior.UNTESTED
         elif framework == SQL_DDL_SQLITE:
+            # TODO: make this a validator
             endpoint = _get_sql_store(schema)
             endpoint.db_exists(force=True)
             py_cls = endpoint.native_module.__dict__[target_class]
@@ -769,6 +785,25 @@ def check_data(
         else:
             logging.warning(f"Unsupported generator {gen}")
             expected_behavior = ValidationBehavior.UNTESTED
+    if plugins:
+        validator = Validator(
+            schema=schema,
+            validation_plugins=plugins,
+        )
+        # validator = JsonSchemaDataValidator(schema=yaml.dump(schema))
+        # errors = list(validator.iter_validate_dict(_clean_dict(object_to_validate), target_class, closed=True))
+
+        errors = list(validator.iter_results(clean_null_terms(object_to_validate), target_class))
+        logging.info(f"Expecting {valid}, Validating {object_to_validate} against {target_class}, errors: {errors}")
+        if valid:
+            assert errors == [], f"Errors found in json schema validation: {errors}"
+        else:
+            if expected_behavior == ValidationBehavior.ACCEPTS:
+                logging.info("Does not flag exception for borderline case (e.g. matching an int to a float)")
+            else:
+                assert errors != [], "Expected errors in json schema validation, but none found"
+        if should_warn:
+            logging.warning("TODO: check for warnings")
     feature.set_framework_behavior(framework, expected_behavior)
     if not valid:
         all_test_results.append(
@@ -781,6 +816,15 @@ def check_data(
                 notes=str(notes),
             )
         )
+
+
+def clean_null_terms(d):
+    if type(d) is dict:  # noqa E721
+        return dict((k, clean_null_terms(v)) for k, v in d.items() if v is not None)
+    elif type(d) is list:  # noqa E721
+        return [clean_null_terms(v) for v in d if v is not None]
+    else:
+        return d
 
 
 def _convert_data_to_rdf(schema: dict, instance: dict, target_class: str, ttl_path: str) -> Optional[rdflib.Graph]:

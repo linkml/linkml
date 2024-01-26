@@ -37,6 +37,7 @@ class ContextGenerator(Generator):
     visit_all_class_slots = False
     uses_schemaloader = True
     requires_metamodel = True
+    file_extension = "context.jsonld"
 
     # ObjectVars
     emit_prefixes: Set[str] = field(default_factory=lambda: set())

@@ -70,6 +70,7 @@ class JavaGenerator(OOCodeGenerator):
     generatorname = os.path.basename(__file__)
     generatorversion = "0.0.1"
     valid_formats = ["java"]
+    file_extension = "java"
 
     # ObjectVars
     generate_records: bool = False

@@ -116,6 +116,7 @@ class ShaclGenerator(Generator):
                     prop_pv_literal(SH.minCount, 1)
                 prop_pv_literal(SH.minInclusive, s.minimum_value)
                 prop_pv_literal(SH.maxInclusive, s.maximum_value)
+                prop_pv_literal(SH.hasValue, s.equals_number)
                 r = s.range
                 if r in sv.all_classes():
                     range_ref = sv.get_uri(r, expand=True)

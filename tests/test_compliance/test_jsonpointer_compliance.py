@@ -1,6 +1,7 @@
 import pytest
 
 from tests.test_compliance.helper import (
+    SHACL,
     ValidationBehavior,
     check_data,
     validated_schema,
@@ -77,6 +78,8 @@ def test_jsonpointer(framework, data_name, data, invalid_reason):
     :param invalid_reason: reason for invalidity (valid if None)
     :return:
     """
+    if framework == SHACL:
+        pytest.skip("TODO: handle @base in RDF translation")
     CLASS_SOURCE = "Source"
     classes = {
         CLASS_SOURCE: {

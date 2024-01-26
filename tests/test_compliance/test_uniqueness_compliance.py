@@ -33,12 +33,14 @@ def test_identifier(framework, description, ids, is_valid, additional_slot_value
     """
     Tests basic behavior of identifiers.
 
-    Identifiers should be unique.
+    This test constructs a container class, with a list of objects of class C.
+    C has an identifier slot, and a slot with additional values.
 
     :param framework: all should support attributes
     :param description: description of the test data
-    :param object: object to check
-    :param is_valid: whether the object is valid
+    :param ids: list of C ids in collection
+    :param is_valid: whether the constructed object is valid
+    :param additional_slot_values: additional slot values
     :return:
     """
     classes = {
@@ -61,7 +63,12 @@ def test_identifier(framework, description, ids, is_valid, additional_slot_value
             },
         },
     }
-    schema = validated_schema(test_identifier, "default", framework, classes=classes, core_elements=["identifier"])
+    prefixes = {
+        "P": "http://example.org/P/",
+    }
+    schema = validated_schema(
+        test_identifier, "default", framework, classes=classes, core_elements=["identifier"], prefixes=prefixes
+    )
     obj = {"entities": [{"id": id, SLOT_S1: additional_slot_values} for id in ids]}
     expected_behavior = ValidationBehavior.IMPLEMENTS
     if not is_valid and framework != PYTHON_DATACLASSES:

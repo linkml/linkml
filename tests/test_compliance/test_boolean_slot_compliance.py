@@ -8,6 +8,7 @@ from tests.test_compliance.helper import (
     OWL,
     PYDANTIC,
     PYTHON_DATACLASSES,
+    SHACL,
     SQL_DDL_SQLITE,
     ValidationBehavior,
     check_data,
@@ -1012,6 +1013,8 @@ def test_class_boolean_with_expressions(
     """
     if (s1_range == CLASS_ANY or s2_range == CLASS_ANY) and framework not in [PYDANTIC]:
         pytest.skip("Class Any not supported in this test")
+    if framework == SHACL:
+        pytest.skip("shaclgen does not support boolean expressions yet")
     if s1_range.endswith("*"):
         s1_multivalued = True
         s1_range = s1_range[:-1]
@@ -1264,6 +1267,8 @@ def test_slot_boolean_with_expressions(
     :param is_valid: expected validity of value
     :return:
     """
+    if framework == SHACL:
+        pytest.skip("shaclgen does not support boolean expressions yet")
     if range.endswith("*"):
         multivalued = True
         range = range[:-1]
@@ -1466,6 +1471,8 @@ def test_preconditions(framework, s1, s2, is_valid):
     :param is_valid: whether the data is valid
     :return:
     """
+    if framework == SHACL:
+        pytest.skip("shaclgen does not support rules yet")
     classes = {
         CLASS_C: {
             "description": "if s1 is either 0 or 10, s2 cannot be either 0 or 10",
@@ -1552,6 +1559,8 @@ def test_classification_rules(framework, s1, s1a, s1b, is_valid):
     :param is_valid: whether the data is valid
     :return:
     """
+    if framework == SHACL:
+        pytest.skip("shaclgen does not support boolean expressions yet")
     classes = {
         CLASS_C: {
             "description": "parent",
@@ -1651,6 +1660,8 @@ def test_union_of(framework, data_name, value, is_valid):
     :param is_valid:
     :return:
     """
+    if framework == SHACL:
+        pytest.skip("shaclgen does not support boolean expressions yet")
     classes = {
         CLASS_D: {
             "attributes": {
@@ -1728,6 +1739,8 @@ def test_value_presence_in_rules(framework, multivalued, data_name, instance, is
     :param is_valid: whether the data is valid or not
     :return:
     """
+    if framework == SHACL:
+        pytest.skip("shaclgen does not support boolean expressions yet")
     classes = {
         CLASS_C: {
             "attributes": {
