@@ -272,6 +272,36 @@ def test_rule_inheritance(subtests, input_path):
     external_file_test(subtests, input_path("jsonschema_rule_inheritance.yaml"))
 
 
+def test_title_from_name_slot(subtests, input_path):
+    """Tests that the JSON Schema title is taken from name slot."""
+    external_file_test(subtests, input_path("jsonschema_title_from_name.yaml"))
+
+
+def test_title_from_name_slot_when_title_missing(subtests, input_path):
+    """Tests that the JSON Schema title is taken from name slot when title is missing."""
+    external_file_test(subtests, input_path("jsonschema_title_from_name_missing_title.yaml"), {"title_from": "title"})
+
+
+def test_schama_title_from_title_slot(subtests, input_path):
+    """Tests that the JSON Schema title is taken from title slot if option specified."""
+    external_file_test(subtests, input_path("jsonschema_title_from_title.yaml"), {"title_from": "title"})
+
+
+def test_class_title_from_title_slot(subtests, input_path):
+    """Tests that the class-based sub-schema title is taken from title slot if option specified."""
+    external_file_test(subtests, input_path("jsonschema_class_title_from_title.yaml"), {"title_from": "title"})
+
+
+def test_enum_title_from_title_slot(subtests, input_path):
+    """Tests that the enum-based sub-schema title is taken from title slot if option specified."""
+    external_file_test(subtests, input_path("jsonschema_enum_title_from_title.yaml"), {"title_from": "title"})
+
+
+def test_slot_title_from_title_slot(subtests, input_path):
+    """Tests that the slot-based sub-schema title is taken from title slot if option specified."""
+    external_file_test(subtests, input_path("jsonschema_slot_title_from_title.yaml"), {"title_from": "title"})
+
+
 # **********************************************************
 #
 #    Utility functions
