@@ -498,6 +498,9 @@
 <span class="sd">    Note that if the range of a slot has a type designator, descendants will always be included.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="n">title_from</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;name&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The slot from which to populate JSONSchema title annotation.&quot;&quot;&quot;</span>
+
     <span class="n">top_level_schema</span><span class="p">:</span> <span class="n">JsonSchema</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -520,7 +523,7 @@
                 <span class="s2">&quot;$id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
                 <span class="s2">&quot;metamodel_version&quot;</span><span class="p">:</span> <span class="n">metamodel_version</span><span class="p">,</span>
                 <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">version</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">version</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
-                <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">title</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">title_from</span> <span class="o">==</span> <span class="s2">&quot;title&quot;</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">title</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                 <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;object&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;additionalProperties&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">not_closed</span><span class="p">,</span>
             <span class="p">}</span>
@@ -543,6 +546,8 @@
                 <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="n">be</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">description</span><span class="p">),</span>
             <span class="p">}</span>
         <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">title_from</span> <span class="o">==</span> <span class="s2">&quot;title&quot;</span> <span class="ow">and</span> <span class="bp">cls</span><span class="o">.</span><span class="n">title</span><span class="p">:</span>
+            <span class="n">class_subschema</span><span class="p">[</span><span class="s2">&quot;title&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">title</span>
 
         <span class="k">for</span> <span class="n">slot_definition</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">class_induced_slots</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">handle_class_slot</span><span class="p">(</span><span class="n">subschema</span><span class="o">=</span><span class="n">class_subschema</span><span class="p">,</span> <span class="bp">cls</span><span class="o">=</span><span class="bp">cls</span><span class="p">,</span> <span class="n">slot</span><span class="o">=</span><span class="n">slot_definition</span><span class="p">)</span>
@@ -669,6 +674,9 @@
                 <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="n">be</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">description</span><span class="p">),</span>
             <span class="p">}</span>
         <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">title_from</span> <span class="o">==</span> <span class="s2">&quot;title&quot;</span> <span class="ow">and</span> <span class="n">enum</span><span class="o">.</span><span class="n">title</span><span class="p">:</span>
+            <span class="n">enum_schema</span><span class="p">[</span><span class="s2">&quot;title&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">title</span>
+
         <span class="k">if</span> <span class="n">permissible_values_texts</span><span class="p">:</span>
             <span class="n">enum_schema</span><span class="p">[</span><span class="s2">&quot;enum&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">permissible_values_texts</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">top_level_schema</span><span class="o">.</span><span class="n">add_def</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">enum_schema</span><span class="p">)</span></div>
@@ -785,6 +793,8 @@
                     <span class="n">prop</span> <span class="o">=</span> <span class="n">JsonSchema</span><span class="o">.</span><span class="n">array_of</span><span class="p">(</span><span class="n">prop</span><span class="p">)</span>
 
         <span class="n">prop</span><span class="o">.</span><span class="n">add_keyword</span><span class="p">(</span><span class="s2">&quot;description&quot;</span><span class="p">,</span> <span class="n">slot</span><span class="o">.</span><span class="n">description</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">title_from</span> <span class="o">==</span> <span class="s2">&quot;title&quot;</span> <span class="ow">and</span> <span class="n">slot</span><span class="o">.</span><span class="n">title</span><span class="p">:</span>
+            <span class="n">prop</span><span class="o">.</span><span class="n">add_keyword</span><span class="p">(</span><span class="s2">&quot;title&quot;</span><span class="p">,</span> <span class="n">slot</span><span class="o">.</span><span class="n">title</span><span class="p">)</span>
 
         <span class="n">own_constraints</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value_constraints_for_slot</span><span class="p">(</span><span class="n">slot</span><span class="p">)</span>
 
@@ -922,6 +932,14 @@
     <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">If this is a positive number the resulting JSON will be pretty-printed with that indent level. Set to 0 to</span>
 <span class="s2">disable pretty-printing and return the most compact JSON representation</span>
+<span class="s2">&quot;&quot;&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
+    <span class="s2">&quot;--title-from&quot;</span><span class="p">,</span>
+    <span class="nb">type</span><span class="o">=</span><span class="n">click</span><span class="o">.</span><span class="n">Choice</span><span class="p">([</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;title&quot;</span><span class="p">],</span> <span class="n">case_sensitive</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+    <span class="n">default</span><span class="o">=</span><span class="s2">&quot;name&quot;</span><span class="p">,</span>
+    <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Specify from which slot are JSON Schema &#39;title&#39; annotations generated.</span>
 <span class="s2">&quot;&quot;&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">version_option</span><span class="p">(</span><span class="n">__version__</span><span class="p">,</span> <span class="s2">&quot;-V&quot;</span><span class="p">,</span> <span class="s2">&quot;--version&quot;</span><span class="p">)</span>
