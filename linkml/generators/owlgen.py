@@ -1219,6 +1219,12 @@ class OwlSchemaGenerator(Generator):
     show_default=True,
     help="If true, then mixins are represented as existential expressions",
 )
+@click.option(
+    "--use-native-uris/--no-use-native-uris",
+    default=True,
+    show_default=True,
+    help="Use model URIs rather than class/slot URIs",
+)
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, metadata_profile: str, **kwargs):
     """Generate an OWL representation of a LinkML model
@@ -1238,7 +1244,8 @@ def cli(yamlfile, metadata_profile: str, **kwargs):
         metadata_profiles = [MetadataProfile(metadata_profile)]
     else:
         metadata_profiles = [MetadataProfile.linkml]
-    print(OwlSchemaGenerator(yamlfile, metadata_profiles=metadata_profiles, **kwargs).serialize(**kwargs))
+    gen = OwlSchemaGenerator(yamlfile, metadata_profiles=metadata_profiles, **kwargs)
+    print(gen.serialize(**kwargs))
 
 
 if __name__ == "__main__":
