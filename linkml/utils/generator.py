@@ -904,7 +904,7 @@ def shared_arguments(g: Type[Generator]) -> Callable[[Command], Command]:
                 ("--useuris/--metauris",),
                 default=True,
                 show_default=True,
-                help="Include metadata in output",
+                help="Use class and slot URIs over model uris",
             )
         )
         f.params.append(Option(("--importmap", "-im"), type=click.File(), help="Import mapping file"))

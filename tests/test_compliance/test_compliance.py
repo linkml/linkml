@@ -1,6 +1,8 @@
 """Constants for compliance tests. See README.md for more information."""
 from tests.test_compliance.helper import (
+    JAVA,
     JSON_SCHEMA,
+    JSONLD_CONTEXT,
     OWL,
     PYDANTIC,
     PYTHON_DATACLASSES,
@@ -53,9 +55,11 @@ SUBSET_SS = "Subset1"
 CORE_FRAMEWORKS = [
     PYTHON_DATACLASSES,
     PYDANTIC,
+    JAVA,
     JSON_SCHEMA,
     SHACL,
     SHEX,
+    JSONLD_CONTEXT,
     #    SQL_ALCHEMY_IMPERATIVE,
     #    SQL_ALCHEMY_DECLARATIVE,
     SQL_DDL_SQLITE,

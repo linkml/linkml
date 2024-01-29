@@ -10,6 +10,7 @@ from tests.test_compliance.helper import (
     JSON_SCHEMA,
     PYDANTIC,
     PYTHON_DATACLASSES,
+    SHACL,
     SQL_DDL_SQLITE,
     ValidationBehavior,
     check_data,
@@ -50,6 +51,8 @@ def test_inlined(framework, inlined, inlined_as_list, multivalued, foreign_key, 
     :param foreign_key: corresponds to whether the referenced entity has an identifier
     :return:
     """
+    if framework == SHACL:
+        pytest.skip("TODO: RDF has no concept of inlining")
     inlined = bool(inlined)
     inlined_as_list = bool(inlined_as_list)
     multivalued = bool(multivalued)
@@ -169,11 +172,15 @@ def test_inlined(framework, inlined, inlined_as_list, multivalued, foreign_key, 
             },
         },
     }
+    prefixes = {
+        "X": "http://example.org/X/",
+    }
     schema = validated_schema(
         test_inlined,
         schema_name,
         framework,
         classes=classes,
+        prefixes=prefixes,
         core_elements=["inlined", "inlined_as_list", "multivalued", "identifier"],
     )
     implementation_status = ValidationBehavior.IMPLEMENTS
@@ -241,7 +248,8 @@ def test_inlined(framework, inlined, inlined_as_list, multivalued, foreign_key, 
         raise AssertionError(f"Unknown data type {data}")
     if not is_valid and framework == PYTHON_DATACLASSES:
         implementation_status = ValidationBehavior.COERCES
-    if framework == SQL_DDL_SQLITE and not is_valid:
+    if framework in [SQL_DDL_SQLITE, SHACL] and not is_valid:
+        # inlining has no cognate in relational and RDF
         implementation_status = ValidationBehavior.NOT_APPLICABLE
     check_data(
         schema,

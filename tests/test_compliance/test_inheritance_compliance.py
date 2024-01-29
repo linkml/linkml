@@ -6,6 +6,7 @@ from tests.test_compliance.helper import (
     OWL,
     PYDANTIC,
     PYTHON_DATACLASSES,
+    SHACL,
     SQL_DDL_SQLITE,
     ValidationBehavior,
     check_data,
@@ -141,7 +142,7 @@ def test_basic_class_inheritance(framework, description, cls: str, object, is_va
     expected_behavior = ValidationBehavior.IMPLEMENTS
     if cls == CLASS_D and parent_is_abstract:
         is_valid = False
-        if framework in [PYDANTIC, PYTHON_DATACLASSES, SQL_DDL_SQLITE, OWL]:
+        if framework in [PYDANTIC, PYTHON_DATACLASSES, SQL_DDL_SQLITE, OWL, SHACL]:
             # currently lax about instantiating abstract classes
             expected_behavior = ValidationBehavior.INCOMPLETE
     schema = validated_schema(
@@ -271,7 +272,7 @@ def test_mixins(framework, description, cls, object, is_valid):
     schema = validated_schema(test_mixins, "default", framework, classes=classes, core_elements=["mixins", "mixin"])
     expected_behavior = ValidationBehavior.IMPLEMENTS
     if cls != CLASS_C:
-        if framework in [PYDANTIC, PYTHON_DATACLASSES, SQL_DDL_SQLITE, OWL]:
+        if framework in [PYDANTIC, PYTHON_DATACLASSES, SQL_DDL_SQLITE, OWL, SHACL]:
             # currently lax about prohibiting instantiating mixins
             expected_behavior = ValidationBehavior.INCOMPLETE
     check_data(
@@ -494,7 +495,7 @@ def test_slot_usage(framework, description, cls: str, object, is_valid):
     }
     expected_behavior = ValidationBehavior.IMPLEMENTS
     if description == "minimum_value inheritance":
-        if framework in [PYTHON_DATACLASSES, SQL_DDL_SQLITE]:
+        if framework in [PYTHON_DATACLASSES, SQL_DDL_SQLITE, SHACL]:
             expected_behavior = ValidationBehavior.INCOMPLETE
     schema = validated_schema(
         test_slot_usage,

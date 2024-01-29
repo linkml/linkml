@@ -4,6 +4,7 @@ representation such as JsonSchema
 """
 
 from linkml.generators.javagen import JavaGenerator
+from linkml.generators.jsonldcontextgen import ContextGenerator
 from linkml.generators.jsonschemagen import JsonSchemaGenerator
 from linkml.generators.owlgen import OwlSchemaGenerator
 from linkml.generators.pydanticgen import PydanticGenerator
@@ -41,6 +42,7 @@ __all__ = [
     "PydanticGenerator",
     "PythonGenerator",
     "JavaGenerator",
+    "ContextGenerator",
     "JsonSchemaGenerator",
     "ShaclGenerator",
     "ShExGenerator",
