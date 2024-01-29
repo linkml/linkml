@@ -957,6 +957,11 @@ for any class that is inherited (class itself, is_a, mixin, apply_to).  Otherwis
 <dd></dd></dl>
 
 <dl class="py attribute">
+<dt class="sig sig-object py" id="linkml.generators.javagen.JavaGenerator.file_extension">
+<span class="sig-name descname"><span class="pre">file_extension</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'java'</span></em><a class="headerlink" href="#linkml.generators.javagen.JavaGenerator.file_extension" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="linkml.generators.javagen.JavaGenerator.gen_classvars">
 <span class="sig-name descname"><span class="pre">gen_classvars</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#linkml.generators.javagen.JavaGenerator.gen_classvars" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
@@ -1062,6 +1067,11 @@ for any class that is inherited (class itself, is_a, mixin, apply_to).  Otherwis
 <dd><p>Visited once at the end of generation</p>
 <p>&#64;param kwargs: Arguments passed through from CLI – implementation dependent</p>
 </dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="linkml.generators.jsonldcontextgen.ContextGenerator.file_extension">
+<span class="sig-name descname"><span class="pre">file_extension</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'context.jsonld'</span></em><a class="headerlink" href="#linkml.generators.jsonldcontextgen.ContextGenerator.file_extension" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="linkml.generators.jsonldcontextgen.ContextGenerator.flatprefixes">
@@ -4231,6 +4241,155 @@ in defining order, with class slots returned last</p>
 <p>Generators translate between a SchemaDefinition and an alternative
 representation such as JsonSchema</p>
 <dl class="py class">
+<dt class="sig sig-object py" id="linkml.generators.ContextGenerator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linkml.generators.</span></span><span class="sig-name descname"><span class="pre">ContextGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">schema:</span> <span class="pre">Union[str,</span> <span class="pre">TextIO,</span> <span class="pre">linkml_runtime.linkml_model.meta.SchemaDefinition,</span> <span class="pre">ForwardRef('Generator')],</span> <span class="pre">schemaview:</span> <span class="pre">Optional[linkml_runtime.utils.schemaview.SchemaView]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">format:</span> <span class="pre">Optional[str]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">metadata:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">useuris:</span> <span class="pre">Optional[bool]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">log_level:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">30,</span> <span class="pre">mergeimports:</span> <span class="pre">Optional[bool]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">source_file_date:</span> <span class="pre">Optional[str]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">source_file_size:</span> <span class="pre">Optional[int]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">logger:</span> <span class="pre">Optional[logging.Logger]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">verbose:</span> <span class="pre">Optional[bool]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">output:</span> <span class="pre">Optional[str]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">namespaces:</span> <span class="pre">Optional[linkml_runtime.utils.namespaces.Namespaces]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">directory_output:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False,</span> <span class="pre">base_dir:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">metamodel_name_map:</span> <span class="pre">Dict[str,</span> <span class="pre">str]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">importmap:</span> <span class="pre">Union[str,</span> <span class="pre">Mapping[str,</span> <span class="pre">str],</span> <span class="pre">NoneType]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">emit_prefixes:</span> <span class="pre">Set[str]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">metamodel:</span> <span class="pre">linkml.utils.schemaloader.SchemaLoader</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">stacktrace:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False,</span> <span class="pre">default_ns:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">context_body:</span> <span class="pre">Dict</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">slot_class_maps:</span> <span class="pre">Dict</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">emit_metadata:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">model:</span> <span class="pre">Optional[bool]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">base:</span> <span class="pre">Optional[str]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">prefixes:</span> <span class="pre">Optional[bool]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">flatprefixes:</span> <span class="pre">Optional[bool]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">**_kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/linkml/generators/jsonldcontextgen.html#ContextGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.ContextGenerator" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="linkml.utils.html#linkml.utils.generator.Generator" title="linkml.utils.generator.Generator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generator</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="linkml.generators.ContextGenerator.base">
+<span class="sig-name descname"><span class="pre">base</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#linkml.generators.ContextGenerator.base" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="linkml.generators.ContextGenerator.context_body">
+<span class="sig-name descname"><span class="pre">context_body</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span></em><a class="headerlink" href="#linkml.generators.ContextGenerator.context_body" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="linkml.generators.ContextGenerator.default_ns">
+<span class="sig-name descname"><span class="pre">default_ns</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#linkml.generators.ContextGenerator.default_ns" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="linkml.generators.ContextGenerator.emit_metadata">
+<span class="sig-name descname"><span class="pre">emit_metadata</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#linkml.generators.ContextGenerator.emit_metadata" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="linkml.generators.ContextGenerator.emit_prefixes">
+<span class="sig-name descname"><span class="pre">emit_prefixes</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#linkml.generators.ContextGenerator.emit_prefixes" title="Permalink to this definition">#</a></dt>
+<dd><p>Prefixes to emit, for RDF-based generators</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml.generators.ContextGenerator.end_schema">
+<span class="sig-name descname"><span class="pre">end_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefixes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flatprefixes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">_</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/linkml/generators/jsonldcontextgen.html#ContextGenerator.end_schema"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.ContextGenerator.end_schema" title="Permalink to this definition">#</a></dt>
+<dd><p>Visited once at the end of generation</p>
+<p>&#64;param kwargs: Arguments passed through from CLI – implementation dependent</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="linkml.generators.ContextGenerator.file_extension">
+<span class="sig-name descname"><span class="pre">file_extension</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'context.jsonld'</span></em><a class="headerlink" href="#linkml.generators.ContextGenerator.file_extension" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="linkml.generators.ContextGenerator.flatprefixes">
+<span class="sig-name descname"><span class="pre">flatprefixes</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#linkml.generators.ContextGenerator.flatprefixes" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="linkml.generators.ContextGenerator.generatorname">
+<span class="sig-name descname"><span class="pre">generatorname</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'jsonldcontextgen.py'</span></em><a class="headerlink" href="#linkml.generators.ContextGenerator.generatorname" title="Permalink to this definition">#</a></dt>
+<dd><p>Name of the generator. Override with os.path.basename(__file__)</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="linkml.generators.ContextGenerator.generatorversion">
+<span class="sig-name descname"><span class="pre">generatorversion</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'0.1.1'</span></em><a class="headerlink" href="#linkml.generators.ContextGenerator.generatorversion" title="Permalink to this definition">#</a></dt>
+<dd><p>Version of the generator. Consider deprecating and instead use overall linkml version</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="linkml.generators.ContextGenerator.mergeimports">
+<span class="sig-name descname"><span class="pre">mergeimports</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#linkml.generators.ContextGenerator.mergeimports" title="Permalink to this definition">#</a></dt>
+<dd><p>True means merge non-linkml sources into importing package.  False means separate packages</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="linkml.generators.ContextGenerator.metadata">
+<span class="sig-name descname"><span class="pre">metadata</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#linkml.generators.ContextGenerator.metadata" title="Permalink to this definition">#</a></dt>
+<dd><p>True means include date, generator, etc. information in source header if appropriate</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="linkml.generators.ContextGenerator.model">
+<span class="sig-name descname"><span class="pre">model</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#linkml.generators.ContextGenerator.model" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="linkml.generators.ContextGenerator.output">
+<span class="sig-name descname"><span class="pre">output</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#linkml.generators.ContextGenerator.output" title="Permalink to this definition">#</a></dt>
+<dd><p>Path to output file. Note all generators may not implement this
+uniformly, see <a class="reference external" href="https://github.com/linkml/linkml/issues/923">https://github.com/linkml/linkml/issues/923</a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="linkml.generators.ContextGenerator.prefixes">
+<span class="sig-name descname"><span class="pre">prefixes</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#linkml.generators.ContextGenerator.prefixes" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="linkml.generators.ContextGenerator.requires_metamodel">
+<span class="sig-name descname"><span class="pre">requires_metamodel</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#linkml.generators.ContextGenerator.requires_metamodel" title="Permalink to this definition">#</a></dt>
+<dd><p>Generator queries an instance of the metamodel</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="linkml.generators.ContextGenerator.schema">
+<span class="sig-name descname"><span class="pre">schema</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">TextIO</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.SchemaDefinition" title="linkml_runtime.linkml_model.meta.SchemaDefinition"><span class="pre">SchemaDefinition</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'Generator'</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#linkml.generators.ContextGenerator.schema" title="Permalink to this definition">#</a></dt>
+<dd><p>metamodel compliant schema.  Can be URI, file name, actual schema, another generator, an
+open file or a pre-parsed schema</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="linkml.generators.ContextGenerator.slot_class_maps">
+<span class="sig-name descname"><span class="pre">slot_class_maps</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span></em><a class="headerlink" href="#linkml.generators.ContextGenerator.slot_class_maps" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="linkml.generators.ContextGenerator.uses_schemaloader">
+<span class="sig-name descname"><span class="pre">uses_schemaloader</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#linkml.generators.ContextGenerator.uses_schemaloader" title="Permalink to this definition">#</a></dt>
+<dd><p>Old-style generator that uses the SchemaLoader and visitor pattern</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="linkml.generators.ContextGenerator.valid_formats">
+<span class="sig-name descname"><span class="pre">valid_formats</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['context',</span> <span class="pre">'json']</span></em><a class="headerlink" href="#linkml.generators.ContextGenerator.valid_formats" title="Permalink to this definition">#</a></dt>
+<dd><p>Allowed formats - first format is default</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="linkml.generators.ContextGenerator.visit_all_class_slots">
+<span class="sig-name descname"><span class="pre">visit_all_class_slots</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#linkml.generators.ContextGenerator.visit_all_class_slots" title="Permalink to this definition">#</a></dt>
+<dd><p>Visitor ClassVar: False means only visit own slots, True means visit all slots</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml.generators.ContextGenerator.visit_class">
+<span class="sig-name descname"><span class="pre">visit_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.ClassDefinition" title="linkml_runtime.linkml_model.meta.ClassDefinition"><span class="pre">ClassDefinition</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/linkml/generators/jsonldcontextgen.html#ContextGenerator.visit_class"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.ContextGenerator.visit_class" title="Permalink to this definition">#</a></dt>
+<dd><p>Visited once per schema class</p>
+<p>&#64;param cls: class being visited
+&#64;return: Visit slots and end class.  False means skip and go on</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml.generators.ContextGenerator.visit_schema">
+<span class="sig-name descname"><span class="pre">visit_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">_</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/linkml/generators/jsonldcontextgen.html#ContextGenerator.visit_schema"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.ContextGenerator.visit_schema" title="Permalink to this definition">#</a></dt>
+<dd><p>Visited once at the beginning of generation</p>
+<p>&#64;param kwargs: Arguments passed through from CLI – implementation dependent</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml.generators.ContextGenerator.visit_slot">
+<span class="sig-name descname"><span class="pre">visit_slot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">aliased_slot_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slot</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.SlotDefinition" title="linkml_runtime.linkml_model.meta.SlotDefinition"><span class="pre">SlotDefinition</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/linkml/generators/jsonldcontextgen.html#ContextGenerator.visit_slot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.ContextGenerator.visit_slot" title="Permalink to this definition">#</a></dt>
+<dd><p>Visited once for every slot definition in the schema.</p>
+<p>&#64;param aliased_slot_name: Aliased name of the slot.  May not be unique
+&#64;param slot: visited slot</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="linkml.generators.JavaGenerator">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linkml.generators.</span></span><span class="sig-name descname"><span class="pre">JavaGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">schema:</span> <span class="pre">~typing.Union[str,</span> <span class="pre">~typing.TextIO,</span> <span class="pre">~linkml_runtime.linkml_model.meta.SchemaDefinition,</span> <span class="pre">Generator],</span> <span class="pre">schemaview:</span> <span class="pre">~typing.Optional[~linkml_runtime.utils.schemaview.SchemaView]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">format:</span> <span class="pre">~typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">metadata:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">useuris:</span> <span class="pre">~typing.Optional[bool]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">log_level:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">30,</span> <span class="pre">mergeimports:</span> <span class="pre">~typing.Optional[bool]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">source_file_date:</span> <span class="pre">~typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">source_file_size:</span> <span class="pre">~typing.Optional[int]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">logger:</span> <span class="pre">~typing.Optional[~logging.Logger]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">verbose:</span> <span class="pre">~typing.Optional[bool]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">output:</span> <span class="pre">~typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">namespaces:</span> <span class="pre">~typing.Optional[~linkml_runtime.utils.namespaces.Namespaces]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">directory_output:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False,</span> <span class="pre">base_dir:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">metamodel_name_map:</span> <span class="pre">~typing.Dict[str,</span> <span class="pre">str]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">importmap:</span> <span class="pre">~typing.Optional[~typing.Union[str,</span> <span class="pre">~typing.Mapping[str,</span> <span class="pre">str]]]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">emit_prefixes:</span> <span class="pre">~typing.Set[str]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">metamodel:</span> <span class="pre">~linkml.utils.schemaloader.SchemaLoader</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">stacktrace:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False,</span> <span class="pre">template_file:</span> <span class="pre">~typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">package:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'example',</span> <span class="pre">generate_records:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False,</span> <span class="pre">gen_classvars:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">gen_slots:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">genmeta:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">emit_metadata:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">**_kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/linkml/generators/javagen.html#JavaGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.JavaGenerator" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#linkml.generators.oocodegen.OOCodeGenerator" title="linkml.generators.oocodegen.OOCodeGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">OOCodeGenerator</span></code></a></p>
@@ -4255,6 +4414,11 @@ representation such as JsonSchema</p>
 <span class="sig-name descname"><span class="pre">emit_prefixes</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#linkml.generators.JavaGenerator.emit_prefixes" title="Permalink to this definition">#</a></dt>
 <dd><p>Prefixes to emit, for RDF-based generators</p>
 </dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="linkml.generators.JavaGenerator.file_extension">
+<span class="sig-name descname"><span class="pre">file_extension</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'java'</span></em><a class="headerlink" href="#linkml.generators.JavaGenerator.file_extension" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="linkml.generators.JavaGenerator.gen_classvars">
@@ -6170,6 +6334,7 @@ open file or a pre-parsed schema</p>
 <li><a class="reference internal" href="#linkml.generators.javagen.JavaGenerator"><code class="docutils literal notranslate"><span class="pre">JavaGenerator</span></code></a><ul>
 <li><a class="reference internal" href="#linkml.generators.javagen.JavaGenerator.default_value_for_type"><code class="docutils literal notranslate"><span class="pre">JavaGenerator.default_value_for_type()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.javagen.JavaGenerator.emit_metadata"><code class="docutils literal notranslate"><span class="pre">JavaGenerator.emit_metadata</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.javagen.JavaGenerator.file_extension"><code class="docutils literal notranslate"><span class="pre">JavaGenerator.file_extension</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.javagen.JavaGenerator.gen_classvars"><code class="docutils literal notranslate"><span class="pre">JavaGenerator.gen_classvars</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.javagen.JavaGenerator.gen_slots"><code class="docutils literal notranslate"><span class="pre">JavaGenerator.gen_slots</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.javagen.JavaGenerator.generate_records"><code class="docutils literal notranslate"><span class="pre">JavaGenerator.generate_records</span></code></a></li>
@@ -6192,6 +6357,7 @@ open file or a pre-parsed schema</p>
 <li><a class="reference internal" href="#linkml.generators.jsonldcontextgen.ContextGenerator.emit_metadata"><code class="docutils literal notranslate"><span class="pre">ContextGenerator.emit_metadata</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.jsonldcontextgen.ContextGenerator.emit_prefixes"><code class="docutils literal notranslate"><span class="pre">ContextGenerator.emit_prefixes</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.jsonldcontextgen.ContextGenerator.end_schema"><code class="docutils literal notranslate"><span class="pre">ContextGenerator.end_schema()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.jsonldcontextgen.ContextGenerator.file_extension"><code class="docutils literal notranslate"><span class="pre">ContextGenerator.file_extension</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.jsonldcontextgen.ContextGenerator.flatprefixes"><code class="docutils literal notranslate"><span class="pre">ContextGenerator.flatprefixes</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.jsonldcontextgen.ContextGenerator.generatorname"><code class="docutils literal notranslate"><span class="pre">ContextGenerator.generatorname</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.jsonldcontextgen.ContextGenerator.generatorversion"><code class="docutils literal notranslate"><span class="pre">ContextGenerator.generatorversion</span></code></a></li>
@@ -6787,10 +6953,38 @@ open file or a pre-parsed schema</p>
 </ul>
 </li>
 <li><a class="reference internal" href="#module-linkml.generators">Module contents</a><ul>
+<li><a class="reference internal" href="#linkml.generators.ContextGenerator"><code class="docutils literal notranslate"><span class="pre">ContextGenerator</span></code></a><ul>
+<li><a class="reference internal" href="#linkml.generators.ContextGenerator.base"><code class="docutils literal notranslate"><span class="pre">ContextGenerator.base</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.ContextGenerator.context_body"><code class="docutils literal notranslate"><span class="pre">ContextGenerator.context_body</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.ContextGenerator.default_ns"><code class="docutils literal notranslate"><span class="pre">ContextGenerator.default_ns</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.ContextGenerator.emit_metadata"><code class="docutils literal notranslate"><span class="pre">ContextGenerator.emit_metadata</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.ContextGenerator.emit_prefixes"><code class="docutils literal notranslate"><span class="pre">ContextGenerator.emit_prefixes</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.ContextGenerator.end_schema"><code class="docutils literal notranslate"><span class="pre">ContextGenerator.end_schema()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.ContextGenerator.file_extension"><code class="docutils literal notranslate"><span class="pre">ContextGenerator.file_extension</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.ContextGenerator.flatprefixes"><code class="docutils literal notranslate"><span class="pre">ContextGenerator.flatprefixes</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.ContextGenerator.generatorname"><code class="docutils literal notranslate"><span class="pre">ContextGenerator.generatorname</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.ContextGenerator.generatorversion"><code class="docutils literal notranslate"><span class="pre">ContextGenerator.generatorversion</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.ContextGenerator.mergeimports"><code class="docutils literal notranslate"><span class="pre">ContextGenerator.mergeimports</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.ContextGenerator.metadata"><code class="docutils literal notranslate"><span class="pre">ContextGenerator.metadata</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.ContextGenerator.model"><code class="docutils literal notranslate"><span class="pre">ContextGenerator.model</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.ContextGenerator.output"><code class="docutils literal notranslate"><span class="pre">ContextGenerator.output</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.ContextGenerator.prefixes"><code class="docutils literal notranslate"><span class="pre">ContextGenerator.prefixes</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.ContextGenerator.requires_metamodel"><code class="docutils literal notranslate"><span class="pre">ContextGenerator.requires_metamodel</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.ContextGenerator.schema"><code class="docutils literal notranslate"><span class="pre">ContextGenerator.schema</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.ContextGenerator.slot_class_maps"><code class="docutils literal notranslate"><span class="pre">ContextGenerator.slot_class_maps</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.ContextGenerator.uses_schemaloader"><code class="docutils literal notranslate"><span class="pre">ContextGenerator.uses_schemaloader</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.ContextGenerator.valid_formats"><code class="docutils literal notranslate"><span class="pre">ContextGenerator.valid_formats</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.ContextGenerator.visit_all_class_slots"><code class="docutils literal notranslate"><span class="pre">ContextGenerator.visit_all_class_slots</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.ContextGenerator.visit_class"><code class="docutils literal notranslate"><span class="pre">ContextGenerator.visit_class()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.ContextGenerator.visit_schema"><code class="docutils literal notranslate"><span class="pre">ContextGenerator.visit_schema()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.ContextGenerator.visit_slot"><code class="docutils literal notranslate"><span class="pre">ContextGenerator.visit_slot()</span></code></a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#linkml.generators.JavaGenerator"><code class="docutils literal notranslate"><span class="pre">JavaGenerator</span></code></a><ul>
 <li><a class="reference internal" href="#linkml.generators.JavaGenerator.default_value_for_type"><code class="docutils literal notranslate"><span class="pre">JavaGenerator.default_value_for_type()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.JavaGenerator.emit_metadata"><code class="docutils literal notranslate"><span class="pre">JavaGenerator.emit_metadata</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.JavaGenerator.emit_prefixes"><code class="docutils literal notranslate"><span class="pre">JavaGenerator.emit_prefixes</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.JavaGenerator.file_extension"><code class="docutils literal notranslate"><span class="pre">JavaGenerator.file_extension</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.JavaGenerator.gen_classvars"><code class="docutils literal notranslate"><span class="pre">JavaGenerator.gen_classvars</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.JavaGenerator.gen_slots"><code class="docutils literal notranslate"><span class="pre">JavaGenerator.gen_slots</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.JavaGenerator.generate_records"><code class="docutils literal notranslate"><span class="pre">JavaGenerator.generate_records</span></code></a></li>
