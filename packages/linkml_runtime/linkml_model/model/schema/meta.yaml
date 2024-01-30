@@ -50,6 +50,7 @@ prefixes:
   vann: https://vocab.org/vann/
   qudt: http://qudt.org/schema/qudt/
   cdisc: http://rdf.cdisc.org/mms#
+  SIO: http://semanticscience.org/resource/SIO_
 
 default_prefix: linkml
 default_range: string
@@ -241,11 +242,18 @@ slots:
       - If identifiers are treated as CURIEs, then the CURIE must start with one of the indicated prefixes followed by `:` (_should_ start if the list is open)
       - If identifiers are treated as URIs, then the URI string must start with the expanded for of the prefix (_should_ start if the list is open)
     see_also:
-      - https://github.com/linkml/linkml/issues/194
       - https://github.com/linkml/linkml-model/issues/28
     in_subset:
       - SpecificationSubset
       - BasicSubset
+
+  id_prefixes_are_closed:
+    domain: element
+    range: boolean
+    description: >-
+      If true, then the id_prefixes slot is treated as being closed, and any use of an id that does not have this prefix is considered a violation.
+    see_also:
+      - https://github.com/linkml/linkml/issues/194
 
   description:
     rank: 5
@@ -1636,6 +1644,7 @@ slots:
       - BasicSubset
     see_also:
       - "https://w3id.org/linkml/docs/specification/06mapping/#collection-forms"
+      - https://linkml.io/linkml/schemas/inlining.html
 
   inlined_as_list:
     rank: 27
@@ -1658,6 +1667,7 @@ slots:
       - BasicSubset
     see_also:
       - "https://w3id.org/linkml/docs/specification/06mapping/#collection-forms"
+      - https://linkml.io/linkml/schemas/inlining.html
 
   inlined_as_simple_dict:
     rank: 28
@@ -1796,6 +1806,7 @@ slots:
     multivalued: true
     exact_mappings:
       - schema:domainIncludes
+      - SIO:000011
 
   is_usage_slot:
     domain: slot_definition
@@ -1935,8 +1946,10 @@ slots:
     aliases:
       - low value
     domain: slot_definition
-    range: integer
-    description: for slots with ranges of type number, the value must be equal to or higher than this
+    range: Anything
+    description: For ordinal ranges, the value must be equal to or higher than this
+    notes:
+      - Range to be refined to an "Ordinal" metaclass - see https://github.com/linkml/linkml/issues/1384#issuecomment-1892721142
     inherited: true
     in_subset:
       - SpecificationSubset
@@ -1946,8 +1959,10 @@ slots:
     aliases:
       - high value
     domain: slot_definition
-    range: integer
-    description: for slots with ranges of type number, the value must be equal to or lowe than this
+    range: Anything
+    description: For ordinal ranges, the value must be equal to or lower than this
+    notes:
+      - Range to be refined to an "Ordinal" metaclass - see https://github.com/linkml/linkml/issues/1384#issuecomment-1892721142
     inherited: true
     in_subset:
       - SpecificationSubset
@@ -2074,7 +2089,7 @@ slots:
       - BasicSubset
 
   # -----------------------------------
-  # Slots for alt descripion
+  # Slots for alt description
   # -----------------------------------
   alt_description_text:
     domain: alt_description
@@ -2395,6 +2410,7 @@ classes:
     slots:
       - name
       - id_prefixes
+      - id_prefixes_are_closed
       - definition_uri
       - local_names
       - conforms_to
@@ -2565,9 +2581,12 @@ classes:
     rank: 5
     aliases:
       - enum
+      - enumeration
+      - semantic enumeration
       - value set
       - term set
       - concept set
+      - code set
       - Terminology Value Set
       - answer list
       - value domain
@@ -3030,6 +3049,8 @@ enums:
         description: The permissible values are the set of code URIs in the code set
       FHIR_CODING:
         description: The permissible values are the set of FHIR coding elements derived from the code set
+      LABEL:
+        description: The permissible values are the set of human readable labels in the code set
     in_subset:
       - SpecificationSubset
       - BasicSubset

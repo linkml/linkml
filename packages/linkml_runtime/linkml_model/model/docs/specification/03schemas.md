@@ -74,20 +74,20 @@ A schema *m* is an instance of a SchemaDefinition, with normative elements:
 
 | Name | Cardinality and Range  | Description                                                                                     |
 | ---  | ---  |-------------------------------------------------------------------------------------------------|
-| [id](id.md) | 1..1 <br/> [xsd:anyURI](http://www.w3.org/2001/XMLSchema#anyURI)  | The official schema URI                                                                         |
-| [name](name.md) | 1..1 <br/> [xsd:string](http://www.w3.org/2001/XMLSchema#string)  | a unique name for the schema that is both human-readable and consists of only... **identifier** |
-| [classes](classes.md) | 0..* <br/> [ClassDefinition](ClassDefinition.md)  | An index to the collection of all class definitions in the schema                               |
-| [slot_definitions](slot_definitions.md) | 0..* <br/> [SlotDefinition](SlotDefinition.md)  | An index to the collection of all slot definitions in the schema                                |
-| [enums](enums.md) | 0..* <br/> [EnumDefinition](EnumDefinition.md)  | An index to the collection of all enum definitions in the schema                                |
-| [subsets](subsets.md) | 0..* <br/> [SubsetDefinition](SubsetDefinition.md)  | An index to the collection of all subset definitions in the schema                              |
-| [prefixes](prefixes.md) | 0..* <br/> [Prefix](Prefix.md)  | prefix / URI definitions to be added to the context beyond those fetched from...                |
-| [default_prefix](default_prefix.md) | 0..1 <br/> [xsd:string](http://www.w3.org/2001/XMLSchema#string)  | default and base prefix -- used for ':' identifiers, @base and @vocab                           |
-| [default_range](default_range.md) | 0..1 <br/> [TypeDefinition](TypeDefinition.md)  | default slot range to be used if range element is omitted from a slot definitition...           |
-| [settings](settings.md) | 0..* <br/> [Setting](Setting.md)  | A collection of global variable settings                                                        |
-| [imports](imports.md) | 0..* <br/> [xsd:anyURI](http://www.w3.org/2001/XMLSchema#anyURI)  | other schemas that are included in this schema                                                  |
-| [rank](rank.md) | 0..1 <br/> [xsd:integer](http://www.w3.org/2001/XMLSchema#integer)  | the relative order in which the element occurs, lower values are given ...                      |
-| [id_prefixes](id_prefixes.md) | 0..* <br/> [xsd:string](http://www.w3.org/2001/XMLSchema#string)  | the identifier of this class or slot must begin with the URIs referenced by ...                 |
-| [from_schema](from_schema.md) | 0..1 <br/> [xsd:anyURI](http://www.w3.org/2001/XMLSchema#anyURI)  | id of the schema that defined the element                                                       |
+| [id](../id.md) | 1..1 <br/> [xsd:anyURI](http://www.w3.org/2001/XMLSchema#anyURI)  | The official schema URI                                                                         |
+| [name](../name.md) | 1..1 <br/> [xsd:string](http://www.w3.org/2001/XMLSchema#string)  | a unique name for the schema that is both human-readable and consists of only... **identifier** |
+| [classes](../classes.md) | 0..* <br/> [ClassDefinition](../ClassDefinition.md)  | An index to the collection of all class definitions in the schema                               |
+| [slot_definitions](../slot_definitions.md) | 0..* <br/> [SlotDefinition](../SlotDefinition.md)  | An index to the collection of all slot definitions in the schema                                |
+| [enums](../enums.md) | 0..* <br/> [EnumDefinition](../EnumDefinition.md)  | An index to the collection of all enum definitions in the schema                                |
+| [subsets](../subsets.md) | 0..* <br/> [SubsetDefinition](../SubsetDefinition.md)  | An index to the collection of all subset definitions in the schema                              |
+| [prefixes](../prefixes.md) | 0..* <br/> [Prefix](../Prefix.md)  | prefix / URI definitions to be added to the context beyond those fetched from...                |
+| [default_prefix](../default_prefix.md) | 0..1 <br/> [xsd:string](http://www.w3.org/2001/XMLSchema#string)  | default and base prefix -- used for ':' identifiers, @base and @vocab                           |
+| [default_range](../default_range.md) | 0..1 <br/> [TypeDefinition](../TypeDefinition.md)  | default slot range to be used if range element is omitted from a slot definitition...           |
+| [settings](../settings.md) | 0..* <br/> [Setting](../Setting.md)  | A collection of global variable settings                                                        |
+| [imports](../imports.md) | 0..* <br/> [xsd:anyURI](http://www.w3.org/2001/XMLSchema#anyURI)  | other schemas that are included in this schema                                                  |
+| [rank](../rank.md) | 0..1 <br/> [xsd:integer](http://www.w3.org/2001/XMLSchema#integer)  | the relative order in which the element occurs, lower values are given ...                      |
+| [id_prefixes](../id_prefixes.md) | 0..* <br/> [xsd:string](http://www.w3.org/2001/XMLSchema#string)  | the identifier of this class or slot must begin with the URIs referenced by ...                 |
+| [from_schema](../from_schema.md) | 0..1 <br/> [xsd:anyURI](http://www.w3.org/2001/XMLSchema#anyURI)  | id of the schema that defined the element                                                       |
 
 
 ### SchemaDefinition: Normative subset UML
@@ -165,30 +165,30 @@ Any instance *c* of a ClassDefinition may have assignments in any of the followi
 
 | Name | Cardinality and Range  | Description  |
 | ---  | ---  | --- |
-| [name](name.md) | 1..1 <br/> [xsd:string](http://www.w3.org/2001/XMLSchema#string)  | the unique name of the element within the context of the schema **identifier** |
-| [class_uri](class_uri.md) | 0..1 <br/> [xsd:anyURI](http://www.w3.org/2001/XMLSchema#anyURI)  | URI of the class that provides a semantic interpretation of the element in a ...  |
-| [is_a](is_a.md) | 0..1 <br/> [ClassDefinition](ClassDefinition.md)  | A primary parent class from which inheritable metaslots are propagated   |
-| [mixins](mixins.md) | 0..* <br/> [ClassDefinition](ClassDefinition.md)  | A collection of secondary parent mixin classes from which inheritable metaslo...  |
-| [slots](slots.md) | 0..* <br/> [SlotDefinition](SlotDefinition.md)  | collection of slot names that are applicable to a class   |
-| [slot_usage](slot_usage.md) | 0..* <br/> [SlotDefinition](SlotDefinition.md)  | the refinement of a slot in the context of the containing class definition  |
-| [attributes](attributes.md) | 0..* <br/> [SlotDefinition](SlotDefinition.md)  | Inline definition of slots   |
-| [tree_root](tree_root.md) | 0..1 <br/> [xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean)  | indicator that this is the root class in tree structures   |
-| [rank](rank.md) | 0..1 <br/> [xsd:integer](http://www.w3.org/2001/XMLSchema#integer)  | the relative order in which the element occurs, lower values are given...   |
-| [any_of](any_of.md) | 0..* <br/> [AnonymousClassExpression](AnonymousClassExpression.md)  | holds if at least one of the expressions hold   |
-| [exactly_one_of](exactly_one_of.md) | 0..* <br/> [AnonymousClassExpression](AnonymousClassExpression.md)  | holds if only one of the expressions hold   |
-| [none_of](none_of.md) | 0..* <br/> [AnonymousClassExpression](AnonymousClassExpression.md)  | holds if none of the expressions hold   |
-| [all_of](all_of.md) | 0..* <br/> [AnonymousClassExpression](AnonymousClassExpression.md)  | holds if all of the expressions hold   |
-| [union_of](union_of.md) | 0..* <br/> [ClassDefinition](ClassDefinition.md)  | indicates that the domain element consists exactly of the members of the elem...  |
-| [unique_keys](unique_keys.md) | 0..* <br/> [UniqueKey](UniqueKey.md)  | A collection of unique keys for this class   |
-| [rules](rules.md) | 0..* <br/> [ClassRule](ClassRule.md)  | the collection of rules that apply to all members of this class   |
-| [classification_rules](classification_rules.md) | 0..* <br/> [AnonymousClassExpression](AnonymousClassExpression.md)  | the collection of classification rules that apply to all members of this clas...  |
-| [disjoint_with](disjoint_with.md) | 0..* <br/> [ClassDefinition](ClassDefinition.md)  | Two classes are disjoint if they have no instances in common, two slots are d...  |
-| [slot_conditions](slot_conditions.md) | 0..* <br/> [SlotDefinition](SlotDefinition.md)  | expresses constraints on a group of slots for a class expression   |
-| [abstract](abstract.md) | 0..1 <br/> [xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean)  | Indicates the class or slot cannot be directly instantiated and is intended f...  |
-| [mixin](mixin.md) | 0..1 <br/> [xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean)  | Indicates the class or slot is not intended to inherited from without being a...  |
-| [string_serialization](string_serialization.md) | 0..1 <br/> [xsd:string](http://www.w3.org/2001/XMLSchema#string)  | Used on a slot that stores the string serialization of the containing object  |
-| [id_prefixes](id_prefixes.md) | 0..* <br/> [xsd:string](http://www.w3.org/2001/XMLSchema#string)  | the identifier of this class or slot must begin with the URIs referenced by t...  |
-| [from_schema](from_schema.md) | 0..1 <br/> [xsd:anyURI](http://www.w3.org/2001/XMLSchema#anyURI)  | id of the schema that defined the element   |
+| [name](../name.md) | 1..1 <br/> [xsd:string](http://www.w3.org/2001/XMLSchema#string)  | the unique name of the element within the context of the schema **identifier** |
+| [class_uri](../class_uri.md) | 0..1 <br/> [xsd:anyURI](http://www.w3.org/2001/XMLSchema#anyURI)  | URI of the class that provides a semantic interpretation of the element in a ...  |
+| [is_a](../is_a.md) | 0..1 <br/> [ClassDefinition](../ClassDefinition.md)  | A primary parent class from which inheritable metaslots are propagated   |
+| [mixins](../mixins.md) | 0..* <br/> [ClassDefinition](../ClassDefinition.md)  | A collection of secondary parent mixin classes from which inheritable metaslo...  |
+| [slots](../slots.md) | 0..* <br/> [SlotDefinition](../SlotDefinition.md)  | collection of slot names that are applicable to a class   |
+| [slot_usage](../slot_usage.md) | 0..* <br/> [SlotDefinition](../SlotDefinition.md)  | the refinement of a slot in the context of the containing class definition  |
+| [attributes](../attributes.md) | 0..* <br/> [SlotDefinition](../SlotDefinition.md)  | Inline definition of slots   |
+| [tree_root](../tree_root.md) | 0..1 <br/> [xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean)  | indicator that this is the root class in tree structures   |
+| [rank](../rank.md) | 0..1 <br/> [xsd:integer](http://www.w3.org/2001/XMLSchema#integer)  | the relative order in which the element occurs, lower values are given...   |
+| [any_of](../any_of.md) | 0..* <br/> [AnonymousClassExpression](../AnonymousClassExpression.md)  | holds if at least one of the expressions hold   |
+| [exactly_one_of](../exactly_one_of.md) | 0..* <br/> [AnonymousClassExpression](../AnonymousClassExpression.md)  | holds if only one of the expressions hold   |
+| [none_of](../none_of.md) | 0..* <br/> [AnonymousClassExpression](../AnonymousClassExpression.md)  | holds if none of the expressions hold   |
+| [all_of](../all_of.md) | 0..* <br/> [AnonymousClassExpression](../AnonymousClassExpression.md)  | holds if all of the expressions hold   |
+| [union_of](../union_of.md) | 0..* <br/> [ClassDefinition](../ClassDefinition.md)  | indicates that the domain element consists exactly of the members of the elem...  |
+| [unique_keys](../unique_keys.md) | 0..* <br/> [UniqueKey](../UniqueKey.md)  | A collection of unique keys for this class   |
+| [rules](../rules.md) | 0..* <br/> [ClassRule](../ClassRule.md)  | the collection of rules that apply to all members of this class   |
+| [classification_rules](../classification_rules.md) | 0..* <br/> [AnonymousClassExpression](../AnonymousClassExpression.md)  | the collection of classification rules that apply to all members of this clas...  |
+| [disjoint_with](../disjoint_with.md) | 0..* <br/> [ClassDefinition](../ClassDefinition.md)  | Two classes are disjoint if they have no instances in common, two slots are d...  |
+| [slot_conditions](../slot_conditions.md) | 0..* <br/> [SlotDefinition](../SlotDefinition.md)  | expresses constraints on a group of slots for a class expression   |
+| [abstract](../abstract.md) | 0..1 <br/> [xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean)  | Indicates the class or slot cannot be directly instantiated and is intended f...  |
+| [mixin](../mixin.md) | 0..1 <br/> [xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean)  | Indicates the class or slot is not intended to inherited from without being a...  |
+| [string_serialization](../string_serialization.md) | 0..1 <br/> [xsd:string](http://www.w3.org/2001/XMLSchema#string)  | Used on a slot that stores the string serialization of the containing object  |
+| [id_prefixes](../id_prefixes.md) | 0..* <br/> [xsd:string](http://www.w3.org/2001/XMLSchema#string)  | the identifier of this class or slot must begin with the URIs referenced by t...  |
+| [from_schema](../from_schema.md) | 0..1 <br/> [xsd:anyURI](http://www.w3.org/2001/XMLSchema#anyURI)  | id of the schema that defined the element   |
 
 
 
@@ -311,63 +311,63 @@ Any instance *s* of a SlotDefinition may have assignments in any of the followin
 
 | Name | Cardinality and Range  | Description  |
 | ---  | ---  | --- |
-| [name](name.md) | 1..1 <br/> [xsd:string](http://www.w3.org/2001/XMLSchema#string)  | the unique name of the element within the context of the schema **identifier** |
-| [slot_uri](slot_uri.md) | 0..1 <br/> [xsd:anyURI](http://www.w3.org/2001/XMLSchema#anyURI)  | predicate of this slot for semantic web application   |
-| [identifier](identifier.md) | 0..1 <br/> [xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean)  | True means that the key slot(s) uniquely identify the container   |
-| [alias](alias.md) | 0..1 <br/> [xsd:string](http://www.w3.org/2001/XMLSchema#string)  | the name used for a slot in the context of its owning class   |
-| [multivalued](multivalued.md) | 0..1 <br/> [xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean)  | true means that slot can have more than one value   |
-| [required](required.md) | 0..1 <br/> [xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean)  | true means that the slot must be present in the loaded definition   |
-| [recommended](recommended.md) | 0..1 <br/> [xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean)  | true means that the slot should be present in the loaded definition, but this... |
-| [is_a](is_a.md) | 0..1 <br/> [SlotDefinition](SlotDefinition.md)  | A primary parent slot from which inheritable metaslots are propagated   |
-| [mixins](mixins.md) | 0..* <br/> [SlotDefinition](SlotDefinition.md)  | A collection of secondary parent mixin slots from which inheritable metaslots... |
-| [inlined](inlined.md) | 0..1 <br/> [xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean)  | True means that keyed or identified slot appears in an outer structure by val... |
-| [inlined_as_list](inlined_as_list.md) | 0..1 <br/> [xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean)  | True means that an inlined slot is represented as a list of range instances  |
-| [pattern](pattern.md) | 0..1 <br/> [xsd:string](http://www.w3.org/2001/XMLSchema#string)  | the string value of the slot must conform to this regular expression expresse... |
-| [rank](rank.md) | 0..1 <br/> [xsd:integer](http://www.w3.org/2001/XMLSchema#integer)  | the relative order in which the element occurs, lower values are given ...   |
-| [any_of](any_of.md) | 0..* <br/> [AnonymousSlotExpression](AnonymousSlotExpression.md)  | holds if at least one of the expressions hold   |
-| [exactly_one_of](exactly_one_of.md) | 0..* <br/> [AnonymousSlotExpression](AnonymousSlotExpression.md)  | holds if only one of the expressions hold   |
-| [none_of](none_of.md) | 0..* <br/> [AnonymousSlotExpression](AnonymousSlotExpression.md)  | holds if none of the expressions hold   |
-| [all_of](all_of.md) | 0..* <br/> [AnonymousSlotExpression](AnonymousSlotExpression.md)  | holds if all of the expressions hold   |
-| [domain](domain.md) | 0..1 <br/> [ClassDefinition](ClassDefinition.md)  | defines the type of the subject of the slot   |
-| [inherited](inherited.md) | 0..1 <br/> [xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean)  | true means that the *value* of a slot is inherited by subclasses   |
-| [ifabsent](ifabsent.md) | 0..1 <br/> [xsd:string](http://www.w3.org/2001/XMLSchema#string)  | function that provides a default value for the slot   |
-| [list_elements_unique](list_elements_unique.md) | 0..1 <br/> [xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean)  | If True, then there must be no duplicates in the elements of a multivalued sl... |
-| [list_elements_ordered](list_elements_ordered.md) | 0..1 <br/> [xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean)  | If True, then the order of elements of a multivalued slot is guaranteed to be... |
-| [shared](shared.md) | 0..1 <br/> [xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean)  | If True, then the relationship between the slot domain and range is many to o... |
-| [key](key.md) | 0..1 <br/> [xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean)  | True means that the key slot(s) uniquely identify the container   |
-| [designates_type](designates_type.md) | 0..1 <br/> [xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean)  | True means that the key slot(s) is used to determine the instantiation (types... |
-| [symmetric](symmetric.md) | 0..1 <br/> [xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean)  | If s is symmetric, and i   |
-| [reflexive](reflexive.md) | 0..1 <br/> [xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean)  | If s is reflexive, then i   |
-| [locally_reflexive](locally_reflexive.md) | 0..1 <br/> [xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean)  | If s is locally_reflexive, then i   |
-| [irreflexive](irreflexive.md) | 0..1 <br/> [xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean)  | If s is irreflexive, then there exists no i such i   |
-| [asymmetric](asymmetric.md) | 0..1 <br/> [xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean)  | If s is antisymmetric, and i   |
-| [transitive](transitive.md) | 0..1 <br/> [xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean)  | If s is transitive, and i   |
-| [inverse](inverse.md) | 0..1 <br/> [SlotDefinition](SlotDefinition.md)  | indicates that any instance of d s r implies that there is also an instance o... |
-| [transitive_form_of](transitive_form_of.md) | 0..1 <br/> [SlotDefinition](SlotDefinition.md)  | If s transitive_form_of d, then (1) s holds whenever d holds (2) s is transit... |
-| [reflexive_transitive_form_of](reflexive_transitive_form_of.md) | 0..1 <br/> [SlotDefinition](SlotDefinition.md)  | transitive_form_of including the reflexive case   |
-| [slot_group](slot_group.md) | 0..1 <br/> [SlotDefinition](SlotDefinition.md)  | allows for grouping of related slots into a grouping slot that serves the rol... |
-| [is_grouping_slot](is_grouping_slot.md) | 0..1 <br/> [xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean)  | true if this slot is a grouping slot   |
-| [disjoint_with](disjoint_with.md) | 0..* <br/> [SlotDefinition](SlotDefinition.md)  | Two classes are disjoint if they have no instances in common, two slots are d... |
-| [union_of](union_of.md) | 0..* <br/> [SlotDefinition](SlotDefinition.md)  | indicates that the domain element consists exactly of the members of the elem... |
-| [range](range.md) | 0..1 <br/> [Element](Element.md)  | defines the type of the object of the slot   |
-| [range_expression](range_expression.md) | 0..1 <br/> [AnonymousClassExpression](AnonymousClassExpression.md)  | A range that is described as a boolean expression combining existing ranges  |
-| [enum_range](enum_range.md) | 0..1 <br/> [EnumExpression](EnumExpression.md)  | An inlined enumeration   |
-| [minimum_value](minimum_value.md) | 0..1 <br/> [xsd:integer](http://www.w3.org/2001/XMLSchema#integer)  | for slots with ranges of type number, the value must be equal to or higher th... |
-| [maximum_value](maximum_value.md) | 0..1 <br/> [xsd:integer](http://www.w3.org/2001/XMLSchema#integer)  | for slots with ranges of type number, the value must be equal to or lowe than... |
-| [structured_pattern](structured_pattern.md) | 0..1 <br/> [PatternExpression](PatternExpression.md)  | the string value of the slot must conform to the regular expression in the pa... |
-| [implicit_prefix](implicit_prefix.md) | 0..1 <br/> [xsd:string](http://www.w3.org/2001/XMLSchema#string)  | Causes the slot value to be interpreted as a uriorcurie after prefixing with ... |
-| [equals_string](equals_string.md) | 0..1 <br/> [xsd:string](http://www.w3.org/2001/XMLSchema#string)  | the slot must have range string and the value of the slot must equal the spec... |
-| [equals_string_in](equals_string_in.md) | 0..* <br/> [xsd:string](http://www.w3.org/2001/XMLSchema#string)  | the slot must have range string and the value of the slot must equal one of t... |
-| [equals_expression](equals_expression.md) | 0..1 <br/> [xsd:string](http://www.w3.org/2001/XMLSchema#string)  | the value of the slot must equal the value of the evaluated expression   |
-| [minimum_cardinality](minimum_cardinality.md) | 0..1 <br/> [xsd:integer](http://www.w3.org/2001/XMLSchema#integer)  | the minimum number of entries for a multivalued slot   |
-| [maximum_cardinality](maximum_cardinality.md) | 0..1 <br/> [xsd:integer](http://www.w3.org/2001/XMLSchema#integer)  | the maximum number of entries for a multivalued slot   |
-| [has_member](has_member.md) | 0..1 <br/> [AnonymousSlotExpression](AnonymousSlotExpression.md)  | the values of the slot is multivalued with at least one member satisfying the... |
-| [all_members](all_members.md) | 0..* <br/> [SlotDefinition](SlotDefinition.md)  | the value of the multivalued slot is a list where all elements conform to the... |
-| [abstract](abstract.md) | 0..1 <br/> [xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean)  | Indicates the class or slot cannot be directly instantiated and is intended f... |
-| [mixin](mixin.md) | 0..1 <br/> [xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean)  | Indicates the class or slot is not intended to inherited from without being a... |
-| [string_serialization](string_serialization.md) | 0..1 <br/> [xsd:string](http://www.w3.org/2001/XMLSchema#string)  | Used on a slot that stores the string serialization of the containing object |
-| [id_prefixes](id_prefixes.md) | 0..* <br/> [xsd:string](http://www.w3.org/2001/XMLSchema#string)  | the identifier of this class or slot must begin with the URIs referenced by t... |
-| [from_schema](from_schema.md) | 0..1 <br/> [xsd:anyURI](http://www.w3.org/2001/XMLSchema#anyURI)  | id of the schema that defined the element   |
+| [name](../name.md) | 1..1 <br/> [xsd:string](http://www.w3.org/2001/XMLSchema#string)  | the unique name of the element within the context of the schema **identifier** |
+| [slot_uri](../slot_uri.md) | 0..1 <br/> [xsd:anyURI](http://www.w3.org/2001/XMLSchema#anyURI)  | predicate of this slot for semantic web application   |
+| [identifier](../identifier.md) | 0..1 <br/> [xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean)  | True means that the key slot(s) uniquely identify the container   |
+| [alias](../alias.md) | 0..1 <br/> [xsd:string](http://www.w3.org/2001/XMLSchema#string)  | the name used for a slot in the context of its owning class   |
+| [multivalued](../multivalued.md) | 0..1 <br/> [xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean)  | true means that slot can have more than one value   |
+| [required](../required.md) | 0..1 <br/> [xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean)  | true means that the slot must be present in the loaded definition   |
+| [recommended](../recommended.md) | 0..1 <br/> [xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean)  | true means that the slot should be present in the loaded definition, but this... |
+| [is_a](../is_a.md) | 0..1 <br/> [SlotDefinition](../SlotDefinition.md)  | A primary parent slot from which inheritable metaslots are propagated   |
+| [mixins](../mixins.md) | 0..* <br/> [SlotDefinition](../SlotDefinition.md)  | A collection of secondary parent mixin slots from which inheritable metaslots... |
+| [inlined](../inlined.md) | 0..1 <br/> [xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean)  | True means that keyed or identified slot appears in an outer structure by val... |
+| [inlined_as_list](../inlined_as_list.md) | 0..1 <br/> [xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean)  | True means that an inlined slot is represented as a list of range instances  |
+| [pattern](../pattern.md) | 0..1 <br/> [xsd:string](http://www.w3.org/2001/XMLSchema#string)  | the string value of the slot must conform to this regular expression expresse... |
+| [rank](../rank.md) | 0..1 <br/> [xsd:integer](http://www.w3.org/2001/XMLSchema#integer)  | the relative order in which the element occurs, lower values are given ...   |
+| [any_of](../any_of.md) | 0..* <br/> [AnonymousSlotExpression](../AnonymousSlotExpression.md)  | holds if at least one of the expressions hold   |
+| [exactly_one_of](../exactly_one_of.md) | 0..* <br/> [AnonymousSlotExpression](../AnonymousSlotExpression.md)  | holds if only one of the expressions hold   |
+| [none_of](../none_of.md) | 0..* <br/> [AnonymousSlotExpression](../AnonymousSlotExpression.md)  | holds if none of the expressions hold   |
+| [all_of](../all_of.md) | 0..* <br/> [AnonymousSlotExpression](../AnonymousSlotExpression.md)  | holds if all of the expressions hold   |
+| [domain](../domain.md) | 0..1 <br/> [ClassDefinition](../ClassDefinition.md)  | defines the type of the subject of the slot   |
+| [inherited](../inherited.md) | 0..1 <br/> [xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean)  | true means that the *value* of a slot is inherited by subclasses   |
+| [ifabsent](../ifabsent.md) | 0..1 <br/> [xsd:string](http://www.w3.org/2001/XMLSchema#string)  | function that provides a default value for the slot   |
+| [list_elements_unique](../list_elements_unique.md) | 0..1 <br/> [xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean)  | If True, then there must be no duplicates in the elements of a multivalued sl... |
+| [list_elements_ordered](../list_elements_ordered.md) | 0..1 <br/> [xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean)  | If True, then the order of elements of a multivalued slot is guaranteed to be... |
+| [shared](../shared.md) | 0..1 <br/> [xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean)  | If True, then the relationship between the slot domain and range is many to o... |
+| [key](../key.md) | 0..1 <br/> [xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean)  | True means that the key slot(s) uniquely identify the container   |
+| [designates_type](../designates_type.md) | 0..1 <br/> [xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean)  | True means that the key slot(s) is used to determine the instantiation (types... |
+| [symmetric](../symmetric.md) | 0..1 <br/> [xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean)  | If s is symmetric, and i   |
+| [reflexive](../reflexive.md) | 0..1 <br/> [xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean)  | If s is reflexive, then i   |
+| [locally_reflexive](../locally_reflexive.md) | 0..1 <br/> [xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean)  | If s is locally_reflexive, then i   |
+| [irreflexive](../irreflexive.md) | 0..1 <br/> [xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean)  | If s is irreflexive, then there exists no i such i   |
+| [asymmetric](../asymmetric.md) | 0..1 <br/> [xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean)  | If s is antisymmetric, and i   |
+| [transitive](../transitive.md) | 0..1 <br/> [xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean)  | If s is transitive, and i   |
+| [inverse](../inverse.md) | 0..1 <br/> [SlotDefinition](../SlotDefinition.md)  | indicates that any instance of d s r implies that there is also an instance o... |
+| [transitive_form_of](../transitive_form_of.md) | 0..1 <br/> [SlotDefinition](../SlotDefinition.md)  | If s transitive_form_of d, then (1) s holds whenever d holds (2) s is transit... |
+| [reflexive_transitive_form_of](../reflexive_transitive_form_of.md) | 0..1 <br/> [SlotDefinition](../SlotDefinition.md)  | transitive_form_of including the reflexive case   |
+| [slot_group](../slot_group.md) | 0..1 <br/> [SlotDefinition](../SlotDefinition.md)  | allows for grouping of related slots into a grouping slot that serves the rol... |
+| [is_grouping_slot](../is_grouping_slot.md) | 0..1 <br/> [xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean)  | true if this slot is a grouping slot   |
+| [disjoint_with](../disjoint_with.md) | 0..* <br/> [SlotDefinition](../SlotDefinition.md)  | Two classes are disjoint if they have no instances in common, two slots are d... |
+| [union_of](../union_of.md) | 0..* <br/> [SlotDefinition](../SlotDefinition.md)  | indicates that the domain element consists exactly of the members of the elem... |
+| [range](../range.md) | 0..1 <br/> [Element](../Element.md)  | defines the type of the object of the slot   |
+| [range_expression](../range_expression.md) | 0..1 <br/> [AnonymousClassExpression](../AnonymousClassExpression.md)  | A range that is described as a boolean expression combining existing ranges  |
+| [enum_range](../enum_range.md) | 0..1 <br/> [EnumExpression](../EnumExpression.md)  | An inlined enumeration   |
+| [minimum_value](../minimum_value.md) | 0..1 <br/> [linkml:Any](https://linkml.io/linkml-model/latest/docs/Anything/)  | for slots with ordinal ranges, the value must be equal to or higher th... |
+| [maximum_value](../maximum_value.md) | 0..1 <br/> [linkml:Any](https://linkml.io/linkml-model/latest/docs/Anything/)  | for slots with ordinal ranges, the value must be equal to or lowe than... |
+| [structured_pattern](../structured_pattern.md) | 0..1 <br/> [PatternExpression](../PatternExpression.md)  | the string value of the slot must conform to the regular expression in the pa... |
+| [implicit_prefix](../implicit_prefix.md) | 0..1 <br/> [xsd:string](http://www.w3.org/2001/XMLSchema#string)  | Causes the slot value to be interpreted as a uriorcurie after prefixing with ... |
+| [equals_string](../equals_string.md) | 0..1 <br/> [xsd:string](http://www.w3.org/2001/XMLSchema#string)  | the slot must have range string and the value of the slot must equal the spec... |
+| [equals_string_in](../equals_string_in.md) | 0..* <br/> [xsd:string](http://www.w3.org/2001/XMLSchema#string)  | the slot must have range string and the value of the slot must equal one of t... |
+| [equals_expression](../equals_expression.md) | 0..1 <br/> [xsd:string](http://www.w3.org/2001/XMLSchema#string)  | the value of the slot must equal the value of the evaluated expression   |
+| [minimum_cardinality](../minimum_cardinality.md) | 0..1 <br/> [xsd:integer](http://www.w3.org/2001/XMLSchema#integer)  | the minimum number of entries for a multivalued slot   |
+| [maximum_cardinality](../maximum_cardinality.md) | 0..1 <br/> [xsd:integer](http://www.w3.org/2001/XMLSchema#integer)  | the maximum number of entries for a multivalued slot   |
+| [has_member](../has_member.md) | 0..1 <br/> [AnonymousSlotExpression](../AnonymousSlotExpression.md)  | the values of the slot is multivalued with at least one member satisfying the... |
+| [all_members](../all_members.md) | 0..* <br/> [SlotDefinition](../SlotDefinition.md)  | the value of the multivalued slot is a list where all elements conform to the... |
+| [abstract](../abstract.md) | 0..1 <br/> [xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean)  | Indicates the class or slot cannot be directly instantiated and is intended f... |
+| [mixin](../mixin.md) | 0..1 <br/> [xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean)  | Indicates the class or slot is not intended to inherited from without being a... |
+| [string_serialization](../string_serialization.md) | 0..1 <br/> [xsd:string](http://www.w3.org/2001/XMLSchema#string)  | Used on a slot that stores the string serialization of the containing object |
+| [id_prefixes](../id_prefixes.md) | 0..* <br/> [xsd:string](http://www.w3.org/2001/XMLSchema#string)  | the identifier of this class or slot must begin with the URIs referenced by t... |
+| [from_schema](../from_schema.md) | 0..1 <br/> [xsd:anyURI](http://www.w3.org/2001/XMLSchema#anyURI)  | id of the schema that defined the element   |
 
 ### SlotDefinition: Normative subset UML
 
@@ -447,25 +447,25 @@ Any instance *e* of a EnumDefinition may have assignments in any of the followin
 
 | Name | Cardinality and Range  | Description  |
 | ---  | ---  | --- |
-| [name](name.md) | 1..1 <br/> [xsd:string](http://www.w3.org/2001/XMLSchema#string)  | the unique name of the element within the context of the schema **identifier** |
-| [is_a](is_a.md) | 0..1 <br/> [Definition](Definition.md)  | A primary parent class or slot from which inheritable metaslots are propagate... |
-| [mixins](mixins.md) | 0..* <br/> [Definition](Definition.md)  | A collection of secondary parent classes or slots from which inheritable meta... |
-| [rank](rank.md) | 0..1 <br/> [xsd:integer](http://www.w3.org/2001/XMLSchema#integer)  | the relative order in which the element occurs, lower values are given...   |
-| [enum_uri](enum_uri.md) | 0..1 <br/> [xsd:anyURI](http://www.w3.org/2001/XMLSchema#anyURI)  | URI of the enum that provides a semantic interpretation of the element in a l... |
-| [code_set](code_set.md) | 0..1 <br/> [xsd:anyURI](http://www.w3.org/2001/XMLSchema#anyURI)  | the identifier of an enumeration code set   |
-| [pv_formula](pv_formula.md) | 0..1 <br/> [PvFormulaOptions](PvFormulaOptions.md)  | Defines the specific formula to be used to generate the permissible values  |
-| [permissible_values](permissible_values.md) | 0..* <br/> [PermissibleValue](PermissibleValue.md)  | A list of possible values for a slot range   |
-| [include](include.md) | 0..* <br/> [AnonymousEnumExpression](AnonymousEnumExpression.md)  | An enum expression that yields a list of permissible values that are to be in... |
-| [minus](minus.md) | 0..* <br/> [AnonymousEnumExpression](AnonymousEnumExpression.md)  | An enum expression that yields a list of permissible values that are to be su... |
-| [inherits](inherits.md) | 0..* <br/> [EnumDefinition](EnumDefinition.md)  | An enum definition that is used as the basis to create a new enum   |
-| [reachable_from](reachable_from.md) | 0..1 <br/> [ReachabilityQuery](ReachabilityQuery.md)  | Specifies a query for obtaining a list of permissible values based on graph r... |
-| [matches](matches.md) | 0..1 <br/> [MatchQuery](MatchQuery.md)  | Specifies a match query that is used to calculate the list of permissible val... |
-| [concepts](concepts.md) | 0..* <br/> [xsd:anyURI](http://www.w3.org/2001/XMLSchema#anyURI)  | A list of identifiers that are used to construct a set of permissible values |
-| [abstract](abstract.md) | 0..1 <br/> [xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean)  | Indicates the class or slot cannot be directly instantiated and is intended f... |
-| [mixin](mixin.md) | 0..1 <br/> [xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean)  | Indicates the class or slot is not intended to inherited from without being a... |
-| [string_serialization](string_serialization.md) | 0..1 <br/> [xsd:string](http://www.w3.org/2001/XMLSchema#string)  | Used on a slot that stores the string serialization of the containing object |
-| [id_prefixes](id_prefixes.md) | 0..* <br/> [xsd:string](http://www.w3.org/2001/XMLSchema#string)  | the identifier of this class or slot must begin with the URIs referenced by t... |
-| [from_schema](from_schema.md) | 0..1 <br/> [xsd:anyURI](http://www.w3.org/2001/XMLSchema#anyURI)  | id of the schema that defined the element   |
+| [name](../name.md) | 1..1 <br/> [xsd:string](http://www.w3.org/2001/XMLSchema#string)  | the unique name of the element within the context of the schema **identifier** |
+| [is_a](../is_a.md) | 0..1 <br/> [Definition](../Definition.md)  | A primary parent class or slot from which inheritable metaslots are propagate... |
+| [mixins](../mixins.md) | 0..* <br/> [Definition](../Definition.md)  | A collection of secondary parent classes or slots from which inheritable meta... |
+| [rank](../rank.md) | 0..1 <br/> [xsd:integer](http://www.w3.org/2001/XMLSchema#integer)  | the relative order in which the element occurs, lower values are given...   |
+| [enum_uri](../enum_uri.md) | 0..1 <br/> [xsd:anyURI](http://www.w3.org/2001/XMLSchema#anyURI)  | URI of the enum that provides a semantic interpretation of the element in a l... |
+| [code_set](../code_set.md) | 0..1 <br/> [xsd:anyURI](http://www.w3.org/2001/XMLSchema#anyURI)  | the identifier of an enumeration code set   |
+| [pv_formula](../pv_formula.md) | 0..1 <br/> [PvFormulaOptions](../PvFormulaOptions.md)  | Defines the specific formula to be used to generate the permissible values  |
+| [permissible_values](../permissible_values.md) | 0..* <br/> [PermissibleValue](../PermissibleValue.md)  | A list of possible values for a slot range   |
+| [include](../include.md) | 0..* <br/> [AnonymousEnumExpression](../AnonymousEnumExpression.md)  | An enum expression that yields a list of permissible values that are to be in... |
+| [minus](../minus.md) | 0..* <br/> [AnonymousEnumExpression](../AnonymousEnumExpression.md)  | An enum expression that yields a list of permissible values that are to be su... |
+| [inherits](../inherits.md) | 0..* <br/> [EnumDefinition](../EnumDefinition.md)  | An enum definition that is used as the basis to create a new enum   |
+| [reachable_from](../reachable_from.md) | 0..1 <br/> [ReachabilityQuery](../ReachabilityQuery.md)  | Specifies a query for obtaining a list of permissible values based on graph r... |
+| [matches](../matches.md) | 0..1 <br/> [MatchQuery](../MatchQuery.md)  | Specifies a match query that is used to calculate the list of permissible val... |
+| [concepts](../concepts.md) | 0..* <br/> [xsd:anyURI](http://www.w3.org/2001/XMLSchema#anyURI)  | A list of identifiers that are used to construct a set of permissible values |
+| [abstract](../abstract.md) | 0..1 <br/> [xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean)  | Indicates the class or slot cannot be directly instantiated and is intended f... |
+| [mixin](../mixin.md) | 0..1 <br/> [xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean)  | Indicates the class or slot is not intended to inherited from without being a... |
+| [string_serialization](../string_serialization.md) | 0..1 <br/> [xsd:string](http://www.w3.org/2001/XMLSchema#string)  | Used on a slot that stores the string serialization of the containing object |
+| [id_prefixes](../id_prefixes.md) | 0..* <br/> [xsd:string](http://www.w3.org/2001/XMLSchema#string)  | the identifier of this class or slot must begin with the URIs referenced by t... |
+| [from_schema](../from_schema.md) | 0..1 <br/> [xsd:anyURI](http://www.w3.org/2001/XMLSchema#anyURI)  | id of the schema that defined the element   |
 
 
 
@@ -505,26 +505,26 @@ Any instance *t* of a TypeDefinition may have assignments in any of the followin
 
 | Name | Cardinality and Range  | Description                                                                       |
 | ---  | ---  |-----------------------------------------------------------------------------------|
-| [name](name.md) | 1..1 <br/> [xsd:string](http://www.w3.org/2001/XMLSchema#string)  | the unique name of the element within the context of the schema **identifier**    |
-| [type_uri](type_uri.md) | 0..1 <br/> [xsd:anyURI](http://www.w3.org/2001/XMLSchema#anyURI)  | The uri that defines the possible values for the type definition                  |
-| [typeof](typeof.md) | 0..1 <br/> [TypeDefinition](TypeDefinition.md)  | Names a parent type                                                               |
-| [base](base.md) | 0..1 <br/> [xsd:string](http://www.w3.org/2001/XMLSchema#string)  | python base type that implements this type definition                             |
-| [repr](repr.md) | 0..1 <br/> [xsd:string](http://www.w3.org/2001/XMLSchema#string)  | the name of the python object that implements this type definition                |
-| [pattern](pattern.md) | 0..1 <br/> [xsd:string](http://www.w3.org/2001/XMLSchema#string)  | the string value of the slot must conform to this regular expression expresses... |
-| [rank](rank.md) | 0..1 <br/> [xsd:integer](http://www.w3.org/2001/XMLSchema#integer)  | the relative order in which the element occurs, lower values are given ...        |
-| [any_of](any_of.md) | 0..* <br/> [AnonymousTypeExpression](AnonymousTypeExpression.md)  | holds if at least one of the expressions hold                                     |
-| [exactly_one_of](exactly_one_of.md) | 0..* <br/> [AnonymousTypeExpression](AnonymousTypeExpression.md)  | holds if only one of the expressions hold                                         |
-| [none_of](none_of.md) | 0..* <br/> [AnonymousTypeExpression](AnonymousTypeExpression.md)  | holds if none of the expressions hold                                             |
-| [all_of](all_of.md) | 0..* <br/> [AnonymousTypeExpression](AnonymousTypeExpression.md)  | holds if all of the expressions hold                                              |
-| [union_of](union_of.md) | 0..* <br/> [TypeDefinition](TypeDefinition.md)  | indicates that the domain element consists exactly of the members of ...          |
-| [structured_pattern](structured_pattern.md) | 0..1 <br/> [PatternExpression](PatternExpression.md)  | the string value of the slot must conform to the regular expression in the ...    |
-| [implicit_prefix](implicit_prefix.md) | 0..1 <br/> [xsd:string](http://www.w3.org/2001/XMLSchema#string)  | Causes the slot value to be interpreted as a uriorcurie after prefixing with ...  |
-| [equals_string](equals_string.md) | 0..1 <br/> [xsd:string](http://www.w3.org/2001/XMLSchema#string)  | the slot must have range string and the value of the slot must equal the ...      |
-| [equals_string_in](equals_string_in.md) | 0..* <br/> [xsd:string](http://www.w3.org/2001/XMLSchema#string)  | the slot must have range string and the value of the slot must equal one of ...   |
-| [minimum_value](minimum_value.md) | 0..1 <br/> [xsd:integer](http://www.w3.org/2001/XMLSchema#integer)  | for slots with ranges of type number, the value must be equal to or higher ...    |
-| [maximum_value](maximum_value.md) | 0..1 <br/> [xsd:integer](http://www.w3.org/2001/XMLSchema#integer)  | for slots with ranges of type number, the value must be equal to or lowe than...  |
-| [id_prefixes](id_prefixes.md) | 0..* <br/> [xsd:string](http://www.w3.org/2001/XMLSchema#string)  | the identifier of this class or slot must begin with the URIs referenced by ...   |
-| [from_schema](from_schema.md) | 0..1 <br/> [xsd:anyURI](http://www.w3.org/2001/XMLSchema#anyURI)  | id of the schema that defined the element                                         |
+| [name](../name.md) | 1..1 <br/> [xsd:string](http://www.w3.org/2001/XMLSchema#string)  | the unique name of the element within the context of the schema **identifier**    |
+| [type_uri](../type_uri.md) | 0..1 <br/> [xsd:anyURI](http://www.w3.org/2001/XMLSchema#anyURI)  | The uri that defines the possible values for the type definition                  |
+| [typeof](../typeof.md) | 0..1 <br/> [TypeDefinition](../TypeDefinition.md)  | Names a parent type                                                               |
+| [base](../base.md) | 0..1 <br/> [xsd:string](http://www.w3.org/2001/XMLSchema#string)  | python base type that implements this type definition                             |
+| [repr](../repr.md) | 0..1 <br/> [xsd:string](http://www.w3.org/2001/XMLSchema#string)  | the name of the python object that implements this type definition                |
+| [pattern](../pattern.md) | 0..1 <br/> [xsd:string](http://www.w3.org/2001/XMLSchema#string)  | the string value of the slot must conform to this regular expression expresses... |
+| [rank](../rank.md) | 0..1 <br/> [xsd:integer](http://www.w3.org/2001/XMLSchema#integer)  | the relative order in which the element occurs, lower values are given ...        |
+| [any_of](../any_of.md) | 0..* <br/> [AnonymousTypeExpression](../AnonymousTypeExpression.md)  | holds if at least one of the expressions hold                                     |
+| [exactly_one_of](../exactly_one_of.md) | 0..* <br/> [AnonymousTypeExpression](../AnonymousTypeExpression.md)  | holds if only one of the expressions hold                                         |
+| [none_of](../none_of.md) | 0..* <br/> [AnonymousTypeExpression](../AnonymousTypeExpression.md)  | holds if none of the expressions hold                                             |
+| [all_of](../all_of.md) | 0..* <br/> [AnonymousTypeExpression](../AnonymousTypeExpression.md)  | holds if all of the expressions hold                                              |
+| [union_of](../union_of.md) | 0..* <br/> [TypeDefinition](../TypeDefinition.md)  | indicates that the domain element consists exactly of the members of ...          |
+| [structured_pattern](../structured_pattern.md) | 0..1 <br/> [PatternExpression](../PatternExpression.md)  | the string value of the slot must conform to the regular expression in the ...    |
+| [implicit_prefix](../implicit_prefix.md) | 0..1 <br/> [xsd:string](http://www.w3.org/2001/XMLSchema#string)  | Causes the slot value to be interpreted as a uriorcurie after prefixing with ...  |
+| [equals_string](../equals_string.md) | 0..1 <br/> [xsd:string](http://www.w3.org/2001/XMLSchema#string)  | the slot must have range string and the value of the slot must equal the ...      |
+| [equals_string_in](../equals_string_in.md) | 0..* <br/> [xsd:string](http://www.w3.org/2001/XMLSchema#string)  | the slot must have range string and the value of the slot must equal one of ...   |
+| [minimum_value](../minimum_value.md) | 0..1 <br/> [xsd:integer](http://www.w3.org/2001/XMLSchema#integer)  | for slots with ranges of type number, the value must be equal to or higher ...    |
+| [maximum_value](../maximum_value.md) | 0..1 <br/> [xsd:integer](http://www.w3.org/2001/XMLSchema#integer)  | for slots with ranges of type number, the value must be equal to or lowe than...  |
+| [id_prefixes](../id_prefixes.md) | 0..* <br/> [xsd:string](http://www.w3.org/2001/XMLSchema#string)  | the identifier of this class or slot must begin with the URIs referenced by ...   |
+| [from_schema](../from_schema.md) | 0..1 <br/> [xsd:anyURI](http://www.w3.org/2001/XMLSchema#anyURI)  | id of the schema that defined the element                                         |
 
 ### TypeDefinition: Normative subset UML
 
@@ -596,8 +596,8 @@ A schema can contain any number of prefixes. Each prefix maps a short name such 
 
 | Name | Cardinality and Range  | Description  |
 | ---  | ---  | --- |
-| [prefix_prefix](prefix_prefix.md) | 0..1 <br/> [xsd:string](http://www.w3.org/2001/XMLSchema#string)  | the nsname (sans ':' for a given prefix)   |
-| [prefix_reference](prefix_reference.md) | 1..1 <br/> [xsd:anyURI](http://www.w3.org/2001/XMLSchema#anyURI)  | A URI associated with a given prefix   |
+| [prefix_prefix](../prefix_prefix.md) | 0..1 <br/> [xsd:string](http://www.w3.org/2001/XMLSchema#string)  | the nsname (sans ':' for a given prefix)   |
+| [prefix_reference](../prefix_reference.md) | 1..1 <br/> [xsd:anyURI](http://www.w3.org/2001/XMLSchema#anyURI)  | A URI associated with a given prefix   |
 
 
 ### Prefix: Normative subset UML

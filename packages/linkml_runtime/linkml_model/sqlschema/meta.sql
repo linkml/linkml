@@ -117,8 +117,8 @@ CREATE TABLE anonymous_slot_expression (
 	recommended BOOLEAN, 
 	inlined BOOLEAN, 
 	inlined_as_list BOOLEAN, 
-	minimum_value INTEGER, 
-	maximum_value INTEGER, 
+	minimum_value TEXT, 
+	maximum_value TEXT, 
 	pattern TEXT, 
 	structured_pattern TEXT, 
 	unit TEXT, 
@@ -147,8 +147,8 @@ CREATE TABLE anonymous_type_expression (
 	equals_string TEXT, 
 	equals_string_in TEXT, 
 	equals_number INTEGER, 
-	minimum_value INTEGER, 
-	maximum_value INTEGER, 
+	minimum_value TEXT, 
+	maximum_value TEXT, 
 	none_of TEXT, 
 	exactly_one_of TEXT, 
 	any_of TEXT, 
@@ -158,6 +158,7 @@ CREATE TABLE anonymous_type_expression (
 
 CREATE TABLE class_definition (
 	name TEXT NOT NULL, 
+	id_prefixes_are_closed BOOLEAN, 
 	definition_uri TEXT, 
 	local_names TEXT, 
 	conforms_to TEXT, 
@@ -212,6 +213,7 @@ CREATE TABLE class_definition (
 
 CREATE TABLE enum_definition (
 	name TEXT NOT NULL, 
+	id_prefixes_are_closed BOOLEAN, 
 	definition_uri TEXT, 
 	local_names TEXT, 
 	conforms_to TEXT, 
@@ -469,6 +471,7 @@ CREATE TABLE structured_alias (
 
 CREATE TABLE subset_definition (
 	name TEXT NOT NULL, 
+	id_prefixes_are_closed BOOLEAN, 
 	definition_uri TEXT, 
 	local_names TEXT, 
 	conforms_to TEXT, 
@@ -498,6 +501,7 @@ CREATE TABLE subset_definition (
 
 CREATE TABLE type_definition (
 	name TEXT NOT NULL, 
+	id_prefixes_are_closed BOOLEAN, 
 	definition_uri TEXT, 
 	local_names TEXT, 
 	conforms_to TEXT, 
@@ -533,8 +537,8 @@ CREATE TABLE type_definition (
 	implicit_prefix TEXT, 
 	equals_string TEXT, 
 	equals_number INTEGER, 
-	minimum_value INTEGER, 
-	maximum_value INTEGER, 
+	minimum_value TEXT, 
+	maximum_value TEXT, 
 	none_of TEXT, 
 	exactly_one_of TEXT, 
 	any_of TEXT, 
@@ -603,6 +607,7 @@ CREATE TABLE class_rule (
 );
 
 CREATE TABLE schema_definition (
+	id_prefixes_are_closed BOOLEAN, 
 	definition_uri TEXT, 
 	local_names TEXT, 
 	conforms_to TEXT, 
@@ -651,6 +656,7 @@ CREATE TABLE schema_definition (
 
 CREATE TABLE slot_definition (
 	name TEXT NOT NULL, 
+	id_prefixes_are_closed BOOLEAN, 
 	definition_uri TEXT, 
 	local_names TEXT, 
 	conforms_to TEXT, 
@@ -725,8 +731,8 @@ CREATE TABLE slot_definition (
 	recommended BOOLEAN, 
 	inlined BOOLEAN, 
 	inlined_as_list BOOLEAN, 
-	minimum_value INTEGER, 
-	maximum_value INTEGER, 
+	minimum_value TEXT, 
+	maximum_value TEXT, 
 	pattern TEXT, 
 	structured_pattern TEXT, 
 	unit TEXT, 

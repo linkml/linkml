@@ -21,6 +21,8 @@ prefixes:
   csvw: http://www.w3.org/ns/csvw#
   dcat: http://www.w3.org/ns/dcat#
   mediatypes: https://www.iana.org/assignments/media-types/
+  oslc: http://open-services.net/ns/core#
+  bibo: http://purl.org/ontology/bibo/
 
 default_prefix: datasets
 default_range: string

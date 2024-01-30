@@ -160,8 +160,8 @@ type AnonymousSlotExpression implements SlotExpression
     recommended: Boolean
     inlined: Boolean
     inlinedAsList: Boolean
-    minimumValue: Integer
-    maximumValue: Integer
+    minimumValue: Anything
+    maximumValue: Anything
     pattern: String
     structuredPattern: PatternExpression
     unit: UnitOfMeasure
@@ -190,8 +190,8 @@ type AnonymousTypeExpression implements TypeExpression
     equalsString: String
     equalsStringIn: [String]
     equalsNumber: Integer
-    minimumValue: Integer
-    maximumValue: Integer
+    minimumValue: Anything
+    maximumValue: Anything
     noneOf: [AnonymousTypeExpression]
     exactlyOneOf: [AnonymousTypeExpression]
     anyOf: [AnonymousTypeExpression]
@@ -210,6 +210,7 @@ type ClassDefinition implements ClassExpression
   {
     name: String!
     idPrefixes: [Ncname]
+    idPrefixesAreClosed: Boolean
     definitionUri: Uriorcurie
     localNames: [LocalName]
     conformsTo: String
@@ -378,6 +379,7 @@ interface Definition
   {
     name: String!
     idPrefixes: [Ncname]
+    idPrefixesAreClosed: Boolean
     definitionUri: Uriorcurie
     localNames: [LocalName]
     conformsTo: String
@@ -431,6 +433,7 @@ type Element implements Extensible, Annotatable, CommonMetadata
   {
     name: String!
     idPrefixes: [Ncname]
+    idPrefixesAreClosed: Boolean
     definitionUri: Uriorcurie
     localNames: [LocalName]
     conformsTo: String
@@ -477,6 +480,7 @@ type EnumDefinition implements EnumExpression
   {
     name: String!
     idPrefixes: [Ncname]
+    idPrefixesAreClosed: Boolean
     definitionUri: Uriorcurie
     localNames: [LocalName]
     conformsTo: String
@@ -782,6 +786,7 @@ type ReachabilityQuery
 type SchemaDefinition
   {
     idPrefixes: [Ncname]
+    idPrefixesAreClosed: Boolean
     definitionUri: Uriorcurie
     localNames: [LocalName]
     conformsTo: String
@@ -856,6 +861,7 @@ type SlotDefinition implements SlotExpression
   {
     name: String!
     idPrefixes: [Ncname]
+    idPrefixesAreClosed: Boolean
     definitionUri: Uriorcurie
     localNames: [LocalName]
     conformsTo: String
@@ -947,8 +953,8 @@ type SlotDefinition implements SlotExpression
     recommended: Boolean
     inlined: Boolean
     inlinedAsList: Boolean
-    minimumValue: Integer
-    maximumValue: Integer
+    minimumValue: Anything
+    maximumValue: Anything
     pattern: String
     structuredPattern: PatternExpression
     unit: UnitOfMeasure
@@ -977,8 +983,8 @@ interface SlotExpression
     recommended: Boolean
     inlined: Boolean
     inlinedAsList: Boolean
-    minimumValue: Integer
-    maximumValue: Integer
+    minimumValue: Anything
+    maximumValue: Anything
     pattern: String
     structuredPattern: PatternExpression
     unit: UnitOfMeasure
@@ -1043,6 +1049,7 @@ type SubsetDefinition
   {
     name: String!
     idPrefixes: [Ncname]
+    idPrefixesAreClosed: Boolean
     definitionUri: Uriorcurie
     localNames: [LocalName]
     conformsTo: String
@@ -1089,6 +1096,7 @@ type TypeDefinition implements TypeExpression
   {
     name: String!
     idPrefixes: [Ncname]
+    idPrefixesAreClosed: Boolean
     definitionUri: Uriorcurie
     localNames: [LocalName]
     conformsTo: String
@@ -1141,8 +1149,8 @@ type TypeDefinition implements TypeExpression
     equalsString: String
     equalsStringIn: [String]
     equalsNumber: Integer
-    minimumValue: Integer
-    maximumValue: Integer
+    minimumValue: Anything
+    maximumValue: Anything
     noneOf: [AnonymousTypeExpression]
     exactlyOneOf: [AnonymousTypeExpression]
     anyOf: [AnonymousTypeExpression]
@@ -1158,8 +1166,8 @@ interface TypeExpression
     equalsString: String
     equalsStringIn: [String]
     equalsNumber: Integer
-    minimumValue: Integer
-    maximumValue: Integer
+    minimumValue: Anything
+    maximumValue: Anything
     noneOf: [AnonymousTypeExpression]
     exactlyOneOf: [AnonymousTypeExpression]
     anyOf: [AnonymousTypeExpression]

@@ -73,8 +73,8 @@
                     "type": "string"
                 },
                 "value": {
-                    "description": "the actual annotation",
-                    "type": "string"
+                    "$ref": "#/$defs/AnyValue",
+                    "description": "the actual annotation"
                 }
             },
             "required": [
@@ -107,8 +107,8 @@
                     "type": "string"
                 },
                 "value": {
-                    "description": "the actual annotation",
-                    "type": "string"
+                    "$ref": "#/$defs/AnyValue",
+                    "description": "the actual annotation"
                 }
             },
             "required": [
@@ -676,16 +676,16 @@
                     "type": "integer"
                 },
                 "maximum_value": {
-                    "description": "for slots with ranges of type number, the value must be equal to or lowe than this",
-                    "type": "integer"
+                    "$ref": "#/$defs/Anything",
+                    "description": "For ordinal ranges, the value must be equal to or lower than this"
                 },
                 "minimum_cardinality": {
                     "description": "the minimum number of entries for a multivalued slot",
                     "type": "integer"
                 },
                 "minimum_value": {
-                    "description": "for slots with ranges of type number, the value must be equal to or higher than this",
-                    "type": "integer"
+                    "$ref": "#/$defs/Anything",
+                    "description": "For ordinal ranges, the value must be equal to or higher than this"
                 },
                 "modified_by": {
                     "description": "agent that modified the element",
@@ -837,12 +837,12 @@
                     "type": "string"
                 },
                 "maximum_value": {
-                    "description": "for slots with ranges of type number, the value must be equal to or lowe than this",
-                    "type": "integer"
+                    "$ref": "#/$defs/Anything",
+                    "description": "For ordinal ranges, the value must be equal to or lower than this"
                 },
                 "minimum_value": {
-                    "description": "for slots with ranges of type number, the value must be equal to or higher than this",
-                    "type": "integer"
+                    "$ref": "#/$defs/Anything",
+                    "description": "For ordinal ranges, the value must be equal to or higher than this"
                 },
                 "none_of": {
                     "description": "holds if none of the expressions hold",
@@ -867,11 +867,29 @@
             "title": "AnonymousTypeExpression",
             "type": "object"
         },
+        "AnyValue": {
+            "additionalProperties": true,
+            "description": "",
+            "title": "AnyValue",
+            "type": [
+                "null",
+                "boolean",
+                "object",
+                "number",
+                "string"
+            ]
+        },
         "Anything": {
             "additionalProperties": true,
             "description": "",
             "title": "Anything",
-            "type": "object"
+            "type": [
+                "null",
+                "boolean",
+                "object",
+                "number",
+                "string"
+            ]
         },
         "ClassDefinition": {
             "additionalProperties": false,
@@ -1080,6 +1098,10 @@
                         "type": "string"
                     },
                     "type": "array"
+                },
+                "id_prefixes_are_closed": {
+                    "description": "If true, then the id_prefixes slot is treated as being closed, and any use of an id that does not have this prefix is considered a violation.",
+                    "type": "boolean"
                 },
                 "implements": {
                     "description": "An element in another schema which this element conforms to. The referenced element is not imported into the schema for the implementing element. However, the referenced schema may be used to check conformance of the implementing element.",
@@ -1528,6 +1550,10 @@
                         "type": "string"
                     },
                     "type": "array"
+                },
+                "id_prefixes_are_closed": {
+                    "description": "If true, then the id_prefixes slot is treated as being closed, and any use of an id that does not have this prefix is considered a violation.",
+                    "type": "boolean"
                 },
                 "implements": {
                     "description": "An element in another schema which this element conforms to. The referenced element is not imported into the schema for the implementing element. However, the referenced schema may be used to check conformance of the implementing element.",
@@ -2176,6 +2202,10 @@
                     },
                     "type": "array"
                 },
+                "id_prefixes_are_closed": {
+                    "description": "If true, then the id_prefixes slot is treated as being closed, and any use of an id that does not have this prefix is considered a violation.",
+                    "type": "boolean"
+                },
                 "implements": {
                     "description": "An element in another schema which this element conforms to. The referenced element is not imported into the schema for the implementing element. However, the referenced schema may be used to check conformance of the implementing element.",
                     "items": {
@@ -2551,6 +2581,10 @@
                     },
                     "type": "array"
                 },
+                "id_prefixes_are_closed": {
+                    "description": "If true, then the id_prefixes slot is treated as being closed, and any use of an id that does not have this prefix is considered a violation.",
+                    "type": "boolean"
+                },
                 "implements": {
                     "description": "An element in another schema which this element conforms to. The referenced element is not imported into the schema for the implementing element. However, the referenced schema may be used to check conformance of the implementing element.",
                     "items": {
@@ -2867,8 +2901,8 @@
                     "type": "string"
                 },
                 "value": {
-                    "description": "the actual annotation",
-                    "type": "string"
+                    "$ref": "#/$defs/AnyValue",
+                    "description": "the actual annotation"
                 }
             },
             "required": [
@@ -2894,8 +2928,8 @@
                     "type": "string"
                 },
                 "value": {
-                    "description": "the actual annotation",
-                    "type": "string"
+                    "$ref": "#/$defs/AnyValue",
+                    "description": "the actual annotation"
                 }
             },
             "required": [
@@ -4211,7 +4245,8 @@
                 "CODE",
                 "CURIE",
                 "URI",
-                "FHIR_CODING"
+                "FHIR_CODING",
+                "LABEL"
             ],
             "title": "PvFormulaOptions",
             "type": "string"
@@ -4457,6 +4492,10 @@
                         "type": "string"
                     },
                     "type": "array"
+                },
+                "id_prefixes_are_closed": {
+                    "description": "If true, then the id_prefixes slot is treated as being closed, and any use of an id that does not have this prefix is considered a violation.",
+                    "type": "boolean"
                 },
                 "implements": {
                     "description": "An element in another schema which this element conforms to. The referenced element is not imported into the schema for the implementing element. However, the referenced schema may be used to check conformance of the implementing element.",
@@ -4971,6 +5010,10 @@
                     },
                     "type": "array"
                 },
+                "id_prefixes_are_closed": {
+                    "description": "If true, then the id_prefixes slot is treated as being closed, and any use of an id that does not have this prefix is considered a violation.",
+                    "type": "boolean"
+                },
                 "identifier": {
                     "description": "True means that the key slot(s) uniquely identifies the elements. There can be at most one identifier or key per container",
                     "type": "boolean"
@@ -5102,16 +5145,16 @@
                     "type": "integer"
                 },
                 "maximum_value": {
-                    "description": "for slots with ranges of type number, the value must be equal to or lowe than this",
-                    "type": "integer"
+                    "$ref": "#/$defs/Anything",
+                    "description": "For ordinal ranges, the value must be equal to or lower than this"
                 },
                 "minimum_cardinality": {
                     "description": "the minimum number of entries for a multivalued slot",
                     "type": "integer"
                 },
                 "minimum_value": {
-                    "description": "for slots with ranges of type number, the value must be equal to or higher than this",
-                    "type": "integer"
+                    "$ref": "#/$defs/Anything",
+                    "description": "For ordinal ranges, the value must be equal to or higher than this"
                 },
                 "mixin": {
                     "description": "Indicates the class or slot is intended to be inherited from without being an is_a parent. mixins should not be inherited from using is_a, except by other mixins.",
@@ -5552,6 +5595,10 @@
                     },
                     "type": "array"
                 },
+                "id_prefixes_are_closed": {
+                    "description": "If true, then the id_prefixes slot is treated as being closed, and any use of an id that does not have this prefix is considered a violation.",
+                    "type": "boolean"
+                },
                 "identifier": {
                     "description": "True means that the key slot(s) uniquely identifies the elements. There can be at most one identifier or key per container",
                     "type": "boolean"
@@ -5683,16 +5730,16 @@
                     "type": "integer"
                 },
                 "maximum_value": {
-                    "description": "for slots with ranges of type number, the value must be equal to or lowe than this",
-                    "type": "integer"
+                    "$ref": "#/$defs/Anything",
+                    "description": "For ordinal ranges, the value must be equal to or lower than this"
                 },
                 "minimum_cardinality": {
                     "description": "the minimum number of entries for a multivalued slot",
                     "type": "integer"
                 },
                 "minimum_value": {
-                    "description": "for slots with ranges of type number, the value must be equal to or higher than this",
-                    "type": "integer"
+                    "$ref": "#/$defs/Anything",
+                    "description": "For ordinal ranges, the value must be equal to or higher than this"
                 },
                 "mixin": {
                     "description": "Indicates the class or slot is intended to be inherited from without being an is_a parent. mixins should not be inherited from using is_a, except by other mixins.",
@@ -6263,6 +6310,10 @@
                     },
                     "type": "array"
                 },
+                "id_prefixes_are_closed": {
+                    "description": "If true, then the id_prefixes slot is treated as being closed, and any use of an id that does not have this prefix is considered a violation.",
+                    "type": "boolean"
+                },
                 "implements": {
                     "description": "An element in another schema which this element conforms to. The referenced element is not imported into the schema for the implementing element. However, the referenced schema may be used to check conformance of the implementing element.",
                     "items": {
@@ -6530,6 +6581,10 @@
                         "type": "string"
                     },
                     "type": "array"
+                },
+                "id_prefixes_are_closed": {
+                    "description": "If true, then the id_prefixes slot is treated as being closed, and any use of an id that does not have this prefix is considered a violation.",
+                    "type": "boolean"
                 },
                 "implements": {
                     "description": "An element in another schema which this element conforms to. The referenced element is not imported into the schema for the implementing element. However, the referenced schema may be used to check conformance of the implementing element.",
@@ -6837,6 +6892,10 @@
                     },
                     "type": "array"
                 },
+                "id_prefixes_are_closed": {
+                    "description": "If true, then the id_prefixes slot is treated as being closed, and any use of an id that does not have this prefix is considered a violation.",
+                    "type": "boolean"
+                },
                 "implements": {
                     "description": "An element in another schema which this element conforms to. The referenced element is not imported into the schema for the implementing element. However, the referenced schema may be used to check conformance of the implementing element.",
                     "items": {
@@ -6904,12 +6963,12 @@
                     "type": "array"
                 },
                 "maximum_value": {
-                    "description": "for slots with ranges of type number, the value must be equal to or lowe than this",
-                    "type": "integer"
+                    "$ref": "#/$defs/Anything",
+                    "description": "For ordinal ranges, the value must be equal to or lower than this"
                 },
                 "minimum_value": {
-                    "description": "for slots with ranges of type number, the value must be equal to or higher than this",
-                    "type": "integer"
+                    "$ref": "#/$defs/Anything",
+                    "description": "For ordinal ranges, the value must be equal to or higher than this"
                 },
                 "modified_by": {
                     "description": "agent that modified the element",
@@ -7195,6 +7254,10 @@
                     },
                     "type": "array"
                 },
+                "id_prefixes_are_closed": {
+                    "description": "If true, then the id_prefixes slot is treated as being closed, and any use of an id that does not have this prefix is considered a violation.",
+                    "type": "boolean"
+                },
                 "implements": {
                     "description": "An element in another schema which this element conforms to. The referenced element is not imported into the schema for the implementing element. However, the referenced schema may be used to check conformance of the implementing element.",
                     "items": {
@@ -7262,12 +7325,12 @@
                     "type": "array"
                 },
                 "maximum_value": {
-                    "description": "for slots with ranges of type number, the value must be equal to or lowe than this",
-                    "type": "integer"
+                    "$ref": "#/$defs/Anything",
+                    "description": "For ordinal ranges, the value must be equal to or lower than this"
                 },
                 "minimum_value": {
-                    "description": "for slots with ranges of type number, the value must be equal to or higher than this",
-                    "type": "integer"
+                    "$ref": "#/$defs/Anything",
+                    "description": "For ordinal ranges, the value must be equal to or higher than this"
                 },
                 "modified_by": {
                     "description": "agent that modified the element",
@@ -7853,10 +7916,10 @@
         },
         "UnitOfMeasure": {
             "additionalProperties": false,
-            "description": "A unit of measure, or unit, is a particular quantity value that has been chosen as a scale for measuring other quantities the same kind (more generally of equivalent dimension).",
+            "description": "A unit of measure, or unit, is a particular quantity value that has been chosen as a scale for  measuring other quantities the same kind (more generally of equivalent dimension).",
             "properties": {
                 "abbreviation": {
-                    "description": "An abbreviation for a unit is a short ASCII string that is used in place of the full name for the unit in contexts where non-ASCII characters would be problematic, or where using the abbreviation will enhance readability. When a power of a base unit needs to be expressed, such as squares this can be done using abbreviations rather than symbols (source: qudt)",
+                    "description": "An abbreviation for a unit is a short ASCII string that is used in place of the full name for the unit in  contexts where non-ASCII characters would be problematic, or where using the abbreviation will enhance  readability. When a power of a base unit needs to be expressed, such as squares this can be done using  abbreviations rather than symbols (source: qudt)",
                     "type": "string"
                 },
                 "derivation": {
@@ -7875,7 +7938,7 @@
                     "type": "array"
                 },
                 "has_quantity_kind": {
-                    "description": "Concept in a vocabulary or ontology that denotes the kind of quanity being measured, e.g. length",
+                    "description": "Concept in a vocabulary or ontology that denotes the kind of quantity being measured, e.g. length",
                     "type": "string"
                 },
                 "iec61360code": {
@@ -7895,7 +7958,7 @@
         }
     },
     "$id": "https://w3id.org/linkml/meta",
-    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$schema": "https://json-schema.org/draft/2019-09/schema",
     "additionalProperties": true,
     "description": "A collection of definitions that make up a schema or a data model.",
     "metamodel_version": "1.7.0",
@@ -8087,6 +8150,10 @@
                 "type": "string"
             },
             "type": "array"
+        },
+        "id_prefixes_are_closed": {
+            "description": "If true, then the id_prefixes slot is treated as being closed, and any use of an id that does not have this prefix is considered a violation.",
+            "type": "boolean"
         },
         "implements": {
             "description": "An element in another schema which this element conforms to. The referenced element is not imported into the schema for the implementing element. However, the referenced schema may be used to check conformance of the implementing element.",

@@ -14,7 +14,7 @@ LinkML is self-describing, and any LinkML schema is itself a collection instance
 
 ## Audience
 
-This document is intended for LinkML tool and framework implementors, and is intended to formally specify the structure and semantics of LinkML.
+This document is intended for LinkML tool and framework implementers, and is intended to formally specify the structure and semantics of LinkML.
 
 For a more lightweight introduction, consult the material on the main [LinkML site](https://linkml.io),
 including the LinkML tutorial.
