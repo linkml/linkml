@@ -418,7 +418,13 @@
 
 <div class="viewcode-block" id="isabsent_match"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.ifabsent_functions.isabsent_match">[docs]</a><span class="k">def</span> <span class="nf">isabsent_match</span><span class="p">(</span>
     <span class="n">txt</span><span class="p">:</span> <span class="n">Text</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Match</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Match</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">SchemaLoader</span><span class="p">,</span> <span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">SlotDefinition</span><span class="p">],</span> <span class="nb">str</span><span class="p">],]]:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span>
+    <span class="n">Tuple</span><span class="p">[</span>
+        <span class="n">Match</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="nb">bool</span><span class="p">,</span>
+        <span class="n">Callable</span><span class="p">[[</span><span class="n">Match</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">SchemaLoader</span><span class="p">,</span> <span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">SlotDefinition</span><span class="p">],</span> <span class="nb">str</span><span class="p">],</span>
+    <span class="p">]</span>
+<span class="p">]:</span>
     <span class="n">txt</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">txt</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">pattern</span><span class="p">,</span> <span class="n">postinit</span><span class="p">,</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">default_library</span><span class="p">:</span>
         <span class="n">m</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">pattern</span> <span class="o">+</span> <span class="s2">&quot;$&quot;</span><span class="p">,</span> <span class="n">txt</span><span class="p">)</span>
