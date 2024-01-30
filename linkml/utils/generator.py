@@ -14,6 +14,7 @@ New generators should always using the latter approach
 See: https://github.com/linkml/linkml/issues/923
 
 """
+
 import abc
 import logging
 import os
@@ -453,9 +454,11 @@ class Generator(metaclass=abc.ABCMeta):
         return (
             None
             if element.is_a is None
-            else self.schema.classes[element.is_a]
-            if isinstance(element, ClassDefinition)
-            else self.schema.slots[element.is_a]
+            else (
+                self.schema.classes[element.is_a]
+                if isinstance(element, ClassDefinition)
+                else self.schema.slots[element.is_a]
+            )
         )
 
     def ancestors(self, element: Union[ClassDefinition, SlotDefinition]) -> List[ElementName]:

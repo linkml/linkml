@@ -2,6 +2,7 @@
 Generate JSON-LD contexts
 
 """
+
 import os
 import re
 from dataclasses import dataclass, field

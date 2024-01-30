@@ -29,7 +29,7 @@ class Validator:
         schema: Union[str, dict, TextIO, Path, SchemaDefinition],
         validation_plugins: Optional[List[ValidationPlugin]] = None,
         *,
-        strict: bool = False
+        strict: bool = False,
     ) -> None:
         if isinstance(schema, Path):
             schema = str(schema)

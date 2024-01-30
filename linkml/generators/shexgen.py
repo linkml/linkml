@@ -1,6 +1,7 @@
 """Generate ShEx definition of a model
 
 """
+
 import os
 import urllib.parse as urlparse
 from dataclasses import dataclass, field

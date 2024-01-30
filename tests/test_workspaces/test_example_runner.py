@@ -5,6 +5,7 @@ Test example runner using a simulated setup.
  - input/examples
  - input/counter_examples
 """
+
 import pytest
 from linkml_runtime import SchemaView
 from prefixmaps.io.parser import load_multi_context

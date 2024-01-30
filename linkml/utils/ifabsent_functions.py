@@ -113,7 +113,13 @@ default_library: List[
 
 def isabsent_match(
     txt: Text,
-) -> Optional[Tuple[Match[str], bool, Callable[[Match[str], SchemaLoader, ClassDefinition, SlotDefinition], str],]]:
+) -> Optional[
+    Tuple[
+        Match[str],
+        bool,
+        Callable[[Match[str], SchemaLoader, ClassDefinition, SlotDefinition], str],
+    ]
+]:
     txt = str(txt)
     for pattern, postinit, f in default_library:
         m = re.match(pattern + "$", txt)

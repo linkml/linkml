@@ -12,6 +12,7 @@ of constraints in both classes hold.
 These logical constraints are then simplified by translating to disjunctive normal form,
 and applying simplification rules.
 """
+
 import logging
 from copy import deepcopy
 from dataclasses import dataclass

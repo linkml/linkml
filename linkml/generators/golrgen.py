@@ -6,6 +6,7 @@ These can be converted to solr schema-xml, and used in amigo-bbop tools
 See the golr-views directory in this repo for examples
 
 """
+
 import os
 from dataclasses import dataclass
 from typing import List, Optional

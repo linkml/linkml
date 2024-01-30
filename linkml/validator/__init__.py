@@ -3,6 +3,7 @@ The ``linkml.validator`` package contains a new LinkML validation framework that
 than the ``linkml.validators`` package. While that package still exists, it may become deprecated
 in the future.
 """
+
 import os
 from pathlib import Path
 from typing import Any, Optional, Union

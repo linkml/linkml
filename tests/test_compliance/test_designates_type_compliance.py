@@ -44,7 +44,7 @@ def test_designates_type(framework, description, type_range, object, is_valid, o
     """
     Tests behavior of designates_type.
 
-    This creates a schema consisting of a *constainer* class that has a multivalued slot *entities*,
+    This creates a schema consisting of a *container* class that has a multivalued slot *entities*,
     with a range of C1. C1 has a slot *type* that designates the type of the entity.  C1a and C1b
     are subclasses of C1.
 
@@ -80,9 +80,11 @@ def test_designates_type(framework, description, type_range, object, is_valid, o
                     "designates_type": True,
                     "range": type_range,
                     "_mappings": {
-                        PYDANTIC: f'{SLOT_TYPE}: Literal["{CLASS_C1}"] = Field("{CLASS_C1}")'
-                        if type_range == "string"
-                        else "",
+                        PYDANTIC: (
+                            f'{SLOT_TYPE}: Literal["{CLASS_C1}"] = Field("{CLASS_C1}")'
+                            if type_range == "string"
+                            else ""
+                        ),
                     },
                 },
             },

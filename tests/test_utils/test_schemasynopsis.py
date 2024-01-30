@@ -1,4 +1,5 @@
 """ Tests for various parts of the schema synopsis file """
+
 from pathlib import Path
 from typing import Union
 

@@ -1,4 +1,5 @@
 """Constants for compliance tests. See README.md for more information."""
+
 from tests.test_compliance.helper import (
     JAVA,
     JSON_SCHEMA,
