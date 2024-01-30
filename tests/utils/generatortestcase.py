@@ -35,7 +35,7 @@ class GeneratorTestCase(TestEnvironmentTestCase):
         filtr: Optional[Callable[[str], str]] = None,
         comparator: Callable[[str, str], str] = None,
         output_name: Optional[str] = None,
-        yaml_file: Optional[str] = None
+        yaml_file: Optional[str] = None,
     ) -> None:
         """Invoke generator specified in gen
 
@@ -78,7 +78,7 @@ class GeneratorTestCase(TestEnvironmentTestCase):
         subdir: Optional[str] = None,
         generator_args: Optional[dict] = None,
         serialize_args: Optional[dict] = None,
-        input_file: Optional[str] = None
+        input_file: Optional[str] = None,
     ) -> None:
         """
         Generate an output directory using the appropriate command and then compare the target with the source

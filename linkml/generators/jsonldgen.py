@@ -1,6 +1,7 @@
 """ Generate JSONld
 
 """
+
 import os
 from copy import deepcopy
 from dataclasses import dataclass
@@ -99,13 +100,15 @@ class JSONLDGenerator(Generator):
             return (
                 ClassDefinitionName(camelcase(node))
                 if node in self.schema.classes
-                else SlotDefinitionName(underscore(node))
-                if node in self.schema.slots
-                else SubsetDefinitionName(camelcase(node))
-                if node in self.schema.subsets
-                else TypeDefinitionName(underscore(node))
-                if node in self.schema.types
-                else None
+                else (
+                    SlotDefinitionName(underscore(node))
+                    if node in self.schema.slots
+                    else (
+                        SubsetDefinitionName(camelcase(node))
+                        if node in self.schema.subsets
+                        else TypeDefinitionName(underscore(node)) if node in self.schema.types else None
+                    )
+                )
             )
         return None
 

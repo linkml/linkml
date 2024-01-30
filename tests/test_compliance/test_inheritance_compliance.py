@@ -1,4 +1,5 @@
 """Tests involving inheritance (is_a) and related constructs."""
+
 import pytest
 
 from tests.test_compliance.helper import (

@@ -1,6 +1,7 @@
 """
 Generate CSVs
 """
+
 import os
 import sys
 from csv import DictWriter

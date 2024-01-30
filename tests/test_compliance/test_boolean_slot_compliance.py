@@ -1,4 +1,5 @@
 """Constants for boolean slots tests (any_of, all_of, etc)."""
+
 from typing import Optional
 
 import pytest
@@ -1391,9 +1392,9 @@ def test_min_max(framework, min_val, max_val, equals_number: Optional[int], valu
                     "maximum_value": max_val,
                     "equals_number": equals_number,
                     "_mappings": {
-                        PYDANTIC: f"{SLOT_S1}: int = Field(..., ge={min_val}, le={max_val})"
-                        if not equals_number
-                        else ""
+                        PYDANTIC: (
+                            f"{SLOT_S1}: int = Field(..., ge={min_val}, le={max_val})" if not equals_number else ""
+                        )
                     },
                 },
             },

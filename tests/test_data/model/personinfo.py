@@ -134,9 +134,9 @@ class Person(NamedThing):
     age_in_years: Optional[int] = None
     gender: Optional[Union[str, "GenderType"]] = None
     current_address: Optional[Union[dict, "Address"]] = None
-    has_employment_history: Optional[
-        Union[Union[dict, "EmploymentEvent"], List[Union[dict, "EmploymentEvent"]]]
-    ] = empty_list()
+    has_employment_history: Optional[Union[Union[dict, "EmploymentEvent"], List[Union[dict, "EmploymentEvent"]]]] = (
+        empty_list()
+    )
     has_familial_relationships: Optional[
         Union[
             Union[dict, "FamilialRelationship"],

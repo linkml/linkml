@@ -3,6 +3,7 @@
 Note these tests differ from other compliance tests in that
 there is no instance data to test.
 """
+
 from copy import copy
 from typing import Any, Dict, Optional
 

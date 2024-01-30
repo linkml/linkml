@@ -120,13 +120,11 @@ class SchemaSynopsis:
         self.add_ref(
             SlotType,
             k,
-            ClassType
-            if v.range in self.schema.classes
-            else EnumType
-            if v.range in self.schema.enums
-            else TypeType
-            if v.range in self.schema.types
-            else None,
+            (
+                ClassType
+                if v.range in self.schema.classes
+                else EnumType if v.range in self.schema.enums else TypeType if v.range in self.schema.types else None
+            ),
             v.range,
         )
 

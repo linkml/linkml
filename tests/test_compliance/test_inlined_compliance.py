@@ -4,6 +4,7 @@ Tests that make use of linkml:inlined and related constructs.
 
 - TODO: dict normalization, SimpleDicts and CompactDicts
 """
+
 import pytest
 
 from tests.test_compliance.helper import (

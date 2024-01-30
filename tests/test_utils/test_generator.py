@@ -13,6 +13,7 @@ https://stackoverflow.com/questions/52099029/change-in-behaviour-of-dataclasses
 If these tests are reinstated then it will be necessary to create distinct subClasses of TestGenerator
 
 """
+
 import logging
 import os
 from dataclasses import dataclass, field

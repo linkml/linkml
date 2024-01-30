@@ -3,6 +3,7 @@ Tests generation of markdown and similar documents
 
 Note that docgen replaces markdowngen
 """
+
 import logging
 import os
 from collections import Counter

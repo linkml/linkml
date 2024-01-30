@@ -1,4 +1,5 @@
 """Generate OWL ontology representation of a LinkML schema."""
+
 import logging
 import os
 from collections import defaultdict

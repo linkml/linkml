@@ -1,4 +1,5 @@
 """DEPRECATED: Use SQLTableGenerator instead"""
+
 import logging
 import os
 from contextlib import redirect_stdout

@@ -1,4 +1,5 @@
 """ Metadata filters for test cases -- various tools to remove metadata from output """
+
 import re
 
 from jsonasobj2 import as_json, loads

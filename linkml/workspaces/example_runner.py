@@ -1,6 +1,7 @@
 """Iterate through all examples in a folder testing them for validity.
 
 """
+
 import glob
 import json
 import logging

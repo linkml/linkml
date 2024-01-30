@@ -1,4 +1,5 @@
 """Compliance tests for core constructs."""
+
 import unicodedata
 
 import pytest

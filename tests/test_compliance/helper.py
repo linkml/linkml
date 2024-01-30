@@ -1,4 +1,5 @@
 """Helper for compliance tests. See README.md for more information."""
+
 import csv
 import enum
 import json

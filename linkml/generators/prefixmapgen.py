@@ -2,6 +2,7 @@
 Generate JSON-LD contexts
 
 """
+
 import csv
 import os
 from dataclasses import dataclass, field

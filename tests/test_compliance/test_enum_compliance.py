@@ -3,6 +3,7 @@ Tests for enum compliance.
 
  - TODO: dynamic enums
 """
+
 import re
 from copy import deepcopy
 
