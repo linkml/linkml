@@ -8,6 +8,21 @@
     {%- endif -%}
 {%- endif -%}
 
+{% macro compute_range(slot) -%}
+    {%- if slot.any_of -%}
+        {%- for subslot in slot.any_of -%}
+            {%- if subslot.range -%}
+                {{ gen.link(subslot.range) }}
+                {%- if not loop.last -%}
+                    &nbsp;∪&nbsp;
+                {%- endif -%}
+            {%- endif -%}
+        {%- endfor -%}
+    {%- else -%}
+        {{ gen.link(slot.range) }}
+    {%- endif -%}
+{% endmacro %}
+
 # Slot: {{ title }}
 
 {%- if header -%}
@@ -58,7 +73,7 @@ URI: {{ gen.uri_link(element) }}
 
 ## Properties
 
-* Range: {{gen.link(element.range)}}
+* Range: {{ compute_range(element) }}
 {% if element.multivalued %}
 * Multivalued: {{ element.multivalued }}
 {% endif -%}
