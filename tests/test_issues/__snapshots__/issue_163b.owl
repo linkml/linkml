@@ -21,13 +21,13 @@ ex:D1 a owl:Class,
         linkml:ClassDefinition ;
     rdfs:label "d1" ;
     rdfs:subClassOf [ a owl:Restriction ;
-            owl:minCardinality 0 ;
-            owl:onProperty ex:has_c ],
-        [ a owl:Restriction ;
             owl:allValuesFrom ex:C ;
             owl:onProperty ex:has_c ],
         [ a owl:Restriction ;
             owl:maxCardinality 1 ;
+            owl:onProperty ex:has_c ],
+        [ a owl:Restriction ;
+            owl:minCardinality 0 ;
             owl:onProperty ex:has_c ],
         ex:C ;
     skos:inScheme <http://example.org/sample/example1> .
@@ -42,7 +42,10 @@ ex:A a owl:Class,
             owl:minCardinality 0 ;
             owl:onProperty ex:name ],
         [ a owl:Restriction ;
-            owl:maxCardinality 1 ;
+            owl:minCardinality 0 ;
+            owl:onProperty ex:unit ],
+        [ a owl:Restriction ;
+            owl:allValuesFrom linkml:String ;
             owl:onProperty ex:id ],
         [ a owl:Restriction ;
             owl:allValuesFrom ex:unitcode ;
@@ -51,29 +54,26 @@ ex:A a owl:Class,
             owl:maxCardinality 1 ;
             owl:onProperty ex:name ],
         [ a owl:Restriction ;
-            owl:allValuesFrom linkml:String ;
-            owl:onProperty ex:name ],
-        [ a owl:Restriction ;
-            owl:allValuesFrom linkml:Integer ;
-            owl:onProperty ex:len ],
-        [ a owl:Restriction ;
             owl:minCardinality 0 ;
-            owl:onProperty ex:unit ],
-        [ a owl:Restriction ;
-            owl:maxCardinality 1 ;
             owl:onProperty ex:len ],
-        [ a owl:Restriction ;
-            owl:allValuesFrom linkml:String ;
-            owl:onProperty ex:id ],
-        [ a owl:Restriction ;
-            owl:maxCardinality 1 ;
-            owl:onProperty ex:unit ],
         [ a owl:Restriction ;
             owl:minCardinality 1 ;
             owl:onProperty ex:id ],
         [ a owl:Restriction ;
-            owl:minCardinality 0 ;
-            owl:onProperty ex:len ] ;
+            owl:maxCardinality 1 ;
+            owl:onProperty ex:id ],
+        [ a owl:Restriction ;
+            owl:maxCardinality 1 ;
+            owl:onProperty ex:len ],
+        [ a owl:Restriction ;
+            owl:allValuesFrom linkml:Integer ;
+            owl:onProperty ex:len ],
+        [ a owl:Restriction ;
+            owl:maxCardinality 1 ;
+            owl:onProperty ex:unit ],
+        [ a owl:Restriction ;
+            owl:allValuesFrom linkml:String ;
+            owl:onProperty ex:name ] ;
     skos:inScheme <http://example.org/sample/example1> .
 
 ex:B a owl:Class,

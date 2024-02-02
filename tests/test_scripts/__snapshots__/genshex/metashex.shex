@@ -102,7 +102,8 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           <code_set_tag> @<String> ? ;
           <code_set_version> @<String> ? ;
           <pv_formula> [ <https://w3id.org/linkml/PvFormulaOptions#CODE> <https://w3id.org/linkml/PvFormulaOptions#CURIE>
-             <https://w3id.org/linkml/PvFormulaOptions#URI> <https://w3id.org/linkml/PvFormulaOptions#FHIR_CODING> ] ? ;
+             <https://w3id.org/linkml/PvFormulaOptions#URI> <https://w3id.org/linkml/PvFormulaOptions#FHIR_CODING>
+             <https://w3id.org/linkml/PvFormulaOptions#LABEL> ] ? ;
           <permissible_values> @<PermissibleValue> * ;
           <include> @<AnonymousEnumExpression> * ;
           <minus> @<AnonymousEnumExpression> * ;
@@ -180,8 +181,8 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           <recommended> @<Boolean> ? ;
           <inlined> @<Boolean> ? ;
           <inlined_as_list> @<Boolean> ? ;
-          <minimum_value> @<Integer> ? ;
-          <maximum_value> @<Integer> ? ;
+          <minimum_value> @<Anything> ? ;
+          <maximum_value> @<Anything> ? ;
           <pattern> @<String> ? ;
           <structured_pattern> @<PatternExpression> ? ;
           qudt:unit @<UnitOfMeasure> ? ;
@@ -215,8 +216,8 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           <equals_string> @<String> ? ;
           <equals_string_in> @<String> * ;
           <equals_number> @<Integer> ? ;
-          <minimum_value> @<Integer> ? ;
-          <maximum_value> @<Integer> ? ;
+          <minimum_value> @<Anything> ? ;
+          <maximum_value> @<Anything> ? ;
           <none_of> @<AnonymousTypeExpression> * ;
           <exactly_one_of> @<AnonymousTypeExpression> * ;
           <any_of> @<AnonymousTypeExpression> * ;
@@ -413,6 +414,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           &<CommonMetadata_tes> ;
           rdf:type [ <CommonMetadata> ] ? ;
           <id_prefixes> @<Ncname> * ;
+          <id_prefixes_are_closed> @<Boolean> ? ;
           <definition_uri> @<Uriorcurie> ? ;
           <local_names> @<LocalName> * ;
           dcterms:conformsTo @<String> ? ;
@@ -468,7 +470,8 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           <code_set_tag> @<String> ? ;
           <code_set_version> @<String> ? ;
           <pv_formula> [ <https://w3id.org/linkml/PvFormulaOptions#CODE> <https://w3id.org/linkml/PvFormulaOptions#CURIE>
-             <https://w3id.org/linkml/PvFormulaOptions#URI> <https://w3id.org/linkml/PvFormulaOptions#FHIR_CODING> ] ? ;
+             <https://w3id.org/linkml/PvFormulaOptions#URI> <https://w3id.org/linkml/PvFormulaOptions#FHIR_CODING>
+             <https://w3id.org/linkml/PvFormulaOptions#LABEL> ] ? ;
           <permissible_values> @<PermissibleValue> * ;
           <include> @<AnonymousEnumExpression> * ;
           <minus> @<AnonymousEnumExpression> * ;
@@ -488,7 +491,8 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           <code_set_tag> @<String> ? ;
           <code_set_version> @<String> ? ;
           <pv_formula> [ <https://w3id.org/linkml/PvFormulaOptions#CODE> <https://w3id.org/linkml/PvFormulaOptions#CURIE>
-             <https://w3id.org/linkml/PvFormulaOptions#URI> <https://w3id.org/linkml/PvFormulaOptions#FHIR_CODING> ] ? ;
+             <https://w3id.org/linkml/PvFormulaOptions#URI> <https://w3id.org/linkml/PvFormulaOptions#FHIR_CODING>
+             <https://w3id.org/linkml/PvFormulaOptions#LABEL> ] ? ;
           <permissible_values> @<PermissibleValue> * ;
           <include> @<AnonymousEnumExpression> * ;
           <minus> @<AnonymousEnumExpression> * ;
@@ -869,8 +873,8 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           <recommended> @<Boolean> ? ;
           <inlined> @<Boolean> ? ;
           <inlined_as_list> @<Boolean> ? ;
-          <minimum_value> @<Integer> ? ;
-          <maximum_value> @<Integer> ? ;
+          <minimum_value> @<Anything> ? ;
+          <maximum_value> @<Anything> ? ;
           <pattern> @<String> ? ;
           <structured_pattern> @<PatternExpression> ? ;
           qudt:unit @<UnitOfMeasure> ? ;
@@ -904,8 +908,8 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           <recommended> @<Boolean> ? ;
           <inlined> @<Boolean> ? ;
           <inlined_as_list> @<Boolean> ? ;
-          <minimum_value> @<Integer> ? ;
-          <maximum_value> @<Integer> ? ;
+          <minimum_value> @<Anything> ? ;
+          <maximum_value> @<Anything> ? ;
           <pattern> @<String> ? ;
           <structured_pattern> @<PatternExpression> ? ;
           qudt:unit @<UnitOfMeasure> ? ;
@@ -1005,8 +1009,8 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           <equals_string> @<String> ? ;
           <equals_string_in> @<String> * ;
           <equals_number> @<Integer> ? ;
-          <minimum_value> @<Integer> ? ;
-          <maximum_value> @<Integer> ? ;
+          <minimum_value> @<Anything> ? ;
+          <maximum_value> @<Anything> ? ;
           <none_of> @<AnonymousTypeExpression> * ;
           <exactly_one_of> @<AnonymousTypeExpression> * ;
           <any_of> @<AnonymousTypeExpression> * ;
@@ -1026,8 +1030,8 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           <equals_string> @<String> ? ;
           <equals_string_in> @<String> * ;
           <equals_number> @<Integer> ? ;
-          <minimum_value> @<Integer> ? ;
-          <maximum_value> @<Integer> ? ;
+          <minimum_value> @<Anything> ? ;
+          <maximum_value> @<Anything> ? ;
           <none_of> @<AnonymousTypeExpression> * ;
           <exactly_one_of> @<AnonymousTypeExpression> * ;
           <any_of> @<AnonymousTypeExpression> * ;

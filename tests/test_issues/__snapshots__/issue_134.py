@@ -36,7 +36,7 @@ DEFAULT_ = CurieNamespace('', 'http://example.org/sample/example1/')
 
 # Types
 class String(str):
-    type_class_uri = XSD.string
+    type_class_uri = XSD["string"]
     type_class_curie = "xsd:string"
     type_name = "string"
     type_model_uri = URIRef("http://example.org/sample/example1/String")

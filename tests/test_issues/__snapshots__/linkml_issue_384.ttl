@@ -1,6 +1,6 @@
 @prefix dcterms: <http://purl.org/dc/terms/> .
 @prefix linkml: <https://w3id.org/linkml/> .
-@prefix schema: <http://schema.org/> .
+@prefix schema1: <http://schema.org/> .
 @prefix sh: <http://www.w3.org/ns/shacl#> .
 @prefix shex: <http://www.w3.org/ns/shex#> .
 @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
@@ -8,12 +8,12 @@
 
 <https://w3id.org/linkml/examples/personinfo/personinfo> a linkml:SchemaDefinition ;
     dcterms:license "https://creativecommons.org/publicdomain/zero/1.0/" ;
-    sh:declare [ sh:namespace schema: ;
+    sh:declare [ sh:namespace linkml: ;
+            sh:prefix "linkml" ],
+        [ sh:namespace schema1: ;
             sh:prefix "sdo" ],
         [ sh:namespace <https://w3id.org/linkml/examples/personinfo/> ;
-            sh:prefix "ex" ],
-        [ sh:namespace linkml: ;
-            sh:prefix "linkml" ] ;
+            sh:prefix "ex" ] ;
     linkml:classes <https://w3id.org/linkml/examples/personinfo/GeoAge>,
         <https://w3id.org/linkml/examples/personinfo/GeoObject>,
         <https://w3id.org/linkml/examples/personinfo/Organization>,
@@ -64,7 +64,7 @@
 <https://w3id.org/linkml/examples/personinfo/boolean> a linkml:TypeDefinition ;
     skos:definition "A binary (true or false) value" ;
     skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"boolean\"." ;
-    skos:exactMatch schema:Boolean ;
+    skos:exactMatch schema1:Boolean ;
     skos:inScheme linkml:types ;
     linkml:base "Bool" ;
     linkml:definition_uri linkml:Boolean ;
@@ -89,7 +89,7 @@
     skos:definition "a date (year, month and day) in an idealized calendar" ;
     skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"date\".",
         "URI is dateTime because OWL reasoners don't work with straight date or time" ;
-    skos:exactMatch schema:Date ;
+    skos:exactMatch schema1:Date ;
     skos:inScheme linkml:types ;
     linkml:base "XSDDate" ;
     linkml:definition_uri linkml:Date ;
@@ -110,7 +110,7 @@
 <https://w3id.org/linkml/examples/personinfo/datetime> a linkml:TypeDefinition ;
     skos:definition "The combination of a date and time" ;
     skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"datetime\"." ;
-    skos:exactMatch schema:DateTime ;
+    skos:exactMatch schema1:DateTime ;
     skos:inScheme linkml:types ;
     linkml:base "XSDDateTime" ;
     linkml:definition_uri linkml:Datetime ;
@@ -119,7 +119,7 @@
     linkml:uri xsd:dateTime .
 
 <https://w3id.org/linkml/examples/personinfo/decimal> a linkml:TypeDefinition ;
-    skos:broadMatch schema:Number ;
+    skos:broadMatch schema1:Number ;
     skos:definition "A real number with arbitrary precision that conforms to the xsd:decimal specification" ;
     skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"decimal\"." ;
     skos:inScheme linkml:types ;
@@ -129,7 +129,7 @@
     linkml:uri xsd:decimal .
 
 <https://w3id.org/linkml/examples/personinfo/double> a linkml:TypeDefinition ;
-    skos:closeMatch schema:Float ;
+    skos:closeMatch schema1:Float ;
     skos:definition "A real number that conforms to the xsd:double specification" ;
     skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"double\"." ;
     skos:inScheme linkml:types ;
@@ -206,7 +206,7 @@
     skos:definition "A time object represents a (local) time of day, independent of any particular day" ;
     skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"time\".",
         "URI is dateTime because OWL reasoners do not work with straight date or time" ;
-    skos:exactMatch schema:Time ;
+    skos:exactMatch schema1:Time ;
     skos:inScheme linkml:types ;
     linkml:base "XSDTime" ;
     linkml:definition_uri linkml:Time ;
@@ -216,7 +216,7 @@
 
 <https://w3id.org/linkml/examples/personinfo/uri> a linkml:TypeDefinition ;
     dcterms:conformsTo "https://www.ietf.org/rfc/rfc3987.txt" ;
-    skos:closeMatch schema:URL ;
+    skos:closeMatch schema1:URL ;
     skos:definition "a complete URI" ;
     skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"uri\"." ;
     skos:inScheme linkml:types ;
@@ -353,7 +353,7 @@
 <https://w3id.org/linkml/examples/personinfo/float> a linkml:TypeDefinition ;
     skos:definition "A real number that conforms to the xsd:float specification" ;
     skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"float\"." ;
-    skos:exactMatch schema:Float ;
+    skos:exactMatch schema1:Float ;
     skos:inScheme linkml:types ;
     linkml:base "float" ;
     linkml:definition_uri linkml:Float ;
@@ -363,7 +363,7 @@
 <https://w3id.org/linkml/examples/personinfo/integer> a linkml:TypeDefinition ;
     skos:definition "An integer" ;
     skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"integer\"." ;
-    skos:exactMatch schema:Integer ;
+    skos:exactMatch schema1:Integer ;
     skos:inScheme linkml:types ;
     linkml:base "int" ;
     linkml:definition_uri linkml:Integer ;
@@ -431,7 +431,7 @@
 <https://w3id.org/linkml/examples/personinfo/string> a linkml:TypeDefinition ;
     skos:definition "A character string" ;
     skos:editorialNote "In RDF serializations, a slot with range of string is treated as a literal or type xsd:string.   If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"string\"." ;
-    skos:exactMatch schema:Text ;
+    skos:exactMatch schema1:Text ;
     skos:inScheme linkml:types ;
     linkml:base "str" ;
     linkml:definition_uri linkml:String ;
@@ -462,7 +462,7 @@
     linkml:attributes <https://w3id.org/linkml/examples/personinfo/age>,
         <https://w3id.org/linkml/examples/personinfo/aliases>,
         <https://w3id.org/linkml/examples/personinfo/phone> ;
-    linkml:class_uri schema:Person ;
+    linkml:class_uri schema1:Person ;
     linkml:definition_uri <https://w3id.org/linkml/examples/personinfo/Person> ;
     linkml:is_a <https://w3id.org/linkml/examples/personinfo/Thing> ;
     linkml:slot_usage [ ] ;

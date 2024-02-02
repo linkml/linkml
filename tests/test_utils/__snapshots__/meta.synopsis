@@ -1,6 +1,6 @@
 
 Classes: 41
-	Referenced by: 24 classes, 223 slots, 0 types, 0 enums 
+	Referenced by: 24 classes, 224 slots, 0 types, 0 enums 
 	Root: 27
 	Leaf: 35
 	Standalone: 40
@@ -9,11 +9,11 @@ Classes: 41
 		enum_expression
 	Abstract: 5
 
-Slots: 254
+Slots: 255
 	Referenced by: 37 classes, 61 slots, 0 types, 0 enums 
-	Root: 193
-	Leaf: 227
-	Standalone: 254
+	Root: 194
+	Leaf: 228
+	Standalone: 255
 	Declared mixin: 0
 	Undeclared mixin: 0
 	Abstract: 8
@@ -37,16 +37,16 @@ Slots: 254
 	Domain unspecified: 48
 	Ranges:
 		Type:
-			boolean: 40
+			boolean: 41
 			datetime: 4
-			integer: 8
+			integer: 6
 			ncname: 7
 			string: 53
 			uri: 3
 			uriorcurie: 38
 		Class:
 			AnyValue: 1
-			Anything: 1
+			Anything: 3
 			UnitOfMeasure: 1
 			alt_description: 1
 			annotation: 1
@@ -84,7 +84,7 @@ Slots: 254
 			relational_role_enum: 1
 
 Types: 19
-	Referenced by: 0 classes, 153 slots, 0 types, 0 enums 
+	Referenced by: 0 classes, 152 slots, 0 types, 0 enums 
 	Bases:
 		Bool:
 			boolean

@@ -93,7 +93,7 @@ class EnumerationTestCase(TestEnvironmentTestCase):
             'Slot: "classError1__slot_1" enumerations cannot be inlined',
         )
 
-        self._check_error("enum_error_7", "Unknown PvFormulaOptions enumeration code: LABEL")
+        self._check_error("enum_error_7", "Unknown PvFormulaOptions enumeration code: FOO")
 
     @unittest.skipIf(
         True,

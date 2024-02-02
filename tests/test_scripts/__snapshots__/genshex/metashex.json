@@ -371,7 +371,8 @@
                               "https://w3id.org/linkml/PvFormulaOptions#CODE",
                               "https://w3id.org/linkml/PvFormulaOptions#CURIE",
                               "https://w3id.org/linkml/PvFormulaOptions#URI",
-                              "https://w3id.org/linkml/PvFormulaOptions#FHIR_CODING"
+                              "https://w3id.org/linkml/PvFormulaOptions#FHIR_CODING",
+                              "https://w3id.org/linkml/PvFormulaOptions#LABEL"
                            ]
                         },
                         "min": 0,
@@ -857,14 +858,14 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/linkml/minimum_value",
-                        "valueExpr": "https://w3id.org/linkml/Integer",
+                        "valueExpr": "https://w3id.org/linkml/Anything",
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/linkml/maximum_value",
-                        "valueExpr": "https://w3id.org/linkml/Integer",
+                        "valueExpr": "https://w3id.org/linkml/Anything",
                         "min": 0,
                         "max": 1
                      },
@@ -1085,14 +1086,14 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/linkml/minimum_value",
-                        "valueExpr": "https://w3id.org/linkml/Integer",
+                        "valueExpr": "https://w3id.org/linkml/Anything",
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/linkml/maximum_value",
-                        "valueExpr": "https://w3id.org/linkml/Integer",
+                        "valueExpr": "https://w3id.org/linkml/Anything",
                         "min": 0,
                         "max": 1
                      },
@@ -2273,6 +2274,13 @@
                      },
                      {
                         "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/id_prefixes_are_closed",
+                        "valueExpr": "https://w3id.org/linkml/Boolean",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
                         "predicate": "https://w3id.org/linkml/definition_uri",
                         "valueExpr": "https://w3id.org/linkml/Uriorcurie",
                         "min": 0,
@@ -2639,7 +2647,8 @@
                               "https://w3id.org/linkml/PvFormulaOptions#CODE",
                               "https://w3id.org/linkml/PvFormulaOptions#CURIE",
                               "https://w3id.org/linkml/PvFormulaOptions#URI",
-                              "https://w3id.org/linkml/PvFormulaOptions#FHIR_CODING"
+                              "https://w3id.org/linkml/PvFormulaOptions#FHIR_CODING",
+                              "https://w3id.org/linkml/PvFormulaOptions#LABEL"
                            ]
                         },
                         "min": 0,
@@ -2763,7 +2772,8 @@
                               "https://w3id.org/linkml/PvFormulaOptions#CODE",
                               "https://w3id.org/linkml/PvFormulaOptions#CURIE",
                               "https://w3id.org/linkml/PvFormulaOptions#URI",
-                              "https://w3id.org/linkml/PvFormulaOptions#FHIR_CODING"
+                              "https://w3id.org/linkml/PvFormulaOptions#FHIR_CODING",
+                              "https://w3id.org/linkml/PvFormulaOptions#LABEL"
                            ]
                         },
                         "min": 0,
@@ -5153,14 +5163,14 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/linkml/minimum_value",
-                        "valueExpr": "https://w3id.org/linkml/Integer",
+                        "valueExpr": "https://w3id.org/linkml/Anything",
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/linkml/maximum_value",
-                        "valueExpr": "https://w3id.org/linkml/Integer",
+                        "valueExpr": "https://w3id.org/linkml/Anything",
                         "min": 0,
                         "max": 1
                      },
@@ -5381,14 +5391,14 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/linkml/minimum_value",
-                        "valueExpr": "https://w3id.org/linkml/Integer",
+                        "valueExpr": "https://w3id.org/linkml/Anything",
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/linkml/maximum_value",
-                        "valueExpr": "https://w3id.org/linkml/Integer",
+                        "valueExpr": "https://w3id.org/linkml/Anything",
                         "min": 0,
                         "max": 1
                      },
@@ -6037,14 +6047,14 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/linkml/minimum_value",
-                        "valueExpr": "https://w3id.org/linkml/Integer",
+                        "valueExpr": "https://w3id.org/linkml/Anything",
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/linkml/maximum_value",
-                        "valueExpr": "https://w3id.org/linkml/Integer",
+                        "valueExpr": "https://w3id.org/linkml/Anything",
                         "min": 0,
                         "max": 1
                      },
@@ -6167,14 +6177,14 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/linkml/minimum_value",
-                        "valueExpr": "https://w3id.org/linkml/Integer",
+                        "valueExpr": "https://w3id.org/linkml/Anything",
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/linkml/maximum_value",
-                        "valueExpr": "https://w3id.org/linkml/Integer",
+                        "valueExpr": "https://w3id.org/linkml/Anything",
                         "min": 0,
                         "max": 1
                      },

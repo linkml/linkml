@@ -43,6 +43,7 @@ class BiolinkNameSpace:
         CurieNamespace('IAO', 'http://purl.obolibrary.org/obo/IAO_'),
         CurieNamespace('NCIT', 'http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#'),
         CurieNamespace('OIO', 'http://www.geneontology.org/formats/oboInOwl#'),
+        CurieNamespace('SIO', 'http://semanticscience.org/resource/SIO_'),
         CurieNamespace('bibo', 'http://purl.org/ontology/bibo/'),
         CurieNamespace('cdisc', 'http://rdf.cdisc.org/mms#'),
         CurieNamespace('dcterms', 'http://purl.org/dc/terms/'),

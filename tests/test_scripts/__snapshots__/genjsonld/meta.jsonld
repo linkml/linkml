@@ -80,6 +80,10 @@
     {
       "prefix_prefix": "cdisc",
       "prefix_reference": "http://rdf.cdisc.org/mms#"
+    },
+    {
+      "prefix_prefix": "SIO",
+      "prefix_reference": "http://semanticscience.org/resource/SIO_"
     }
   ],
   "emit_prefixes": [
@@ -491,6 +495,10 @@
         {
           "text": "FHIR_CODING",
           "description": "The permissible values are the set of FHIR coding elements derived from the code set"
+        },
+        {
+          "text": "LABEL",
+          "description": "The permissible values are the set of human readable labels in the code set"
         }
       ]
     },
@@ -781,7 +789,6 @@
       ],
       "from_schema": "https://w3id.org/linkml/meta",
       "see_also": [
-        "https://github.com/linkml/linkml/issues/194",
         "https://github.com/linkml/linkml-model/issues/28"
       ],
       "domain": "Element",
@@ -792,6 +799,23 @@
         "Element"
       ],
       "range": "ncname",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "id_prefixes_are_closed",
+      "definition_uri": "https://w3id.org/linkml/id_prefixes_are_closed",
+      "description": "If true, then the id_prefixes slot is treated as being closed, and any use of an id that does not have this prefix is considered a violation.",
+      "from_schema": "https://w3id.org/linkml/meta",
+      "see_also": [
+        "https://github.com/linkml/linkml/issues/194"
+      ],
+      "domain": "Element",
+      "slot_uri": "https://w3id.org/linkml/id_prefixes_are_closed",
+      "owner": "Element",
+      "domain_of": [
+        "Element"
+      ],
+      "range": "boolean",
       "@type": "SlotDefinition"
     },
     {
@@ -3457,7 +3481,8 @@
       ],
       "from_schema": "https://w3id.org/linkml/meta",
       "see_also": [
-        "https://w3id.org/linkml/docs/specification/06mapping/#collection-forms"
+        "https://w3id.org/linkml/docs/specification/06mapping/#collection-forms",
+        "https://linkml.io/linkml/schemas/inlining.html"
       ],
       "rank": 25,
       "domain": "SlotDefinition",
@@ -3484,7 +3509,8 @@
       ],
       "from_schema": "https://w3id.org/linkml/meta",
       "see_also": [
-        "https://w3id.org/linkml/docs/specification/06mapping/#collection-forms"
+        "https://w3id.org/linkml/docs/specification/06mapping/#collection-forms",
+        "https://linkml.io/linkml/schemas/inlining.html"
       ],
       "rank": 27,
       "domain": "SlotDefinition",
@@ -3720,7 +3746,8 @@
       "description": "the class(es) that reference the slot in a \"slots\" or \"slot_usage\" context",
       "from_schema": "https://w3id.org/linkml/meta",
       "exact_mappings": [
-        "http://schema.org/domainIncludes"
+        "http://schema.org/domainIncludes",
+        "http://semanticscience.org/resource/SIO_000011"
       ],
       "domain": "SlotDefinition",
       "slot_uri": "https://w3id.org/linkml/domain_of",
@@ -4054,7 +4081,10 @@
     {
       "name": "minimum_value",
       "definition_uri": "https://w3id.org/linkml/minimum_value",
-      "description": "for slots with ranges of type number, the value must be equal to or higher than this",
+      "description": "For ordinal ranges, the value must be equal to or higher than this",
+      "notes": [
+        "Range to be refined to an \"Ordinal\" metaclass - see https://github.com/linkml/linkml/issues/1384#issuecomment-1892721142"
+      ],
       "in_subset": [
         "SpecificationSubset",
         "BasicSubset"
@@ -4071,13 +4101,17 @@
         "TypeExpression",
         "SlotExpression"
       ],
-      "range": "integer",
+      "range": "Anything",
+      "inlined": true,
       "@type": "SlotDefinition"
     },
     {
       "name": "maximum_value",
       "definition_uri": "https://w3id.org/linkml/maximum_value",
-      "description": "for slots with ranges of type number, the value must be equal to or lowe than this",
+      "description": "For ordinal ranges, the value must be equal to or lower than this",
+      "notes": [
+        "Range to be refined to an \"Ordinal\" metaclass - see https://github.com/linkml/linkml/issues/1384#issuecomment-1892721142"
+      ],
       "in_subset": [
         "SpecificationSubset",
         "BasicSubset"
@@ -4094,7 +4128,8 @@
         "TypeExpression",
         "SlotExpression"
       ],
-      "range": "integer",
+      "range": "Anything",
+      "inlined": true,
       "@type": "SlotDefinition"
     },
     {
@@ -6264,6 +6299,7 @@
       "slots": [
         "name",
         "id_prefixes",
+        "id_prefixes_are_closed",
         "definition_uri",
         "local_names",
         "conforms_to",
@@ -6341,6 +6377,7 @@
       "is_a": "Element",
       "slots": [
         "id_prefixes",
+        "id_prefixes_are_closed",
         "definition_uri",
         "local_names",
         "conforms_to",
@@ -6480,6 +6517,7 @@
       "slots": [
         "name",
         "id_prefixes",
+        "id_prefixes_are_closed",
         "definition_uri",
         "local_names",
         "conforms_to",
@@ -6557,6 +6595,7 @@
       "slots": [
         "name",
         "id_prefixes",
+        "id_prefixes_are_closed",
         "definition_uri",
         "local_names",
         "conforms_to",
@@ -6618,6 +6657,7 @@
       "slots": [
         "name",
         "id_prefixes",
+        "id_prefixes_are_closed",
         "definition_uri",
         "local_names",
         "conforms_to",
@@ -6732,9 +6772,12 @@
       "from_schema": "https://w3id.org/linkml/meta",
       "aliases": [
         "enum",
+        "enumeration",
+        "semantic enumeration",
         "value set",
         "term set",
         "concept set",
+        "code set",
         "Terminology Value Set",
         "answer list",
         "value domain"
@@ -6755,6 +6798,7 @@
       "slots": [
         "name",
         "id_prefixes",
+        "id_prefixes_are_closed",
         "definition_uri",
         "local_names",
         "conforms_to",
@@ -7184,6 +7228,7 @@
       "slots": [
         "name",
         "id_prefixes",
+        "id_prefixes_are_closed",
         "definition_uri",
         "local_names",
         "conforms_to",
@@ -7402,6 +7447,7 @@
       "slots": [
         "name",
         "id_prefixes",
+        "id_prefixes_are_closed",
         "definition_uri",
         "local_names",
         "conforms_to",

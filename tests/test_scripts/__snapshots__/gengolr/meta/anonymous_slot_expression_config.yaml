@@ -177,12 +177,10 @@ fields:
     key or identifier and whose value is the range instance.
   display_name: inlined_as_list
 - id: minimum_value
-  description: for slots with ranges of type number, the value must be equal to or
-    higher than this
+  description: For ordinal ranges, the value must be equal to or higher than this
   display_name: minimum_value
 - id: maximum_value
-  description: for slots with ranges of type number, the value must be equal to or
-    lowe than this
+  description: For ordinal ranges, the value must be equal to or lower than this
   display_name: maximum_value
 - id: pattern
   description: the string value of the slot must conform to this regular expression

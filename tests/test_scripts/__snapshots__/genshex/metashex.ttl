@@ -88,7 +88,7 @@
                 shex:min 0 ;
                 shex:predicate <https://w3id.org/linkml/pv_formula> ;
                 shex:valueExpr [ a shex:NodeConstraint ;
-                        shex:values ( <https://w3id.org/linkml/PvFormulaOptions#CODE> <https://w3id.org/linkml/PvFormulaOptions#CURIE> <https://w3id.org/linkml/PvFormulaOptions#URI> <https://w3id.org/linkml/PvFormulaOptions#FHIR_CODING> ) ] ] [ a shex:TripleConstraint ;
+                        shex:values ( <https://w3id.org/linkml/PvFormulaOptions#CODE> <https://w3id.org/linkml/PvFormulaOptions#CURIE> <https://w3id.org/linkml/PvFormulaOptions#URI> <https://w3id.org/linkml/PvFormulaOptions#FHIR_CODING> <https://w3id.org/linkml/PvFormulaOptions#LABEL> ) ] ] [ a shex:TripleConstraint ;
                 shex:max -1 ;
                 shex:min 0 ;
                 shex:predicate <https://w3id.org/linkml/permissible_values> ;
@@ -168,11 +168,11 @@
                 shex:max 1 ;
                 shex:min 0 ;
                 shex:predicate <https://w3id.org/linkml/minimum_value> ;
-                shex:valueExpr <https://w3id.org/linkml/Integer> ] [ a shex:TripleConstraint ;
+                shex:valueExpr <https://w3id.org/linkml/Anything> ] [ a shex:TripleConstraint ;
                 shex:max 1 ;
                 shex:min 0 ;
                 shex:predicate <https://w3id.org/linkml/maximum_value> ;
-                shex:valueExpr <https://w3id.org/linkml/Integer> ] [ a shex:TripleConstraint ;
+                shex:valueExpr <https://w3id.org/linkml/Anything> ] [ a shex:TripleConstraint ;
                 shex:max 1 ;
                 shex:min 0 ;
                 shex:predicate <https://w3id.org/linkml/pattern> ;
@@ -280,11 +280,11 @@
                 shex:max 1 ;
                 shex:min 0 ;
                 shex:predicate <https://w3id.org/linkml/minimum_value> ;
-                shex:valueExpr <https://w3id.org/linkml/Integer> ] [ a shex:TripleConstraint ;
+                shex:valueExpr <https://w3id.org/linkml/Anything> ] [ a shex:TripleConstraint ;
                 shex:max 1 ;
                 shex:min 0 ;
                 shex:predicate <https://w3id.org/linkml/maximum_value> ;
-                shex:valueExpr <https://w3id.org/linkml/Integer> ] [ a shex:TripleConstraint ;
+                shex:valueExpr <https://w3id.org/linkml/Anything> ] [ a shex:TripleConstraint ;
                 shex:max -1 ;
                 shex:min 0 ;
                 shex:predicate <https://w3id.org/linkml/none_of> ;
@@ -654,7 +654,7 @@
                 shex:min 0 ;
                 shex:predicate <https://w3id.org/linkml/pv_formula> ;
                 shex:valueExpr [ a shex:NodeConstraint ;
-                        shex:values ( <https://w3id.org/linkml/PvFormulaOptions#CODE> <https://w3id.org/linkml/PvFormulaOptions#CURIE> <https://w3id.org/linkml/PvFormulaOptions#URI> <https://w3id.org/linkml/PvFormulaOptions#FHIR_CODING> ) ] ] [ a shex:TripleConstraint ;
+                        shex:values ( <https://w3id.org/linkml/PvFormulaOptions#CODE> <https://w3id.org/linkml/PvFormulaOptions#CURIE> <https://w3id.org/linkml/PvFormulaOptions#URI> <https://w3id.org/linkml/PvFormulaOptions#FHIR_CODING> <https://w3id.org/linkml/PvFormulaOptions#LABEL> ) ] ] [ a shex:TripleConstraint ;
                 shex:max -1 ;
                 shex:min 0 ;
                 shex:predicate <https://w3id.org/linkml/permissible_values> ;
@@ -1775,11 +1775,11 @@
                 shex:max 1 ;
                 shex:min 0 ;
                 shex:predicate <https://w3id.org/linkml/minimum_value> ;
-                shex:valueExpr <https://w3id.org/linkml/Integer> ] [ a shex:TripleConstraint ;
+                shex:valueExpr <https://w3id.org/linkml/Anything> ] [ a shex:TripleConstraint ;
                 shex:max 1 ;
                 shex:min 0 ;
                 shex:predicate <https://w3id.org/linkml/maximum_value> ;
-                shex:valueExpr <https://w3id.org/linkml/Integer> ] [ a shex:TripleConstraint ;
+                shex:valueExpr <https://w3id.org/linkml/Anything> ] [ a shex:TripleConstraint ;
                 shex:max 1 ;
                 shex:min 0 ;
                 shex:predicate <https://w3id.org/linkml/pattern> ;
@@ -2092,11 +2092,11 @@
                 shex:max 1 ;
                 shex:min 0 ;
                 shex:predicate <https://w3id.org/linkml/minimum_value> ;
-                shex:valueExpr <https://w3id.org/linkml/Integer> ] [ a shex:TripleConstraint ;
+                shex:valueExpr <https://w3id.org/linkml/Anything> ] [ a shex:TripleConstraint ;
                 shex:max 1 ;
                 shex:min 0 ;
                 shex:predicate <https://w3id.org/linkml/maximum_value> ;
-                shex:valueExpr <https://w3id.org/linkml/Integer> ] [ a shex:TripleConstraint ;
+                shex:valueExpr <https://w3id.org/linkml/Anything> ] [ a shex:TripleConstraint ;
                 shex:max -1 ;
                 shex:min 0 ;
                 shex:predicate <https://w3id.org/linkml/none_of> ;
@@ -2320,15 +2320,6 @@
     shex:closed true ;
     shex:expression [ a shex:EachOf ;
             shex:expressions ( <https://w3id.org/linkml/AnyValue_tes> [ a shex:TripleConstraint ;
-                        shex:min 0 ;
-                        shex:predicate rdf:type ;
-                        shex:valueExpr [ a shex:NodeConstraint ;
-                                shex:values ( <https://w3id.org/linkml/Any> ) ] ] ) ] .
-
-<https://w3id.org/linkml/Anything> a shex:Shape ;
-    shex:closed true ;
-    shex:expression [ a shex:EachOf ;
-            shex:expressions ( <https://w3id.org/linkml/Anything_tes> [ a shex:TripleConstraint ;
                         shex:min 0 ;
                         shex:predicate rdf:type ;
                         shex:valueExpr [ a shex:NodeConstraint ;
@@ -2580,7 +2571,7 @@
                 shex:min 0 ;
                 shex:predicate <https://w3id.org/linkml/pv_formula> ;
                 shex:valueExpr [ a shex:NodeConstraint ;
-                        shex:values ( <https://w3id.org/linkml/PvFormulaOptions#CODE> <https://w3id.org/linkml/PvFormulaOptions#CURIE> <https://w3id.org/linkml/PvFormulaOptions#URI> <https://w3id.org/linkml/PvFormulaOptions#FHIR_CODING> ) ] ] [ a shex:TripleConstraint ;
+                        shex:values ( <https://w3id.org/linkml/PvFormulaOptions#CODE> <https://w3id.org/linkml/PvFormulaOptions#CURIE> <https://w3id.org/linkml/PvFormulaOptions#URI> <https://w3id.org/linkml/PvFormulaOptions#FHIR_CODING> <https://w3id.org/linkml/PvFormulaOptions#LABEL> ) ] ] [ a shex:TripleConstraint ;
                 shex:max -1 ;
                 shex:min 0 ;
                 shex:predicate <https://w3id.org/linkml/permissible_values> ;
@@ -2674,11 +2665,11 @@
                 shex:max 1 ;
                 shex:min 0 ;
                 shex:predicate <https://w3id.org/linkml/minimum_value> ;
-                shex:valueExpr <https://w3id.org/linkml/Integer> ] [ a shex:TripleConstraint ;
+                shex:valueExpr <https://w3id.org/linkml/Anything> ] [ a shex:TripleConstraint ;
                 shex:max 1 ;
                 shex:min 0 ;
                 shex:predicate <https://w3id.org/linkml/maximum_value> ;
-                shex:valueExpr <https://w3id.org/linkml/Integer> ] [ a shex:TripleConstraint ;
+                shex:valueExpr <https://w3id.org/linkml/Anything> ] [ a shex:TripleConstraint ;
                 shex:max 1 ;
                 shex:min 0 ;
                 shex:predicate <https://w3id.org/linkml/pattern> ;
@@ -2786,11 +2777,11 @@
                 shex:max 1 ;
                 shex:min 0 ;
                 shex:predicate <https://w3id.org/linkml/minimum_value> ;
-                shex:valueExpr <https://w3id.org/linkml/Integer> ] [ a shex:TripleConstraint ;
+                shex:valueExpr <https://w3id.org/linkml/Anything> ] [ a shex:TripleConstraint ;
                 shex:max 1 ;
                 shex:min 0 ;
                 shex:predicate <https://w3id.org/linkml/maximum_value> ;
-                shex:valueExpr <https://w3id.org/linkml/Integer> ] [ a shex:TripleConstraint ;
+                shex:valueExpr <https://w3id.org/linkml/Anything> ] [ a shex:TripleConstraint ;
                 shex:max -1 ;
                 shex:min 0 ;
                 shex:predicate <https://w3id.org/linkml/none_of> ;
@@ -2896,6 +2887,10 @@
                 shex:min 0 ;
                 shex:predicate <https://w3id.org/linkml/id_prefixes> ;
                 shex:valueExpr <https://w3id.org/linkml/Ncname> ] [ a shex:TripleConstraint ;
+                shex:max 1 ;
+                shex:min 0 ;
+                shex:predicate <https://w3id.org/linkml/id_prefixes_are_closed> ;
+                shex:valueExpr <https://w3id.org/linkml/Boolean> ] [ a shex:TripleConstraint ;
                 shex:max 1 ;
                 shex:min 0 ;
                 shex:predicate <https://w3id.org/linkml/definition_uri> ;
@@ -3412,6 +3407,15 @@
                         shex:predicate rdf:type ;
                         shex:valueExpr [ a shex:NodeConstraint ;
                                 shex:values ( <https://w3id.org/linkml/AnonymousTypeExpression> ) ] ] ) ] .
+
+<https://w3id.org/linkml/Anything> a shex:Shape ;
+    shex:closed true ;
+    shex:expression [ a shex:EachOf ;
+            shex:expressions ( <https://w3id.org/linkml/Anything_tes> [ a shex:TripleConstraint ;
+                        shex:min 0 ;
+                        shex:predicate rdf:type ;
+                        shex:valueExpr [ a shex:NodeConstraint ;
+                                shex:values ( <https://w3id.org/linkml/Any> ) ] ] ) ] .
 
 <https://w3id.org/linkml/Extension> a shex:ShapeOr ;
     shex:shapeExprs ( [ a shex:Shape ;

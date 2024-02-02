@@ -39,7 +39,7 @@ DEFAULT_ = M
 # Types
 class String(str):
     """ A character string """
-    type_class_uri = XSD.string
+    type_class_uri = XSD["string"]
     type_class_curie = "xsd:string"
     type_name = "string"
     type_model_uri = M.String
@@ -47,7 +47,7 @@ class String(str):
 
 class Uriorcurie(URIorCURIE):
     """ a URI or a CURIE """
-    type_class_uri = XSD.anyURI
+    type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "uriorcurie"
     type_model_uri = M.Uriorcurie
@@ -55,7 +55,7 @@ class Uriorcurie(URIorCURIE):
 
 class Uri(URI):
     """ a complete URI """
-    type_class_uri = XSD.anyURI
+    type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "uri"
     type_model_uri = M.Uri
@@ -63,7 +63,7 @@ class Uri(URI):
 
 class Curie(Curie):
     """ a CURIE """
-    type_class_uri = XSD.anyURI
+    type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "curie"
     type_model_uri = M.Curie
@@ -71,7 +71,7 @@ class Curie(Curie):
 
 class Ncname(NCName):
     """ Prefix part of CURIE """
-    type_class_uri = XSD.string
+    type_class_uri = XSD["string"]
     type_class_curie = "xsd:string"
     type_name = "ncname"
     type_model_uri = M.Ncname
@@ -79,7 +79,7 @@ class Ncname(NCName):
 
 class Objectidentifier(ElementIdentifier):
     """ A URI or CURIE that represents an object in the model. """
-    type_class_uri = SHEX.iri
+    type_class_uri = SHEX["iri"]
     type_class_curie = "shex:iri"
     type_name = "objectidentifier"
     type_model_uri = M.Objectidentifier
@@ -87,7 +87,7 @@ class Objectidentifier(ElementIdentifier):
 
 class Nodeidentifier(NodeIdentifier):
     """ A URI, CURIE or BNODE that represents a node in a model. """
-    type_class_uri = SHEX.nonliteral
+    type_class_uri = SHEX["nonliteral"]
     type_class_curie = "shex:nonliteral"
     type_name = "nodeidentifier"
     type_model_uri = M.Nodeidentifier
@@ -102,7 +102,7 @@ class C1Id(ElementIdentifier):
 class C1(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = M.C1
+    class_class_uri: ClassVar[URIRef] = M["C1"]
     class_class_curie: ClassVar[str] = "m:C1"
     class_name: ClassVar[str] = "c1"
     class_model_uri: ClassVar[URIRef] = M.C1

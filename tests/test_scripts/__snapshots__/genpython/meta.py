@@ -62,6 +62,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
 IAO = CurieNamespace('IAO', 'http://purl.obolibrary.org/obo/IAO_')
 NCIT = CurieNamespace('NCIT', 'http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#')
 OIO = CurieNamespace('OIO', 'http://www.geneontology.org/formats/oboInOwl#')
+SIO = CurieNamespace('SIO', 'http://semanticscience.org/resource/SIO_')
 BIBO = CurieNamespace('bibo', 'http://purl.org/ontology/bibo/')
 CDISC = CurieNamespace('cdisc', 'http://rdf.cdisc.org/mms#')
 DCTERMS = CurieNamespace('dcterms', 'http://purl.org/dc/terms/')
@@ -152,7 +153,7 @@ class CommonMetadata(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LINKML.CommonMetadata
+    class_class_uri: ClassVar[URIRef] = LINKML["CommonMetadata"]
     class_class_curie: ClassVar[str] = "linkml:CommonMetadata"
     class_name: ClassVar[str] = "common_metadata"
     class_model_uri: ClassVar[URIRef] = LINKML.CommonMetadata
@@ -315,13 +316,14 @@ class Element(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LINKML.Element
+    class_class_uri: ClassVar[URIRef] = LINKML["Element"]
     class_class_curie: ClassVar[str] = "linkml:Element"
     class_name: ClassVar[str] = "element"
     class_model_uri: ClassVar[URIRef] = LINKML.Element
 
     name: Union[str, ElementName] = None
     id_prefixes: Optional[Union[Union[str, NCName], List[Union[str, NCName]]]] = empty_list()
+    id_prefixes_are_closed: Optional[Union[bool, Bool]] = None
     definition_uri: Optional[Union[str, URIorCURIE]] = None
     local_names: Optional[Union[Dict[Union[str, LocalNameLocalNameSource], Union[dict, "LocalName"]], List[Union[dict, "LocalName"]]]] = empty_dict()
     conforms_to: Optional[str] = None
@@ -372,6 +374,9 @@ class Element(YAMLRoot):
         if not isinstance(self.id_prefixes, list):
             self.id_prefixes = [self.id_prefixes] if self.id_prefixes is not None else []
         self.id_prefixes = [v if isinstance(v, NCName) else NCName(v) for v in self.id_prefixes]
+
+        if self.id_prefixes_are_closed is not None and not isinstance(self.id_prefixes_are_closed, Bool):
+            self.id_prefixes_are_closed = Bool(self.id_prefixes_are_closed)
 
         if self.definition_uri is not None and not isinstance(self.definition_uri, URIorCURIE):
             self.definition_uri = URIorCURIE(self.definition_uri)
@@ -516,7 +521,7 @@ class SchemaDefinition(Element):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LINKML.SchemaDefinition
+    class_class_uri: ClassVar[URIRef] = LINKML["SchemaDefinition"]
     class_class_curie: ClassVar[str] = "linkml:SchemaDefinition"
     class_name: ClassVar[str] = "schema_definition"
     class_model_uri: ClassVar[URIRef] = LINKML.SchemaDefinition
@@ -623,7 +628,7 @@ class AnonymousTypeExpression(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = ["pattern", "structured_pattern", "equals_string", "equals_string_in", "equals_number", "minimum_value", "maximum_value"]
 
-    class_class_uri: ClassVar[URIRef] = LINKML.AnonymousTypeExpression
+    class_class_uri: ClassVar[URIRef] = LINKML["AnonymousTypeExpression"]
     class_class_curie: ClassVar[str] = "linkml:AnonymousTypeExpression"
     class_name: ClassVar[str] = "anonymous_type_expression"
     class_model_uri: ClassVar[URIRef] = LINKML.AnonymousTypeExpression
@@ -635,8 +640,8 @@ class AnonymousTypeExpression(YAMLRoot):
     equals_string: Optional[str] = None
     equals_string_in: Optional[Union[str, List[str]]] = empty_list()
     equals_number: Optional[int] = None
-    minimum_value: Optional[int] = None
-    maximum_value: Optional[int] = None
+    minimum_value: Optional[Union[dict, Anything]] = None
+    maximum_value: Optional[Union[dict, Anything]] = None
     none_of: Optional[Union[Union[dict, "AnonymousTypeExpression"], List[Union[dict, "AnonymousTypeExpression"]]]] = empty_list()
     exactly_one_of: Optional[Union[Union[dict, "AnonymousTypeExpression"], List[Union[dict, "AnonymousTypeExpression"]]]] = empty_list()
     any_of: Optional[Union[Union[dict, "AnonymousTypeExpression"], List[Union[dict, "AnonymousTypeExpression"]]]] = empty_list()
@@ -665,12 +670,6 @@ class AnonymousTypeExpression(YAMLRoot):
         if self.equals_number is not None and not isinstance(self.equals_number, int):
             self.equals_number = int(self.equals_number)
 
-        if self.minimum_value is not None and not isinstance(self.minimum_value, int):
-            self.minimum_value = int(self.minimum_value)
-
-        if self.maximum_value is not None and not isinstance(self.maximum_value, int):
-            self.maximum_value = int(self.maximum_value)
-
         if not isinstance(self.none_of, list):
             self.none_of = [self.none_of] if self.none_of is not None else []
         self.none_of = [v if isinstance(v, AnonymousTypeExpression) else AnonymousTypeExpression(**as_dict(v)) for v in self.none_of]
@@ -697,7 +696,7 @@ class TypeDefinition(Element):
     """
     _inherited_slots: ClassVar[List[str]] = ["base", "uri", "repr", "pattern", "structured_pattern", "equals_string", "equals_string_in", "equals_number", "minimum_value", "maximum_value"]
 
-    class_class_uri: ClassVar[URIRef] = LINKML.TypeDefinition
+    class_class_uri: ClassVar[URIRef] = LINKML["TypeDefinition"]
     class_class_curie: ClassVar[str] = "linkml:TypeDefinition"
     class_name: ClassVar[str] = "type_definition"
     class_model_uri: ClassVar[URIRef] = LINKML.TypeDefinition
@@ -715,8 +714,8 @@ class TypeDefinition(Element):
     equals_string: Optional[str] = None
     equals_string_in: Optional[Union[str, List[str]]] = empty_list()
     equals_number: Optional[int] = None
-    minimum_value: Optional[int] = None
-    maximum_value: Optional[int] = None
+    minimum_value: Optional[Union[dict, Anything]] = None
+    maximum_value: Optional[Union[dict, Anything]] = None
     none_of: Optional[Union[Union[dict, AnonymousTypeExpression], List[Union[dict, AnonymousTypeExpression]]]] = empty_list()
     exactly_one_of: Optional[Union[Union[dict, AnonymousTypeExpression], List[Union[dict, AnonymousTypeExpression]]]] = empty_list()
     any_of: Optional[Union[Union[dict, AnonymousTypeExpression], List[Union[dict, AnonymousTypeExpression]]]] = empty_list()
@@ -766,12 +765,6 @@ class TypeDefinition(Element):
         if self.equals_number is not None and not isinstance(self.equals_number, int):
             self.equals_number = int(self.equals_number)
 
-        if self.minimum_value is not None and not isinstance(self.minimum_value, int):
-            self.minimum_value = int(self.minimum_value)
-
-        if self.maximum_value is not None and not isinstance(self.maximum_value, int):
-            self.maximum_value = int(self.maximum_value)
-
         if not isinstance(self.none_of, list):
             self.none_of = [self.none_of] if self.none_of is not None else []
         self.none_of = [v if isinstance(v, AnonymousTypeExpression) else AnonymousTypeExpression(**as_dict(v)) for v in self.none_of]
@@ -798,7 +791,7 @@ class SubsetDefinition(Element):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LINKML.SubsetDefinition
+    class_class_uri: ClassVar[URIRef] = LINKML["SubsetDefinition"]
     class_class_curie: ClassVar[str] = "linkml:SubsetDefinition"
     class_name: ClassVar[str] = "subset_definition"
     class_model_uri: ClassVar[URIRef] = LINKML.SubsetDefinition
@@ -821,7 +814,7 @@ class Definition(Element):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LINKML.Definition
+    class_class_uri: ClassVar[URIRef] = LINKML["Definition"]
     class_class_curie: ClassVar[str] = "linkml:Definition"
     class_name: ClassVar[str] = "definition"
     class_model_uri: ClassVar[URIRef] = LINKML.Definition
@@ -870,7 +863,7 @@ class AnonymousEnumExpression(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LINKML.AnonymousEnumExpression
+    class_class_uri: ClassVar[URIRef] = LINKML["AnonymousEnumExpression"]
     class_class_curie: ClassVar[str] = "linkml:AnonymousEnumExpression"
     class_name: ClassVar[str] = "anonymous_enum_expression"
     class_model_uri: ClassVar[URIRef] = LINKML.AnonymousEnumExpression
@@ -934,7 +927,7 @@ class EnumDefinition(Definition):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LINKML.EnumDefinition
+    class_class_uri: ClassVar[URIRef] = LINKML["EnumDefinition"]
     class_class_curie: ClassVar[str] = "linkml:EnumDefinition"
     class_name: ClassVar[str] = "enum_definition"
     class_model_uri: ClassVar[URIRef] = LINKML.EnumDefinition
@@ -1009,7 +1002,7 @@ class MatchQuery(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LINKML.MatchQuery
+    class_class_uri: ClassVar[URIRef] = LINKML["MatchQuery"]
     class_class_curie: ClassVar[str] = "linkml:MatchQuery"
     class_name: ClassVar[str] = "match_query"
     class_model_uri: ClassVar[URIRef] = LINKML.MatchQuery
@@ -1035,7 +1028,7 @@ class ReachabilityQuery(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LINKML.ReachabilityQuery
+    class_class_uri: ClassVar[URIRef] = LINKML["ReachabilityQuery"]
     class_class_curie: ClassVar[str] = "linkml:ReachabilityQuery"
     class_name: ClassVar[str] = "reachability_query"
     class_model_uri: ClassVar[URIRef] = LINKML.ReachabilityQuery
@@ -1079,7 +1072,7 @@ class StructuredAlias(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = SKOSXL.Label
+    class_class_uri: ClassVar[URIRef] = SKOSXL["Label"]
     class_class_curie: ClassVar[str] = "skosxl:Label"
     class_name: ClassVar[str] = "structured_alias"
     class_model_uri: ClassVar[URIRef] = LINKML.StructuredAlias
@@ -1257,7 +1250,7 @@ class Expression(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LINKML.Expression
+    class_class_uri: ClassVar[URIRef] = LINKML["Expression"]
     class_class_curie: ClassVar[str] = "linkml:Expression"
     class_name: ClassVar[str] = "expression"
     class_model_uri: ClassVar[URIRef] = LINKML.Expression
@@ -1270,7 +1263,7 @@ class TypeExpression(Expression):
     """
     _inherited_slots: ClassVar[List[str]] = ["pattern", "structured_pattern", "equals_string", "equals_string_in", "equals_number", "minimum_value", "maximum_value"]
 
-    class_class_uri: ClassVar[URIRef] = LINKML.TypeExpression
+    class_class_uri: ClassVar[URIRef] = LINKML["TypeExpression"]
     class_class_curie: ClassVar[str] = "linkml:TypeExpression"
     class_name: ClassVar[str] = "type_expression"
     class_model_uri: ClassVar[URIRef] = LINKML.TypeExpression
@@ -1282,8 +1275,8 @@ class TypeExpression(Expression):
     equals_string: Optional[str] = None
     equals_string_in: Optional[Union[str, List[str]]] = empty_list()
     equals_number: Optional[int] = None
-    minimum_value: Optional[int] = None
-    maximum_value: Optional[int] = None
+    minimum_value: Optional[Union[dict, Anything]] = None
+    maximum_value: Optional[Union[dict, Anything]] = None
     none_of: Optional[Union[Union[dict, "AnonymousTypeExpression"], List[Union[dict, "AnonymousTypeExpression"]]]] = empty_list()
     exactly_one_of: Optional[Union[Union[dict, "AnonymousTypeExpression"], List[Union[dict, "AnonymousTypeExpression"]]]] = empty_list()
     any_of: Optional[Union[Union[dict, "AnonymousTypeExpression"], List[Union[dict, "AnonymousTypeExpression"]]]] = empty_list()
@@ -1312,12 +1305,6 @@ class TypeExpression(Expression):
         if self.equals_number is not None and not isinstance(self.equals_number, int):
             self.equals_number = int(self.equals_number)
 
-        if self.minimum_value is not None and not isinstance(self.minimum_value, int):
-            self.minimum_value = int(self.minimum_value)
-
-        if self.maximum_value is not None and not isinstance(self.maximum_value, int):
-            self.maximum_value = int(self.maximum_value)
-
         if not isinstance(self.none_of, list):
             self.none_of = [self.none_of] if self.none_of is not None else []
         self.none_of = [v if isinstance(v, AnonymousTypeExpression) else AnonymousTypeExpression(**as_dict(v)) for v in self.none_of]
@@ -1344,7 +1331,7 @@ class EnumExpression(Expression):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LINKML.EnumExpression
+    class_class_uri: ClassVar[URIRef] = LINKML["EnumExpression"]
     class_class_curie: ClassVar[str] = "linkml:EnumExpression"
     class_name: ClassVar[str] = "enum_expression"
     class_model_uri: ClassVar[URIRef] = LINKML.EnumExpression
@@ -1408,7 +1395,7 @@ class AnonymousExpression(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LINKML.AnonymousExpression
+    class_class_uri: ClassVar[URIRef] = LINKML["AnonymousExpression"]
     class_class_curie: ClassVar[str] = "linkml:AnonymousExpression"
     class_name: ClassVar[str] = "anonymous_expression"
     class_model_uri: ClassVar[URIRef] = LINKML.AnonymousExpression
@@ -1577,7 +1564,7 @@ class PathExpression(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LINKML.PathExpression
+    class_class_uri: ClassVar[URIRef] = LINKML["PathExpression"]
     class_class_curie: ClassVar[str] = "linkml:PathExpression"
     class_name: ClassVar[str] = "path_expression"
     class_model_uri: ClassVar[URIRef] = LINKML.PathExpression
@@ -1782,7 +1769,7 @@ class SlotExpression(Expression):
     """
     _inherited_slots: ClassVar[List[str]] = ["range", "required", "recommended", "inlined", "inlined_as_list", "minimum_value", "maximum_value", "pattern", "structured_pattern", "value_presence", "equals_string", "equals_string_in", "equals_number", "equals_expression", "minimum_cardinality", "maximum_cardinality"]
 
-    class_class_uri: ClassVar[URIRef] = LINKML.SlotExpression
+    class_class_uri: ClassVar[URIRef] = LINKML["SlotExpression"]
     class_class_curie: ClassVar[str] = "linkml:SlotExpression"
     class_name: ClassVar[str] = "slot_expression"
     class_model_uri: ClassVar[URIRef] = LINKML.SlotExpression
@@ -1794,8 +1781,8 @@ class SlotExpression(Expression):
     recommended: Optional[Union[bool, Bool]] = None
     inlined: Optional[Union[bool, Bool]] = None
     inlined_as_list: Optional[Union[bool, Bool]] = None
-    minimum_value: Optional[int] = None
-    maximum_value: Optional[int] = None
+    minimum_value: Optional[Union[dict, Anything]] = None
+    maximum_value: Optional[Union[dict, Anything]] = None
     pattern: Optional[str] = None
     structured_pattern: Optional[Union[dict, "PatternExpression"]] = None
     unit: Optional[Union[dict, UnitOfMeasure]] = None
@@ -1835,12 +1822,6 @@ class SlotExpression(Expression):
 
         if self.inlined_as_list is not None and not isinstance(self.inlined_as_list, Bool):
             self.inlined_as_list = Bool(self.inlined_as_list)
-
-        if self.minimum_value is not None and not isinstance(self.minimum_value, int):
-            self.minimum_value = int(self.minimum_value)
-
-        if self.maximum_value is not None and not isinstance(self.maximum_value, int):
-            self.maximum_value = int(self.maximum_value)
 
         if self.pattern is not None and not isinstance(self.pattern, str):
             self.pattern = str(self.pattern)
@@ -1905,7 +1886,7 @@ class SlotExpression(Expression):
 class AnonymousSlotExpression(AnonymousExpression):
     _inherited_slots: ClassVar[List[str]] = ["range", "required", "recommended", "inlined", "inlined_as_list", "minimum_value", "maximum_value", "pattern", "structured_pattern", "value_presence", "equals_string", "equals_string_in", "equals_number", "equals_expression", "minimum_cardinality", "maximum_cardinality"]
 
-    class_class_uri: ClassVar[URIRef] = LINKML.AnonymousSlotExpression
+    class_class_uri: ClassVar[URIRef] = LINKML["AnonymousSlotExpression"]
     class_class_curie: ClassVar[str] = "linkml:AnonymousSlotExpression"
     class_name: ClassVar[str] = "anonymous_slot_expression"
     class_model_uri: ClassVar[URIRef] = LINKML.AnonymousSlotExpression
@@ -1917,8 +1898,8 @@ class AnonymousSlotExpression(AnonymousExpression):
     recommended: Optional[Union[bool, Bool]] = None
     inlined: Optional[Union[bool, Bool]] = None
     inlined_as_list: Optional[Union[bool, Bool]] = None
-    minimum_value: Optional[int] = None
-    maximum_value: Optional[int] = None
+    minimum_value: Optional[Union[dict, Anything]] = None
+    maximum_value: Optional[Union[dict, Anything]] = None
     pattern: Optional[str] = None
     structured_pattern: Optional[Union[dict, "PatternExpression"]] = None
     unit: Optional[Union[dict, UnitOfMeasure]] = None
@@ -1958,12 +1939,6 @@ class AnonymousSlotExpression(AnonymousExpression):
 
         if self.inlined_as_list is not None and not isinstance(self.inlined_as_list, Bool):
             self.inlined_as_list = Bool(self.inlined_as_list)
-
-        if self.minimum_value is not None and not isinstance(self.minimum_value, int):
-            self.minimum_value = int(self.minimum_value)
-
-        if self.maximum_value is not None and not isinstance(self.maximum_value, int):
-            self.maximum_value = int(self.maximum_value)
 
         if self.pattern is not None and not isinstance(self.pattern, str):
             self.pattern = str(self.pattern)
@@ -2031,7 +2006,7 @@ class SlotDefinition(Definition):
     """
     _inherited_slots: ClassVar[List[str]] = ["domain", "multivalued", "inherited", "readonly", "ifabsent", "list_elements_unique", "list_elements_ordered", "shared", "key", "identifier", "designates_type", "role", "relational_role", "range", "required", "recommended", "inlined", "inlined_as_list", "minimum_value", "maximum_value", "pattern", "structured_pattern", "value_presence", "equals_string", "equals_string_in", "equals_number", "equals_expression", "minimum_cardinality", "maximum_cardinality"]
 
-    class_class_uri: ClassVar[URIRef] = LINKML.SlotDefinition
+    class_class_uri: ClassVar[URIRef] = LINKML["SlotDefinition"]
     class_class_curie: ClassVar[str] = "linkml:SlotDefinition"
     class_name: ClassVar[str] = "slot_definition"
     class_model_uri: ClassVar[URIRef] = LINKML.SlotDefinition
@@ -2084,8 +2059,8 @@ class SlotDefinition(Definition):
     recommended: Optional[Union[bool, Bool]] = None
     inlined: Optional[Union[bool, Bool]] = None
     inlined_as_list: Optional[Union[bool, Bool]] = None
-    minimum_value: Optional[int] = None
-    maximum_value: Optional[int] = None
+    minimum_value: Optional[Union[dict, Anything]] = None
+    maximum_value: Optional[Union[dict, Anything]] = None
     pattern: Optional[str] = None
     structured_pattern: Optional[Union[dict, "PatternExpression"]] = None
     unit: Optional[Union[dict, UnitOfMeasure]] = None
@@ -2256,12 +2231,6 @@ class SlotDefinition(Definition):
         if self.inlined_as_list is not None and not isinstance(self.inlined_as_list, Bool):
             self.inlined_as_list = Bool(self.inlined_as_list)
 
-        if self.minimum_value is not None and not isinstance(self.minimum_value, int):
-            self.minimum_value = int(self.minimum_value)
-
-        if self.maximum_value is not None and not isinstance(self.maximum_value, int):
-            self.maximum_value = int(self.maximum_value)
-
         if self.pattern is not None and not isinstance(self.pattern, str):
             self.pattern = str(self.pattern)
 
@@ -2328,7 +2297,7 @@ class ClassExpression(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LINKML.ClassExpression
+    class_class_uri: ClassVar[URIRef] = LINKML["ClassExpression"]
     class_class_curie: ClassVar[str] = "linkml:ClassExpression"
     class_name: ClassVar[str] = "class_expression"
     class_model_uri: ClassVar[URIRef] = LINKML.ClassExpression
@@ -2365,7 +2334,7 @@ class ClassExpression(YAMLRoot):
 class AnonymousClassExpression(AnonymousExpression):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LINKML.AnonymousClassExpression
+    class_class_uri: ClassVar[URIRef] = LINKML["AnonymousClassExpression"]
     class_class_curie: ClassVar[str] = "linkml:AnonymousClassExpression"
     class_name: ClassVar[str] = "anonymous_class_expression"
     class_model_uri: ClassVar[URIRef] = LINKML.AnonymousClassExpression
@@ -2409,7 +2378,7 @@ class ClassDefinition(Definition):
     """
     _inherited_slots: ClassVar[List[str]] = ["defining_slots", "represents_relationship"]
 
-    class_class_uri: ClassVar[URIRef] = LINKML.ClassDefinition
+    class_class_uri: ClassVar[URIRef] = LINKML["ClassDefinition"]
     class_class_curie: ClassVar[str] = "linkml:ClassDefinition"
     class_name: ClassVar[str] = "class_definition"
     class_model_uri: ClassVar[URIRef] = LINKML.ClassDefinition
@@ -2531,7 +2500,7 @@ class ClassLevelRule(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LINKML.ClassLevelRule
+    class_class_uri: ClassVar[URIRef] = LINKML["ClassLevelRule"]
     class_class_curie: ClassVar[str] = "linkml:ClassLevelRule"
     class_name: ClassVar[str] = "class_level_rule"
     class_model_uri: ClassVar[URIRef] = LINKML.ClassLevelRule
@@ -2544,7 +2513,7 @@ class ClassRule(ClassLevelRule):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LINKML.ClassRule
+    class_class_uri: ClassVar[URIRef] = LINKML["ClassRule"]
     class_class_curie: ClassVar[str] = "linkml:ClassRule"
     class_name: ClassVar[str] = "class_rule"
     class_model_uri: ClassVar[URIRef] = LINKML.ClassRule
@@ -2737,7 +2706,7 @@ class PatternExpression(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = ["syntax"]
 
-    class_class_uri: ClassVar[URIRef] = LINKML.PatternExpression
+    class_class_uri: ClassVar[URIRef] = LINKML["PatternExpression"]
     class_class_curie: ClassVar[str] = "linkml:PatternExpression"
     class_name: ClassVar[str] = "pattern_expression"
     class_model_uri: ClassVar[URIRef] = LINKML.PatternExpression
@@ -2918,7 +2887,7 @@ class ImportExpression(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LINKML.ImportExpression
+    class_class_uri: ClassVar[URIRef] = LINKML["ImportExpression"]
     class_class_curie: ClassVar[str] = "linkml:ImportExpression"
     class_name: ClassVar[str] = "import_expression"
     class_model_uri: ClassVar[URIRef] = LINKML.ImportExpression
@@ -3100,7 +3069,7 @@ class Setting(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LINKML.Setting
+    class_class_uri: ClassVar[URIRef] = LINKML["Setting"]
     class_class_curie: ClassVar[str] = "linkml:Setting"
     class_name: ClassVar[str] = "setting"
     class_model_uri: ClassVar[URIRef] = LINKML.Setting
@@ -3129,7 +3098,7 @@ class Prefix(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LINKML.Prefix
+    class_class_uri: ClassVar[URIRef] = LINKML["Prefix"]
     class_class_curie: ClassVar[str] = "linkml:Prefix"
     class_name: ClassVar[str] = "prefix"
     class_model_uri: ClassVar[URIRef] = LINKML.Prefix
@@ -3158,7 +3127,7 @@ class LocalName(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LINKML.LocalName
+    class_class_uri: ClassVar[URIRef] = LINKML["LocalName"]
     class_class_curie: ClassVar[str] = "linkml:LocalName"
     class_name: ClassVar[str] = "local_name"
     class_model_uri: ClassVar[URIRef] = LINKML.LocalName
@@ -3187,7 +3156,7 @@ class Example(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LINKML.Example
+    class_class_uri: ClassVar[URIRef] = LINKML["Example"]
     class_class_curie: ClassVar[str] = "linkml:Example"
     class_name: ClassVar[str] = "example"
     class_model_uri: ClassVar[URIRef] = LINKML.Example
@@ -3213,7 +3182,7 @@ class AltDescription(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LINKML.AltDescription
+    class_class_uri: ClassVar[URIRef] = LINKML["AltDescription"]
     class_class_curie: ClassVar[str] = "linkml:AltDescription"
     class_name: ClassVar[str] = "alt_description"
     class_model_uri: ClassVar[URIRef] = LINKML.AltDescription
@@ -3242,7 +3211,7 @@ class PermissibleValue(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LINKML.PermissibleValue
+    class_class_uri: ClassVar[URIRef] = LINKML["PermissibleValue"]
     class_class_curie: ClassVar[str] = "linkml:PermissibleValue"
     class_name: ClassVar[str] = "permissible_value"
     class_model_uri: ClassVar[URIRef] = LINKML.PermissibleValue
@@ -3434,7 +3403,7 @@ class UniqueKey(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LINKML.UniqueKey
+    class_class_uri: ClassVar[URIRef] = LINKML["UniqueKey"]
     class_class_curie: ClassVar[str] = "linkml:UniqueKey"
     class_name: ClassVar[str] = "unique_key"
     class_model_uri: ClassVar[URIRef] = LINKML.UniqueKey
@@ -3630,6 +3599,9 @@ class PvFormulaOptions(EnumDefinitionImpl):
     FHIR_CODING = PermissibleValue(
         text="FHIR_CODING",
         description="The permissible values are the set of FHIR coding elements derived from the code set")
+    LABEL = PermissibleValue(
+        text="LABEL",
+        description="The permissible values are the set of human readable labels in the code set")
 
     _defn = EnumDefinition(
         name="PvFormulaOptions",
@@ -3656,15 +3628,15 @@ class RelationalRoleEnum(EnumDefinitionImpl):
     SUBJECT = PermissibleValue(
         text="SUBJECT",
         description="a slot with this role connects a relationship to its subject/source node",
-        meaning=RDF.subject)
+        meaning=RDF["subject"])
     OBJECT = PermissibleValue(
         text="OBJECT",
         description="a slot with this role connects a relationship to its object/target node",
-        meaning=RDF.object)
+        meaning=RDF["object"])
     PREDICATE = PermissibleValue(
         text="PREDICATE",
         description="a slot with this role connects a relationship to its predicate/property",
-        meaning=RDF.predicate)
+        meaning=RDF["predicate"])
     NODE = PermissibleValue(
         text="NODE",
         description="""a slot with this role connects a symmetric relationship to a node that represents either subject or object node""")
@@ -3683,16 +3655,16 @@ class AliasPredicateEnum(EnumDefinitionImpl):
     """
     EXACT_SYNONYM = PermissibleValue(
         text="EXACT_SYNONYM",
-        meaning=SKOS.exactMatch)
+        meaning=SKOS["exactMatch"])
     RELATED_SYNONYM = PermissibleValue(
         text="RELATED_SYNONYM",
-        meaning=SKOS.relatedMatch)
+        meaning=SKOS["relatedMatch"])
     BROAD_SYNONYM = PermissibleValue(
         text="BROAD_SYNONYM",
-        meaning=SKOS.broaderMatch)
+        meaning=SKOS["broaderMatch"])
     NARROW_SYNONYM = PermissibleValue(
         text="NARROW_SYNONYM",
-        meaning=SKOS.narrowerMatch)
+        meaning=SKOS["narrowerMatch"])
 
     _defn = EnumDefinition(
         name="AliasPredicateEnum",
@@ -3729,6 +3701,9 @@ slots.definition_uri = Slot(uri=LINKML.definition_uri, name="definition_uri", cu
 
 slots.id_prefixes = Slot(uri=LINKML.id_prefixes, name="id_prefixes", curie=LINKML.curie('id_prefixes'),
                    model_uri=LINKML.id_prefixes, domain=Element, range=Optional[Union[Union[str, NCName], List[Union[str, NCName]]]])
+
+slots.id_prefixes_are_closed = Slot(uri=LINKML.id_prefixes_are_closed, name="id_prefixes_are_closed", curie=LINKML.curie('id_prefixes_are_closed'),
+                   model_uri=LINKML.id_prefixes_are_closed, domain=Element, range=Optional[Union[bool, Bool]])
 
 slots.description = Slot(uri=SKOS.definition, name="description", curie=SKOS.curie('definition'),
                    model_uri=LINKML.description, domain=Element, range=Optional[str])
@@ -4187,10 +4162,10 @@ slots.role = Slot(uri=LINKML.role, name="role", curie=LINKML.curie('role'),
                    model_uri=LINKML.role, domain=SlotDefinition, range=Optional[str])
 
 slots.minimum_value = Slot(uri=LINKML.minimum_value, name="minimum_value", curie=LINKML.curie('minimum_value'),
-                   model_uri=LINKML.minimum_value, domain=SlotDefinition, range=Optional[int])
+                   model_uri=LINKML.minimum_value, domain=SlotDefinition, range=Optional[Union[dict, Anything]])
 
 slots.maximum_value = Slot(uri=LINKML.maximum_value, name="maximum_value", curie=LINKML.curie('maximum_value'),
-                   model_uri=LINKML.maximum_value, domain=SlotDefinition, range=Optional[int])
+                   model_uri=LINKML.maximum_value, domain=SlotDefinition, range=Optional[Union[dict, Anything]])
 
 slots.interpolated = Slot(uri=LINKML.interpolated, name="interpolated", curie=LINKML.curie('interpolated'),
                    model_uri=LINKML.interpolated, domain=PatternExpression, range=Optional[Union[bool, Bool]])

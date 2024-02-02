@@ -105,6 +105,9 @@ prefixes:
   cdisc:
     prefix_prefix: cdisc
     prefix_reference: http://rdf.cdisc.org/mms#
+  SIO:
+    prefix_prefix: SIO
+    prefix_reference: http://semanticscience.org/resource/SIO_
 emit_prefixes:
 - linkml
 - rdf
@@ -500,6 +503,10 @@ enums:
         text: FHIR_CODING
         description: The permissible values are the set of FHIR coding elements derived
           from the code set
+      LABEL:
+        text: LABEL
+        description: The permissible values are the set of human readable labels in
+          the code set
   presence_enum:
     name: presence_enum
     definition_uri: https://w3id.org/linkml/PresenceEnum
@@ -738,7 +745,6 @@ slots:
     - BasicSubset
     from_schema: https://w3id.org/linkml/meta
     see_also:
-    - https://github.com/linkml/linkml/issues/194
     - https://github.com/linkml/linkml-model/issues/28
     domain: element
     slot_uri: linkml:id_prefixes
@@ -747,6 +753,20 @@ slots:
     domain_of:
     - element
     range: ncname
+  id_prefixes_are_closed:
+    name: id_prefixes_are_closed
+    definition_uri: https://w3id.org/linkml/id_prefixes_are_closed
+    description: If true, then the id_prefixes slot is treated as being closed, and
+      any use of an id that does not have this prefix is considered a violation.
+    from_schema: https://w3id.org/linkml/meta
+    see_also:
+    - https://github.com/linkml/linkml/issues/194
+    domain: element
+    slot_uri: linkml:id_prefixes_are_closed
+    owner: element
+    domain_of:
+    - element
+    range: boolean
   description:
     name: description
     definition_uri: https://w3id.org/linkml/description
@@ -2942,6 +2962,7 @@ slots:
     from_schema: https://w3id.org/linkml/meta
     see_also:
     - https://w3id.org/linkml/docs/specification/06mapping/#collection-forms
+    - https://linkml.io/linkml/schemas/inlining.html
     rank: 25
     domain: slot_definition
     slot_uri: linkml:inlined
@@ -2974,6 +2995,7 @@ slots:
     from_schema: https://w3id.org/linkml/meta
     see_also:
     - https://w3id.org/linkml/docs/specification/06mapping/#collection-forms
+    - https://linkml.io/linkml/schemas/inlining.html
     rank: 27
     domain: slot_definition
     slot_uri: linkml:inlined_as_list
@@ -3173,6 +3195,7 @@ slots:
     from_schema: https://w3id.org/linkml/meta
     exact_mappings:
     - schema:domainIncludes
+    - SIO:000011
     domain: slot_definition
     slot_uri: linkml:domain_of
     multivalued: true
@@ -3447,8 +3470,9 @@ slots:
   minimum_value:
     name: minimum_value
     definition_uri: https://w3id.org/linkml/minimum_value
-    description: for slots with ranges of type number, the value must be equal to
-      or higher than this
+    description: For ordinal ranges, the value must be equal to or higher than this
+    notes:
+    - Range to be refined to an "Ordinal" metaclass - see https://github.com/linkml/linkml/issues/1384#issuecomment-1892721142
     in_subset:
     - SpecificationSubset
     - BasicSubset
@@ -3462,12 +3486,14 @@ slots:
     domain_of:
     - type_expression
     - slot_expression
-    range: integer
+    range: Anything
+    inlined: true
   maximum_value:
     name: maximum_value
     definition_uri: https://w3id.org/linkml/maximum_value
-    description: for slots with ranges of type number, the value must be equal to
-      or lowe than this
+    description: For ordinal ranges, the value must be equal to or lower than this
+    notes:
+    - Range to be refined to an "Ordinal" metaclass - see https://github.com/linkml/linkml/issues/1384#issuecomment-1892721142
     in_subset:
     - SpecificationSubset
     - BasicSubset
@@ -3481,7 +3507,8 @@ slots:
     domain_of:
     - type_expression
     - slot_expression
-    range: integer
+    range: Anything
+    inlined: true
   interpolated:
     name: interpolated
     definition_uri: https://w3id.org/linkml/interpolated
@@ -5293,6 +5320,7 @@ classes:
     slots:
     - name
     - id_prefixes
+    - id_prefixes_are_closed
     - definition_uri
     - local_names
     - conforms_to
@@ -5362,6 +5390,7 @@ classes:
     is_a: element
     slots:
     - id_prefixes
+    - id_prefixes_are_closed
     - definition_uri
     - local_names
     - conforms_to
@@ -5507,6 +5536,7 @@ classes:
     slots:
     - name
     - id_prefixes
+    - id_prefixes_are_closed
     - definition_uri
     - local_names
     - conforms_to
@@ -5583,6 +5613,7 @@ classes:
     slots:
     - name
     - id_prefixes
+    - id_prefixes_are_closed
     - definition_uri
     - local_names
     - conforms_to
@@ -5638,6 +5669,7 @@ classes:
     slots:
     - name
     - id_prefixes
+    - id_prefixes_are_closed
     - definition_uri
     - local_names
     - conforms_to
@@ -5739,9 +5771,12 @@ classes:
     from_schema: https://w3id.org/linkml/meta
     aliases:
     - enum
+    - enumeration
+    - semantic enumeration
     - value set
     - term set
     - concept set
+    - code set
     - Terminology Value Set
     - answer list
     - value domain
@@ -5758,6 +5793,7 @@ classes:
     slots:
     - name
     - id_prefixes
+    - id_prefixes_are_closed
     - definition_uri
     - local_names
     - conforms_to
@@ -6184,6 +6220,7 @@ classes:
     slots:
     - name
     - id_prefixes
+    - id_prefixes_are_closed
     - definition_uri
     - local_names
     - conforms_to
@@ -6419,6 +6456,7 @@ classes:
     slots:
     - name
     - id_prefixes
+    - id_prefixes_are_closed
     - definition_uri
     - local_names
     - conforms_to

@@ -15,6 +15,10 @@ fields:
     identifier of this class or slot must begin with the URIs referenced by this prefix
   display_name: id_prefixes
   cardinality: multi
+- id: id_prefixes_are_closed
+  description: If true, then the id_prefixes slot is treated as being closed, and
+    any use of an id that does not have this prefix is considered a violation.
+  display_name: id_prefixes_are_closed
 - id: definition_uri
   description: The native URI of the element. This is always within the namespace
     of the containing schema. Contrast with the assigned URI, via class_uri or slot_uri
@@ -411,12 +415,10 @@ fields:
     key or identifier and whose value is the range instance.
   display_name: inlined_as_list
 - id: minimum_value
-  description: for slots with ranges of type number, the value must be equal to or
-    higher than this
+  description: For ordinal ranges, the value must be equal to or higher than this
   display_name: minimum_value
 - id: maximum_value
-  description: for slots with ranges of type number, the value must be equal to or
-    lowe than this
+  description: For ordinal ranges, the value must be equal to or lower than this
   display_name: maximum_value
 - id: pattern
   description: the string value of the slot must conform to this regular expression
