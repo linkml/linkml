@@ -1,40 +1,35 @@
-cff-version: 1.1.0
+cff-version: 1.2.0
 message: If you use this software, please cite it as below.
 authors:
-  - family-names: Solbrig
-    given-names: Harold
-    affiliation: "JHU"
-    email: nicolas.matentzoglu@gmail.com
   - family-names: Moxon
     given-names: Sierra
     affiliation: "Lawrence Berkeley National Laboratory (LBNL)"
   - family-names: Unni
     given-names: Deepak
-    affiliation: "Lawrence Berkeley National Laboratory (LBNL)"
+    affiliation: "SIB Swiss Institute of Bioinformatics"
   - family-names: Vaidya
     given-names: Gaurav
     affiliation: "RENCI"
   - family-names: Hegde
     given-names: Harshad
     affiliation: "Lawrence Berkeley National Laboratory (LBNL)"
-  - family-names: Duncan
-    given-names: Bill
-    affiliation: "Lawrence Berkeley National Laboratory (LBNL)"
   - family-names: Patil
     given-names: Sujay
     affiliation: "Lawrence Berkeley National Laboratory (LBNL)"
-  - family-names: Winston
-    given-names: Donny
-    affiliation: "Lawrence Berkeley National Laboratory (LBNL)"
-  - family-names: Wagner
-    given-names: Alex
-    affiliation: "nationwidechildrens.org"
   - family-names: Schafer
     given-names: Kevin
     affiliation: "University of Colorado Anschutz"
+  - family-names: Kalita
+    given-names: Patrick
+    affiliation: "Lawrence Berkeley National Laboratory (LBNL)"
+  - family-names: Harris
+    given-names: Nomi
+    affiliation: "Lawrence Berkeley National Laboratory (LBNL)"
   - family-names: Putman
     given-names: Tim
-    affiliation: "University of Colorado Anschutz"
+  - family-names: Solbrig
+    given-names: Harold
+    affiliation: "independent"
   - family-names: Haendel
     given-names: Melissa
     orcid: https://orcid.org/0000-0001-9114-8737
