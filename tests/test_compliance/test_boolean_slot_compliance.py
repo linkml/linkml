@@ -368,12 +368,9 @@ def test_slot_none_of(framework, data_name, value, is_valid):
     ],
 )
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
-@pytest.mark.skip("requires metamodel changes")
 def test_cardinality_in_exactly_one_of(framework, data_name, instance, is_valid):
     """
     Tests intersection of cardinality and exactly_one_of.
-
-    TODO: unskip this test when metamodel allows attributes or slot usage on anon expressions.
 
     :param framework:
     :param data_name:
@@ -383,16 +380,20 @@ def test_cardinality_in_exactly_one_of(framework, data_name, instance, is_valid)
     """
     classes = {
         CLASS_C: {
+            "attributes": {
+                SLOT_S1: {},
+                SLOT_S2: {},
+            },
             "exactly_one_of": [
                 {
-                    "attributes": {
+                    "slot_conditions": {
                         SLOT_S1: {
                             "required": True,
                         },
                     },
                 },
                 {
-                    "attributes": {
+                    "slot_conditions": {
                         SLOT_S2: {
                             "required": True,
                         },
@@ -408,8 +409,9 @@ def test_cardinality_in_exactly_one_of(framework, data_name, instance, is_valid)
         classes=classes,
         core_elements=["exactly_one_of", "minimum_value", "maximum_value"],
     )
-    expected_behavior = ValidationBehavior.IMPLEMENTS
-    if framework != JSON_SCHEMA:
+    expected_behavior = ValidationBehavior.INCOMPLETE
+    if framework == JSON_SCHEMA:
+        # TODO: this should be possible in json schema
         expected_behavior = ValidationBehavior.INCOMPLETE
     check_data(
         schema,
@@ -1806,6 +1808,72 @@ def test_value_presence_in_rules(framework, multivalued, data_name, instance, is
         data_name,
         framework,
         instance,
+        is_valid,
+        target_class=CLASS_C,
+        expected_behavior=expected_behavior,
+        description=f"validity {is_valid} check for value {instance}",
+    )
+
+
+@pytest.mark.parametrize(
+    "name,quantification,expression,instance,is_valid",
+    [
+        ("all_members_min_10", "all_members", {"range": "integer", "minimum_value": 10}, [10, 11, 12], True),
+        ("all_members_min_10", "all_members", {"range": "integer", "minimum_value": 10}, [9, 10], False),
+        ("all_members_min_10", "all_members", {"range": "integer", "minimum_value": 10}, [9], False),
+        ("all_members_min_10", "all_members", {"range": "integer", "minimum_value": 10}, [10], True),
+        ("all_members_min_10", "all_members", {"range": "integer", "minimum_value": 10}, [], True),
+        ("has_member_min_10", "has_member", {"range": "integer", "minimum_value": 10}, [10, 11, 12], True),
+        ("has_member_min_10", "has_member", {"range": "integer", "minimum_value": 10}, [9, 10], True),
+        ("has_member_min_10", "has_member", {"range": "integer", "minimum_value": 10}, [8, 9], False),
+        ("has_member_min_10", "has_member", {"range": "integer", "minimum_value": 10}, [9], False),
+        ("has_member_min_10", "has_member", {"range": "integer", "minimum_value": 10}, [10], True),
+        ("has_member_min_10", "has_member", {"range": "integer", "minimum_value": 10}, [], False),
+    ],
+)
+@pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
+def test_membership(framework, name, quantification, expression, instance, is_valid):
+    """
+    Tests behavior of membership.
+
+    :param framework:
+    :param name:
+    :param quantification:
+    :param expression:
+    :param instance:
+    :param is_valid:
+    :return:
+    """
+    classes = {
+        CLASS_C: {
+            "attributes": {
+                SLOT_S1: {
+                    "range": "integer",
+                    "multivalued": True,
+                    quantification: expression,
+                },
+            },
+        },
+    }
+    schema = validated_schema(
+        test_membership,
+        name,
+        framework,
+        classes=classes,
+        core_elements=[quantification],
+    )
+    expected_behavior = ValidationBehavior.IMPLEMENTS
+    if framework not in [JSON_SCHEMA, OWL]:
+        if not is_valid:
+            expected_behavior = ValidationBehavior.INCOMPLETE
+    if framework == OWL and quantification == "has_member" and not is_valid:
+        # OWL is open world, existential checks succeed without closure axioms
+        expected_behavior = ValidationBehavior.INCOMPLETE
+    check_data(
+        schema,
+        "_".join([str(x) for x in instance]),
+        framework,
+        {SLOT_S1: instance},
         is_valid,
         target_class=CLASS_C,
         expected_behavior=expected_behavior,

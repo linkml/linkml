@@ -703,7 +703,7 @@ def test_non_standard_names(framework, class_name, safe_class_name, slot_name, s
         },
     }
     name = ensafeify(f"ClassNameEQ_{class_name}__SlotNameEQ_{slot_name}__TypeNameEQ_{type_name}")
-    schema = validated_schema(test_cardinality, name, framework, classes=classes, types=types, core_elements=[])
+    schema = validated_schema(test_cardinality, name, framework, classes=classes, types=types, core_elements=["name"])
     expected_behavior = ValidationBehavior.IMPLEMENTS
     instance = {
         safe_slot_name: "x",
@@ -777,7 +777,7 @@ def test_non_standard_num_names(framework, enum_name, pv_name):
         framework,
         classes=classes,
         enums=enums,
-        core_elements=[],
+        core_elements=["name"],
     )
     expected_behavior = ValidationBehavior.IMPLEMENTS
     instance = {
