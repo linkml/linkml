@@ -966,7 +966,8 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
             return False
         if slot_range in self.schema.enums:
             return True
-        for cname in self.schema.classes:
+        clist = [x.name for x in self._sort_classes(self.schema.classes.values())]
+        for cname in clist:
             if cname == owning_class:
                 logging.info(f"TRUE: OCCURS SAME: {cname} == {slot_range} owning: {owning_class}")
                 return True  # Occurs on or after

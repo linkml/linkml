@@ -1284,10 +1284,10 @@ class TypeExpression(Expression):
     equals_number: Optional[int] = None
     minimum_value: Optional[int] = None
     maximum_value: Optional[int] = None
-    none_of: Optional[Union[Union[dict, "AnonymousTypeExpression"], List[Union[dict, "AnonymousTypeExpression"]]]] = empty_list()
-    exactly_one_of: Optional[Union[Union[dict, "AnonymousTypeExpression"], List[Union[dict, "AnonymousTypeExpression"]]]] = empty_list()
-    any_of: Optional[Union[Union[dict, "AnonymousTypeExpression"], List[Union[dict, "AnonymousTypeExpression"]]]] = empty_list()
-    all_of: Optional[Union[Union[dict, "AnonymousTypeExpression"], List[Union[dict, "AnonymousTypeExpression"]]]] = empty_list()
+    none_of: Optional[Union[Union[dict, AnonymousTypeExpression], List[Union[dict, AnonymousTypeExpression]]]] = empty_list()
+    exactly_one_of: Optional[Union[Union[dict, AnonymousTypeExpression], List[Union[dict, AnonymousTypeExpression]]]] = empty_list()
+    any_of: Optional[Union[Union[dict, AnonymousTypeExpression], List[Union[dict, AnonymousTypeExpression]]]] = empty_list()
+    all_of: Optional[Union[Union[dict, AnonymousTypeExpression], List[Union[dict, AnonymousTypeExpression]]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self.pattern is not None and not isinstance(self.pattern, str):
@@ -1354,11 +1354,11 @@ class EnumExpression(Expression):
     code_set_version: Optional[str] = None
     pv_formula: Optional[Union[str, "PvFormulaOptions"]] = None
     permissible_values: Optional[Union[Dict[Union[str, PermissibleValueText], Union[dict, "PermissibleValue"]], List[Union[dict, "PermissibleValue"]]]] = empty_dict()
-    include: Optional[Union[Union[dict, "AnonymousEnumExpression"], List[Union[dict, "AnonymousEnumExpression"]]]] = empty_list()
-    minus: Optional[Union[Union[dict, "AnonymousEnumExpression"], List[Union[dict, "AnonymousEnumExpression"]]]] = empty_list()
+    include: Optional[Union[Union[dict, AnonymousEnumExpression], List[Union[dict, AnonymousEnumExpression]]]] = empty_list()
+    minus: Optional[Union[Union[dict, AnonymousEnumExpression], List[Union[dict, AnonymousEnumExpression]]]] = empty_list()
     inherits: Optional[Union[Union[str, EnumDefinitionName], List[Union[str, EnumDefinitionName]]]] = empty_list()
-    reachable_from: Optional[Union[dict, "ReachabilityQuery"]] = None
-    matches: Optional[Union[dict, "MatchQuery"]] = None
+    reachable_from: Optional[Union[dict, ReachabilityQuery]] = None
+    matches: Optional[Union[dict, MatchQuery]] = None
     concepts: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
@@ -3836,16 +3836,16 @@ slots.enum_uri = Slot(uri=LINKML.enum_uri, name="enum_uri", curie=LINKML.curie('
                    model_uri=LINKML.enum_uri, domain=EnumDefinition, range=Optional[Union[str, URIorCURIE]])
 
 slots.include = Slot(uri=LINKML.include, name="include", curie=LINKML.curie('include'),
-                   model_uri=LINKML.include, domain=EnumExpression, range=Optional[Union[Union[dict, "AnonymousEnumExpression"], List[Union[dict, "AnonymousEnumExpression"]]]])
+                   model_uri=LINKML.include, domain=EnumExpression, range=Optional[Union[Union[dict, AnonymousEnumExpression], List[Union[dict, AnonymousEnumExpression]]]])
 
 slots.minus = Slot(uri=LINKML.minus, name="minus", curie=LINKML.curie('minus'),
-                   model_uri=LINKML.minus, domain=EnumExpression, range=Optional[Union[Union[dict, "AnonymousEnumExpression"], List[Union[dict, "AnonymousEnumExpression"]]]])
+                   model_uri=LINKML.minus, domain=EnumExpression, range=Optional[Union[Union[dict, AnonymousEnumExpression], List[Union[dict, AnonymousEnumExpression]]]])
 
 slots.inherits = Slot(uri=LINKML.inherits, name="inherits", curie=LINKML.curie('inherits'),
                    model_uri=LINKML.inherits, domain=EnumExpression, range=Optional[Union[Union[str, EnumDefinitionName], List[Union[str, EnumDefinitionName]]]])
 
 slots.matches = Slot(uri=LINKML.matches, name="matches", curie=LINKML.curie('matches'),
-                   model_uri=LINKML.matches, domain=EnumExpression, range=Optional[Union[dict, "MatchQuery"]])
+                   model_uri=LINKML.matches, domain=EnumExpression, range=Optional[Union[dict, MatchQuery]])
 
 slots.identifier_pattern = Slot(uri=LINKML.identifier_pattern, name="identifier_pattern", curie=LINKML.curie('identifier_pattern'),
                    model_uri=LINKML.identifier_pattern, domain=MatchQuery, range=Optional[str])
@@ -3854,7 +3854,7 @@ slots.concepts = Slot(uri=LINKML.concepts, name="concepts", curie=LINKML.curie('
                    model_uri=LINKML.concepts, domain=EnumExpression, range=Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]])
 
 slots.reachable_from = Slot(uri=LINKML.reachable_from, name="reachable_from", curie=LINKML.curie('reachable_from'),
-                   model_uri=LINKML.reachable_from, domain=EnumExpression, range=Optional[Union[dict, "ReachabilityQuery"]])
+                   model_uri=LINKML.reachable_from, domain=EnumExpression, range=Optional[Union[dict, ReachabilityQuery]])
 
 slots.source_ontology = Slot(uri=LINKML.source_ontology, name="source_ontology", curie=LINKML.curie('source_ontology'),
                    model_uri=LINKML.source_ontology, domain=None, range=Optional[Union[str, URIorCURIE]])
@@ -4307,16 +4307,16 @@ slots.schema_definition_name = Slot(uri=RDFS.label, name="schema_definition_name
                    model_uri=LINKML.schema_definition_name, domain=SchemaDefinition, range=Union[str, SchemaDefinitionName])
 
 slots.type_expression_any_of = Slot(uri=LINKML.any_of, name="type_expression_any_of", curie=LINKML.curie('any_of'),
-                   model_uri=LINKML.type_expression_any_of, domain=None, range=Optional[Union[Union[dict, "AnonymousTypeExpression"], List[Union[dict, "AnonymousTypeExpression"]]]])
+                   model_uri=LINKML.type_expression_any_of, domain=None, range=Optional[Union[Union[dict, AnonymousTypeExpression], List[Union[dict, AnonymousTypeExpression]]]])
 
 slots.type_expression_all_of = Slot(uri=LINKML.all_of, name="type_expression_all_of", curie=LINKML.curie('all_of'),
-                   model_uri=LINKML.type_expression_all_of, domain=None, range=Optional[Union[Union[dict, "AnonymousTypeExpression"], List[Union[dict, "AnonymousTypeExpression"]]]])
+                   model_uri=LINKML.type_expression_all_of, domain=None, range=Optional[Union[Union[dict, AnonymousTypeExpression], List[Union[dict, AnonymousTypeExpression]]]])
 
 slots.type_expression_exactly_one_of = Slot(uri=LINKML.exactly_one_of, name="type_expression_exactly_one_of", curie=LINKML.curie('exactly_one_of'),
-                   model_uri=LINKML.type_expression_exactly_one_of, domain=None, range=Optional[Union[Union[dict, "AnonymousTypeExpression"], List[Union[dict, "AnonymousTypeExpression"]]]])
+                   model_uri=LINKML.type_expression_exactly_one_of, domain=None, range=Optional[Union[Union[dict, AnonymousTypeExpression], List[Union[dict, AnonymousTypeExpression]]]])
 
 slots.type_expression_none_of = Slot(uri=LINKML.none_of, name="type_expression_none_of", curie=LINKML.curie('none_of'),
-                   model_uri=LINKML.type_expression_none_of, domain=None, range=Optional[Union[Union[dict, "AnonymousTypeExpression"], List[Union[dict, "AnonymousTypeExpression"]]]])
+                   model_uri=LINKML.type_expression_none_of, domain=None, range=Optional[Union[Union[dict, AnonymousTypeExpression], List[Union[dict, AnonymousTypeExpression]]]])
 
 slots.type_definition_union_of = Slot(uri=LINKML.union_of, name="type_definition_union_of", curie=LINKML.curie('union_of'),
                    model_uri=LINKML.type_definition_union_of, domain=TypeDefinition, range=Optional[Union[Union[str, TypeDefinitionName], List[Union[str, TypeDefinitionName]]]])
