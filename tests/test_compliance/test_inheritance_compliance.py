@@ -14,6 +14,7 @@ from tests.test_compliance.helper import (
     validated_schema,
 )
 from tests.test_compliance.test_compliance import (
+    CLASS_ANY,
     CLASS_C,
     CLASS_D,
     CLASS_MC1,
@@ -29,7 +30,7 @@ from tests.test_compliance.test_compliance import (
     SLOT_S1,
     SLOT_S2,
     SLOT_S3,
-    SLOT_S4, CLASS_ANY,
+    SLOT_S4,
 )
 
 
@@ -528,7 +529,11 @@ def test_slot_usage(framework, description, cls: str, object, is_valid):
         ("inherits constraints", "rMAX", "integer", {"maximum_value": 10}, {}, CLASS_C, {SLOT_S2: 5}, True),
         ("inherits constraints invalid", "rMAX", "integer", {"maximum_value": 10}, {}, CLASS_C, {SLOT_S2: 15}, False),
         (
-            "slots are inherited", "rX", "string", {"range": CLASS_X}, {},
+            "slots are inherited",
+            "rX",
+            "string",
+            {"range": CLASS_X},
+            {},
             CLASS_C,
             {
                 SLOT_S2: {
@@ -538,7 +543,11 @@ def test_slot_usage(framework, description, cls: str, object, is_valid):
             True,
         ),
         (
-            "slots are inherited2", "rX", "string", {"range": CLASS_X}, {},
+            "slots are inherited2",
+            "rX",
+            "string",
+            {"range": CLASS_X},
+            {},
             CLASS_C,
             {
                 SLOT_S2: EXAMPLE_STRING_VALUE_2,
