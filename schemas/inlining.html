@@ -441,6 +441,37 @@ like this:</p>
 </pre></div>
 </div>
 </section>
+<section id="inlining-as-simple-dictionaries">
+<h2>Inlining as simple dictionaries<a class="headerlink" href="#inlining-as-simple-dictionaries" title="Permalink to this heading">#</a></h2>
+<p>If a collection of objects is inlined as a dict, and the objects have a “primary” value, then
+a more compact simple key-value pair inlining can be used.</p>
+<p>One example of this is <a class="reference external" href="https://w3id.org/linkml/prefixes">prefixes</a> in the LinkML metamodel. This is an
+inlined collection of <a class="reference external" href="https://w3id.org/linkml/Prefix">Prefix</a> classes which are essentially tuples of
+a key (the prefix itself, e.g. <code class="docutils literal notranslate"><span class="pre">dcterms</span></code>) and a value (the expansion, e.g. <code class="docutils literal notranslate"><span class="pre">http://purl.org/dc/terms/</span></code>).</p>
+<p>These can be serialized in the standard compact form like this:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">prefixes</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">dcterms</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">prefix_reference</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://purl.org/dc/terms/</span>
+<span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">...</span>
+</pre></div>
+</div>
+<p>However, the canonical encoding is the more compact SimpleDict form:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">prefixes</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">dcterms</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://purl.org/dc/terms/</span>
+</pre></div>
+</div>
+<p>The procedure for determining whether a SimpleDict serialization can be used
+on a collection of classes is as follows:</p>
+<ol class="arabic simple">
+<li><p>There must be a key or identifier slot (this is true for all slots inlined as dict)</p></li>
+<li><p>One of the following must hold of the set of remaining slots:</p>
+<ul class="simple">
+<li><p>There is exactly one additional non-key slot (this forms the “primary” value)</p></li>
+<li><p>If there are multiple candidates for the primary value, if exactly one is <code class="docutils literal notranslate"><span class="pre">required</span></code>, it is used.</p></li>
+</ul>
+</li>
+</ol>
+</section>
 <section id="inlining-with-non-json-serializations">
 <h2>Inlining with non-JSON serializations<a class="headerlink" href="#inlining-with-non-json-serializations" title="Permalink to this heading">#</a></h2>
 <p>The concept of inlining only makes sense with JSON-like tree-oriented data serializations:</p>
@@ -519,6 +550,7 @@ like this:</p>
 <li><a class="reference internal" href="#inlining-as-a-list">Inlining as a list</a></li>
 <li><a class="reference internal" href="#inlining-as-a-dictionary">Inlining as a dictionary</a></li>
 <li><a class="reference internal" href="#inlining-a-single-valued-object">Inlining a single-valued object</a></li>
+<li><a class="reference internal" href="#inlining-as-simple-dictionaries">Inlining as simple dictionaries</a></li>
 <li><a class="reference internal" href="#inlining-with-non-json-serializations">Inlining with non-JSON serializations</a></li>
 <li><a class="reference internal" href="#when-should-inlining-be-used">When should inlining be used?</a></li>
 </ul>

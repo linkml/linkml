@@ -805,7 +805,7 @@
                     <span class="k">elif</span> <span class="nb">range</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">all_enums</span><span class="p">():</span>
                         <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_enum_uri</span><span class="p">(</span><span class="nb">range</span><span class="p">)</span>
                     <span class="k">elif</span> <span class="nb">range</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">all_classes</span><span class="p">():</span>
-                        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_enum_uri</span><span class="p">(</span><span class="nb">range</span><span class="p">)</span>
+                        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_class_uri</span><span class="p">(</span><span class="nb">range</span><span class="p">)</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown range </span><span class="si">{</span><span class="nb">range</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                         <span class="c1"># x = self._class_uri(range)</span>
@@ -836,6 +836,9 @@
                 <span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">max_card_expr</span><span class="p">,</span> <span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">OWL</span><span class="o">.</span><span class="n">Restriction</span><span class="p">))</span>
                 <span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">max_card_expr</span><span class="p">,</span> <span class="n">OWL</span><span class="o">.</span><span class="n">maxCardinality</span><span class="p">,</span> <span class="n">Literal</span><span class="p">(</span><span class="mi">1</span><span class="p">)))</span>
                 <span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">max_card_expr</span><span class="p">,</span> <span class="n">OWL</span><span class="o">.</span><span class="n">onProperty</span><span class="p">,</span> <span class="n">slot_uri</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">has_member</span><span class="p">:</span>
+                <span class="n">has_member_expr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transform_class_slot_expression</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">slot</span><span class="o">.</span><span class="n">has_member</span><span class="p">,</span> <span class="n">slot</span><span class="p">)</span>
+                <span class="n">owl_exprs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_some_values_from</span><span class="p">(</span><span class="n">slot_uri</span><span class="p">,</span> <span class="n">has_member_expr</span><span class="p">))</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_intersection_of</span><span class="p">(</span><span class="n">owl_exprs</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="OwlSchemaGenerator.slot_node_owltypes"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.owlgen.OwlSchemaGenerator.slot_node_owltypes">[docs]</a>    <span class="k">def</span> <span class="nf">slot_node_owltypes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">SlotDefinition</span><span class="p">,</span> <span class="n">AnonymousSlotExpression</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Set</span><span class="p">[</span><span class="n">URIRef</span><span class="p">]:</span>
@@ -877,18 +880,8 @@
 
         <span class="n">owl_exprs</span> <span class="o">=</span> <span class="p">[]</span>
 
-        <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">has_member</span><span class="p">:</span>
-            <span class="n">owl_exprs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_union_of</span><span class="p">(</span>
-                    <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">transform_class_slot_expression</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">main_slot</span><span class="p">,</span> <span class="n">owl_types</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">slot</span><span class="o">.</span><span class="n">has_member</span><span class="p">]</span>
-                <span class="p">)</span>
-            <span class="p">)</span>
         <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">all_members</span><span class="p">:</span>
-            <span class="n">owl_exprs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_union_of</span><span class="p">(</span>
-                    <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">transform_class_slot_expression</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">main_slot</span><span class="p">,</span> <span class="n">owl_types</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">slot</span><span class="o">.</span><span class="n">all_members</span><span class="p">]</span>
-                <span class="p">)</span>
-            <span class="p">)</span>
+            <span class="n">owl_exprs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transform_class_slot_expression</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">slot</span><span class="o">.</span><span class="n">all_members</span><span class="p">,</span> <span class="n">main_slot</span><span class="p">,</span> <span class="n">owl_types</span><span class="p">))</span>
 
         <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">any_of</span><span class="p">:</span>
             <span class="n">owl_exprs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>

@@ -884,9 +884,34 @@
         <span class="p">]</span>
         <span class="n">non_id_required_slots</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">non_id_slots</span> <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">required</span><span class="p">]</span>
 
+        <span class="c1"># Some lists of objects can be serialized as SimpleDicts.</span>
+        <span class="c1"># A SimpleDict is serialized as simple key-value pairs where the value is atomic.</span>
+        <span class="c1"># The key must be declared as a key, and the value must satisfy one of the following conditions:</span>
+        <span class="c1"># 1. The value slot is the only other slot in the object other than the key</span>
+        <span class="c1"># 2. The value slot is explicitly annotated as a simple_dict_value</span>
+        <span class="c1"># 3. The value slot is the only non-key that is required</span>
+        <span class="c1"># See also: https://github.com/linkml/linkml/issues/1250</span>
         <span class="n">range_simple_dict_value_slot</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">non_id_slots</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">range_simple_dict_value_slot</span> <span class="o">=</span> <span class="n">non_id_slots</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">non_id_slots</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">candidate_non_id_slots</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">non_id_slot</span> <span class="ow">in</span> <span class="n">non_id_slots</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">non_id_slot</span><span class="o">.</span><span class="n">annotations</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                    <span class="n">is_simple_dict_value</span> <span class="o">=</span> <span class="n">non_id_slot</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;simple_dict_value&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">is_simple_dict_value</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">non_id_slot</span><span class="o">.</span><span class="n">annotations</span><span class="p">,</span> <span class="s2">&quot;simple_dict_value&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">is_simple_dict_value</span><span class="p">:</span>
+                    <span class="n">candidate_non_id_slots</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">non_id_slot</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">candidate_non_id_slots</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">range_simple_dict_value_slot</span> <span class="o">=</span> <span class="n">candidate_non_id_slots</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">candidate_non_id_slots</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">non_id_slot</span> <span class="ow">in</span> <span class="n">non_id_slots</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">non_id_slot</span><span class="o">.</span><span class="n">required</span><span class="p">:</span>
+                        <span class="n">candidate_non_id_slots</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">non_id_slot</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">candidate_non_id_slots</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">range_simple_dict_value_slot</span> <span class="o">=</span> <span class="n">candidate_non_id_slots</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
         <span class="k">return</span> <span class="n">range_class_id_slot</span><span class="p">,</span> <span class="n">range_simple_dict_value_slot</span><span class="p">,</span> <span class="n">non_id_required_slots</span></div>
 
