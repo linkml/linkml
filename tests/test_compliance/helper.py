@@ -482,6 +482,8 @@ def _make_schema(
         stream.write(f"# {test.__name__}\n\n")
         stream.write(f"{desc}\n\n")
         stream.write("## Elements Tested\n\n")
+        if not core_elements:
+            raise AssertionError(f"No core elements defined for for {schema_name}")
         for el in core_elements:
             stream.write(f"* [{el}](https://w3id.org/linkml/{el})\n")
     # Write README for this schema combo
@@ -543,6 +545,8 @@ def validated_schema(test: Callable, local_name: str, framework: str, **kwargs) 
     """
     test_name = test.__name__
     if test_name not in feature_dict:
+        if not test.__doc__:
+            raise AssertionError(f"Test {test_name} has no docstring")
         feature_dict[test_name] = Feature(
             name=test_name,
             description=test.__doc__,
@@ -858,6 +862,26 @@ def _convert_data_to_rdf(schema: dict, instance: dict, target_class: str, ttl_pa
 
 @lru_cache
 def robot_is_on_path():
+    """
+    Check if robot is on the path.
+
+    If robot is not on the path, then OWL checks will be skipped.
+
+    To ensure robot is on the path for pycharm
+
+    .. code-block:: bash
+
+        poetry run which python
+        which robot
+
+    Then execute something like this, ensuring you substitute your robot path and virtualenv path:
+
+    .. code-block:: bash
+
+        ln -s ~/repos/robot/bin/robot ~/Library/Caches/pypoetry/virtualenvs/linkml-lavaHNw6-py3.9/bin/robot
+
+    :return:
+    """
     return shutil.which("robot") is not None
 
 
@@ -895,6 +919,7 @@ def robot_check_coherency(data_path: str, ontology_path: str, output_path: str =
     if output_path:
         cmd.extend(["-o", output_path])
     try:
+        # print(f"Running robot: {' '.join(cmd)}")
         result = subprocess.run(cmd, check=True, capture_output=True, text=True)
         if result.stderr:
             logging.warning(result.stderr)

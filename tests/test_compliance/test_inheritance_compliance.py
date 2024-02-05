@@ -14,6 +14,7 @@ from tests.test_compliance.helper import (
     validated_schema,
 )
 from tests.test_compliance.test_compliance import (
+    CLASS_ANY,
     CLASS_C,
     CLASS_D,
     CLASS_MC1,
@@ -519,11 +520,20 @@ def test_slot_usage(framework, description, cls: str, object, is_valid):
 
 
 @pytest.mark.parametrize(
-    "description,cls,object,is_valid",
+    "description,schema_name,default_range,s1def,s2def,cls,object,is_valid",
     [
-        ("object may be empty", CLASS_C, {}, True),
+        ("object may be empty", "rX", "string", {"range": CLASS_X}, {}, CLASS_C, {}, True),
+        ("inherits basic type", "rINT", CLASS_ANY, {"range": "integer"}, {}, CLASS_C, {SLOT_S2: 5}, True),
+        ("inherits Any type 1", "rANY", "string", {"range": CLASS_ANY}, {}, CLASS_C, {SLOT_S2: 5}, True),
+        ("inherits Any type 2", "rANY", "string", {"range": CLASS_ANY}, {}, CLASS_C, {SLOT_S2: {SLOT_S3: "..."}}, True),
+        ("inherits constraints", "rMAX", "integer", {"maximum_value": 10}, {}, CLASS_C, {SLOT_S2: 5}, True),
+        ("inherits constraints invalid", "rMAX", "integer", {"maximum_value": 10}, {}, CLASS_C, {SLOT_S2: 15}, False),
         (
             "slots are inherited",
+            "rX",
+            "string",
+            {"range": CLASS_X},
+            {},
             CLASS_C,
             {
                 SLOT_S2: {
@@ -534,6 +544,10 @@ def test_slot_usage(framework, description, cls: str, object, is_valid):
         ),
         (
             "slots are inherited2",
+            "rX",
+            "string",
+            {"range": CLASS_X},
+            {},
             CLASS_C,
             {
                 SLOT_S2: EXAMPLE_STRING_VALUE_2,
@@ -542,10 +556,16 @@ def test_slot_usage(framework, description, cls: str, object, is_valid):
         ),
     ],
 )
+@pytest.mark.parametrize("mixins", [False, True])
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
 def test_basic_slot_inheritance(
     framework,
+    mixins,
     description,
+    schema_name,
+    default_range,
+    s1def,
+    s2def,
     cls: str,
     object,
     is_valid,
@@ -553,23 +573,33 @@ def test_basic_slot_inheritance(
     """
     Tests behavior of is_a in slot hierarchies.
 
+    This sets up a simple slot hierarchy where S2 inherits from S1
+
     :param framework:
     :param description:
+    :param schema_name:
+    :param cls:
     :param object:
     :param is_valid:
     :return:
     """
     slots = {
-        SLOT_S1: {"range": CLASS_X},
-        SLOT_S2: {
-            "is_a": SLOT_S1,
-        },
+        SLOT_S1: s1def,
+        SLOT_S2: s2def,
     }
+    if mixins:
+        slots[SLOT_S2]["mixins"] = [SLOT_S1]
+    else:
+        slots[SLOT_S2]["is_a"] = SLOT_S1
     classes = {
+        CLASS_ANY: {
+            "class_uri": "linkml:Any",
+        },
         CLASS_X: {
             "attributes": {
                 SLOT_S3: {
                     "required": True,
+                    "range": "string",
                 },
             }
         },
@@ -579,20 +609,29 @@ def test_basic_slot_inheritance(
     }
 
     expected_behavior = ValidationBehavior.IMPLEMENTS
+    if framework in [PYTHON_DATACLASSES, SQL_DDL_SQLITE]:
+        if schema_name == "rMAX":
+            # range constraints are not enforced in these frameworks
+            expected_behavior = ValidationBehavior.INCOMPLETE
+    if framework == SQL_DDL_SQLITE and schema_name == "rANY":
+        pytest.skip("TODO: inconsistencies in SQLA generation")
     schema = validated_schema(
         test_basic_slot_inheritance,
-        "default",
+        f"mixins{mixins}_{schema_name}",
         framework,
+        default_range=default_range,
         classes=classes,
         slots=slots,
         core_elements=["is_a", "slots"],
     )
+    exclude_rdf = schema_name in ["rANY"]
     check_data(
         schema,
         description.replace(" ", "_"),
         framework,
         object,
         is_valid,
+        exclude_rdf=exclude_rdf,
         expected_behavior=expected_behavior,
         target_class=cls,
         description=description,
