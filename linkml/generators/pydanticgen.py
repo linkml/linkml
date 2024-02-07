@@ -525,6 +525,28 @@ class PydanticGenerator(OOCodeGenerator):
             return list(collection_keys)[0]
         return None
 
+    def _inline_as_simple_dict_with_value(self, slot_def: SlotDefinition, sv: SchemaView) -> Optional[str]:
+        """
+        Determine if a slot should be inlined as a simple dict with a value
+
+        :param slot_def: SlotDefinition
+        :param sv: SchemaView
+        :return: str
+        """
+        if slot_def.inlined and not slot_def.inlined_as_list:
+            if slot_def.range in sv.all_classes():
+                id_slot = sv.get_identifier_slot(slot_def.range, use_key=True)
+                if id_slot is not None:
+                    range_cls_slots = sv.class_induced_slots(slot_def.range)
+                    if len(range_cls_slots) == 2:
+                        non_id_slots = [slot for slot in range_cls_slots if slot.name != id_slot.name]
+                        if len(non_id_slots) == 1:
+                            value_slot = non_id_slots[0]
+                            value_slot_range_type = sv.get_type(value_slot.range)
+                            if value_slot_range_type is not None:
+                                return _get_pyrange(value_slot_range_type, sv)
+        return None
+
     def serialize(self) -> str:
         if self.template_file is not None:
             with open(self.template_file) as template_file:
@@ -610,7 +632,14 @@ class PydanticGenerator(OOCodeGenerator):
                     if s.inlined is False or collection_key is None or s.inlined_as_list is True:
                         pyrange = f"List[{pyrange}]"
                     else:
-                        pyrange = f"Dict[{collection_key}, {pyrange}]"
+                        simple_dict_value = None
+                        if len(slot_ranges) == 1:
+                            simple_dict_value = self._inline_as_simple_dict_with_value(s, sv)
+                        if simple_dict_value:
+                            # inlining as simple dict
+                            pyrange = f"Dict[str, {simple_dict_value}]"
+                        else:
+                            pyrange = f"Dict[{collection_key}, {pyrange}]"
                 if not (s.required or s.identifier or s.key) and not s.designates_type:
                     pyrange = f"Optional[{pyrange}]"
                 ann = Annotation("python_range", pyrange)
