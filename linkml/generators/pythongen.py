@@ -215,7 +215,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
                 path = str(self.namespaces.uri_for(path) if ":" in path else path)
                 if path.startswith(linkml_files.LINKML_NAMESPACE):
                     model_base = "." if self.genmeta else "linkml_runtime.linkml_model."
-                    innerself.v.setdefault(model_base + path[len(linkml_files.LINKML_NAMESPACE) :], set()).add(name)
+                    innerself.v.setdefault(model_base + path[len(linkml_files.LINKML_NAMESPACE):], set()).add(name)
                 elif path == linkml.BIOLINK_MODEL_URI:
                     innerself.v.setdefault(linkml.BIOLINK_MODEL_PYTHON_LOC, set()).add(name)
                 elif "://" in path:
