@@ -511,7 +511,7 @@ def test_cardinality(framework, multivalued, required, data_name, value):
     else:
         sqlite = (
             'CREATE TABLE "C_s1" ('
-            '   "C_id" TEXT,'
+            '   "C_id" INTEGER,'
             f"   s1 TEXT {sql_nullable},"
             '   PRIMARY KEY ("C_id", s1),'
             '   FOREIGN KEY("C_id") REFERENCES "C" (id)'
