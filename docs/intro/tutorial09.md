@@ -4,7 +4,7 @@ LinkML allows you to work with SQL/Relational databases in a number of different
 
 * SQL Schemas (DDL) can be generated directly from LinkML schemas
 * Optional Object Relational Mapping (ORM) layers can be generated
-    - Currently only Python / SQL Alchemy ORM layesr are supported
+    - Currently only Python / SQL Alchemy ORM layers are supported
 * SQL Backends can be used directly to store and retrieve data
     - No coding required
     - Currently only SQLite is supported
