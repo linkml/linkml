@@ -9,13 +9,11 @@
 {%- endif -%}
 
 {% macro compute_range(slot) -%}
-    {%- if slot.any_of -%}
-        {%- for subslot in slot.any_of -%}
-            {%- if subslot.range -%}
-                {{ gen.link(subslot.range) }}
-                {%- if not loop.last -%}
-                    &nbsp;∪&nbsp;
-                {%- endif -%}
+    {%- if slot.any_of or slot.exactly_one_of -%}
+        {%- for subslot_range in schemaview.slot_range_as_union(slot) -%}
+            {{ gen.link(subslot_range) }}
+            {%- if not loop.last -%}
+                &nbsp;or&nbsp;<br />
             {%- endif -%}
         {%- endfor -%}
     {%- else -%}
