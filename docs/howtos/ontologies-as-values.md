@@ -406,7 +406,7 @@ Next, we'll look at an ontologist's way to model the same domain. Let's first su
 
 From a LinkML modeling perspective, these additional properties would be Good Things. They allow
 us to constrain our data model to avoid instance data that is invalid or surprising (for example,
-Napolean having a "species" value of "Vertebrate" or "HistoricHuman").
+Napoleon having a "species" value of "Vertebrate" or "HistoricHuman").
 
 ### A model of organisms following ontology conventions
 
