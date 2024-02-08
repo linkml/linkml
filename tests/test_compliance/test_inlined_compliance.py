@@ -76,7 +76,7 @@ def test_inlined(framework, inlined, inlined_as_list, multivalued, foreign_key, 
         (PYDANTIC, True, False, False, False): "D",
         (PYDANTIC, True, False, False, True): "D",
         (PYDANTIC, True, False, True, False): "List[D]",
-        (PYDANTIC, True, False, True, True): "Dict[str, D]", ## TODO: relax for CompactDict
+        (PYDANTIC, True, False, True, True): "Dict[str, D]",  ## TODO: relax for CompactDict
         (PYDANTIC, True, True, False, False): "D",  # odd but valid combo
         # (PYDANTIC, True, True, False, True): "str",  ## TODO check this one
         (PYDANTIC, True, True, True, False): "List[D]",
