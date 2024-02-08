@@ -1475,12 +1475,6 @@ slots:
     comments:
       - if exact_number_dimensions is set, then minimum_number_dimensions and maximum_number_dimensions must be unset or have the same value
 
-  has_extra_dimensions:
-    description: If this is set to true
-    domain: array_expression
-    range: boolean
-    status: testing
-
   inherited:
     domain: slot_definition
     range: boolean
@@ -3007,7 +3001,6 @@ classes:
       - exact_number_dimensions
       - minimum_number_dimensions
       - maximum_number_dimensions
-      - has_extra_dimensions
       - dimensions
     status: testing
 
