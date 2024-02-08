@@ -232,7 +232,7 @@ Currently the only ORM directly supported in SQL Alchemy
 You can generate SQL Alchemy classes using:
 
 ```bash
-gen-sqla -s personinfo.yaml
+gen-sqla personinfo.yaml
 ```
 
 See the SQLDDL generator docs for more details.
