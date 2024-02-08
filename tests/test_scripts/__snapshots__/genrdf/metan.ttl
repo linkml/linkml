@@ -4553,13 +4553,13 @@ linkml:UnitOfMeasure a linkml:ClassDefinition ;
     skos:inScheme linkml:units ;
     skos:mappingRelation qudt:Unit ;
     linkml:any_of [ a linkml:AnonymousClassExpression ;
-            linkml:slot_conditions linkml:iec61360code ],
+            linkml:slot_conditions linkml:exact_mappings ],
         [ a linkml:AnonymousClassExpression ;
             linkml:slot_conditions linkml:ucum_code ],
         [ a linkml:AnonymousClassExpression ;
-            linkml:slot_conditions linkml:symbol ],
+            linkml:slot_conditions linkml:iec61360code ],
         [ a linkml:AnonymousClassExpression ;
-            linkml:slot_conditions linkml:exact_mappings ] ;
+            linkml:slot_conditions linkml:symbol ] ;
     linkml:class_uri linkml:UnitOfMeasure ;
     linkml:definition_uri linkml:UnitOfMeasure ;
     linkml:imported_from "linkml:units" ;
@@ -5723,42 +5723,42 @@ There are many subsets of *profiles* of the metamodel, for different purposes:
 For canonical reference documentation on any metamodel construct,
 refer to the official URI for each construct, e.g.
 [https://w3id.org/linkml/is_a](https://w3id.org/linkml/is_a)""" ;
-    sh:declare [ sh:namespace NCIT: ;
-            sh:prefix "NCIT" ],
-        [ sh:namespace qudt: ;
-            sh:prefix "qudt" ],
-        [ sh:namespace pav: ;
-            sh:prefix "pav" ],
-        [ sh:namespace oslc: ;
-            sh:prefix "oslc" ],
-        [ sh:namespace cdisc: ;
-            sh:prefix "cdisc" ],
-        [ sh:namespace OIO: ;
-            sh:prefix "OIO" ],
-        [ sh:namespace skosxl: ;
-            sh:prefix "skosxl" ],
+    sh:declare [ sh:namespace schema1: ;
+            sh:prefix "schema" ],
         [ sh:namespace <http://semanticscience.org/resource/SIO_> ;
             sh:prefix "SIO" ],
-        [ sh:namespace vann1: ;
-            sh:prefix "vann" ],
-        [ sh:namespace skos: ;
-            sh:prefix "skos" ],
-        [ sh:namespace bibo: ;
-            sh:prefix "bibo" ],
-        [ sh:namespace prov: ;
-            sh:prefix "prov" ],
         [ sh:namespace linkml: ;
             sh:prefix "linkml" ],
-        [ sh:namespace schema1: ;
-            sh:prefix "schema" ],
         [ sh:namespace sh: ;
             sh:prefix "sh" ],
-        [ sh:namespace owl: ;
-            sh:prefix "owl" ],
+        [ sh:namespace pav: ;
+            sh:prefix "pav" ],
+        [ sh:namespace bibo: ;
+            sh:prefix "bibo" ],
         [ sh:namespace swrl: ;
             sh:prefix "swrl" ],
+        [ sh:namespace vann1: ;
+            sh:prefix "vann" ],
+        [ sh:namespace cdisc: ;
+            sh:prefix "cdisc" ],
+        [ sh:namespace qudt: ;
+            sh:prefix "qudt" ],
         [ sh:namespace qb: ;
-            sh:prefix "qb" ] ;
+            sh:prefix "qb" ],
+        [ sh:namespace OIO: ;
+            sh:prefix "OIO" ],
+        [ sh:namespace prov: ;
+            sh:prefix "prov" ],
+        [ sh:namespace oslc: ;
+            sh:prefix "oslc" ],
+        [ sh:namespace owl: ;
+            sh:prefix "owl" ],
+        [ sh:namespace skos: ;
+            sh:prefix "skos" ],
+        [ sh:namespace skosxl: ;
+            sh:prefix "skosxl" ],
+        [ sh:namespace NCIT: ;
+            sh:prefix "NCIT" ] ;
     linkml:classes linkml:AltDescription,
         linkml:Annotatable,
         linkml:Annotation,

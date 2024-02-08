@@ -987,7 +987,15 @@
                 },
                 "annotations": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/Annotation__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Annotation__identifier_optional"
+                            },
+                            {
+                                "$ref": "#/$defs/AnyValue",
+                                "description": "the actual annotation"
+                            }
+                        ]
                     },
                     "description": "a collection of tag/text tuples with the semantics of OWL Annotation",
                     "type": "object"
@@ -1079,7 +1087,15 @@
                 },
                 "extensions": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/Extension__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Extension__identifier_optional"
+                            },
+                            {
+                                "$ref": "#/$defs/AnyValue",
+                                "description": "the actual annotation"
+                            }
+                        ]
                     },
                     "description": "a tag/text tuple attached to an arbitrary element",
                     "type": "object"
@@ -2450,7 +2466,15 @@
                 },
                 "annotations": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/Annotation__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Annotation__identifier_optional"
+                            },
+                            {
+                                "$ref": "#/$defs/AnyValue",
+                                "description": "the actual annotation"
+                            }
+                        ]
                     },
                     "description": "a collection of tag/text tuples with the semantics of OWL Annotation",
                     "type": "object"
@@ -2535,7 +2559,15 @@
                 },
                 "extensions": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/Extension__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Extension__identifier_optional"
+                            },
+                            {
+                                "$ref": "#/$defs/AnyValue",
+                                "description": "the actual annotation"
+                            }
+                        ]
                     },
                     "description": "a tag/text tuple attached to an arbitrary element",
                     "type": "object"
