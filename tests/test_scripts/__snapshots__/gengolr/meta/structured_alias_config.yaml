@@ -1,4 +1,4 @@
-# metamodel_version: 1.7.0# version: 2.0.0id: structured_alias
+# metamodel_version: 1.7.0id: structured_alias
 schema_generating: true
 description: object that contains meta data about a synonym or alias including where
   it came from (source) and its scope (narrow, broad, etc.)

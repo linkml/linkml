@@ -1,4 +1,4 @@
-# metamodel_version: 1.7.0# version: 2.0.0id: slot_definition
+# metamodel_version: 1.7.0id: slot_definition
 schema_generating: true
 description: an element that describes how instances are related to other instances
 display_name: slot_definition
@@ -15,6 +15,10 @@ fields:
     identifier of this class or slot must begin with the URIs referenced by this prefix
   display_name: id_prefixes
   cardinality: multi
+- id: id_prefixes_are_closed
+  description: If true, then the id_prefixes slot is treated as being closed, and
+    any use of an id that does not have this prefix is considered a violation.
+  display_name: id_prefixes_are_closed
 - id: definition_uri
   description: The native URI of the element. This is always within the namespace
     of the containing schema. Contrast with the assigned URI, via class_uri or slot_uri
@@ -231,6 +235,10 @@ fields:
   description: true means that slot can have more than one value and should be represented
     using a list or collection structure.
   display_name: multivalued
+- id: array
+  description: coerces the value of the slot into an array and defines the dimensions
+    of that array
+  display_name: array
 - id: inherited
   description: true means that the *value* of a slot is inherited by subclasses
   display_name: inherited
@@ -411,12 +419,10 @@ fields:
     key or identifier and whose value is the range instance.
   display_name: inlined_as_list
 - id: minimum_value
-  description: for slots with ranges of type number, the value must be equal to or
-    higher than this
+  description: For ordinal ranges, the value must be equal to or higher than this
   display_name: minimum_value
 - id: maximum_value
-  description: for slots with ranges of type number, the value must be equal to or
-    lowe than this
+  description: For ordinal ranges, the value must be equal to or lower than this
   display_name: maximum_value
 - id: pattern
   description: the string value of the slot must conform to this regular expression
@@ -453,6 +459,9 @@ fields:
 - id: equals_expression
   description: the value of the slot must equal the value of the evaluated expression
   display_name: equals_expression
+- id: exact_cardinality
+  description: the exact number of entries for a multivalued slot
+  display_name: exact_cardinality
 - id: minimum_cardinality
   description: the minimum number of entries for a multivalued slot
   display_name: minimum_cardinality

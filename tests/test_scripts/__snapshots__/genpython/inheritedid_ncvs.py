@@ -37,7 +37,7 @@ DEFAULT_ = LINKML
 
 # Types
 class String(str):
-    type_class_uri = XSD.string
+    type_class_uri = XSD["string"]
     type_class_curie = "xsd:string"
     type_name = "string"
     type_model_uri = LINKML.String
@@ -45,7 +45,7 @@ class String(str):
 
 class Uri(URI):
     """ a complete URI """
-    type_class_uri = XSD.anyURI
+    type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "uri"
     type_model_uri = LINKML.Uri
@@ -53,7 +53,7 @@ class Uri(URI):
 
 class IdentifierType(String):
     """ A string that is intended to uniquely identify a thing May be URI in full or compact (CURIE) form """
-    type_class_uri = XSD.string
+    type_class_uri = XSD["string"]
     type_class_curie = "xsd:string"
     type_name = "identifier type"
     type_model_uri = LINKML.IdentifierType
@@ -61,7 +61,7 @@ class IdentifierType(String):
 
 class LabelType(String):
     """ A string that provides a human-readable name for a thing """
-    type_class_uri = XSD.string
+    type_class_uri = XSD["string"]
     type_class_curie = "xsd:string"
     type_name = "label type"
     type_model_uri = LINKML.LabelType

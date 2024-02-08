@@ -37,7 +37,7 @@ DEFAULT_ = LINKML
 
 # Types
 class String(str):
-    type_class_uri = XSD.string
+    type_class_uri = XSD["string"]
     type_class_curie = "xsd:string"
     type_name = "string"
     type_model_uri = LINKML.String
@@ -45,7 +45,7 @@ class String(str):
 
 class Uri(URI):
     """ a complete URI """
-    type_class_uri = XSD.anyURI
+    type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "uri"
     type_model_uri = LINKML.Uri
@@ -53,7 +53,7 @@ class Uri(URI):
 
 class IdentifierType(String):
     """ A string that is intended to uniquely identify a thing May be URI in full or compact (CURIE) form """
-    type_class_uri = XSD.string
+    type_class_uri = XSD["string"]
     type_class_curie = "xsd:string"
     type_name = "identifier type"
     type_model_uri = LINKML.IdentifierType
@@ -61,7 +61,7 @@ class IdentifierType(String):
 
 class LabelType(String):
     """ A string that provides a human-readable name for a thing """
-    type_class_uri = XSD.string
+    type_class_uri = XSD["string"]
     type_class_curie = "xsd:string"
     type_name = "label type"
     type_model_uri = LINKML.LabelType
@@ -91,7 +91,7 @@ class Attribute(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LINKML.Attribute
+    class_class_uri: ClassVar[URIRef] = LINKML["Attribute"]
     class_class_curie: ClassVar[str] = "linkml:Attribute"
     class_name: ClassVar[str] = "attribute"
     class_model_uri: ClassVar[URIRef] = LINKML.Attribute
@@ -115,7 +115,7 @@ class Attribute(YAMLRoot):
 class BiologicalSex(Attribute):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LINKML.BiologicalSex
+    class_class_uri: ClassVar[URIRef] = LINKML["BiologicalSex"]
     class_class_curie: ClassVar[str] = "linkml:BiologicalSex"
     class_name: ClassVar[str] = "biological sex"
     class_model_uri: ClassVar[URIRef] = LINKML.BiologicalSex
@@ -138,7 +138,7 @@ class NamedThing(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LINKML.NamedThing
+    class_class_uri: ClassVar[URIRef] = LINKML["NamedThing"]
     class_class_curie: ClassVar[str] = "linkml:NamedThing"
     class_name: ClassVar[str] = "named thing"
     class_model_uri: ClassVar[URIRef] = LINKML.NamedThing
@@ -165,7 +165,7 @@ class OntologyClass(NamedThing):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LINKML.OntologyClass
+    class_class_uri: ClassVar[URIRef] = LINKML["OntologyClass"]
     class_class_curie: ClassVar[str] = "linkml:OntologyClass"
     class_name: ClassVar[str] = "ontology class"
     class_model_uri: ClassVar[URIRef] = LINKML.OntologyClass

@@ -47,7 +47,7 @@ DEFAULT_ = NMDC
 # Types
 class IdentifierType(ElementIdentifier):
     """ A string that is intended to uniquely identify a thing May be URI in full or compact (CURIE) form """
-    type_class_uri = XSD.anyURI
+    type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "identifier type"
     type_model_uri = NMDC.IdentifierType
@@ -73,7 +73,7 @@ class Biosample(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = NMDC.Biosample
+    class_class_uri: ClassVar[URIRef] = NMDC["Biosample"]
     class_class_curie: ClassVar[str] = "nmdc:Biosample"
     class_name: ClassVar[str] = "biosample"
     class_model_uri: ClassVar[URIRef] = NMDC.Biosample
@@ -108,7 +108,7 @@ class BiosampleProcessing(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = NMDC.BiosampleProcessing
+    class_class_uri: ClassVar[URIRef] = NMDC["BiosampleProcessing"]
     class_class_curie: ClassVar[str] = "nmdc:BiosampleProcessing"
     class_name: ClassVar[str] = "biosample processing"
     class_model_uri: ClassVar[URIRef] = NMDC.BiosampleProcessing
@@ -135,7 +135,7 @@ class Annotation(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = NMDC.Annotation
+    class_class_uri: ClassVar[URIRef] = NMDC["Annotation"]
     class_class_curie: ClassVar[str] = "nmdc:Annotation"
     class_name: ClassVar[str] = "annotation"
     class_model_uri: ClassVar[URIRef] = NMDC.Annotation
@@ -167,7 +167,7 @@ class Characteristic(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = NMDC.Characteristic
+    class_class_uri: ClassVar[URIRef] = NMDC["Characteristic"]
     class_class_curie: ClassVar[str] = "nmdc:Characteristic"
     class_name: ClassVar[str] = "characteristic"
     class_model_uri: ClassVar[URIRef] = NMDC.Characteristic
@@ -202,7 +202,7 @@ class NormalizedValue(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = NMDC.NormalizedValue
+    class_class_uri: ClassVar[URIRef] = NMDC["NormalizedValue"]
     class_class_curie: ClassVar[str] = "nmdc:NormalizedValue"
     class_name: ClassVar[str] = "normalized value"
     class_model_uri: ClassVar[URIRef] = NMDC.NormalizedValue
@@ -215,7 +215,7 @@ class QuantityValue(NormalizedValue):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = NMDC.QuantityValue
+    class_class_uri: ClassVar[URIRef] = NMDC["QuantityValue"]
     class_class_curie: ClassVar[str] = "nmdc:QuantityValue"
     class_name: ClassVar[str] = "quantity value"
     class_model_uri: ClassVar[URIRef] = NMDC.QuantityValue
@@ -240,7 +240,7 @@ class ControlledTermValue(NormalizedValue):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = NMDC.ControlledTermValue
+    class_class_uri: ClassVar[URIRef] = NMDC["ControlledTermValue"]
     class_class_curie: ClassVar[str] = "nmdc:ControlledTermValue"
     class_name: ClassVar[str] = "controlled term value"
     class_model_uri: ClassVar[URIRef] = NMDC.ControlledTermValue
@@ -261,7 +261,7 @@ class GeolocationValue(NormalizedValue):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = NMDC.GeolocationValue
+    class_class_uri: ClassVar[URIRef] = NMDC["GeolocationValue"]
     class_class_curie: ClassVar[str] = "nmdc:GeolocationValue"
     class_name: ClassVar[str] = "geolocation value"
     class_model_uri: ClassVar[URIRef] = NMDC.GeolocationValue
@@ -282,7 +282,7 @@ class GeolocationValue(NormalizedValue):
 class Unit(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = NMDC.Unit
+    class_class_uri: ClassVar[URIRef] = NMDC["Unit"]
     class_class_curie: ClassVar[str] = "nmdc:Unit"
     class_name: ClassVar[str] = "unit"
     class_model_uri: ClassVar[URIRef] = NMDC.Unit
@@ -292,7 +292,7 @@ class Unit(YAMLRoot):
 class OntologyClass(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = NMDC.OntologyClass
+    class_class_uri: ClassVar[URIRef] = NMDC["OntologyClass"]
     class_class_curie: ClassVar[str] = "nmdc:OntologyClass"
     class_name: ClassVar[str] = "ontology class"
     class_model_uri: ClassVar[URIRef] = NMDC.OntologyClass
@@ -341,10 +341,10 @@ slots.has_normalized_value = Slot(uri=NMDC.has_normalized_value, name="has norma
                    model_uri=NMDC.has_normalized_value, domain=Annotation, range=Optional[Union[dict, "NormalizedValue"]])
 
 slots.has_unit = Slot(uri=NMDC.has_unit, name="has unit", curie=NMDC.curie('has_unit'),
-                   model_uri=NMDC.has_unit, domain=None, range=Optional[Union[dict, Unit]], mappings = [QUD.unit])
+                   model_uri=NMDC.has_unit, domain=None, range=Optional[Union[dict, Unit]], mappings = [QUD["unit"]])
 
 slots.has_numeric_value = Slot(uri=NMDC.has_numeric_value, name="has numeric value", curie=NMDC.curie('has_numeric_value'),
-                   model_uri=NMDC.has_numeric_value, domain=None, range=Optional[float], mappings = [QUD.quantityValue])
+                   model_uri=NMDC.has_numeric_value, domain=None, range=Optional[float], mappings = [QUD["quantityValue"]])
 
 slots.alternate_identifiers = Slot(uri=NMDC.alternate_identifiers, name="alternate identifiers", curie=NMDC.curie('alternate_identifiers'),
                    model_uri=NMDC.alternate_identifiers, domain=None, range=Optional[Union[ElementIdentifier, List[ElementIdentifier]]])

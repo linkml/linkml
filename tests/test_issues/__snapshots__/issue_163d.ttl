@@ -1,7 +1,7 @@
 @prefix dcterms: <http://purl.org/dc/terms/> .
 @prefix ex: <http://example.org/> .
 @prefix linkml: <https://w3id.org/linkml/> .
-@prefix schema: <http://schema.org/> .
+@prefix schema1: <http://schema.org/> .
 @prefix sh: <http://www.w3.org/ns/shacl#> .
 @prefix shex: <http://www.w3.org/ns/shex#> .
 @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
@@ -46,7 +46,7 @@ ex:example163d a linkml:SchemaDefinition ;
 ex:boolean a linkml:TypeDefinition ;
     skos:definition "A binary (true or false) value" ;
     skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"boolean\"." ;
-    skos:exactMatch schema:Boolean ;
+    skos:exactMatch schema1:Boolean ;
     skos:inScheme linkml:types ;
     linkml:base "Bool" ;
     linkml:definition_uri linkml:Boolean ;
@@ -71,7 +71,7 @@ ex:date a linkml:TypeDefinition ;
     skos:definition "a date (year, month and day) in an idealized calendar" ;
     skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"date\".",
         "URI is dateTime because OWL reasoners don't work with straight date or time" ;
-    skos:exactMatch schema:Date ;
+    skos:exactMatch schema1:Date ;
     skos:inScheme linkml:types ;
     linkml:base "XSDDate" ;
     linkml:definition_uri linkml:Date ;
@@ -92,7 +92,7 @@ ex:date_or_datetime a linkml:TypeDefinition ;
 ex:datetime a linkml:TypeDefinition ;
     skos:definition "The combination of a date and time" ;
     skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"datetime\"." ;
-    skos:exactMatch schema:DateTime ;
+    skos:exactMatch schema1:DateTime ;
     skos:inScheme linkml:types ;
     linkml:base "XSDDateTime" ;
     linkml:definition_uri linkml:Datetime ;
@@ -101,7 +101,7 @@ ex:datetime a linkml:TypeDefinition ;
     linkml:uri xsd:dateTime .
 
 ex:decimal a linkml:TypeDefinition ;
-    skos:broadMatch schema:Number ;
+    skos:broadMatch schema1:Number ;
     skos:definition "A real number with arbitrary precision that conforms to the xsd:decimal specification" ;
     skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"decimal\"." ;
     skos:inScheme linkml:types ;
@@ -111,7 +111,7 @@ ex:decimal a linkml:TypeDefinition ;
     linkml:uri xsd:decimal .
 
 ex:double a linkml:TypeDefinition ;
-    skos:closeMatch schema:Float ;
+    skos:closeMatch schema1:Float ;
     skos:definition "A real number that conforms to the xsd:double specification" ;
     skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"double\"." ;
     skos:inScheme linkml:types ;
@@ -123,7 +123,7 @@ ex:double a linkml:TypeDefinition ;
 ex:float a linkml:TypeDefinition ;
     skos:definition "A real number that conforms to the xsd:float specification" ;
     skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"float\"." ;
-    skos:exactMatch schema:Float ;
+    skos:exactMatch schema1:Float ;
     skos:inScheme linkml:types ;
     linkml:base "float" ;
     linkml:definition_uri linkml:Float ;
@@ -133,7 +133,7 @@ ex:float a linkml:TypeDefinition ;
 ex:integer a linkml:TypeDefinition ;
     skos:definition "An integer" ;
     skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"integer\"." ;
-    skos:exactMatch schema:Integer ;
+    skos:exactMatch schema1:Integer ;
     skos:inScheme linkml:types ;
     linkml:base "int" ;
     linkml:definition_uri linkml:Integer ;
@@ -208,7 +208,7 @@ ex:time a linkml:TypeDefinition ;
     skos:definition "A time object represents a (local) time of day, independent of any particular day" ;
     skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"time\".",
         "URI is dateTime because OWL reasoners do not work with straight date or time" ;
-    skos:exactMatch schema:Time ;
+    skos:exactMatch schema1:Time ;
     skos:inScheme linkml:types ;
     linkml:base "XSDTime" ;
     linkml:definition_uri linkml:Time ;
@@ -218,7 +218,7 @@ ex:time a linkml:TypeDefinition ;
 
 ex:uri a linkml:TypeDefinition ;
     dcterms:conformsTo "https://www.ietf.org/rfc/rfc3987.txt" ;
-    skos:closeMatch schema:URL ;
+    skos:closeMatch schema1:URL ;
     skos:definition "a complete URI" ;
     skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"uri\"." ;
     skos:inScheme linkml:types ;
@@ -242,7 +242,7 @@ ex:uriorcurie a linkml:TypeDefinition ;
 ex:string a linkml:TypeDefinition ;
     skos:definition "A character string" ;
     skos:editorialNote "In RDF serializations, a slot with range of string is treated as a literal or type xsd:string.   If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"string\"." ;
-    skos:exactMatch schema:Text ;
+    skos:exactMatch schema1:Text ;
     skos:inScheme linkml:types ;
     linkml:base "str" ;
     linkml:definition_uri linkml:String ;

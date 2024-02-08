@@ -46,7 +46,7 @@ DEFAULT_ = EX
 class Thing(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = EX.Thing
+    class_class_uri: ClassVar[URIRef] = EX["Thing"]
     class_class_curie: ClassVar[str] = "ex:Thing"
     class_name: ClassVar[str] = "Thing"
     class_model_uri: ClassVar[URIRef] = EX.Thing
@@ -68,7 +68,7 @@ class Thing(YAMLRoot):
 class Person(Thing):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = SDO.Person
+    class_class_uri: ClassVar[URIRef] = SDO["Person"]
     class_class_curie: ClassVar[str] = "sdo:Person"
     class_name: ClassVar[str] = "Person"
     class_model_uri: ClassVar[URIRef] = EX.Person
@@ -100,7 +100,7 @@ class Person(Thing):
 class Organization(Thing):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = EX.Organization
+    class_class_uri: ClassVar[URIRef] = EX["Organization"]
     class_class_curie: ClassVar[str] = "ex:Organization"
     class_name: ClassVar[str] = "Organization"
     class_model_uri: ClassVar[URIRef] = EX.Organization
@@ -123,7 +123,7 @@ class Organization(Thing):
 class GeoObject(Thing):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = EX.GeoObject
+    class_class_uri: ClassVar[URIRef] = EX["GeoObject"]
     class_class_curie: ClassVar[str] = "ex:GeoObject"
     class_name: ClassVar[str] = "GeoObject"
     class_model_uri: ClassVar[URIRef] = EX.GeoObject
@@ -145,7 +145,7 @@ class GeoObject(Thing):
 class GeoAge(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = EX.GeoAge
+    class_class_uri: ClassVar[URIRef] = EX["GeoAge"]
     class_class_curie: ClassVar[str] = "ex:GeoAge"
     class_name: ClassVar[str] = "GeoAge"
     class_model_uri: ClassVar[URIRef] = EX.GeoAge

@@ -45,7 +45,7 @@ DEFAULT_ = TCCM
 class IterableResolvedValueSet(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = TCCM.IterableResolvedValueSet
+    class_class_uri: ClassVar[URIRef] = TCCM["IterableResolvedValueSet"]
     class_class_curie: ClassVar[str] = "tccm:IterableResolvedValueSet"
     class_name: ClassVar[str] = "IterableResolvedValueSet"
     class_model_uri: ClassVar[URIRef] = TCCM.IterableResolvedValueSet

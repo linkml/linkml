@@ -1,4 +1,4 @@
-# metamodel_version: 1.7.0# version: 2.0.0id: extension
+# metamodel_version: 1.7.0id: extension
 schema_generating: true
 description: a tag/value pair used to add non-model information to an entry
 display_name: extension

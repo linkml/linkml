@@ -1,5 +1,4 @@
 # metamodel_version: 1.7.0
-# version: 2.0.0
 BASE <https://w3id.org/linkml/>
 PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -91,7 +90,8 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <code_set_tag> @<String> ? ;
           <code_set_version> @<String> ? ;
           <pv_formula> [ <https://w3id.org/linkml/PvFormulaOptions#CODE> <https://w3id.org/linkml/PvFormulaOptions#CURIE>
-             <https://w3id.org/linkml/PvFormulaOptions#URI> <https://w3id.org/linkml/PvFormulaOptions#FHIR_CODING> ] ? ;
+             <https://w3id.org/linkml/PvFormulaOptions#URI> <https://w3id.org/linkml/PvFormulaOptions#FHIR_CODING>
+             <https://w3id.org/linkml/PvFormulaOptions#LABEL> ] ? ;
           <permissible_values> @<PermissibleValue> * ;
           <include> @<AnonymousEnumExpression> * ;
           <minus> @<AnonymousEnumExpression> * ;
@@ -169,8 +169,8 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <recommended> @<Boolean> ? ;
           <inlined> @<Boolean> ? ;
           <inlined_as_list> @<Boolean> ? ;
-          <minimum_value> @<Integer> ? ;
-          <maximum_value> @<Integer> ? ;
+          <minimum_value> @<Anything> ? ;
+          <maximum_value> @<Anything> ? ;
           <pattern> @<String> ? ;
           <structured_pattern> @<PatternExpression> ? ;
           <unit> @<UnitOfMeasure> ? ;
@@ -181,6 +181,7 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <equals_string_in> @<String> * ;
           <equals_number> @<Integer> ? ;
           <equals_expression> @<String> ? ;
+          <exact_cardinality> @<Integer> ? ;
           <minimum_cardinality> @<Integer> ? ;
           <maximum_cardinality> @<Integer> ? ;
           <has_member> @<AnonymousSlotExpression> ? ;
@@ -204,8 +205,8 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <equals_string> @<String> ? ;
           <equals_string_in> @<String> * ;
           <equals_number> @<Integer> ? ;
-          <minimum_value> @<Integer> ? ;
-          <maximum_value> @<Integer> ? ;
+          <minimum_value> @<Anything> ? ;
+          <maximum_value> @<Anything> ? ;
           <none_of> @<AnonymousTypeExpression> * ;
           <exactly_one_of> @<AnonymousTypeExpression> * ;
           <any_of> @<AnonymousTypeExpression> * ;
@@ -224,6 +225,57 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 <AnyValue> CLOSED {
     (  $<AnyValue_tes> rdf:type . * ;
        rdf:type [ <AnyValue> ] ?
+    )
+}
+
+<ArrayExpression> CLOSED {
+    (  $<ArrayExpression_tes> (  &<Extensible_tes> ;
+          rdf:type [ <Extensible> ] ? ;
+          &<Annotatable_tes> ;
+          rdf:type [ <Annotatable> ] ? ;
+          &<CommonMetadata_tes> ;
+          rdf:type [ <CommonMetadata> ] ? ;
+          <exact_number_dimensions> @<Integer> ? ;
+          <minimum_number_dimensions> @<Integer> ? ;
+          <maximum_number_dimensions> @<Anything> ? ;
+          <dimensions> @<DimensionExpression> * ;
+          <extensions> @<Extension> * ;
+          <annotations> @<Annotation> * ;
+          <description> @<String> ? ;
+          <alt_descriptions> @<AltDescription> * ;
+          <title> @<String> ? ;
+          <deprecated> @<String> ? ;
+          <todos> @<String> * ;
+          <notes> @<String> * ;
+          <comments> @<String> * ;
+          <examples> @<Example> * ;
+          <in_subset> @<SubsetDefinition> * ;
+          <from_schema> @<Uri> ? ;
+          <imported_from> @<String> ? ;
+          <source> @<Uriorcurie> ? ;
+          <in_language> @<String> ? ;
+          <see_also> @<Uriorcurie> * ;
+          <deprecated_element_has_exact_replacement> @<Uriorcurie> ? ;
+          <deprecated_element_has_possible_replacement> @<Uriorcurie> ? ;
+          <aliases> @<String> * ;
+          <structured_aliases> @<StructuredAlias> * ;
+          <mappings> @<Uriorcurie> * ;
+          <exact_mappings> @<Uriorcurie> * ;
+          <close_mappings> @<Uriorcurie> * ;
+          <related_mappings> @<Uriorcurie> * ;
+          <narrow_mappings> @<Uriorcurie> * ;
+          <broad_mappings> @<Uriorcurie> * ;
+          <created_by> @<Uriorcurie> ? ;
+          <contributors> @<Uriorcurie> * ;
+          <created_on> @<Datetime> ? ;
+          <last_updated_on> @<Datetime> ? ;
+          <modified_by> @<Uriorcurie> ? ;
+          <status> @<Uriorcurie> ? ;
+          <rank> @<Integer> ? ;
+          <categories> @<Uriorcurie> * ;
+          <keywords> @<String> *
+       ) ;
+       rdf:type [ <ArrayExpression> ] ?
     )
 }
 
@@ -390,6 +442,57 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
     )
 }
 
+<DimensionExpression> CLOSED {
+    (  $<DimensionExpression_tes> (  &<Extensible_tes> ;
+          rdf:type [ <Extensible> ] ? ;
+          &<Annotatable_tes> ;
+          rdf:type [ <Annotatable> ] ? ;
+          &<CommonMetadata_tes> ;
+          rdf:type [ <CommonMetadata> ] ? ;
+          <alias> @<String> ? ;
+          <maximum_cardinality> @<Integer> ? ;
+          <minimum_cardinality> @<Integer> ? ;
+          <exact_cardinality> @<Integer> ? ;
+          <extensions> @<Extension> * ;
+          <annotations> @<Annotation> * ;
+          <description> @<String> ? ;
+          <alt_descriptions> @<AltDescription> * ;
+          <title> @<String> ? ;
+          <deprecated> @<String> ? ;
+          <todos> @<String> * ;
+          <notes> @<String> * ;
+          <comments> @<String> * ;
+          <examples> @<Example> * ;
+          <in_subset> @<SubsetDefinition> * ;
+          <from_schema> @<Uri> ? ;
+          <imported_from> @<String> ? ;
+          <source> @<Uriorcurie> ? ;
+          <in_language> @<String> ? ;
+          <see_also> @<Uriorcurie> * ;
+          <deprecated_element_has_exact_replacement> @<Uriorcurie> ? ;
+          <deprecated_element_has_possible_replacement> @<Uriorcurie> ? ;
+          <aliases> @<String> * ;
+          <structured_aliases> @<StructuredAlias> * ;
+          <mappings> @<Uriorcurie> * ;
+          <exact_mappings> @<Uriorcurie> * ;
+          <close_mappings> @<Uriorcurie> * ;
+          <related_mappings> @<Uriorcurie> * ;
+          <narrow_mappings> @<Uriorcurie> * ;
+          <broad_mappings> @<Uriorcurie> * ;
+          <created_by> @<Uriorcurie> ? ;
+          <contributors> @<Uriorcurie> * ;
+          <created_on> @<Datetime> ? ;
+          <last_updated_on> @<Datetime> ? ;
+          <modified_by> @<Uriorcurie> ? ;
+          <status> @<Uriorcurie> ? ;
+          <rank> @<Integer> ? ;
+          <categories> @<Uriorcurie> * ;
+          <keywords> @<String> *
+       ) ;
+       rdf:type [ <DimensionExpression> ] ?
+    )
+}
+
 <Element>  (
     @<Definition> OR @<SchemaDefinition> OR @<SubsetDefinition> OR @<TypeDefinition>
 )
@@ -402,6 +505,7 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           &<CommonMetadata_tes> ;
           rdf:type [ <CommonMetadata> ] ? ;
           <id_prefixes> @<Ncname> * ;
+          <id_prefixes_are_closed> @<Boolean> ? ;
           <definition_uri> @<Uriorcurie> ? ;
           <local_names> @<LocalName> * ;
           <conforms_to> @<String> ? ;
@@ -457,7 +561,8 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <code_set_tag> @<String> ? ;
           <code_set_version> @<String> ? ;
           <pv_formula> [ <https://w3id.org/linkml/PvFormulaOptions#CODE> <https://w3id.org/linkml/PvFormulaOptions#CURIE>
-             <https://w3id.org/linkml/PvFormulaOptions#URI> <https://w3id.org/linkml/PvFormulaOptions#FHIR_CODING> ] ? ;
+             <https://w3id.org/linkml/PvFormulaOptions#URI> <https://w3id.org/linkml/PvFormulaOptions#FHIR_CODING>
+             <https://w3id.org/linkml/PvFormulaOptions#LABEL> ] ? ;
           <permissible_values> @<PermissibleValue> * ;
           <include> @<AnonymousEnumExpression> * ;
           <minus> @<AnonymousEnumExpression> * ;
@@ -477,7 +582,8 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <code_set_tag> @<String> ? ;
           <code_set_version> @<String> ? ;
           <pv_formula> [ <https://w3id.org/linkml/PvFormulaOptions#CODE> <https://w3id.org/linkml/PvFormulaOptions#CURIE>
-             <https://w3id.org/linkml/PvFormulaOptions#URI> <https://w3id.org/linkml/PvFormulaOptions#FHIR_CODING> ] ? ;
+             <https://w3id.org/linkml/PvFormulaOptions#URI> <https://w3id.org/linkml/PvFormulaOptions#FHIR_CODING>
+             <https://w3id.org/linkml/PvFormulaOptions#LABEL> ] ? ;
           <permissible_values> @<PermissibleValue> * ;
           <include> @<AnonymousEnumExpression> * ;
           <minus> @<AnonymousEnumExpression> * ;
@@ -815,6 +921,7 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <domain> @<ClassDefinition> ? ;
           <slot_uri> @<Uriorcurie> ? ;
           <multivalued> @<Boolean> ? ;
+          <array> @<ArrayExpression> ? ;
           <inherited> @<Boolean> ? ;
           <readonly> @<String> ? ;
           <ifabsent> @<String> ? ;
@@ -858,8 +965,8 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <recommended> @<Boolean> ? ;
           <inlined> @<Boolean> ? ;
           <inlined_as_list> @<Boolean> ? ;
-          <minimum_value> @<Integer> ? ;
-          <maximum_value> @<Integer> ? ;
+          <minimum_value> @<Anything> ? ;
+          <maximum_value> @<Anything> ? ;
           <pattern> @<String> ? ;
           <structured_pattern> @<PatternExpression> ? ;
           <unit> @<UnitOfMeasure> ? ;
@@ -870,6 +977,7 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <equals_string_in> @<String> * ;
           <equals_number> @<Integer> ? ;
           <equals_expression> @<String> ? ;
+          <exact_cardinality> @<Integer> ? ;
           <minimum_cardinality> @<Integer> ? ;
           <maximum_cardinality> @<Integer> ? ;
           <has_member> @<AnonymousSlotExpression> ? ;
@@ -893,8 +1001,8 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <recommended> @<Boolean> ? ;
           <inlined> @<Boolean> ? ;
           <inlined_as_list> @<Boolean> ? ;
-          <minimum_value> @<Integer> ? ;
-          <maximum_value> @<Integer> ? ;
+          <minimum_value> @<Anything> ? ;
+          <maximum_value> @<Anything> ? ;
           <pattern> @<String> ? ;
           <structured_pattern> @<PatternExpression> ? ;
           <unit> @<UnitOfMeasure> ? ;
@@ -905,6 +1013,7 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <equals_string_in> @<String> * ;
           <equals_number> @<Integer> ? ;
           <equals_expression> @<String> ? ;
+          <exact_cardinality> @<Integer> ? ;
           <minimum_cardinality> @<Integer> ? ;
           <maximum_cardinality> @<Integer> ? ;
           <has_member> @<AnonymousSlotExpression> ? ;
@@ -994,8 +1103,8 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <equals_string> @<String> ? ;
           <equals_string_in> @<String> * ;
           <equals_number> @<Integer> ? ;
-          <minimum_value> @<Integer> ? ;
-          <maximum_value> @<Integer> ? ;
+          <minimum_value> @<Anything> ? ;
+          <maximum_value> @<Anything> ? ;
           <none_of> @<AnonymousTypeExpression> * ;
           <exactly_one_of> @<AnonymousTypeExpression> * ;
           <any_of> @<AnonymousTypeExpression> * ;
@@ -1015,8 +1124,8 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <equals_string> @<String> ? ;
           <equals_string_in> @<String> * ;
           <equals_number> @<Integer> ? ;
-          <minimum_value> @<Integer> ? ;
-          <maximum_value> @<Integer> ? ;
+          <minimum_value> @<Anything> ? ;
+          <maximum_value> @<Anything> ? ;
           <none_of> @<AnonymousTypeExpression> * ;
           <exactly_one_of> @<AnonymousTypeExpression> * ;
           <any_of> @<AnonymousTypeExpression> * ;

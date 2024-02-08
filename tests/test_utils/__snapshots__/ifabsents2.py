@@ -39,7 +39,7 @@ DEFAULT_ = TEST
 # Types
 class String(str):
     """ A character string """
-    type_class_uri = XSD.string
+    type_class_uri = XSD["string"]
     type_class_curie = "xsd:string"
     type_name = "string"
     type_model_uri = TEST.String
@@ -53,7 +53,7 @@ class String(str):
 class C1(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = TEST.C1
+    class_class_uri: ClassVar[URIRef] = TEST["C1"]
     class_class_curie: ClassVar[str] = "test:C1"
     class_name: ClassVar[str] = "c1"
     class_model_uri: ClassVar[URIRef] = TEST.C1

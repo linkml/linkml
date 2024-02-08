@@ -1,16 +1,25 @@
-# metamodel_version: 1.7.0id: import_expression
+# metamodel_version: 1.7.0id: array_expression
 schema_generating: true
-description: an expression describing an import
-display_name: import_expression
-document_category: import_expression
+description: defines the dimensions of an array
+display_name: array_expression
+document_category: array_expression
 weight: 20
 fields:
-- id: import_from
-  display_name: import_from
-- id: import_as
-  display_name: import_as
-- id: import_map
-  display_name: import_map
+- id: exact_number_dimensions
+  description: exact number of dimensions in the array
+  display_name: exact_number_dimensions
+- id: minimum_number_dimensions
+  description: minimum number of dimensions in the array
+  display_name: minimum_number_dimensions
+- id: maximum_number_dimensions
+  description: maximum number of dimensions in the array, or False if explicitly no
+    maximum. If this is unset, and an explicit list of dimensions are passed using
+    dimensions, then this is interpreted as a closed list and the maximum_number_dimensions
+    is the length of the dimensions list, unless this value is set to False
+  display_name: maximum_number_dimensions
+- id: dimensions
+  description: definitions of each axis in the array
+  display_name: dimensions
   cardinality: multi
 - id: extensions
   description: a tag/text tuple attached to an arbitrary element

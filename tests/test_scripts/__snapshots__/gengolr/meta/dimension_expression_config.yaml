@@ -1,17 +1,23 @@
-# metamodel_version: 1.7.0id: import_expression
+# metamodel_version: 1.7.0id: dimension_expression
 schema_generating: true
-description: an expression describing an import
-display_name: import_expression
-document_category: import_expression
+description: defines one of the dimensions of an array
+display_name: dimension_expression
+document_category: dimension_expression
 weight: 20
 fields:
-- id: import_from
-  display_name: import_from
-- id: import_as
-  display_name: import_as
-- id: import_map
-  display_name: import_map
-  cardinality: multi
+- id: alias
+  description: the name used for a slot in the context of its owning class.  If present,
+    this is used instead of the actual slot name.
+  display_name: alias
+- id: maximum_cardinality
+  description: the maximum number of entries for a multivalued slot
+  display_name: maximum_cardinality
+- id: minimum_cardinality
+  description: the minimum number of entries for a multivalued slot
+  display_name: minimum_cardinality
+- id: exact_cardinality
+  description: the exact number of entries for a multivalued slot
+  display_name: exact_cardinality
 - id: extensions
   description: a tag/text tuple attached to an arbitrary element
   display_name: extensions

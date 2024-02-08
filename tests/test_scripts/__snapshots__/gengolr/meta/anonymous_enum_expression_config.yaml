@@ -1,4 +1,4 @@
-# metamodel_version: 1.7.0# version: 2.0.0id: anonymous_enum_expression
+# metamodel_version: 1.7.0id: anonymous_enum_expression
 schema_generating: true
 description: An enum_expression that is not named
 display_name: anonymous_enum_expression

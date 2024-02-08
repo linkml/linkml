@@ -39,7 +39,7 @@ DEFAULT_ = CurieNamespace('', 'http://example.org/tests/timepoint/')
 # Types
 class TimeType(Time):
     """ A time object represents a (local) time of day, independent of any particular day """
-    type_class_uri = XSD.time
+    type_class_uri = XSD["time"]
     type_class_curie = "xsd:time"
     type_name = "time type"
     type_model_uri = URIRef("http://example.org/tests/timepoint/TimeType")

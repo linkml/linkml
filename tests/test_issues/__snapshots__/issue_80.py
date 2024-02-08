@@ -52,7 +52,7 @@ class Person(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = EX.PERSON
+    class_class_uri: ClassVar[URIRef] = EX["PERSON"]
     class_class_curie: ClassVar[str] = "ex:PERSON"
     class_name: ClassVar[str] = "person"
     class_model_uri: ClassVar[URIRef] = BIOLINK.Person

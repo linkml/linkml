@@ -38,7 +38,7 @@ DEFAULT_ = EX
 # Types
 class String(str):
     """ A character string """
-    type_class_uri = XSD.string
+    type_class_uri = XSD["string"]
     type_class_curie = "xsd:string"
     type_name = "string"
     type_model_uri = EX.String
@@ -53,7 +53,7 @@ class BaseId(extended_str):
 class Base(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = EX.Base
+    class_class_uri: ClassVar[URIRef] = EX["Base"]
     class_class_curie: ClassVar[str] = "ex:Base"
     class_name: ClassVar[str] = "base"
     class_model_uri: ClassVar[URIRef] = EX.Base
