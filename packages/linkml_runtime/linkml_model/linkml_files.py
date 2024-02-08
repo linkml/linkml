@@ -111,7 +111,7 @@ def GITHUB_PATH_FOR(source: Source,
         raise requests.HTTPError(f"{resp.status_code} - {resp.reason}: {url}")
 
     def tag_to_commit(tag: str) -> str:
-        tags = do_request(f"{GITHUB_API_BASE}tags")
+        tags = do_request(f"{GITHUB_API_BASE}tags?per_page=100")
         for tagent in tags:
             if tagent['name'] == tag:
                 return _build_loc(f"{GITHUB_BASE}blob/{tagent['commit']['sha']}/", source, fmt)

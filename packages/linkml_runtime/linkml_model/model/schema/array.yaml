@@ -1,7 +1,7 @@
 id: https://w3id.org/linkml/lib/arrays
 name: arrays
 title: LinkML Arrays
-description: >- 
+description: >-
   LinkML templates for storing one-dimensional series, two-dimensional arrays,
   and arrays of higher dimensionality.
 
@@ -9,7 +9,7 @@ description: >-
 
   Note that this model is not intended to be imported directly. Instead,
   use `implements` to denote conformance.
-  
+
 status: testing
 # contributors:
 #  - github:rly
@@ -39,13 +39,13 @@ classes:
   DataStructure:
     abstract: true
 
-  Array:
+  NDArray:
     description: >-
       a data structure consisting of a collection of *elements*, each identified by at least one array index tuple.
     abstract: true
     is_a: DataStructure
     slots:
-      - dimensionality
+      - dimensions
       - elements
       - array_linearization_order
     slot_usage:
@@ -55,65 +55,26 @@ classes:
           an ordered sequence of values. The elements also have an *array interpretation*, where each
           element has a unique index which is determined by array_linearization_order
 
-
-  OneDimensionalSeries:
-    is_a: Array
+  DataArray:
     description: >-
-      An array that has one dimension
-    aliases:
+      a data structure containing an NDArray and a set of one-dimensional series that are used to label
+      the elements of the array
+    is_a: DataStructure
+    slots:
       - axis
-      - 1D array
-      - vector
-      - series
-      - row
-    slots:
-      - series_label
-      - length
-      # TODO: consider offset and rate
-    slot_usage:
-      dimensionality:
-        equals_expression: "1"
-    
-  TwoDimensionalArray:
-    is_a: Array
-    description: >-
-      An array that has two dimensions
-    aliases:
-      - table
-      - matrix
-      - grid
-    slots:
-      - axis0
-      - axis1
-    slot_usage:
-      dimensionality:
-        equals_expression: "2"
-      elements:
-        description: >-
-          this will be serialized as one big long list that should be interpreted as a 2D array
+      - array
+    see_also:
+      - https://docs.xarray.dev/en/stable/generated/xarray.DataArray.html
 
-  ThreeDimensionalArray:
-    is_a: Array
-    description: >-
-      An array that has two dimensions
-    aliases:
-      - 3D array
-    slots:
-      - axis0
-      - axis1
-      - axis2
-    slot_usage:
-      dimensionality:
-        equals_expression: "3"
-
-  OrderedArray:
+  GroupingByArrayOrder:
     mixin: true
     description: >-
       A mixin that describes an array whose elements are mapped from a linear sequence to an array index
       via a specified mapping
-      
+
   ColumnOrderedArray:
     mixin: true
+    is_a: GroupingByArrayOrder
     description: >-
       An array ordering that is column-order
     slots:
@@ -121,9 +82,10 @@ classes:
     slot_usage:
       array_linearization_order:
         equals_string: COLUMN_MAJOR_ARRAY_ORDER
-        
+
   RowOrderedArray:
     mixin: true
+    is_a: GroupingByArrayOrder
     description: >-
       An array ordering that is row-order or generalizations thereof
     slots:
@@ -131,96 +93,36 @@ classes:
     slot_usage:
       array_linearization_order:
         equals_string: ROW_MAJOR_ARRAY_ORDER
-        
-  MultiDimensionalArray:
-    is_a: Array
-    abstract: true
-    description: >-
-      An array that has more than two dimensions
 
-  ObjectAsTuple:
-    comments:
-      - not modeled as an array since this is used as a metaclass
-    implements:
-      - OneDimensionalSeries
-
-  ArrayIndex:
-    is_a: ObjectAsTuple
-
-  Operation:
-    abstract: true
-    description: >-
-      Represents the transformation of one or more inputs to one or more outputs determined by
-      zero to many operation parameters
-    slots:
-      - specified_input
-      - specified_output
-      - operation_parameters
-
-  ArrayIndexOperation:
-    description: >-
-      An operation that takes as input an Array and is parameterized by an array index tuple and
-      yields an array element
-    slot_usage:
-      specified_input:
-        range: Array
-        maximum_cardinality: 1
-      specified_output:
-        range: Any
-        maximum_cardinality: 1
-      operation_parameters:
-        range: ArrayIndex
-        maximum_cardinality: 1
-      
 slots:
-  dimensionality:
+  dimensions:
     description: >-
       The number of elements in the tuple used to access elements of an array
     aliases:
       - rank
-      - dimension
+      - dimensionality
       - number of axes
       - number of elements
     range: integer
   axis:
-    abstract: true
-    range: OneDimensionalSeries
+    range: NDArray
+    slot_usage:
+      dimensions:
+        equals_number: 1
     aliases:
       - dimension
     description: >-
-      A one dimensional series that contains elements that form one part of a tuple used to access an array
-  axis0:
-    is_a: axis
-    aliases:
-      - x
-      - dimension0
+      A one-dimensional series that contains elements that form one part of a tuple used to access an array
+    required: true
+  axis_index:
+    range: integer
     description: >-
-      An axis that is the zeroth index of the tuple used to access an array
-    range: OneDimensionalSeries
-    rank: 0
-    required: true
-    inlined: true
-    inlined_as_list: true
-  axis1:
-    is_a: axis
-    aliases:
-      - y
+      The position of an axis in a tuple used to access an array
+  array:
+    range: NDArray
     description: >-
-      An axis that is the index after the zeroth of the tuple used to access an array
-    range: OneDimensionalSeries
-    rank: 1
+      An array that is labeled by a set of one-dimensional series
     required: true
-    inlined: true
-    inlined_as_list: true
-  axis2:
-    is_a: axis
-    aliases:
-      - z
-    range: OneDimensionalSeries
-    rank: 2
-    required: true
-    inlined: true
-    inlined_as_list: true
   elements:
     # this will be serialized as one big long list that should be interpreted as a 2D array
     range: Any
@@ -254,7 +156,7 @@ slots:
   operation_parameters:
     range: Any
     multivalued: true
-  
+
 enums:
   ArrayLinearizationOrderOptions:
     description: >-
@@ -275,5 +177,3 @@ enums:
           or any generalization thereof to dimensionality greater than 2
         aliases:
           - C order
-
-        

@@ -1,9 +1,8 @@
 {
   "name": "meta",
-  "description": "The metamodel for schemas defined using the Linked Data Modeling Language framework.\n\nFor more information on LinkML:\n\n* [linkml.io](https://linkml.io) main website\n* [specification](https://w3id.org/linkml/docs/specification/)\n\nLinkML is self-describing. Every LinkML schema consists of elements\nthat instantiate classes in this metamodel.\n\nCore metaclasses:\n\n* [SchemaDefinition](https://w3id.org/linkml/SchemaDefinition)\n* [ClassDefinition](https://w3id.org/linkml/ClassDefinition)\n* [SlotDefinition](https://w3id.org/linkml/SlotDefinition)\n* [TypeDefinition](https://w3id.org/linkml/TypeDefinition)\n\nThere are many subsets of *profiles* of the metamodel, for different purposes:\n\n* [MinimalSubset](https://w3id.org/linkml/MinimalSubset)\n* [BasicSubset](https://w3id.org/linkml/BasicSubset)\n* [BasicSubset](https://w3id.org/linkml/BasicSubset)\n\nFor canonical reference documentation on any metamodel construct,\nrefer to the official URI for each construct, e.g.\n[https://w3id.org/linkml/is_a](https://w3id.org/linkml/is_a)",
+  "description": "The metamodel for schemas defined using the Linked Data Modeling Language framework.\n\nFor more information on LinkML:\n\n* [linkml.io](https://linkml.io) main website\n* [specification](https://w3id.org/linkml/docs/specification/)\n\nLinkML is self-describing. Every LinkML schema consists of elements\nthat instantiate classes in this metamodel.\n\nCore metaclasses:\n\n* [SchemaDefinition](https://w3id.org/linkml/SchemaDefinition)\n* [ClassDefinition](https://w3id.org/linkml/ClassDefinition)\n* [SlotDefinition](https://w3id.org/linkml/SlotDefinition)\n* [TypeDefinition](https://w3id.org/linkml/TypeDefinition)\n\nThere are many subsets of *profiles* of the metamodel, for different purposes:\n\n* [MinimalSubset](https://w3id.org/linkml/MinimalSubset)\n* [BasicSubset](https://w3id.org/linkml/BasicSubset)\n\nFor canonical reference documentation on any metamodel construct,\nrefer to the official URI for each construct, e.g.\n[https://w3id.org/linkml/is_a](https://w3id.org/linkml/is_a)",
   "title": "LinkML Schema Metamodel",
   "id": "https://w3id.org/linkml/meta",
-  "version": "2.0.0",
   "imports": [
     "linkml:types",
     "linkml:mappings",
@@ -80,6 +79,10 @@
     {
       "prefix_prefix": "cdisc",
       "prefix_reference": "http://rdf.cdisc.org/mms#"
+    },
+    {
+      "prefix_prefix": "SIO",
+      "prefix_reference": "http://semanticscience.org/resource/SIO_"
     }
   ],
   "emit_prefixes": [
@@ -491,6 +494,10 @@
         {
           "text": "FHIR_CODING",
           "description": "The permissible values are the set of FHIR coding elements derived from the code set"
+        },
+        {
+          "text": "LABEL",
+          "description": "The permissible values are the set of human readable labels in the code set"
         }
       ]
     },
@@ -781,7 +788,6 @@
       ],
       "from_schema": "https://w3id.org/linkml/meta",
       "see_also": [
-        "https://github.com/linkml/linkml/issues/194",
         "https://github.com/linkml/linkml-model/issues/28"
       ],
       "domain": "Element",
@@ -792,6 +798,23 @@
         "Element"
       ],
       "range": "ncname",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "id_prefixes_are_closed",
+      "definition_uri": "https://w3id.org/linkml/id_prefixes_are_closed",
+      "description": "If true, then the id_prefixes slot is treated as being closed, and any use of an id that does not have this prefix is considered a violation.",
+      "from_schema": "https://w3id.org/linkml/meta",
+      "see_also": [
+        "https://github.com/linkml/linkml/issues/194"
+      ],
+      "domain": "Element",
+      "slot_uri": "https://w3id.org/linkml/id_prefixes_are_closed",
+      "owner": "Element",
+      "domain_of": [
+        "Element"
+      ],
+      "range": "boolean",
       "@type": "SlotDefinition"
     },
     {
@@ -3056,6 +3079,124 @@
       "@type": "SlotDefinition"
     },
     {
+      "name": "array",
+      "definition_uri": "https://w3id.org/linkml/array",
+      "description": "coerces the value of the slot into an array and defines the dimensions of that array",
+      "from_schema": "https://w3id.org/linkml/meta",
+      "status": "testing",
+      "domain": "SlotDefinition",
+      "slot_uri": "https://w3id.org/linkml/array",
+      "inherited": true,
+      "owner": "SlotDefinition",
+      "domain_of": [
+        "SlotDefinition"
+      ],
+      "range": "ArrayExpression",
+      "inlined": true,
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "dimensions",
+      "definition_uri": "https://w3id.org/linkml/dimensions",
+      "description": "definitions of each axis in the array",
+      "from_schema": "https://w3id.org/linkml/meta",
+      "aliases": [
+        "axes"
+      ],
+      "status": "testing",
+      "domain": "ArrayExpression",
+      "slot_uri": "https://w3id.org/linkml/dimensions",
+      "multivalued": true,
+      "list_elements_ordered": true,
+      "owner": "ArrayExpression",
+      "domain_of": [
+        "ArrayExpression"
+      ],
+      "range": "DimensionExpression",
+      "inlined": true,
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "minimum_number_dimensions",
+      "definition_uri": "https://w3id.org/linkml/minimum_number_dimensions",
+      "description": "minimum number of dimensions in the array",
+      "comments": [
+        "minimum_cardinality cannot be greater than maximum_cardinality"
+      ],
+      "from_schema": "https://w3id.org/linkml/meta",
+      "status": "testing",
+      "domain": "ArrayExpression",
+      "slot_uri": "https://w3id.org/linkml/minimum_number_dimensions",
+      "owner": "ArrayExpression",
+      "domain_of": [
+        "ArrayExpression"
+      ],
+      "range": "integer",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "maximum_number_dimensions",
+      "definition_uri": "https://w3id.org/linkml/maximum_number_dimensions",
+      "description": "maximum number of dimensions in the array, or False if explicitly no maximum. If this is unset, and an explicit list of dimensions are passed using dimensions, then this is interpreted as a closed list and the maximum_number_dimensions is the length of the dimensions list, unless this value is set to False",
+      "comments": [
+        "maximum_number_dimensions cannot be less than minimum_number_dimensions"
+      ],
+      "from_schema": "https://w3id.org/linkml/meta",
+      "status": "testing",
+      "domain": "ArrayExpression",
+      "slot_uri": "https://w3id.org/linkml/maximum_number_dimensions",
+      "owner": "ArrayExpression",
+      "domain_of": [
+        "ArrayExpression"
+      ],
+      "range": "Anything",
+      "inlined": true,
+      "any_of": [
+        {
+          "range": "integer",
+          "@type": "AnonymousSlotExpression"
+        },
+        {
+          "range": "boolean",
+          "@type": "AnonymousSlotExpression"
+        }
+      ],
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "exact_number_dimensions",
+      "definition_uri": "https://w3id.org/linkml/exact_number_dimensions",
+      "description": "exact number of dimensions in the array",
+      "comments": [
+        "if exact_number_dimensions is set, then minimum_number_dimensions and maximum_number_dimensions must be unset or have the same value"
+      ],
+      "from_schema": "https://w3id.org/linkml/meta",
+      "status": "testing",
+      "domain": "ArrayExpression",
+      "slot_uri": "https://w3id.org/linkml/exact_number_dimensions",
+      "owner": "ArrayExpression",
+      "domain_of": [
+        "ArrayExpression"
+      ],
+      "range": "integer",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "has_extra_dimensions",
+      "definition_uri": "https://w3id.org/linkml/has_extra_dimensions",
+      "description": "If this is set to true",
+      "from_schema": "https://w3id.org/linkml/meta",
+      "status": "testing",
+      "domain": "ArrayExpression",
+      "slot_uri": "https://w3id.org/linkml/has_extra_dimensions",
+      "owner": "ArrayExpression",
+      "domain_of": [
+        "ArrayExpression"
+      ],
+      "range": "boolean",
+      "@type": "SlotDefinition"
+    },
+    {
       "name": "inherited",
       "definition_uri": "https://w3id.org/linkml/inherited",
       "description": "true means that the *value* of a slot is inherited by subclasses",
@@ -3242,9 +3383,34 @@
       "@type": "SlotDefinition"
     },
     {
+      "name": "exact_cardinality",
+      "definition_uri": "https://w3id.org/linkml/exact_cardinality",
+      "description": "the exact number of entries for a multivalued slot",
+      "comments": [
+        "if exact_cardinality is set, then minimum_cardinalty and maximum_cardinality must be unset or have the same value"
+      ],
+      "in_subset": [
+        "SpecificationSubset"
+      ],
+      "from_schema": "https://w3id.org/linkml/meta",
+      "is_a": "list_value_specification_constant",
+      "slot_uri": "https://w3id.org/linkml/exact_cardinality",
+      "inherited": true,
+      "owner": "DimensionExpression",
+      "domain_of": [
+        "SlotExpression",
+        "DimensionExpression"
+      ],
+      "range": "integer",
+      "@type": "SlotDefinition"
+    },
+    {
       "name": "minimum_cardinality",
       "definition_uri": "https://w3id.org/linkml/minimum_cardinality",
       "description": "the minimum number of entries for a multivalued slot",
+      "comments": [
+        "minimum_cardinality cannot be greater than maximum_cardinality"
+      ],
       "in_subset": [
         "SpecificationSubset"
       ],
@@ -3252,9 +3418,10 @@
       "is_a": "list_value_specification_constant",
       "slot_uri": "https://w3id.org/linkml/minimum_cardinality",
       "inherited": true,
-      "owner": "SlotExpression",
+      "owner": "DimensionExpression",
       "domain_of": [
-        "SlotExpression"
+        "SlotExpression",
+        "DimensionExpression"
       ],
       "range": "integer",
       "@type": "SlotDefinition"
@@ -3263,6 +3430,9 @@
       "name": "maximum_cardinality",
       "definition_uri": "https://w3id.org/linkml/maximum_cardinality",
       "description": "the maximum number of entries for a multivalued slot",
+      "comments": [
+        "maximum_cardinality cannot be less than minimum_cardinality"
+      ],
       "in_subset": [
         "SpecificationSubset"
       ],
@@ -3270,9 +3440,10 @@
       "is_a": "list_value_specification_constant",
       "slot_uri": "https://w3id.org/linkml/maximum_cardinality",
       "inherited": true,
-      "owner": "SlotExpression",
+      "owner": "DimensionExpression",
       "domain_of": [
-        "SlotExpression"
+        "SlotExpression",
+        "DimensionExpression"
       ],
       "range": "integer",
       "@type": "SlotDefinition"
@@ -3457,7 +3628,8 @@
       ],
       "from_schema": "https://w3id.org/linkml/meta",
       "see_also": [
-        "https://w3id.org/linkml/docs/specification/06mapping/#collection-forms"
+        "https://w3id.org/linkml/docs/specification/06mapping/#collection-forms",
+        "https://linkml.io/linkml/schemas/inlining.html"
       ],
       "rank": 25,
       "domain": "SlotDefinition",
@@ -3484,7 +3656,8 @@
       ],
       "from_schema": "https://w3id.org/linkml/meta",
       "see_also": [
-        "https://w3id.org/linkml/docs/specification/06mapping/#collection-forms"
+        "https://w3id.org/linkml/docs/specification/06mapping/#collection-forms",
+        "https://linkml.io/linkml/schemas/inlining.html"
       ],
       "rank": 27,
       "domain": "SlotDefinition",
@@ -3691,9 +3864,10 @@
       "rank": 6,
       "domain": "SlotDefinition",
       "slot_uri": "http://www.w3.org/2004/02/skos/core#prefLabel",
-      "owner": "SlotDefinition",
+      "owner": "DimensionExpression",
       "domain_of": [
-        "SlotDefinition"
+        "SlotDefinition",
+        "DimensionExpression"
       ],
       "range": "string",
       "@type": "SlotDefinition"
@@ -3720,7 +3894,8 @@
       "description": "the class(es) that reference the slot in a \"slots\" or \"slot_usage\" context",
       "from_schema": "https://w3id.org/linkml/meta",
       "exact_mappings": [
-        "http://schema.org/domainIncludes"
+        "http://schema.org/domainIncludes",
+        "http://semanticscience.org/resource/SIO_000011"
       ],
       "domain": "SlotDefinition",
       "slot_uri": "https://w3id.org/linkml/domain_of",
@@ -4054,7 +4229,10 @@
     {
       "name": "minimum_value",
       "definition_uri": "https://w3id.org/linkml/minimum_value",
-      "description": "for slots with ranges of type number, the value must be equal to or higher than this",
+      "description": "For ordinal ranges, the value must be equal to or higher than this",
+      "notes": [
+        "Range to be refined to an \"Ordinal\" metaclass - see https://github.com/linkml/linkml/issues/1384#issuecomment-1892721142"
+      ],
       "in_subset": [
         "SpecificationSubset",
         "BasicSubset"
@@ -4071,13 +4249,17 @@
         "TypeExpression",
         "SlotExpression"
       ],
-      "range": "integer",
+      "range": "Anything",
+      "inlined": true,
       "@type": "SlotDefinition"
     },
     {
       "name": "maximum_value",
       "definition_uri": "https://w3id.org/linkml/maximum_value",
-      "description": "for slots with ranges of type number, the value must be equal to or lowe than this",
+      "description": "For ordinal ranges, the value must be equal to or lower than this",
+      "notes": [
+        "Range to be refined to an \"Ordinal\" metaclass - see https://github.com/linkml/linkml/issues/1384#issuecomment-1892721142"
+      ],
       "in_subset": [
         "SpecificationSubset",
         "BasicSubset"
@@ -4094,7 +4276,8 @@
         "TypeExpression",
         "SlotExpression"
       ],
-      "range": "integer",
+      "range": "Anything",
+      "inlined": true,
       "@type": "SlotDefinition"
     },
     {
@@ -6264,6 +6447,7 @@
       "slots": [
         "name",
         "id_prefixes",
+        "id_prefixes_are_closed",
         "definition_uri",
         "local_names",
         "conforms_to",
@@ -6341,6 +6525,7 @@
       "is_a": "Element",
       "slots": [
         "id_prefixes",
+        "id_prefixes_are_closed",
         "definition_uri",
         "local_names",
         "conforms_to",
@@ -6480,6 +6665,7 @@
       "slots": [
         "name",
         "id_prefixes",
+        "id_prefixes_are_closed",
         "definition_uri",
         "local_names",
         "conforms_to",
@@ -6557,6 +6743,7 @@
       "slots": [
         "name",
         "id_prefixes",
+        "id_prefixes_are_closed",
         "definition_uri",
         "local_names",
         "conforms_to",
@@ -6618,6 +6805,7 @@
       "slots": [
         "name",
         "id_prefixes",
+        "id_prefixes_are_closed",
         "definition_uri",
         "local_names",
         "conforms_to",
@@ -6732,9 +6920,12 @@
       "from_schema": "https://w3id.org/linkml/meta",
       "aliases": [
         "enum",
+        "enumeration",
+        "semantic enumeration",
         "value set",
         "term set",
         "concept set",
+        "code set",
         "Terminology Value Set",
         "answer list",
         "value domain"
@@ -6755,6 +6946,7 @@
       "slots": [
         "name",
         "id_prefixes",
+        "id_prefixes_are_closed",
         "definition_uri",
         "local_names",
         "conforms_to",
@@ -7065,6 +7257,7 @@
         "equals_string_in",
         "equals_number",
         "equals_expression",
+        "exact_cardinality",
         "minimum_cardinality",
         "maximum_cardinality",
         "has_member",
@@ -7140,6 +7333,7 @@
         "equals_string_in",
         "equals_number",
         "equals_expression",
+        "exact_cardinality",
         "minimum_cardinality",
         "maximum_cardinality",
         "has_member",
@@ -7184,6 +7378,7 @@
       "slots": [
         "name",
         "id_prefixes",
+        "id_prefixes_are_closed",
         "definition_uri",
         "local_names",
         "conforms_to",
@@ -7232,6 +7427,7 @@
         "domain",
         "slot_uri",
         "multivalued",
+        "array",
         "inherited",
         "readonly",
         "ifabsent",
@@ -7286,6 +7482,7 @@
         "equals_string_in",
         "equals_number",
         "equals_expression",
+        "exact_cardinality",
         "minimum_cardinality",
         "maximum_cardinality",
         "has_member",
@@ -7402,6 +7599,7 @@
       "slots": [
         "name",
         "id_prefixes",
+        "id_prefixes_are_closed",
         "definition_uri",
         "local_names",
         "conforms_to",
@@ -7550,6 +7748,119 @@
       ],
       "slot_usage": {},
       "class_uri": "https://w3id.org/linkml/ClassRule",
+      "@type": "ClassDefinition"
+    },
+    {
+      "name": "ArrayExpression",
+      "definition_uri": "https://w3id.org/linkml/ArrayExpression",
+      "description": "defines the dimensions of an array",
+      "from_schema": "https://w3id.org/linkml/meta",
+      "status": "testing",
+      "mixins": [
+        "Extensible",
+        "Annotatable",
+        "CommonMetadata"
+      ],
+      "slots": [
+        "exact_number_dimensions",
+        "minimum_number_dimensions",
+        "maximum_number_dimensions",
+        "has_extra_dimensions",
+        "dimensions",
+        "extensions",
+        "annotations",
+        "description",
+        "alt_descriptions",
+        "title",
+        "deprecated",
+        "todos",
+        "notes",
+        "comments",
+        "examples",
+        "in_subset",
+        "from_schema",
+        "imported_from",
+        "source",
+        "in_language",
+        "see_also",
+        "deprecated_element_has_exact_replacement",
+        "deprecated_element_has_possible_replacement",
+        "aliases",
+        "structured_aliases",
+        "mappings",
+        "exact_mappings",
+        "close_mappings",
+        "related_mappings",
+        "narrow_mappings",
+        "broad_mappings",
+        "created_by",
+        "contributors",
+        "created_on",
+        "last_updated_on",
+        "modified_by",
+        "status",
+        "rank",
+        "categories",
+        "keywords"
+      ],
+      "slot_usage": {},
+      "class_uri": "https://w3id.org/linkml/ArrayExpression",
+      "@type": "ClassDefinition"
+    },
+    {
+      "name": "DimensionExpression",
+      "definition_uri": "https://w3id.org/linkml/DimensionExpression",
+      "description": "defines one of the dimensions of an array",
+      "from_schema": "https://w3id.org/linkml/meta",
+      "status": "testing",
+      "mixins": [
+        "Extensible",
+        "Annotatable",
+        "CommonMetadata"
+      ],
+      "slots": [
+        "alias",
+        "maximum_cardinality",
+        "minimum_cardinality",
+        "exact_cardinality",
+        "extensions",
+        "annotations",
+        "description",
+        "alt_descriptions",
+        "title",
+        "deprecated",
+        "todos",
+        "notes",
+        "comments",
+        "examples",
+        "in_subset",
+        "from_schema",
+        "imported_from",
+        "source",
+        "in_language",
+        "see_also",
+        "deprecated_element_has_exact_replacement",
+        "deprecated_element_has_possible_replacement",
+        "aliases",
+        "structured_aliases",
+        "mappings",
+        "exact_mappings",
+        "close_mappings",
+        "related_mappings",
+        "narrow_mappings",
+        "broad_mappings",
+        "created_by",
+        "contributors",
+        "created_on",
+        "last_updated_on",
+        "modified_by",
+        "status",
+        "rank",
+        "categories",
+        "keywords"
+      ],
+      "slot_usage": {},
+      "class_uri": "https://w3id.org/linkml/DimensionExpression",
       "@type": "ClassDefinition"
     },
     {
@@ -8014,12 +8325,12 @@
   ],
   "metamodel_version": "1.7.0",
   "source_file": "meta.yaml",
-  "source_file_date": "2023-09-01T13:18:46",
-  "source_file_size": 89472,
-  "generation_date": "2023-09-01T13:19:57",
+  "source_file_date": "2024-02-07T17:29:17",
+  "source_file_size": 93289,
+  "generation_date": "2024-02-07T17:29:51",
   "@type": "SchemaDefinition",
   "@context": [
-    "target/jsonld/meta.context.jsonld",
+    "staging/jsonld/meta.context.jsonld",
     "https://w3id.org/linkml/types.context.jsonld",
     "https://w3id.org/linkml/mappings.context.jsonld",
     "https://w3id.org/linkml/extensions.context.jsonld",

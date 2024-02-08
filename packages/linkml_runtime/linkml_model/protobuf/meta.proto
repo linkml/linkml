@@ -115,8 +115,8 @@ message AnonymousSlotExpression
   boolean recommended = 9
   boolean inlined = 25
   boolean inlinedAsList = 27
-  integer minimumValue = 0
-  integer maximumValue = 0
+  anything minimumValue = 0
+  anything maximumValue = 0
   string pattern = 35
   patternExpression structuredPattern = 0
   unitOfMeasure unit = 0
@@ -126,6 +126,7 @@ message AnonymousSlotExpression
  repeated  string equalsStringIn = 0
   integer equalsNumber = 0
   string equalsExpression = 0
+  integer exactCardinality = 0
   integer minimumCardinality = 0
   integer maximumCardinality = 0
   anonymousSlotExpression hasMember = 0
@@ -145,18 +146,63 @@ message AnonymousTypeExpression
   string equalsString = 0
  repeated  string equalsStringIn = 0
   integer equalsNumber = 0
-  integer minimumValue = 0
-  integer maximumValue = 0
+  anything minimumValue = 0
+  anything maximumValue = 0
  repeated  anonymousTypeExpression noneOf = 105
  repeated  anonymousTypeExpression exactlyOneOf = 103
  repeated  anonymousTypeExpression anyOf = 101
  repeated  anonymousTypeExpression allOf = 107
+ }
+// defines the dimensions of an array
+message ArrayExpression
+ {
+  integer exactNumberDimensions = 0
+  integer minimumNumberDimensions = 0
+  anything maximumNumberDimensions = 0
+  boolean hasExtraDimensions = 0
+ repeated  dimensionExpression dimensions = 0
+ repeated  extension extensions = 0
+ repeated  annotation annotations = 0
+  string description = 5
+ repeated  altDescription altDescriptions = 0
+  string title = 3
+  string deprecated = 0
+ repeated  string todos = 0
+ repeated  string notes = 0
+ repeated  string comments = 0
+ repeated  example examples = 0
+ repeated  subsetDefinition inSubset = 0
+  uri fromSchema = 0
+  string importedFrom = 0
+  uriorcurie source = 0
+  string inLanguage = 0
+ repeated  uriorcurie seeAlso = 0
+  uriorcurie deprecatedElementHasExactReplacement = 0
+  uriorcurie deprecatedElementHasPossibleReplacement = 0
+ repeated  string aliases = 0
+ repeated  structuredAlias structuredAliases = 0
+ repeated  uriorcurie mappings = 0
+ repeated  uriorcurie exactMappings = 0
+ repeated  uriorcurie closeMappings = 0
+ repeated  uriorcurie relatedMappings = 0
+ repeated  uriorcurie narrowMappings = 0
+ repeated  uriorcurie broadMappings = 0
+  uriorcurie createdBy = 0
+ repeated  uriorcurie contributors = 0
+  datetime createdOn = 0
+  datetime lastUpdatedOn = 0
+  uriorcurie modifiedBy = 0
+  uriorcurie status = 0
+  integer rank = 51
+ repeated  uriorcurie categories = 0
+ repeated  string keywords = 0
  }
 // an element whose instances are complex objects that may have slot-value assignments
 message ClassDefinition
  {
   string name = 1
  repeated  ncname idPrefixes = 0
+  boolean idPrefixesAreClosed = 0
   uriorcurie definitionUri = 0
  repeated  localName localNames = 0
   string conformsTo = 0
@@ -270,11 +316,55 @@ message ClassRule
  repeated  uriorcurie categories = 0
  repeated  string keywords = 0
  }
+// defines one of the dimensions of an array
+message DimensionExpression
+ {
+  string alias = 6
+  integer maximumCardinality = 0
+  integer minimumCardinality = 0
+  integer exactCardinality = 0
+ repeated  extension extensions = 0
+ repeated  annotation annotations = 0
+  string description = 5
+ repeated  altDescription altDescriptions = 0
+  string title = 3
+  string deprecated = 0
+ repeated  string todos = 0
+ repeated  string notes = 0
+ repeated  string comments = 0
+ repeated  example examples = 0
+ repeated  subsetDefinition inSubset = 0
+  uri fromSchema = 0
+  string importedFrom = 0
+  uriorcurie source = 0
+  string inLanguage = 0
+ repeated  uriorcurie seeAlso = 0
+  uriorcurie deprecatedElementHasExactReplacement = 0
+  uriorcurie deprecatedElementHasPossibleReplacement = 0
+ repeated  string aliases = 0
+ repeated  structuredAlias structuredAliases = 0
+ repeated  uriorcurie mappings = 0
+ repeated  uriorcurie exactMappings = 0
+ repeated  uriorcurie closeMappings = 0
+ repeated  uriorcurie relatedMappings = 0
+ repeated  uriorcurie narrowMappings = 0
+ repeated  uriorcurie broadMappings = 0
+  uriorcurie createdBy = 0
+ repeated  uriorcurie contributors = 0
+  datetime createdOn = 0
+  datetime lastUpdatedOn = 0
+  uriorcurie modifiedBy = 0
+  uriorcurie status = 0
+  integer rank = 51
+ repeated  uriorcurie categories = 0
+ repeated  string keywords = 0
+ }
 // an element whose instances must be drawn from a specified set of permissible values
 message EnumDefinition
  {
   string name = 1
  repeated  ncname idPrefixes = 0
+  boolean idPrefixesAreClosed = 0
   uriorcurie definitionUri = 0
  repeated  localName localNames = 0
   string conformsTo = 0
@@ -571,6 +661,7 @@ message ReachabilityQuery
 message SchemaDefinition
  {
  repeated  ncname idPrefixes = 0
+  boolean idPrefixesAreClosed = 0
   uriorcurie definitionUri = 0
  repeated  localName localNames = 0
   string conformsTo = 0
@@ -645,6 +736,7 @@ message SlotDefinition
  {
   string name = 1
  repeated  ncname idPrefixes = 0
+  boolean idPrefixesAreClosed = 0
   uriorcurie definitionUri = 0
  repeated  localName localNames = 0
   string conformsTo = 0
@@ -693,6 +785,7 @@ message SlotDefinition
   classDefinition domain = 0
   uriorcurie slotUri = 2
   boolean multivalued = 7
+  arrayExpression array = 0
   boolean inherited = 0
   string readonly = 0
   string ifabsent = 0
@@ -736,8 +829,8 @@ message SlotDefinition
   boolean recommended = 9
   boolean inlined = 25
   boolean inlinedAsList = 27
-  integer minimumValue = 0
-  integer maximumValue = 0
+  anything minimumValue = 0
+  anything maximumValue = 0
   string pattern = 35
   patternExpression structuredPattern = 0
   unitOfMeasure unit = 0
@@ -747,6 +840,7 @@ message SlotDefinition
  repeated  string equalsStringIn = 0
   integer equalsNumber = 0
   string equalsExpression = 0
+  integer exactCardinality = 0
   integer minimumCardinality = 0
   integer maximumCardinality = 0
   anonymousSlotExpression hasMember = 0
@@ -802,6 +896,7 @@ message SubsetDefinition
  {
   string name = 1
  repeated  ncname idPrefixes = 0
+  boolean idPrefixesAreClosed = 0
   uriorcurie definitionUri = 0
  repeated  localName localNames = 0
   string conformsTo = 0
@@ -848,6 +943,7 @@ message TypeDefinition
  {
   string name = 1
  repeated  ncname idPrefixes = 0
+  boolean idPrefixesAreClosed = 0
   uriorcurie definitionUri = 0
  repeated  localName localNames = 0
   string conformsTo = 0
@@ -900,8 +996,8 @@ message TypeDefinition
   string equalsString = 0
  repeated  string equalsStringIn = 0
   integer equalsNumber = 0
-  integer minimumValue = 0
-  integer maximumValue = 0
+  anything minimumValue = 0
+  anything maximumValue = 0
  repeated  anonymousTypeExpression noneOf = 105
  repeated  anonymousTypeExpression exactlyOneOf = 103
  repeated  anonymousTypeExpression anyOf = 101

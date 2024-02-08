@@ -56,14 +56,30 @@
             "properties": {
                 "annotations": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/Annotation__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Annotation__identifier_optional"
+                            },
+                            {
+                                "$ref": "#/$defs/AnyValue",
+                                "description": "the actual annotation"
+                            }
+                        ]
                     },
                     "description": "a collection of tag/text tuples with the semantics of OWL Annotation",
                     "type": "object"
                 },
                 "extensions": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/Extension__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Extension__identifier_optional"
+                            },
+                            {
+                                "$ref": "#/$defs/AnyValue",
+                                "description": "the actual annotation"
+                            }
+                        ]
                     },
                     "description": "a tag/text tuple attached to an arbitrary element",
                     "type": "object"
@@ -73,8 +89,8 @@
                     "type": "string"
                 },
                 "value": {
-                    "description": "the actual annotation",
-                    "type": "string"
+                    "$ref": "#/$defs/AnyValue",
+                    "description": "the actual annotation"
                 }
             },
             "required": [
@@ -90,14 +106,30 @@
             "properties": {
                 "annotations": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/Annotation__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Annotation__identifier_optional"
+                            },
+                            {
+                                "$ref": "#/$defs/AnyValue",
+                                "description": "the actual annotation"
+                            }
+                        ]
                     },
                     "description": "a collection of tag/text tuples with the semantics of OWL Annotation",
                     "type": "object"
                 },
                 "extensions": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/Extension__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Extension__identifier_optional"
+                            },
+                            {
+                                "$ref": "#/$defs/AnyValue",
+                                "description": "the actual annotation"
+                            }
+                        ]
                     },
                     "description": "a tag/text tuple attached to an arbitrary element",
                     "type": "object"
@@ -107,8 +139,8 @@
                     "type": "string"
                 },
                 "value": {
-                    "description": "the actual annotation",
-                    "type": "string"
+                    "$ref": "#/$defs/AnyValue",
+                    "description": "the actual annotation"
                 }
             },
             "required": [
@@ -152,7 +184,15 @@
                 },
                 "annotations": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/Annotation__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Annotation__identifier_optional"
+                            },
+                            {
+                                "$ref": "#/$defs/AnyValue",
+                                "description": "the actual annotation"
+                            }
+                        ]
                     },
                     "description": "a collection of tag/text tuples with the semantics of OWL Annotation",
                     "type": "object"
@@ -247,7 +287,15 @@
                 },
                 "extensions": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/Extension__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Extension__identifier_optional"
+                            },
+                            {
+                                "$ref": "#/$defs/AnyValue",
+                                "description": "the actual annotation"
+                            }
+                        ]
                     },
                     "description": "a tag/text tuple attached to an arbitrary element",
                     "type": "object"
@@ -494,7 +542,15 @@
                 },
                 "annotations": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/Annotation__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Annotation__identifier_optional"
+                            },
+                            {
+                                "$ref": "#/$defs/AnyValue",
+                                "description": "the actual annotation"
+                            }
+                        ]
                     },
                     "description": "a collection of tag/text tuples with the semantics of OWL Annotation",
                     "type": "object"
@@ -589,6 +645,10 @@
                     },
                     "type": "array"
                 },
+                "exact_cardinality": {
+                    "description": "the exact number of entries for a multivalued slot",
+                    "type": "integer"
+                },
                 "exact_mappings": {
                     "description": "A list of terms from different schemas or terminology systems that have identical meaning.",
                     "items": {
@@ -612,7 +672,15 @@
                 },
                 "extensions": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/Extension__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Extension__identifier_optional"
+                            },
+                            {
+                                "$ref": "#/$defs/AnyValue",
+                                "description": "the actual annotation"
+                            }
+                        ]
                     },
                     "description": "a tag/text tuple attached to an arbitrary element",
                     "type": "object"
@@ -676,16 +744,16 @@
                     "type": "integer"
                 },
                 "maximum_value": {
-                    "description": "for slots with ranges of type number, the value must be equal to or lowe than this",
-                    "type": "integer"
+                    "$ref": "#/$defs/Anything",
+                    "description": "For ordinal ranges, the value must be equal to or lower than this"
                 },
                 "minimum_cardinality": {
                     "description": "the minimum number of entries for a multivalued slot",
                     "type": "integer"
                 },
                 "minimum_value": {
-                    "description": "for slots with ranges of type number, the value must be equal to or higher than this",
-                    "type": "integer"
+                    "$ref": "#/$defs/Anything",
+                    "description": "For ordinal ranges, the value must be equal to or higher than this"
                 },
                 "modified_by": {
                     "description": "agent that modified the element",
@@ -837,12 +905,12 @@
                     "type": "string"
                 },
                 "maximum_value": {
-                    "description": "for slots with ranges of type number, the value must be equal to or lowe than this",
-                    "type": "integer"
+                    "$ref": "#/$defs/Anything",
+                    "description": "For ordinal ranges, the value must be equal to or lower than this"
                 },
                 "minimum_value": {
-                    "description": "for slots with ranges of type number, the value must be equal to or higher than this",
-                    "type": "integer"
+                    "$ref": "#/$defs/Anything",
+                    "description": "For ordinal ranges, the value must be equal to or higher than this"
                 },
                 "none_of": {
                     "description": "holds if none of the expressions hold",
@@ -867,10 +935,293 @@
             "title": "AnonymousTypeExpression",
             "type": "object"
         },
+        "AnyValue": {
+            "additionalProperties": true,
+            "description": "",
+            "title": "AnyValue",
+            "type": [
+                "null",
+                "boolean",
+                "object",
+                "number",
+                "string"
+            ]
+        },
         "Anything": {
             "additionalProperties": true,
             "description": "",
             "title": "Anything",
+            "type": [
+                "null",
+                "boolean",
+                "object",
+                "number",
+                "string"
+            ]
+        },
+        "ArrayExpression": {
+            "additionalProperties": false,
+            "description": "defines the dimensions of an array",
+            "properties": {
+                "aliases": {
+                    "description": "Alternate names/labels for the element. These do not alter the semantics of the schema, but may be useful to support search and alignment.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "alt_descriptions": {
+                    "additionalProperties": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/AltDescription__identifier_optional"
+                            },
+                            {
+                                "description": "text of an attributed description",
+                                "type": "string"
+                            }
+                        ]
+                    },
+                    "description": "A sourced alternative description for an element",
+                    "type": "object"
+                },
+                "annotations": {
+                    "additionalProperties": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Annotation__identifier_optional"
+                            },
+                            {
+                                "$ref": "#/$defs/AnyValue",
+                                "description": "the actual annotation"
+                            }
+                        ]
+                    },
+                    "description": "a collection of tag/text tuples with the semantics of OWL Annotation",
+                    "type": "object"
+                },
+                "broad_mappings": {
+                    "description": "A list of terms from different schemas or terminology systems that have broader meaning.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "categories": {
+                    "description": "Controlled terms used to categorize an element.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "close_mappings": {
+                    "description": "A list of terms from different schemas or terminology systems that have close meaning.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "comments": {
+                    "description": "notes and comments about an element intended primarily for external consumption",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "contributors": {
+                    "description": "agent that contributed to the element",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "created_by": {
+                    "description": "agent that created the element",
+                    "type": "string"
+                },
+                "created_on": {
+                    "description": "time at which the element was created",
+                    "format": "date-time",
+                    "type": "string"
+                },
+                "deprecated": {
+                    "description": "Description of why and when this element will no longer be used",
+                    "type": "string"
+                },
+                "deprecated_element_has_exact_replacement": {
+                    "description": "When an element is deprecated, it can be automatically replaced by this uri or curie",
+                    "type": "string"
+                },
+                "deprecated_element_has_possible_replacement": {
+                    "description": "When an element is deprecated, it can be potentially replaced by this uri or curie",
+                    "type": "string"
+                },
+                "description": {
+                    "description": "a textual description of the element's purpose and use",
+                    "type": "string"
+                },
+                "dimensions": {
+                    "description": "definitions of each axis in the array",
+                    "items": {
+                        "$ref": "#/$defs/DimensionExpression"
+                    },
+                    "type": "array"
+                },
+                "exact_mappings": {
+                    "description": "A list of terms from different schemas or terminology systems that have identical meaning.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "exact_number_dimensions": {
+                    "description": "exact number of dimensions in the array",
+                    "type": "integer"
+                },
+                "examples": {
+                    "description": "example usages of an element",
+                    "items": {
+                        "$ref": "#/$defs/Example"
+                    },
+                    "type": "array"
+                },
+                "extensions": {
+                    "additionalProperties": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Extension__identifier_optional"
+                            },
+                            {
+                                "$ref": "#/$defs/AnyValue",
+                                "description": "the actual annotation"
+                            }
+                        ]
+                    },
+                    "description": "a tag/text tuple attached to an arbitrary element",
+                    "type": "object"
+                },
+                "from_schema": {
+                    "description": "id of the schema that defined the element",
+                    "type": "string"
+                },
+                "has_extra_dimensions": {
+                    "description": "If this is set to true",
+                    "type": "boolean"
+                },
+                "imported_from": {
+                    "description": "the imports entry that this element was derived from.  Empty means primary source",
+                    "type": "string"
+                },
+                "in_language": {
+                    "description": "the primary language used in the sources",
+                    "type": "string"
+                },
+                "in_subset": {
+                    "description": "used to indicate membership of a term in a defined subset of terms used for a particular domain or application.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "keywords": {
+                    "description": "Keywords or tags used to describe the element",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "last_updated_on": {
+                    "description": "time at which the element was last updated",
+                    "format": "date-time",
+                    "type": "string"
+                },
+                "mappings": {
+                    "description": "A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "maximum_number_dimensions": {
+                    "$ref": "#/$defs/Anything",
+                    "anyOf": [
+                        {
+                            "type": "integer"
+                        },
+                        {
+                            "type": "boolean"
+                        }
+                    ],
+                    "description": "maximum number of dimensions in the array, or False if explicitly no maximum. If this is unset, and an explicit list of dimensions are passed using dimensions, then this is interpreted as a closed list and the maximum_number_dimensions is the length of the dimensions list, unless this value is set to False"
+                },
+                "minimum_number_dimensions": {
+                    "description": "minimum number of dimensions in the array",
+                    "type": "integer"
+                },
+                "modified_by": {
+                    "description": "agent that modified the element",
+                    "type": "string"
+                },
+                "narrow_mappings": {
+                    "description": "A list of terms from different schemas or terminology systems that have narrower meaning.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "notes": {
+                    "description": "editorial notes about an element intended primarily for internal consumption",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "rank": {
+                    "description": "the relative order in which the element occurs, lower values are given precedence",
+                    "type": "integer"
+                },
+                "related_mappings": {
+                    "description": "A list of terms from different schemas or terminology systems that have related meaning.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "see_also": {
+                    "description": "A list of related entities or URLs that may be of relevance",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "source": {
+                    "description": "A related resource from which the element is derived.",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "status of the element",
+                    "type": "string"
+                },
+                "structured_aliases": {
+                    "description": "A list of structured_alias objects, used to provide aliases in conjunction with additional metadata.",
+                    "items": {
+                        "$ref": "#/$defs/StructuredAlias"
+                    },
+                    "type": "array"
+                },
+                "title": {
+                    "description": "A concise human-readable display label for the element. The title should mirror the name, and should use ordinary textual punctuation.",
+                    "type": "string"
+                },
+                "todos": {
+                    "description": "Outstanding issues that needs resolution",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                }
+            },
+            "title": "ArrayExpression",
             "type": "object"
         },
         "ClassDefinition": {
@@ -912,7 +1263,15 @@
                 },
                 "annotations": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/Annotation__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Annotation__identifier_optional"
+                            },
+                            {
+                                "$ref": "#/$defs/AnyValue",
+                                "description": "the actual annotation"
+                            }
+                        ]
                     },
                     "description": "a collection of tag/text tuples with the semantics of OWL Annotation",
                     "type": "object"
@@ -1065,7 +1424,15 @@
                 },
                 "extensions": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/Extension__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Extension__identifier_optional"
+                            },
+                            {
+                                "$ref": "#/$defs/AnyValue",
+                                "description": "the actual annotation"
+                            }
+                        ]
                     },
                     "description": "a tag/text tuple attached to an arbitrary element",
                     "type": "object"
@@ -1080,6 +1447,10 @@
                         "type": "string"
                     },
                     "type": "array"
+                },
+                "id_prefixes_are_closed": {
+                    "description": "If true, then the id_prefixes slot is treated as being closed, and any use of an id that does not have this prefix is considered a violation.",
+                    "type": "boolean"
                 },
                 "implements": {
                     "description": "An element in another schema which this element conforms to. The referenced element is not imported into the schema for the implementing element. However, the referenced schema may be used to check conformance of the implementing element.",
@@ -1302,7 +1673,18 @@
                 },
                 "unique_keys": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/UniqueKey__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/UniqueKey__identifier_optional"
+                            },
+                            {
+                                "description": "list of slot names that form a key. The tuple formed from the values of all these slots should be unique.",
+                                "items": {
+                                    "type": "string"
+                                },
+                                "type": "array"
+                            }
+                        ]
                     },
                     "description": "A collection of named unique keys for this class. Unique keys may be singular or compound.",
                     "type": "object"
@@ -1360,7 +1742,15 @@
                 },
                 "annotations": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/Annotation__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Annotation__identifier_optional"
+                            },
+                            {
+                                "$ref": "#/$defs/AnyValue",
+                                "description": "the actual annotation"
+                            }
+                        ]
                     },
                     "description": "a collection of tag/text tuples with the semantics of OWL Annotation",
                     "type": "object"
@@ -1513,7 +1903,15 @@
                 },
                 "extensions": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/Extension__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Extension__identifier_optional"
+                            },
+                            {
+                                "$ref": "#/$defs/AnyValue",
+                                "description": "the actual annotation"
+                            }
+                        ]
                     },
                     "description": "a tag/text tuple attached to an arbitrary element",
                     "type": "object"
@@ -1528,6 +1926,10 @@
                         "type": "string"
                     },
                     "type": "array"
+                },
+                "id_prefixes_are_closed": {
+                    "description": "If true, then the id_prefixes slot is treated as being closed, and any use of an id that does not have this prefix is considered a violation.",
+                    "type": "boolean"
                 },
                 "implements": {
                     "description": "An element in another schema which this element conforms to. The referenced element is not imported into the schema for the implementing element. However, the referenced schema may be used to check conformance of the implementing element.",
@@ -1750,7 +2152,18 @@
                 },
                 "unique_keys": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/UniqueKey__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/UniqueKey__identifier_optional"
+                            },
+                            {
+                                "description": "list of slot names that form a key. The tuple formed from the values of all these slots should be unique.",
+                                "items": {
+                                    "type": "string"
+                                },
+                                "type": "array"
+                            }
+                        ]
                     },
                     "description": "A collection of named unique keys for this class. Unique keys may be singular or compound.",
                     "type": "object"
@@ -1795,7 +2208,15 @@
                 },
                 "annotations": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/Annotation__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Annotation__identifier_optional"
+                            },
+                            {
+                                "$ref": "#/$defs/AnyValue",
+                                "description": "the actual annotation"
+                            }
+                        ]
                     },
                     "description": "a collection of tag/text tuples with the semantics of OWL Annotation",
                     "type": "object"
@@ -1888,7 +2309,15 @@
                 },
                 "extensions": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/Extension__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Extension__identifier_optional"
+                            },
+                            {
+                                "$ref": "#/$defs/AnyValue",
+                                "description": "the actual annotation"
+                            }
+                        ]
                     },
                     "description": "a tag/text tuple attached to an arbitrary element",
                     "type": "object"
@@ -2009,6 +2438,256 @@
             "title": "ClassRule",
             "type": "object"
         },
+        "DimensionExpression": {
+            "additionalProperties": false,
+            "description": "defines one of the dimensions of an array",
+            "properties": {
+                "alias": {
+                    "description": "the name used for a slot in the context of its owning class.  If present, this is used instead of the actual slot name.",
+                    "type": "string"
+                },
+                "aliases": {
+                    "description": "Alternate names/labels for the element. These do not alter the semantics of the schema, but may be useful to support search and alignment.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "alt_descriptions": {
+                    "additionalProperties": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/AltDescription__identifier_optional"
+                            },
+                            {
+                                "description": "text of an attributed description",
+                                "type": "string"
+                            }
+                        ]
+                    },
+                    "description": "A sourced alternative description for an element",
+                    "type": "object"
+                },
+                "annotations": {
+                    "additionalProperties": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Annotation__identifier_optional"
+                            },
+                            {
+                                "$ref": "#/$defs/AnyValue",
+                                "description": "the actual annotation"
+                            }
+                        ]
+                    },
+                    "description": "a collection of tag/text tuples with the semantics of OWL Annotation",
+                    "type": "object"
+                },
+                "broad_mappings": {
+                    "description": "A list of terms from different schemas or terminology systems that have broader meaning.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "categories": {
+                    "description": "Controlled terms used to categorize an element.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "close_mappings": {
+                    "description": "A list of terms from different schemas or terminology systems that have close meaning.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "comments": {
+                    "description": "notes and comments about an element intended primarily for external consumption",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "contributors": {
+                    "description": "agent that contributed to the element",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "created_by": {
+                    "description": "agent that created the element",
+                    "type": "string"
+                },
+                "created_on": {
+                    "description": "time at which the element was created",
+                    "format": "date-time",
+                    "type": "string"
+                },
+                "deprecated": {
+                    "description": "Description of why and when this element will no longer be used",
+                    "type": "string"
+                },
+                "deprecated_element_has_exact_replacement": {
+                    "description": "When an element is deprecated, it can be automatically replaced by this uri or curie",
+                    "type": "string"
+                },
+                "deprecated_element_has_possible_replacement": {
+                    "description": "When an element is deprecated, it can be potentially replaced by this uri or curie",
+                    "type": "string"
+                },
+                "description": {
+                    "description": "a textual description of the element's purpose and use",
+                    "type": "string"
+                },
+                "exact_cardinality": {
+                    "description": "the exact number of entries for a multivalued slot",
+                    "type": "integer"
+                },
+                "exact_mappings": {
+                    "description": "A list of terms from different schemas or terminology systems that have identical meaning.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "examples": {
+                    "description": "example usages of an element",
+                    "items": {
+                        "$ref": "#/$defs/Example"
+                    },
+                    "type": "array"
+                },
+                "extensions": {
+                    "additionalProperties": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Extension__identifier_optional"
+                            },
+                            {
+                                "$ref": "#/$defs/AnyValue",
+                                "description": "the actual annotation"
+                            }
+                        ]
+                    },
+                    "description": "a tag/text tuple attached to an arbitrary element",
+                    "type": "object"
+                },
+                "from_schema": {
+                    "description": "id of the schema that defined the element",
+                    "type": "string"
+                },
+                "imported_from": {
+                    "description": "the imports entry that this element was derived from.  Empty means primary source",
+                    "type": "string"
+                },
+                "in_language": {
+                    "description": "the primary language used in the sources",
+                    "type": "string"
+                },
+                "in_subset": {
+                    "description": "used to indicate membership of a term in a defined subset of terms used for a particular domain or application.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "keywords": {
+                    "description": "Keywords or tags used to describe the element",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "last_updated_on": {
+                    "description": "time at which the element was last updated",
+                    "format": "date-time",
+                    "type": "string"
+                },
+                "mappings": {
+                    "description": "A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "maximum_cardinality": {
+                    "description": "the maximum number of entries for a multivalued slot",
+                    "type": "integer"
+                },
+                "minimum_cardinality": {
+                    "description": "the minimum number of entries for a multivalued slot",
+                    "type": "integer"
+                },
+                "modified_by": {
+                    "description": "agent that modified the element",
+                    "type": "string"
+                },
+                "narrow_mappings": {
+                    "description": "A list of terms from different schemas or terminology systems that have narrower meaning.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "notes": {
+                    "description": "editorial notes about an element intended primarily for internal consumption",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "rank": {
+                    "description": "the relative order in which the element occurs, lower values are given precedence",
+                    "type": "integer"
+                },
+                "related_mappings": {
+                    "description": "A list of terms from different schemas or terminology systems that have related meaning.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "see_also": {
+                    "description": "A list of related entities or URLs that may be of relevance",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "source": {
+                    "description": "A related resource from which the element is derived.",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "status of the element",
+                    "type": "string"
+                },
+                "structured_aliases": {
+                    "description": "A list of structured_alias objects, used to provide aliases in conjunction with additional metadata.",
+                    "items": {
+                        "$ref": "#/$defs/StructuredAlias"
+                    },
+                    "type": "array"
+                },
+                "title": {
+                    "description": "A concise human-readable display label for the element. The title should mirror the name, and should use ordinary textual punctuation.",
+                    "type": "string"
+                },
+                "todos": {
+                    "description": "Outstanding issues that needs resolution",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                }
+            },
+            "title": "DimensionExpression",
+            "type": "object"
+        },
         "EnumDefinition": {
             "additionalProperties": false,
             "description": "an element whose instances must be drawn from a specified set of permissible values",
@@ -2041,7 +2720,15 @@
                 },
                 "annotations": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/Annotation__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Annotation__identifier_optional"
+                            },
+                            {
+                                "$ref": "#/$defs/AnyValue",
+                                "description": "the actual annotation"
+                            }
+                        ]
                     },
                     "description": "a collection of tag/text tuples with the semantics of OWL Annotation",
                     "type": "object"
@@ -2160,7 +2847,15 @@
                 },
                 "extensions": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/Extension__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Extension__identifier_optional"
+                            },
+                            {
+                                "$ref": "#/$defs/AnyValue",
+                                "description": "the actual annotation"
+                            }
+                        ]
                     },
                     "description": "a tag/text tuple attached to an arbitrary element",
                     "type": "object"
@@ -2175,6 +2870,10 @@
                         "type": "string"
                     },
                     "type": "array"
+                },
+                "id_prefixes_are_closed": {
+                    "description": "If true, then the id_prefixes slot is treated as being closed, and any use of an id that does not have this prefix is considered a violation.",
+                    "type": "boolean"
                 },
                 "implements": {
                     "description": "An element in another schema which this element conforms to. The referenced element is not imported into the schema for the implementing element. However, the referenced schema may be used to check conformance of the implementing element.",
@@ -2416,7 +3115,15 @@
                 },
                 "annotations": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/Annotation__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Annotation__identifier_optional"
+                            },
+                            {
+                                "$ref": "#/$defs/AnyValue",
+                                "description": "the actual annotation"
+                            }
+                        ]
                     },
                     "description": "a collection of tag/text tuples with the semantics of OWL Annotation",
                     "type": "object"
@@ -2535,7 +3242,15 @@
                 },
                 "extensions": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/Extension__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Extension__identifier_optional"
+                            },
+                            {
+                                "$ref": "#/$defs/AnyValue",
+                                "description": "the actual annotation"
+                            }
+                        ]
                     },
                     "description": "a tag/text tuple attached to an arbitrary element",
                     "type": "object"
@@ -2550,6 +3265,10 @@
                         "type": "string"
                     },
                     "type": "array"
+                },
+                "id_prefixes_are_closed": {
+                    "description": "If true, then the id_prefixes slot is treated as being closed, and any use of an id that does not have this prefix is considered a violation.",
+                    "type": "boolean"
                 },
                 "implements": {
                     "description": "An element in another schema which this element conforms to. The referenced element is not imported into the schema for the implementing element. However, the referenced schema may be used to check conformance of the implementing element.",
@@ -2857,7 +3576,15 @@
             "properties": {
                 "extensions": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/Extension__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Extension__identifier_optional"
+                            },
+                            {
+                                "$ref": "#/$defs/AnyValue",
+                                "description": "the actual annotation"
+                            }
+                        ]
                     },
                     "description": "a tag/text tuple attached to an arbitrary element",
                     "type": "object"
@@ -2867,8 +3594,8 @@
                     "type": "string"
                 },
                 "value": {
-                    "description": "the actual annotation",
-                    "type": "string"
+                    "$ref": "#/$defs/AnyValue",
+                    "description": "the actual annotation"
                 }
             },
             "required": [
@@ -2884,7 +3611,15 @@
             "properties": {
                 "extensions": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/Extension__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Extension__identifier_optional"
+                            },
+                            {
+                                "$ref": "#/$defs/AnyValue",
+                                "description": "the actual annotation"
+                            }
+                        ]
                     },
                     "description": "a tag/text tuple attached to an arbitrary element",
                     "type": "object"
@@ -2894,8 +3629,8 @@
                     "type": "string"
                 },
                 "value": {
-                    "description": "the actual annotation",
-                    "type": "string"
+                    "$ref": "#/$defs/AnyValue",
+                    "description": "the actual annotation"
                 }
             },
             "required": [
@@ -2932,7 +3667,15 @@
                 },
                 "annotations": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/Annotation__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Annotation__identifier_optional"
+                            },
+                            {
+                                "$ref": "#/$defs/AnyValue",
+                                "description": "the actual annotation"
+                            }
+                        ]
                     },
                     "description": "a collection of tag/text tuples with the semantics of OWL Annotation",
                     "type": "object"
@@ -3013,7 +3756,15 @@
                 },
                 "extensions": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/Extension__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Extension__identifier_optional"
+                            },
+                            {
+                                "$ref": "#/$defs/AnyValue",
+                                "description": "the actual annotation"
+                            }
+                        ]
                     },
                     "description": "a tag/text tuple attached to an arbitrary element",
                     "type": "object"
@@ -3235,7 +3986,15 @@
                 },
                 "annotations": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/Annotation__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Annotation__identifier_optional"
+                            },
+                            {
+                                "$ref": "#/$defs/AnyValue",
+                                "description": "the actual annotation"
+                            }
+                        ]
                     },
                     "description": "a collection of tag/text tuples with the semantics of OWL Annotation",
                     "type": "object"
@@ -3330,7 +4089,15 @@
                 },
                 "extensions": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/Extension__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Extension__identifier_optional"
+                            },
+                            {
+                                "$ref": "#/$defs/AnyValue",
+                                "description": "the actual annotation"
+                            }
+                        ]
                     },
                     "description": "a tag/text tuple attached to an arbitrary element",
                     "type": "object"
@@ -3490,7 +4257,15 @@
                 },
                 "annotations": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/Annotation__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Annotation__identifier_optional"
+                            },
+                            {
+                                "$ref": "#/$defs/AnyValue",
+                                "description": "the actual annotation"
+                            }
+                        ]
                     },
                     "description": "a collection of tag/text tuples with the semantics of OWL Annotation",
                     "type": "object"
@@ -3571,7 +4346,15 @@
                 },
                 "extensions": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/Extension__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Extension__identifier_optional"
+                            },
+                            {
+                                "$ref": "#/$defs/AnyValue",
+                                "description": "the actual annotation"
+                            }
+                        ]
                     },
                     "description": "a tag/text tuple attached to an arbitrary element",
                     "type": "object"
@@ -3720,7 +4503,15 @@
                 },
                 "annotations": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/Annotation__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Annotation__identifier_optional"
+                            },
+                            {
+                                "$ref": "#/$defs/AnyValue",
+                                "description": "the actual annotation"
+                            }
+                        ]
                     },
                     "description": "a collection of tag/text tuples with the semantics of OWL Annotation",
                     "type": "object"
@@ -3801,7 +4592,15 @@
                 },
                 "extensions": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/Extension__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Extension__identifier_optional"
+                            },
+                            {
+                                "$ref": "#/$defs/AnyValue",
+                                "description": "the actual annotation"
+                            }
+                        ]
                     },
                     "description": "a tag/text tuple attached to an arbitrary element",
                     "type": "object"
@@ -3953,7 +4752,15 @@
                 },
                 "annotations": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/Annotation__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Annotation__identifier_optional"
+                            },
+                            {
+                                "$ref": "#/$defs/AnyValue",
+                                "description": "the actual annotation"
+                            }
+                        ]
                     },
                     "description": "a collection of tag/text tuples with the semantics of OWL Annotation",
                     "type": "object"
@@ -4034,7 +4841,15 @@
                 },
                 "extensions": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/Extension__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Extension__identifier_optional"
+                            },
+                            {
+                                "$ref": "#/$defs/AnyValue",
+                                "description": "the actual annotation"
+                            }
+                        ]
                     },
                     "description": "a tag/text tuple attached to an arbitrary element",
                     "type": "object"
@@ -4211,7 +5026,8 @@
                 "CODE",
                 "CURIE",
                 "URI",
-                "FHIR_CODING"
+                "FHIR_CODING",
+                "LABEL"
             ],
             "title": "PvFormulaOptions",
             "type": "string"
@@ -4294,7 +5110,15 @@
                 },
                 "annotations": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/Annotation__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Annotation__identifier_optional"
+                            },
+                            {
+                                "$ref": "#/$defs/AnyValue",
+                                "description": "the actual annotation"
+                            }
+                        ]
                     },
                     "description": "a collection of tag/text tuples with the semantics of OWL Annotation",
                     "type": "object"
@@ -4433,7 +5257,15 @@
                 },
                 "extensions": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/Extension__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Extension__identifier_optional"
+                            },
+                            {
+                                "$ref": "#/$defs/AnyValue",
+                                "description": "the actual annotation"
+                            }
+                        ]
                     },
                     "description": "a tag/text tuple attached to an arbitrary element",
                     "type": "object"
@@ -4457,6 +5289,10 @@
                         "type": "string"
                     },
                     "type": "array"
+                },
+                "id_prefixes_are_closed": {
+                    "description": "If true, then the id_prefixes slot is treated as being closed, and any use of an id that does not have this prefix is considered a violation.",
+                    "type": "boolean"
                 },
                 "implements": {
                     "description": "An element in another schema which this element conforms to. The referenced element is not imported into the schema for the implementing element. However, the referenced schema may be used to check conformance of the implementing element.",
@@ -4788,7 +5624,15 @@
                 },
                 "annotations": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/Annotation__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Annotation__identifier_optional"
+                            },
+                            {
+                                "$ref": "#/$defs/AnyValue",
+                                "description": "the actual annotation"
+                            }
+                        ]
                     },
                     "description": "a collection of tag/text tuples with the semantics of OWL Annotation",
                     "type": "object"
@@ -4806,6 +5650,10 @@
                         "type": "string"
                     },
                     "type": "array"
+                },
+                "array": {
+                    "$ref": "#/$defs/ArrayExpression",
+                    "description": "coerces the value of the slot into an array and defines the dimensions of that array"
                 },
                 "asymmetric": {
                     "description": "If s is antisymmetric, and i.s=v where i is different from v, v.s cannot have value i",
@@ -4928,6 +5776,10 @@
                     },
                     "type": "array"
                 },
+                "exact_cardinality": {
+                    "description": "the exact number of entries for a multivalued slot",
+                    "type": "integer"
+                },
                 "exact_mappings": {
                     "description": "A list of terms from different schemas or terminology systems that have identical meaning.",
                     "items": {
@@ -4951,7 +5803,15 @@
                 },
                 "extensions": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/Extension__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Extension__identifier_optional"
+                            },
+                            {
+                                "$ref": "#/$defs/AnyValue",
+                                "description": "the actual annotation"
+                            }
+                        ]
                     },
                     "description": "a tag/text tuple attached to an arbitrary element",
                     "type": "object"
@@ -4970,6 +5830,10 @@
                         "type": "string"
                     },
                     "type": "array"
+                },
+                "id_prefixes_are_closed": {
+                    "description": "If true, then the id_prefixes slot is treated as being closed, and any use of an id that does not have this prefix is considered a violation.",
+                    "type": "boolean"
                 },
                 "identifier": {
                     "description": "True means that the key slot(s) uniquely identifies the elements. There can be at most one identifier or key per container",
@@ -5102,16 +5966,16 @@
                     "type": "integer"
                 },
                 "maximum_value": {
-                    "description": "for slots with ranges of type number, the value must be equal to or lowe than this",
-                    "type": "integer"
+                    "$ref": "#/$defs/Anything",
+                    "description": "For ordinal ranges, the value must be equal to or lower than this"
                 },
                 "minimum_cardinality": {
                     "description": "the minimum number of entries for a multivalued slot",
                     "type": "integer"
                 },
                 "minimum_value": {
-                    "description": "for slots with ranges of type number, the value must be equal to or higher than this",
-                    "type": "integer"
+                    "$ref": "#/$defs/Anything",
+                    "description": "For ordinal ranges, the value must be equal to or higher than this"
                 },
                 "mixin": {
                     "description": "Indicates the class or slot is intended to be inherited from without being an is_a parent. mixins should not be inherited from using is_a, except by other mixins.",
@@ -5369,7 +6233,15 @@
                 },
                 "annotations": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/Annotation__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Annotation__identifier_optional"
+                            },
+                            {
+                                "$ref": "#/$defs/AnyValue",
+                                "description": "the actual annotation"
+                            }
+                        ]
                     },
                     "description": "a collection of tag/text tuples with the semantics of OWL Annotation",
                     "type": "object"
@@ -5387,6 +6259,10 @@
                         "type": "string"
                     },
                     "type": "array"
+                },
+                "array": {
+                    "$ref": "#/$defs/ArrayExpression",
+                    "description": "coerces the value of the slot into an array and defines the dimensions of that array"
                 },
                 "asymmetric": {
                     "description": "If s is antisymmetric, and i.s=v where i is different from v, v.s cannot have value i",
@@ -5509,6 +6385,10 @@
                     },
                     "type": "array"
                 },
+                "exact_cardinality": {
+                    "description": "the exact number of entries for a multivalued slot",
+                    "type": "integer"
+                },
                 "exact_mappings": {
                     "description": "A list of terms from different schemas or terminology systems that have identical meaning.",
                     "items": {
@@ -5532,7 +6412,15 @@
                 },
                 "extensions": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/Extension__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Extension__identifier_optional"
+                            },
+                            {
+                                "$ref": "#/$defs/AnyValue",
+                                "description": "the actual annotation"
+                            }
+                        ]
                     },
                     "description": "a tag/text tuple attached to an arbitrary element",
                     "type": "object"
@@ -5551,6 +6439,10 @@
                         "type": "string"
                     },
                     "type": "array"
+                },
+                "id_prefixes_are_closed": {
+                    "description": "If true, then the id_prefixes slot is treated as being closed, and any use of an id that does not have this prefix is considered a violation.",
+                    "type": "boolean"
                 },
                 "identifier": {
                     "description": "True means that the key slot(s) uniquely identifies the elements. There can be at most one identifier or key per container",
@@ -5683,16 +6575,16 @@
                     "type": "integer"
                 },
                 "maximum_value": {
-                    "description": "for slots with ranges of type number, the value must be equal to or lowe than this",
-                    "type": "integer"
+                    "$ref": "#/$defs/Anything",
+                    "description": "For ordinal ranges, the value must be equal to or lower than this"
                 },
                 "minimum_cardinality": {
                     "description": "the minimum number of entries for a multivalued slot",
                     "type": "integer"
                 },
                 "minimum_value": {
-                    "description": "for slots with ranges of type number, the value must be equal to or higher than this",
-                    "type": "integer"
+                    "$ref": "#/$defs/Anything",
+                    "description": "For ordinal ranges, the value must be equal to or higher than this"
                 },
                 "mixin": {
                     "description": "Indicates the class or slot is intended to be inherited from without being an is_a parent. mixins should not be inherited from using is_a, except by other mixins.",
@@ -5929,7 +6821,15 @@
                 },
                 "annotations": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/Annotation__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Annotation__identifier_optional"
+                            },
+                            {
+                                "$ref": "#/$defs/AnyValue",
+                                "description": "the actual annotation"
+                            }
+                        ]
                     },
                     "description": "a collection of tag/text tuples with the semantics of OWL Annotation",
                     "type": "object"
@@ -6010,7 +6910,15 @@
                 },
                 "extensions": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/Extension__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Extension__identifier_optional"
+                            },
+                            {
+                                "$ref": "#/$defs/AnyValue",
+                                "description": "the actual annotation"
+                            }
+                        ]
                     },
                     "description": "a tag/text tuple attached to an arbitrary element",
                     "type": "object"
@@ -6158,7 +7066,15 @@
                 },
                 "annotations": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/Annotation__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Annotation__identifier_optional"
+                            },
+                            {
+                                "$ref": "#/$defs/AnyValue",
+                                "description": "the actual annotation"
+                            }
+                        ]
                     },
                     "description": "a collection of tag/text tuples with the semantics of OWL Annotation",
                     "type": "object"
@@ -6247,7 +7163,15 @@
                 },
                 "extensions": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/Extension__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Extension__identifier_optional"
+                            },
+                            {
+                                "$ref": "#/$defs/AnyValue",
+                                "description": "the actual annotation"
+                            }
+                        ]
                     },
                     "description": "a tag/text tuple attached to an arbitrary element",
                     "type": "object"
@@ -6262,6 +7186,10 @@
                         "type": "string"
                     },
                     "type": "array"
+                },
+                "id_prefixes_are_closed": {
+                    "description": "If true, then the id_prefixes slot is treated as being closed, and any use of an id that does not have this prefix is considered a violation.",
+                    "type": "boolean"
                 },
                 "implements": {
                     "description": "An element in another schema which this element conforms to. The referenced element is not imported into the schema for the implementing element. However, the referenced schema may be used to check conformance of the implementing element.",
@@ -6426,7 +7354,15 @@
                 },
                 "annotations": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/Annotation__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Annotation__identifier_optional"
+                            },
+                            {
+                                "$ref": "#/$defs/AnyValue",
+                                "description": "the actual annotation"
+                            }
+                        ]
                     },
                     "description": "a collection of tag/text tuples with the semantics of OWL Annotation",
                     "type": "object"
@@ -6515,7 +7451,15 @@
                 },
                 "extensions": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/Extension__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Extension__identifier_optional"
+                            },
+                            {
+                                "$ref": "#/$defs/AnyValue",
+                                "description": "the actual annotation"
+                            }
+                        ]
                     },
                     "description": "a tag/text tuple attached to an arbitrary element",
                     "type": "object"
@@ -6530,6 +7474,10 @@
                         "type": "string"
                     },
                     "type": "array"
+                },
+                "id_prefixes_are_closed": {
+                    "description": "If true, then the id_prefixes slot is treated as being closed, and any use of an id that does not have this prefix is considered a violation.",
+                    "type": "boolean"
                 },
                 "implements": {
                     "description": "An element in another schema which this element conforms to. The referenced element is not imported into the schema for the implementing element. However, the referenced schema may be used to check conformance of the implementing element.",
@@ -6699,7 +7647,15 @@
                 },
                 "annotations": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/Annotation__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Annotation__identifier_optional"
+                            },
+                            {
+                                "$ref": "#/$defs/AnyValue",
+                                "description": "the actual annotation"
+                            }
+                        ]
                     },
                     "description": "a collection of tag/text tuples with the semantics of OWL Annotation",
                     "type": "object"
@@ -6821,7 +7777,15 @@
                 },
                 "extensions": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/Extension__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Extension__identifier_optional"
+                            },
+                            {
+                                "$ref": "#/$defs/AnyValue",
+                                "description": "the actual annotation"
+                            }
+                        ]
                     },
                     "description": "a tag/text tuple attached to an arbitrary element",
                     "type": "object"
@@ -6836,6 +7800,10 @@
                         "type": "string"
                     },
                     "type": "array"
+                },
+                "id_prefixes_are_closed": {
+                    "description": "If true, then the id_prefixes slot is treated as being closed, and any use of an id that does not have this prefix is considered a violation.",
+                    "type": "boolean"
                 },
                 "implements": {
                     "description": "An element in another schema which this element conforms to. The referenced element is not imported into the schema for the implementing element. However, the referenced schema may be used to check conformance of the implementing element.",
@@ -6904,12 +7872,12 @@
                     "type": "array"
                 },
                 "maximum_value": {
-                    "description": "for slots with ranges of type number, the value must be equal to or lowe than this",
-                    "type": "integer"
+                    "$ref": "#/$defs/Anything",
+                    "description": "For ordinal ranges, the value must be equal to or lower than this"
                 },
                 "minimum_value": {
-                    "description": "for slots with ranges of type number, the value must be equal to or higher than this",
-                    "type": "integer"
+                    "$ref": "#/$defs/Anything",
+                    "description": "For ordinal ranges, the value must be equal to or higher than this"
                 },
                 "modified_by": {
                     "description": "agent that modified the element",
@@ -7057,7 +8025,15 @@
                 },
                 "annotations": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/Annotation__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Annotation__identifier_optional"
+                            },
+                            {
+                                "$ref": "#/$defs/AnyValue",
+                                "description": "the actual annotation"
+                            }
+                        ]
                     },
                     "description": "a collection of tag/text tuples with the semantics of OWL Annotation",
                     "type": "object"
@@ -7179,7 +8155,15 @@
                 },
                 "extensions": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/Extension__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Extension__identifier_optional"
+                            },
+                            {
+                                "$ref": "#/$defs/AnyValue",
+                                "description": "the actual annotation"
+                            }
+                        ]
                     },
                     "description": "a tag/text tuple attached to an arbitrary element",
                     "type": "object"
@@ -7194,6 +8178,10 @@
                         "type": "string"
                     },
                     "type": "array"
+                },
+                "id_prefixes_are_closed": {
+                    "description": "If true, then the id_prefixes slot is treated as being closed, and any use of an id that does not have this prefix is considered a violation.",
+                    "type": "boolean"
                 },
                 "implements": {
                     "description": "An element in another schema which this element conforms to. The referenced element is not imported into the schema for the implementing element. However, the referenced schema may be used to check conformance of the implementing element.",
@@ -7262,12 +8250,12 @@
                     "type": "array"
                 },
                 "maximum_value": {
-                    "description": "for slots with ranges of type number, the value must be equal to or lowe than this",
-                    "type": "integer"
+                    "$ref": "#/$defs/Anything",
+                    "description": "For ordinal ranges, the value must be equal to or lower than this"
                 },
                 "minimum_value": {
-                    "description": "for slots with ranges of type number, the value must be equal to or higher than this",
-                    "type": "integer"
+                    "$ref": "#/$defs/Anything",
+                    "description": "For ordinal ranges, the value must be equal to or higher than this"
                 },
                 "modified_by": {
                     "description": "agent that modified the element",
@@ -7406,7 +8394,15 @@
                 },
                 "annotations": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/Annotation__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Annotation__identifier_optional"
+                            },
+                            {
+                                "$ref": "#/$defs/AnyValue",
+                                "description": "the actual annotation"
+                            }
+                        ]
                     },
                     "description": "a collection of tag/text tuples with the semantics of OWL Annotation",
                     "type": "object"
@@ -7491,7 +8487,15 @@
                 },
                 "extensions": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/Extension__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Extension__identifier_optional"
+                            },
+                            {
+                                "$ref": "#/$defs/AnyValue",
+                                "description": "the actual annotation"
+                            }
+                        ]
                     },
                     "description": "a tag/text tuple attached to an arbitrary element",
                     "type": "object"
@@ -7643,7 +8647,15 @@
                 },
                 "annotations": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/Annotation__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Annotation__identifier_optional"
+                            },
+                            {
+                                "$ref": "#/$defs/AnyValue",
+                                "description": "the actual annotation"
+                            }
+                        ]
                     },
                     "description": "a collection of tag/text tuples with the semantics of OWL Annotation",
                     "type": "object"
@@ -7728,7 +8740,15 @@
                 },
                 "extensions": {
                     "additionalProperties": {
-                        "$ref": "#/$defs/Extension__identifier_optional"
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Extension__identifier_optional"
+                            },
+                            {
+                                "$ref": "#/$defs/AnyValue",
+                                "description": "the actual annotation"
+                            }
+                        ]
                     },
                     "description": "a tag/text tuple attached to an arbitrary element",
                     "type": "object"
@@ -7853,10 +8873,10 @@
         },
         "UnitOfMeasure": {
             "additionalProperties": false,
-            "description": "A unit of measure, or unit, is a particular quantity value that has been chosen as a scale for measuring other quantities the same kind (more generally of equivalent dimension).",
+            "description": "A unit of measure, or unit, is a particular quantity value that has been chosen as a scale for  measuring other quantities the same kind (more generally of equivalent dimension).",
             "properties": {
                 "abbreviation": {
-                    "description": "An abbreviation for a unit is a short ASCII string that is used in place of the full name for the unit in contexts where non-ASCII characters would be problematic, or where using the abbreviation will enhance readability. When a power of a base unit needs to be expressed, such as squares this can be done using abbreviations rather than symbols (source: qudt)",
+                    "description": "An abbreviation for a unit is a short ASCII string that is used in place of the full name for the unit in  contexts where non-ASCII characters would be problematic, or where using the abbreviation will enhance  readability. When a power of a base unit needs to be expressed, such as squares this can be done using  abbreviations rather than symbols (source: qudt)",
                     "type": "string"
                 },
                 "derivation": {
@@ -7875,7 +8895,7 @@
                     "type": "array"
                 },
                 "has_quantity_kind": {
-                    "description": "Concept in a vocabulary or ontology that denotes the kind of quanity being measured, e.g. length",
+                    "description": "Concept in a vocabulary or ontology that denotes the kind of quantity being measured, e.g. length",
                     "type": "string"
                 },
                 "iec61360code": {
@@ -7895,7 +8915,7 @@
         }
     },
     "$id": "https://w3id.org/linkml/meta",
-    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$schema": "https://json-schema.org/draft/2019-09/schema",
     "additionalProperties": true,
     "description": "A collection of definitions that make up a schema or a data model.",
     "metamodel_version": "1.7.0",
@@ -7924,7 +8944,15 @@
         },
         "annotations": {
             "additionalProperties": {
-                "$ref": "#/$defs/Annotation__identifier_optional"
+                "anyOf": [
+                    {
+                        "$ref": "#/$defs/Annotation__identifier_optional"
+                    },
+                    {
+                        "$ref": "#/$defs/AnyValue",
+                        "description": "the actual annotation"
+                    }
+                ]
             },
             "description": "a collection of tag/text tuples with the semantics of OWL Annotation",
             "type": "object"
@@ -8063,7 +9091,15 @@
         },
         "extensions": {
             "additionalProperties": {
-                "$ref": "#/$defs/Extension__identifier_optional"
+                "anyOf": [
+                    {
+                        "$ref": "#/$defs/Extension__identifier_optional"
+                    },
+                    {
+                        "$ref": "#/$defs/AnyValue",
+                        "description": "the actual annotation"
+                    }
+                ]
             },
             "description": "a tag/text tuple attached to an arbitrary element",
             "type": "object"
@@ -8087,6 +9123,10 @@
                 "type": "string"
             },
             "type": "array"
+        },
+        "id_prefixes_are_closed": {
+            "description": "If true, then the id_prefixes slot is treated as being closed, and any use of an id that does not have this prefix is considered a violation.",
+            "type": "boolean"
         },
         "implements": {
             "description": "An element in another schema which this element conforms to. The referenced element is not imported into the schema for the implementing element. However, the referenced schema may be used to check conformance of the implementing element.",
@@ -8331,5 +9371,5 @@
     ],
     "title": "meta",
     "type": "object",
-    "version": "2.0.0"
+    "version": null
 }

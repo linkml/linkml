@@ -1,5 +1,5 @@
-# Auto generated from units.yaml by pythongen.py version: 0.9.0
-# Generation date: 2023-09-01T13:21:21
+# Auto generated from units.yaml by pythongen.py version: 0.0.1
+# Generation date: 2024-02-07T17:29:43
 # Schema: units
 #
 # id: https://w3id.org/linkml/units
@@ -55,7 +55,7 @@ class UnitOfMeasure(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = QUDT.Unit
+    class_class_uri: ClassVar[URIRef] = QUDT["Unit"]
     class_class_curie: ClassVar[str] = "qudt:Unit"
     class_name: ClassVar[str] = "UnitOfMeasure"
     class_model_uri: ClassVar[URIRef] = LINKML.UnitOfMeasure

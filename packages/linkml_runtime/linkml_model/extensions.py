@@ -1,5 +1,5 @@
-# Auto generated from extensions.yaml by pythongen.py version: 0.9.0
-# Generation date: 2023-09-01T13:21:14
+# Auto generated from extensions.yaml by pythongen.py version: 0.0.1
+# Generation date: 2024-02-07T17:29:29
 # Schema: extensions
 #
 # id: https://w3id.org/linkml/extensions
@@ -50,7 +50,7 @@ class Extension(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LINKML.Extension
+    class_class_uri: ClassVar[URIRef] = LINKML["Extension"]
     class_class_curie: ClassVar[str] = "linkml:Extension"
     class_name: ClassVar[str] = "extension"
     class_model_uri: ClassVar[URIRef] = LINKML.Extension
@@ -77,7 +77,7 @@ class Extensible(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LINKML.Extensible
+    class_class_uri: ClassVar[URIRef] = LINKML["Extensible"]
     class_class_curie: ClassVar[str] = "linkml:Extensible"
     class_name: ClassVar[str] = "extensible"
     class_model_uri: ClassVar[URIRef] = LINKML.Extensible

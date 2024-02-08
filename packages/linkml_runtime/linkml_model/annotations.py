@@ -1,5 +1,5 @@
-# Auto generated from annotations.yaml by pythongen.py version: 0.9.0
-# Generation date: 2023-09-01T13:21:10
+# Auto generated from annotations.yaml by pythongen.py version: 0.0.1
+# Generation date: 2024-02-07T17:29:22
 # Schema: annotations
 #
 # id: https://w3id.org/linkml/annotations
@@ -49,7 +49,7 @@ class Annotatable(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LINKML.Annotatable
+    class_class_uri: ClassVar[URIRef] = LINKML["Annotatable"]
     class_class_curie: ClassVar[str] = "linkml:Annotatable"
     class_name: ClassVar[str] = "annotatable"
     class_model_uri: ClassVar[URIRef] = LINKML.Annotatable
@@ -69,7 +69,7 @@ class Annotation(Extension):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LINKML.Annotation
+    class_class_uri: ClassVar[URIRef] = LINKML["Annotation"]
     class_class_curie: ClassVar[str] = "linkml:Annotation"
     class_name: ClassVar[str] = "annotation"
     class_model_uri: ClassVar[URIRef] = LINKML.Annotation

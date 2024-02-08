@@ -1,5 +1,5 @@
-# Auto generated from datasets.yaml by pythongen.py version: 0.9.0
-# Generation date: 2023-09-01T13:21:13
+# Auto generated from datasets.yaml by pythongen.py version: 0.0.1
+# Generation date: 2024-02-07T17:29:27
 # Schema: datasets
 #
 # id: https://w3id.org/linkml/datasets
@@ -30,7 +30,7 @@ version = None
 dataclasses._init_fn = dataclasses_init_fn_with_kwargs
 
 # Namespaces
-BIBO = CurieNamespace('bibo', 'http://example.org/UNKNOWN/bibo/')
+BIBO = CurieNamespace('bibo', 'http://purl.org/ontology/bibo/')
 CSVW = CurieNamespace('csvw', 'http://www.w3.org/ns/csvw#')
 DATASETS = CurieNamespace('datasets', 'https://w3id.org/linkml/report')
 DCAT = CurieNamespace('dcat', 'http://www.w3.org/ns/dcat#')
@@ -39,7 +39,7 @@ FORMATS = CurieNamespace('formats', 'http://www.w3.org/ns/formats/')
 FRICTIONLESS = CurieNamespace('frictionless', 'https://specs.frictionlessdata.io/')
 LINKML = CurieNamespace('linkml', 'https://w3id.org/linkml/')
 MEDIATYPES = CurieNamespace('mediatypes', 'https://www.iana.org/assignments/media-types/')
-OSLC = CurieNamespace('oslc', 'http://example.org/UNKNOWN/oslc/')
+OSLC = CurieNamespace('oslc', 'http://open-services.net/ns/core#')
 OWL = CurieNamespace('owl', 'http://www.w3.org/2002/07/owl#')
 PAV = CurieNamespace('pav', 'http://purl.org/pav/')
 PROV = CurieNamespace('prov', 'http://www.w3.org/ns/prov#')
@@ -75,7 +75,7 @@ class Information(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = DATASETS.Information
+    class_class_uri: ClassVar[URIRef] = DATASETS["Information"]
     class_class_curie: ClassVar[str] = "datasets:Information"
     class_name: ClassVar[str] = "Information"
     class_model_uri: ClassVar[URIRef] = DATASETS.Information
@@ -172,7 +172,7 @@ class DataPackage(Information):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = VOID.Dataset
+    class_class_uri: ClassVar[URIRef] = VOID["Dataset"]
     class_class_curie: ClassVar[str] = "void:Dataset"
     class_name: ClassVar[str] = "DataPackage"
     class_model_uri: ClassVar[URIRef] = DATASETS.DataPackage
@@ -200,7 +200,7 @@ class DataResource(Information):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = DCAT.Distribution
+    class_class_uri: ClassVar[URIRef] = DCAT["Distribution"]
     class_class_curie: ClassVar[str] = "dcat:Distribution"
     class_name: ClassVar[str] = "DataResource"
     class_model_uri: ClassVar[URIRef] = DATASETS.DataResource
@@ -267,7 +267,7 @@ class FormatDialect(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = DATASETS.FormatDialect
+    class_class_uri: ClassVar[URIRef] = DATASETS["FormatDialect"]
     class_class_curie: ClassVar[str] = "datasets:FormatDialect"
     class_name: ClassVar[str] = "FormatDialect"
     class_model_uri: ClassVar[URIRef] = DATASETS.FormatDialect
@@ -328,22 +328,22 @@ class FormatEnum(EnumDefinitionImpl):
 
     N3 = PermissibleValue(
         text="N3",
-        meaning=FORMATS.N3)
+        meaning=FORMATS["N3"])
     Microdata = PermissibleValue(
         text="Microdata",
-        meaning=FORMATS.microdata)
+        meaning=FORMATS["microdata"])
     POWDER = PermissibleValue(
         text="POWDER",
-        meaning=FORMATS.POWDER)
+        meaning=FORMATS["POWDER"])
     RDFa = PermissibleValue(
         text="RDFa",
-        meaning=FORMATS.RDFa)
+        meaning=FORMATS["RDFa"])
     Turtle = PermissibleValue(
         text="Turtle",
-        meaning=FORMATS.Turtle)
+        meaning=FORMATS["Turtle"])
     TriG = PermissibleValue(
         text="TriG",
-        meaning=FORMATS.TriG)
+        meaning=FORMATS["TriG"])
     YAML = PermissibleValue(text="YAML")
     JSON = PermissibleValue(text="JSON")
 
@@ -368,19 +368,19 @@ class FormatEnum(EnumDefinitionImpl):
         setattr(cls, "LD Patch",
             PermissibleValue(
                 text="LD Patch",
-                meaning=FORMATS.LD_Patch))
+                meaning=FORMATS["LD_Patch"]))
         setattr(cls, "OWL XML Serialization",
             PermissibleValue(
                 text="OWL XML Serialization",
-                meaning=FORMATS.OWL_XML))
+                meaning=FORMATS["OWL_XML"]))
         setattr(cls, "OWL Functional Syntax",
             PermissibleValue(
                 text="OWL Functional Syntax",
-                meaning=FORMATS.OWL_Functional))
+                meaning=FORMATS["OWL_Functional"]))
         setattr(cls, "OWL Manchester Syntax",
             PermissibleValue(
                 text="OWL Manchester Syntax",
-                meaning=FORMATS.OWL_Manchester))
+                meaning=FORMATS["OWL_Manchester"]))
         setattr(cls, "POWDER-S",
             PermissibleValue(
                 text="POWDER-S",
@@ -396,31 +396,31 @@ class FormatEnum(EnumDefinitionImpl):
         setattr(cls, "RDF/JSON",
             PermissibleValue(
                 text="RDF/JSON",
-                meaning=FORMATS.RDF_JSON))
+                meaning=FORMATS["RDF_JSON"]))
         setattr(cls, "RDF/XML",
             PermissibleValue(
                 text="RDF/XML",
-                meaning=FORMATS.RDF_XML))
+                meaning=FORMATS["RDF_XML"]))
         setattr(cls, "RIF XML Syntax",
             PermissibleValue(
                 text="RIF XML Syntax",
-                meaning=FORMATS.RIF_XML))
+                meaning=FORMATS["RIF_XML"]))
         setattr(cls, "SPARQL Results in XML",
             PermissibleValue(
                 text="SPARQL Results in XML",
-                meaning=FORMATS.SPARQL_Results_XML))
+                meaning=FORMATS["SPARQL_Results_XML"]))
         setattr(cls, "SPARQL Results in JSON",
             PermissibleValue(
                 text="SPARQL Results in JSON",
-                meaning=FORMATS.SPARQL_Results_JSON))
+                meaning=FORMATS["SPARQL_Results_JSON"]))
         setattr(cls, "SPARQL Results in CSV",
             PermissibleValue(
                 text="SPARQL Results in CSV",
-                meaning=FORMATS.SPARQL_Results_CSV))
+                meaning=FORMATS["SPARQL_Results_CSV"]))
         setattr(cls, "SPARQL Results in TSV",
             PermissibleValue(
                 text="SPARQL Results in TSV",
-                meaning=FORMATS.SPARQL_Results_TSV))
+                meaning=FORMATS["SPARQL_Results_TSV"]))
 
 # Slots
 class slots:

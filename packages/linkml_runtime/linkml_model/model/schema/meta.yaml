@@ -23,14 +23,12 @@ description: |-
 
   * [MinimalSubset](https://w3id.org/linkml/MinimalSubset)
   * [BasicSubset](https://w3id.org/linkml/BasicSubset)
-  * [BasicSubset](https://w3id.org/linkml/BasicSubset)
 
   For canonical reference documentation on any metamodel construct,
   refer to the official URI for each construct, e.g.
   [https://w3id.org/linkml/is_a](https://w3id.org/linkml/is_a)
 
 license: https://creativecommons.org/publicdomain/zero/1.0/
-version: 2.0.0
 
 prefixes:
   linkml: https://w3id.org/linkml/
@@ -50,6 +48,7 @@ prefixes:
   vann: https://vocab.org/vann/
   qudt: http://qudt.org/schema/qudt/
   cdisc: http://rdf.cdisc.org/mms#
+  SIO: http://semanticscience.org/resource/SIO_
 
 default_prefix: linkml
 default_range: string
@@ -241,11 +240,18 @@ slots:
       - If identifiers are treated as CURIEs, then the CURIE must start with one of the indicated prefixes followed by `:` (_should_ start if the list is open)
       - If identifiers are treated as URIs, then the URI string must start with the expanded for of the prefix (_should_ start if the list is open)
     see_also:
-      - https://github.com/linkml/linkml/issues/194
       - https://github.com/linkml/linkml-model/issues/28
     in_subset:
       - SpecificationSubset
       - BasicSubset
+
+  id_prefixes_are_closed:
+    domain: element
+    range: boolean
+    description: >-
+      If true, then the id_prefixes slot is treated as being closed, and any use of an id that does not have this prefix is considered a violation.
+    see_also:
+      - https://github.com/linkml/linkml/issues/194
 
   description:
     rank: 5
@@ -1419,6 +1425,56 @@ slots:
       - BasicSubset
       - ObjectOrientedProfile
 
+  array:
+    domain: slot_definition
+    range: array_expression
+    inherited: true
+    description: coerces the value of the slot into an array and defines the dimensions of that array
+    status: testing
+
+  dimensions:
+    aliases:
+      - axes
+    description: definitions of each axis in the array
+    domain: array_expression
+    range: dimension_expression
+    multivalued: true
+    list_elements_ordered: true
+    status: testing
+
+  minimum_number_dimensions:
+    description: minimum number of dimensions in the array
+    domain: array_expression
+    range: integer
+    status: testing
+    # minimum_value: 1
+    comments:
+      - minimum_cardinality cannot be greater than maximum_cardinality
+
+  maximum_number_dimensions:
+    description: maximum number of dimensions in the array, or False if explicitly no maximum.
+      If this is unset, and an explicit list of dimensions are passed using dimensions, then this is interpreted
+      as a closed list and the maximum_number_dimensions is the length of the dimensions list, unless this
+      value is set to False
+    domain: array_expression
+    range: Anything
+    any_of:
+      - range: integer
+        # minimum_value: 1
+      - range: boolean
+    status: testing
+    comments:
+      - maximum_number_dimensions cannot be less than minimum_number_dimensions
+
+  exact_number_dimensions:
+    description: exact number of dimensions in the array
+    domain: array_expression
+    range: integer
+    status: testing
+    # minimum_value: 1
+    comments:
+      - if exact_number_dimensions is set, then minimum_number_dimensions and maximum_number_dimensions must be unset or have the same value
+
   inherited:
     domain: slot_definition
     range: boolean
@@ -1520,6 +1576,16 @@ slots:
     in_subset:
       - SpecificationSubset
 
+  exact_cardinality:
+    is_a: list_value_specification_constant
+    range: integer
+    inherited: true
+    description: the exact number of entries for a multivalued slot
+    in_subset:
+      - SpecificationSubset
+    comments:
+      - if exact_cardinality is set, then minimum_cardinalty and maximum_cardinality must be unset or have the same value
+
   minimum_cardinality:
     is_a: list_value_specification_constant
     range: integer
@@ -1527,6 +1593,9 @@ slots:
     description: the minimum number of entries for a multivalued slot
     in_subset:
       - SpecificationSubset
+    # minimum_value: 0
+    comments:
+      - minimum_cardinality cannot be greater than maximum_cardinality
 
   maximum_cardinality:
     is_a: list_value_specification_constant
@@ -1535,6 +1604,9 @@ slots:
     description: the maximum number of entries for a multivalued slot
     in_subset:
       - SpecificationSubset
+    comments:
+      - maximum_cardinality cannot be less than minimum_cardinality
+    # minimum_value: 0
 
   equals_string_in:
     is_a: list_value_specification_constant
@@ -1636,6 +1708,7 @@ slots:
       - BasicSubset
     see_also:
       - "https://w3id.org/linkml/docs/specification/06mapping/#collection-forms"
+      - https://linkml.io/linkml/schemas/inlining.html
 
   inlined_as_list:
     rank: 27
@@ -1658,6 +1731,7 @@ slots:
       - BasicSubset
     see_also:
       - "https://w3id.org/linkml/docs/specification/06mapping/#collection-forms"
+      - https://linkml.io/linkml/schemas/inlining.html
 
   inlined_as_simple_dict:
     rank: 28
@@ -1796,6 +1870,7 @@ slots:
     multivalued: true
     exact_mappings:
       - schema:domainIncludes
+      - SIO:000011
 
   is_usage_slot:
     domain: slot_definition
@@ -1935,8 +2010,10 @@ slots:
     aliases:
       - low value
     domain: slot_definition
-    range: integer
-    description: for slots with ranges of type number, the value must be equal to or higher than this
+    range: Anything
+    description: For ordinal ranges, the value must be equal to or higher than this
+    notes:
+      - Range to be refined to an "Ordinal" metaclass - see https://github.com/linkml/linkml/issues/1384#issuecomment-1892721142
     inherited: true
     in_subset:
       - SpecificationSubset
@@ -1946,8 +2023,10 @@ slots:
     aliases:
       - high value
     domain: slot_definition
-    range: integer
-    description: for slots with ranges of type number, the value must be equal to or lowe than this
+    range: Anything
+    description: For ordinal ranges, the value must be equal to or lower than this
+    notes:
+      - Range to be refined to an "Ordinal" metaclass - see https://github.com/linkml/linkml/issues/1384#issuecomment-1892721142
     inherited: true
     in_subset:
       - SpecificationSubset
@@ -2074,7 +2153,7 @@ slots:
       - BasicSubset
 
   # -----------------------------------
-  # Slots for alt descripion
+  # Slots for alt description
   # -----------------------------------
   alt_description_text:
     domain: alt_description
@@ -2395,6 +2474,7 @@ classes:
     slots:
       - name
       - id_prefixes
+      - id_prefixes_are_closed
       - definition_uri
       - local_names
       - conforms_to
@@ -2565,9 +2645,12 @@ classes:
     rank: 5
     aliases:
       - enum
+      - enumeration
+      - semantic enumeration
       - value set
       - term set
       - concept set
+      - code set
       - Terminology Value Set
       - answer list
       - value domain
@@ -2704,6 +2787,7 @@ classes:
       - equals_string_in
       - equals_number
       - equals_expression
+      - exact_cardinality
       - minimum_cardinality
       - maximum_cardinality
       - has_member
@@ -2748,6 +2832,7 @@ classes:
       - domain
       - slot_uri
       - multivalued
+      - array
       - inherited
       - readonly
       - ifabsent
@@ -2906,6 +2991,32 @@ classes:
     in_subset:
       - SpecificationSubset
 
+  array_expression:
+    description: defines the dimensions of an array
+    mixins:
+      - extensible
+      - annotatable
+      - common_metadata
+    slots:
+      - exact_number_dimensions
+      - minimum_number_dimensions
+      - maximum_number_dimensions
+      - dimensions
+    status: testing
+
+  dimension_expression:
+    description: defines one of the dimensions of an array
+    mixins:
+      - extensible
+      - annotatable
+      - common_metadata
+    slots:
+      - alias
+      - maximum_cardinality
+      - minimum_cardinality
+      - exact_cardinality
+    status: testing
+
   pattern_expression:
     description: a regular expression pattern used to evaluate conformance of a string
     mixins:
@@ -3030,6 +3141,8 @@ enums:
         description: The permissible values are the set of code URIs in the code set
       FHIR_CODING:
         description: The permissible values are the set of FHIR coding elements derived from the code set
+      LABEL:
+        description: The permissible values are the set of human readable labels in the code set
     in_subset:
       - SpecificationSubset
       - BasicSubset

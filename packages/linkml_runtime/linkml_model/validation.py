@@ -1,5 +1,5 @@
-# Auto generated from validation.yaml by pythongen.py version: 0.9.0
-# Generation date: 2023-09-01T13:21:24
+# Auto generated from validation.yaml by pythongen.py version: 0.0.1
+# Generation date: 2024-02-07T17:29:45
 # Schema: reporting
 #
 # id: https://w3id.org/linkml/reporting
@@ -56,7 +56,7 @@ class ValidationReport(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = SH.ValidationReport
+    class_class_uri: ClassVar[URIRef] = SH["ValidationReport"]
     class_class_curie: ClassVar[str] = "sh:ValidationReport"
     class_name: ClassVar[str] = "ValidationReport"
     class_model_uri: ClassVar[URIRef] = REPORTING.ValidationReport
@@ -78,7 +78,7 @@ class ValidationResult(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = SH.ValidationResult
+    class_class_uri: ClassVar[URIRef] = SH["ValidationResult"]
     class_class_curie: ClassVar[str] = "sh:ValidationResult"
     class_name: ClassVar[str] = "ValidationResult"
     class_model_uri: ClassVar[URIRef] = REPORTING.ValidationResult
@@ -141,7 +141,7 @@ class ProblemType(EnumDefinitionImpl):
         description="Applies when the value of a slot is inconsistent with the declared range")
     max_count_violation = PermissibleValue(
         text="max_count_violation",
-        meaning=SH.MaxCountConstraintComponent)
+        meaning=SH["MaxCountConstraintComponent"])
     parsing_error = PermissibleValue(
         text="parsing_error",
         description="The data could not be parsed")
@@ -155,13 +155,13 @@ class SeverityOptions(EnumDefinitionImpl):
     FATAL = PermissibleValue(text="FATAL")
     ERROR = PermissibleValue(
         text="ERROR",
-        meaning=SH.Violation)
+        meaning=SH["Violation"])
     WARNING = PermissibleValue(
         text="WARNING",
-        meaning=SH.Warning)
+        meaning=SH["Warning"])
     INFO = PermissibleValue(
         text="INFO",
-        meaning=SH.Info)
+        meaning=SH["Info"])
 
     _defn = EnumDefinition(
         name="SeverityOptions",
