@@ -299,7 +299,7 @@ def test_docgen(kitchen_sink_path, input_path, tmp_path):
     # test that slots with ranges modified using any_of have union/cup
     # separated ranges
     assert_mdfile_contains(tmp_path / "EmploymentEvent.md", "[CordialnessEnum](CordialnessEnum.md)", after="## Slots")
-    assert_mdfile_contains(tmp_path / "EmploymentEvent.md", "&nbsp;∪&nbsp;", after="## Slots")
+    assert_mdfile_contains(tmp_path / "EmploymentEvent.md", "&nbsp;or&nbsp;<br />", after="## Slots")
     assert_mdfile_contains(
         tmp_path / "EmploymentEvent.md", "[EmploymentEventType](EmploymentEventType.md)", after="## Slots"
     )
