@@ -1,3 +1,4 @@
+from enum import Enum
 import logging
 import os
 from collections import defaultdict
@@ -253,6 +254,11 @@ def _get_pyrange(t: TypeDefinition, sv: SchemaView) -> str:
     return pyrange
 
 
+class ArrayRepresentation(Enum):
+    LIST = "list"
+    NPARRAY = "nparray"  # numpy and nptyping must be installed to use this
+
+
 @dataclass
 class PydanticGenerator(OOCodeGenerator):
     """
@@ -269,6 +275,7 @@ class PydanticGenerator(OOCodeGenerator):
 
     # ObjectVars
     pydantic_version: str = field(default_factory=lambda: PYDANTIC_VERSION[0])
+    array_representations: List[ArrayRepresentation] = field(default_factory=lambda: [ArrayRepresentation.LIST])
     template_file: str = None
     extra_fields: str = field(default_factory=lambda: "forbid")
     gen_mixin_inheritance: bool = field(default_factory=lambda: True)
@@ -525,6 +532,52 @@ class PydanticGenerator(OOCodeGenerator):
             return list(collection_keys)[0]
         return None
 
+    def get_array_representations_range(self, slot: SlotDefinition) -> str:
+        """
+        Generate the python range for array representations
+        """
+        array_info = slot.array
+        if array_info is None:  # pragma: no cover
+            return ""  # this should not happen
+
+        # if exact_number_dimensions is not set, then we can't generate a range
+        ndim = array_info.exact_number_dimensions
+        min_dim = array_info.minimum_number_dimensions
+        max_dim = array_info.maximum_number_dimensions
+        if ndim is None and min_dim is None:
+            min_dim = 1
+        if ndim is None and max_dim is None:
+            max_dim = len(array_info.dimensions)
+
+
+        if ndim is None:
+            return "List[Any]"
+
+        reps = [self.get_array_representation_single(x.value, ndim, slot.range) for x in self.array_representations]
+        if len(reps) == 1:
+            return reps[0]
+        else:
+            return f"Union[{','.join(reps)}]"
+
+    def get_array_representation_single(self, ArrayRepresentation: str, ndim: int, range: str) -> str:
+        """
+        Generate the python range for array representations
+        """
+        # goal: range: float and exact_number_dimensions: 3 -->
+        # List[List[List[float]]]
+        def _get_list_rep(dims: int) -> str:
+            if dims == 1:
+                return f"List[{range}]"
+            else:
+                return f"List[{_get_list_rep(dims - 1)}]"
+
+        if ArrayRepresentation == "list":
+            return _get_list_rep(ndim)
+        elif ArrayRepresentation == "nparray":
+            return f"np.ndarray[{range}, {ndim}]"  # TODO
+        else:
+            raise Exception(f"Unknown array representation: {ArrayRepresentation}")
+
     def serialize(self) -> str:
         if self.template_file is not None:
             with open(self.template_file) as template_file:
@@ -596,9 +649,9 @@ class PydanticGenerator(OOCodeGenerator):
                 else:
                     raise Exception(f"Could not generate python range for {class_name}.{s.name}")
 
-                if "linkml:elements" in s.implements:
+                if s.array or "linkml:elements" in s.implements:
                     # TODO add support for xarray
-                    pyrange = "np.ndarray"
+                    pyrange = self.get_array_representations_range(s)
                     if "linkml:ColumnOrderedArray" in class_def.implements:
                         raise NotImplementedError("Cannot generate Pydantic code for ColumnOrderedArrays.")
                     uses_numpy = True
@@ -641,6 +694,14 @@ class PydanticGenerator(OOCodeGenerator):
     help="Pydantic version to use (1 or 2)",
 )
 @click.option(
+    "--array-representations",
+    type=click.Choice([k.value for k in ArrayRepresentation]),
+    multiple=True,
+    default=["list"],
+    help="List of array representations to accept for array slots. Default is list of lists.",
+)
+
+@click.option(
     "--extra-fields",
     type=click.Choice(["allow", "ignore", "forbid"], case_sensitive=False),
     default="forbid",
@@ -657,6 +718,7 @@ def cli(
     classvars=True,
     slots=True,
     pydantic_version="1",
+    array_representations=list("list"),
     extra_fields="forbid",
     **args,
 ):
@@ -665,6 +727,7 @@ def cli(
         yamlfile,
         template_file=template_file,
         pydantic_version=pydantic_version,
+        array_representations=[ArrayRepresentation(x) for x in array_representations],
         extra_fields=extra_fields,
         emit_metadata=head,
         genmeta=genmeta,
