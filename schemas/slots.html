@@ -399,7 +399,7 @@ are applicable to that class.</p>
 </section>
 <section id="identifiers">
 <h2>Identifiers<a class="headerlink" href="#identifiers" title="Permalink to this heading">#</a></h2>
-<p>If a slot is declared as an <a class="reference external" href="https://w3id.org/linkml/">identifier</a>
+<p>If a slot is declared as an <a class="reference external" href="https://w3id.org/linkml/identifier">identifier</a>
 then it serves as a unique key for members of that class. It can also
 be used for <a class="reference internal" href="inlining.html"><span class="doc std std-doc">inlining</span></a> as a dict in JSON serializations.</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">slots</span><span class="p">:</span>
@@ -407,7 +407,7 @@ be used for <a class="reference internal" href="inlining.html"><span class="doc 
 <span class="w">    </span><span class="nt">identifier</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 </pre></div>
 </div>
-<p>the range of an identifier can be any type, but it is a good idea to have these be of type <a class="reference external" href="https://w3id.org/linkml/uriorcurie">uriorcurie</a></p>
+<p>the range of an identifier can be any type, but it is a good idea to have these be of type <a class="reference external" href="https://w3id.org/linkml/Uriorcurie">Uriorcurie</a></p>
 <p>A class must not have more than one identifier (asserted or derived). <code class="docutils literal notranslate"><span class="pre">identifier</span></code> marks the <em>primary</em> identifier.</p>
 <p>If you need to mark additional fields as unique, or a collection of slots that when considered as a tuple are unique, use
 <code class="docutils literal notranslate"><span class="pre">unique_keys</span></code> (see the <a class="reference internal" href="constraints.html"><span class="std std-doc">constraints</span></a> section of the docs).</p>
@@ -535,7 +535,7 @@ inverses.</p>
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2021-2023, LinkML Authors
+                Copyright &#169; 2021-2024, LinkML Authors
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             

@@ -98,7 +98,7 @@ we can use `slot_usage` to constrain the meaning of more generic slots such as `
 ## Identifiers
 
 
-If a slot is declared as an [identifier](https://w3id.org/linkml/)
+If a slot is declared as an [identifier](https://w3id.org/linkml/identifier)
 then it serves as a unique key for members of that class. It can also
 be used for [inlining](inlining) as a dict in JSON serializations.
 
@@ -109,7 +109,7 @@ slots:
     identifier: true
 ```
 
-the range of an identifier can be any type, but it is a good idea to have these be of type [uriorcurie](https://w3id.org/linkml/uriorcurie)
+the range of an identifier can be any type, but it is a good idea to have these be of type [Uriorcurie](https://w3id.org/linkml/Uriorcurie)
 
 A class must not have more than one identifier (asserted or derived). `identifier` marks the *primary* identifier.
 
