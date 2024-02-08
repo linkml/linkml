@@ -315,8 +315,10 @@
 <p>We use the sphinx framework.</p>
 <section id="instructions">
 <h2>Instructions<a class="headerlink" href="#instructions" title="Permalink to this heading">#</a></h2>
-<p>To build the doc locally:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>poetry<span class="w"> </span>run<span class="w"> </span>make<span class="w"> </span>html
+<p>To build the docs locally, first make sure you have the poetry dev dependencies installed, then use poetry to run make html (don’t run “make html” directly):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>poetry<span class="w"> </span>install<span class="w"> </span>--with<span class="w"> </span>dev
+<span class="nb">cd</span><span class="w"> </span>docs
+poetry<span class="w"> </span>run<span class="w"> </span>make<span class="w"> </span>html
 </pre></div>
 </div>
 <p>This will build docs in <code class="docutils literal notranslate"><span class="pre">_build/html/</span></code>. You can check these with your browser.</p>

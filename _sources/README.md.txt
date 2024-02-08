@@ -11,9 +11,11 @@ We use the sphinx framework.
 
 ## Instructions
 
-To build the doc locally:
+To build the docs locally, first make sure you have the poetry dev dependencies installed, then use poetry to run make html (don't run "make html" directly):
 
 ```bash
+poetry install --with dev
+cd docs
 poetry run make html
 ```
 
