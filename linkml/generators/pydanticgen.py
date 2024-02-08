@@ -1,9 +1,9 @@
-from enum import Enum
 import logging
 import os
 from collections import defaultdict
 from copy import deepcopy
 from dataclasses import dataclass, field
+from enum import Enum
 from types import ModuleType
 from typing import Dict, List, Optional, Set
 
@@ -549,7 +549,6 @@ class PydanticGenerator(OOCodeGenerator):
         if ndim is None and max_dim is None:
             max_dim = len(array_info.dimensions)
 
-
         if ndim is None:
             return "List[Any]"
 
@@ -563,6 +562,7 @@ class PydanticGenerator(OOCodeGenerator):
         """
         Generate the python range for array representations
         """
+
         # goal: range: float and exact_number_dimensions: 3 -->
         # List[List[List[float]]]
         def _get_list_rep(dims: int) -> str:
@@ -700,7 +700,6 @@ class PydanticGenerator(OOCodeGenerator):
     default=["list"],
     help="List of array representations to accept for array slots. Default is list of lists.",
 )
-
 @click.option(
     "--extra-fields",
     type=click.Choice(["allow", "ignore", "forbid"], case_sensitive=False),

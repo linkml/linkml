@@ -1,39 +1,17 @@
 """Compliance tests for core constructs."""
 
-import unicodedata
-
 import pytest
-from _decimal import Decimal
-from linkml_runtime.utils.formatutils import underscore
 from pydantic.version import VERSION as PYDANTIC_VERSION
 
 from tests.test_compliance.helper import (
-    JSON_SCHEMA,
-    OWL,
     PYDANTIC,
-    PYDANTIC_ROOT_CLASS,
-    PYTHON_DATACLASSES,
-    PYTHON_DATACLASSES_ROOT_CLASS,
-    SHACL,
-    SHEX,
-    SQL_DDL_POSTGRES,
-    SQL_DDL_SQLITE,
-    ValidationBehavior,
     check_data,
-    metamodel_schemaview,
     validated_schema,
 )
 from tests.test_compliance.test_compliance import (
-    CLASS_ANY,
     CLASS_C,
     CORE_FRAMEWORKS,
-    EXAMPLE_STRING_VALUE_1,
-    EXAMPLE_STRING_VALUE_2,
-    EXAMPLE_STRING_VALUE_3,
-    SLOT_ID,
     SLOT_S1,
-    SLOT_S2,
-    SLOT_S3,
 )
 
 IS_PYDANTIC_V1 = PYDANTIC_VERSION[0] == "1"
@@ -134,7 +112,7 @@ def test_array(framework, description, ndim, object, is_valid):
                     },
                     "_mappings": {
                         PYDANTIC: f"s1: Optional[{expected_range[ndim]}] = Field(None)",
-                    }
+                    },
                 },
             },
         },
@@ -149,4 +127,3 @@ def test_array(framework, description, ndim, object, is_valid):
         target_class=CLASS_C,
         description="pattern",
     )
-
