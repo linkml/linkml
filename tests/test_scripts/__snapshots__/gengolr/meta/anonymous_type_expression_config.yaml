@@ -1,4 +1,4 @@
-# metamodel_version: 1.7.0# version: 2.0.0id: anonymous_type_expression
+# metamodel_version: 1.7.0id: anonymous_type_expression
 schema_generating: true
 description: A type expression that is not a top-level named type definition. Used
   for nesting.

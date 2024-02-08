@@ -1,5 +1,4 @@
 # metamodel_version: 1.7.0
-# version: 2.0.0
 type AltDescription
   {
     source: String!
@@ -173,6 +172,7 @@ type AnonymousSlotExpression implements SlotExpression
     equalsStringIn: [String]
     equalsNumber: Integer
     equalsExpression: String
+    exactCardinality: Integer
     minimumCardinality: Integer
     maximumCardinality: Integer
     hasMember: AnonymousSlotExpression
@@ -206,6 +206,49 @@ type Anything
 
 type AnyValue
   {
+  }
+
+type ArrayExpression implements Extensible, Annotatable, CommonMetadata
+  {
+    exactNumberDimensions: Integer
+    minimumNumberDimensions: Integer
+    maximumNumberDimensions: Anything
+    dimensions: [DimensionExpression]
+    extensions: [Extension]
+    annotations: [Annotation]
+    description: String
+    altDescriptions: [AltDescription]
+    title: String
+    deprecated: String
+    todos: [String]
+    notes: [String]
+    comments: [String]
+    examples: [Example]
+    inSubset: [SubsetDefinition]
+    fromSchema: Uri
+    importedFrom: String
+    source: Uriorcurie
+    inLanguage: String
+    seeAlso: [Uriorcurie]
+    deprecatedElementHasExactReplacement: Uriorcurie
+    deprecatedElementHasPossibleReplacement: Uriorcurie
+    aliases: [String]
+    structuredAliases: [StructuredAlias]
+    mappings: [Uriorcurie]
+    exactMappings: [Uriorcurie]
+    closeMappings: [Uriorcurie]
+    relatedMappings: [Uriorcurie]
+    narrowMappings: [Uriorcurie]
+    broadMappings: [Uriorcurie]
+    createdBy: Uriorcurie
+    contributors: [Uriorcurie]
+    createdOn: Datetime
+    lastUpdatedOn: Datetime
+    modifiedBy: Uriorcurie
+    status: Uriorcurie
+    rank: Integer
+    categories: [Uriorcurie]
+    keywords: [String]
   }
 
 type ClassDefinition implements ClassExpression
@@ -429,6 +472,49 @@ interface Definition
     applyTo: [Definition]
     valuesFrom: [Uriorcurie]
     stringSerialization: String
+  }
+
+type DimensionExpression implements Extensible, Annotatable, CommonMetadata
+  {
+    alias: String
+    maximumCardinality: Integer
+    minimumCardinality: Integer
+    exactCardinality: Integer
+    extensions: [Extension]
+    annotations: [Annotation]
+    description: String
+    altDescriptions: [AltDescription]
+    title: String
+    deprecated: String
+    todos: [String]
+    notes: [String]
+    comments: [String]
+    examples: [Example]
+    inSubset: [SubsetDefinition]
+    fromSchema: Uri
+    importedFrom: String
+    source: Uriorcurie
+    inLanguage: String
+    seeAlso: [Uriorcurie]
+    deprecatedElementHasExactReplacement: Uriorcurie
+    deprecatedElementHasPossibleReplacement: Uriorcurie
+    aliases: [String]
+    structuredAliases: [StructuredAlias]
+    mappings: [Uriorcurie]
+    exactMappings: [Uriorcurie]
+    closeMappings: [Uriorcurie]
+    relatedMappings: [Uriorcurie]
+    narrowMappings: [Uriorcurie]
+    broadMappings: [Uriorcurie]
+    createdBy: Uriorcurie
+    contributors: [Uriorcurie]
+    createdOn: Datetime
+    lastUpdatedOn: Datetime
+    modifiedBy: Uriorcurie
+    status: Uriorcurie
+    rank: Integer
+    categories: [Uriorcurie]
+    keywords: [String]
   }
 
 type Element implements Extensible, Annotatable, CommonMetadata
@@ -912,6 +998,7 @@ type SlotDefinition implements SlotExpression
     domain: ClassDefinition
     slotUri: Uriorcurie
     multivalued: Boolean
+    array: ArrayExpression
     inherited: Boolean
     readonly: String
     ifabsent: String
@@ -966,6 +1053,7 @@ type SlotDefinition implements SlotExpression
     equalsStringIn: [String]
     equalsNumber: Integer
     equalsExpression: String
+    exactCardinality: Integer
     minimumCardinality: Integer
     maximumCardinality: Integer
     hasMember: AnonymousSlotExpression
@@ -996,6 +1084,7 @@ interface SlotExpression
     equalsStringIn: [String]
     equalsNumber: Integer
     equalsExpression: String
+    exactCardinality: Integer
     minimumCardinality: Integer
     maximumCardinality: Integer
     hasMember: AnonymousSlotExpression

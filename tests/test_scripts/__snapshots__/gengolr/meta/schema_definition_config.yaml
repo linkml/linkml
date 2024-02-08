@@ -1,4 +1,4 @@
-# metamodel_version: 1.7.0# version: 2.0.0id: schema_definition
+# metamodel_version: 1.7.0id: schema_definition
 schema_generating: true
 description: A collection of definitions that make up a schema or a data model.
 display_name: schema_definition

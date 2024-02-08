@@ -1,4 +1,4 @@
-# metamodel_version: 1.7.0# version: 2.0.0id: anonymous_slot_expression
+# metamodel_version: 1.7.0id: anonymous_slot_expression
 schema_generating: true
 display_name: anonymous_slot_expression
 document_category: anonymous_slot_expression
@@ -217,6 +217,9 @@ fields:
 - id: equals_expression
   description: the value of the slot must equal the value of the evaluated expression
   display_name: equals_expression
+- id: exact_cardinality
+  description: the exact number of entries for a multivalued slot
+  display_name: exact_cardinality
 - id: minimum_cardinality
   description: the minimum number of entries for a multivalued slot
   display_name: minimum_cardinality

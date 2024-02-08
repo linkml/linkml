@@ -64,6 +64,9 @@
       "apply_to": {
          "@type": "@id"
       },
+      "array": {
+         "@type": "@id"
+      },
       "asymmetric": {
          "@type": "xsd:boolean"
       },
@@ -136,6 +139,9 @@
       "designates_type": {
          "@type": "xsd:boolean"
       },
+      "dimensions": {
+         "@type": "@id"
+      },
       "disjoint_with": {
          "@type": "@id"
       },
@@ -165,6 +171,12 @@
       },
       "exact_mappings": {
          "@type": "@id"
+      },
+      "exact_cardinality": {
+         "@type": "xsd:integer"
+      },
+      "exact_number_dimensions": {
+         "@type": "xsd:integer"
       },
       "exactly_one_of": {
          "@type": "@id"
@@ -298,6 +310,9 @@
       "maximum_cardinality": {
          "@type": "xsd:integer"
       },
+      "maximum_number_dimensions": {
+         "@type": "@id"
+      },
       "maximum_value": {
          "@type": "@id"
       },
@@ -305,6 +320,9 @@
          "@type": "@id"
       },
       "minimum_cardinality": {
+         "@type": "xsd:integer"
+      },
+      "minimum_number_dimensions": {
          "@type": "xsd:integer"
       },
       "minimum_value": {

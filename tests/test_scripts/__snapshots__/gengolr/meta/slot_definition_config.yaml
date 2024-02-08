@@ -1,4 +1,4 @@
-# metamodel_version: 1.7.0# version: 2.0.0id: slot_definition
+# metamodel_version: 1.7.0id: slot_definition
 schema_generating: true
 description: an element that describes how instances are related to other instances
 display_name: slot_definition
@@ -235,6 +235,10 @@ fields:
   description: true means that slot can have more than one value and should be represented
     using a list or collection structure.
   display_name: multivalued
+- id: array
+  description: coerces the value of the slot into an array and defines the dimensions
+    of that array
+  display_name: array
 - id: inherited
   description: true means that the *value* of a slot is inherited by subclasses
   display_name: inherited
@@ -455,6 +459,9 @@ fields:
 - id: equals_expression
   description: the value of the slot must equal the value of the evaluated expression
   display_name: equals_expression
+- id: exact_cardinality
+  description: the exact number of entries for a multivalued slot
+  display_name: exact_cardinality
 - id: minimum_cardinality
   description: the minimum number of entries for a multivalued slot
   display_name: minimum_cardinality

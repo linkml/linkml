@@ -1,4 +1,4 @@
-# metamodel_version: 1.7.0# version: 2.0.0id: type_definition
+# metamodel_version: 1.7.0id: type_definition
 schema_generating: true
 description: an element that whose instances are atomic scalar values that can be
   mapped to primitive types

@@ -35,8 +35,6 @@ description: 'The metamodel for schemas defined using the Linked Data Modeling L
 
   * [BasicSubset](https://w3id.org/linkml/BasicSubset)
 
-  * [BasicSubset](https://w3id.org/linkml/BasicSubset)
-
 
   For canonical reference documentation on any metamodel construct,
 
@@ -45,7 +43,6 @@ description: 'The metamodel for schemas defined using the Linked Data Modeling L
   [https://w3id.org/linkml/is_a](https://w3id.org/linkml/is_a)'
 title: LinkML Schema Metamodel
 id: https://w3id.org/linkml/meta
-version: 2.0.0
 imports:
 - linkml:types
 - linkml:mappings
@@ -2618,6 +2615,88 @@ slots:
     domain_of:
     - slot_definition
     range: boolean
+  array:
+    name: array
+    definition_uri: https://w3id.org/linkml/array
+    description: coerces the value of the slot into an array and defines the dimensions
+      of that array
+    from_schema: https://w3id.org/linkml/meta
+    status: testing
+    domain: slot_definition
+    slot_uri: linkml:array
+    inherited: true
+    owner: slot_definition
+    domain_of:
+    - slot_definition
+    range: array_expression
+    inlined: true
+  dimensions:
+    name: dimensions
+    definition_uri: https://w3id.org/linkml/dimensions
+    description: definitions of each axis in the array
+    from_schema: https://w3id.org/linkml/meta
+    aliases:
+    - axes
+    status: testing
+    domain: array_expression
+    slot_uri: linkml:dimensions
+    multivalued: true
+    list_elements_ordered: true
+    owner: array_expression
+    domain_of:
+    - array_expression
+    range: dimension_expression
+    inlined: true
+  minimum_number_dimensions:
+    name: minimum_number_dimensions
+    definition_uri: https://w3id.org/linkml/minimum_number_dimensions
+    description: minimum number of dimensions in the array
+    comments:
+    - minimum_cardinality cannot be greater than maximum_cardinality
+    from_schema: https://w3id.org/linkml/meta
+    status: testing
+    domain: array_expression
+    slot_uri: linkml:minimum_number_dimensions
+    owner: array_expression
+    domain_of:
+    - array_expression
+    range: integer
+  maximum_number_dimensions:
+    name: maximum_number_dimensions
+    definition_uri: https://w3id.org/linkml/maximum_number_dimensions
+    description: maximum number of dimensions in the array, or False if explicitly
+      no maximum. If this is unset, and an explicit list of dimensions are passed
+      using dimensions, then this is interpreted as a closed list and the maximum_number_dimensions
+      is the length of the dimensions list, unless this value is set to False
+    comments:
+    - maximum_number_dimensions cannot be less than minimum_number_dimensions
+    from_schema: https://w3id.org/linkml/meta
+    status: testing
+    domain: array_expression
+    slot_uri: linkml:maximum_number_dimensions
+    owner: array_expression
+    domain_of:
+    - array_expression
+    range: Anything
+    inlined: true
+    any_of:
+    - range: integer
+    - range: boolean
+  exact_number_dimensions:
+    name: exact_number_dimensions
+    definition_uri: https://w3id.org/linkml/exact_number_dimensions
+    description: exact number of dimensions in the array
+    comments:
+    - if exact_number_dimensions is set, then minimum_number_dimensions and maximum_number_dimensions
+      must be unset or have the same value
+    from_schema: https://w3id.org/linkml/meta
+    status: testing
+    domain: array_expression
+    slot_uri: linkml:exact_number_dimensions
+    owner: array_expression
+    domain_of:
+    - array_expression
+    range: integer
   inherited:
     name: inherited
     definition_uri: https://w3id.org/linkml/inherited
@@ -2778,33 +2857,57 @@ slots:
     domain_of:
     - slot_expression
     range: string
+  exact_cardinality:
+    name: exact_cardinality
+    definition_uri: https://w3id.org/linkml/exact_cardinality
+    description: the exact number of entries for a multivalued slot
+    comments:
+    - if exact_cardinality is set, then minimum_cardinalty and maximum_cardinality
+      must be unset or have the same value
+    in_subset:
+    - SpecificationSubset
+    from_schema: https://w3id.org/linkml/meta
+    is_a: list_value_specification_constant
+    slot_uri: linkml:exact_cardinality
+    inherited: true
+    owner: dimension_expression
+    domain_of:
+    - slot_expression
+    - dimension_expression
+    range: integer
   minimum_cardinality:
     name: minimum_cardinality
     definition_uri: https://w3id.org/linkml/minimum_cardinality
     description: the minimum number of entries for a multivalued slot
+    comments:
+    - minimum_cardinality cannot be greater than maximum_cardinality
     in_subset:
     - SpecificationSubset
     from_schema: https://w3id.org/linkml/meta
     is_a: list_value_specification_constant
     slot_uri: linkml:minimum_cardinality
     inherited: true
-    owner: slot_expression
+    owner: dimension_expression
     domain_of:
     - slot_expression
+    - dimension_expression
     range: integer
   maximum_cardinality:
     name: maximum_cardinality
     definition_uri: https://w3id.org/linkml/maximum_cardinality
     description: the maximum number of entries for a multivalued slot
+    comments:
+    - maximum_cardinality cannot be less than minimum_cardinality
     in_subset:
     - SpecificationSubset
     from_schema: https://w3id.org/linkml/meta
     is_a: list_value_specification_constant
     slot_uri: linkml:maximum_cardinality
     inherited: true
-    owner: slot_expression
+    owner: dimension_expression
     domain_of:
     - slot_expression
+    - dimension_expression
     range: integer
   equals_string_in:
     name: equals_string_in
@@ -3169,9 +3272,10 @@ slots:
     rank: 6
     domain: slot_definition
     slot_uri: skos:prefLabel
-    owner: slot_definition
+    owner: dimension_expression
     domain_of:
     - slot_definition
+    - dimension_expression
     range: string
   owner:
     name: owner
@@ -6101,6 +6205,7 @@ classes:
     - equals_string_in
     - equals_number
     - equals_expression
+    - exact_cardinality
     - minimum_cardinality
     - maximum_cardinality
     - has_member
@@ -6184,6 +6289,7 @@ classes:
     - equals_string_in
     - equals_number
     - equals_expression
+    - exact_cardinality
     - minimum_cardinality
     - maximum_cardinality
     - has_member
@@ -6269,6 +6375,7 @@ classes:
     - domain
     - slot_uri
     - multivalued
+    - array
     - inherited
     - readonly
     - ifabsent
@@ -6323,6 +6430,7 @@ classes:
     - equals_string_in
     - equals_number
     - equals_expression
+    - exact_cardinality
     - minimum_cardinality
     - maximum_cardinality
     - has_member
@@ -6614,6 +6722,108 @@ classes:
     - categories
     - keywords
     class_uri: linkml:ClassRule
+  array_expression:
+    name: array_expression
+    definition_uri: https://w3id.org/linkml/ArrayExpression
+    description: defines the dimensions of an array
+    from_schema: https://w3id.org/linkml/meta
+    status: testing
+    mixins:
+    - extensible
+    - annotatable
+    - common_metadata
+    slots:
+    - exact_number_dimensions
+    - minimum_number_dimensions
+    - maximum_number_dimensions
+    - dimensions
+    - extensions
+    - annotations
+    - description
+    - alt_descriptions
+    - title
+    - deprecated
+    - todos
+    - notes
+    - comments
+    - examples
+    - in_subset
+    - from_schema
+    - imported_from
+    - source
+    - in_language
+    - see_also
+    - deprecated element has exact replacement
+    - deprecated element has possible replacement
+    - aliases
+    - structured_aliases
+    - mappings
+    - exact mappings
+    - close mappings
+    - related mappings
+    - narrow mappings
+    - broad mappings
+    - created_by
+    - contributors
+    - created_on
+    - last_updated_on
+    - modified_by
+    - status
+    - rank
+    - categories
+    - keywords
+    class_uri: linkml:ArrayExpression
+  dimension_expression:
+    name: dimension_expression
+    definition_uri: https://w3id.org/linkml/DimensionExpression
+    description: defines one of the dimensions of an array
+    from_schema: https://w3id.org/linkml/meta
+    status: testing
+    mixins:
+    - extensible
+    - annotatable
+    - common_metadata
+    slots:
+    - alias
+    - maximum_cardinality
+    - minimum_cardinality
+    - exact_cardinality
+    - extensions
+    - annotations
+    - description
+    - alt_descriptions
+    - title
+    - deprecated
+    - todos
+    - notes
+    - comments
+    - examples
+    - in_subset
+    - from_schema
+    - imported_from
+    - source
+    - in_language
+    - see_also
+    - deprecated element has exact replacement
+    - deprecated element has possible replacement
+    - aliases
+    - structured_aliases
+    - mappings
+    - exact mappings
+    - close mappings
+    - related mappings
+    - narrow mappings
+    - broad mappings
+    - created_by
+    - contributors
+    - created_on
+    - last_updated_on
+    - modified_by
+    - status
+    - rank
+    - categories
+    - keywords
+    class_uri: linkml:DimensionExpression
   pattern_expression:
     name: pattern_expression
     definition_uri: https://w3id.org/linkml/PatternExpression

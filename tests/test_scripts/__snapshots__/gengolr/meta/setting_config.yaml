@@ -1,4 +1,4 @@
-# metamodel_version: 1.7.0# version: 2.0.0id: setting
+# metamodel_version: 1.7.0id: setting
 schema_generating: true
 description: assignment of a key to a value
 display_name: setting

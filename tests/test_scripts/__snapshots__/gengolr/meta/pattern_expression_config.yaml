@@ -1,4 +1,4 @@
-# metamodel_version: 1.7.0# version: 2.0.0id: pattern_expression
+# metamodel_version: 1.7.0id: pattern_expression
 schema_generating: true
 description: a regular expression pattern used to evaluate conformance of a string
 display_name: pattern_expression

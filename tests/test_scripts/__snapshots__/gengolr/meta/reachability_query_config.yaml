@@ -1,4 +1,4 @@
-# metamodel_version: 1.7.0# version: 2.0.0id: reachability_query
+# metamodel_version: 1.7.0id: reachability_query
 schema_generating: true
 description: A query that is used on an enum expression to dynamically obtain a set
   of permissible values via walking from a  set of source nodes to a set of descendants

@@ -1,4 +1,4 @@
-# metamodel_version: 1.7.0# version: 2.0.0id: enum_expression
+# metamodel_version: 1.7.0id: enum_expression
 schema_generating: true
 description: An expression that constrains the range of a slot
 display_name: enum_expression

@@ -1,5 +1,4 @@
 # metamodel_version: 1.7.0
-# version: 2.0.0
 BASE <https://w3id.org/linkml/>
 PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -182,6 +181,7 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <equals_string_in> @<String> * ;
           <equals_number> @<Integer> ? ;
           <equals_expression> @<String> ? ;
+          <exact_cardinality> @<Integer> ? ;
           <minimum_cardinality> @<Integer> ? ;
           <maximum_cardinality> @<Integer> ? ;
           <has_member> @<AnonymousSlotExpression> ? ;
@@ -225,6 +225,57 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 <AnyValue> CLOSED {
     (  $<AnyValue_tes> rdf:type . * ;
        rdf:type [ <AnyValue> ] ?
+    )
+}
+
+<ArrayExpression> CLOSED {
+    (  $<ArrayExpression_tes> (  &<Extensible_tes> ;
+          rdf:type [ <Extensible> ] ? ;
+          &<Annotatable_tes> ;
+          rdf:type [ <Annotatable> ] ? ;
+          &<CommonMetadata_tes> ;
+          rdf:type [ <CommonMetadata> ] ? ;
+          <exact_number_dimensions> @<Integer> ? ;
+          <minimum_number_dimensions> @<Integer> ? ;
+          <maximum_number_dimensions> @<Anything> ? ;
+          <dimensions> @<DimensionExpression> * ;
+          <extensions> @<Extension> * ;
+          <annotations> @<Annotation> * ;
+          <description> @<String> ? ;
+          <alt_descriptions> @<AltDescription> * ;
+          <title> @<String> ? ;
+          <deprecated> @<String> ? ;
+          <todos> @<String> * ;
+          <notes> @<String> * ;
+          <comments> @<String> * ;
+          <examples> @<Example> * ;
+          <in_subset> @<SubsetDefinition> * ;
+          <from_schema> @<Uri> ? ;
+          <imported_from> @<String> ? ;
+          <source> @<Uriorcurie> ? ;
+          <in_language> @<String> ? ;
+          <see_also> @<Uriorcurie> * ;
+          <deprecated_element_has_exact_replacement> @<Uriorcurie> ? ;
+          <deprecated_element_has_possible_replacement> @<Uriorcurie> ? ;
+          <aliases> @<String> * ;
+          <structured_aliases> @<StructuredAlias> * ;
+          <mappings> @<Uriorcurie> * ;
+          <exact_mappings> @<Uriorcurie> * ;
+          <close_mappings> @<Uriorcurie> * ;
+          <related_mappings> @<Uriorcurie> * ;
+          <narrow_mappings> @<Uriorcurie> * ;
+          <broad_mappings> @<Uriorcurie> * ;
+          <created_by> @<Uriorcurie> ? ;
+          <contributors> @<Uriorcurie> * ;
+          <created_on> @<Datetime> ? ;
+          <last_updated_on> @<Datetime> ? ;
+          <modified_by> @<Uriorcurie> ? ;
+          <status> @<Uriorcurie> ? ;
+          <rank> @<Integer> ? ;
+          <categories> @<Uriorcurie> * ;
+          <keywords> @<String> *
+       ) ;
+       rdf:type [ <ArrayExpression> ] ?
     )
 }
 
@@ -388,6 +439,57 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <string_serialization> @<String> ?
        ) ;
        rdf:type [ <Definition> ]
+    )
+}
+
+<DimensionExpression> CLOSED {
+    (  $<DimensionExpression_tes> (  &<Extensible_tes> ;
+          rdf:type [ <Extensible> ] ? ;
+          &<Annotatable_tes> ;
+          rdf:type [ <Annotatable> ] ? ;
+          &<CommonMetadata_tes> ;
+          rdf:type [ <CommonMetadata> ] ? ;
+          <alias> @<String> ? ;
+          <maximum_cardinality> @<Integer> ? ;
+          <minimum_cardinality> @<Integer> ? ;
+          <exact_cardinality> @<Integer> ? ;
+          <extensions> @<Extension> * ;
+          <annotations> @<Annotation> * ;
+          <description> @<String> ? ;
+          <alt_descriptions> @<AltDescription> * ;
+          <title> @<String> ? ;
+          <deprecated> @<String> ? ;
+          <todos> @<String> * ;
+          <notes> @<String> * ;
+          <comments> @<String> * ;
+          <examples> @<Example> * ;
+          <in_subset> @<SubsetDefinition> * ;
+          <from_schema> @<Uri> ? ;
+          <imported_from> @<String> ? ;
+          <source> @<Uriorcurie> ? ;
+          <in_language> @<String> ? ;
+          <see_also> @<Uriorcurie> * ;
+          <deprecated_element_has_exact_replacement> @<Uriorcurie> ? ;
+          <deprecated_element_has_possible_replacement> @<Uriorcurie> ? ;
+          <aliases> @<String> * ;
+          <structured_aliases> @<StructuredAlias> * ;
+          <mappings> @<Uriorcurie> * ;
+          <exact_mappings> @<Uriorcurie> * ;
+          <close_mappings> @<Uriorcurie> * ;
+          <related_mappings> @<Uriorcurie> * ;
+          <narrow_mappings> @<Uriorcurie> * ;
+          <broad_mappings> @<Uriorcurie> * ;
+          <created_by> @<Uriorcurie> ? ;
+          <contributors> @<Uriorcurie> * ;
+          <created_on> @<Datetime> ? ;
+          <last_updated_on> @<Datetime> ? ;
+          <modified_by> @<Uriorcurie> ? ;
+          <status> @<Uriorcurie> ? ;
+          <rank> @<Integer> ? ;
+          <categories> @<Uriorcurie> * ;
+          <keywords> @<String> *
+       ) ;
+       rdf:type [ <DimensionExpression> ] ?
     )
 }
 
@@ -819,6 +921,7 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <domain> @<ClassDefinition> ? ;
           <slot_uri> @<Uriorcurie> ? ;
           <multivalued> @<Boolean> ? ;
+          <array> @<ArrayExpression> ? ;
           <inherited> @<Boolean> ? ;
           <readonly> @<String> ? ;
           <ifabsent> @<String> ? ;
@@ -874,6 +977,7 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <equals_string_in> @<String> * ;
           <equals_number> @<Integer> ? ;
           <equals_expression> @<String> ? ;
+          <exact_cardinality> @<Integer> ? ;
           <minimum_cardinality> @<Integer> ? ;
           <maximum_cardinality> @<Integer> ? ;
           <has_member> @<AnonymousSlotExpression> ? ;
@@ -909,6 +1013,7 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <equals_string_in> @<String> * ;
           <equals_number> @<Integer> ? ;
           <equals_expression> @<String> ? ;
+          <exact_cardinality> @<Integer> ? ;
           <minimum_cardinality> @<Integer> ? ;
           <maximum_cardinality> @<Integer> ? ;
           <has_member> @<AnonymousSlotExpression> ? ;
