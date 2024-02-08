@@ -500,7 +500,7 @@ class OwlSchemaGenerator(Generator):
                     elif range in sv.all_enums():
                         x = self._enum_uri(range)
                     elif range in sv.all_classes():
-                        x = self._enum_uri(range)
+                        x = self._class_uri(range)
                     else:
                         raise ValueError(f"Unknown range {range}")
                         # x = self._class_uri(range)
@@ -531,6 +531,9 @@ class OwlSchemaGenerator(Generator):
                 graph.add((max_card_expr, RDF.type, OWL.Restriction))
                 graph.add((max_card_expr, OWL.maxCardinality, Literal(1)))
                 graph.add((max_card_expr, OWL.onProperty, slot_uri))
+            if slot.has_member:
+                has_member_expr = self.transform_class_slot_expression(cls, slot.has_member, slot)
+                owl_exprs.append(self._some_values_from(slot_uri, has_member_expr))
         return self._intersection_of(owl_exprs)
 
     def slot_node_owltypes(self, slot: Union[SlotDefinition, AnonymousSlotExpression]) -> Set[URIRef]:
@@ -572,18 +575,8 @@ class OwlSchemaGenerator(Generator):
 
         owl_exprs = []
 
-        if slot.has_member:
-            owl_exprs.append(
-                self._union_of(
-                    [self.transform_class_slot_expression(cls, x, main_slot, owl_types) for x in slot.has_member]
-                )
-            )
         if slot.all_members:
-            owl_exprs.append(
-                self._union_of(
-                    [self.transform_class_slot_expression(cls, x, main_slot, owl_types) for x in slot.all_members]
-                )
-            )
+            owl_exprs.append(self.transform_class_slot_expression(cls, slot.all_members, main_slot, owl_types))
 
         if slot.any_of:
             owl_exprs.append(

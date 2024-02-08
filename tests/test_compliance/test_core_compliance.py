@@ -24,6 +24,7 @@ from tests.test_compliance.helper import (
     validated_schema,
 )
 from tests.test_compliance.test_compliance import (
+    CLASS_ANY,
     CLASS_C,
     CORE_FRAMEWORKS,
     EXAMPLE_STRING_VALUE_1,
@@ -215,6 +216,51 @@ def test_type_range(framework, linkml_type, example_value):
         target_class=CLASS_C,
         coerced=coerced,
         description="pattern",
+    )
+
+
+@pytest.mark.parametrize("example_value", ["", None, 1, 1.1, "1", True, False, Decimal("5.4"), {}, {"foo": 1}])
+@pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
+def test_any_type(framework, example_value):
+    """
+    Tests linkml:Any.
+
+    :param framework: all should support built-in types
+    :param example_value: value to check
+    :return:
+    """
+    if isinstance(example_value, Decimal):
+        pytest.skip("Decimal not supported by YAML - https://github.com/yaml/pyyaml/issues/255")
+    if framework in [SQL_DDL_SQLITE, SQL_DDL_POSTGRES]:
+        pytest.skip("TODO: add support in sqlgen")
+    classes = {
+        CLASS_ANY: {
+            "class_uri": "linkml:Any",
+        },
+        CLASS_C: {
+            "attributes": {
+                SLOT_S1: {
+                    "range": "Any",
+                    "_mappings": {
+                        # PYDANTIC: f"{SLOT_S1}: Optional[Any]",
+                        # PYTHON_DATACLASSES: f"{SLOT_S1}: Optional[Any]",
+                    },
+                },
+            }
+        },
+    }
+    schema = validated_schema(test_any_type, "linkml_any", framework, classes=classes, core_elements=["Any"])
+    expected_behavior = ValidationBehavior.IMPLEMENTS
+    check_data(
+        schema,
+        f"{type(example_value).__name__}-{example_value}",
+        framework,
+        {SLOT_S1: example_value},
+        True,
+        expected_behavior=expected_behavior,
+        target_class=CLASS_C,
+        exclude_rdf=True,
+        description=f"linkml:Any with {example_value}",
     )
 
 
@@ -657,7 +703,7 @@ def test_non_standard_names(framework, class_name, safe_class_name, slot_name, s
         },
     }
     name = ensafeify(f"ClassNameEQ_{class_name}__SlotNameEQ_{slot_name}__TypeNameEQ_{type_name}")
-    schema = validated_schema(test_cardinality, name, framework, classes=classes, types=types, core_elements=[])
+    schema = validated_schema(test_cardinality, name, framework, classes=classes, types=types, core_elements=["name"])
     expected_behavior = ValidationBehavior.IMPLEMENTS
     instance = {
         safe_slot_name: "x",
@@ -731,7 +777,7 @@ def test_non_standard_num_names(framework, enum_name, pv_name):
         framework,
         classes=classes,
         enums=enums,
-        core_elements=[],
+        core_elements=["name"],
     )
     expected_behavior = ValidationBehavior.IMPLEMENTS
     instance = {

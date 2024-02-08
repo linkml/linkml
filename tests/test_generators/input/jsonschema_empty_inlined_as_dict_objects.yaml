@@ -57,4 +57,4 @@ data_cases:
       non_key_required_slots:
         id1:
         id2:
-    error_message: "None is not of type 'object'"
+    error_message: "Failed validating 'anyOf'"

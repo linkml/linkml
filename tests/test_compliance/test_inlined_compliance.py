@@ -2,13 +2,15 @@
 
 Tests that make use of linkml:inlined and related constructs.
 
-- TODO: dict normalization, SimpleDicts and CompactDicts
+See: `<https://linkml.io/linkml/schemas/inlining.html>`_
+
 """
 
 import pytest
 
 from tests.test_compliance.helper import (
     JSON_SCHEMA,
+    OWL,
     PYDANTIC,
     PYTHON_DATACLASSES,
     SHACL,
@@ -39,6 +41,8 @@ from tests.test_compliance.test_compliance import (
 def test_inlined(framework, inlined, inlined_as_list, multivalued, foreign_key, data):
     """
     Tests behavior of inlined slots.
+
+    See: `<https://linkml.io/linkml/schemas/inlining.html>`_
 
     Inlining controls whether nested objects are inlined or referenced by id.
 
@@ -263,4 +267,117 @@ def test_inlined(framework, inlined, inlined_as_list, multivalued, foreign_key, 
         target_class=CLASS_C,
         description=f"testing data shape {data} against schema",
         exclude_rdf=not is_valid,
+    )
+
+
+BASIC_ATTRS = {SLOT_ID: {"key": True}, SLOT_S1: {"range": "string"}}
+EXTRA_ATTRS = {
+    SLOT_ID: {"key": True},
+    SLOT_S1: {"range": "string"},
+    SLOT_S2: {"range": "string"},
+}
+IMPLICIT_ATTRS = {
+    SLOT_ID: {"key": True},
+    SLOT_S1: {"range": "string"},
+    SLOT_S2: {"range": "string", "required": True},
+}
+ANNOTATED_ATTRS = {
+    SLOT_ID: {"key": True},
+    SLOT_S1: {"range": "string"},
+    SLOT_S2: {"range": "string", "annotations": {"simple_dict_value": True}},
+}
+
+
+@pytest.mark.parametrize(
+    "name,attrs,data_name,values,is_valid",
+    [
+        ("basic", BASIC_ATTRS, "t1", {"x": "y"}, True),
+        ("basic", BASIC_ATTRS, "expanded", {"x": {SLOT_ID: "x", SLOT_S1: "y"}}, True),
+        ("basic", BASIC_ATTRS, "expanded_nokey", {"x": {SLOT_S1: "y"}}, True),
+        ("basic", BASIC_ATTRS, "expanded_noval", {"x": None}, True),
+        ("basic", BASIC_ATTRS, "wrong_type", {"x": 5}, False),
+        ("basic", BASIC_ATTRS, "empty", {}, True),
+        ("extra", EXTRA_ATTRS, "t1", {"x": "y"}, False),
+        ("extra", EXTRA_ATTRS, "expanded", {"x": {SLOT_ID: "x", SLOT_S1: "y"}}, True),
+        ("extra", EXTRA_ATTRS, "empty", {}, True),
+        ("implicit", IMPLICIT_ATTRS, "t1", {"x": "y"}, True),
+        ("implicit", IMPLICIT_ATTRS, "expanded", {"x": {SLOT_ID: "x", SLOT_S2: "y"}}, True),
+        ("implicit", IMPLICIT_ATTRS, "expanded2", {"x": {SLOT_ID: "x", SLOT_S1: "z", SLOT_S2: "y"}}, True),
+        ("implicit", IMPLICIT_ATTRS, "expanded_noreqval", {"x": {}}, False),
+        ("implicit", IMPLICIT_ATTRS, "empty", {}, True),
+        ("annotated", ANNOTATED_ATTRS, "t1", {"x": "y"}, True),
+        ("annotated", ANNOTATED_ATTRS, "expanded", {"x": {SLOT_ID: "x", SLOT_S2: "y"}}, True),
+        ("annotated", ANNOTATED_ATTRS, "expanded2", {"x": {SLOT_ID: "x", SLOT_S1: "z", SLOT_S2: "y"}}, True),
+        ("annotated", ANNOTATED_ATTRS, "empty", {}, True),
+    ],
+)
+@pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
+def test_inlined_as_simple_dict(framework, name, attrs, data_name, values, is_valid):
+    """
+    Test inlined as simple dict.
+
+    In some cases, a multivalued slot whose range is objects can be compacted to
+    a SimpleDict, whose keys are the keys/identifiers of the object, and whose values
+    are atomic and represent the "main value" for the object.
+
+    An example of this is prefixes in the metamodel, where the value is the prefix_reference.
+
+    A SimpleDict can be used in the following scenarios:
+
+    1. The object is a tuple of two slots, the first being the key
+    2. There is exactly one required non-key slot
+    3. The main value slot is explicitly annotated
+
+    This test sets up a schema where class C is a container for inlined class D objects,
+    where the definition of class D is varied across different SimpleDict patterns.
+
+    :param framework:
+    :param name:
+    :param attrs:
+    :param data_name:
+    :param values:
+    :param is_valid:
+    :return:
+    """
+    if framework in [PYDANTIC, SQL_DDL_SQLITE]:
+        pytest.skip("TODO: pydantic and SQLA do not support inlined as simple dict")
+    if name == "extra" and data_name == "t1":
+        if framework != JSON_SCHEMA:
+            pytest.skip("TODO: dataclasses-based methods are permissive")
+    if data_name == "expanded_noval" and framework != JSON_SCHEMA:
+        pytest.skip("TODO: dataclasses-based methods dislike empty values for simpledict")
+    coerced = None
+    classes = {
+        CLASS_D: {
+            "attributes": attrs,
+        },
+        CLASS_C: {
+            "attributes": {
+                SLOT_S3: {
+                    "range": CLASS_D,
+                    "multivalued": True,
+                    "inlined": True,
+                },
+            },
+        },
+    }
+    schema = validated_schema(
+        test_inlined_as_simple_dict, name, framework, classes=classes, description=name, core_elements=["inlined"]
+    )
+    expected_behavior = ValidationBehavior.IMPLEMENTS
+    if data_name == "wrong_type":
+        if framework == PYTHON_DATACLASSES:
+            expected_behavior = ValidationBehavior.COERCES
+        elif framework in [OWL, SHACL]:
+            expected_behavior = ValidationBehavior.INCOMPLETE
+    check_data(
+        schema,
+        data_name,
+        framework,
+        {SLOT_S3: values},
+        is_valid,
+        coerced=coerced,
+        expected_behavior=expected_behavior,
+        target_class=CLASS_C,
+        description=f"testing data shape {data_name} against schema {name}",
     )
