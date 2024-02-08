@@ -1,5 +1,5 @@
 # Auto generated from meta.yaml by pythongen.py version: 0.0.1
-# Generation date: 2024-01-29T16:06:00
+# Generation date: 2024-02-07T17:29:36
 # Schema: meta
 #
 # id: https://w3id.org/linkml/meta
@@ -23,7 +23,6 @@
 #   There are many subsets of *profiles* of the metamodel, for different purposes:
 #
 #   * [MinimalSubset](https://w3id.org/linkml/MinimalSubset)
-#   * [BasicSubset](https://w3id.org/linkml/BasicSubset)
 #   * [BasicSubset](https://w3id.org/linkml/BasicSubset)
 #
 #   For canonical reference documentation on any metamodel construct,
@@ -52,7 +51,7 @@ from .units import UnitOfMeasure
 from linkml_runtime.utils.metamodelcore import Bool, NCName, URI, URIorCURIE, XSDDateTime
 
 metamodel_version = "1.7.0"
-version = "2.0.0"
+version = None
 
 # Overwrite dataclasses _init_fn to add **kwargs in __init__
 dataclasses._init_fn = dataclasses_init_fn_with_kwargs
@@ -1766,7 +1765,7 @@ class SlotExpression(Expression):
     """
     an expression that constrains the range of values a slot can take
     """
-    _inherited_slots: ClassVar[List[str]] = ["range", "required", "recommended", "inlined", "inlined_as_list", "minimum_value", "maximum_value", "pattern", "structured_pattern", "value_presence", "equals_string", "equals_string_in", "equals_number", "equals_expression", "minimum_cardinality", "maximum_cardinality"]
+    _inherited_slots: ClassVar[List[str]] = ["range", "required", "recommended", "inlined", "inlined_as_list", "minimum_value", "maximum_value", "pattern", "structured_pattern", "value_presence", "equals_string", "equals_string_in", "equals_number", "equals_expression", "exact_cardinality", "minimum_cardinality", "maximum_cardinality"]
 
     class_class_uri: ClassVar[URIRef] = LINKML["SlotExpression"]
     class_class_curie: ClassVar[str] = "linkml:SlotExpression"
@@ -1791,6 +1790,7 @@ class SlotExpression(Expression):
     equals_string_in: Optional[Union[str, List[str]]] = empty_list()
     equals_number: Optional[int] = None
     equals_expression: Optional[str] = None
+    exact_cardinality: Optional[int] = None
     minimum_cardinality: Optional[int] = None
     maximum_cardinality: Optional[int] = None
     has_member: Optional[Union[dict, "AnonymousSlotExpression"]] = None
@@ -1849,6 +1849,9 @@ class SlotExpression(Expression):
 
         if self.equals_expression is not None and not isinstance(self.equals_expression, str):
             self.equals_expression = str(self.equals_expression)
+
+        if self.exact_cardinality is not None and not isinstance(self.exact_cardinality, int):
+            self.exact_cardinality = int(self.exact_cardinality)
 
         if self.minimum_cardinality is not None and not isinstance(self.minimum_cardinality, int):
             self.minimum_cardinality = int(self.minimum_cardinality)
@@ -1883,7 +1886,7 @@ class SlotExpression(Expression):
 
 @dataclass
 class AnonymousSlotExpression(AnonymousExpression):
-    _inherited_slots: ClassVar[List[str]] = ["range", "required", "recommended", "inlined", "inlined_as_list", "minimum_value", "maximum_value", "pattern", "structured_pattern", "value_presence", "equals_string", "equals_string_in", "equals_number", "equals_expression", "minimum_cardinality", "maximum_cardinality"]
+    _inherited_slots: ClassVar[List[str]] = ["range", "required", "recommended", "inlined", "inlined_as_list", "minimum_value", "maximum_value", "pattern", "structured_pattern", "value_presence", "equals_string", "equals_string_in", "equals_number", "equals_expression", "exact_cardinality", "minimum_cardinality", "maximum_cardinality"]
 
     class_class_uri: ClassVar[URIRef] = LINKML["AnonymousSlotExpression"]
     class_class_curie: ClassVar[str] = "linkml:AnonymousSlotExpression"
@@ -1908,6 +1911,7 @@ class AnonymousSlotExpression(AnonymousExpression):
     equals_string_in: Optional[Union[str, List[str]]] = empty_list()
     equals_number: Optional[int] = None
     equals_expression: Optional[str] = None
+    exact_cardinality: Optional[int] = None
     minimum_cardinality: Optional[int] = None
     maximum_cardinality: Optional[int] = None
     has_member: Optional[Union[dict, "AnonymousSlotExpression"]] = None
@@ -1966,6 +1970,9 @@ class AnonymousSlotExpression(AnonymousExpression):
 
         if self.equals_expression is not None and not isinstance(self.equals_expression, str):
             self.equals_expression = str(self.equals_expression)
+
+        if self.exact_cardinality is not None and not isinstance(self.exact_cardinality, int):
+            self.exact_cardinality = int(self.exact_cardinality)
 
         if self.minimum_cardinality is not None and not isinstance(self.minimum_cardinality, int):
             self.minimum_cardinality = int(self.minimum_cardinality)
@@ -2003,7 +2010,7 @@ class SlotDefinition(Definition):
     """
     an element that describes how instances are related to other instances
     """
-    _inherited_slots: ClassVar[List[str]] = ["domain", "multivalued", "inherited", "readonly", "ifabsent", "list_elements_unique", "list_elements_ordered", "shared", "key", "identifier", "designates_type", "role", "relational_role", "range", "required", "recommended", "inlined", "inlined_as_list", "minimum_value", "maximum_value", "pattern", "structured_pattern", "value_presence", "equals_string", "equals_string_in", "equals_number", "equals_expression", "minimum_cardinality", "maximum_cardinality"]
+    _inherited_slots: ClassVar[List[str]] = ["domain", "multivalued", "array", "inherited", "readonly", "ifabsent", "list_elements_unique", "list_elements_ordered", "shared", "key", "identifier", "designates_type", "role", "relational_role", "range", "required", "recommended", "inlined", "inlined_as_list", "minimum_value", "maximum_value", "pattern", "structured_pattern", "value_presence", "equals_string", "equals_string_in", "equals_number", "equals_expression", "exact_cardinality", "minimum_cardinality", "maximum_cardinality"]
 
     class_class_uri: ClassVar[URIRef] = LINKML["SlotDefinition"]
     class_class_curie: ClassVar[str] = "linkml:SlotDefinition"
@@ -2015,6 +2022,7 @@ class SlotDefinition(Definition):
     domain: Optional[Union[str, ClassDefinitionName]] = None
     slot_uri: Optional[Union[str, URIorCURIE]] = None
     multivalued: Optional[Union[bool, Bool]] = None
+    array: Optional[Union[dict, "ArrayExpression"]] = None
     inherited: Optional[Union[bool, Bool]] = None
     readonly: Optional[str] = None
     ifabsent: Optional[str] = None
@@ -2069,6 +2077,7 @@ class SlotDefinition(Definition):
     equals_string_in: Optional[Union[str, List[str]]] = empty_list()
     equals_number: Optional[int] = None
     equals_expression: Optional[str] = None
+    exact_cardinality: Optional[int] = None
     minimum_cardinality: Optional[int] = None
     maximum_cardinality: Optional[int] = None
     has_member: Optional[Union[dict, AnonymousSlotExpression]] = None
@@ -2095,6 +2104,9 @@ class SlotDefinition(Definition):
 
         if self.multivalued is not None and not isinstance(self.multivalued, Bool):
             self.multivalued = Bool(self.multivalued)
+
+        if self.array is not None and not isinstance(self.array, ArrayExpression):
+            self.array = ArrayExpression(**as_dict(self.array))
 
         if self.inherited is not None and not isinstance(self.inherited, Bool):
             self.inherited = Bool(self.inherited)
@@ -2257,6 +2269,9 @@ class SlotDefinition(Definition):
 
         if self.equals_expression is not None and not isinstance(self.equals_expression, str):
             self.equals_expression = str(self.equals_expression)
+
+        if self.exact_cardinality is not None and not isinstance(self.exact_cardinality, int):
+            self.exact_cardinality = int(self.exact_cardinality)
 
         if self.minimum_cardinality is not None and not isinstance(self.minimum_cardinality, int):
             self.minimum_cardinality = int(self.minimum_cardinality)
@@ -2686,6 +2701,378 @@ class ClassRule(ClassLevelRule):
 
         if self.status is not None and not isinstance(self.status, URIorCURIE):
             self.status = URIorCURIE(self.status)
+
+        if not isinstance(self.categories, list):
+            self.categories = [self.categories] if self.categories is not None else []
+        self.categories = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.categories]
+
+        if not isinstance(self.keywords, list):
+            self.keywords = [self.keywords] if self.keywords is not None else []
+        self.keywords = [v if isinstance(v, str) else str(v) for v in self.keywords]
+
+        super().__post_init__(**kwargs)
+
+
+@dataclass
+class ArrayExpression(YAMLRoot):
+    """
+    defines the dimensions of an array
+    """
+    _inherited_slots: ClassVar[List[str]] = []
+
+    class_class_uri: ClassVar[URIRef] = LINKML["ArrayExpression"]
+    class_class_curie: ClassVar[str] = "linkml:ArrayExpression"
+    class_name: ClassVar[str] = "array_expression"
+    class_model_uri: ClassVar[URIRef] = LINKML.ArrayExpression
+
+    exact_number_dimensions: Optional[int] = None
+    minimum_number_dimensions: Optional[int] = None
+    maximum_number_dimensions: Optional[Union[dict, Anything]] = None
+    has_extra_dimensions: Optional[Union[bool, Bool]] = None
+    dimensions: Optional[Union[Union[dict, "DimensionExpression"], List[Union[dict, "DimensionExpression"]]]] = empty_list()
+    extensions: Optional[Union[Dict[Union[str, ExtensionTag], Union[dict, Extension]], List[Union[dict, Extension]]]] = empty_dict()
+    annotations: Optional[Union[Dict[Union[str, AnnotationTag], Union[dict, Annotation]], List[Union[dict, Annotation]]]] = empty_dict()
+    description: Optional[str] = None
+    alt_descriptions: Optional[Union[Dict[Union[str, AltDescriptionSource], Union[dict, "AltDescription"]], List[Union[dict, "AltDescription"]]]] = empty_dict()
+    title: Optional[str] = None
+    deprecated: Optional[str] = None
+    todos: Optional[Union[str, List[str]]] = empty_list()
+    notes: Optional[Union[str, List[str]]] = empty_list()
+    comments: Optional[Union[str, List[str]]] = empty_list()
+    examples: Optional[Union[Union[dict, "Example"], List[Union[dict, "Example"]]]] = empty_list()
+    in_subset: Optional[Union[Union[str, SubsetDefinitionName], List[Union[str, SubsetDefinitionName]]]] = empty_list()
+    from_schema: Optional[Union[str, URI]] = None
+    imported_from: Optional[str] = None
+    source: Optional[Union[str, URIorCURIE]] = None
+    in_language: Optional[str] = None
+    see_also: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    deprecated_element_has_exact_replacement: Optional[Union[str, URIorCURIE]] = None
+    deprecated_element_has_possible_replacement: Optional[Union[str, URIorCURIE]] = None
+    aliases: Optional[Union[str, List[str]]] = empty_list()
+    structured_aliases: Optional[Union[Union[dict, StructuredAlias], List[Union[dict, StructuredAlias]]]] = empty_list()
+    mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    exact_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    close_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    related_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    narrow_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    broad_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    created_by: Optional[Union[str, URIorCURIE]] = None
+    contributors: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    created_on: Optional[Union[str, XSDDateTime]] = None
+    last_updated_on: Optional[Union[str, XSDDateTime]] = None
+    modified_by: Optional[Union[str, URIorCURIE]] = None
+    status: Optional[Union[str, URIorCURIE]] = None
+    rank: Optional[int] = None
+    categories: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    keywords: Optional[Union[str, List[str]]] = empty_list()
+
+    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self.exact_number_dimensions is not None and not isinstance(self.exact_number_dimensions, int):
+            self.exact_number_dimensions = int(self.exact_number_dimensions)
+
+        if self.minimum_number_dimensions is not None and not isinstance(self.minimum_number_dimensions, int):
+            self.minimum_number_dimensions = int(self.minimum_number_dimensions)
+
+        if self.has_extra_dimensions is not None and not isinstance(self.has_extra_dimensions, Bool):
+            self.has_extra_dimensions = Bool(self.has_extra_dimensions)
+
+        if not isinstance(self.dimensions, list):
+            self.dimensions = [self.dimensions] if self.dimensions is not None else []
+        self.dimensions = [v if isinstance(v, DimensionExpression) else DimensionExpression(**as_dict(v)) for v in self.dimensions]
+
+        self._normalize_inlined_as_dict(slot_name="extensions", slot_type=Extension, key_name="tag", keyed=True)
+
+        self._normalize_inlined_as_dict(slot_name="annotations", slot_type=Annotation, key_name="tag", keyed=True)
+
+        if self.description is not None and not isinstance(self.description, str):
+            self.description = str(self.description)
+
+        self._normalize_inlined_as_dict(slot_name="alt_descriptions", slot_type=AltDescription, key_name="source", keyed=True)
+
+        if self.title is not None and not isinstance(self.title, str):
+            self.title = str(self.title)
+
+        if self.deprecated is not None and not isinstance(self.deprecated, str):
+            self.deprecated = str(self.deprecated)
+
+        if not isinstance(self.todos, list):
+            self.todos = [self.todos] if self.todos is not None else []
+        self.todos = [v if isinstance(v, str) else str(v) for v in self.todos]
+
+        if not isinstance(self.notes, list):
+            self.notes = [self.notes] if self.notes is not None else []
+        self.notes = [v if isinstance(v, str) else str(v) for v in self.notes]
+
+        if not isinstance(self.comments, list):
+            self.comments = [self.comments] if self.comments is not None else []
+        self.comments = [v if isinstance(v, str) else str(v) for v in self.comments]
+
+        if not isinstance(self.examples, list):
+            self.examples = [self.examples] if self.examples is not None else []
+        self.examples = [v if isinstance(v, Example) else Example(**as_dict(v)) for v in self.examples]
+
+        if not isinstance(self.in_subset, list):
+            self.in_subset = [self.in_subset] if self.in_subset is not None else []
+        self.in_subset = [v if isinstance(v, SubsetDefinitionName) else SubsetDefinitionName(v) for v in self.in_subset]
+
+        if self.from_schema is not None and not isinstance(self.from_schema, URI):
+            self.from_schema = URI(self.from_schema)
+
+        if self.imported_from is not None and not isinstance(self.imported_from, str):
+            self.imported_from = str(self.imported_from)
+
+        if self.source is not None and not isinstance(self.source, URIorCURIE):
+            self.source = URIorCURIE(self.source)
+
+        if self.in_language is not None and not isinstance(self.in_language, str):
+            self.in_language = str(self.in_language)
+
+        if not isinstance(self.see_also, list):
+            self.see_also = [self.see_also] if self.see_also is not None else []
+        self.see_also = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.see_also]
+
+        if self.deprecated_element_has_exact_replacement is not None and not isinstance(self.deprecated_element_has_exact_replacement, URIorCURIE):
+            self.deprecated_element_has_exact_replacement = URIorCURIE(self.deprecated_element_has_exact_replacement)
+
+        if self.deprecated_element_has_possible_replacement is not None and not isinstance(self.deprecated_element_has_possible_replacement, URIorCURIE):
+            self.deprecated_element_has_possible_replacement = URIorCURIE(self.deprecated_element_has_possible_replacement)
+
+        if not isinstance(self.aliases, list):
+            self.aliases = [self.aliases] if self.aliases is not None else []
+        self.aliases = [v if isinstance(v, str) else str(v) for v in self.aliases]
+
+        self._normalize_inlined_as_dict(slot_name="structured_aliases", slot_type=StructuredAlias, key_name="literal_form", keyed=False)
+
+        if not isinstance(self.mappings, list):
+            self.mappings = [self.mappings] if self.mappings is not None else []
+        self.mappings = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.mappings]
+
+        if not isinstance(self.exact_mappings, list):
+            self.exact_mappings = [self.exact_mappings] if self.exact_mappings is not None else []
+        self.exact_mappings = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.exact_mappings]
+
+        if not isinstance(self.close_mappings, list):
+            self.close_mappings = [self.close_mappings] if self.close_mappings is not None else []
+        self.close_mappings = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.close_mappings]
+
+        if not isinstance(self.related_mappings, list):
+            self.related_mappings = [self.related_mappings] if self.related_mappings is not None else []
+        self.related_mappings = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.related_mappings]
+
+        if not isinstance(self.narrow_mappings, list):
+            self.narrow_mappings = [self.narrow_mappings] if self.narrow_mappings is not None else []
+        self.narrow_mappings = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.narrow_mappings]
+
+        if not isinstance(self.broad_mappings, list):
+            self.broad_mappings = [self.broad_mappings] if self.broad_mappings is not None else []
+        self.broad_mappings = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.broad_mappings]
+
+        if self.created_by is not None and not isinstance(self.created_by, URIorCURIE):
+            self.created_by = URIorCURIE(self.created_by)
+
+        if not isinstance(self.contributors, list):
+            self.contributors = [self.contributors] if self.contributors is not None else []
+        self.contributors = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.contributors]
+
+        if self.created_on is not None and not isinstance(self.created_on, XSDDateTime):
+            self.created_on = XSDDateTime(self.created_on)
+
+        if self.last_updated_on is not None and not isinstance(self.last_updated_on, XSDDateTime):
+            self.last_updated_on = XSDDateTime(self.last_updated_on)
+
+        if self.modified_by is not None and not isinstance(self.modified_by, URIorCURIE):
+            self.modified_by = URIorCURIE(self.modified_by)
+
+        if self.status is not None and not isinstance(self.status, URIorCURIE):
+            self.status = URIorCURIE(self.status)
+
+        if self.rank is not None and not isinstance(self.rank, int):
+            self.rank = int(self.rank)
+
+        if not isinstance(self.categories, list):
+            self.categories = [self.categories] if self.categories is not None else []
+        self.categories = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.categories]
+
+        if not isinstance(self.keywords, list):
+            self.keywords = [self.keywords] if self.keywords is not None else []
+        self.keywords = [v if isinstance(v, str) else str(v) for v in self.keywords]
+
+        super().__post_init__(**kwargs)
+
+
+@dataclass
+class DimensionExpression(YAMLRoot):
+    """
+    defines one of the dimensions of an array
+    """
+    _inherited_slots: ClassVar[List[str]] = ["maximum_cardinality", "minimum_cardinality", "exact_cardinality"]
+
+    class_class_uri: ClassVar[URIRef] = LINKML["DimensionExpression"]
+    class_class_curie: ClassVar[str] = "linkml:DimensionExpression"
+    class_name: ClassVar[str] = "dimension_expression"
+    class_model_uri: ClassVar[URIRef] = LINKML.DimensionExpression
+
+    alias: Optional[str] = None
+    maximum_cardinality: Optional[int] = None
+    minimum_cardinality: Optional[int] = None
+    exact_cardinality: Optional[int] = None
+    extensions: Optional[Union[Dict[Union[str, ExtensionTag], Union[dict, Extension]], List[Union[dict, Extension]]]] = empty_dict()
+    annotations: Optional[Union[Dict[Union[str, AnnotationTag], Union[dict, Annotation]], List[Union[dict, Annotation]]]] = empty_dict()
+    description: Optional[str] = None
+    alt_descriptions: Optional[Union[Dict[Union[str, AltDescriptionSource], Union[dict, "AltDescription"]], List[Union[dict, "AltDescription"]]]] = empty_dict()
+    title: Optional[str] = None
+    deprecated: Optional[str] = None
+    todos: Optional[Union[str, List[str]]] = empty_list()
+    notes: Optional[Union[str, List[str]]] = empty_list()
+    comments: Optional[Union[str, List[str]]] = empty_list()
+    examples: Optional[Union[Union[dict, "Example"], List[Union[dict, "Example"]]]] = empty_list()
+    in_subset: Optional[Union[Union[str, SubsetDefinitionName], List[Union[str, SubsetDefinitionName]]]] = empty_list()
+    from_schema: Optional[Union[str, URI]] = None
+    imported_from: Optional[str] = None
+    source: Optional[Union[str, URIorCURIE]] = None
+    in_language: Optional[str] = None
+    see_also: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    deprecated_element_has_exact_replacement: Optional[Union[str, URIorCURIE]] = None
+    deprecated_element_has_possible_replacement: Optional[Union[str, URIorCURIE]] = None
+    aliases: Optional[Union[str, List[str]]] = empty_list()
+    structured_aliases: Optional[Union[Union[dict, StructuredAlias], List[Union[dict, StructuredAlias]]]] = empty_list()
+    mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    exact_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    close_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    related_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    narrow_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    broad_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    created_by: Optional[Union[str, URIorCURIE]] = None
+    contributors: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    created_on: Optional[Union[str, XSDDateTime]] = None
+    last_updated_on: Optional[Union[str, XSDDateTime]] = None
+    modified_by: Optional[Union[str, URIorCURIE]] = None
+    status: Optional[Union[str, URIorCURIE]] = None
+    rank: Optional[int] = None
+    categories: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    keywords: Optional[Union[str, List[str]]] = empty_list()
+
+    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self.alias is not None and not isinstance(self.alias, str):
+            self.alias = str(self.alias)
+
+        if self.maximum_cardinality is not None and not isinstance(self.maximum_cardinality, int):
+            self.maximum_cardinality = int(self.maximum_cardinality)
+
+        if self.minimum_cardinality is not None and not isinstance(self.minimum_cardinality, int):
+            self.minimum_cardinality = int(self.minimum_cardinality)
+
+        if self.exact_cardinality is not None and not isinstance(self.exact_cardinality, int):
+            self.exact_cardinality = int(self.exact_cardinality)
+
+        self._normalize_inlined_as_dict(slot_name="extensions", slot_type=Extension, key_name="tag", keyed=True)
+
+        self._normalize_inlined_as_dict(slot_name="annotations", slot_type=Annotation, key_name="tag", keyed=True)
+
+        if self.description is not None and not isinstance(self.description, str):
+            self.description = str(self.description)
+
+        self._normalize_inlined_as_dict(slot_name="alt_descriptions", slot_type=AltDescription, key_name="source", keyed=True)
+
+        if self.title is not None and not isinstance(self.title, str):
+            self.title = str(self.title)
+
+        if self.deprecated is not None and not isinstance(self.deprecated, str):
+            self.deprecated = str(self.deprecated)
+
+        if not isinstance(self.todos, list):
+            self.todos = [self.todos] if self.todos is not None else []
+        self.todos = [v if isinstance(v, str) else str(v) for v in self.todos]
+
+        if not isinstance(self.notes, list):
+            self.notes = [self.notes] if self.notes is not None else []
+        self.notes = [v if isinstance(v, str) else str(v) for v in self.notes]
+
+        if not isinstance(self.comments, list):
+            self.comments = [self.comments] if self.comments is not None else []
+        self.comments = [v if isinstance(v, str) else str(v) for v in self.comments]
+
+        if not isinstance(self.examples, list):
+            self.examples = [self.examples] if self.examples is not None else []
+        self.examples = [v if isinstance(v, Example) else Example(**as_dict(v)) for v in self.examples]
+
+        if not isinstance(self.in_subset, list):
+            self.in_subset = [self.in_subset] if self.in_subset is not None else []
+        self.in_subset = [v if isinstance(v, SubsetDefinitionName) else SubsetDefinitionName(v) for v in self.in_subset]
+
+        if self.from_schema is not None and not isinstance(self.from_schema, URI):
+            self.from_schema = URI(self.from_schema)
+
+        if self.imported_from is not None and not isinstance(self.imported_from, str):
+            self.imported_from = str(self.imported_from)
+
+        if self.source is not None and not isinstance(self.source, URIorCURIE):
+            self.source = URIorCURIE(self.source)
+
+        if self.in_language is not None and not isinstance(self.in_language, str):
+            self.in_language = str(self.in_language)
+
+        if not isinstance(self.see_also, list):
+            self.see_also = [self.see_also] if self.see_also is not None else []
+        self.see_also = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.see_also]
+
+        if self.deprecated_element_has_exact_replacement is not None and not isinstance(self.deprecated_element_has_exact_replacement, URIorCURIE):
+            self.deprecated_element_has_exact_replacement = URIorCURIE(self.deprecated_element_has_exact_replacement)
+
+        if self.deprecated_element_has_possible_replacement is not None and not isinstance(self.deprecated_element_has_possible_replacement, URIorCURIE):
+            self.deprecated_element_has_possible_replacement = URIorCURIE(self.deprecated_element_has_possible_replacement)
+
+        if not isinstance(self.aliases, list):
+            self.aliases = [self.aliases] if self.aliases is not None else []
+        self.aliases = [v if isinstance(v, str) else str(v) for v in self.aliases]
+
+        self._normalize_inlined_as_dict(slot_name="structured_aliases", slot_type=StructuredAlias, key_name="literal_form", keyed=False)
+
+        if not isinstance(self.mappings, list):
+            self.mappings = [self.mappings] if self.mappings is not None else []
+        self.mappings = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.mappings]
+
+        if not isinstance(self.exact_mappings, list):
+            self.exact_mappings = [self.exact_mappings] if self.exact_mappings is not None else []
+        self.exact_mappings = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.exact_mappings]
+
+        if not isinstance(self.close_mappings, list):
+            self.close_mappings = [self.close_mappings] if self.close_mappings is not None else []
+        self.close_mappings = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.close_mappings]
+
+        if not isinstance(self.related_mappings, list):
+            self.related_mappings = [self.related_mappings] if self.related_mappings is not None else []
+        self.related_mappings = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.related_mappings]
+
+        if not isinstance(self.narrow_mappings, list):
+            self.narrow_mappings = [self.narrow_mappings] if self.narrow_mappings is not None else []
+        self.narrow_mappings = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.narrow_mappings]
+
+        if not isinstance(self.broad_mappings, list):
+            self.broad_mappings = [self.broad_mappings] if self.broad_mappings is not None else []
+        self.broad_mappings = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.broad_mappings]
+
+        if self.created_by is not None and not isinstance(self.created_by, URIorCURIE):
+            self.created_by = URIorCURIE(self.created_by)
+
+        if not isinstance(self.contributors, list):
+            self.contributors = [self.contributors] if self.contributors is not None else []
+        self.contributors = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.contributors]
+
+        if self.created_on is not None and not isinstance(self.created_on, XSDDateTime):
+            self.created_on = XSDDateTime(self.created_on)
+
+        if self.last_updated_on is not None and not isinstance(self.last_updated_on, XSDDateTime):
+            self.last_updated_on = XSDDateTime(self.last_updated_on)
+
+        if self.modified_by is not None and not isinstance(self.modified_by, URIorCURIE):
+            self.modified_by = URIorCURIE(self.modified_by)
+
+        if self.status is not None and not isinstance(self.status, URIorCURIE):
+            self.status = URIorCURIE(self.status)
+
+        if self.rank is not None and not isinstance(self.rank, int):
+            self.rank = int(self.rank)
 
         if not isinstance(self.categories, list):
             self.categories = [self.categories] if self.categories is not None else []
@@ -4013,6 +4400,24 @@ slots.slot_uri = Slot(uri=LINKML.slot_uri, name="slot_uri", curie=LINKML.curie('
 slots.multivalued = Slot(uri=LINKML.multivalued, name="multivalued", curie=LINKML.curie('multivalued'),
                    model_uri=LINKML.multivalued, domain=SlotDefinition, range=Optional[Union[bool, Bool]])
 
+slots.array = Slot(uri=LINKML.array, name="array", curie=LINKML.curie('array'),
+                   model_uri=LINKML.array, domain=SlotDefinition, range=Optional[Union[dict, "ArrayExpression"]])
+
+slots.dimensions = Slot(uri=LINKML.dimensions, name="dimensions", curie=LINKML.curie('dimensions'),
+                   model_uri=LINKML.dimensions, domain=ArrayExpression, range=Optional[Union[Union[dict, "DimensionExpression"], List[Union[dict, "DimensionExpression"]]]])
+
+slots.minimum_number_dimensions = Slot(uri=LINKML.minimum_number_dimensions, name="minimum_number_dimensions", curie=LINKML.curie('minimum_number_dimensions'),
+                   model_uri=LINKML.minimum_number_dimensions, domain=ArrayExpression, range=Optional[int])
+
+slots.maximum_number_dimensions = Slot(uri=LINKML.maximum_number_dimensions, name="maximum_number_dimensions", curie=LINKML.curie('maximum_number_dimensions'),
+                   model_uri=LINKML.maximum_number_dimensions, domain=ArrayExpression, range=Optional[Union[dict, Anything]])
+
+slots.exact_number_dimensions = Slot(uri=LINKML.exact_number_dimensions, name="exact_number_dimensions", curie=LINKML.curie('exact_number_dimensions'),
+                   model_uri=LINKML.exact_number_dimensions, domain=ArrayExpression, range=Optional[int])
+
+slots.has_extra_dimensions = Slot(uri=LINKML.has_extra_dimensions, name="has_extra_dimensions", curie=LINKML.curie('has_extra_dimensions'),
+                   model_uri=LINKML.has_extra_dimensions, domain=ArrayExpression, range=Optional[Union[bool, Bool]])
+
 slots.inherited = Slot(uri=LINKML.inherited, name="inherited", curie=LINKML.curie('inherited'),
                    model_uri=LINKML.inherited, domain=SlotDefinition, range=Optional[Union[bool, Bool]])
 
@@ -4042,6 +4447,9 @@ slots.equals_number = Slot(uri=LINKML.equals_number, name="equals_number", curie
 
 slots.equals_expression = Slot(uri=LINKML.equals_expression, name="equals_expression", curie=LINKML.curie('equals_expression'),
                    model_uri=LINKML.equals_expression, domain=None, range=Optional[str])
+
+slots.exact_cardinality = Slot(uri=LINKML.exact_cardinality, name="exact_cardinality", curie=LINKML.curie('exact_cardinality'),
+                   model_uri=LINKML.exact_cardinality, domain=None, range=Optional[int])
 
 slots.minimum_cardinality = Slot(uri=LINKML.minimum_cardinality, name="minimum_cardinality", curie=LINKML.curie('minimum_cardinality'),
                    model_uri=LINKML.minimum_cardinality, domain=None, range=Optional[int])

@@ -1,5 +1,5 @@
 # Auto generated from annotations.yaml by pythongen.py version: 0.0.1
-# Generation date: 2024-01-29T16:05:46
+# Generation date: 2024-02-07T17:29:22
 # Schema: annotations
 #
 # id: https://w3id.org/linkml/annotations

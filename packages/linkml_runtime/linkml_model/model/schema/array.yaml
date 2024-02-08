@@ -63,6 +63,8 @@ classes:
     slots:
       - axis
       - array
+    see_also:
+      - https://docs.xarray.dev/en/stable/generated/xarray.DataArray.html
 
   GroupingByArrayOrder:
     mixin: true
