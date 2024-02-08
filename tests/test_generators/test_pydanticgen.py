@@ -79,6 +79,32 @@ enums:
     assert enum["values"]["Ohio"]["value"] == "Ohio"
 
 
+def test_pydantic_enum_titles():
+    unit_test_schema = """
+id: unit_test
+name: unit_test
+
+prefixes:
+  ex: https://example.org/
+default_prefix: ex
+
+enums:
+  TestEnum:
+    permissible_values:
+      value1:
+        title: label1
+      value2:
+        title: label2    
+    """
+    sv = SchemaView(unit_test_schema)
+    gen = PydanticGenerator(schema=unit_test_schema)
+    enums = gen.generate_enums(sv.all_enums())
+    assert enums
+    enum = enums["TestEnum"]
+    assert enum
+    assert enum["values"]["value1"]["label"] == "label1"
+    assert enum["values"]["value2"]["label"] == "label2"
+
 def test_pydantic_any_of():
     # TODO: convert to SchemaBuilder and parameterize?
     schema_str = """
