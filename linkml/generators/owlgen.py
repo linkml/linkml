@@ -533,7 +533,8 @@ class OwlSchemaGenerator(Generator):
                 graph.add((max_card_expr, OWL.onProperty, slot_uri))
             if slot.has_member:
                 has_member_expr = self.transform_class_slot_expression(cls, slot.has_member, slot)
-                owl_exprs.append(self._some_values_from(slot_uri, has_member_expr))
+                if has_member_expr:
+                    owl_exprs.append(self._some_values_from(slot_uri, has_member_expr))
         return self._intersection_of(owl_exprs)
 
     def slot_node_owltypes(self, slot: Union[SlotDefinition, AnonymousSlotExpression]) -> Set[URIRef]:
@@ -558,7 +559,7 @@ class OwlSchemaGenerator(Generator):
         slot: Union[SlotDefinition, AnonymousSlotExpression],
         main_slot: SlotDefinition = None,
         owl_types: Set[OWL_TYPE] = None,
-    ) -> Union[BNode, URIRef]:
+    ) -> Optional[Union[BNode, URIRef]]:
         """
         Take a ClassExpression and SlotExpression combination and transform to a node.
 
@@ -929,6 +930,10 @@ class OwlSchemaGenerator(Generator):
                 triples.extend(graph.triples((obj, None, None)))
 
     def _some_values_from(self, property: URIRef, filler: Union[URIRef, BNode]) -> BNode:
+        if not property:
+            raise ValueError(f"Property is required, filler: {filler}")
+        if not filler:
+            raise ValueError(f"Filler is required, property: {property}")
         node = BNode()
         self.graph.add((node, RDF.type, OWL.Restriction))
         self.graph.add((node, OWL.onProperty, property))

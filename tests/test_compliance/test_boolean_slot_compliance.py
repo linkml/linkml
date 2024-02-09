@@ -1818,6 +1818,14 @@ def test_value_presence_in_rules(framework, multivalued, data_name, instance, is
 @pytest.mark.parametrize(
     "name,quantification,expression,instance,is_valid",
     [
+        ("all_obj_members_equals_curie_string", "has_member", {"range": CLASS_D, "equals_string": "X:1"}, ["X:1"], True),
+        ("all_obj_members_equals_curie_string", "all_members", {"range": CLASS_D, "equals_string": "X:1"}, ["X:1"], True),
+        ("all_obj_members_equals_string", "all_members", {"range": CLASS_D, "equals_string": "foo"}, ["X:1"], False),
+        ("has_member_equals_string", "has_member", {"range": "string", "equals_string": "x"}, ["x"], True),
+        ("has_member_equals_number", "has_member", {"range": "integer", "equals_number": 10}, [10], True),
+        ("has_member_equals_number", "has_member", {"range": "integer", "equals_number": 10}, [10, 20], True),
+        ("has_member_equals_number", "has_member", {"range": "integer", "equals_number": 10}, [], False),
+        ("has_member_equals_number", "has_member", {"range": "integer", "equals_number": 10}, [9], False),
         ("all_members_min_10", "all_members", {"range": "integer", "minimum_value": 10}, [10, 11, 12], True),
         ("all_members_min_10", "all_members", {"range": "integer", "minimum_value": 10}, [9, 10], False),
         ("all_members_min_10", "all_members", {"range": "integer", "minimum_value": 10}, [9], False),
@@ -1836,29 +1844,54 @@ def test_membership(framework, name, quantification, expression, instance, is_va
     """
     Tests behavior of membership.
 
-    :param framework:
-    :param name:
-    :param quantification:
-    :param expression:
-    :param instance:
-    :param is_valid:
+    The schema for this test consists of a single class C and multivalued slot S.
+
+    the range of S is constrained according to a parameterized expression, using either has_member or all_members,
+    with additional membership criteria.
+
+    This is tested against various combinations of lists where the membership criteria is true for None,
+    Some, or All members of the list.
+
+    :param framework: generator to test
+    :param name: unique name of the schema
+    :param quantification: kind of quantification to use (all_members or has_member)
+    :param expression: expression to use in quantification
+    :param instance: instance to test with
+    :param is_valid: whether the instance is valid
     :return:
     """
+    s1_range = expression["range"]
+
     classes = {
         CLASS_C: {
             "attributes": {
                 SLOT_S1: {
-                    "range": "integer",
+                    "range": s1_range,
                     "multivalued": True,
                     quantification: expression,
                 },
             },
         },
     }
+    if s1_range == CLASS_D:
+        classes[CLASS_D] = {
+            "attributes": {
+                SLOT_ID: {
+                    "range": "uriorcurie",
+                    "identifier": True,
+                },
+                SLOT_S3: {
+                    "range": "string",
+                },
+            }
+        }
     schema = validated_schema(
         test_membership,
         name,
         framework,
+        prefixes={
+            "X": "https://example.org/X/",
+        },
         classes=classes,
         core_elements=[quantification],
     )
@@ -1868,6 +1901,12 @@ def test_membership(framework, name, quantification, expression, instance, is_va
             expected_behavior = ValidationBehavior.INCOMPLETE
     if framework == OWL and quantification == "has_member" and not is_valid:
         # OWL is open world, existential checks succeed without closure axioms
+        expected_behavior = ValidationBehavior.INCOMPLETE
+    if framework in [SHACL, SQL_DDL_SQLITE]:
+        expected_behavior = ValidationBehavior.INCOMPLETE
+    if framework == OWL and name == "all_obj_members_equals_string" and not is_valid:
+        # This test case relies on punning, as s1 is used as both an OP and DP,
+        # so we do not expect a DL-reasoner to be able to handle it
         expected_behavior = ValidationBehavior.INCOMPLETE
     check_data(
         schema,
