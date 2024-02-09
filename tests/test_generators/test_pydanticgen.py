@@ -107,6 +107,7 @@ enums:
     assert enum["values"]["label2"]["value"] == "value2"
     assert enum["values"]["value3"]["value"] == "value3"
 
+
 def test_pydantic_any_of():
     # TODO: convert to SchemaBuilder and parameterize?
     schema_str = """
