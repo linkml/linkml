@@ -307,6 +307,16 @@
           <section id="contribution-guidelines">
 <h1>Contribution Guidelines<a class="headerlink" href="#contribution-guidelines" title="Permalink to this heading">#</a></h1>
 <p>For general info about how to contribute to LinkML, please see <a class="reference external" href="https://linkml.io/linkml/faq/contributing.html">FAQ: Contributing</a>.</p>
+<section id="development-environment-setup">
+<h2>Development Environment Setup<a class="headerlink" href="#development-environment-setup" title="Permalink to this heading">#</a></h2>
+<p>LinkML is developed with <a class="reference external" href="https://www.python.org/">Python</a> and uses <a class="reference external" href="https://python-poetry.org/">Poetry</a> for dependency management and packaging. If you have not used Poetry before refer to the <a class="reference external" href="https://python-poetry.org/docs/master/#installation/">Poetry documentation</a> for installation instructions.</p>
+<p>Then clone the repository and install the development dependencies:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/linkml/linkml
+<span class="nb">cd</span><span class="w"> </span>linkml
+poetry<span class="w"> </span>install
+</pre></div>
+</div>
+</section>
 <section id="linkml-testing-framework">
 <h2>LinkML Testing Framework<a class="headerlink" href="#linkml-testing-framework" title="Permalink to this heading">#</a></h2>
 <ul class="simple">
@@ -571,6 +581,7 @@ insight into your work and allows them to provide feedback early on.</p></li>
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">Contribution Guidelines</a><ul>
+<li><a class="reference internal" href="#development-environment-setup">Development Environment Setup</a></li>
 <li><a class="reference internal" href="#linkml-testing-framework">LinkML Testing Framework</a><ul>
 <li><a class="reference internal" href="#directions-for-creating-a-unit-test">Directions for creating a unit test</a></li>
 <li><a class="reference internal" href="#general-tips">General Tips</a></li>

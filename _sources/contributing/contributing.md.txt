@@ -2,6 +2,18 @@
 
 For general info about how to contribute to LinkML, please see [FAQ: Contributing](https://linkml.io/linkml/faq/contributing.html).
 
+### Development Environment Setup
+
+LinkML is developed with [Python](https://www.python.org/) and uses [Poetry](https://python-poetry.org/) for dependency management and packaging. If you have not used Poetry before refer to the [Poetry documentation](https://python-poetry.org/docs/master/#installation/) for installation instructions.
+
+Then clone the repository and install the development dependencies:
+
+```shell
+git clone https://github.com/linkml/linkml
+cd linkml
+poetry install
+```
+
 ### LinkML Testing Framework
 
 * The LinkML test suite can be found in the [tests](../../tests/) folder. The tests are written under specific subfolders within the main aggregated [tests](../../tests/) suite.
