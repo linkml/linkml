@@ -94,7 +94,8 @@ enums:
       value1:
         title: label1
       value2:
-        title: label2    
+        title: label2
+      value3:
     """
     sv = SchemaView(unit_test_schema)
     gen = PydanticGenerator(schema=unit_test_schema)
@@ -102,8 +103,9 @@ enums:
     assert enums
     enum = enums["TestEnum"]
     assert enum
-    assert enum["values"]["value1"]["label"] == "label1"
-    assert enum["values"]["value2"]["label"] == "label2"
+    assert enum["values"]["label1"]["value"] == "value1"
+    assert enum["values"]["label2"]["value"] == "value2"
+    assert enum["values"]["value3"]["value"] == "value3"
 
 def test_pydantic_any_of():
     # TODO: convert to SchemaBuilder and parameterize?

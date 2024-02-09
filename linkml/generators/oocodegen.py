@@ -141,7 +141,10 @@ class OOCodeGenerator(Generator):
                 enum["description"] = enum_original.description
 
             for pv in enum_original.permissible_values.values():
-                label = self.generate_enum_label(pv.text)
+                if pv.title:
+                    label = self.generate_enum_label(pv.title)
+                else:
+                    label = self.generate_enum_label(pv.text)
                 val = {"label": label, "value": pv.text.replace('"', '\\"')}
                 if hasattr(pv, "description"):
                     val["description"] = pv.description
