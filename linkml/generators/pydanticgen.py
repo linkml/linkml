@@ -1,11 +1,12 @@
 import logging
 import os
+from abc import ABC, abstractmethod
 from collections import defaultdict
 from copy import deepcopy
 from dataclasses import dataclass, field
 from enum import Enum
 from types import ModuleType
-from typing import Dict, List, Optional, Set
+from typing import ClassVar, Dict, List, Optional, Set, Type
 
 import click
 from jinja2 import Template
@@ -13,7 +14,9 @@ from jinja2 import Template
 # from linkml.generators import pydantic_GEN_VERSION
 from linkml_runtime.linkml_model.meta import (
     Annotation,
+    ArrayExpression,
     ClassDefinition,
+    Element,
     SchemaDefinition,
     SlotDefinition,
     TypeDefinition,
@@ -257,6 +260,117 @@ def _get_pyrange(t: TypeDefinition, sv: SchemaView) -> str:
 class ArrayRepresentation(Enum):
     LIST = "list"
     NPARRAY = "nparray"  # numpy and nptyping must be installed to use this
+
+
+_ANONYMOUS_ARRAY_FIELDS = ("exact_number_dimensions", "minimum_number_dimensions", "maximum_number_dimensions")
+
+
+class ArrayRangeGenerator(ABC):
+    """
+    Metaclass for generating a given format of array annotation.
+
+    These classes do only enough validation of the array specification to decide
+    which kind of representation to generate. Proper value validation should
+    happen elsewhere (ie. in the metamodel and generated :class:`.ArrayExpression` class.)
+
+    Each of the array representation generation methods should be able to handle
+    the supported pydantic versions (currently still 1 and 2).
+
+    Notes:
+
+        When checking for array specification, recall that there is a semantic difference between
+        ``None`` and ``False`` , particularly for :attr:`.ArrayExpression.max_number_dimensions` -
+        check for absence of specification with ``is None`` rather than checking for truthiness/falsiness
+        (unless that's what you intend to do ofc ;)
+    """
+
+    REPR: ClassVar[ArrayRepresentation]
+
+    def __init__(self, array: ArrayExpression | None, dtype: str | Element, pydantic_ver: str = PYDANTIC_VERSION):
+        self.array = array
+        self.dtype = dtype
+        self.pydantic_ver = pydantic_ver
+
+    def make(self) -> str:
+        """Create the string form of the array representation"""
+        if self.array is None:
+            # any-shaped array
+            return self.any_shape(self.array)
+        elif self.array.dimensions is None and self.has_anonymous_dimensions:
+            return self.anonymous_shape(self.array)
+        elif self.array.dimensions is not None and not self.has_anonymous_dimensions:
+            return self.labeled_shape(self.array)
+        else:
+            return self.mixed_shape(self.array)
+
+    @property
+    def has_anonymous_dimensions(self) -> bool:
+        """Whether the :class:`.ArrayExpression` has some shape specification aside from ``dimensions``"""
+        return any([getattr(self.array, arr_field, None) is not None for arr_field in _ANONYMOUS_ARRAY_FIELDS])
+
+    @classmethod
+    def get_generator(cls, repr: ArrayRepresentation) -> Type["ArrayRangeGenerator"]:
+        """Get the generator class for a given array representation"""
+        for subclass in cls.__subclasses__():
+            if subclass.REPR == repr:
+                return subclass
+        raise ValueError(f"Generator for array representation {repr} not found!")
+
+    @abstractmethod
+    def any_shape(self, array: None) -> str:
+        """Any shaped array!"""
+        pass
+
+    @abstractmethod
+    def anonymous_shape(self, array: ArrayExpression) -> str:
+        """Array shape specified numerically, without axis parameterization"""
+        pass
+
+    @abstractmethod
+    def labeled_shape(self, array: ArrayExpression) -> str:
+        """Array shape specified with ``dimensions`` without additional anonymous axes"""
+        pass
+
+    @abstractmethod
+    def mixed_shape(self, array: ArrayExpression) -> str:
+        """Array shape with both ``dimensions`` and a ``max_number_dimensions`` for anonymous axes"""
+        pass
+
+
+class ListOfListsArray(ArrayRangeGenerator):
+    """
+    Represent arrays as lists of lists!
+    """
+
+    REPR = ArrayRepresentation.LIST
+
+    def anonymous_shape(self, array: ArrayExpression) -> str:
+        if array.exact_number_dimensions:
+            return "List[" * array.exact_number_dimensions + self.dtype + "]" * array.exact_number_dimensions
+        elif not array.maximum_number_dimensions:
+            # in this case, false and none both mean unbounded number of max dimensions
+            # commenting out to avoid unused variable linter error, but ya this is what we want
+            # min = 1 if array.minimum_number_dimensions is None else array.minimum_number_dimensions
+
+            # here we want to use a generic type for List[T] | T
+            # that can be evaluated recursively - to type arbitrary nesting depth, at each depth, the
+            # validator should check if it is a list or the type, if it's a list, check it with the same type
+            # that continues checking for list or type... and so on.
+            pass
+
+        raise NotImplementedError("Not finished yet!")
+
+
+class NPTypingArray(ArrayRangeGenerator):
+    """
+    Represent array range with nptyping, and serialization/loading with an ArrayProxy
+    """
+
+    REPR = ArrayRepresentation.NPARRAY
+
+    def __init__(self, **kwargs):
+        super(self).__init__(**kwargs)
+        raise NotImplementedError("NPTyping array ranges are not implemented yet :(")
 
 
 @dataclass
@@ -536,47 +650,18 @@ class PydanticGenerator(OOCodeGenerator):
         """
         Generate the python range for array representations
         """
-        array_info = slot.array
-        if array_info is None:  # pragma: no cover
-            return ""  # this should not happen
+        array_reps = []
+        for repr in self.array_representations:
+            generator = ArrayRangeGenerator.get_generator(repr)
+            array_reps.append(generator(slot.array, slot.range, self.pydantic_version).make())
 
-        # if exact_number_dimensions is not set, then we can't generate a range
-        ndim = array_info.exact_number_dimensions
-        min_dim = array_info.minimum_number_dimensions
-        max_dim = array_info.maximum_number_dimensions
-        if ndim is None and min_dim is None:
-            min_dim = 1
-        if ndim is None and max_dim is None:
-            max_dim = len(array_info.dimensions)
-
-        if ndim is None:
-            return "List[Any]"
-
-        reps = [self.get_array_representation_single(x.value, ndim, slot.range) for x in self.array_representations]
-        if len(reps) == 1:
-            return reps[0]
+        if len(array_reps) == 0:
+            raise ValueError("No array representation generated, but one was requested!")
+        elif len(array_reps) == 1:
+            return array_reps[0]
         else:
-            return f"Union[{','.join(reps)}]"
-
-    def get_array_representation_single(self, ArrayRepresentation: str, ndim: int, range: str) -> str:
-        """
-        Generate the python range for array representations
-        """
-
-        # goal: range: float and exact_number_dimensions: 3 -->
-        # List[List[List[float]]]
-        def _get_list_rep(dims: int) -> str:
-            if dims == 1:
-                return f"List[{range}]"
-            else:
-                return f"List[{_get_list_rep(dims - 1)}]"
-
-        if ArrayRepresentation == "list":
-            return _get_list_rep(ndim)
-        elif ArrayRepresentation == "nparray":
-            return f"np.ndarray[{range}, {ndim}]"  # TODO
-        else:
-            raise Exception(f"Unknown array representation: {ArrayRepresentation}")
+            # TODO: lets format this nicely :)
+            return f"Union[{','.join(array_reps)}]"
 
     def serialize(self) -> str:
         if self.template_file is not None:
