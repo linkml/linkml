@@ -265,7 +265,7 @@ classes:
         multivalued: true
       code systems:
         range: CodeSystem
-        inlined: true
+        inlined_as_list: true
         multivalued: true
     slots:
       - metadata
