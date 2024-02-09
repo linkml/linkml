@@ -2391,28 +2391,66 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/subject_form_or_variant_qualifier",
-                        "valueExpr": "https://w3id.org/biolink/vocab/ChemicalOrGeneOrGeneProductFormOrVariantEnum",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/biolink/vocab/ChemicalOrGeneOrGeneProductFormOrVariantEnum#genetic_variant_form",
+                              "https://w3id.org/biolink/vocab/ChemicalOrGeneOrGeneProductFormOrVariantEnum#modified_form",
+                              "https://w3id.org/biolink/vocab/ChemicalOrGeneOrGeneProductFormOrVariantEnum#loss_of_function_variant_form",
+                              "https://w3id.org/biolink/vocab/ChemicalOrGeneOrGeneProductFormOrVariantEnum#gain_of_function_variant_form",
+                              "https://w3id.org/biolink/vocab/ChemicalOrGeneOrGeneProductFormOrVariantEnum#polymorphic_form",
+                              "https://w3id.org/biolink/vocab/ChemicalOrGeneOrGeneProductFormOrVariantEnum#snp_form",
+                              "https://w3id.org/biolink/vocab/ChemicalOrGeneOrGeneProductFormOrVariantEnum#analog_form"
+                           ]
+                        },
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/subject_part_qualifier",
-                        "valueExpr": "https://w3id.org/biolink/vocab/GeneOrGeneProductOrChemicalPartQualifierEnum",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/biolink/vocab/GeneOrGeneProductOrChemicalPartQualifierEnum#3_prime_utr",
+                              "https://w3id.org/biolink/vocab/GeneOrGeneProductOrChemicalPartQualifierEnum#5_prime_utr",
+                              "https://w3id.org/biolink/vocab/GeneOrGeneProductOrChemicalPartQualifierEnum#polya_tail",
+                              "https://w3id.org/biolink/vocab/GeneOrGeneProductOrChemicalPartQualifierEnum#promoter",
+                              "https://w3id.org/biolink/vocab/GeneOrGeneProductOrChemicalPartQualifierEnum#enhancer",
+                              "https://w3id.org/biolink/vocab/GeneOrGeneProductOrChemicalPartQualifierEnum#exon",
+                              "https://w3id.org/biolink/vocab/GeneOrGeneProductOrChemicalPartQualifierEnum#intron"
+                           ]
+                        },
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/subject_derivative_qualifier",
-                        "valueExpr": "https://w3id.org/biolink/vocab/ChemicalEntityDerivativeEnum",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/biolink/vocab/ChemicalEntityDerivativeEnum#metabolite"
+                           ]
+                        },
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/subject_aspect_qualifier",
-                        "valueExpr": "https://w3id.org/biolink/vocab/GeneOrGeneProductOrChemicalPartQualifierEnum",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/biolink/vocab/GeneOrGeneProductOrChemicalPartQualifierEnum#3_prime_utr",
+                              "https://w3id.org/biolink/vocab/GeneOrGeneProductOrChemicalPartQualifierEnum#5_prime_utr",
+                              "https://w3id.org/biolink/vocab/GeneOrGeneProductOrChemicalPartQualifierEnum#polya_tail",
+                              "https://w3id.org/biolink/vocab/GeneOrGeneProductOrChemicalPartQualifierEnum#promoter",
+                              "https://w3id.org/biolink/vocab/GeneOrGeneProductOrChemicalPartQualifierEnum#enhancer",
+                              "https://w3id.org/biolink/vocab/GeneOrGeneProductOrChemicalPartQualifierEnum#exon",
+                              "https://w3id.org/biolink/vocab/GeneOrGeneProductOrChemicalPartQualifierEnum#intron"
+                           ]
+                        },
                         "min": 0,
                         "max": 1
                      },
@@ -2426,28 +2464,69 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/subject_direction_qualifier",
-                        "valueExpr": "https://w3id.org/biolink/vocab/DirectionQualifierEnum",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/biolink/vocab/DirectionQualifierEnum#increased",
+                              "https://w3id.org/biolink/vocab/DirectionQualifierEnum#upregulated",
+                              "https://w3id.org/biolink/vocab/DirectionQualifierEnum#decreased",
+                              "https://w3id.org/biolink/vocab/DirectionQualifierEnum#downregulated"
+                           ]
+                        },
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/object_form_or_variant_qualifier",
-                        "valueExpr": "https://w3id.org/biolink/vocab/ChemicalOrGeneOrGeneProductFormOrVariantEnum",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/biolink/vocab/ChemicalOrGeneOrGeneProductFormOrVariantEnum#genetic_variant_form",
+                              "https://w3id.org/biolink/vocab/ChemicalOrGeneOrGeneProductFormOrVariantEnum#modified_form",
+                              "https://w3id.org/biolink/vocab/ChemicalOrGeneOrGeneProductFormOrVariantEnum#loss_of_function_variant_form",
+                              "https://w3id.org/biolink/vocab/ChemicalOrGeneOrGeneProductFormOrVariantEnum#gain_of_function_variant_form",
+                              "https://w3id.org/biolink/vocab/ChemicalOrGeneOrGeneProductFormOrVariantEnum#polymorphic_form",
+                              "https://w3id.org/biolink/vocab/ChemicalOrGeneOrGeneProductFormOrVariantEnum#snp_form",
+                              "https://w3id.org/biolink/vocab/ChemicalOrGeneOrGeneProductFormOrVariantEnum#analog_form"
+                           ]
+                        },
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/object_part_qualifier",
-                        "valueExpr": "https://w3id.org/biolink/vocab/GeneOrGeneProductOrChemicalPartQualifierEnum",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/biolink/vocab/GeneOrGeneProductOrChemicalPartQualifierEnum#3_prime_utr",
+                              "https://w3id.org/biolink/vocab/GeneOrGeneProductOrChemicalPartQualifierEnum#5_prime_utr",
+                              "https://w3id.org/biolink/vocab/GeneOrGeneProductOrChemicalPartQualifierEnum#polya_tail",
+                              "https://w3id.org/biolink/vocab/GeneOrGeneProductOrChemicalPartQualifierEnum#promoter",
+                              "https://w3id.org/biolink/vocab/GeneOrGeneProductOrChemicalPartQualifierEnum#enhancer",
+                              "https://w3id.org/biolink/vocab/GeneOrGeneProductOrChemicalPartQualifierEnum#exon",
+                              "https://w3id.org/biolink/vocab/GeneOrGeneProductOrChemicalPartQualifierEnum#intron"
+                           ]
+                        },
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/object_aspect_qualifier",
-                        "valueExpr": "https://w3id.org/biolink/vocab/GeneOrGeneProductOrChemicalPartQualifierEnum",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/biolink/vocab/GeneOrGeneProductOrChemicalPartQualifierEnum#3_prime_utr",
+                              "https://w3id.org/biolink/vocab/GeneOrGeneProductOrChemicalPartQualifierEnum#5_prime_utr",
+                              "https://w3id.org/biolink/vocab/GeneOrGeneProductOrChemicalPartQualifierEnum#polya_tail",
+                              "https://w3id.org/biolink/vocab/GeneOrGeneProductOrChemicalPartQualifierEnum#promoter",
+                              "https://w3id.org/biolink/vocab/GeneOrGeneProductOrChemicalPartQualifierEnum#enhancer",
+                              "https://w3id.org/biolink/vocab/GeneOrGeneProductOrChemicalPartQualifierEnum#exon",
+                              "https://w3id.org/biolink/vocab/GeneOrGeneProductOrChemicalPartQualifierEnum#intron"
+                           ]
+                        },
                         "min": 0,
                         "max": 1
                      },
@@ -2461,7 +2540,29 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/causal_mechanism_qualifier",
-                        "valueExpr": "https://w3id.org/biolink/vocab/CausalMechanismQualifierEnum",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/biolink/vocab/CausalMechanismQualifierEnum#binding",
+                              "https://w3id.org/biolink/vocab/CausalMechanismQualifierEnum#inhibition",
+                              "https://w3id.org/biolink/vocab/CausalMechanismQualifierEnum#antibody_inhibition",
+                              "https://w3id.org/biolink/vocab/CausalMechanismQualifierEnum#antagonism",
+                              "https://w3id.org/biolink/vocab/CausalMechanismQualifierEnum#molecular_channel_blockage",
+                              "https://w3id.org/biolink/vocab/CausalMechanismQualifierEnum#inverse_agonism",
+                              "https://w3id.org/biolink/vocab/CausalMechanismQualifierEnum#negative_allosteric_modulation",
+                              "https://w3id.org/biolink/vocab/CausalMechanismQualifierEnum#agonism",
+                              "https://w3id.org/biolink/vocab/CausalMechanismQualifierEnum#molecular_channel_opening",
+                              "https://w3id.org/biolink/vocab/CausalMechanismQualifierEnum#positive_allosteric_modulation",
+                              "https://w3id.org/biolink/vocab/CausalMechanismQualifierEnum#potentiation",
+                              "https://w3id.org/biolink/vocab/CausalMechanismQualifierEnum#activation",
+                              "https://w3id.org/biolink/vocab/CausalMechanismQualifierEnum#inducer",
+                              "https://w3id.org/biolink/vocab/CausalMechanismQualifierEnum#transcriptional_regulation",
+                              "https://w3id.org/biolink/vocab/CausalMechanismQualifierEnum#signaling_mediated_control",
+                              "https://w3id.org/biolink/vocab/CausalMechanismQualifierEnum#stabilization",
+                              "https://w3id.org/biolink/vocab/CausalMechanismQualifierEnum#stimulation",
+                              "https://w3id.org/biolink/vocab/CausalMechanismQualifierEnum#releasing_activity"
+                           ]
+                        },
                         "min": 0,
                         "max": 1
                      },
@@ -2503,7 +2604,15 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/object_direction_qualifier",
-                        "valueExpr": "https://w3id.org/biolink/vocab/DirectionQualifierEnum",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/biolink/vocab/DirectionQualifierEnum#increased",
+                              "https://w3id.org/biolink/vocab/DirectionQualifierEnum#upregulated",
+                              "https://w3id.org/biolink/vocab/DirectionQualifierEnum#decreased",
+                              "https://w3id.org/biolink/vocab/DirectionQualifierEnum#downregulated"
+                           ]
+                        },
                         "min": 0,
                         "max": 1
                      },
@@ -2614,7 +2723,13 @@
                            {
                               "type": "TripleConstraint",
                               "predicate": "https://w3id.org/biolink/vocab/available_from",
-                              "valueExpr": "https://w3id.org/biolink/vocab/DrugAvailabilityEnum",
+                              "valueExpr": {
+                                 "type": "NodeConstraint",
+                                 "values": [
+                                    "https://w3id.org/biolink/vocab/DrugAvailabilityEnum#over_the_counter",
+                                    "https://w3id.org/biolink/vocab/DrugAvailabilityEnum#prescription"
+                                 ]
+                              },
                               "min": 0,
                               "max": -1
                            },
@@ -2775,7 +2890,15 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/object_direction_qualifier",
-                        "valueExpr": "https://w3id.org/biolink/vocab/DirectionQualifierEnum",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/biolink/vocab/DirectionQualifierEnum#increased",
+                              "https://w3id.org/biolink/vocab/DirectionQualifierEnum#upregulated",
+                              "https://w3id.org/biolink/vocab/DirectionQualifierEnum#decreased",
+                              "https://w3id.org/biolink/vocab/DirectionQualifierEnum#downregulated"
+                           ]
+                        },
                         "min": 0,
                         "max": 1
                      },
@@ -2983,21 +3106,48 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/subject_form_or_variant_qualifier",
-                        "valueExpr": "https://w3id.org/biolink/vocab/ChemicalOrGeneOrGeneProductFormOrVariantEnum",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/biolink/vocab/ChemicalOrGeneOrGeneProductFormOrVariantEnum#genetic_variant_form",
+                              "https://w3id.org/biolink/vocab/ChemicalOrGeneOrGeneProductFormOrVariantEnum#modified_form",
+                              "https://w3id.org/biolink/vocab/ChemicalOrGeneOrGeneProductFormOrVariantEnum#loss_of_function_variant_form",
+                              "https://w3id.org/biolink/vocab/ChemicalOrGeneOrGeneProductFormOrVariantEnum#gain_of_function_variant_form",
+                              "https://w3id.org/biolink/vocab/ChemicalOrGeneOrGeneProductFormOrVariantEnum#polymorphic_form",
+                              "https://w3id.org/biolink/vocab/ChemicalOrGeneOrGeneProductFormOrVariantEnum#snp_form",
+                              "https://w3id.org/biolink/vocab/ChemicalOrGeneOrGeneProductFormOrVariantEnum#analog_form"
+                           ]
+                        },
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/subject_part_qualifier",
-                        "valueExpr": "https://w3id.org/biolink/vocab/GeneOrGeneProductOrChemicalPartQualifierEnum",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/biolink/vocab/GeneOrGeneProductOrChemicalPartQualifierEnum#3_prime_utr",
+                              "https://w3id.org/biolink/vocab/GeneOrGeneProductOrChemicalPartQualifierEnum#5_prime_utr",
+                              "https://w3id.org/biolink/vocab/GeneOrGeneProductOrChemicalPartQualifierEnum#polya_tail",
+                              "https://w3id.org/biolink/vocab/GeneOrGeneProductOrChemicalPartQualifierEnum#promoter",
+                              "https://w3id.org/biolink/vocab/GeneOrGeneProductOrChemicalPartQualifierEnum#enhancer",
+                              "https://w3id.org/biolink/vocab/GeneOrGeneProductOrChemicalPartQualifierEnum#exon",
+                              "https://w3id.org/biolink/vocab/GeneOrGeneProductOrChemicalPartQualifierEnum#intron"
+                           ]
+                        },
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/subject_derivative_qualifier",
-                        "valueExpr": "https://w3id.org/biolink/vocab/ChemicalEntityDerivativeEnum",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/biolink/vocab/ChemicalEntityDerivativeEnum#metabolite"
+                           ]
+                        },
                         "min": 0,
                         "max": 1
                      },
@@ -3011,14 +3161,36 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/object_form_or_variant_qualifier",
-                        "valueExpr": "https://w3id.org/biolink/vocab/ChemicalOrGeneOrGeneProductFormOrVariantEnum",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/biolink/vocab/ChemicalOrGeneOrGeneProductFormOrVariantEnum#genetic_variant_form",
+                              "https://w3id.org/biolink/vocab/ChemicalOrGeneOrGeneProductFormOrVariantEnum#modified_form",
+                              "https://w3id.org/biolink/vocab/ChemicalOrGeneOrGeneProductFormOrVariantEnum#loss_of_function_variant_form",
+                              "https://w3id.org/biolink/vocab/ChemicalOrGeneOrGeneProductFormOrVariantEnum#gain_of_function_variant_form",
+                              "https://w3id.org/biolink/vocab/ChemicalOrGeneOrGeneProductFormOrVariantEnum#polymorphic_form",
+                              "https://w3id.org/biolink/vocab/ChemicalOrGeneOrGeneProductFormOrVariantEnum#snp_form",
+                              "https://w3id.org/biolink/vocab/ChemicalOrGeneOrGeneProductFormOrVariantEnum#analog_form"
+                           ]
+                        },
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/object_part_qualifier",
-                        "valueExpr": "https://w3id.org/biolink/vocab/GeneOrGeneProductOrChemicalPartQualifierEnum",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/biolink/vocab/GeneOrGeneProductOrChemicalPartQualifierEnum#3_prime_utr",
+                              "https://w3id.org/biolink/vocab/GeneOrGeneProductOrChemicalPartQualifierEnum#5_prime_utr",
+                              "https://w3id.org/biolink/vocab/GeneOrGeneProductOrChemicalPartQualifierEnum#polya_tail",
+                              "https://w3id.org/biolink/vocab/GeneOrGeneProductOrChemicalPartQualifierEnum#promoter",
+                              "https://w3id.org/biolink/vocab/GeneOrGeneProductOrChemicalPartQualifierEnum#enhancer",
+                              "https://w3id.org/biolink/vocab/GeneOrGeneProductOrChemicalPartQualifierEnum#exon",
+                              "https://w3id.org/biolink/vocab/GeneOrGeneProductOrChemicalPartQualifierEnum#intron"
+                           ]
+                        },
                         "min": 0,
                         "max": 1
                      },
@@ -3123,7 +3295,15 @@
                            {
                               "type": "TripleConstraint",
                               "predicate": "https://w3id.org/biolink/vocab/routes_of_delivery",
-                              "valueExpr": "https://w3id.org/biolink/vocab/DrugDeliveryEnum",
+                              "valueExpr": {
+                                 "type": "NodeConstraint",
+                                 "values": [
+                                    "https://w3id.org/biolink/vocab/DrugDeliveryEnum#inhalation",
+                                    "https://w3id.org/biolink/vocab/DrugDeliveryEnum#oral",
+                                    "https://w3id.org/biolink/vocab/DrugDeliveryEnum#absorption_through_the_skin",
+                                    "https://w3id.org/biolink/vocab/DrugDeliveryEnum#intravenous_injection"
+                                 ]
+                              },
                               "min": 0,
                               "max": -1
                            }
@@ -3300,7 +3480,15 @@
                            {
                               "type": "TripleConstraint",
                               "predicate": "https://w3id.org/biolink/vocab/FDA_adverse_event_level",
-                              "valueExpr": "https://w3id.org/biolink/vocab/FDAIDAAdverseEventEnum",
+                              "valueExpr": {
+                                 "type": "NodeConstraint",
+                                 "values": [
+                                    "https://w3id.org/biolink/vocab/FDAIDAAdverseEventEnum#life_threatening_adverse_event",
+                                    "https://w3id.org/biolink/vocab/FDAIDAAdverseEventEnum#serious_adverse_event",
+                                    "https://w3id.org/biolink/vocab/FDAIDAAdverseEventEnum#suspected_adverse_reaction",
+                                    "https://w3id.org/biolink/vocab/FDAIDAAdverseEventEnum#unexpected_adverse_event"
+                                 ]
+                              },
                               "min": 0,
                               "max": 1
                            },
@@ -5580,7 +5768,15 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/has_evidence",
-                        "valueExpr": "https://w3id.org/biolink/vocab/DruggableGeneCategoryEnum",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/biolink/vocab/DruggableGeneCategoryEnum#tclin",
+                              "https://w3id.org/biolink/vocab/DruggableGeneCategoryEnum#tbio",
+                              "https://w3id.org/biolink/vocab/DruggableGeneCategoryEnum#tchem",
+                              "https://w3id.org/biolink/vocab/DruggableGeneCategoryEnum#tdark"
+                           ]
+                        },
                         "min": 0,
                         "max": -1
                      }
@@ -5703,7 +5899,26 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/FDA_approval_status",
-                        "valueExpr": "https://w3id.org/biolink/vocab/FDAApprovalStatusEnum",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/biolink/vocab/FDAApprovalStatusEnum#discovery_and_development_phase",
+                              "https://w3id.org/biolink/vocab/FDAApprovalStatusEnum#preclinical_research_phase",
+                              "https://w3id.org/biolink/vocab/FDAApprovalStatusEnum#fda_clinical_research_phase",
+                              "https://w3id.org/biolink/vocab/FDAApprovalStatusEnum#fda_review_phase_4",
+                              "https://w3id.org/biolink/vocab/FDAApprovalStatusEnum#fda_post_market_safety_review",
+                              "https://w3id.org/biolink/vocab/FDAApprovalStatusEnum#fda_clinical_research_phase_1",
+                              "https://w3id.org/biolink/vocab/FDAApprovalStatusEnum#fda_clinical_research_phase_2",
+                              "https://w3id.org/biolink/vocab/FDAApprovalStatusEnum#fda_clinical_research_phase_3",
+                              "https://w3id.org/biolink/vocab/FDAApprovalStatusEnum#fda_clinical_research_phase_4",
+                              "https://w3id.org/biolink/vocab/FDAApprovalStatusEnum#fda_fast_track",
+                              "https://w3id.org/biolink/vocab/FDAApprovalStatusEnum#fda_breakthrough_therapy",
+                              "https://w3id.org/biolink/vocab/FDAApprovalStatusEnum#fda_accelerated_approval",
+                              "https://w3id.org/biolink/vocab/FDAApprovalStatusEnum#fda_priority_review",
+                              "https://w3id.org/biolink/vocab/FDAApprovalStatusEnum#regular_fda_approval",
+                              "https://w3id.org/biolink/vocab/FDAApprovalStatusEnum#post_approval_withdrawal"
+                           ]
+                        },
                         "min": 0,
                         "max": 1
                      }
@@ -5943,7 +6158,26 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/FDA_approval_status",
-                        "valueExpr": "https://w3id.org/biolink/vocab/FDAApprovalStatusEnum",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/biolink/vocab/FDAApprovalStatusEnum#discovery_and_development_phase",
+                              "https://w3id.org/biolink/vocab/FDAApprovalStatusEnum#preclinical_research_phase",
+                              "https://w3id.org/biolink/vocab/FDAApprovalStatusEnum#fda_clinical_research_phase",
+                              "https://w3id.org/biolink/vocab/FDAApprovalStatusEnum#fda_review_phase_4",
+                              "https://w3id.org/biolink/vocab/FDAApprovalStatusEnum#fda_post_market_safety_review",
+                              "https://w3id.org/biolink/vocab/FDAApprovalStatusEnum#fda_clinical_research_phase_1",
+                              "https://w3id.org/biolink/vocab/FDAApprovalStatusEnum#fda_clinical_research_phase_2",
+                              "https://w3id.org/biolink/vocab/FDAApprovalStatusEnum#fda_clinical_research_phase_3",
+                              "https://w3id.org/biolink/vocab/FDAApprovalStatusEnum#fda_clinical_research_phase_4",
+                              "https://w3id.org/biolink/vocab/FDAApprovalStatusEnum#fda_fast_track",
+                              "https://w3id.org/biolink/vocab/FDAApprovalStatusEnum#fda_breakthrough_therapy",
+                              "https://w3id.org/biolink/vocab/FDAApprovalStatusEnum#fda_accelerated_approval",
+                              "https://w3id.org/biolink/vocab/FDAApprovalStatusEnum#fda_priority_review",
+                              "https://w3id.org/biolink/vocab/FDAApprovalStatusEnum#regular_fda_approval",
+                              "https://w3id.org/biolink/vocab/FDAApprovalStatusEnum#post_approval_withdrawal"
+                           ]
+                        },
                         "min": 0,
                         "max": 1
                      }
@@ -8625,21 +8859,44 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/genome_build",
-                        "valueExpr": "https://w3id.org/biolink/vocab/StrandEnum",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/biolink/vocab/StrandEnum#%2B",
+                              "https://w3id.org/biolink/vocab/StrandEnum#-",
+                              "https://w3id.org/biolink/vocab/StrandEnum#.",
+                              "https://w3id.org/biolink/vocab/StrandEnum#%3F"
+                           ]
+                        },
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/strand",
-                        "valueExpr": "https://w3id.org/biolink/vocab/StrandEnum",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/biolink/vocab/StrandEnum#%2B",
+                              "https://w3id.org/biolink/vocab/StrandEnum#-",
+                              "https://w3id.org/biolink/vocab/StrandEnum#.",
+                              "https://w3id.org/biolink/vocab/StrandEnum#%3F"
+                           ]
+                        },
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/phase",
-                        "valueExpr": "https://w3id.org/biolink/vocab/PhaseEnum",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/biolink/vocab/PhaseEnum#0",
+                              "https://w3id.org/biolink/vocab/PhaseEnum#1",
+                              "https://w3id.org/biolink/vocab/PhaseEnum#2"
+                           ]
+                        },
                         "min": 0,
                         "max": 1
                      },
@@ -13452,7 +13709,15 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/object_direction_qualifier",
-                        "valueExpr": "https://w3id.org/biolink/vocab/DirectionQualifierEnum",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/biolink/vocab/DirectionQualifierEnum#increased",
+                              "https://w3id.org/biolink/vocab/DirectionQualifierEnum#upregulated",
+                              "https://w3id.org/biolink/vocab/DirectionQualifierEnum#decreased",
+                              "https://w3id.org/biolink/vocab/DirectionQualifierEnum#downregulated"
+                           ]
+                        },
                         "min": 0,
                         "max": 1
                      },
@@ -13494,7 +13759,6 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/anatomical_context_qualifier",
-                        "valueExpr": "https://w3id.org/biolink/vocab/AnatomicalContextQualifierEnum",
                         "min": 0,
                         "max": 1
                      },
@@ -14119,14 +14383,28 @@
                            {
                               "type": "TripleConstraint",
                               "predicate": "https://w3id.org/biolink/vocab/reaction_direction",
-                              "valueExpr": "https://w3id.org/biolink/vocab/ReactionDirectionEnum",
+                              "valueExpr": {
+                                 "type": "NodeConstraint",
+                                 "values": [
+                                    "https://w3id.org/biolink/vocab/ReactionDirectionEnum#left_to_right",
+                                    "https://w3id.org/biolink/vocab/ReactionDirectionEnum#right_to_left",
+                                    "https://w3id.org/biolink/vocab/ReactionDirectionEnum#bidirectional",
+                                    "https://w3id.org/biolink/vocab/ReactionDirectionEnum#neutral"
+                                 ]
+                              },
                               "min": 0,
                               "max": 1
                            },
                            {
                               "type": "TripleConstraint",
                               "predicate": "https://w3id.org/biolink/vocab/reaction_side",
-                              "valueExpr": "https://w3id.org/biolink/vocab/ReactionSideEnum",
+                              "valueExpr": {
+                                 "type": "NodeConstraint",
+                                 "values": [
+                                    "https://w3id.org/biolink/vocab/ReactionSideEnum#left",
+                                    "https://w3id.org/biolink/vocab/ReactionSideEnum#right"
+                                 ]
+                              },
                               "min": 0,
                               "max": 1
                            },

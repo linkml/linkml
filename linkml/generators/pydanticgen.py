@@ -527,7 +527,21 @@ class PydanticGenerator(OOCodeGenerator):
 
     def _inline_as_simple_dict_with_value(self, slot_def: SlotDefinition, sv: SchemaView) -> Optional[str]:
         """
-        Determine if a slot should be inlined as a simple dict with a value
+        Determine if a slot should be inlined as a simple dict with a value.
+
+        For example, if we have a class such as Prefix, with two slots prefix and expansion,
+        then an inlined list of prefixes can be serialized as:
+
+        .. code-block:: yaml
+
+            prefixes:
+                prefix1: expansion1
+                prefix2: expansion2
+                ...
+
+        Provided that the prefix slot is the identifier slot for the Prefix class.
+
+        TODO: move this to SchemaView
 
         :param slot_def: SlotDefinition
         :param sv: SchemaView

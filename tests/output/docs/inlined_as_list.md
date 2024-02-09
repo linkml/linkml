@@ -35,4 +35,5 @@ to the inlined_as_list setting. |
 | **In Subsets:** | | SpecificationSubset |
 |  | | BasicSubset |
 | **See also:** | | [https://w3id.org/linkml/docs/specification/06mapping/#collection-forms](https://w3id.org/linkml/docs/specification/06mapping/#collection-forms) |
+|  | | [https://linkml.io/linkml/schemas/inlining.html](https://linkml.io/linkml/schemas/inlining.html) |
 

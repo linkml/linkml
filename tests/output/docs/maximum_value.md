@@ -2,14 +2,14 @@
 # Slot: maximum_value
 
 
-for slots with ranges of type number, the value must be equal to or lowe than this
+For ordinal ranges, the value must be equal to or lower than this
 
 URI: [linkml:maximum_value](https://w3id.org/linkml/maximum_value)
 
 
 ## Domain and Range
 
-[SlotDefinition](SlotDefinition.md) &#8594;  <sub>0..1</sub> [Integer](types/Integer.md)
+[SlotDefinition](SlotDefinition.md) &#8594;  <sub>0..1</sub> [Anything](Anything.md)
 
 ## Parents
 
