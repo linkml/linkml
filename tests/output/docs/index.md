@@ -4,7 +4,7 @@
 
 **metamodel version:** 1.7.0
 
-**version:** 2.0.0
+**version:** None
 
 
 The metamodel for schemas defined using the Linked Data Modeling Language framework.
@@ -28,7 +28,6 @@ There are many subsets of *profiles* of the metamodel, for different purposes:
 
 * [MinimalSubset](https://w3id.org/linkml/MinimalSubset)
 * [BasicSubset](https://w3id.org/linkml/BasicSubset)
-* [BasicSubset](https://w3id.org/linkml/BasicSubset)
 
 For canonical reference documentation on any metamodel construct,
 refer to the official URI for each construct, e.g.
@@ -46,8 +45,10 @@ refer to the official URI for each construct, e.g.
      * [AnonymousClassExpression](AnonymousClassExpression.md)
      * [AnonymousSlotExpression](AnonymousSlotExpression.md)
  * [AnonymousTypeExpression](AnonymousTypeExpression.md) - A type expression that is not a top-level named type definition. Used for nesting.
+ * [ArrayExpression](ArrayExpression.md) - defines the dimensions of an array
  * [ClassLevelRule](ClassLevelRule.md) - A rule that is applied to classes
      * [ClassRule](ClassRule.md) - A rule that applies to instances of a class
+ * [DimensionExpression](DimensionExpression.md) - defines one of the dimensions of an array
  * [Element](Element.md) - A named element in the model
      * [Definition](Definition.md) - abstract base class for core metaclasses
          * [ClassDefinition](ClassDefinition.md) - an element whose instances are complex objects that may have slot-value assignments
@@ -61,12 +62,12 @@ refer to the official URI for each construct, e.g.
      * [Annotation](Annotation.md) - a tag/value pair with the semantics of OWL Annotation
  * [ImportExpression](ImportExpression.md) - an expression describing an import
  * [LocalName](LocalName.md) - an attributed label
- * [MatchQuery](MatchQuery.md) - A query that is used on an enum expression to dynamically obtain a set of permissivle values via a query that matches on properties of the external concepts
+ * [MatchQuery](MatchQuery.md) - A query that is used on an enum expression to dynamically obtain a set of permissivle values via a query that  matches on properties of the external concepts.
  * [PathExpression](PathExpression.md) - An expression that describes an abstract path from an object to another through a sequence of slot lookups
  * [PatternExpression](PatternExpression.md) - a regular expression pattern used to evaluate conformance of a string
  * [PermissibleValue](PermissibleValue.md) - a permissible value, accompanied by intended text and an optional mapping to a concept URI
  * [Prefix](Prefix.md) - prefix URI tuple
- * [ReachabilityQuery](ReachabilityQuery.md) - A query that is used on an enum expression to dynamically obtain a set of permissible values via walking from a set of source nodes to a set of descendants or ancestors over a set of relationship types
+ * [ReachabilityQuery](ReachabilityQuery.md) - A query that is used on an enum expression to dynamically obtain a set of permissible values via walking from a  set of source nodes to a set of descendants or ancestors over a set of relationship types.
  * [Setting](Setting.md) - assignment of a key to a value
  * [StructuredAlias](StructuredAlias.md) - object that contains meta data about a synonym or alias including where it came from (source) and its scope (narrow, broad, etc.)
  * [UniqueKey](UniqueKey.md) - a collection of slots whose values uniquely identify an instance of a class
@@ -97,6 +98,7 @@ refer to the official URI for each construct, e.g.
  * [apply_to](apply_to.md) - Used to extend class or slot definitions. For example, if we have a core schema where a gene has two slots for identifier and symbol, and we have a specialized schema for my_organism where we wish to add a slot systematic_name, we can avoid subclassing by defining a class gene_my_organism, adding the slot to this class, and then adding an apply_to pointing to the gene class. The new slot will be 'injected into' the gene class.
      * [class_definition➞apply_to](class_definition_apply_to.md)
      * [slot_definition➞apply_to](slot_definition_apply_to.md)
+ * [array](array.md) - coerces the value of the slot into an array and defines the dimensions of that array
  * [attributes](attributes.md) - Inline definition of slots
  * [base](base.md) - python base type in the LinkML runtime that implements this type definition
  * [bidirectional](bidirectional.md) - in addition to preconditions entailing postconditions, the postconditions entail the preconditions
@@ -150,6 +152,7 @@ refer to the official URI for each construct, e.g.
  * [description](description.md) - a textual description of the element's purpose and use
  * [descriptive_name](descriptive_name.md) - the spelled out name of the unit, for example, meter
  * [designates_type](designates_type.md) - True means that the key slot(s) is used to determine the instantiation (types) relation between objects and a ClassDefinition
+ * [dimensions](dimensions.md) - definitions of each axis in the array
  * [disjoint_with](disjoint_with.md) - Two classes are disjoint if they have no instances in common, two slots are disjoint if they can never hold between the same two instances
      * [class_definition➞disjoint_with](class_definition_disjoint_with.md)
      * [slot_definition➞disjoint_with](slot_definition_disjoint_with.md)
@@ -160,6 +163,7 @@ refer to the official URI for each construct, e.g.
  * [enum_range](enum_range.md) - An inlined enumeration
  * [enum_uri](enum_uri.md) - URI of the enum that provides a semantic interpretation of the element in a linked data context. The URI may come from any namespace and may be shared between schemas
  * [enums](enums.md) - An index to the collection of all enum definitions in the schema
+ * [exact_number_dimensions](exact_number_dimensions.md) - exact number of dimensions in the array
  * [examples](examples.md) - example usages of an element
  * [extension➞tag](extension_tag.md) - a tag associated with an extension
  * [extension➞value](extension_value.md) - the actual annotation
@@ -172,10 +176,11 @@ refer to the official URI for each construct, e.g.
  * [has_quantity_kind](has_quantity_kind.md) - Concept in a vocabulary or ontology that denotes the kind of quantity being measured, e.g. length
  * [id](id.md) - The official schema URI
  * [id_prefixes](id_prefixes.md) - An allowed list of prefixes for which identifiers must conform. The identifier of this class or slot must begin with the URIs referenced by this prefix
+ * [id_prefixes_are_closed](id_prefixes_are_closed.md) - If true, then the id_prefixes slot is treated as being closed, and any use of an id that does not have this prefix is considered a violation.
  * [identifier](identifier.md) - True means that the key slot(s) uniquely identifies the elements. There can be at most one identifier or key per container
  * [identifier_pattern](identifier_pattern.md) - A regular expression that is used to obtain a set of identifiers from a source_ontology to construct a set of permissible values
  * [iec61360code](iec61360code.md)
- * [ifabsent](ifabsent.md) - function that provides a default value for the slot.  Possible values for this slot are defined in
+ * [ifabsent](ifabsent.md) - function that provides a default value for the slot.  Possible values for this slot are defined in linkml.utils.ifabsent_functions.default_library:
  * [implements](implements.md) - An element in another schema which this element conforms to. The referenced element is not imported into the schema for the implementing element. However, the referenced schema may be used to check conformance of the implementing element.
  * [implicit_prefix](implicit_prefix.md) - Causes the slot value to be interpreted as a uriorcurie after prefixing with this string
  * [import_as](import_as.md)
@@ -193,6 +198,7 @@ refer to the official URI for each construct, e.g.
  * [inlined](inlined.md) - True means that keyed or identified slot appears in an outer structure by value.  False means that only the key or identifier for the slot appears within the domain, referencing a structure that appears elsewhere.
  * [inlined_as_list](inlined_as_list.md) - True means that an inlined slot is represented as a list of range instances.  False means that an inlined slot is represented as a dictionary, whose key is the slot key or identifier and whose value is the range instance.
  * [inlined_as_simple_dict](inlined_as_simple_dict.md) - True means that an inlined slot is represented as a simple dict whose values are all atoms
+ * [instantiates](instantiates.md) - An element in another schema which this element instantiates.
  * [interpolated](interpolated.md) - if true then the pattern is first string interpolated
  * [inverse](inverse.md) - indicates that any instance of d s r implies that there is also an instance of r s' d
  * [is_a](is_a.md) - A primary parent class or slot from which inheritable metaslots are propagated from. While multiple inheritance is not allowed, mixins can be provided effectively providing the same thing. The semantics are the same when translated to formalisms that allow MI (e.g. RDFS/OWL). When translating to a SI framework (e.g. java classes, python classes) then is a is used. When translating a framework without polymorphism (e.g. json-schema, solr document schema) then is a and mixins are recursively unfolded
@@ -216,6 +222,7 @@ refer to the official URI for each construct, e.g.
      * [equals_number_in](equals_number_in.md) - the slot must have range number and the value of the slot must equal one of the specified values
      * [equals_string](equals_string.md) - the slot must have range string and the value of the slot must equal the specified value
      * [equals_string_in](equals_string_in.md) - the slot must have range string and the value of the slot must equal one of the specified values
+     * [exact_cardinality](exact_cardinality.md) - the exact number of entries for a multivalued slot
      * [has_member](has_member.md) - the value of the slot is multivalued with at least one member satisfying the condition
      * [maximum_cardinality](maximum_cardinality.md) - the maximum number of entries for a multivalued slot
      * [minimum_cardinality](minimum_cardinality.md) - the minimum number of entries for a multivalued slot
@@ -232,10 +239,12 @@ refer to the official URI for each construct, e.g.
      * [narrow mappings](narrow_mappings.md) - A list of terms from different schemas or terminology systems that have narrower meaning.
      * [related mappings](related_mappings.md) - A list of terms from different schemas or terminology systems that have related meaning.
  * [matches](matches.md) - Specifies a match query that is used to calculate the list of permissible values
- * [maximum_value](maximum_value.md) - for slots with ranges of type number, the value must be equal to or lowe than this
+ * [maximum_number_dimensions](maximum_number_dimensions.md) - maximum number of dimensions in the array, or False if explicitly no maximum. If this is unset, and an explicit list of dimensions are passed using dimensions, then this is interpreted as a closed list and the maximum_number_dimensions is the length of the dimensions list, unless this value is set to False
+ * [maximum_value](maximum_value.md) - For ordinal ranges, the value must be equal to or lower than this
  * [meaning](meaning.md) - the value meaning of a permissible value
  * [metamodel_version](metamodel_version.md) - Version of the metamodel used to load the schema
- * [minimum_value](minimum_value.md) - for slots with ranges of type number, the value must be equal to or higher than this
+ * [minimum_number_dimensions](minimum_number_dimensions.md) - minimum number of dimensions in the array
+ * [minimum_value](minimum_value.md) - For ordinal ranges, the value must be equal to or higher than this
  * [minus](minus.md) - An enum expression that yields a list of permissible values that are to be subtracted from the enum
  * [mixin](mixin.md) - Indicates the class or slot is intended to be inherited from without being an is_a parent. mixins should not be inherited from using is_a, except by other mixins.
  * [mixins](mixins.md) - A collection of secondary parent classes or slots from which inheritable metaslots are propagated from.
@@ -250,8 +259,8 @@ refer to the official URI for each construct, e.g.
  * [open_world](open_world.md) - if true, the the postconditions may be omitted in instance data, but it is valid for an inference engine to add these
  * [owned_by](owned_by.md) - agent that owns or is the steward of the element
  * [owner](owner.md) - the "owner" of the slot. It is the class if it appears in the slots list, otherwise the declaring slot
- * [partial_match](partial_match.md) - if true then the pattern must match the whole string, as if enclosed in ^...$
- * [path_rule](path_rule.md) - a rule for inferring a slot assignment based on evaluating a path through a sequence of slot assignemnts
+ * [partial_match](partial_match.md) - if not true then the pattern must match the whole string, as if enclosed in ^...$
+ * [path_rule](path_rule.md) - a rule for inferring a slot assignment based on evaluating a path through a sequence of slot assignments
  * [pattern](pattern.md) - the string value of the slot must conform to this regular expression expressed in the string
  * [permissible_values](permissible_values.md) - A list of possible values for a slot range
  * [postconditions](postconditions.md) - an expression that must hold for an instance of the class, if the preconditions hold
@@ -308,7 +317,7 @@ refer to the official URI for each construct, e.g.
  * [structured_imports](structured_imports.md) - A list of specifications for how to import elements from external schemas
  * [structured_pattern](structured_pattern.md) - the string value of the slot must conform to the regular expression in the pattern expression
  * [subclass_of](subclass_of.md) - DEPRECATED -- rdfs:subClassOf to be emitted in OWL generation
- * [subproperty_of](subproperty_of.md) - Ontology property which this slot is a subproperty of.  Note: setting this property on a slot does not guarantee an expansion of the ontological hiearchy into an enumerated list of possible values in every serialization of the model.
+ * [subproperty_of](subproperty_of.md) - Ontology property which this slot is a subproperty of.  Note: setting this property on a slot does not guarantee an expansion of the ontological hierarchy into an enumerated list of possible values in every serialization of the model.
  * [subsets](subsets.md) - An index to the collection of all subset definitions in the schema
  * [symbol](symbol.md) - name of the unit encoded as a symbol
  * [syntax](syntax.md) - the string value of the slot must conform to this regular expression expressed in the string. May be interpolated.
@@ -337,7 +346,7 @@ refer to the official URI for each construct, e.g.
  * [example➞description](value_description.md) - description of what the value is doing
  * [example➞object](value_object.md) - direct object representation of the example
  * [value_specification_constant](value_specification_constant.md) - Grouping for metamodel slots that constrain the a slot value to equal a specified constant
- * [values_from](values_from.md) - The identifier of a "value set" -- a set of identifiers that form the possible values for the range of a slot. Note: this is different than 'subproperty_of' in that 'subproperty_of' is intended to be a single ontology term while 'values_from' is the identifier of an entire value set.  Additionally, this is different than an enumeration in that in an enumeration, the values of the enumeration are listed directly in the model itself. Setting this property on a slot does not guarantee an expansion of the ontological hiearchy into an enumerated list of possible values in every serialization of the model.
+ * [values_from](values_from.md) - The identifier of a "value set" -- a set of identifiers that form the possible values for the range of a slot. Note: this is different than 'subproperty_of' in that 'subproperty_of' is intended to be a single ontology term while 'values_from' is the identifier of an entire value set.  Additionally, this is different than an enumeration in that in an enumeration, the values of the enumeration are listed directly in the model itself. Setting this property on a slot does not guarantee an expansion of the ontological hierarchy into an enumerated list of possible values in every serialization of the model.
  * [version](version.md) - particular version of schema
 
 ### Enums

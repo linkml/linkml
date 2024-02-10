@@ -1,5 +1,5 @@
 # Auto generated from alternatives.yaml by pythongen.py version: 0.0.1
-# Generation date: 2023-09-22T11:49:25
+# Generation date: 2024-02-07T21:03:58
 # Schema: alternatives
 #
 # id: http://example.org/test/alternatives
@@ -51,7 +51,7 @@ class AllEnums(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = EVIDENCE.AllEnums
+    class_class_uri: ClassVar[URIRef] = EVIDENCE["AllEnums"]
     class_class_curie: ClassVar[str] = "evidence:AllEnums"
     class_name: ClassVar[str] = "all_enums"
     class_model_uri: ClassVar[URIRef] = EVIDENCE.AllEnums
@@ -78,26 +78,8 @@ class AllEnums(YAMLRoot):
             self.code_1 = [self.code_1] if self.code_1 is not None else []
         self.code_1 = [v if isinstance(v, OpenEnum) else OpenEnum(v) for v in self.code_1]
 
-        if self.code_2 is not None and not isinstance(self.code_2, ConstrainedEnum2):
-            self.code_2 = ConstrainedEnum2(self.code_2)
-
-        if self.code_3 is not None and not isinstance(self.code_3, ConstrainedEnum3):
-            self.code_3 = ConstrainedEnum3(self.code_3)
-
-        if self.code_4 is not None and not isinstance(self.code_4, ConstrainedEnum4):
-            self.code_4 = ConstrainedEnum4(self.code_4)
-
-        if self.code_5 is not None and not isinstance(self.code_5, ConstrainedEnum4):
-            self.code_5 = ConstrainedEnum4(self.code_5)
-
-        if self.code_6 is not None and not isinstance(self.code_6, ConstrainedEnum4):
-            self.code_6 = ConstrainedEnum4(self.code_6)
-
         if self.code_7 is not None and not isinstance(self.code_7, ConstrainedEvidence):
             self.code_7 = ConstrainedEvidence(self.code_7)
-
-        if self.code_8 is not None and not isinstance(self.code_8, MappedEvidence):
-            self.code_8 = MappedEvidence(self.code_8)
 
         super().__post_init__(**kwargs)
 
@@ -130,7 +112,7 @@ class ConstrainedEnum2(EnumDefinitionImpl):
     _defn = EnumDefinition(
         name="ConstrainedEnum2",
         description="All codes from the version of HPO labeled \"current\" by the referenced service",
-        code_set=CS.HPO,
+        code_set=CS["HPO"],
         pv_formula=PvFormulaOptions.CODE,
     )
 
@@ -141,7 +123,7 @@ class ConstrainedEnum3(EnumDefinitionImpl):
     _defn = EnumDefinition(
         name="ConstrainedEnum3",
         description="All uris from the version of HPO with the tag, \"production\"",
-        code_set=CS.HPO,
+        code_set=CS["HPO"],
         code_set_tag="production",
         pv_formula=PvFormulaOptions.URI,
     )
@@ -153,7 +135,7 @@ class ConstrainedEnum4(EnumDefinitionImpl):
     _defn = EnumDefinition(
         name="ConstrainedEnum4",
         description="All curies from version 1.17 of HPO",
-        code_set=CS.HPO,
+        code_set=CS["HPO"],
         code_set_version="1.17",
         pv_formula=PvFormulaOptions.CURIE,
     )
@@ -165,7 +147,7 @@ class ConstrainedEnum5(EnumDefinitionImpl):
     _defn = EnumDefinition(
         name="ConstrainedEnum5",
         description="All fhir codings from the \"current\" version of the CLUE \"mustard options\" value set",
-        code_set=CLUE.mustard_options,
+        code_set=CLUE["mustard_options"],
         pv_formula=PvFormulaOptions.FHIR_CODING,
     )
 
@@ -176,7 +158,7 @@ class ConstrainedEnum6(EnumDefinitionImpl):
     _defn = EnumDefinition(
         name="ConstrainedEnum6",
         description="All codes from SNOMED CT INTL 2020-7-31 or greater",
-        code_set=CS.SCT,
+        code_set=CS["SCT"],
         code_set_version=">=2020-7-31",
         pv_formula=PvFormulaOptions.CODE,
     )
@@ -196,7 +178,7 @@ class ConstrainedEvidence(EnumDefinitionImpl):
     _defn = EnumDefinition(
         name="ConstrainedEvidence",
         description="Permissible values for CLUE evidence fragments",
-        code_set=EVIDENCE.clue_answers,
+        code_set=EVIDENCE["clue_answers"],
     )
 
 class MappedEvidence(EnumDefinitionImpl):
@@ -206,7 +188,7 @@ class MappedEvidence(EnumDefinitionImpl):
     _defn = EnumDefinition(
         name="MappedEvidence",
         description="Permissible values that draw directly from the code set",
-        code_set=EVIDENCE.clue_answers,
+        code_set=EVIDENCE["clue_answers"],
         pv_formula=PvFormulaOptions.URI,
     )
 

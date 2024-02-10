@@ -64,12 +64,12 @@ implicitly asserts Y is an instance of C2
      * Range: [Boolean](types/Boolean.md)
      * in subsets: (SpecificationSubset,BasicSubset)
  * [minimum_value](minimum_value.md)  <sub>0..1</sub>
-     * Description: for slots with ranges of type number, the value must be equal to or higher than this
-     * Range: [Integer](types/Integer.md)
+     * Description: For ordinal ranges, the value must be equal to or higher than this
+     * Range: [Anything](Anything.md)
      * in subsets: (SpecificationSubset,BasicSubset)
  * [maximum_value](maximum_value.md)  <sub>0..1</sub>
-     * Description: for slots with ranges of type number, the value must be equal to or lowe than this
-     * Range: [Integer](types/Integer.md)
+     * Description: For ordinal ranges, the value must be equal to or lower than this
+     * Range: [Anything](Anything.md)
      * in subsets: (SpecificationSubset,BasicSubset)
  * [pattern](pattern.md)  <sub>0..1</sub>
      * Description: the string value of the slot must conform to this regular expression expressed in the string
@@ -103,6 +103,10 @@ implicitly asserts Y is an instance of C2
  * [equals_expression](equals_expression.md)  <sub>0..1</sub>
      * Description: the value of the slot must equal the value of the evaluated expression
      * Range: [String](types/String.md)
+     * in subsets: (SpecificationSubset)
+ * [exact_cardinality](exact_cardinality.md)  <sub>0..1</sub>
+     * Description: the exact number of entries for a multivalued slot
+     * Range: [Integer](types/Integer.md)
      * in subsets: (SpecificationSubset)
  * [minimum_cardinality](minimum_cardinality.md)  <sub>0..1</sub>
      * Description: the minimum number of entries for a multivalued slot

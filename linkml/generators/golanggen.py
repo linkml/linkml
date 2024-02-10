@@ -160,7 +160,7 @@ class GolangGenerator(Generator):
             rc_name = self.name(rc)
             id_slot = self.get_identifier_or_key_slot(r)
             if slot.multivalued:
-                if not id_slot or slot.inlined:
+                if not id_slot or slot.inlined or slot.inlined_as_list:
                     if slot.inlined_as_list or not id_slot:
                         return f"[]{rc_name}"
                     else:

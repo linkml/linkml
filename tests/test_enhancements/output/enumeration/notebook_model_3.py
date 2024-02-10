@@ -1,5 +1,5 @@
 # Auto generated from notebook_model_3.yaml by pythongen.py version: 0.0.1
-# Generation date: 2023-09-22T11:49:30
+# Generation date: 2024-02-07T21:04:03
 # Schema: simple
 #
 # id: http://example.org/test/simple
@@ -92,7 +92,7 @@ class Colors(EnumDefinitionImpl):
             PermissibleValue(
                 text="4",
                 description="Muted",
-                meaning=SCT.abcde))
+                meaning=SCT["abcde"]))
         setattr(cls, "9",
             PermissibleValue(
                 text="9",

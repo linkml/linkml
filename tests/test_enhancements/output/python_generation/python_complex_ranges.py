@@ -1,5 +1,5 @@
 # Auto generated from python_complex_ranges.yaml by pythongen.py version: 0.0.1
-# Generation date: 2023-09-22T11:49:31
+# Generation date: 2024-02-07T21:04:05
 # Schema: complex_ranges
 #
 # id: http://examples.org/linkml/test/complex_ranges
@@ -70,7 +70,7 @@ class OneElementClass(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = COMPLEX_RANGES.OneElementClass
+    class_class_uri: ClassVar[URIRef] = COMPLEX_RANGES["OneElementClass"]
     class_class_curie: ClassVar[str] = "complex_ranges:OneElementClass"
     class_name: ClassVar[str] = "OneElementClass"
     class_model_uri: ClassVar[URIRef] = COMPLEX_RANGES.OneElementClass
@@ -91,7 +91,7 @@ class TwoElementClass(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = COMPLEX_RANGES.TwoElementClass
+    class_class_uri: ClassVar[URIRef] = COMPLEX_RANGES["TwoElementClass"]
     class_class_curie: ClassVar[str] = "complex_ranges:TwoElementClass"
     class_name: ClassVar[str] = "TwoElementClass"
     class_model_uri: ClassVar[URIRef] = COMPLEX_RANGES.TwoElementClass
@@ -116,7 +116,7 @@ class ThreeElementClass(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = COMPLEX_RANGES.ThreeElementClass
+    class_class_uri: ClassVar[URIRef] = COMPLEX_RANGES["ThreeElementClass"]
     class_class_curie: ClassVar[str] = "complex_ranges:ThreeElementClass"
     class_name: ClassVar[str] = "ThreeElementClass"
     class_model_uri: ClassVar[URIRef] = COMPLEX_RANGES.ThreeElementClass
@@ -145,7 +145,7 @@ class KeyedOneElementClass(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = COMPLEX_RANGES.KeyedOneElementClass
+    class_class_uri: ClassVar[URIRef] = COMPLEX_RANGES["KeyedOneElementClass"]
     class_class_curie: ClassVar[str] = "complex_ranges:KeyedOneElementClass"
     class_name: ClassVar[str] = "KeyedOneElementClass"
     class_model_uri: ClassVar[URIRef] = COMPLEX_RANGES.KeyedOneElementClass
@@ -168,7 +168,7 @@ class KeyedTwoElementClass(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = COMPLEX_RANGES.KeyedTwoElementClass
+    class_class_uri: ClassVar[URIRef] = COMPLEX_RANGES["KeyedTwoElementClass"]
     class_class_curie: ClassVar[str] = "complex_ranges:KeyedTwoElementClass"
     class_name: ClassVar[str] = "KeyedTwoElementClass"
     class_model_uri: ClassVar[URIRef] = COMPLEX_RANGES.KeyedTwoElementClass
@@ -195,7 +195,7 @@ class KeyedThreeElementClass(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = COMPLEX_RANGES.KeyedThreeElementClass
+    class_class_uri: ClassVar[URIRef] = COMPLEX_RANGES["KeyedThreeElementClass"]
     class_class_curie: ClassVar[str] = "complex_ranges:KeyedThreeElementClass"
     class_name: ClassVar[str] = "KeyedThreeElementClass"
     class_model_uri: ClassVar[URIRef] = COMPLEX_RANGES.KeyedThreeElementClass
@@ -226,7 +226,7 @@ class IdentifiedOneElementClass(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = COMPLEX_RANGES.IdentifiedOneElementClass
+    class_class_uri: ClassVar[URIRef] = COMPLEX_RANGES["IdentifiedOneElementClass"]
     class_class_curie: ClassVar[str] = "complex_ranges:IdentifiedOneElementClass"
     class_name: ClassVar[str] = "IdentifiedOneElementClass"
     class_model_uri: ClassVar[URIRef] = COMPLEX_RANGES.IdentifiedOneElementClass
@@ -249,7 +249,7 @@ class IdentifiedTwoElementClass(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = COMPLEX_RANGES.IdentifiedTwoElementClass
+    class_class_uri: ClassVar[URIRef] = COMPLEX_RANGES["IdentifiedTwoElementClass"]
     class_class_curie: ClassVar[str] = "complex_ranges:IdentifiedTwoElementClass"
     class_name: ClassVar[str] = "IdentifiedTwoElementClass"
     class_model_uri: ClassVar[URIRef] = COMPLEX_RANGES.IdentifiedTwoElementClass
@@ -276,7 +276,7 @@ class IdentifiedThreeElementClass(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = COMPLEX_RANGES.IdentifiedThreeElementClass
+    class_class_uri: ClassVar[URIRef] = COMPLEX_RANGES["IdentifiedThreeElementClass"]
     class_class_curie: ClassVar[str] = "complex_ranges:IdentifiedThreeElementClass"
     class_name: ClassVar[str] = "IdentifiedThreeElementClass"
     class_model_uri: ClassVar[URIRef] = COMPLEX_RANGES.IdentifiedThreeElementClass

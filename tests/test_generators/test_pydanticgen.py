@@ -18,9 +18,9 @@ def test_pydantic(kitchen_sink_path, tmp_path, input_path):
     """Generate pydantic classes"""
     gen = PydanticGenerator(kitchen_sink_path, package=PACKAGE)
     code = gen.serialize()
-    # TODO: lowering the bar for the pydantic test until list to dict normalization is supported
+    # TODO: also check for expanded dicts
     #  https://github.com/linkml/linkml/issues/1304
-    with open(input_path("kitchen_sink_normalized_inst_01.yaml")) as stream:
+    with open(input_path("kitchen_sink_inst_01.yaml")) as stream:
         dataset_dict = yaml.safe_load(stream)
 
     module = compile_python(code, PACKAGE)
@@ -165,14 +165,9 @@ slots:
     assert lines[ix + 5] == "    not_inlined_things: Optional[List[str]] = Field(default_factory=list)"
 
 
-def test_pydantic_inlining():
-    # Case = namedtuple("multivalued", "inlined", "inlined_as_list", "B_has_identities")
-    expected_default_factories = {
-        "Optional[List[str]]": "Field(default_factory=list)",
-        "Optional[List[B]]": "Field(default_factory=list)",
-        "Optional[Dict[str, B]]": "Field(default_factory=dict)",
-    }
-    cases = [
+@pytest.mark.parametrize(
+    "range,multivalued,inlined,inlined_as_list,B_has_identifier,expected,notes",
+    [
         # block 1: primitives are NEVER inlined
         (
             "T",
@@ -228,7 +223,7 @@ def test_pydantic_inlining():
             True,
             False,
             True,
-            "Optional[Dict[str, B]]",
+            "Optional[Dict[str, str]]",
             "references to class with identifier inlined ONLY ON REQUEST, with dict as default",
         ),
         # TODO: fix the next two
@@ -242,42 +237,45 @@ def test_pydantic_inlining():
             "references to class with identifier inlined as list ONLY ON REQUEST",
         ),
         ("B", True, False, False, True, "Optional[List[str]]", ""),
-    ]
-    for (
-        range,
-        multivalued,
-        inlined,
-        inlined_as_list,
-        B_has_identifier,
-        expected,
-        notes,
-    ) in cases:
-        sb = SchemaBuilder("test")
-        sb.add_type("T", typeof="string")
-        a2b = SlotDefinition(
-            "a2b",
-            range=range,
-            multivalued=multivalued,
-            inlined=inlined,
-            inlined_as_list=inlined_as_list,
-        )
-        sb.add_class("A", slots=[a2b])
-        b_id = SlotDefinition("id", identifier=B_has_identifier)
-        sb.add_class("B", slots=[b_id, "name"])
-        sb.add_defaults()
-        schema = sb.schema
-        schema_str = yaml_dumper.dumps(schema)
-        gen = PydanticGenerator(schema_str, package=PACKAGE)
-        code = gen.serialize()
-        lines = code.splitlines()
-        ix = lines.index("class A(ConfiguredBaseModel):")
-        assert ix > 0
-        # assume a single blank line separating
-        slot_line = lines[ix + 2]
-        assert f"a2b: {expected}" in slot_line
-        if expected not in expected_default_factories:
-            raise ValueError(f"unexpected default factory for {expected}")
-        assert expected_default_factories[expected] in slot_line
+    ],
+)
+def test_pydantic_inlining(range, multivalued, inlined, inlined_as_list, B_has_identifier, expected, notes):
+    # Case = namedtuple("multivalued", "inlined", "inlined_as_list", "B_has_identities")
+    expected_default_factories = {
+        "Optional[List[str]]": "Field(default_factory=list)",
+        "Optional[List[B]]": "Field(default_factory=list)",
+        "Optional[Dict[str, B]]": "Field(default_factory=dict)",
+        "Optional[Dict[str, str]]": "Field(default_factory=dict)",
+    }
+
+    sb = SchemaBuilder("test")
+    sb.add_type("T", typeof="string")
+    a2b = SlotDefinition(
+        "a2b",
+        range=range,
+        multivalued=multivalued,
+        inlined=inlined,
+        inlined_as_list=inlined_as_list,
+    )
+    sb.add_class("A", slots=[a2b])
+    b_id = SlotDefinition("id", identifier=B_has_identifier)
+    sb.add_class("B", slots=[b_id, "name"])
+    sb.add_defaults()
+    schema = sb.schema
+    schema_str = yaml_dumper.dumps(schema)
+    gen = PydanticGenerator(schema_str, package=PACKAGE)
+    code = gen.serialize()
+    lines = code.splitlines()
+    ix = lines.index("class A(ConfiguredBaseModel):")
+    assert ix > 0
+    # assume a single blank line separating
+    slot_line = lines[ix + 2]
+    assert f"a2b: {expected}" in slot_line, f"did not find expected {expected} in {slot_line}"
+    if expected not in expected_default_factories:
+        raise ValueError(f"unexpected default factory for {expected}")
+    assert (
+        expected_default_factories[expected] in slot_line
+    ), f"did not find expected default factory {expected_default_factories[expected]}"
 
 
 def test_ifabsent():

@@ -1,5 +1,5 @@
 # Auto generated from biolink-model.yaml by pythongen.py version: 0.0.1
-# Generation date: 2023-09-22T11:48:12
+# Generation date: 2024-02-07T20:50:23
 # Schema: Biolink-Model
 #
 # id: https://w3id.org/biolink/biolink-model
@@ -294,7 +294,7 @@ DEFAULT_ = BIOLINK
 # Types
 class ChemicalFormulaValue(str):
     """ A chemical formula """
-    type_class_uri = XSD.string
+    type_class_uri = XSD["string"]
     type_class_curie = "xsd:string"
     type_name = "chemical formula value"
     type_model_uri = BIOLINK.ChemicalFormulaValue
@@ -302,7 +302,7 @@ class ChemicalFormulaValue(str):
 
 class CategoryType(Uriorcurie):
     """ A primitive type in which the value denotes a class within the biolink model. The value must be a URI or a CURIE. In a Neo4j representation, the value should be the CURIE for the biolink class, for example biolink:Gene. For an RDF representation, the value should be a URI such as https://w3id.org/biolink/vocab/Gene """
-    type_class_uri = XSD.anyURI
+    type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "category type"
     type_model_uri = BIOLINK.CategoryType
@@ -310,7 +310,7 @@ class CategoryType(Uriorcurie):
 
 class IriType(Uriorcurie):
     """ An IRI """
-    type_class_uri = XSD.anyURI
+    type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "iri type"
     type_model_uri = BIOLINK.IriType
@@ -318,7 +318,7 @@ class IriType(Uriorcurie):
 
 class LabelType(String):
     """ A string that provides a human-readable name for an entity """
-    type_class_uri = XSD.string
+    type_class_uri = XSD["string"]
     type_class_curie = "xsd:string"
     type_name = "label type"
     type_model_uri = BIOLINK.LabelType
@@ -326,7 +326,7 @@ class LabelType(String):
 
 class PredicateType(Uriorcurie):
     """ A CURIE from the biolink related_to hierarchy. For example, biolink:related_to, biolink:causes, biolink:treats. """
-    type_class_uri = XSD.anyURI
+    type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "predicate type"
     type_model_uri = BIOLINK.PredicateType
@@ -334,14 +334,14 @@ class PredicateType(Uriorcurie):
 
 class NarrativeText(String):
     """ A string that provides a human-readable description of something """
-    type_class_uri = XSD.string
+    type_class_uri = XSD["string"]
     type_class_curie = "xsd:string"
     type_name = "narrative text"
     type_model_uri = BIOLINK.NarrativeText
 
 
 class SymbolType(String):
-    type_class_uri = XSD.string
+    type_class_uri = XSD["string"]
     type_class_curie = "xsd:string"
     type_name = "symbol type"
     type_model_uri = BIOLINK.SymbolType
@@ -376,14 +376,14 @@ class Unit(String):
 
 
 class TimeType(Time):
-    type_class_uri = XSD.time
+    type_class_uri = XSD["time"]
     type_class_curie = "xsd:time"
     type_name = "time type"
     type_model_uri = BIOLINK.TimeType
 
 
 class BiologicalSequence(String):
-    type_class_uri = XSD.string
+    type_class_uri = XSD["string"]
     type_class_curie = "xsd:string"
     type_name = "biological sequence"
     type_model_uri = BIOLINK.BiologicalSequence
@@ -1293,7 +1293,7 @@ class MappingCollection(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.MappingCollection
+    class_class_uri: ClassVar[URIRef] = BIOLINK["MappingCollection"]
     class_class_curie: ClassVar[str] = "biolink:MappingCollection"
     class_name: ClassVar[str] = "mapping collection"
     class_model_uri: ClassVar[URIRef] = BIOLINK.MappingCollection
@@ -1316,7 +1316,7 @@ class PredicateMapping(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = ["exact_match", "narrow_match", "broad_match"]
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.PredicateMapping
+    class_class_uri: ClassVar[URIRef] = BIOLINK["PredicateMapping"]
     class_class_curie: ClassVar[str] = "biolink:PredicateMapping"
     class_name: ClassVar[str] = "predicate mapping"
     class_model_uri: ClassVar[URIRef] = BIOLINK.PredicateMapping
@@ -1394,9 +1394,6 @@ class PredicateMapping(YAMLRoot):
         if self.causal_mechanism_qualifier is not None and not isinstance(self.causal_mechanism_qualifier, str):
             self.causal_mechanism_qualifier = str(self.causal_mechanism_qualifier)
 
-        if self.anatomical_context_qualifier is not None and not isinstance(self.anatomical_context_qualifier, AnatomicalContextQualifierEnum):
-            self.anatomical_context_qualifier = AnatomicalContextQualifierEnum(self.anatomical_context_qualifier)
-
         if self.species_context_qualifier is not None and not isinstance(self.species_context_qualifier, OrganismTaxonId):
             self.species_context_qualifier = OrganismTaxonId(self.species_context_qualifier)
 
@@ -1425,7 +1422,7 @@ class OntologyClass(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.OntologyClass
+    class_class_uri: ClassVar[URIRef] = BIOLINK["OntologyClass"]
     class_class_curie: ClassVar[str] = "biolink:OntologyClass"
     class_name: ClassVar[str] = "ontology class"
     class_model_uri: ClassVar[URIRef] = BIOLINK.OntologyClass
@@ -1447,7 +1444,7 @@ class Annotation(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.Annotation
+    class_class_uri: ClassVar[URIRef] = BIOLINK["Annotation"]
     class_class_curie: ClassVar[str] = "biolink:Annotation"
     class_name: ClassVar[str] = "annotation"
     class_model_uri: ClassVar[URIRef] = BIOLINK.Annotation
@@ -1461,7 +1458,7 @@ class QuantityValue(Annotation):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.QuantityValue
+    class_class_uri: ClassVar[URIRef] = BIOLINK["QuantityValue"]
     class_class_curie: ClassVar[str] = "biolink:QuantityValue"
     class_name: ClassVar[str] = "quantity value"
     class_model_uri: ClassVar[URIRef] = BIOLINK.QuantityValue
@@ -1482,7 +1479,7 @@ class QuantityValue(Annotation):
 class RelationshipQuantifier(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.RelationshipQuantifier
+    class_class_uri: ClassVar[URIRef] = BIOLINK["RelationshipQuantifier"]
     class_class_curie: ClassVar[str] = "biolink:RelationshipQuantifier"
     class_name: ClassVar[str] = "relationship quantifier"
     class_model_uri: ClassVar[URIRef] = BIOLINK.RelationshipQuantifier
@@ -1491,7 +1488,7 @@ class RelationshipQuantifier(YAMLRoot):
 class SensitivityQuantifier(RelationshipQuantifier):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.SensitivityQuantifier
+    class_class_uri: ClassVar[URIRef] = BIOLINK["SensitivityQuantifier"]
     class_class_curie: ClassVar[str] = "biolink:SensitivityQuantifier"
     class_name: ClassVar[str] = "sensitivity quantifier"
     class_model_uri: ClassVar[URIRef] = BIOLINK.SensitivityQuantifier
@@ -1500,7 +1497,7 @@ class SensitivityQuantifier(RelationshipQuantifier):
 class SpecificityQuantifier(RelationshipQuantifier):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.SpecificityQuantifier
+    class_class_uri: ClassVar[URIRef] = BIOLINK["SpecificityQuantifier"]
     class_class_curie: ClassVar[str] = "biolink:SpecificityQuantifier"
     class_name: ClassVar[str] = "specificity quantifier"
     class_model_uri: ClassVar[URIRef] = BIOLINK.SpecificityQuantifier
@@ -1513,7 +1510,7 @@ class PathognomonicityQuantifier(SpecificityQuantifier):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.PathognomonicityQuantifier
+    class_class_uri: ClassVar[URIRef] = BIOLINK["PathognomonicityQuantifier"]
     class_class_curie: ClassVar[str] = "biolink:PathognomonicityQuantifier"
     class_name: ClassVar[str] = "pathognomonicity quantifier"
     class_model_uri: ClassVar[URIRef] = BIOLINK.PathognomonicityQuantifier
@@ -1523,7 +1520,7 @@ class PathognomonicityQuantifier(SpecificityQuantifier):
 class FrequencyQuantifier(RelationshipQuantifier):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.FrequencyQuantifier
+    class_class_uri: ClassVar[URIRef] = BIOLINK["FrequencyQuantifier"]
     class_class_curie: ClassVar[str] = "biolink:FrequencyQuantifier"
     class_name: ClassVar[str] = "frequency quantifier"
     class_model_uri: ClassVar[URIRef] = BIOLINK.FrequencyQuantifier
@@ -1552,7 +1549,7 @@ class FrequencyQuantifier(RelationshipQuantifier):
 class ChemicalOrDrugOrTreatment(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.ChemicalOrDrugOrTreatment
+    class_class_uri: ClassVar[URIRef] = BIOLINK["ChemicalOrDrugOrTreatment"]
     class_class_curie: ClassVar[str] = "biolink:ChemicalOrDrugOrTreatment"
     class_name: ClassVar[str] = "chemical or drug or treatment"
     class_model_uri: ClassVar[URIRef] = BIOLINK.ChemicalOrDrugOrTreatment
@@ -1565,7 +1562,7 @@ class Entity(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.Entity
+    class_class_uri: ClassVar[URIRef] = BIOLINK["Entity"]
     class_class_curie: ClassVar[str] = "biolink:Entity"
     class_name: ClassVar[str] = "entity"
     class_model_uri: ClassVar[URIRef] = BIOLINK.Entity
@@ -1607,6 +1604,31 @@ class Entity(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
+    def __new__(cls, *args, **kwargs):
+
+        type_designator = "category"
+        if not type_designator in kwargs:
+            return super().__new__(cls,*args,**kwargs)
+        else:
+            type_designator_value = kwargs[type_designator]
+            target_cls = cls._class_for("class_class_curie", type_designator_value)
+
+
+            if target_cls is None:
+                target_cls = cls._class_for("class_class_uri", type_designator_value)
+
+
+            if target_cls is None:
+                target_cls = cls._class_for("class_model_uri", type_designator_value)
+
+
+            if target_cls is None:
+                raise ValueError(f"Wrong type designator value: class {cls.__name__} "
+                                 f"has no subclass with ['class_class_curie', 'class_class_uri', 'class_model_uri']='{kwargs[type_designator]}'")
+            return super().__new__(target_cls,*args,**kwargs)
+
+
+
 @dataclass
 class NamedThing(Entity):
     """
@@ -1614,7 +1636,7 @@ class NamedThing(Entity):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.NamedThing
+    class_class_uri: ClassVar[URIRef] = BIOLINK["NamedThing"]
     class_class_curie: ClassVar[str] = "biolink:NamedThing"
     class_name: ClassVar[str] = "named thing"
     class_model_uri: ClassVar[URIRef] = BIOLINK.NamedThing
@@ -1645,6 +1667,36 @@ class NamedThing(Entity):
         self.xref = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.xref]
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
+
+
+    def __new__(cls, *args, **kwargs):
+
+        type_designator = "category"
+        if not type_designator in kwargs:
+            return super().__new__(cls,*args,**kwargs)
+        else:
+            type_designator_value = kwargs[type_designator]
+            target_cls = cls._class_for("class_class_curie", type_designator_value)
+
+
+            if target_cls is None:
+                target_cls = cls._class_for("class_class_uri", type_designator_value)
+
+
+            if target_cls is None:
+                target_cls = cls._class_for("class_model_uri", type_designator_value)
+
+
+            if target_cls is None:
+                raise ValueError(f"Wrong type designator value: class {cls.__name__} "
+                                 f"has no subclass with ['class_class_curie', 'class_class_uri', 'class_model_uri']='{kwargs[type_designator]}'")
+            return super().__new__(target_cls,*args,**kwargs)
+
 
 
 @dataclass
@@ -1655,7 +1707,7 @@ class Attribute(NamedThing):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.Attribute
+    class_class_uri: ClassVar[URIRef] = BIOLINK["Attribute"]
     class_class_curie: ClassVar[str] = "biolink:Attribute"
     class_name: ClassVar[str] = "attribute"
     class_model_uri: ClassVar[URIRef] = BIOLINK.Attribute
@@ -1693,6 +1745,11 @@ class Attribute(NamedThing):
             self.iri = IriType(self.iri)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -1702,7 +1759,7 @@ class ChemicalRole(Attribute):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.ChemicalRole
+    class_class_uri: ClassVar[URIRef] = BIOLINK["ChemicalRole"]
     class_class_curie: ClassVar[str] = "biolink:ChemicalRole"
     class_name: ClassVar[str] = "chemical role"
     class_model_uri: ClassVar[URIRef] = BIOLINK.ChemicalRole
@@ -1718,13 +1775,18 @@ class ChemicalRole(Attribute):
             self.id = ChemicalRoleId(self.id)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
 class BiologicalSex(Attribute):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.BiologicalSex
+    class_class_uri: ClassVar[URIRef] = BIOLINK["BiologicalSex"]
     class_class_curie: ClassVar[str] = "biolink:BiologicalSex"
     class_name: ClassVar[str] = "biological sex"
     class_model_uri: ClassVar[URIRef] = BIOLINK.BiologicalSex
@@ -1740,6 +1802,11 @@ class BiologicalSex(Attribute):
             self.id = BiologicalSexId(self.id)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -1749,7 +1816,7 @@ class PhenotypicSex(BiologicalSex):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.PhenotypicSex
+    class_class_uri: ClassVar[URIRef] = BIOLINK["PhenotypicSex"]
     class_class_curie: ClassVar[str] = "biolink:PhenotypicSex"
     class_name: ClassVar[str] = "phenotypic sex"
     class_model_uri: ClassVar[URIRef] = BIOLINK.PhenotypicSex
@@ -1765,6 +1832,11 @@ class PhenotypicSex(BiologicalSex):
             self.id = PhenotypicSexId(self.id)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -1775,7 +1847,7 @@ class GenotypicSex(BiologicalSex):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.GenotypicSex
+    class_class_uri: ClassVar[URIRef] = BIOLINK["GenotypicSex"]
     class_class_curie: ClassVar[str] = "biolink:GenotypicSex"
     class_name: ClassVar[str] = "genotypic sex"
     class_model_uri: ClassVar[URIRef] = BIOLINK.GenotypicSex
@@ -1791,6 +1863,11 @@ class GenotypicSex(BiologicalSex):
             self.id = GenotypicSexId(self.id)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -1800,7 +1877,7 @@ class SeverityValue(Attribute):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.SeverityValue
+    class_class_uri: ClassVar[URIRef] = BIOLINK["SeverityValue"]
     class_class_curie: ClassVar[str] = "biolink:SeverityValue"
     class_name: ClassVar[str] = "severity value"
     class_model_uri: ClassVar[URIRef] = BIOLINK.SeverityValue
@@ -1816,6 +1893,11 @@ class SeverityValue(Attribute):
             self.id = SeverityValueId(self.id)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -1825,7 +1907,7 @@ class RelationshipType(OntologyClass):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.RelationshipType
+    class_class_uri: ClassVar[URIRef] = BIOLINK["RelationshipType"]
     class_class_curie: ClassVar[str] = "biolink:RelationshipType"
     class_name: ClassVar[str] = "relationship type"
     class_model_uri: ClassVar[URIRef] = BIOLINK.RelationshipType
@@ -1848,7 +1930,7 @@ class TaxonomicRank(OntologyClass):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.TaxonomicRank
+    class_class_uri: ClassVar[URIRef] = BIOLINK["TaxonomicRank"]
     class_class_curie: ClassVar[str] = "biolink:TaxonomicRank"
     class_name: ClassVar[str] = "taxonomic rank"
     class_model_uri: ClassVar[URIRef] = BIOLINK.TaxonomicRank
@@ -1872,7 +1954,7 @@ class OrganismTaxon(NamedThing):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.OrganismTaxon
+    class_class_uri: ClassVar[URIRef] = BIOLINK["OrganismTaxon"]
     class_class_curie: ClassVar[str] = "biolink:OrganismTaxon"
     class_name: ClassVar[str] = "organism taxon"
     class_model_uri: ClassVar[URIRef] = BIOLINK.OrganismTaxon
@@ -1891,6 +1973,11 @@ class OrganismTaxon(NamedThing):
             self.has_taxonomic_rank = TaxonomicRankId(self.has_taxonomic_rank)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -1900,7 +1987,7 @@ class Event(NamedThing):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.Event
+    class_class_uri: ClassVar[URIRef] = BIOLINK["Event"]
     class_class_curie: ClassVar[str] = "biolink:Event"
     class_name: ClassVar[str] = "event"
     class_model_uri: ClassVar[URIRef] = BIOLINK.Event
@@ -1915,19 +2002,34 @@ class Event(NamedThing):
             self.id = EventId(self.id)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
 class AdministrativeEntity(NamedThing):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.AdministrativeEntity
+    class_class_uri: ClassVar[URIRef] = BIOLINK["AdministrativeEntity"]
     class_class_curie: ClassVar[str] = "biolink:AdministrativeEntity"
     class_name: ClassVar[str] = "administrative entity"
     class_model_uri: ClassVar[URIRef] = BIOLINK.AdministrativeEntity
 
     id: Union[str, AdministrativeEntityId] = None
     category: Union[Union[str, CategoryType], List[Union[str, CategoryType]]] = None
+
+    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+
+        super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
+
 
 @dataclass
 class Agent(AdministrativeEntity):
@@ -1936,7 +2038,7 @@ class Agent(AdministrativeEntity):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.Agent
+    class_class_uri: ClassVar[URIRef] = BIOLINK["Agent"]
     class_class_curie: ClassVar[str] = "biolink:Agent"
     class_name: ClassVar[str] = "agent"
     class_model_uri: ClassVar[URIRef] = BIOLINK.Agent
@@ -1964,6 +2066,11 @@ class Agent(AdministrativeEntity):
             self.name = LabelType(self.name)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -1973,7 +2080,7 @@ class InformationContentEntity(NamedThing):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.InformationContentEntity
+    class_class_uri: ClassVar[URIRef] = BIOLINK["InformationContentEntity"]
     class_class_curie: ClassVar[str] = "biolink:InformationContentEntity"
     class_name: ClassVar[str] = "information content entity"
     class_model_uri: ClassVar[URIRef] = BIOLINK.InformationContentEntity
@@ -1999,6 +2106,11 @@ class InformationContentEntity(NamedThing):
             self.creation_date = XSDDate(self.creation_date)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -2010,13 +2122,23 @@ class StudyResult(InformationContentEntity):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.StudyResult
+    class_class_uri: ClassVar[URIRef] = BIOLINK["StudyResult"]
     class_class_curie: ClassVar[str] = "biolink:StudyResult"
     class_name: ClassVar[str] = "study result"
     class_model_uri: ClassVar[URIRef] = BIOLINK.StudyResult
 
     id: Union[str, StudyResultId] = None
     category: Union[Union[str, CategoryType], List[Union[str, CategoryType]]] = None
+
+    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+
+        super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
+
 
 @dataclass
 class Study(InformationContentEntity):
@@ -2025,7 +2147,7 @@ class Study(InformationContentEntity):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.Study
+    class_class_uri: ClassVar[URIRef] = BIOLINK["Study"]
     class_class_curie: ClassVar[str] = "biolink:Study"
     class_name: ClassVar[str] = "study"
     class_model_uri: ClassVar[URIRef] = BIOLINK.Study
@@ -2040,6 +2162,11 @@ class Study(InformationContentEntity):
             self.id = StudyId(self.id)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -2049,7 +2176,7 @@ class StudyVariable(InformationContentEntity):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.StudyVariable
+    class_class_uri: ClassVar[URIRef] = BIOLINK["StudyVariable"]
     class_class_curie: ClassVar[str] = "biolink:StudyVariable"
     class_name: ClassVar[str] = "study variable"
     class_model_uri: ClassVar[URIRef] = BIOLINK.StudyVariable
@@ -2064,6 +2191,11 @@ class StudyVariable(InformationContentEntity):
             self.id = StudyVariableId(self.id)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -2075,7 +2207,7 @@ class CommonDataElement(InformationContentEntity):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.CommonDataElement
+    class_class_uri: ClassVar[URIRef] = BIOLINK["CommonDataElement"]
     class_class_curie: ClassVar[str] = "biolink:CommonDataElement"
     class_name: ClassVar[str] = "common data element"
     class_model_uri: ClassVar[URIRef] = BIOLINK.CommonDataElement
@@ -2090,6 +2222,11 @@ class CommonDataElement(InformationContentEntity):
             self.id = CommonDataElementId(self.id)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -2099,7 +2236,7 @@ class ConceptCountAnalysisResult(StudyResult):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.ConceptCountAnalysisResult
+    class_class_uri: ClassVar[URIRef] = BIOLINK["ConceptCountAnalysisResult"]
     class_class_curie: ClassVar[str] = "biolink:ConceptCountAnalysisResult"
     class_name: ClassVar[str] = "concept count analysis result"
     class_model_uri: ClassVar[URIRef] = BIOLINK.ConceptCountAnalysisResult
@@ -2114,6 +2251,11 @@ class ConceptCountAnalysisResult(StudyResult):
             self.id = ConceptCountAnalysisResultId(self.id)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -2123,7 +2265,7 @@ class ObservedExpectedFrequencyAnalysisResult(StudyResult):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.ObservedExpectedFrequencyAnalysisResult
+    class_class_uri: ClassVar[URIRef] = BIOLINK["ObservedExpectedFrequencyAnalysisResult"]
     class_class_curie: ClassVar[str] = "biolink:ObservedExpectedFrequencyAnalysisResult"
     class_name: ClassVar[str] = "observed expected frequency analysis result"
     class_model_uri: ClassVar[URIRef] = BIOLINK.ObservedExpectedFrequencyAnalysisResult
@@ -2138,6 +2280,11 @@ class ObservedExpectedFrequencyAnalysisResult(StudyResult):
             self.id = ObservedExpectedFrequencyAnalysisResultId(self.id)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -2147,7 +2294,7 @@ class RelativeFrequencyAnalysisResult(StudyResult):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.RelativeFrequencyAnalysisResult
+    class_class_uri: ClassVar[URIRef] = BIOLINK["RelativeFrequencyAnalysisResult"]
     class_class_curie: ClassVar[str] = "biolink:RelativeFrequencyAnalysisResult"
     class_name: ClassVar[str] = "relative frequency analysis result"
     class_model_uri: ClassVar[URIRef] = BIOLINK.RelativeFrequencyAnalysisResult
@@ -2162,6 +2309,11 @@ class RelativeFrequencyAnalysisResult(StudyResult):
             self.id = RelativeFrequencyAnalysisResultId(self.id)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -2171,7 +2323,7 @@ class TextMiningResult(StudyResult):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.TextMiningResult
+    class_class_uri: ClassVar[URIRef] = BIOLINK["TextMiningResult"]
     class_class_curie: ClassVar[str] = "biolink:TextMiningResult"
     class_name: ClassVar[str] = "text mining result"
     class_model_uri: ClassVar[URIRef] = BIOLINK.TextMiningResult
@@ -2186,6 +2338,11 @@ class TextMiningResult(StudyResult):
             self.id = TextMiningResultId(self.id)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -2195,7 +2352,7 @@ class ChiSquaredAnalysisResult(StudyResult):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.ChiSquaredAnalysisResult
+    class_class_uri: ClassVar[URIRef] = BIOLINK["ChiSquaredAnalysisResult"]
     class_class_curie: ClassVar[str] = "biolink:ChiSquaredAnalysisResult"
     class_name: ClassVar[str] = "chi squared analysis result"
     class_model_uri: ClassVar[URIRef] = BIOLINK.ChiSquaredAnalysisResult
@@ -2210,6 +2367,11 @@ class ChiSquaredAnalysisResult(StudyResult):
             self.id = ChiSquaredAnalysisResultId(self.id)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -2219,7 +2381,7 @@ class Dataset(InformationContentEntity):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.Dataset
+    class_class_uri: ClassVar[URIRef] = BIOLINK["Dataset"]
     class_class_curie: ClassVar[str] = "biolink:Dataset"
     class_name: ClassVar[str] = "dataset"
     class_model_uri: ClassVar[URIRef] = BIOLINK.Dataset
@@ -2234,6 +2396,11 @@ class Dataset(InformationContentEntity):
             self.id = DatasetId(self.id)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -2243,7 +2410,7 @@ class DatasetDistribution(InformationContentEntity):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.DatasetDistribution
+    class_class_uri: ClassVar[URIRef] = BIOLINK["DatasetDistribution"]
     class_class_curie: ClassVar[str] = "biolink:DatasetDistribution"
     class_name: ClassVar[str] = "dataset distribution"
     class_model_uri: ClassVar[URIRef] = BIOLINK.DatasetDistribution
@@ -2262,6 +2429,11 @@ class DatasetDistribution(InformationContentEntity):
             self.distribution_download_url = str(self.distribution_download_url)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -2271,7 +2443,7 @@ class DatasetVersion(InformationContentEntity):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.DatasetVersion
+    class_class_uri: ClassVar[URIRef] = BIOLINK["DatasetVersion"]
     class_class_curie: ClassVar[str] = "biolink:DatasetVersion"
     class_name: ClassVar[str] = "dataset version"
     class_model_uri: ClassVar[URIRef] = BIOLINK.DatasetVersion
@@ -2298,6 +2470,11 @@ class DatasetVersion(InformationContentEntity):
             self.has_distribution = DatasetDistributionId(self.has_distribution)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -2307,7 +2484,7 @@ class DatasetSummary(InformationContentEntity):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.DatasetSummary
+    class_class_uri: ClassVar[URIRef] = BIOLINK["DatasetSummary"]
     class_class_curie: ClassVar[str] = "biolink:DatasetSummary"
     class_name: ClassVar[str] = "dataset summary"
     class_model_uri: ClassVar[URIRef] = BIOLINK.DatasetSummary
@@ -2330,6 +2507,11 @@ class DatasetSummary(InformationContentEntity):
             self.source_logo = str(self.source_logo)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -2339,7 +2521,7 @@ class ConfidenceLevel(InformationContentEntity):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.ConfidenceLevel
+    class_class_uri: ClassVar[URIRef] = BIOLINK["ConfidenceLevel"]
     class_class_curie: ClassVar[str] = "biolink:ConfidenceLevel"
     class_name: ClassVar[str] = "confidence level"
     class_model_uri: ClassVar[URIRef] = BIOLINK.ConfidenceLevel
@@ -2354,6 +2536,11 @@ class ConfidenceLevel(InformationContentEntity):
             self.id = ConfidenceLevelId(self.id)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -2363,7 +2550,7 @@ class EvidenceType(InformationContentEntity):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.EvidenceType
+    class_class_uri: ClassVar[URIRef] = BIOLINK["EvidenceType"]
     class_class_curie: ClassVar[str] = "biolink:EvidenceType"
     class_name: ClassVar[str] = "evidence type"
     class_model_uri: ClassVar[URIRef] = BIOLINK.EvidenceType
@@ -2378,6 +2565,11 @@ class EvidenceType(InformationContentEntity):
             self.id = EvidenceTypeId(self.id)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -2391,7 +2583,7 @@ class InformationResource(InformationContentEntity):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.InformationResource
+    class_class_uri: ClassVar[URIRef] = BIOLINK["InformationResource"]
     class_class_curie: ClassVar[str] = "biolink:InformationResource"
     class_name: ClassVar[str] = "information resource"
     class_model_uri: ClassVar[URIRef] = BIOLINK.InformationResource
@@ -2406,6 +2598,11 @@ class InformationResource(InformationContentEntity):
             self.id = InformationResourceId(self.id)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -2418,7 +2615,7 @@ class Publication(InformationContentEntity):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.Publication
+    class_class_uri: ClassVar[URIRef] = BIOLINK["Publication"]
     class_class_curie: ClassVar[str] = "biolink:Publication"
     class_name: ClassVar[str] = "publication"
     class_model_uri: ClassVar[URIRef] = BIOLINK.Publication
@@ -2472,6 +2669,11 @@ class Publication(InformationContentEntity):
             self.name = LabelType(self.name)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -2481,7 +2683,7 @@ class Book(Publication):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.Book
+    class_class_uri: ClassVar[URIRef] = BIOLINK["Book"]
     class_class_curie: ClassVar[str] = "biolink:Book"
     class_name: ClassVar[str] = "book"
     class_model_uri: ClassVar[URIRef] = BIOLINK.Book
@@ -2502,13 +2704,18 @@ class Book(Publication):
             self.type = str(self.type)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
 class BookChapter(Publication):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.BookChapter
+    class_class_uri: ClassVar[URIRef] = BIOLINK["BookChapter"]
     class_class_curie: ClassVar[str] = "biolink:BookChapter"
     class_name: ClassVar[str] = "book chapter"
     class_model_uri: ClassVar[URIRef] = BIOLINK.BookChapter
@@ -2538,6 +2745,11 @@ class BookChapter(Publication):
             self.chapter = str(self.chapter)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -2547,7 +2759,7 @@ class Serial(Publication):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.Serial
+    class_class_uri: ClassVar[URIRef] = BIOLINK["Serial"]
     class_class_curie: ClassVar[str] = "biolink:Serial"
     class_name: ClassVar[str] = "serial"
     class_model_uri: ClassVar[URIRef] = BIOLINK.Serial
@@ -2580,13 +2792,18 @@ class Serial(Publication):
             self.issue = str(self.issue)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
 class Article(Publication):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.Article
+    class_class_uri: ClassVar[URIRef] = BIOLINK["Article"]
     class_class_curie: ClassVar[str] = "biolink:Article"
     class_name: ClassVar[str] = "article"
     class_model_uri: ClassVar[URIRef] = BIOLINK.Article
@@ -2620,6 +2837,11 @@ class Article(Publication):
             self.issue = str(self.issue)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 class PhysicalEssenceOrOccurrent(YAMLRoot):
@@ -2628,7 +2850,7 @@ class PhysicalEssenceOrOccurrent(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.PhysicalEssenceOrOccurrent
+    class_class_uri: ClassVar[URIRef] = BIOLINK["PhysicalEssenceOrOccurrent"]
     class_class_curie: ClassVar[str] = "biolink:PhysicalEssenceOrOccurrent"
     class_name: ClassVar[str] = "physical essence or occurrent"
     class_model_uri: ClassVar[URIRef] = BIOLINK.PhysicalEssenceOrOccurrent
@@ -2640,7 +2862,7 @@ class PhysicalEssence(PhysicalEssenceOrOccurrent):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.PhysicalEssence
+    class_class_uri: ClassVar[URIRef] = BIOLINK["PhysicalEssence"]
     class_class_curie: ClassVar[str] = "biolink:PhysicalEssence"
     class_name: ClassVar[str] = "physical essence"
     class_model_uri: ClassVar[URIRef] = BIOLINK.PhysicalEssence
@@ -2653,7 +2875,7 @@ class PhysicalEntity(NamedThing):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.PhysicalEntity
+    class_class_uri: ClassVar[URIRef] = BIOLINK["PhysicalEntity"]
     class_class_curie: ClassVar[str] = "biolink:PhysicalEntity"
     class_name: ClassVar[str] = "physical entity"
     class_model_uri: ClassVar[URIRef] = BIOLINK.PhysicalEntity
@@ -2668,6 +2890,11 @@ class PhysicalEntity(NamedThing):
             self.id = PhysicalEntityId(self.id)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 class Occurrent(PhysicalEssenceOrOccurrent):
@@ -2676,7 +2903,7 @@ class Occurrent(PhysicalEssenceOrOccurrent):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.Occurrent
+    class_class_uri: ClassVar[URIRef] = BIOLINK["Occurrent"]
     class_class_curie: ClassVar[str] = "biolink:Occurrent"
     class_name: ClassVar[str] = "occurrent"
     class_model_uri: ClassVar[URIRef] = BIOLINK.Occurrent
@@ -2688,7 +2915,7 @@ class ActivityAndBehavior(Occurrent):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.ActivityAndBehavior
+    class_class_uri: ClassVar[URIRef] = BIOLINK["ActivityAndBehavior"]
     class_class_curie: ClassVar[str] = "biolink:ActivityAndBehavior"
     class_name: ClassVar[str] = "activity and behavior"
     class_model_uri: ClassVar[URIRef] = BIOLINK.ActivityAndBehavior
@@ -2702,7 +2929,7 @@ class Activity(NamedThing):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.Activity
+    class_class_uri: ClassVar[URIRef] = BIOLINK["Activity"]
     class_class_curie: ClassVar[str] = "biolink:Activity"
     class_name: ClassVar[str] = "activity"
     class_model_uri: ClassVar[URIRef] = BIOLINK.Activity
@@ -2717,6 +2944,11 @@ class Activity(NamedThing):
             self.id = ActivityId(self.id)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -2726,7 +2958,7 @@ class Procedure(NamedThing):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.Procedure
+    class_class_uri: ClassVar[URIRef] = BIOLINK["Procedure"]
     class_class_curie: ClassVar[str] = "biolink:Procedure"
     class_name: ClassVar[str] = "procedure"
     class_model_uri: ClassVar[URIRef] = BIOLINK.Procedure
@@ -2741,6 +2973,11 @@ class Procedure(NamedThing):
             self.id = ProcedureId(self.id)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -2750,7 +2987,7 @@ class Phenomenon(NamedThing):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.Phenomenon
+    class_class_uri: ClassVar[URIRef] = BIOLINK["Phenomenon"]
     class_class_curie: ClassVar[str] = "biolink:Phenomenon"
     class_name: ClassVar[str] = "phenomenon"
     class_model_uri: ClassVar[URIRef] = BIOLINK.Phenomenon
@@ -2765,6 +3002,11 @@ class Phenomenon(NamedThing):
             self.id = PhenomenonId(self.id)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -2774,7 +3016,7 @@ class Device(NamedThing):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.Device
+    class_class_uri: ClassVar[URIRef] = BIOLINK["Device"]
     class_class_curie: ClassVar[str] = "biolink:Device"
     class_name: ClassVar[str] = "device"
     class_model_uri: ClassVar[URIRef] = BIOLINK.Device
@@ -2789,6 +3031,11 @@ class Device(NamedThing):
             self.id = DeviceId(self.id)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 class SubjectOfInvestigation(YAMLRoot):
@@ -2797,7 +3044,7 @@ class SubjectOfInvestigation(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.SubjectOfInvestigation
+    class_class_uri: ClassVar[URIRef] = BIOLINK["SubjectOfInvestigation"]
     class_class_curie: ClassVar[str] = "biolink:SubjectOfInvestigation"
     class_name: ClassVar[str] = "subject of investigation"
     class_model_uri: ClassVar[URIRef] = BIOLINK.SubjectOfInvestigation
@@ -2812,7 +3059,7 @@ class MaterialSample(PhysicalEntity):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.MaterialSample
+    class_class_uri: ClassVar[URIRef] = BIOLINK["MaterialSample"]
     class_class_curie: ClassVar[str] = "biolink:MaterialSample"
     class_name: ClassVar[str] = "material sample"
     class_model_uri: ClassVar[URIRef] = BIOLINK.MaterialSample
@@ -2827,6 +3074,11 @@ class MaterialSample(PhysicalEntity):
             self.id = MaterialSampleId(self.id)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -2836,7 +3088,7 @@ class PlanetaryEntity(NamedThing):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.PlanetaryEntity
+    class_class_uri: ClassVar[URIRef] = BIOLINK["PlanetaryEntity"]
     class_class_curie: ClassVar[str] = "biolink:PlanetaryEntity"
     class_name: ClassVar[str] = "planetary entity"
     class_model_uri: ClassVar[URIRef] = BIOLINK.PlanetaryEntity
@@ -2851,13 +3103,18 @@ class PlanetaryEntity(NamedThing):
             self.id = PlanetaryEntityId(self.id)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
 class EnvironmentalProcess(PlanetaryEntity):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.EnvironmentalProcess
+    class_class_uri: ClassVar[URIRef] = BIOLINK["EnvironmentalProcess"]
     class_class_curie: ClassVar[str] = "biolink:EnvironmentalProcess"
     class_name: ClassVar[str] = "environmental process"
     class_model_uri: ClassVar[URIRef] = BIOLINK.EnvironmentalProcess
@@ -2872,13 +3129,18 @@ class EnvironmentalProcess(PlanetaryEntity):
             self.id = EnvironmentalProcessId(self.id)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
 class EnvironmentalFeature(PlanetaryEntity):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.EnvironmentalFeature
+    class_class_uri: ClassVar[URIRef] = BIOLINK["EnvironmentalFeature"]
     class_class_curie: ClassVar[str] = "biolink:EnvironmentalFeature"
     class_name: ClassVar[str] = "environmental feature"
     class_model_uri: ClassVar[URIRef] = BIOLINK.EnvironmentalFeature
@@ -2893,6 +3155,11 @@ class EnvironmentalFeature(PlanetaryEntity):
             self.id = EnvironmentalFeatureId(self.id)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -2902,7 +3169,7 @@ class GeographicLocation(PlanetaryEntity):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.GeographicLocation
+    class_class_uri: ClassVar[URIRef] = BIOLINK["GeographicLocation"]
     class_class_curie: ClassVar[str] = "biolink:GeographicLocation"
     class_name: ClassVar[str] = "geographic location"
     class_model_uri: ClassVar[URIRef] = BIOLINK.GeographicLocation
@@ -2925,6 +3192,11 @@ class GeographicLocation(PlanetaryEntity):
             self.longitude = float(self.longitude)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -2934,7 +3206,7 @@ class GeographicLocationAtTime(GeographicLocation):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.GeographicLocationAtTime
+    class_class_uri: ClassVar[URIRef] = BIOLINK["GeographicLocationAtTime"]
     class_class_curie: ClassVar[str] = "biolink:GeographicLocationAtTime"
     class_name: ClassVar[str] = "geographic location at time"
     class_model_uri: ClassVar[URIRef] = BIOLINK.GeographicLocationAtTime
@@ -2953,6 +3225,11 @@ class GeographicLocationAtTime(GeographicLocation):
             self.timepoint = TimeType(self.timepoint)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -2963,7 +3240,7 @@ class ThingWithTaxon(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = ["in_taxon"]
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.ThingWithTaxon
+    class_class_uri: ClassVar[URIRef] = BIOLINK["ThingWithTaxon"]
     class_class_curie: ClassVar[str] = "biolink:ThingWithTaxon"
     class_name: ClassVar[str] = "thing with taxon"
     class_model_uri: ClassVar[URIRef] = BIOLINK.ThingWithTaxon
@@ -2982,7 +3259,7 @@ class ThingWithTaxon(YAMLRoot):
 class BiologicalEntity(NamedThing):
     _inherited_slots: ClassVar[List[str]] = ["in_taxon"]
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.BiologicalEntity
+    class_class_uri: ClassVar[URIRef] = BIOLINK["BiologicalEntity"]
     class_class_curie: ClassVar[str] = "biolink:BiologicalEntity"
     class_name: ClassVar[str] = "biological entity"
     class_model_uri: ClassVar[URIRef] = BIOLINK.BiologicalEntity
@@ -2997,13 +3274,18 @@ class BiologicalEntity(NamedThing):
         self.in_taxon = [v if isinstance(v, OrganismTaxonId) else OrganismTaxonId(v) for v in self.in_taxon]
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
 class GenomicEntity(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.GenomicEntity
+    class_class_uri: ClassVar[URIRef] = BIOLINK["GenomicEntity"]
     class_class_curie: ClassVar[str] = "biolink:GenomicEntity"
     class_name: ClassVar[str] = "genomic entity"
     class_model_uri: ClassVar[URIRef] = BIOLINK.GenomicEntity
@@ -3021,7 +3303,7 @@ class GenomicEntity(YAMLRoot):
 class EpigenomicEntity(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.EpigenomicEntity
+    class_class_uri: ClassVar[URIRef] = BIOLINK["EpigenomicEntity"]
     class_class_curie: ClassVar[str] = "biolink:EpigenomicEntity"
     class_name: ClassVar[str] = "epigenomic entity"
     class_model_uri: ClassVar[URIRef] = BIOLINK.EpigenomicEntity
@@ -3042,7 +3324,7 @@ class ChemicalEntity(NamedThing):
     """
     _inherited_slots: ClassVar[List[str]] = ["has_chemical_role"]
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.ChemicalEntity
+    class_class_uri: ClassVar[URIRef] = BIOLINK["ChemicalEntity"]
     class_class_curie: ClassVar[str] = "biolink:ChemicalEntity"
     class_name: ClassVar[str] = "chemical entity"
     class_model_uri: ClassVar[URIRef] = BIOLINK.ChemicalEntity
@@ -3079,6 +3361,11 @@ class ChemicalEntity(NamedThing):
         self.has_chemical_role = [v if isinstance(v, ChemicalRoleId) else ChemicalRoleId(v) for v in self.has_chemical_role]
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -3088,7 +3375,7 @@ class MolecularEntity(ChemicalEntity):
     """
     _inherited_slots: ClassVar[List[str]] = ["has_chemical_role"]
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.MolecularEntity
+    class_class_uri: ClassVar[URIRef] = BIOLINK["MolecularEntity"]
     class_class_curie: ClassVar[str] = "biolink:MolecularEntity"
     class_name: ClassVar[str] = "molecular entity"
     class_model_uri: ClassVar[URIRef] = BIOLINK.MolecularEntity
@@ -3107,6 +3394,11 @@ class MolecularEntity(ChemicalEntity):
             self.is_metabolite = Bool(self.is_metabolite)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -3119,7 +3411,7 @@ class SmallMolecule(MolecularEntity):
     """
     _inherited_slots: ClassVar[List[str]] = ["has_chemical_role"]
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.SmallMolecule
+    class_class_uri: ClassVar[URIRef] = BIOLINK["SmallMolecule"]
     class_class_curie: ClassVar[str] = "biolink:SmallMolecule"
     class_name: ClassVar[str] = "small molecule"
     class_model_uri: ClassVar[URIRef] = BIOLINK.SmallMolecule
@@ -3134,6 +3426,11 @@ class SmallMolecule(MolecularEntity):
             self.id = SmallMoleculeId(self.id)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -3143,7 +3440,7 @@ class ChemicalMixture(ChemicalEntity):
     """
     _inherited_slots: ClassVar[List[str]] = ["has_chemical_role"]
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.ChemicalMixture
+    class_class_uri: ClassVar[URIRef] = BIOLINK["ChemicalMixture"]
     class_class_curie: ClassVar[str] = "biolink:ChemicalMixture"
     class_name: ClassVar[str] = "chemical mixture"
     class_model_uri: ClassVar[URIRef] = BIOLINK.ChemicalMixture
@@ -3175,6 +3472,11 @@ class ChemicalMixture(ChemicalEntity):
         self.routes_of_delivery = [v if isinstance(v, DrugDeliveryEnum) else DrugDeliveryEnum(v) for v in self.routes_of_delivery]
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -3186,7 +3488,7 @@ class NucleicAcidEntity(MolecularEntity):
     """
     _inherited_slots: ClassVar[List[str]] = ["has_chemical_role", "in_taxon"]
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.NucleicAcidEntity
+    class_class_uri: ClassVar[URIRef] = BIOLINK["NucleicAcidEntity"]
     class_class_curie: ClassVar[str] = "biolink:NucleicAcidEntity"
     class_name: ClassVar[str] = "nucleic acid entity"
     class_model_uri: ClassVar[URIRef] = BIOLINK.NucleicAcidEntity
@@ -3210,6 +3512,11 @@ class NucleicAcidEntity(MolecularEntity):
         self.in_taxon = [v if isinstance(v, OrganismTaxonId) else OrganismTaxonId(v) for v in self.in_taxon]
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -3220,7 +3527,7 @@ class MolecularMixture(ChemicalMixture):
     """
     _inherited_slots: ClassVar[List[str]] = ["has_chemical_role"]
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.MolecularMixture
+    class_class_uri: ClassVar[URIRef] = BIOLINK["MolecularMixture"]
     class_class_curie: ClassVar[str] = "biolink:MolecularMixture"
     class_name: ClassVar[str] = "molecular mixture"
     class_model_uri: ClassVar[URIRef] = BIOLINK.MolecularMixture
@@ -3235,6 +3542,11 @@ class MolecularMixture(ChemicalMixture):
             self.id = MolecularMixtureId(self.id)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -3245,7 +3557,7 @@ class ComplexMolecularMixture(ChemicalMixture):
     """
     _inherited_slots: ClassVar[List[str]] = ["has_chemical_role"]
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.ComplexMolecularMixture
+    class_class_uri: ClassVar[URIRef] = BIOLINK["ComplexMolecularMixture"]
     class_class_curie: ClassVar[str] = "biolink:ComplexMolecularMixture"
     class_name: ClassVar[str] = "complex molecular mixture"
     class_model_uri: ClassVar[URIRef] = BIOLINK.ComplexMolecularMixture
@@ -3260,6 +3572,11 @@ class ComplexMolecularMixture(ChemicalMixture):
             self.id = ComplexMolecularMixtureId(self.id)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -3270,7 +3587,7 @@ class BiologicalProcessOrActivity(BiologicalEntity):
     """
     _inherited_slots: ClassVar[List[str]] = ["in_taxon", "has_input", "has_output", "enabled_by"]
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.BiologicalProcessOrActivity
+    class_class_uri: ClassVar[URIRef] = BIOLINK["BiologicalProcessOrActivity"]
     class_class_curie: ClassVar[str] = "biolink:BiologicalProcessOrActivity"
     class_name: ClassVar[str] = "biological process or activity"
     class_model_uri: ClassVar[URIRef] = BIOLINK.BiologicalProcessOrActivity
@@ -3300,6 +3617,11 @@ class BiologicalProcessOrActivity(BiologicalEntity):
         self.enabled_by = [v if isinstance(v, PhysicalEntityId) else PhysicalEntityId(v) for v in self.enabled_by]
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -3309,7 +3631,7 @@ class MolecularActivity(BiologicalProcessOrActivity):
     """
     _inherited_slots: ClassVar[List[str]] = ["in_taxon", "has_input", "has_output", "enabled_by"]
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.MolecularActivity
+    class_class_uri: ClassVar[URIRef] = BIOLINK["MolecularActivity"]
     class_class_curie: ClassVar[str] = "biolink:MolecularActivity"
     class_name: ClassVar[str] = "molecular activity"
     class_model_uri: ClassVar[URIRef] = BIOLINK.MolecularActivity
@@ -3339,6 +3661,11 @@ class MolecularActivity(BiologicalProcessOrActivity):
         self.enabled_by = [v if isinstance(v, MacromolecularMachineMixin) else MacromolecularMachineMixin(**as_dict(v)) for v in self.enabled_by]
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -3348,7 +3675,7 @@ class BiologicalProcess(BiologicalProcessOrActivity):
     """
     _inherited_slots: ClassVar[List[str]] = ["in_taxon", "has_input", "has_output", "enabled_by"]
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.BiologicalProcess
+    class_class_uri: ClassVar[URIRef] = BIOLINK["BiologicalProcess"]
     class_class_curie: ClassVar[str] = "biolink:BiologicalProcess"
     class_name: ClassVar[str] = "biological process"
     class_model_uri: ClassVar[URIRef] = BIOLINK.BiologicalProcess
@@ -3363,13 +3690,18 @@ class BiologicalProcess(BiologicalProcessOrActivity):
             self.id = BiologicalProcessId(self.id)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
 class Pathway(BiologicalProcess):
     _inherited_slots: ClassVar[List[str]] = ["in_taxon", "has_input", "has_output", "enabled_by"]
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.Pathway
+    class_class_uri: ClassVar[URIRef] = BIOLINK["Pathway"]
     class_class_curie: ClassVar[str] = "biolink:Pathway"
     class_name: ClassVar[str] = "pathway"
     class_model_uri: ClassVar[URIRef] = BIOLINK.Pathway
@@ -3384,13 +3716,18 @@ class Pathway(BiologicalProcess):
             self.id = PathwayId(self.id)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
 class PhysiologicalProcess(BiologicalProcess):
     _inherited_slots: ClassVar[List[str]] = ["in_taxon", "has_input", "has_output", "enabled_by"]
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.PhysiologicalProcess
+    class_class_uri: ClassVar[URIRef] = BIOLINK["PhysiologicalProcess"]
     class_class_curie: ClassVar[str] = "biolink:PhysiologicalProcess"
     class_name: ClassVar[str] = "physiological process"
     class_model_uri: ClassVar[URIRef] = BIOLINK.PhysiologicalProcess
@@ -3405,13 +3742,18 @@ class PhysiologicalProcess(BiologicalProcess):
             self.id = PhysiologicalProcessId(self.id)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
 class Behavior(BiologicalProcess):
     _inherited_slots: ClassVar[List[str]] = ["in_taxon", "has_input", "has_output", "enabled_by"]
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.Behavior
+    class_class_uri: ClassVar[URIRef] = BIOLINK["Behavior"]
     class_class_curie: ClassVar[str] = "biolink:Behavior"
     class_name: ClassVar[str] = "behavior"
     class_model_uri: ClassVar[URIRef] = BIOLINK.Behavior
@@ -3426,6 +3768,11 @@ class Behavior(BiologicalProcess):
             self.id = BehaviorId(self.id)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -3436,7 +3783,7 @@ class ProcessedMaterial(ChemicalMixture):
     """
     _inherited_slots: ClassVar[List[str]] = ["has_chemical_role"]
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.ProcessedMaterial
+    class_class_uri: ClassVar[URIRef] = BIOLINK["ProcessedMaterial"]
     class_class_curie: ClassVar[str] = "biolink:ProcessedMaterial"
     class_name: ClassVar[str] = "processed material"
     class_model_uri: ClassVar[URIRef] = BIOLINK.ProcessedMaterial
@@ -3451,6 +3798,11 @@ class ProcessedMaterial(ChemicalMixture):
             self.id = ProcessedMaterialId(self.id)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -3460,7 +3812,7 @@ class Drug(MolecularMixture):
     """
     _inherited_slots: ClassVar[List[str]] = ["has_chemical_role"]
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.Drug
+    class_class_uri: ClassVar[URIRef] = BIOLINK["Drug"]
     class_class_curie: ClassVar[str] = "biolink:Drug"
     class_name: ClassVar[str] = "drug"
     class_model_uri: ClassVar[URIRef] = BIOLINK.Drug
@@ -3475,13 +3827,18 @@ class Drug(MolecularMixture):
             self.id = DrugId(self.id)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
 class EnvironmentalFoodContaminant(ChemicalEntity):
     _inherited_slots: ClassVar[List[str]] = ["has_chemical_role"]
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.EnvironmentalFoodContaminant
+    class_class_uri: ClassVar[URIRef] = BIOLINK["EnvironmentalFoodContaminant"]
     class_class_curie: ClassVar[str] = "biolink:EnvironmentalFoodContaminant"
     class_name: ClassVar[str] = "environmental food contaminant"
     class_model_uri: ClassVar[URIRef] = BIOLINK.EnvironmentalFoodContaminant
@@ -3496,13 +3853,18 @@ class EnvironmentalFoodContaminant(ChemicalEntity):
             self.id = EnvironmentalFoodContaminantId(self.id)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
 class FoodAdditive(ChemicalEntity):
     _inherited_slots: ClassVar[List[str]] = ["has_chemical_role"]
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.FoodAdditive
+    class_class_uri: ClassVar[URIRef] = BIOLINK["FoodAdditive"]
     class_class_curie: ClassVar[str] = "biolink:FoodAdditive"
     class_name: ClassVar[str] = "food additive"
     class_model_uri: ClassVar[URIRef] = BIOLINK.FoodAdditive
@@ -3517,6 +3879,11 @@ class FoodAdditive(ChemicalEntity):
             self.id = FoodAdditiveId(self.id)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -3526,7 +3893,7 @@ class Food(ChemicalMixture):
     """
     _inherited_slots: ClassVar[List[str]] = ["has_chemical_role"]
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.Food
+    class_class_uri: ClassVar[URIRef] = BIOLINK["Food"]
     class_class_curie: ClassVar[str] = "biolink:Food"
     class_name: ClassVar[str] = "food"
     class_model_uri: ClassVar[URIRef] = BIOLINK.Food
@@ -3541,6 +3908,11 @@ class Food(ChemicalMixture):
             self.id = FoodId(self.id)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -3550,7 +3922,7 @@ class OrganismAttribute(Attribute):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.OrganismAttribute
+    class_class_uri: ClassVar[URIRef] = BIOLINK["OrganismAttribute"]
     class_class_curie: ClassVar[str] = "biolink:OrganismAttribute"
     class_name: ClassVar[str] = "organism attribute"
     class_model_uri: ClassVar[URIRef] = BIOLINK.OrganismAttribute
@@ -3566,6 +3938,11 @@ class OrganismAttribute(Attribute):
             self.id = OrganismAttributeId(self.id)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -3575,7 +3952,7 @@ class PhenotypicQuality(OrganismAttribute):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.PhenotypicQuality
+    class_class_uri: ClassVar[URIRef] = BIOLINK["PhenotypicQuality"]
     class_class_curie: ClassVar[str] = "biolink:PhenotypicQuality"
     class_name: ClassVar[str] = "phenotypic quality"
     class_model_uri: ClassVar[URIRef] = BIOLINK.PhenotypicQuality
@@ -3591,6 +3968,11 @@ class PhenotypicQuality(OrganismAttribute):
             self.id = PhenotypicQualityId(self.id)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -3601,7 +3983,7 @@ class GeneticInheritance(BiologicalEntity):
     """
     _inherited_slots: ClassVar[List[str]] = ["in_taxon"]
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.GeneticInheritance
+    class_class_uri: ClassVar[URIRef] = BIOLINK["GeneticInheritance"]
     class_class_curie: ClassVar[str] = "biolink:GeneticInheritance"
     class_name: ClassVar[str] = "genetic inheritance"
     class_model_uri: ClassVar[URIRef] = BIOLINK.GeneticInheritance
@@ -3616,6 +3998,11 @@ class GeneticInheritance(BiologicalEntity):
             self.id = GeneticInheritanceId(self.id)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -3626,7 +4013,7 @@ class OrganismalEntity(BiologicalEntity):
     """
     _inherited_slots: ClassVar[List[str]] = ["in_taxon"]
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.OrganismalEntity
+    class_class_uri: ClassVar[URIRef] = BIOLINK["OrganismalEntity"]
     class_class_curie: ClassVar[str] = "biolink:OrganismalEntity"
     class_name: ClassVar[str] = "organismal entity"
     class_model_uri: ClassVar[URIRef] = BIOLINK.OrganismalEntity
@@ -3641,6 +4028,11 @@ class OrganismalEntity(BiologicalEntity):
         self.has_attribute = [v if isinstance(v, AttributeId) else AttributeId(v) for v in self.has_attribute]
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -3650,7 +4042,7 @@ class Virus(OrganismalEntity):
     """
     _inherited_slots: ClassVar[List[str]] = ["in_taxon"]
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.Virus
+    class_class_uri: ClassVar[URIRef] = BIOLINK["Virus"]
     class_class_curie: ClassVar[str] = "biolink:Virus"
     class_name: ClassVar[str] = "virus"
     class_model_uri: ClassVar[URIRef] = BIOLINK.Virus
@@ -3665,13 +4057,18 @@ class Virus(OrganismalEntity):
             self.id = VirusId(self.id)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
 class CellularOrganism(OrganismalEntity):
     _inherited_slots: ClassVar[List[str]] = ["in_taxon"]
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.CellularOrganism
+    class_class_uri: ClassVar[URIRef] = BIOLINK["CellularOrganism"]
     class_class_curie: ClassVar[str] = "biolink:CellularOrganism"
     class_name: ClassVar[str] = "cellular organism"
     class_model_uri: ClassVar[URIRef] = BIOLINK.CellularOrganism
@@ -3686,6 +4083,11 @@ class CellularOrganism(OrganismalEntity):
             self.id = CellularOrganismId(self.id)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -3695,7 +4097,7 @@ class LifeStage(OrganismalEntity):
     """
     _inherited_slots: ClassVar[List[str]] = ["in_taxon"]
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.LifeStage
+    class_class_uri: ClassVar[URIRef] = BIOLINK["LifeStage"]
     class_class_curie: ClassVar[str] = "biolink:LifeStage"
     class_name: ClassVar[str] = "life stage"
     class_model_uri: ClassVar[URIRef] = BIOLINK.LifeStage
@@ -3710,6 +4112,11 @@ class LifeStage(OrganismalEntity):
             self.id = LifeStageId(self.id)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -3720,7 +4127,7 @@ class IndividualOrganism(OrganismalEntity):
     """
     _inherited_slots: ClassVar[List[str]] = ["in_taxon"]
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.IndividualOrganism
+    class_class_uri: ClassVar[URIRef] = BIOLINK["IndividualOrganism"]
     class_class_curie: ClassVar[str] = "biolink:IndividualOrganism"
     class_name: ClassVar[str] = "individual organism"
     class_model_uri: ClassVar[URIRef] = BIOLINK.IndividualOrganism
@@ -3735,6 +4142,11 @@ class IndividualOrganism(OrganismalEntity):
             self.id = IndividualOrganismId(self.id)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -3745,7 +4157,7 @@ class PopulationOfIndividualOrganisms(OrganismalEntity):
     """
     _inherited_slots: ClassVar[List[str]] = ["in_taxon"]
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.PopulationOfIndividualOrganisms
+    class_class_uri: ClassVar[URIRef] = BIOLINK["PopulationOfIndividualOrganisms"]
     class_class_curie: ClassVar[str] = "biolink:PopulationOfIndividualOrganisms"
     class_name: ClassVar[str] = "population of individual organisms"
     class_model_uri: ClassVar[URIRef] = BIOLINK.PopulationOfIndividualOrganisms
@@ -3760,6 +4172,11 @@ class PopulationOfIndividualOrganisms(OrganismalEntity):
             self.id = PopulationOfIndividualOrganismsId(self.id)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -3769,7 +4186,7 @@ class StudyPopulation(PopulationOfIndividualOrganisms):
     """
     _inherited_slots: ClassVar[List[str]] = ["in_taxon"]
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.StudyPopulation
+    class_class_uri: ClassVar[URIRef] = BIOLINK["StudyPopulation"]
     class_class_curie: ClassVar[str] = "biolink:StudyPopulation"
     class_name: ClassVar[str] = "study population"
     class_model_uri: ClassVar[URIRef] = BIOLINK.StudyPopulation
@@ -3784,6 +4201,11 @@ class StudyPopulation(PopulationOfIndividualOrganisms):
             self.id = StudyPopulationId(self.id)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -3796,7 +4218,7 @@ class DiseaseOrPhenotypicFeature(BiologicalEntity):
     """
     _inherited_slots: ClassVar[List[str]] = ["in_taxon"]
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.DiseaseOrPhenotypicFeature
+    class_class_uri: ClassVar[URIRef] = BIOLINK["DiseaseOrPhenotypicFeature"]
     class_class_curie: ClassVar[str] = "biolink:DiseaseOrPhenotypicFeature"
     class_name: ClassVar[str] = "disease or phenotypic feature"
     class_model_uri: ClassVar[URIRef] = BIOLINK.DiseaseOrPhenotypicFeature
@@ -3811,6 +4233,11 @@ class DiseaseOrPhenotypicFeature(BiologicalEntity):
             self.id = DiseaseOrPhenotypicFeatureId(self.id)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -3822,7 +4249,7 @@ class Disease(DiseaseOrPhenotypicFeature):
     """
     _inherited_slots: ClassVar[List[str]] = ["in_taxon"]
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.Disease
+    class_class_uri: ClassVar[URIRef] = BIOLINK["Disease"]
     class_class_curie: ClassVar[str] = "biolink:Disease"
     class_name: ClassVar[str] = "disease"
     class_model_uri: ClassVar[URIRef] = BIOLINK.Disease
@@ -3837,6 +4264,11 @@ class Disease(DiseaseOrPhenotypicFeature):
             self.id = DiseaseId(self.id)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -3847,7 +4279,7 @@ class PhenotypicFeature(DiseaseOrPhenotypicFeature):
     """
     _inherited_slots: ClassVar[List[str]] = ["in_taxon"]
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.PhenotypicFeature
+    class_class_uri: ClassVar[URIRef] = BIOLINK["PhenotypicFeature"]
     class_class_curie: ClassVar[str] = "biolink:PhenotypicFeature"
     class_name: ClassVar[str] = "phenotypic feature"
     class_model_uri: ClassVar[URIRef] = BIOLINK.PhenotypicFeature
@@ -3862,6 +4294,11 @@ class PhenotypicFeature(DiseaseOrPhenotypicFeature):
             self.id = PhenotypicFeatureId(self.id)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -3871,7 +4308,7 @@ class BehavioralFeature(PhenotypicFeature):
     """
     _inherited_slots: ClassVar[List[str]] = ["in_taxon"]
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.BehavioralFeature
+    class_class_uri: ClassVar[URIRef] = BIOLINK["BehavioralFeature"]
     class_class_curie: ClassVar[str] = "biolink:BehavioralFeature"
     class_name: ClassVar[str] = "behavioral feature"
     class_model_uri: ClassVar[URIRef] = BIOLINK.BehavioralFeature
@@ -3886,6 +4323,11 @@ class BehavioralFeature(PhenotypicFeature):
             self.id = BehavioralFeatureId(self.id)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -3895,7 +4337,7 @@ class AnatomicalEntity(OrganismalEntity):
     """
     _inherited_slots: ClassVar[List[str]] = ["in_taxon"]
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.AnatomicalEntity
+    class_class_uri: ClassVar[URIRef] = BIOLINK["AnatomicalEntity"]
     class_class_curie: ClassVar[str] = "biolink:AnatomicalEntity"
     class_name: ClassVar[str] = "anatomical entity"
     class_model_uri: ClassVar[URIRef] = BIOLINK.AnatomicalEntity
@@ -3910,6 +4352,11 @@ class AnatomicalEntity(OrganismalEntity):
             self.id = AnatomicalEntityId(self.id)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -3919,7 +4366,7 @@ class CellularComponent(AnatomicalEntity):
     """
     _inherited_slots: ClassVar[List[str]] = ["in_taxon"]
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.CellularComponent
+    class_class_uri: ClassVar[URIRef] = BIOLINK["CellularComponent"]
     class_class_curie: ClassVar[str] = "biolink:CellularComponent"
     class_name: ClassVar[str] = "cellular component"
     class_model_uri: ClassVar[URIRef] = BIOLINK.CellularComponent
@@ -3934,13 +4381,18 @@ class CellularComponent(AnatomicalEntity):
             self.id = CellularComponentId(self.id)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
 class Cell(AnatomicalEntity):
     _inherited_slots: ClassVar[List[str]] = ["in_taxon"]
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.Cell
+    class_class_uri: ClassVar[URIRef] = BIOLINK["Cell"]
     class_class_curie: ClassVar[str] = "biolink:Cell"
     class_name: ClassVar[str] = "cell"
     class_model_uri: ClassVar[URIRef] = BIOLINK.Cell
@@ -3955,13 +4407,18 @@ class Cell(AnatomicalEntity):
             self.id = CellId(self.id)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
 class CellLine(OrganismalEntity):
     _inherited_slots: ClassVar[List[str]] = ["in_taxon"]
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.CellLine
+    class_class_uri: ClassVar[URIRef] = BIOLINK["CellLine"]
     class_class_curie: ClassVar[str] = "biolink:CellLine"
     class_name: ClassVar[str] = "cell line"
     class_model_uri: ClassVar[URIRef] = BIOLINK.CellLine
@@ -3976,13 +4433,18 @@ class CellLine(OrganismalEntity):
             self.id = CellLineId(self.id)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
 class GrossAnatomicalStructure(AnatomicalEntity):
     _inherited_slots: ClassVar[List[str]] = ["in_taxon"]
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.GrossAnatomicalStructure
+    class_class_uri: ClassVar[URIRef] = BIOLINK["GrossAnatomicalStructure"]
     class_class_curie: ClassVar[str] = "biolink:GrossAnatomicalStructure"
     class_name: ClassVar[str] = "gross anatomical structure"
     class_model_uri: ClassVar[URIRef] = BIOLINK.GrossAnatomicalStructure
@@ -3997,6 +4459,11 @@ class GrossAnatomicalStructure(AnatomicalEntity):
             self.id = GrossAnatomicalStructureId(self.id)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 class ChemicalEntityOrGeneOrGeneProduct(YAMLRoot):
@@ -4006,7 +4473,7 @@ class ChemicalEntityOrGeneOrGeneProduct(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.ChemicalEntityOrGeneOrGeneProduct
+    class_class_uri: ClassVar[URIRef] = BIOLINK["ChemicalEntityOrGeneOrGeneProduct"]
     class_class_curie: ClassVar[str] = "biolink:ChemicalEntityOrGeneOrGeneProduct"
     class_name: ClassVar[str] = "chemical entity or gene or gene product"
     class_model_uri: ClassVar[URIRef] = BIOLINK.ChemicalEntityOrGeneOrGeneProduct
@@ -4019,7 +4486,7 @@ class ChemicalEntityOrProteinOrPolypeptide(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.ChemicalEntityOrProteinOrPolypeptide
+    class_class_uri: ClassVar[URIRef] = BIOLINK["ChemicalEntityOrProteinOrPolypeptide"]
     class_class_curie: ClassVar[str] = "biolink:ChemicalEntityOrProteinOrPolypeptide"
     class_name: ClassVar[str] = "chemical entity or protein or polypeptide"
     class_model_uri: ClassVar[URIRef] = BIOLINK.ChemicalEntityOrProteinOrPolypeptide
@@ -4033,7 +4500,7 @@ class MacromolecularMachineMixin(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.MacromolecularMachineMixin
+    class_class_uri: ClassVar[URIRef] = BIOLINK["MacromolecularMachineMixin"]
     class_class_curie: ClassVar[str] = "biolink:MacromolecularMachineMixin"
     class_name: ClassVar[str] = "macromolecular machine mixin"
     class_model_uri: ClassVar[URIRef] = BIOLINK.MacromolecularMachineMixin
@@ -4053,7 +4520,7 @@ class GeneOrGeneProduct(MacromolecularMachineMixin):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.GeneOrGeneProduct
+    class_class_uri: ClassVar[URIRef] = BIOLINK["GeneOrGeneProduct"]
     class_class_curie: ClassVar[str] = "biolink:GeneOrGeneProduct"
     class_name: ClassVar[str] = "gene or gene product"
     class_model_uri: ClassVar[URIRef] = BIOLINK.GeneOrGeneProduct
@@ -4067,13 +4534,14 @@ class Gene(BiologicalEntity):
     """
     _inherited_slots: ClassVar[List[str]] = ["in_taxon"]
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.Gene
+    class_class_uri: ClassVar[URIRef] = BIOLINK["Gene"]
     class_class_curie: ClassVar[str] = "biolink:Gene"
     class_name: ClassVar[str] = "gene"
     class_model_uri: ClassVar[URIRef] = BIOLINK.Gene
 
     id: Union[str, GeneId] = None
     category: Union[Union[str, CategoryType], List[Union[str, CategoryType]]] = None
+    name: Optional[Union[str, LabelType]] = None
     symbol: Optional[str] = None
     synonym: Optional[Union[Union[str, LabelType], List[Union[str, LabelType]]]] = empty_list()
     xref: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
@@ -4084,6 +4552,9 @@ class Gene(BiologicalEntity):
             self.MissingRequiredField("id")
         if not isinstance(self.id, GeneId):
             self.id = GeneId(self.id)
+
+        if self.name is not None and not isinstance(self.name, LabelType):
+            self.name = LabelType(self.name)
 
         if self.symbol is not None and not isinstance(self.symbol, str):
             self.symbol = str(self.symbol)
@@ -4100,6 +4571,11 @@ class Gene(BiologicalEntity):
             self.has_biological_sequence = BiologicalSequence(self.has_biological_sequence)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -4110,7 +4586,7 @@ class GeneProductMixin(GeneOrGeneProduct):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.GeneProductMixin
+    class_class_uri: ClassVar[URIRef] = BIOLINK["GeneProductMixin"]
     class_class_curie: ClassVar[str] = "biolink:GeneProductMixin"
     class_name: ClassVar[str] = "gene product mixin"
     class_model_uri: ClassVar[URIRef] = BIOLINK.GeneProductMixin
@@ -4138,7 +4614,7 @@ class GeneProductIsoformMixin(GeneProductMixin):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.GeneProductIsoformMixin
+    class_class_uri: ClassVar[URIRef] = BIOLINK["GeneProductIsoformMixin"]
     class_class_curie: ClassVar[str] = "biolink:GeneProductIsoformMixin"
     class_name: ClassVar[str] = "gene product isoform mixin"
     class_model_uri: ClassVar[URIRef] = BIOLINK.GeneProductIsoformMixin
@@ -4152,7 +4628,7 @@ class MacromolecularComplex(BiologicalEntity):
     """
     _inherited_slots: ClassVar[List[str]] = ["in_taxon"]
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.MacromolecularComplex
+    class_class_uri: ClassVar[URIRef] = BIOLINK["MacromolecularComplex"]
     class_class_curie: ClassVar[str] = "biolink:MacromolecularComplex"
     class_name: ClassVar[str] = "macromolecular complex"
     class_model_uri: ClassVar[URIRef] = BIOLINK.MacromolecularComplex
@@ -4171,6 +4647,11 @@ class MacromolecularComplex(BiologicalEntity):
             self.name = LabelType(self.name)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -4181,13 +4662,16 @@ class NucleosomeModification(BiologicalEntity):
     """
     _inherited_slots: ClassVar[List[str]] = ["in_taxon"]
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.NucleosomeModification
+    class_class_uri: ClassVar[URIRef] = BIOLINK["NucleosomeModification"]
     class_class_curie: ClassVar[str] = "biolink:NucleosomeModification"
     class_name: ClassVar[str] = "nucleosome modification"
     class_model_uri: ClassVar[URIRef] = BIOLINK.NucleosomeModification
 
     id: Union[str, NucleosomeModificationId] = None
     category: Union[Union[str, CategoryType], List[Union[str, CategoryType]]] = None
+    name: Optional[Union[str, LabelType]] = None
+    xref: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    synonym: Optional[Union[Union[str, LabelType], List[Union[str, LabelType]]]] = empty_list()
     has_biological_sequence: Optional[Union[str, BiologicalSequence]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
@@ -4196,10 +4680,26 @@ class NucleosomeModification(BiologicalEntity):
         if not isinstance(self.id, NucleosomeModificationId):
             self.id = NucleosomeModificationId(self.id)
 
+        if self.name is not None and not isinstance(self.name, LabelType):
+            self.name = LabelType(self.name)
+
+        if not isinstance(self.xref, list):
+            self.xref = [self.xref] if self.xref is not None else []
+        self.xref = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.xref]
+
+        if not isinstance(self.synonym, list):
+            self.synonym = [self.synonym] if self.synonym is not None else []
+        self.synonym = [v if isinstance(v, LabelType) else LabelType(v) for v in self.synonym]
+
         if self.has_biological_sequence is not None and not isinstance(self.has_biological_sequence, BiologicalSequence):
             self.has_biological_sequence = BiologicalSequence(self.has_biological_sequence)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -4209,7 +4709,7 @@ class Genome(BiologicalEntity):
     """
     _inherited_slots: ClassVar[List[str]] = ["in_taxon"]
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.Genome
+    class_class_uri: ClassVar[URIRef] = BIOLINK["Genome"]
     class_class_curie: ClassVar[str] = "biolink:Genome"
     class_name: ClassVar[str] = "genome"
     class_model_uri: ClassVar[URIRef] = BIOLINK.Genome
@@ -4228,6 +4728,11 @@ class Genome(BiologicalEntity):
             self.has_biological_sequence = BiologicalSequence(self.has_biological_sequence)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -4238,7 +4743,7 @@ class Exon(NucleicAcidEntity):
     """
     _inherited_slots: ClassVar[List[str]] = ["has_chemical_role", "in_taxon"]
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.Exon
+    class_class_uri: ClassVar[URIRef] = BIOLINK["Exon"]
     class_class_curie: ClassVar[str] = "biolink:Exon"
     class_name: ClassVar[str] = "exon"
     class_model_uri: ClassVar[URIRef] = BIOLINK.Exon
@@ -4253,6 +4758,11 @@ class Exon(NucleicAcidEntity):
             self.id = ExonId(self.id)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -4262,7 +4772,7 @@ class Transcript(NucleicAcidEntity):
     """
     _inherited_slots: ClassVar[List[str]] = ["has_chemical_role", "in_taxon"]
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.Transcript
+    class_class_uri: ClassVar[URIRef] = BIOLINK["Transcript"]
     class_class_curie: ClassVar[str] = "biolink:Transcript"
     class_name: ClassVar[str] = "transcript"
     class_model_uri: ClassVar[URIRef] = BIOLINK.Transcript
@@ -4277,13 +4787,18 @@ class Transcript(NucleicAcidEntity):
             self.id = TranscriptId(self.id)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
 class CodingSequence(NucleicAcidEntity):
     _inherited_slots: ClassVar[List[str]] = ["has_chemical_role", "in_taxon"]
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.CodingSequence
+    class_class_uri: ClassVar[URIRef] = BIOLINK["CodingSequence"]
     class_class_curie: ClassVar[str] = "biolink:CodingSequence"
     class_name: ClassVar[str] = "coding sequence"
     class_model_uri: ClassVar[URIRef] = BIOLINK.CodingSequence
@@ -4298,6 +4813,11 @@ class CodingSequence(NucleicAcidEntity):
             self.id = CodingSequenceId(self.id)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -4309,7 +4829,7 @@ class Polypeptide(BiologicalEntity):
     """
     _inherited_slots: ClassVar[List[str]] = ["in_taxon"]
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.Polypeptide
+    class_class_uri: ClassVar[URIRef] = BIOLINK["Polypeptide"]
     class_class_curie: ClassVar[str] = "biolink:Polypeptide"
     class_name: ClassVar[str] = "polypeptide"
     class_model_uri: ClassVar[URIRef] = BIOLINK.Polypeptide
@@ -4324,6 +4844,11 @@ class Polypeptide(BiologicalEntity):
             self.id = PolypeptideId(self.id)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -4334,13 +4859,14 @@ class Protein(Polypeptide):
     """
     _inherited_slots: ClassVar[List[str]] = ["in_taxon"]
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.Protein
+    class_class_uri: ClassVar[URIRef] = BIOLINK["Protein"]
     class_class_curie: ClassVar[str] = "biolink:Protein"
     class_name: ClassVar[str] = "protein"
     class_model_uri: ClassVar[URIRef] = BIOLINK.Protein
 
     id: Union[str, ProteinId] = None
     category: Union[Union[str, CategoryType], List[Union[str, CategoryType]]] = None
+    name: Optional[Union[str, LabelType]] = None
     xref: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
     synonym: Optional[Union[Union[str, LabelType], List[Union[str, LabelType]]]] = empty_list()
 
@@ -4349,6 +4875,9 @@ class Protein(Polypeptide):
             self.MissingRequiredField("id")
         if not isinstance(self.id, ProteinId):
             self.id = ProteinId(self.id)
+
+        if self.name is not None and not isinstance(self.name, LabelType):
+            self.name = LabelType(self.name)
 
         if not isinstance(self.xref, list):
             self.xref = [self.xref] if self.xref is not None else []
@@ -4359,6 +4888,11 @@ class Protein(Polypeptide):
         self.synonym = [v if isinstance(v, LabelType) else LabelType(v) for v in self.synonym]
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -4369,13 +4903,16 @@ class ProteinIsoform(Protein):
     """
     _inherited_slots: ClassVar[List[str]] = ["in_taxon"]
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.ProteinIsoform
+    class_class_uri: ClassVar[URIRef] = BIOLINK["ProteinIsoform"]
     class_class_curie: ClassVar[str] = "biolink:ProteinIsoform"
     class_name: ClassVar[str] = "protein isoform"
     class_model_uri: ClassVar[URIRef] = BIOLINK.ProteinIsoform
 
     id: Union[str, ProteinIsoformId] = None
     category: Union[Union[str, CategoryType], List[Union[str, CategoryType]]] = None
+    name: Optional[Union[str, LabelType]] = None
+    xref: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    synonym: Optional[Union[Union[str, LabelType], List[Union[str, LabelType]]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
@@ -4383,7 +4920,23 @@ class ProteinIsoform(Protein):
         if not isinstance(self.id, ProteinIsoformId):
             self.id = ProteinIsoformId(self.id)
 
+        if self.name is not None and not isinstance(self.name, LabelType):
+            self.name = LabelType(self.name)
+
+        if not isinstance(self.xref, list):
+            self.xref = [self.xref] if self.xref is not None else []
+        self.xref = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.xref]
+
+        if not isinstance(self.synonym, list):
+            self.synonym = [self.synonym] if self.synonym is not None else []
+        self.synonym = [v if isinstance(v, LabelType) else LabelType(v) for v in self.synonym]
+
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -4395,7 +4948,7 @@ class ProteinDomain(BiologicalEntity):
     """
     _inherited_slots: ClassVar[List[str]] = ["in_taxon"]
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.ProteinDomain
+    class_class_uri: ClassVar[URIRef] = BIOLINK["ProteinDomain"]
     class_class_curie: ClassVar[str] = "biolink:ProteinDomain"
     class_name: ClassVar[str] = "protein domain"
     class_model_uri: ClassVar[URIRef] = BIOLINK.ProteinDomain
@@ -4415,6 +4968,11 @@ class ProteinDomain(BiologicalEntity):
         self.has_gene_or_gene_product = [v if isinstance(v, GeneId) else GeneId(v) for v in self.has_gene_or_gene_product]
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -4425,13 +4983,16 @@ class PosttranslationalModification(BiologicalEntity):
     """
     _inherited_slots: ClassVar[List[str]] = ["in_taxon"]
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.PosttranslationalModification
+    class_class_uri: ClassVar[URIRef] = BIOLINK["PosttranslationalModification"]
     class_class_curie: ClassVar[str] = "biolink:PosttranslationalModification"
     class_name: ClassVar[str] = "posttranslational modification"
     class_model_uri: ClassVar[URIRef] = BIOLINK.PosttranslationalModification
 
     id: Union[str, PosttranslationalModificationId] = None
     category: Union[Union[str, CategoryType], List[Union[str, CategoryType]]] = None
+    name: Optional[Union[str, LabelType]] = None
+    xref: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    synonym: Optional[Union[Union[str, LabelType], List[Union[str, LabelType]]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
@@ -4439,14 +5000,30 @@ class PosttranslationalModification(BiologicalEntity):
         if not isinstance(self.id, PosttranslationalModificationId):
             self.id = PosttranslationalModificationId(self.id)
 
+        if self.name is not None and not isinstance(self.name, LabelType):
+            self.name = LabelType(self.name)
+
+        if not isinstance(self.xref, list):
+            self.xref = [self.xref] if self.xref is not None else []
+        self.xref = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.xref]
+
+        if not isinstance(self.synonym, list):
+            self.synonym = [self.synonym] if self.synonym is not None else []
+        self.synonym = [v if isinstance(v, LabelType) else LabelType(v) for v in self.synonym]
+
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
 class ProteinFamily(BiologicalEntity):
     _inherited_slots: ClassVar[List[str]] = ["in_taxon"]
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.ProteinFamily
+    class_class_uri: ClassVar[URIRef] = BIOLINK["ProteinFamily"]
     class_class_curie: ClassVar[str] = "biolink:ProteinFamily"
     class_name: ClassVar[str] = "protein family"
     class_model_uri: ClassVar[URIRef] = BIOLINK.ProteinFamily
@@ -4466,6 +5043,11 @@ class ProteinFamily(BiologicalEntity):
         self.has_gene_or_gene_product = [v if isinstance(v, GeneId) else GeneId(v) for v in self.has_gene_or_gene_product]
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -4476,7 +5058,7 @@ class NucleicAcidSequenceMotif(BiologicalEntity):
     """
     _inherited_slots: ClassVar[List[str]] = ["in_taxon"]
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.NucleicAcidSequenceMotif
+    class_class_uri: ClassVar[URIRef] = BIOLINK["NucleicAcidSequenceMotif"]
     class_class_curie: ClassVar[str] = "biolink:NucleicAcidSequenceMotif"
     class_name: ClassVar[str] = "nucleic acid sequence motif"
     class_model_uri: ClassVar[URIRef] = BIOLINK.NucleicAcidSequenceMotif
@@ -4491,19 +5073,25 @@ class NucleicAcidSequenceMotif(BiologicalEntity):
             self.id = NucleicAcidSequenceMotifId(self.id)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
 class RNAProduct(Transcript):
     _inherited_slots: ClassVar[List[str]] = ["has_chemical_role", "in_taxon"]
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.RNAProduct
+    class_class_uri: ClassVar[URIRef] = BIOLINK["RNAProduct"]
     class_class_curie: ClassVar[str] = "biolink:RNAProduct"
     class_name: ClassVar[str] = "RNA product"
     class_model_uri: ClassVar[URIRef] = BIOLINK.RNAProduct
 
     id: Union[str, RNAProductId] = None
     category: Union[Union[str, CategoryType], List[Union[str, CategoryType]]] = None
+    name: Optional[Union[str, LabelType]] = None
     xref: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
     synonym: Optional[Union[Union[str, LabelType], List[Union[str, LabelType]]]] = empty_list()
 
@@ -4512,6 +5100,9 @@ class RNAProduct(Transcript):
             self.MissingRequiredField("id")
         if not isinstance(self.id, RNAProductId):
             self.id = RNAProductId(self.id)
+
+        if self.name is not None and not isinstance(self.name, LabelType):
+            self.name = LabelType(self.name)
 
         if not isinstance(self.xref, list):
             self.xref = [self.xref] if self.xref is not None else []
@@ -4522,6 +5113,11 @@ class RNAProduct(Transcript):
         self.synonym = [v if isinstance(v, LabelType) else LabelType(v) for v in self.synonym]
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -4531,13 +5127,16 @@ class RNAProductIsoform(RNAProduct):
     """
     _inherited_slots: ClassVar[List[str]] = ["has_chemical_role", "in_taxon"]
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.RNAProductIsoform
+    class_class_uri: ClassVar[URIRef] = BIOLINK["RNAProductIsoform"]
     class_class_curie: ClassVar[str] = "biolink:RNAProductIsoform"
     class_name: ClassVar[str] = "RNA product isoform"
     class_model_uri: ClassVar[URIRef] = BIOLINK.RNAProductIsoform
 
     id: Union[str, RNAProductIsoformId] = None
     category: Union[Union[str, CategoryType], List[Union[str, CategoryType]]] = None
+    name: Optional[Union[str, LabelType]] = None
+    xref: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    synonym: Optional[Union[Union[str, LabelType], List[Union[str, LabelType]]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
@@ -4545,14 +5144,30 @@ class RNAProductIsoform(RNAProduct):
         if not isinstance(self.id, RNAProductIsoformId):
             self.id = RNAProductIsoformId(self.id)
 
+        if self.name is not None and not isinstance(self.name, LabelType):
+            self.name = LabelType(self.name)
+
+        if not isinstance(self.xref, list):
+            self.xref = [self.xref] if self.xref is not None else []
+        self.xref = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.xref]
+
+        if not isinstance(self.synonym, list):
+            self.synonym = [self.synonym] if self.synonym is not None else []
+        self.synonym = [v if isinstance(v, LabelType) else LabelType(v) for v in self.synonym]
+
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
 class NoncodingRNAProduct(RNAProduct):
     _inherited_slots: ClassVar[List[str]] = ["has_chemical_role", "in_taxon"]
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.NoncodingRNAProduct
+    class_class_uri: ClassVar[URIRef] = BIOLINK["NoncodingRNAProduct"]
     class_class_curie: ClassVar[str] = "biolink:NoncodingRNAProduct"
     class_name: ClassVar[str] = "noncoding RNA product"
     class_model_uri: ClassVar[URIRef] = BIOLINK.NoncodingRNAProduct
@@ -4567,13 +5182,18 @@ class NoncodingRNAProduct(RNAProduct):
             self.id = NoncodingRNAProductId(self.id)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
 class MicroRNA(NoncodingRNAProduct):
     _inherited_slots: ClassVar[List[str]] = ["has_chemical_role", "in_taxon"]
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.MicroRNA
+    class_class_uri: ClassVar[URIRef] = BIOLINK["MicroRNA"]
     class_class_curie: ClassVar[str] = "biolink:MicroRNA"
     class_name: ClassVar[str] = "microRNA"
     class_model_uri: ClassVar[URIRef] = BIOLINK.MicroRNA
@@ -4588,6 +5208,11 @@ class MicroRNA(NoncodingRNAProduct):
             self.id = MicroRNAId(self.id)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -4599,7 +5224,7 @@ class SiRNA(NoncodingRNAProduct):
     """
     _inherited_slots: ClassVar[List[str]] = ["has_chemical_role", "in_taxon"]
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.SiRNA
+    class_class_uri: ClassVar[URIRef] = BIOLINK["SiRNA"]
     class_class_curie: ClassVar[str] = "biolink:SiRNA"
     class_name: ClassVar[str] = "siRNA"
     class_model_uri: ClassVar[URIRef] = BIOLINK.SiRNA
@@ -4614,6 +5239,11 @@ class SiRNA(NoncodingRNAProduct):
             self.id = SiRNAId(self.id)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -4623,7 +5253,7 @@ class GeneGroupingMixin(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.GeneGroupingMixin
+    class_class_uri: ClassVar[URIRef] = BIOLINK["GeneGroupingMixin"]
     class_class_curie: ClassVar[str] = "biolink:GeneGroupingMixin"
     class_name: ClassVar[str] = "gene grouping mixin"
     class_model_uri: ClassVar[URIRef] = BIOLINK.GeneGroupingMixin
@@ -4645,7 +5275,7 @@ class GeneFamily(BiologicalEntity):
     """
     _inherited_slots: ClassVar[List[str]] = ["in_taxon"]
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.GeneFamily
+    class_class_uri: ClassVar[URIRef] = BIOLINK["GeneFamily"]
     class_class_curie: ClassVar[str] = "biolink:GeneFamily"
     class_name: ClassVar[str] = "gene family"
     class_model_uri: ClassVar[URIRef] = BIOLINK.GeneFamily
@@ -4665,13 +5295,18 @@ class GeneFamily(BiologicalEntity):
         self.has_gene_or_gene_product = [v if isinstance(v, GeneId) else GeneId(v) for v in self.has_gene_or_gene_product]
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
 class Zygosity(Attribute):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.Zygosity
+    class_class_uri: ClassVar[URIRef] = BIOLINK["Zygosity"]
     class_class_curie: ClassVar[str] = "biolink:Zygosity"
     class_name: ClassVar[str] = "zygosity"
     class_model_uri: ClassVar[URIRef] = BIOLINK.Zygosity
@@ -4687,6 +5322,11 @@ class Zygosity(Attribute):
             self.id = ZygosityId(self.id)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -4697,7 +5337,7 @@ class Genotype(BiologicalEntity):
     """
     _inherited_slots: ClassVar[List[str]] = ["in_taxon"]
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.Genotype
+    class_class_uri: ClassVar[URIRef] = BIOLINK["Genotype"]
     class_class_curie: ClassVar[str] = "biolink:Genotype"
     class_name: ClassVar[str] = "genotype"
     class_model_uri: ClassVar[URIRef] = BIOLINK.Genotype
@@ -4720,6 +5360,11 @@ class Genotype(BiologicalEntity):
             self.has_biological_sequence = BiologicalSequence(self.has_biological_sequence)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -4729,7 +5374,7 @@ class Haplotype(BiologicalEntity):
     """
     _inherited_slots: ClassVar[List[str]] = ["in_taxon"]
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.Haplotype
+    class_class_uri: ClassVar[URIRef] = BIOLINK["Haplotype"]
     class_class_curie: ClassVar[str] = "biolink:Haplotype"
     class_name: ClassVar[str] = "haplotype"
     class_model_uri: ClassVar[URIRef] = BIOLINK.Haplotype
@@ -4748,6 +5393,11 @@ class Haplotype(BiologicalEntity):
             self.has_biological_sequence = BiologicalSequence(self.has_biological_sequence)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -4757,7 +5407,7 @@ class SequenceVariant(BiologicalEntity):
     """
     _inherited_slots: ClassVar[List[str]] = ["in_taxon"]
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.SequenceVariant
+    class_class_uri: ClassVar[URIRef] = BIOLINK["SequenceVariant"]
     class_class_curie: ClassVar[str] = "biolink:SequenceVariant"
     class_name: ClassVar[str] = "sequence variant"
     class_model_uri: ClassVar[URIRef] = BIOLINK.SequenceVariant
@@ -4781,6 +5431,11 @@ class SequenceVariant(BiologicalEntity):
             self.has_biological_sequence = BiologicalSequence(self.has_biological_sequence)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -4790,7 +5445,7 @@ class Snv(SequenceVariant):
     """
     _inherited_slots: ClassVar[List[str]] = ["in_taxon"]
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.Snv
+    class_class_uri: ClassVar[URIRef] = BIOLINK["Snv"]
     class_class_curie: ClassVar[str] = "biolink:Snv"
     class_name: ClassVar[str] = "snv"
     class_model_uri: ClassVar[URIRef] = BIOLINK.Snv
@@ -4805,6 +5460,11 @@ class Snv(SequenceVariant):
             self.id = SnvId(self.id)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -4815,7 +5475,7 @@ class ReagentTargetedGene(BiologicalEntity):
     """
     _inherited_slots: ClassVar[List[str]] = ["in_taxon"]
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.ReagentTargetedGene
+    class_class_uri: ClassVar[URIRef] = BIOLINK["ReagentTargetedGene"]
     class_class_curie: ClassVar[str] = "biolink:ReagentTargetedGene"
     class_name: ClassVar[str] = "reagent targeted gene"
     class_model_uri: ClassVar[URIRef] = BIOLINK.ReagentTargetedGene
@@ -4834,6 +5494,11 @@ class ReagentTargetedGene(BiologicalEntity):
             self.has_biological_sequence = BiologicalSequence(self.has_biological_sequence)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -4843,7 +5508,7 @@ class ClinicalAttribute(Attribute):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.ClinicalAttribute
+    class_class_uri: ClassVar[URIRef] = BIOLINK["ClinicalAttribute"]
     class_class_curie: ClassVar[str] = "biolink:ClinicalAttribute"
     class_name: ClassVar[str] = "clinical attribute"
     class_model_uri: ClassVar[URIRef] = BIOLINK.ClinicalAttribute
@@ -4859,6 +5524,11 @@ class ClinicalAttribute(Attribute):
             self.id = ClinicalAttributeId(self.id)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -4869,7 +5539,7 @@ class ClinicalMeasurement(ClinicalAttribute):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.ClinicalMeasurement
+    class_class_uri: ClassVar[URIRef] = BIOLINK["ClinicalMeasurement"]
     class_class_curie: ClassVar[str] = "biolink:ClinicalMeasurement"
     class_name: ClassVar[str] = "clinical measurement"
     class_model_uri: ClassVar[URIRef] = BIOLINK.ClinicalMeasurement
@@ -4890,6 +5560,11 @@ class ClinicalMeasurement(ClinicalAttribute):
             self.has_attribute_type = OntologyClassId(self.has_attribute_type)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -4900,7 +5575,7 @@ class ClinicalModifier(ClinicalAttribute):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.ClinicalModifier
+    class_class_uri: ClassVar[URIRef] = BIOLINK["ClinicalModifier"]
     class_class_curie: ClassVar[str] = "biolink:ClinicalModifier"
     class_name: ClassVar[str] = "clinical modifier"
     class_model_uri: ClassVar[URIRef] = BIOLINK.ClinicalModifier
@@ -4916,6 +5591,11 @@ class ClinicalModifier(ClinicalAttribute):
             self.id = ClinicalModifierId(self.id)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -4926,7 +5606,7 @@ class ClinicalCourse(ClinicalAttribute):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.ClinicalCourse
+    class_class_uri: ClassVar[URIRef] = BIOLINK["ClinicalCourse"]
     class_class_curie: ClassVar[str] = "biolink:ClinicalCourse"
     class_name: ClassVar[str] = "clinical course"
     class_model_uri: ClassVar[URIRef] = BIOLINK.ClinicalCourse
@@ -4942,6 +5622,11 @@ class ClinicalCourse(ClinicalAttribute):
             self.id = ClinicalCourseId(self.id)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -4951,7 +5636,7 @@ class Onset(ClinicalCourse):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.Onset
+    class_class_uri: ClassVar[URIRef] = BIOLINK["Onset"]
     class_class_curie: ClassVar[str] = "biolink:Onset"
     class_name: ClassVar[str] = "onset"
     class_model_uri: ClassVar[URIRef] = BIOLINK.Onset
@@ -4967,6 +5652,11 @@ class Onset(ClinicalCourse):
             self.id = OnsetId(self.id)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -4977,7 +5667,7 @@ class ClinicalEntity(NamedThing):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.ClinicalEntity
+    class_class_uri: ClassVar[URIRef] = BIOLINK["ClinicalEntity"]
     class_class_curie: ClassVar[str] = "biolink:ClinicalEntity"
     class_name: ClassVar[str] = "clinical entity"
     class_model_uri: ClassVar[URIRef] = BIOLINK.ClinicalEntity
@@ -4992,13 +5682,18 @@ class ClinicalEntity(NamedThing):
             self.id = ClinicalEntityId(self.id)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
 class ClinicalTrial(ClinicalEntity):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.ClinicalTrial
+    class_class_uri: ClassVar[URIRef] = BIOLINK["ClinicalTrial"]
     class_class_curie: ClassVar[str] = "biolink:ClinicalTrial"
     class_name: ClassVar[str] = "clinical trial"
     class_model_uri: ClassVar[URIRef] = BIOLINK.ClinicalTrial
@@ -5013,13 +5708,18 @@ class ClinicalTrial(ClinicalEntity):
             self.id = ClinicalTrialId(self.id)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
 class ClinicalIntervention(ClinicalEntity):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.ClinicalIntervention
+    class_class_uri: ClassVar[URIRef] = BIOLINK["ClinicalIntervention"]
     class_class_curie: ClassVar[str] = "biolink:ClinicalIntervention"
     class_name: ClassVar[str] = "clinical intervention"
     class_model_uri: ClassVar[URIRef] = BIOLINK.ClinicalIntervention
@@ -5034,6 +5734,11 @@ class ClinicalIntervention(ClinicalEntity):
             self.id = ClinicalInterventionId(self.id)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -5044,7 +5749,7 @@ class ClinicalFinding(PhenotypicFeature):
     """
     _inherited_slots: ClassVar[List[str]] = ["in_taxon"]
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.ClinicalFinding
+    class_class_uri: ClassVar[URIRef] = BIOLINK["ClinicalFinding"]
     class_class_curie: ClassVar[str] = "biolink:ClinicalFinding"
     class_name: ClassVar[str] = "clinical finding"
     class_model_uri: ClassVar[URIRef] = BIOLINK.ClinicalFinding
@@ -5064,13 +5769,18 @@ class ClinicalFinding(PhenotypicFeature):
         self.has_attribute = [v if isinstance(v, ClinicalAttributeId) else ClinicalAttributeId(v) for v in self.has_attribute]
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
 class Hospitalization(ClinicalIntervention):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.Hospitalization
+    class_class_uri: ClassVar[URIRef] = BIOLINK["Hospitalization"]
     class_class_curie: ClassVar[str] = "biolink:Hospitalization"
     class_name: ClassVar[str] = "hospitalization"
     class_model_uri: ClassVar[URIRef] = BIOLINK.Hospitalization
@@ -5085,6 +5795,11 @@ class Hospitalization(ClinicalIntervention):
             self.id = HospitalizationId(self.id)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -5094,7 +5809,7 @@ class SocioeconomicAttribute(Attribute):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.SocioeconomicAttribute
+    class_class_uri: ClassVar[URIRef] = BIOLINK["SocioeconomicAttribute"]
     class_class_curie: ClassVar[str] = "biolink:SocioeconomicAttribute"
     class_name: ClassVar[str] = "socioeconomic attribute"
     class_model_uri: ClassVar[URIRef] = BIOLINK.SocioeconomicAttribute
@@ -5110,6 +5825,11 @@ class SocioeconomicAttribute(Attribute):
             self.id = SocioeconomicAttributeId(self.id)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -5119,7 +5839,7 @@ class Case(IndividualOrganism):
     """
     _inherited_slots: ClassVar[List[str]] = ["in_taxon"]
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.Case
+    class_class_uri: ClassVar[URIRef] = BIOLINK["Case"]
     class_class_curie: ClassVar[str] = "biolink:Case"
     class_name: ClassVar[str] = "case"
     class_model_uri: ClassVar[URIRef] = BIOLINK.Case
@@ -5134,6 +5854,11 @@ class Case(IndividualOrganism):
             self.id = CaseId(self.id)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -5144,7 +5869,7 @@ class Cohort(StudyPopulation):
     """
     _inherited_slots: ClassVar[List[str]] = ["in_taxon"]
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.Cohort
+    class_class_uri: ClassVar[URIRef] = BIOLINK["Cohort"]
     class_class_curie: ClassVar[str] = "biolink:Cohort"
     class_name: ClassVar[str] = "cohort"
     class_model_uri: ClassVar[URIRef] = BIOLINK.Cohort
@@ -5159,6 +5884,11 @@ class Cohort(StudyPopulation):
             self.id = CohortId(self.id)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -5169,7 +5899,7 @@ class ExposureEvent(OntologyClass):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.ExposureEvent
+    class_class_uri: ClassVar[URIRef] = BIOLINK["ExposureEvent"]
     class_class_curie: ClassVar[str] = "biolink:ExposureEvent"
     class_name: ClassVar[str] = "exposure event"
     class_model_uri: ClassVar[URIRef] = BIOLINK.ExposureEvent
@@ -5193,7 +5923,7 @@ class GenomicBackgroundExposure(Attribute):
     """
     _inherited_slots: ClassVar[List[str]] = ["in_taxon"]
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.GenomicBackgroundExposure
+    class_class_uri: ClassVar[URIRef] = BIOLINK["GenomicBackgroundExposure"]
     class_class_curie: ClassVar[str] = "biolink:GenomicBackgroundExposure"
     class_name: ClassVar[str] = "genomic background exposure"
     class_model_uri: ClassVar[URIRef] = BIOLINK.GenomicBackgroundExposure
@@ -5227,6 +5957,11 @@ class GenomicBackgroundExposure(Attribute):
         self.in_taxon = [v if isinstance(v, OrganismTaxonId) else OrganismTaxonId(v) for v in self.in_taxon]
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 class PathologicalEntityMixin(YAMLRoot):
@@ -5235,7 +5970,7 @@ class PathologicalEntityMixin(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.PathologicalEntityMixin
+    class_class_uri: ClassVar[URIRef] = BIOLINK["PathologicalEntityMixin"]
     class_class_curie: ClassVar[str] = "biolink:PathologicalEntityMixin"
     class_name: ClassVar[str] = "pathological entity mixin"
     class_model_uri: ClassVar[URIRef] = BIOLINK.PathologicalEntityMixin
@@ -5249,7 +5984,7 @@ class PathologicalProcess(BiologicalProcess):
     """
     _inherited_slots: ClassVar[List[str]] = ["in_taxon", "has_input", "has_output", "enabled_by"]
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.PathologicalProcess
+    class_class_uri: ClassVar[URIRef] = BIOLINK["PathologicalProcess"]
     class_class_curie: ClassVar[str] = "biolink:PathologicalProcess"
     class_name: ClassVar[str] = "pathological process"
     class_model_uri: ClassVar[URIRef] = BIOLINK.PathologicalProcess
@@ -5264,6 +5999,11 @@ class PathologicalProcess(BiologicalProcess):
             self.id = PathologicalProcessId(self.id)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -5274,7 +6014,7 @@ class PathologicalProcessExposure(Attribute):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.PathologicalProcessExposure
+    class_class_uri: ClassVar[URIRef] = BIOLINK["PathologicalProcessExposure"]
     class_class_curie: ClassVar[str] = "biolink:PathologicalProcessExposure"
     class_name: ClassVar[str] = "pathological process exposure"
     class_model_uri: ClassVar[URIRef] = BIOLINK.PathologicalProcessExposure
@@ -5294,6 +6034,11 @@ class PathologicalProcessExposure(Attribute):
             self.timepoint = TimeType(self.timepoint)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -5304,7 +6049,7 @@ class PathologicalAnatomicalStructure(AnatomicalEntity):
     """
     _inherited_slots: ClassVar[List[str]] = ["in_taxon"]
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.PathologicalAnatomicalStructure
+    class_class_uri: ClassVar[URIRef] = BIOLINK["PathologicalAnatomicalStructure"]
     class_class_curie: ClassVar[str] = "biolink:PathologicalAnatomicalStructure"
     class_name: ClassVar[str] = "pathological anatomical structure"
     class_model_uri: ClassVar[URIRef] = BIOLINK.PathologicalAnatomicalStructure
@@ -5319,6 +6064,11 @@ class PathologicalAnatomicalStructure(AnatomicalEntity):
             self.id = PathologicalAnatomicalStructureId(self.id)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -5329,7 +6079,7 @@ class PathologicalAnatomicalExposure(Attribute):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.PathologicalAnatomicalExposure
+    class_class_uri: ClassVar[URIRef] = BIOLINK["PathologicalAnatomicalExposure"]
     class_class_curie: ClassVar[str] = "biolink:PathologicalAnatomicalExposure"
     class_name: ClassVar[str] = "pathological anatomical exposure"
     class_model_uri: ClassVar[URIRef] = BIOLINK.PathologicalAnatomicalExposure
@@ -5349,6 +6099,11 @@ class PathologicalAnatomicalExposure(Attribute):
             self.timepoint = TimeType(self.timepoint)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -5360,7 +6115,7 @@ class DiseaseOrPhenotypicFeatureExposure(Attribute):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.DiseaseOrPhenotypicFeatureExposure
+    class_class_uri: ClassVar[URIRef] = BIOLINK["DiseaseOrPhenotypicFeatureExposure"]
     class_class_curie: ClassVar[str] = "biolink:DiseaseOrPhenotypicFeatureExposure"
     class_name: ClassVar[str] = "disease or phenotypic feature exposure"
     class_model_uri: ClassVar[URIRef] = BIOLINK.DiseaseOrPhenotypicFeatureExposure
@@ -5380,6 +6135,11 @@ class DiseaseOrPhenotypicFeatureExposure(Attribute):
             self.timepoint = TimeType(self.timepoint)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -5389,7 +6149,7 @@ class ChemicalExposure(Attribute):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.ChemicalExposure
+    class_class_uri: ClassVar[URIRef] = BIOLINK["ChemicalExposure"]
     class_class_curie: ClassVar[str] = "biolink:ChemicalExposure"
     class_name: ClassVar[str] = "chemical exposure"
     class_model_uri: ClassVar[URIRef] = BIOLINK.ChemicalExposure
@@ -5414,6 +6174,11 @@ class ChemicalExposure(Attribute):
             self.timepoint = TimeType(self.timepoint)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -5423,7 +6188,7 @@ class ComplexChemicalExposure(Attribute):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.ComplexChemicalExposure
+    class_class_uri: ClassVar[URIRef] = BIOLINK["ComplexChemicalExposure"]
     class_class_curie: ClassVar[str] = "biolink:ComplexChemicalExposure"
     class_name: ClassVar[str] = "complex chemical exposure"
     class_model_uri: ClassVar[URIRef] = BIOLINK.ComplexChemicalExposure
@@ -5439,6 +6204,11 @@ class ComplexChemicalExposure(Attribute):
             self.id = ComplexChemicalExposureId(self.id)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -5448,7 +6218,7 @@ class DrugExposure(ChemicalExposure):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.DrugExposure
+    class_class_uri: ClassVar[URIRef] = BIOLINK["DrugExposure"]
     class_class_curie: ClassVar[str] = "biolink:DrugExposure"
     class_name: ClassVar[str] = "drug exposure"
     class_model_uri: ClassVar[URIRef] = BIOLINK.DrugExposure
@@ -5468,6 +6238,11 @@ class DrugExposure(ChemicalExposure):
             self.timepoint = TimeType(self.timepoint)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -5478,7 +6253,7 @@ class DrugToGeneInteractionExposure(DrugExposure):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.DrugToGeneInteractionExposure
+    class_class_uri: ClassVar[URIRef] = BIOLINK["DrugToGeneInteractionExposure"]
     class_class_curie: ClassVar[str] = "biolink:DrugToGeneInteractionExposure"
     class_name: ClassVar[str] = "drug to gene interaction exposure"
     class_model_uri: ClassVar[URIRef] = BIOLINK.DrugToGeneInteractionExposure
@@ -5499,6 +6274,11 @@ class DrugToGeneInteractionExposure(DrugExposure):
         self.has_gene_or_gene_product = [v if isinstance(v, GeneId) else GeneId(v) for v in self.has_gene_or_gene_product]
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -5509,7 +6289,7 @@ class Treatment(NamedThing):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.Treatment
+    class_class_uri: ClassVar[URIRef] = BIOLINK["Treatment"]
     class_class_curie: ClassVar[str] = "biolink:Treatment"
     class_name: ClassVar[str] = "treatment"
     class_model_uri: ClassVar[URIRef] = BIOLINK.Treatment
@@ -5543,6 +6323,11 @@ class Treatment(NamedThing):
             self.timepoint = TimeType(self.timepoint)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -5552,7 +6337,7 @@ class BioticExposure(Attribute):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.BioticExposure
+    class_class_uri: ClassVar[URIRef] = BIOLINK["BioticExposure"]
     class_class_curie: ClassVar[str] = "biolink:BioticExposure"
     class_name: ClassVar[str] = "biotic exposure"
     class_model_uri: ClassVar[URIRef] = BIOLINK.BioticExposure
@@ -5572,6 +6357,11 @@ class BioticExposure(Attribute):
             self.timepoint = TimeType(self.timepoint)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -5582,7 +6372,7 @@ class EnvironmentalExposure(Attribute):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.EnvironmentalExposure
+    class_class_uri: ClassVar[URIRef] = BIOLINK["EnvironmentalExposure"]
     class_class_curie: ClassVar[str] = "biolink:EnvironmentalExposure"
     class_name: ClassVar[str] = "environmental exposure"
     class_model_uri: ClassVar[URIRef] = BIOLINK.EnvironmentalExposure
@@ -5602,6 +6392,11 @@ class EnvironmentalExposure(Attribute):
             self.timepoint = TimeType(self.timepoint)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -5611,7 +6406,7 @@ class GeographicExposure(EnvironmentalExposure):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.GeographicExposure
+    class_class_uri: ClassVar[URIRef] = BIOLINK["GeographicExposure"]
     class_class_curie: ClassVar[str] = "biolink:GeographicExposure"
     class_name: ClassVar[str] = "geographic exposure"
     class_model_uri: ClassVar[URIRef] = BIOLINK.GeographicExposure
@@ -5631,6 +6426,11 @@ class GeographicExposure(EnvironmentalExposure):
             self.timepoint = TimeType(self.timepoint)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -5640,7 +6440,7 @@ class BehavioralExposure(Attribute):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.BehavioralExposure
+    class_class_uri: ClassVar[URIRef] = BIOLINK["BehavioralExposure"]
     class_class_curie: ClassVar[str] = "biolink:BehavioralExposure"
     class_name: ClassVar[str] = "behavioral exposure"
     class_model_uri: ClassVar[URIRef] = BIOLINK.BehavioralExposure
@@ -5660,6 +6460,11 @@ class BehavioralExposure(Attribute):
             self.timepoint = TimeType(self.timepoint)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -5670,7 +6475,7 @@ class SocioeconomicExposure(Attribute):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.SocioeconomicExposure
+    class_class_uri: ClassVar[URIRef] = BIOLINK["SocioeconomicExposure"]
     class_class_curie: ClassVar[str] = "biolink:SocioeconomicExposure"
     class_name: ClassVar[str] = "socioeconomic exposure"
     class_model_uri: ClassVar[URIRef] = BIOLINK.SocioeconomicExposure
@@ -5697,6 +6502,11 @@ class SocioeconomicExposure(Attribute):
             self.timepoint = TimeType(self.timepoint)
 
         super().__post_init__(**kwargs)
+        if self._is_empty(self.category):
+            self.MissingRequiredField("category")
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 class Outcome(YAMLRoot):
@@ -5706,7 +6516,7 @@ class Outcome(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.Outcome
+    class_class_uri: ClassVar[URIRef] = BIOLINK["Outcome"]
     class_class_curie: ClassVar[str] = "biolink:Outcome"
     class_name: ClassVar[str] = "outcome"
     class_model_uri: ClassVar[URIRef] = BIOLINK.Outcome
@@ -5718,7 +6528,7 @@ class PathologicalProcessOutcome(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.PathologicalProcessOutcome
+    class_class_uri: ClassVar[URIRef] = BIOLINK["PathologicalProcessOutcome"]
     class_class_curie: ClassVar[str] = "biolink:PathologicalProcessOutcome"
     class_name: ClassVar[str] = "pathological process outcome"
     class_model_uri: ClassVar[URIRef] = BIOLINK.PathologicalProcessOutcome
@@ -5730,7 +6540,7 @@ class PathologicalAnatomicalOutcome(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.PathologicalAnatomicalOutcome
+    class_class_uri: ClassVar[URIRef] = BIOLINK["PathologicalAnatomicalOutcome"]
     class_class_curie: ClassVar[str] = "biolink:PathologicalAnatomicalOutcome"
     class_name: ClassVar[str] = "pathological anatomical outcome"
     class_model_uri: ClassVar[URIRef] = BIOLINK.PathologicalAnatomicalOutcome
@@ -5743,7 +6553,7 @@ class DiseaseOrPhenotypicFeatureOutcome(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.DiseaseOrPhenotypicFeatureOutcome
+    class_class_uri: ClassVar[URIRef] = BIOLINK["DiseaseOrPhenotypicFeatureOutcome"]
     class_class_curie: ClassVar[str] = "biolink:DiseaseOrPhenotypicFeatureOutcome"
     class_name: ClassVar[str] = "disease or phenotypic feature outcome"
     class_model_uri: ClassVar[URIRef] = BIOLINK.DiseaseOrPhenotypicFeatureOutcome
@@ -5755,7 +6565,7 @@ class BehavioralOutcome(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.BehavioralOutcome
+    class_class_uri: ClassVar[URIRef] = BIOLINK["BehavioralOutcome"]
     class_class_curie: ClassVar[str] = "biolink:BehavioralOutcome"
     class_name: ClassVar[str] = "behavioral outcome"
     class_model_uri: ClassVar[URIRef] = BIOLINK.BehavioralOutcome
@@ -5768,7 +6578,7 @@ class HospitalizationOutcome(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.HospitalizationOutcome
+    class_class_uri: ClassVar[URIRef] = BIOLINK["HospitalizationOutcome"]
     class_class_curie: ClassVar[str] = "biolink:HospitalizationOutcome"
     class_name: ClassVar[str] = "hospitalization outcome"
     class_model_uri: ClassVar[URIRef] = BIOLINK.HospitalizationOutcome
@@ -5780,7 +6590,7 @@ class MortalityOutcome(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.MortalityOutcome
+    class_class_uri: ClassVar[URIRef] = BIOLINK["MortalityOutcome"]
     class_class_curie: ClassVar[str] = "biolink:MortalityOutcome"
     class_name: ClassVar[str] = "mortality outcome"
     class_model_uri: ClassVar[URIRef] = BIOLINK.MortalityOutcome
@@ -5792,7 +6602,7 @@ class EpidemiologicalOutcome(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.EpidemiologicalOutcome
+    class_class_uri: ClassVar[URIRef] = BIOLINK["EpidemiologicalOutcome"]
     class_class_curie: ClassVar[str] = "biolink:EpidemiologicalOutcome"
     class_name: ClassVar[str] = "epidemiological outcome"
     class_model_uri: ClassVar[URIRef] = BIOLINK.EpidemiologicalOutcome
@@ -5805,7 +6615,7 @@ class SocioeconomicOutcome(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.SocioeconomicOutcome
+    class_class_uri: ClassVar[URIRef] = BIOLINK["SocioeconomicOutcome"]
     class_class_curie: ClassVar[str] = "biolink:SocioeconomicOutcome"
     class_name: ClassVar[str] = "socioeconomic outcome"
     class_model_uri: ClassVar[URIRef] = BIOLINK.SocioeconomicOutcome
@@ -5818,7 +6628,7 @@ class Association(Entity):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.Association
+    class_class_uri: ClassVar[URIRef] = BIOLINK["Association"]
     class_class_curie: ClassVar[str] = "biolink:Association"
     class_name: ClassVar[str] = "association"
     class_model_uri: ClassVar[URIRef] = BIOLINK.Association
@@ -5907,13 +6717,41 @@ class Association(Entity):
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
         super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
+
+
+    def __new__(cls, *args, **kwargs):
+
+        type_designator = "category"
+        if not type_designator in kwargs:
+            return super().__new__(cls,*args,**kwargs)
+        else:
+            type_designator_value = kwargs[type_designator]
+            target_cls = cls._class_for("class_class_curie", type_designator_value)
+
+
+            if target_cls is None:
+                target_cls = cls._class_for("class_class_uri", type_designator_value)
+
+
+            if target_cls is None:
+                target_cls = cls._class_for("class_model_uri", type_designator_value)
+
+
+            if target_cls is None:
+                raise ValueError(f"Wrong type designator value: class {cls.__name__} "
+                                 f"has no subclass with ['class_class_curie', 'class_class_uri', 'class_model_uri']='{kwargs[type_designator]}'")
+            return super().__new__(target_cls,*args,**kwargs)
+
 
 
 @dataclass
 class ChemicalEntityAssessesNamedThingAssociation(Association):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.ChemicalEntityAssessesNamedThingAssociation
+    class_class_uri: ClassVar[URIRef] = BIOLINK["ChemicalEntityAssessesNamedThingAssociation"]
     class_class_curie: ClassVar[str] = "biolink:ChemicalEntityAssessesNamedThingAssociation"
     class_name: ClassVar[str] = "chemical entity assesses named thing association"
     class_model_uri: ClassVar[URIRef] = BIOLINK.ChemicalEntityAssessesNamedThingAssociation
@@ -5945,6 +6783,9 @@ class ChemicalEntityAssessesNamedThingAssociation(Association):
             self.predicate = PredicateType(self.predicate)
 
         super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -5954,7 +6795,7 @@ class ContributorAssociation(Association):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.ContributorAssociation
+    class_class_uri: ClassVar[URIRef] = BIOLINK["ContributorAssociation"]
     class_class_curie: ClassVar[str] = "biolink:ContributorAssociation"
     class_name: ClassVar[str] = "contributor association"
     class_model_uri: ClassVar[URIRef] = BIOLINK.ContributorAssociation
@@ -5991,6 +6832,9 @@ class ContributorAssociation(Association):
         self.qualifiers = [v if isinstance(v, OntologyClassId) else OntologyClassId(v) for v in self.qualifiers]
 
         super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -6000,7 +6844,7 @@ class GenotypeToGenotypePartAssociation(Association):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.GenotypeToGenotypePartAssociation
+    class_class_uri: ClassVar[URIRef] = BIOLINK["GenotypeToGenotypePartAssociation"]
     class_class_curie: ClassVar[str] = "biolink:GenotypeToGenotypePartAssociation"
     class_name: ClassVar[str] = "genotype to genotype part association"
     class_model_uri: ClassVar[URIRef] = BIOLINK.GenotypeToGenotypePartAssociation
@@ -6032,6 +6876,9 @@ class GenotypeToGenotypePartAssociation(Association):
             self.object = GenotypeId(self.object)
 
         super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -6042,7 +6889,7 @@ class GenotypeToGeneAssociation(Association):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.GenotypeToGeneAssociation
+    class_class_uri: ClassVar[URIRef] = BIOLINK["GenotypeToGeneAssociation"]
     class_class_curie: ClassVar[str] = "biolink:GenotypeToGeneAssociation"
     class_name: ClassVar[str] = "genotype to gene association"
     class_model_uri: ClassVar[URIRef] = BIOLINK.GenotypeToGeneAssociation
@@ -6074,6 +6921,9 @@ class GenotypeToGeneAssociation(Association):
             self.object = GeneId(self.object)
 
         super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -6083,7 +6933,7 @@ class GenotypeToVariantAssociation(Association):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.GenotypeToVariantAssociation
+    class_class_uri: ClassVar[URIRef] = BIOLINK["GenotypeToVariantAssociation"]
     class_class_curie: ClassVar[str] = "biolink:GenotypeToVariantAssociation"
     class_name: ClassVar[str] = "genotype to variant association"
     class_model_uri: ClassVar[URIRef] = BIOLINK.GenotypeToVariantAssociation
@@ -6115,6 +6965,9 @@ class GenotypeToVariantAssociation(Association):
             self.object = SequenceVariantId(self.object)
 
         super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -6125,7 +6978,7 @@ class GeneToGeneAssociation(Association):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.GeneToGeneAssociation
+    class_class_uri: ClassVar[URIRef] = BIOLINK["GeneToGeneAssociation"]
     class_class_curie: ClassVar[str] = "biolink:GeneToGeneAssociation"
     class_name: ClassVar[str] = "gene to gene association"
     class_model_uri: ClassVar[URIRef] = BIOLINK.GeneToGeneAssociation
@@ -6147,6 +7000,9 @@ class GeneToGeneAssociation(Association):
             self.object = GeneOrGeneProduct(**as_dict(self.object))
 
         super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -6157,7 +7013,7 @@ class GeneToGeneHomologyAssociation(GeneToGeneAssociation):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.GeneToGeneHomologyAssociation
+    class_class_uri: ClassVar[URIRef] = BIOLINK["GeneToGeneHomologyAssociation"]
     class_class_curie: ClassVar[str] = "biolink:GeneToGeneHomologyAssociation"
     class_name: ClassVar[str] = "gene to gene homology association"
     class_model_uri: ClassVar[URIRef] = BIOLINK.GeneToGeneHomologyAssociation
@@ -6189,6 +7045,9 @@ class GeneToGeneHomologyAssociation(GeneToGeneAssociation):
             self.object = GeneOrGeneProduct(**as_dict(self.object))
 
         super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -6200,7 +7059,7 @@ class GeneToGeneFamilyAssociation(Association):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.GeneToGeneFamilyAssociation
+    class_class_uri: ClassVar[URIRef] = BIOLINK["GeneToGeneFamilyAssociation"]
     class_class_curie: ClassVar[str] = "biolink:GeneToGeneFamilyAssociation"
     class_name: ClassVar[str] = "gene to gene family association"
     class_model_uri: ClassVar[URIRef] = BIOLINK.GeneToGeneFamilyAssociation
@@ -6232,6 +7091,9 @@ class GeneToGeneFamilyAssociation(Association):
             self.predicate = PredicateType(self.predicate)
 
         super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -6242,7 +7104,7 @@ class GeneExpressionMixin(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.GeneExpressionMixin
+    class_class_uri: ClassVar[URIRef] = BIOLINK["GeneExpressionMixin"]
     class_class_curie: ClassVar[str] = "biolink:GeneExpressionMixin"
     class_name: ClassVar[str] = "gene expression mixin"
     class_model_uri: ClassVar[URIRef] = BIOLINK.GeneExpressionMixin
@@ -6275,7 +7137,7 @@ class GeneToGeneCoexpressionAssociation(GeneToGeneAssociation):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.GeneToGeneCoexpressionAssociation
+    class_class_uri: ClassVar[URIRef] = BIOLINK["GeneToGeneCoexpressionAssociation"]
     class_class_curie: ClassVar[str] = "biolink:GeneToGeneCoexpressionAssociation"
     class_name: ClassVar[str] = "gene to gene coexpression association"
     class_model_uri: ClassVar[URIRef] = BIOLINK.GeneToGeneCoexpressionAssociation
@@ -6313,6 +7175,9 @@ class GeneToGeneCoexpressionAssociation(GeneToGeneAssociation):
             self.phenotypic_state = DiseaseOrPhenotypicFeatureId(self.phenotypic_state)
 
         super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -6323,7 +7188,7 @@ class PairwiseGeneToGeneInteraction(GeneToGeneAssociation):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.PairwiseGeneToGeneInteraction
+    class_class_uri: ClassVar[URIRef] = BIOLINK["PairwiseGeneToGeneInteraction"]
     class_class_curie: ClassVar[str] = "biolink:PairwiseGeneToGeneInteraction"
     class_name: ClassVar[str] = "pairwise gene to gene interaction"
     class_model_uri: ClassVar[URIRef] = BIOLINK.PairwiseGeneToGeneInteraction
@@ -6345,6 +7210,9 @@ class PairwiseGeneToGeneInteraction(GeneToGeneAssociation):
             self.predicate = PredicateType(self.predicate)
 
         super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -6354,7 +7222,7 @@ class PairwiseMolecularInteraction(PairwiseGeneToGeneInteraction):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.PairwiseMolecularInteraction
+    class_class_uri: ClassVar[URIRef] = BIOLINK["PairwiseMolecularInteraction"]
     class_class_curie: ClassVar[str] = "biolink:PairwiseMolecularInteraction"
     class_name: ClassVar[str] = "pairwise molecular interaction"
     class_model_uri: ClassVar[URIRef] = BIOLINK.PairwiseMolecularInteraction
@@ -6390,6 +7258,9 @@ class PairwiseMolecularInteraction(PairwiseGeneToGeneInteraction):
             self.interacting_molecules_category = OntologyClassId(self.interacting_molecules_category)
 
         super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -6399,7 +7270,7 @@ class CellLineToEntityAssociationMixin(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.CellLineToEntityAssociationMixin
+    class_class_uri: ClassVar[URIRef] = BIOLINK["CellLineToEntityAssociationMixin"]
     class_class_curie: ClassVar[str] = "biolink:CellLineToEntityAssociationMixin"
     class_name: ClassVar[str] = "cell line to entity association mixin"
     class_model_uri: ClassVar[URIRef] = BIOLINK.CellLineToEntityAssociationMixin
@@ -6423,7 +7294,7 @@ class CellLineToDiseaseOrPhenotypicFeatureAssociation(Association):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.CellLineToDiseaseOrPhenotypicFeatureAssociation
+    class_class_uri: ClassVar[URIRef] = BIOLINK["CellLineToDiseaseOrPhenotypicFeatureAssociation"]
     class_class_curie: ClassVar[str] = "biolink:CellLineToDiseaseOrPhenotypicFeatureAssociation"
     class_name: ClassVar[str] = "cell line to disease or phenotypic feature association"
     class_model_uri: ClassVar[URIRef] = BIOLINK.CellLineToDiseaseOrPhenotypicFeatureAssociation
@@ -6445,6 +7316,9 @@ class CellLineToDiseaseOrPhenotypicFeatureAssociation(Association):
             self.subject = DiseaseOrPhenotypicFeatureId(self.subject)
 
         super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -6454,7 +7328,7 @@ class ChemicalEntityToEntityAssociationMixin(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.ChemicalEntityToEntityAssociationMixin
+    class_class_uri: ClassVar[URIRef] = BIOLINK["ChemicalEntityToEntityAssociationMixin"]
     class_class_curie: ClassVar[str] = "biolink:ChemicalEntityToEntityAssociationMixin"
     class_name: ClassVar[str] = "chemical entity to entity association mixin"
     class_model_uri: ClassVar[URIRef] = BIOLINK.ChemicalEntityToEntityAssociationMixin
@@ -6477,7 +7351,7 @@ class DrugToEntityAssociationMixin(ChemicalEntityToEntityAssociationMixin):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.DrugToEntityAssociationMixin
+    class_class_uri: ClassVar[URIRef] = BIOLINK["DrugToEntityAssociationMixin"]
     class_class_curie: ClassVar[str] = "biolink:DrugToEntityAssociationMixin"
     class_name: ClassVar[str] = "drug to entity association mixin"
     class_model_uri: ClassVar[URIRef] = BIOLINK.DrugToEntityAssociationMixin
@@ -6500,7 +7374,7 @@ class ChemicalToEntityAssociationMixin(ChemicalEntityToEntityAssociationMixin):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.ChemicalToEntityAssociationMixin
+    class_class_uri: ClassVar[URIRef] = BIOLINK["ChemicalToEntityAssociationMixin"]
     class_class_curie: ClassVar[str] = "biolink:ChemicalToEntityAssociationMixin"
     class_name: ClassVar[str] = "chemical to entity association mixin"
     class_model_uri: ClassVar[URIRef] = BIOLINK.ChemicalToEntityAssociationMixin
@@ -6523,7 +7397,7 @@ class CaseToEntityAssociationMixin(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.CaseToEntityAssociationMixin
+    class_class_uri: ClassVar[URIRef] = BIOLINK["CaseToEntityAssociationMixin"]
     class_class_curie: ClassVar[str] = "biolink:CaseToEntityAssociationMixin"
     class_name: ClassVar[str] = "case to entity association mixin"
     class_model_uri: ClassVar[URIRef] = BIOLINK.CaseToEntityAssociationMixin
@@ -6547,7 +7421,7 @@ class ChemicalToChemicalAssociation(Association):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.ChemicalToChemicalAssociation
+    class_class_uri: ClassVar[URIRef] = BIOLINK["ChemicalToChemicalAssociation"]
     class_class_curie: ClassVar[str] = "biolink:ChemicalToChemicalAssociation"
     class_name: ClassVar[str] = "chemical to chemical association"
     class_model_uri: ClassVar[URIRef] = BIOLINK.ChemicalToChemicalAssociation
@@ -6569,13 +7443,16 @@ class ChemicalToChemicalAssociation(Association):
             self.object = ChemicalEntityId(self.object)
 
         super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
 class ReactionToParticipantAssociation(ChemicalToChemicalAssociation):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.ReactionToParticipantAssociation
+    class_class_uri: ClassVar[URIRef] = BIOLINK["ReactionToParticipantAssociation"]
     class_class_curie: ClassVar[str] = "biolink:ReactionToParticipantAssociation"
     class_name: ClassVar[str] = "reaction to participant association"
     class_model_uri: ClassVar[URIRef] = BIOLINK.ReactionToParticipantAssociation
@@ -6609,13 +7486,16 @@ class ReactionToParticipantAssociation(ChemicalToChemicalAssociation):
             self.reaction_side = ReactionSideEnum(self.reaction_side)
 
         super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
 class ReactionToCatalystAssociation(ReactionToParticipantAssociation):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.ReactionToCatalystAssociation
+    class_class_uri: ClassVar[URIRef] = BIOLINK["ReactionToCatalystAssociation"]
     class_class_curie: ClassVar[str] = "biolink:ReactionToCatalystAssociation"
     class_name: ClassVar[str] = "reaction to catalyst association"
     class_model_uri: ClassVar[URIRef] = BIOLINK.ReactionToCatalystAssociation
@@ -6637,6 +7517,9 @@ class ReactionToCatalystAssociation(ReactionToParticipantAssociation):
             self.object = GeneOrGeneProduct(**as_dict(self.object))
 
         super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -6654,7 +7537,7 @@ class ChemicalToChemicalDerivationAssociation(ChemicalToChemicalAssociation):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.ChemicalToChemicalDerivationAssociation
+    class_class_uri: ClassVar[URIRef] = BIOLINK["ChemicalToChemicalDerivationAssociation"]
     class_class_curie: ClassVar[str] = "biolink:ChemicalToChemicalDerivationAssociation"
     class_name: ClassVar[str] = "chemical to chemical derivation association"
     class_model_uri: ClassVar[URIRef] = BIOLINK.ChemicalToChemicalDerivationAssociation
@@ -6691,6 +7574,9 @@ class ChemicalToChemicalDerivationAssociation(ChemicalToChemicalAssociation):
         self.catalyst_qualifier = [v if isinstance(v, MacromolecularMachineMixin) else MacromolecularMachineMixin(**as_dict(v)) for v in self.catalyst_qualifier]
 
         super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -6701,7 +7587,7 @@ class ChemicalToDiseaseOrPhenotypicFeatureAssociation(Association):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.ChemicalToDiseaseOrPhenotypicFeatureAssociation
+    class_class_uri: ClassVar[URIRef] = BIOLINK["ChemicalToDiseaseOrPhenotypicFeatureAssociation"]
     class_class_curie: ClassVar[str] = "biolink:ChemicalToDiseaseOrPhenotypicFeatureAssociation"
     class_name: ClassVar[str] = "chemical to disease or phenotypic feature association"
     class_model_uri: ClassVar[URIRef] = BIOLINK.ChemicalToDiseaseOrPhenotypicFeatureAssociation
@@ -6723,6 +7609,9 @@ class ChemicalToDiseaseOrPhenotypicFeatureAssociation(Association):
             self.object = DiseaseOrPhenotypicFeatureId(self.object)
 
         super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -6733,7 +7622,7 @@ class ChemicalOrDrugOrTreatmentToDiseaseOrPhenotypicFeatureAssociation(Associati
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.ChemicalOrDrugOrTreatmentToDiseaseOrPhenotypicFeatureAssociation
+    class_class_uri: ClassVar[URIRef] = BIOLINK["ChemicalOrDrugOrTreatmentToDiseaseOrPhenotypicFeatureAssociation"]
     class_class_curie: ClassVar[str] = "biolink:ChemicalOrDrugOrTreatmentToDiseaseOrPhenotypicFeatureAssociation"
     class_name: ClassVar[str] = "chemical or drug or treatment to disease or phenotypic feature association"
     class_model_uri: ClassVar[URIRef] = BIOLINK.ChemicalOrDrugOrTreatmentToDiseaseOrPhenotypicFeatureAssociation
@@ -6759,6 +7648,9 @@ class ChemicalOrDrugOrTreatmentToDiseaseOrPhenotypicFeatureAssociation(Associati
             self.FDA_adverse_event_level = FDAIDAAdverseEventEnum(self.FDA_adverse_event_level)
 
         super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -6769,7 +7661,7 @@ class ChemicalOrDrugOrTreatmentSideEffectDiseaseOrPhenotypicFeatureAssociation(C
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.ChemicalOrDrugOrTreatmentSideEffectDiseaseOrPhenotypicFeatureAssociation
+    class_class_uri: ClassVar[URIRef] = BIOLINK["ChemicalOrDrugOrTreatmentSideEffectDiseaseOrPhenotypicFeatureAssociation"]
     class_class_curie: ClassVar[str] = "biolink:ChemicalOrDrugOrTreatmentSideEffectDiseaseOrPhenotypicFeatureAssociation"
     class_name: ClassVar[str] = "chemical or drug or treatment side effect disease or phenotypic feature association"
     class_model_uri: ClassVar[URIRef] = BIOLINK.ChemicalOrDrugOrTreatmentSideEffectDiseaseOrPhenotypicFeatureAssociation
@@ -6791,6 +7683,9 @@ class ChemicalOrDrugOrTreatmentSideEffectDiseaseOrPhenotypicFeatureAssociation(C
             self.predicate = PredicateType(self.predicate)
 
         super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -6800,7 +7695,7 @@ class GeneToPathwayAssociation(Association):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.GeneToPathwayAssociation
+    class_class_uri: ClassVar[URIRef] = BIOLINK["GeneToPathwayAssociation"]
     class_class_curie: ClassVar[str] = "biolink:GeneToPathwayAssociation"
     class_name: ClassVar[str] = "gene to pathway association"
     class_model_uri: ClassVar[URIRef] = BIOLINK.GeneToPathwayAssociation
@@ -6827,6 +7722,9 @@ class GeneToPathwayAssociation(Association):
             self.object = PathwayId(self.object)
 
         super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -6836,7 +7734,7 @@ class MolecularActivityToPathwayAssociation(Association):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.MolecularActivityToPathwayAssociation
+    class_class_uri: ClassVar[URIRef] = BIOLINK["MolecularActivityToPathwayAssociation"]
     class_class_curie: ClassVar[str] = "biolink:MolecularActivityToPathwayAssociation"
     class_name: ClassVar[str] = "molecular activity to pathway association"
     class_model_uri: ClassVar[URIRef] = BIOLINK.MolecularActivityToPathwayAssociation
@@ -6868,6 +7766,9 @@ class MolecularActivityToPathwayAssociation(Association):
             self.predicate = PredicateType(self.predicate)
 
         super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -6877,7 +7778,7 @@ class ChemicalToPathwayAssociation(Association):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.ChemicalToPathwayAssociation
+    class_class_uri: ClassVar[URIRef] = BIOLINK["ChemicalToPathwayAssociation"]
     class_class_curie: ClassVar[str] = "biolink:ChemicalToPathwayAssociation"
     class_name: ClassVar[str] = "chemical to pathway association"
     class_model_uri: ClassVar[URIRef] = BIOLINK.ChemicalToPathwayAssociation
@@ -6904,13 +7805,16 @@ class ChemicalToPathwayAssociation(Association):
             self.object = PathwayId(self.object)
 
         super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
 class NamedThingAssociatedWithLikelihoodOfNamedThingAssociation(Association):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.NamedThingAssociatedWithLikelihoodOfNamedThingAssociation
+    class_class_uri: ClassVar[URIRef] = BIOLINK["NamedThingAssociatedWithLikelihoodOfNamedThingAssociation"]
     class_class_curie: ClassVar[str] = "biolink:NamedThingAssociatedWithLikelihoodOfNamedThingAssociation"
     class_name: ClassVar[str] = "named thing associated with likelihood of named thing association"
     class_model_uri: ClassVar[URIRef] = BIOLINK.NamedThingAssociatedWithLikelihoodOfNamedThingAssociation
@@ -6948,6 +7852,9 @@ class NamedThingAssociatedWithLikelihoodOfNamedThingAssociation(Association):
             self.object_context_qualifier = OntologyClassId(self.object_context_qualifier)
 
         super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -6959,7 +7866,7 @@ class ChemicalGeneInteractionAssociation(Association):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.ChemicalGeneInteractionAssociation
+    class_class_uri: ClassVar[URIRef] = BIOLINK["ChemicalGeneInteractionAssociation"]
     class_class_curie: ClassVar[str] = "biolink:ChemicalGeneInteractionAssociation"
     class_name: ClassVar[str] = "chemical gene interaction association"
     class_model_uri: ClassVar[URIRef] = BIOLINK.ChemicalGeneInteractionAssociation
@@ -7023,6 +7930,9 @@ class ChemicalGeneInteractionAssociation(Association):
             self.anatomical_context_qualifier = AnatomicalEntityId(self.anatomical_context_qualifier)
 
         super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -7033,7 +7943,7 @@ class ChemicalAffectsGeneAssociation(Association):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.ChemicalAffectsGeneAssociation
+    class_class_uri: ClassVar[URIRef] = BIOLINK["ChemicalAffectsGeneAssociation"]
     class_class_curie: ClassVar[str] = "biolink:ChemicalAffectsGeneAssociation"
     class_name: ClassVar[str] = "chemical affects gene association"
     class_model_uri: ClassVar[URIRef] = BIOLINK.ChemicalAffectsGeneAssociation
@@ -7125,6 +8035,9 @@ class ChemicalAffectsGeneAssociation(Association):
             self.species_context_qualifier = OrganismTaxonId(self.species_context_qualifier)
 
         super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -7134,7 +8047,7 @@ class DrugToGeneAssociation(Association):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.DrugToGeneAssociation
+    class_class_uri: ClassVar[URIRef] = BIOLINK["DrugToGeneAssociation"]
     class_class_curie: ClassVar[str] = "biolink:DrugToGeneAssociation"
     class_name: ClassVar[str] = "drug to gene association"
     class_model_uri: ClassVar[URIRef] = BIOLINK.DrugToGeneAssociation
@@ -7156,6 +8069,9 @@ class DrugToGeneAssociation(Association):
             self.object = GeneOrGeneProduct(**as_dict(self.object))
 
         super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -7165,7 +8081,7 @@ class MaterialSampleToEntityAssociationMixin(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.MaterialSampleToEntityAssociationMixin
+    class_class_uri: ClassVar[URIRef] = BIOLINK["MaterialSampleToEntityAssociationMixin"]
     class_class_curie: ClassVar[str] = "biolink:MaterialSampleToEntityAssociationMixin"
     class_name: ClassVar[str] = "material sample to entity association mixin"
     class_model_uri: ClassVar[URIRef] = BIOLINK.MaterialSampleToEntityAssociationMixin
@@ -7188,7 +8104,7 @@ class MaterialSampleDerivationAssociation(Association):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.MaterialSampleDerivationAssociation
+    class_class_uri: ClassVar[URIRef] = BIOLINK["MaterialSampleDerivationAssociation"]
     class_class_curie: ClassVar[str] = "biolink:MaterialSampleDerivationAssociation"
     class_name: ClassVar[str] = "material sample derivation association"
     class_model_uri: ClassVar[URIRef] = BIOLINK.MaterialSampleDerivationAssociation
@@ -7220,6 +8136,9 @@ class MaterialSampleDerivationAssociation(Association):
             self.predicate = PredicateType(self.predicate)
 
         super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -7229,7 +8148,7 @@ class MaterialSampleToDiseaseOrPhenotypicFeatureAssociation(Association):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.MaterialSampleToDiseaseOrPhenotypicFeatureAssociation
+    class_class_uri: ClassVar[URIRef] = BIOLINK["MaterialSampleToDiseaseOrPhenotypicFeatureAssociation"]
     class_class_curie: ClassVar[str] = "biolink:MaterialSampleToDiseaseOrPhenotypicFeatureAssociation"
     class_name: ClassVar[str] = "material sample to disease or phenotypic feature association"
     class_model_uri: ClassVar[URIRef] = BIOLINK.MaterialSampleToDiseaseOrPhenotypicFeatureAssociation
@@ -7246,13 +8165,16 @@ class MaterialSampleToDiseaseOrPhenotypicFeatureAssociation(Association):
             self.id = MaterialSampleToDiseaseOrPhenotypicFeatureAssociationId(self.id)
 
         super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
 class DiseaseToEntityAssociationMixin(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.DiseaseToEntityAssociationMixin
+    class_class_uri: ClassVar[URIRef] = BIOLINK["DiseaseToEntityAssociationMixin"]
     class_class_curie: ClassVar[str] = "biolink:DiseaseToEntityAssociationMixin"
     class_name: ClassVar[str] = "disease to entity association mixin"
     class_model_uri: ClassVar[URIRef] = BIOLINK.DiseaseToEntityAssociationMixin
@@ -7275,7 +8197,7 @@ class EntityToExposureEventAssociationMixin(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.EntityToExposureEventAssociationMixin
+    class_class_uri: ClassVar[URIRef] = BIOLINK["EntityToExposureEventAssociationMixin"]
     class_class_curie: ClassVar[str] = "biolink:EntityToExposureEventAssociationMixin"
     class_name: ClassVar[str] = "entity to exposure event association mixin"
     class_model_uri: ClassVar[URIRef] = BIOLINK.EntityToExposureEventAssociationMixin
@@ -7298,7 +8220,7 @@ class DiseaseToExposureEventAssociation(Association):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.DiseaseToExposureEventAssociation
+    class_class_uri: ClassVar[URIRef] = BIOLINK["DiseaseToExposureEventAssociation"]
     class_class_curie: ClassVar[str] = "biolink:DiseaseToExposureEventAssociation"
     class_name: ClassVar[str] = "disease to exposure event association"
     class_model_uri: ClassVar[URIRef] = BIOLINK.DiseaseToExposureEventAssociation
@@ -7315,6 +8237,9 @@ class DiseaseToExposureEventAssociation(Association):
             self.id = DiseaseToExposureEventAssociationId(self.id)
 
         super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -7324,7 +8249,7 @@ class EntityToOutcomeAssociationMixin(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.EntityToOutcomeAssociationMixin
+    class_class_uri: ClassVar[URIRef] = BIOLINK["EntityToOutcomeAssociationMixin"]
     class_class_curie: ClassVar[str] = "biolink:EntityToOutcomeAssociationMixin"
     class_name: ClassVar[str] = "entity to outcome association mixin"
     class_model_uri: ClassVar[URIRef] = BIOLINK.EntityToOutcomeAssociationMixin
@@ -7347,7 +8272,7 @@ class ExposureEventToOutcomeAssociation(Association):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.ExposureEventToOutcomeAssociation
+    class_class_uri: ClassVar[URIRef] = BIOLINK["ExposureEventToOutcomeAssociation"]
     class_class_curie: ClassVar[str] = "biolink:ExposureEventToOutcomeAssociation"
     class_name: ClassVar[str] = "exposure event to outcome association"
     class_model_uri: ClassVar[URIRef] = BIOLINK.ExposureEventToOutcomeAssociation
@@ -7372,6 +8297,9 @@ class ExposureEventToOutcomeAssociation(Association):
             self.temporal_context_qualifier = TimeType(self.temporal_context_qualifier)
 
         super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -7381,7 +8309,7 @@ class FrequencyQualifierMixin(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.FrequencyQualifierMixin
+    class_class_uri: ClassVar[URIRef] = BIOLINK["FrequencyQualifierMixin"]
     class_class_curie: ClassVar[str] = "biolink:FrequencyQualifierMixin"
     class_name: ClassVar[str] = "frequency qualifier mixin"
     class_model_uri: ClassVar[URIRef] = BIOLINK.FrequencyQualifierMixin
@@ -7402,7 +8330,7 @@ class EntityToFeatureOrDiseaseQualifiersMixin(FrequencyQualifierMixin):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.EntityToFeatureOrDiseaseQualifiersMixin
+    class_class_uri: ClassVar[URIRef] = BIOLINK["EntityToFeatureOrDiseaseQualifiersMixin"]
     class_class_curie: ClassVar[str] = "biolink:EntityToFeatureOrDiseaseQualifiersMixin"
     class_name: ClassVar[str] = "entity to feature or disease qualifiers mixin"
     class_model_uri: ClassVar[URIRef] = BIOLINK.EntityToFeatureOrDiseaseQualifiersMixin
@@ -7424,7 +8352,7 @@ class EntityToFeatureOrDiseaseQualifiersMixin(FrequencyQualifierMixin):
 class EntityToPhenotypicFeatureAssociationMixin(EntityToFeatureOrDiseaseQualifiersMixin):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.EntityToPhenotypicFeatureAssociationMixin
+    class_class_uri: ClassVar[URIRef] = BIOLINK["EntityToPhenotypicFeatureAssociationMixin"]
     class_class_curie: ClassVar[str] = "biolink:EntityToPhenotypicFeatureAssociationMixin"
     class_name: ClassVar[str] = "entity to phenotypic feature association mixin"
     class_model_uri: ClassVar[URIRef] = BIOLINK.EntityToPhenotypicFeatureAssociationMixin
@@ -7472,7 +8400,7 @@ class InformationContentEntityToNamedThingAssociation(Association):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.InformationContentEntityToNamedThingAssociation
+    class_class_uri: ClassVar[URIRef] = BIOLINK["InformationContentEntityToNamedThingAssociation"]
     class_class_curie: ClassVar[str] = "biolink:InformationContentEntityToNamedThingAssociation"
     class_name: ClassVar[str] = "information content entity to named thing association"
     class_model_uri: ClassVar[URIRef] = BIOLINK.InformationContentEntityToNamedThingAssociation
@@ -7504,6 +8432,9 @@ class InformationContentEntityToNamedThingAssociation(Association):
             self.predicate = PredicateType(self.predicate)
 
         super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -7513,7 +8444,7 @@ class EntityToDiseaseAssociationMixin(EntityToFeatureOrDiseaseQualifiersMixin):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.EntityToDiseaseAssociationMixin
+    class_class_uri: ClassVar[URIRef] = BIOLINK["EntityToDiseaseAssociationMixin"]
     class_class_curie: ClassVar[str] = "biolink:EntityToDiseaseAssociationMixin"
     class_name: ClassVar[str] = "entity to disease association mixin"
     class_model_uri: ClassVar[URIRef] = BIOLINK.EntityToDiseaseAssociationMixin
@@ -7533,7 +8464,7 @@ class EntityToDiseaseAssociationMixin(EntityToFeatureOrDiseaseQualifiersMixin):
 class DiseaseOrPhenotypicFeatureToEntityAssociationMixin(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.DiseaseOrPhenotypicFeatureToEntityAssociationMixin
+    class_class_uri: ClassVar[URIRef] = BIOLINK["DiseaseOrPhenotypicFeatureToEntityAssociationMixin"]
     class_class_curie: ClassVar[str] = "biolink:DiseaseOrPhenotypicFeatureToEntityAssociationMixin"
     class_name: ClassVar[str] = "disease or phenotypic feature to entity association mixin"
     class_model_uri: ClassVar[URIRef] = BIOLINK.DiseaseOrPhenotypicFeatureToEntityAssociationMixin
@@ -7557,7 +8488,7 @@ class DiseaseOrPhenotypicFeatureToLocationAssociation(Association):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.DiseaseOrPhenotypicFeatureToLocationAssociation
+    class_class_uri: ClassVar[URIRef] = BIOLINK["DiseaseOrPhenotypicFeatureToLocationAssociation"]
     class_class_curie: ClassVar[str] = "biolink:DiseaseOrPhenotypicFeatureToLocationAssociation"
     class_name: ClassVar[str] = "disease or phenotypic feature to location association"
     class_model_uri: ClassVar[URIRef] = BIOLINK.DiseaseOrPhenotypicFeatureToLocationAssociation
@@ -7579,6 +8510,9 @@ class DiseaseOrPhenotypicFeatureToLocationAssociation(Association):
             self.object = AnatomicalEntityId(self.object)
 
         super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -7588,7 +8522,7 @@ class DiseaseOrPhenotypicFeatureToGeneticInheritanceAssociation(Association):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.DiseaseOrPhenotypicFeatureToGeneticInheritanceAssociation
+    class_class_uri: ClassVar[URIRef] = BIOLINK["DiseaseOrPhenotypicFeatureToGeneticInheritanceAssociation"]
     class_class_curie: ClassVar[str] = "biolink:DiseaseOrPhenotypicFeatureToGeneticInheritanceAssociation"
     class_name: ClassVar[str] = "disease or phenotypic feature to genetic inheritance association"
     class_model_uri: ClassVar[URIRef] = BIOLINK.DiseaseOrPhenotypicFeatureToGeneticInheritanceAssociation
@@ -7615,13 +8549,16 @@ class DiseaseOrPhenotypicFeatureToGeneticInheritanceAssociation(Association):
             self.object = GeneticInheritanceId(self.object)
 
         super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
 class EntityToDiseaseOrPhenotypicFeatureAssociationMixin(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.EntityToDiseaseOrPhenotypicFeatureAssociationMixin
+    class_class_uri: ClassVar[URIRef] = BIOLINK["EntityToDiseaseOrPhenotypicFeatureAssociationMixin"]
     class_class_curie: ClassVar[str] = "biolink:EntityToDiseaseOrPhenotypicFeatureAssociationMixin"
     class_name: ClassVar[str] = "entity to disease or phenotypic feature association mixin"
     class_model_uri: ClassVar[URIRef] = BIOLINK.EntityToDiseaseOrPhenotypicFeatureAssociationMixin
@@ -7641,7 +8578,7 @@ class EntityToDiseaseOrPhenotypicFeatureAssociationMixin(YAMLRoot):
 class GenotypeToEntityAssociationMixin(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.GenotypeToEntityAssociationMixin
+    class_class_uri: ClassVar[URIRef] = BIOLINK["GenotypeToEntityAssociationMixin"]
     class_class_curie: ClassVar[str] = "biolink:GenotypeToEntityAssociationMixin"
     class_name: ClassVar[str] = "genotype to entity association mixin"
     class_model_uri: ClassVar[URIRef] = BIOLINK.GenotypeToEntityAssociationMixin
@@ -7665,7 +8602,7 @@ class GenotypeToPhenotypicFeatureAssociation(Association):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.GenotypeToPhenotypicFeatureAssociation
+    class_class_uri: ClassVar[URIRef] = BIOLINK["GenotypeToPhenotypicFeatureAssociation"]
     class_class_curie: ClassVar[str] = "biolink:GenotypeToPhenotypicFeatureAssociation"
     class_name: ClassVar[str] = "genotype to phenotypic feature association"
     class_model_uri: ClassVar[URIRef] = BIOLINK.GenotypeToPhenotypicFeatureAssociation
@@ -7674,6 +8611,9 @@ class GenotypeToPhenotypicFeatureAssociation(Association):
     object: Union[str, NamedThingId] = None
     predicate: Union[str, PredicateType] = None
     subject: Union[str, GenotypeId] = None
+    frequency_qualifier: Optional[Union[str, FrequencyValue]] = None
+    severity_qualifier: Optional[Union[str, SeverityValueId]] = None
+    onset_qualifier: Optional[Union[str, OnsetId]] = None
     sex_qualifier: Optional[Union[str, BiologicalSexId]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
@@ -7692,10 +8632,22 @@ class GenotypeToPhenotypicFeatureAssociation(Association):
         if not isinstance(self.subject, GenotypeId):
             self.subject = GenotypeId(self.subject)
 
+        if self.frequency_qualifier is not None and not isinstance(self.frequency_qualifier, FrequencyValue):
+            self.frequency_qualifier = FrequencyValue(self.frequency_qualifier)
+
+        if self.severity_qualifier is not None and not isinstance(self.severity_qualifier, SeverityValueId):
+            self.severity_qualifier = SeverityValueId(self.severity_qualifier)
+
+        if self.onset_qualifier is not None and not isinstance(self.onset_qualifier, OnsetId):
+            self.onset_qualifier = OnsetId(self.onset_qualifier)
+
         if self.sex_qualifier is not None and not isinstance(self.sex_qualifier, BiologicalSexId):
             self.sex_qualifier = BiologicalSexId(self.sex_qualifier)
 
         super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -7706,7 +8658,7 @@ class ExposureEventToPhenotypicFeatureAssociation(Association):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.ExposureEventToPhenotypicFeatureAssociation
+    class_class_uri: ClassVar[URIRef] = BIOLINK["ExposureEventToPhenotypicFeatureAssociation"]
     class_class_curie: ClassVar[str] = "biolink:ExposureEventToPhenotypicFeatureAssociation"
     class_name: ClassVar[str] = "exposure event to phenotypic feature association"
     class_model_uri: ClassVar[URIRef] = BIOLINK.ExposureEventToPhenotypicFeatureAssociation
@@ -7715,6 +8667,9 @@ class ExposureEventToPhenotypicFeatureAssociation(Association):
     predicate: Union[str, PredicateType] = None
     object: Union[str, NamedThingId] = None
     subject: Union[str, ExposureEventId] = None
+    frequency_qualifier: Optional[Union[str, FrequencyValue]] = None
+    severity_qualifier: Optional[Union[str, SeverityValueId]] = None
+    onset_qualifier: Optional[Union[str, OnsetId]] = None
     sex_qualifier: Optional[Union[str, BiologicalSexId]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
@@ -7728,10 +8683,22 @@ class ExposureEventToPhenotypicFeatureAssociation(Association):
         if not isinstance(self.subject, ExposureEventId):
             self.subject = ExposureEventId(self.subject)
 
+        if self.frequency_qualifier is not None and not isinstance(self.frequency_qualifier, FrequencyValue):
+            self.frequency_qualifier = FrequencyValue(self.frequency_qualifier)
+
+        if self.severity_qualifier is not None and not isinstance(self.severity_qualifier, SeverityValueId):
+            self.severity_qualifier = SeverityValueId(self.severity_qualifier)
+
+        if self.onset_qualifier is not None and not isinstance(self.onset_qualifier, OnsetId):
+            self.onset_qualifier = OnsetId(self.onset_qualifier)
+
         if self.sex_qualifier is not None and not isinstance(self.sex_qualifier, BiologicalSexId):
             self.sex_qualifier = BiologicalSexId(self.sex_qualifier)
 
         super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -7742,7 +8709,7 @@ class DiseaseToPhenotypicFeatureAssociation(Association):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.DiseaseToPhenotypicFeatureAssociation
+    class_class_uri: ClassVar[URIRef] = BIOLINK["DiseaseToPhenotypicFeatureAssociation"]
     class_class_curie: ClassVar[str] = "biolink:DiseaseToPhenotypicFeatureAssociation"
     class_name: ClassVar[str] = "disease to phenotypic feature association"
     class_model_uri: ClassVar[URIRef] = BIOLINK.DiseaseToPhenotypicFeatureAssociation
@@ -7751,6 +8718,9 @@ class DiseaseToPhenotypicFeatureAssociation(Association):
     predicate: Union[str, PredicateType] = None
     subject: Union[str, DiseaseId] = None
     object: Union[str, PhenotypicFeatureId] = None
+    frequency_qualifier: Optional[Union[str, FrequencyValue]] = None
+    severity_qualifier: Optional[Union[str, SeverityValueId]] = None
+    onset_qualifier: Optional[Union[str, OnsetId]] = None
     sex_qualifier: Optional[Union[str, BiologicalSexId]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
@@ -7769,10 +8739,22 @@ class DiseaseToPhenotypicFeatureAssociation(Association):
         if not isinstance(self.object, PhenotypicFeatureId):
             self.object = PhenotypicFeatureId(self.object)
 
+        if self.frequency_qualifier is not None and not isinstance(self.frequency_qualifier, FrequencyValue):
+            self.frequency_qualifier = FrequencyValue(self.frequency_qualifier)
+
+        if self.severity_qualifier is not None and not isinstance(self.severity_qualifier, SeverityValueId):
+            self.severity_qualifier = SeverityValueId(self.severity_qualifier)
+
+        if self.onset_qualifier is not None and not isinstance(self.onset_qualifier, OnsetId):
+            self.onset_qualifier = OnsetId(self.onset_qualifier)
+
         if self.sex_qualifier is not None and not isinstance(self.sex_qualifier, BiologicalSexId):
             self.sex_qualifier = BiologicalSexId(self.sex_qualifier)
 
         super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -7783,7 +8765,7 @@ class CaseToPhenotypicFeatureAssociation(Association):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.CaseToPhenotypicFeatureAssociation
+    class_class_uri: ClassVar[URIRef] = BIOLINK["CaseToPhenotypicFeatureAssociation"]
     class_class_curie: ClassVar[str] = "biolink:CaseToPhenotypicFeatureAssociation"
     class_name: ClassVar[str] = "case to phenotypic feature association"
     class_model_uri: ClassVar[URIRef] = BIOLINK.CaseToPhenotypicFeatureAssociation
@@ -7792,6 +8774,9 @@ class CaseToPhenotypicFeatureAssociation(Association):
     subject: Union[str, NamedThingId] = None
     predicate: Union[str, PredicateType] = None
     object: Union[str, NamedThingId] = None
+    frequency_qualifier: Optional[Union[str, FrequencyValue]] = None
+    severity_qualifier: Optional[Union[str, SeverityValueId]] = None
+    onset_qualifier: Optional[Union[str, OnsetId]] = None
     sex_qualifier: Optional[Union[str, BiologicalSexId]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
@@ -7800,10 +8785,22 @@ class CaseToPhenotypicFeatureAssociation(Association):
         if not isinstance(self.id, CaseToPhenotypicFeatureAssociationId):
             self.id = CaseToPhenotypicFeatureAssociationId(self.id)
 
+        if self.frequency_qualifier is not None and not isinstance(self.frequency_qualifier, FrequencyValue):
+            self.frequency_qualifier = FrequencyValue(self.frequency_qualifier)
+
+        if self.severity_qualifier is not None and not isinstance(self.severity_qualifier, SeverityValueId):
+            self.severity_qualifier = SeverityValueId(self.severity_qualifier)
+
+        if self.onset_qualifier is not None and not isinstance(self.onset_qualifier, OnsetId):
+            self.onset_qualifier = OnsetId(self.onset_qualifier)
+
         if self.sex_qualifier is not None and not isinstance(self.sex_qualifier, BiologicalSexId):
             self.sex_qualifier = BiologicalSexId(self.sex_qualifier)
 
         super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -7814,7 +8811,7 @@ class BehaviorToBehavioralFeatureAssociation(Association):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.BehaviorToBehavioralFeatureAssociation
+    class_class_uri: ClassVar[URIRef] = BIOLINK["BehaviorToBehavioralFeatureAssociation"]
     class_class_curie: ClassVar[str] = "biolink:BehaviorToBehavioralFeatureAssociation"
     class_name: ClassVar[str] = "behavior to behavioral feature association"
     class_model_uri: ClassVar[URIRef] = BIOLINK.BehaviorToBehavioralFeatureAssociation
@@ -7823,6 +8820,9 @@ class BehaviorToBehavioralFeatureAssociation(Association):
     predicate: Union[str, PredicateType] = None
     subject: Union[str, BehaviorId] = None
     object: Union[str, BehavioralFeatureId] = None
+    frequency_qualifier: Optional[Union[str, FrequencyValue]] = None
+    severity_qualifier: Optional[Union[str, SeverityValueId]] = None
+    onset_qualifier: Optional[Union[str, OnsetId]] = None
     sex_qualifier: Optional[Union[str, BiologicalSexId]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
@@ -7841,17 +8841,29 @@ class BehaviorToBehavioralFeatureAssociation(Association):
         if not isinstance(self.object, BehavioralFeatureId):
             self.object = BehavioralFeatureId(self.object)
 
+        if self.frequency_qualifier is not None and not isinstance(self.frequency_qualifier, FrequencyValue):
+            self.frequency_qualifier = FrequencyValue(self.frequency_qualifier)
+
+        if self.severity_qualifier is not None and not isinstance(self.severity_qualifier, SeverityValueId):
+            self.severity_qualifier = SeverityValueId(self.severity_qualifier)
+
+        if self.onset_qualifier is not None and not isinstance(self.onset_qualifier, OnsetId):
+            self.onset_qualifier = OnsetId(self.onset_qualifier)
+
         if self.sex_qualifier is not None and not isinstance(self.sex_qualifier, BiologicalSexId):
             self.sex_qualifier = BiologicalSexId(self.sex_qualifier)
 
         super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
 class GeneToEntityAssociationMixin(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.GeneToEntityAssociationMixin
+    class_class_uri: ClassVar[URIRef] = BIOLINK["GeneToEntityAssociationMixin"]
     class_class_curie: ClassVar[str] = "biolink:GeneToEntityAssociationMixin"
     class_name: ClassVar[str] = "gene to entity association mixin"
     class_model_uri: ClassVar[URIRef] = BIOLINK.GeneToEntityAssociationMixin
@@ -7871,7 +8883,7 @@ class GeneToEntityAssociationMixin(YAMLRoot):
 class VariantToEntityAssociationMixin(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.VariantToEntityAssociationMixin
+    class_class_uri: ClassVar[URIRef] = BIOLINK["VariantToEntityAssociationMixin"]
     class_class_curie: ClassVar[str] = "biolink:VariantToEntityAssociationMixin"
     class_name: ClassVar[str] = "variant to entity association mixin"
     class_model_uri: ClassVar[URIRef] = BIOLINK.VariantToEntityAssociationMixin
@@ -7891,7 +8903,7 @@ class VariantToEntityAssociationMixin(YAMLRoot):
 class GeneToPhenotypicFeatureAssociation(Association):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.GeneToPhenotypicFeatureAssociation
+    class_class_uri: ClassVar[URIRef] = BIOLINK["GeneToPhenotypicFeatureAssociation"]
     class_class_curie: ClassVar[str] = "biolink:GeneToPhenotypicFeatureAssociation"
     class_name: ClassVar[str] = "gene to phenotypic feature association"
     class_model_uri: ClassVar[URIRef] = BIOLINK.GeneToPhenotypicFeatureAssociation
@@ -7900,6 +8912,9 @@ class GeneToPhenotypicFeatureAssociation(Association):
     predicate: Union[str, PredicateType] = None
     subject: Union[dict, GeneOrGeneProduct] = None
     object: Union[str, PhenotypicFeatureId] = None
+    frequency_qualifier: Optional[Union[str, FrequencyValue]] = None
+    severity_qualifier: Optional[Union[str, SeverityValueId]] = None
+    onset_qualifier: Optional[Union[str, OnsetId]] = None
     sex_qualifier: Optional[Union[str, BiologicalSexId]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
@@ -7918,17 +8933,29 @@ class GeneToPhenotypicFeatureAssociation(Association):
         if not isinstance(self.object, PhenotypicFeatureId):
             self.object = PhenotypicFeatureId(self.object)
 
+        if self.frequency_qualifier is not None and not isinstance(self.frequency_qualifier, FrequencyValue):
+            self.frequency_qualifier = FrequencyValue(self.frequency_qualifier)
+
+        if self.severity_qualifier is not None and not isinstance(self.severity_qualifier, SeverityValueId):
+            self.severity_qualifier = SeverityValueId(self.severity_qualifier)
+
+        if self.onset_qualifier is not None and not isinstance(self.onset_qualifier, OnsetId):
+            self.onset_qualifier = OnsetId(self.onset_qualifier)
+
         if self.sex_qualifier is not None and not isinstance(self.sex_qualifier, BiologicalSexId):
             self.sex_qualifier = BiologicalSexId(self.sex_qualifier)
 
         super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
 class GeneToDiseaseAssociation(Association):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.GeneToDiseaseAssociation
+    class_class_uri: ClassVar[URIRef] = BIOLINK["GeneToDiseaseAssociation"]
     class_class_curie: ClassVar[str] = "biolink:GeneToDiseaseAssociation"
     class_name: ClassVar[str] = "gene to disease association"
     class_model_uri: ClassVar[URIRef] = BIOLINK.GeneToDiseaseAssociation
@@ -7937,6 +8964,9 @@ class GeneToDiseaseAssociation(Association):
     predicate: Union[str, PredicateType] = None
     subject: Union[dict, GeneOrGeneProduct] = None
     object: Union[str, DiseaseId] = None
+    frequency_qualifier: Optional[Union[str, FrequencyValue]] = None
+    severity_qualifier: Optional[Union[str, SeverityValueId]] = None
+    onset_qualifier: Optional[Union[str, OnsetId]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
@@ -7954,14 +8984,26 @@ class GeneToDiseaseAssociation(Association):
         if not isinstance(self.object, DiseaseId):
             self.object = DiseaseId(self.object)
 
+        if self.frequency_qualifier is not None and not isinstance(self.frequency_qualifier, FrequencyValue):
+            self.frequency_qualifier = FrequencyValue(self.frequency_qualifier)
+
+        if self.severity_qualifier is not None and not isinstance(self.severity_qualifier, SeverityValueId):
+            self.severity_qualifier = SeverityValueId(self.severity_qualifier)
+
+        if self.onset_qualifier is not None and not isinstance(self.onset_qualifier, OnsetId):
+            self.onset_qualifier = OnsetId(self.onset_qualifier)
+
         super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
 class DruggableGeneToDiseaseAssociation(GeneToDiseaseAssociation):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.DruggableGeneToDiseaseAssociation
+    class_class_uri: ClassVar[URIRef] = BIOLINK["DruggableGeneToDiseaseAssociation"]
     class_class_curie: ClassVar[str] = "biolink:DruggableGeneToDiseaseAssociation"
     class_name: ClassVar[str] = "druggable gene to disease association"
     class_model_uri: ClassVar[URIRef] = BIOLINK.DruggableGeneToDiseaseAssociation
@@ -7970,6 +9012,9 @@ class DruggableGeneToDiseaseAssociation(GeneToDiseaseAssociation):
     object: Union[str, DiseaseId] = None
     subject: Union[dict, GeneOrGeneProduct] = None
     predicate: Union[str, PredicateType] = None
+    frequency_qualifier: Optional[Union[str, FrequencyValue]] = None
+    severity_qualifier: Optional[Union[str, SeverityValueId]] = None
+    onset_qualifier: Optional[Union[str, OnsetId]] = None
     has_evidence: Optional[Union[Union[str, "DruggableGeneCategoryEnum"], List[Union[str, "DruggableGeneCategoryEnum"]]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
@@ -7988,11 +9033,23 @@ class DruggableGeneToDiseaseAssociation(GeneToDiseaseAssociation):
         if not isinstance(self.predicate, PredicateType):
             self.predicate = PredicateType(self.predicate)
 
+        if self.frequency_qualifier is not None and not isinstance(self.frequency_qualifier, FrequencyValue):
+            self.frequency_qualifier = FrequencyValue(self.frequency_qualifier)
+
+        if self.severity_qualifier is not None and not isinstance(self.severity_qualifier, SeverityValueId):
+            self.severity_qualifier = SeverityValueId(self.severity_qualifier)
+
+        if self.onset_qualifier is not None and not isinstance(self.onset_qualifier, OnsetId):
+            self.onset_qualifier = OnsetId(self.onset_qualifier)
+
         if not isinstance(self.has_evidence, list):
             self.has_evidence = [self.has_evidence] if self.has_evidence is not None else []
         self.has_evidence = [v if isinstance(v, DruggableGeneCategoryEnum) else DruggableGeneCategoryEnum(v) for v in self.has_evidence]
 
         super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -8003,7 +9060,7 @@ class VariantToGeneAssociation(Association):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.VariantToGeneAssociation
+    class_class_uri: ClassVar[URIRef] = BIOLINK["VariantToGeneAssociation"]
     class_class_curie: ClassVar[str] = "biolink:VariantToGeneAssociation"
     class_name: ClassVar[str] = "variant to gene association"
     class_model_uri: ClassVar[URIRef] = BIOLINK.VariantToGeneAssociation
@@ -8030,6 +9087,9 @@ class VariantToGeneAssociation(Association):
             self.predicate = PredicateType(self.predicate)
 
         super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -8039,7 +9099,7 @@ class VariantToGeneExpressionAssociation(VariantToGeneAssociation):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.VariantToGeneExpressionAssociation
+    class_class_uri: ClassVar[URIRef] = BIOLINK["VariantToGeneExpressionAssociation"]
     class_class_curie: ClassVar[str] = "biolink:VariantToGeneExpressionAssociation"
     class_name: ClassVar[str] = "variant to gene expression association"
     class_model_uri: ClassVar[URIRef] = BIOLINK.VariantToGeneExpressionAssociation
@@ -8077,6 +9137,9 @@ class VariantToGeneExpressionAssociation(VariantToGeneAssociation):
             self.phenotypic_state = DiseaseOrPhenotypicFeatureId(self.phenotypic_state)
 
         super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -8086,7 +9149,7 @@ class VariantToPopulationAssociation(Association):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.VariantToPopulationAssociation
+    class_class_uri: ClassVar[URIRef] = BIOLINK["VariantToPopulationAssociation"]
     class_class_curie: ClassVar[str] = "biolink:VariantToPopulationAssociation"
     class_name: ClassVar[str] = "variant to population association"
     class_model_uri: ClassVar[URIRef] = BIOLINK.VariantToPopulationAssociation
@@ -8133,6 +9196,9 @@ class VariantToPopulationAssociation(Association):
             self.frequency_qualifier = FrequencyValue(self.frequency_qualifier)
 
         super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -8142,7 +9208,7 @@ class PopulationToPopulationAssociation(Association):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.PopulationToPopulationAssociation
+    class_class_uri: ClassVar[URIRef] = BIOLINK["PopulationToPopulationAssociation"]
     class_class_curie: ClassVar[str] = "biolink:PopulationToPopulationAssociation"
     class_name: ClassVar[str] = "population to population association"
     class_model_uri: ClassVar[URIRef] = BIOLINK.PopulationToPopulationAssociation
@@ -8174,13 +9240,16 @@ class PopulationToPopulationAssociation(Association):
             self.predicate = PredicateType(self.predicate)
 
         super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
 class VariantToPhenotypicFeatureAssociation(Association):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.VariantToPhenotypicFeatureAssociation
+    class_class_uri: ClassVar[URIRef] = BIOLINK["VariantToPhenotypicFeatureAssociation"]
     class_class_curie: ClassVar[str] = "biolink:VariantToPhenotypicFeatureAssociation"
     class_name: ClassVar[str] = "variant to phenotypic feature association"
     class_model_uri: ClassVar[URIRef] = BIOLINK.VariantToPhenotypicFeatureAssociation
@@ -8189,6 +9258,9 @@ class VariantToPhenotypicFeatureAssociation(Association):
     predicate: Union[str, PredicateType] = None
     object: Union[str, NamedThingId] = None
     subject: Union[str, SequenceVariantId] = None
+    frequency_qualifier: Optional[Union[str, FrequencyValue]] = None
+    severity_qualifier: Optional[Union[str, SeverityValueId]] = None
+    onset_qualifier: Optional[Union[str, OnsetId]] = None
     sex_qualifier: Optional[Union[str, BiologicalSexId]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
@@ -8202,17 +9274,29 @@ class VariantToPhenotypicFeatureAssociation(Association):
         if not isinstance(self.subject, SequenceVariantId):
             self.subject = SequenceVariantId(self.subject)
 
+        if self.frequency_qualifier is not None and not isinstance(self.frequency_qualifier, FrequencyValue):
+            self.frequency_qualifier = FrequencyValue(self.frequency_qualifier)
+
+        if self.severity_qualifier is not None and not isinstance(self.severity_qualifier, SeverityValueId):
+            self.severity_qualifier = SeverityValueId(self.severity_qualifier)
+
+        if self.onset_qualifier is not None and not isinstance(self.onset_qualifier, OnsetId):
+            self.onset_qualifier = OnsetId(self.onset_qualifier)
+
         if self.sex_qualifier is not None and not isinstance(self.sex_qualifier, BiologicalSexId):
             self.sex_qualifier = BiologicalSexId(self.sex_qualifier)
 
         super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
 class VariantToDiseaseAssociation(Association):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.VariantToDiseaseAssociation
+    class_class_uri: ClassVar[URIRef] = BIOLINK["VariantToDiseaseAssociation"]
     class_class_curie: ClassVar[str] = "biolink:VariantToDiseaseAssociation"
     class_name: ClassVar[str] = "variant to disease association"
     class_model_uri: ClassVar[URIRef] = BIOLINK.VariantToDiseaseAssociation
@@ -8221,6 +9305,9 @@ class VariantToDiseaseAssociation(Association):
     subject: Union[str, NamedThingId] = None
     predicate: Union[str, PredicateType] = None
     object: Union[str, NamedThingId] = None
+    frequency_qualifier: Optional[Union[str, FrequencyValue]] = None
+    severity_qualifier: Optional[Union[str, SeverityValueId]] = None
+    onset_qualifier: Optional[Union[str, OnsetId]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
@@ -8243,14 +9330,26 @@ class VariantToDiseaseAssociation(Association):
         if not isinstance(self.object, NamedThingId):
             self.object = NamedThingId(self.object)
 
+        if self.frequency_qualifier is not None and not isinstance(self.frequency_qualifier, FrequencyValue):
+            self.frequency_qualifier = FrequencyValue(self.frequency_qualifier)
+
+        if self.severity_qualifier is not None and not isinstance(self.severity_qualifier, SeverityValueId):
+            self.severity_qualifier = SeverityValueId(self.severity_qualifier)
+
+        if self.onset_qualifier is not None and not isinstance(self.onset_qualifier, OnsetId):
+            self.onset_qualifier = OnsetId(self.onset_qualifier)
+
         super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
 class GenotypeToDiseaseAssociation(Association):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.GenotypeToDiseaseAssociation
+    class_class_uri: ClassVar[URIRef] = BIOLINK["GenotypeToDiseaseAssociation"]
     class_class_curie: ClassVar[str] = "biolink:GenotypeToDiseaseAssociation"
     class_name: ClassVar[str] = "genotype to disease association"
     class_model_uri: ClassVar[URIRef] = BIOLINK.GenotypeToDiseaseAssociation
@@ -8259,6 +9358,9 @@ class GenotypeToDiseaseAssociation(Association):
     subject: Union[str, NamedThingId] = None
     predicate: Union[str, PredicateType] = None
     object: Union[str, NamedThingId] = None
+    frequency_qualifier: Optional[Union[str, FrequencyValue]] = None
+    severity_qualifier: Optional[Union[str, SeverityValueId]] = None
+    onset_qualifier: Optional[Union[str, OnsetId]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
@@ -8281,7 +9383,19 @@ class GenotypeToDiseaseAssociation(Association):
         if not isinstance(self.object, NamedThingId):
             self.object = NamedThingId(self.object)
 
+        if self.frequency_qualifier is not None and not isinstance(self.frequency_qualifier, FrequencyValue):
+            self.frequency_qualifier = FrequencyValue(self.frequency_qualifier)
+
+        if self.severity_qualifier is not None and not isinstance(self.severity_qualifier, SeverityValueId):
+            self.severity_qualifier = SeverityValueId(self.severity_qualifier)
+
+        if self.onset_qualifier is not None and not isinstance(self.onset_qualifier, OnsetId):
+            self.onset_qualifier = OnsetId(self.onset_qualifier)
+
         super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -8293,7 +9407,7 @@ class ModelToDiseaseAssociationMixin(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.ModelToDiseaseAssociationMixin
+    class_class_uri: ClassVar[URIRef] = BIOLINK["ModelToDiseaseAssociationMixin"]
     class_class_curie: ClassVar[str] = "biolink:ModelToDiseaseAssociationMixin"
     class_name: ClassVar[str] = "model to disease association mixin"
     class_model_uri: ClassVar[URIRef] = BIOLINK.ModelToDiseaseAssociationMixin
@@ -8319,7 +9433,7 @@ class ModelToDiseaseAssociationMixin(YAMLRoot):
 class GeneAsAModelOfDiseaseAssociation(GeneToDiseaseAssociation):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.GeneAsAModelOfDiseaseAssociation
+    class_class_uri: ClassVar[URIRef] = BIOLINK["GeneAsAModelOfDiseaseAssociation"]
     class_class_curie: ClassVar[str] = "biolink:GeneAsAModelOfDiseaseAssociation"
     class_name: ClassVar[str] = "gene as a model of disease association"
     class_model_uri: ClassVar[URIRef] = BIOLINK.GeneAsAModelOfDiseaseAssociation
@@ -8328,6 +9442,9 @@ class GeneAsAModelOfDiseaseAssociation(GeneToDiseaseAssociation):
     predicate: Union[str, PredicateType] = None
     object: Union[str, DiseaseId] = None
     subject: Union[dict, GeneOrGeneProduct] = None
+    frequency_qualifier: Optional[Union[str, FrequencyValue]] = None
+    severity_qualifier: Optional[Union[str, SeverityValueId]] = None
+    onset_qualifier: Optional[Union[str, OnsetId]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
@@ -8340,14 +9457,26 @@ class GeneAsAModelOfDiseaseAssociation(GeneToDiseaseAssociation):
         if not isinstance(self.subject, GeneOrGeneProduct):
             self.subject = GeneOrGeneProduct(**as_dict(self.subject))
 
+        if self.frequency_qualifier is not None and not isinstance(self.frequency_qualifier, FrequencyValue):
+            self.frequency_qualifier = FrequencyValue(self.frequency_qualifier)
+
+        if self.severity_qualifier is not None and not isinstance(self.severity_qualifier, SeverityValueId):
+            self.severity_qualifier = SeverityValueId(self.severity_qualifier)
+
+        if self.onset_qualifier is not None and not isinstance(self.onset_qualifier, OnsetId):
+            self.onset_qualifier = OnsetId(self.onset_qualifier)
+
         super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
 class VariantAsAModelOfDiseaseAssociation(VariantToDiseaseAssociation):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.VariantAsAModelOfDiseaseAssociation
+    class_class_uri: ClassVar[URIRef] = BIOLINK["VariantAsAModelOfDiseaseAssociation"]
     class_class_curie: ClassVar[str] = "biolink:VariantAsAModelOfDiseaseAssociation"
     class_name: ClassVar[str] = "variant as a model of disease association"
     class_model_uri: ClassVar[URIRef] = BIOLINK.VariantAsAModelOfDiseaseAssociation
@@ -8356,6 +9485,9 @@ class VariantAsAModelOfDiseaseAssociation(VariantToDiseaseAssociation):
     predicate: Union[str, PredicateType] = None
     object: Union[str, NamedThingId] = None
     subject: Union[str, SequenceVariantId] = None
+    frequency_qualifier: Optional[Union[str, FrequencyValue]] = None
+    severity_qualifier: Optional[Union[str, SeverityValueId]] = None
+    onset_qualifier: Optional[Union[str, OnsetId]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
@@ -8368,14 +9500,26 @@ class VariantAsAModelOfDiseaseAssociation(VariantToDiseaseAssociation):
         if not isinstance(self.subject, SequenceVariantId):
             self.subject = SequenceVariantId(self.subject)
 
+        if self.frequency_qualifier is not None and not isinstance(self.frequency_qualifier, FrequencyValue):
+            self.frequency_qualifier = FrequencyValue(self.frequency_qualifier)
+
+        if self.severity_qualifier is not None and not isinstance(self.severity_qualifier, SeverityValueId):
+            self.severity_qualifier = SeverityValueId(self.severity_qualifier)
+
+        if self.onset_qualifier is not None and not isinstance(self.onset_qualifier, OnsetId):
+            self.onset_qualifier = OnsetId(self.onset_qualifier)
+
         super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
 class GenotypeAsAModelOfDiseaseAssociation(GenotypeToDiseaseAssociation):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.GenotypeAsAModelOfDiseaseAssociation
+    class_class_uri: ClassVar[URIRef] = BIOLINK["GenotypeAsAModelOfDiseaseAssociation"]
     class_class_curie: ClassVar[str] = "biolink:GenotypeAsAModelOfDiseaseAssociation"
     class_name: ClassVar[str] = "genotype as a model of disease association"
     class_model_uri: ClassVar[URIRef] = BIOLINK.GenotypeAsAModelOfDiseaseAssociation
@@ -8384,6 +9528,9 @@ class GenotypeAsAModelOfDiseaseAssociation(GenotypeToDiseaseAssociation):
     predicate: Union[str, PredicateType] = None
     object: Union[str, NamedThingId] = None
     subject: Union[str, GenotypeId] = None
+    frequency_qualifier: Optional[Union[str, FrequencyValue]] = None
+    severity_qualifier: Optional[Union[str, SeverityValueId]] = None
+    onset_qualifier: Optional[Union[str, OnsetId]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
@@ -8396,14 +9543,26 @@ class GenotypeAsAModelOfDiseaseAssociation(GenotypeToDiseaseAssociation):
         if not isinstance(self.subject, GenotypeId):
             self.subject = GenotypeId(self.subject)
 
+        if self.frequency_qualifier is not None and not isinstance(self.frequency_qualifier, FrequencyValue):
+            self.frequency_qualifier = FrequencyValue(self.frequency_qualifier)
+
+        if self.severity_qualifier is not None and not isinstance(self.severity_qualifier, SeverityValueId):
+            self.severity_qualifier = SeverityValueId(self.severity_qualifier)
+
+        if self.onset_qualifier is not None and not isinstance(self.onset_qualifier, OnsetId):
+            self.onset_qualifier = OnsetId(self.onset_qualifier)
+
         super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
 class CellLineAsAModelOfDiseaseAssociation(CellLineToDiseaseOrPhenotypicFeatureAssociation):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.CellLineAsAModelOfDiseaseAssociation
+    class_class_uri: ClassVar[URIRef] = BIOLINK["CellLineAsAModelOfDiseaseAssociation"]
     class_class_curie: ClassVar[str] = "biolink:CellLineAsAModelOfDiseaseAssociation"
     class_name: ClassVar[str] = "cell line as a model of disease association"
     class_model_uri: ClassVar[URIRef] = BIOLINK.CellLineAsAModelOfDiseaseAssociation
@@ -8412,6 +9571,9 @@ class CellLineAsAModelOfDiseaseAssociation(CellLineToDiseaseOrPhenotypicFeatureA
     predicate: Union[str, PredicateType] = None
     object: Union[str, NamedThingId] = None
     subject: Union[str, CellLineId] = None
+    frequency_qualifier: Optional[Union[str, FrequencyValue]] = None
+    severity_qualifier: Optional[Union[str, SeverityValueId]] = None
+    onset_qualifier: Optional[Union[str, OnsetId]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
@@ -8424,14 +9586,26 @@ class CellLineAsAModelOfDiseaseAssociation(CellLineToDiseaseOrPhenotypicFeatureA
         if not isinstance(self.subject, CellLineId):
             self.subject = CellLineId(self.subject)
 
+        if self.frequency_qualifier is not None and not isinstance(self.frequency_qualifier, FrequencyValue):
+            self.frequency_qualifier = FrequencyValue(self.frequency_qualifier)
+
+        if self.severity_qualifier is not None and not isinstance(self.severity_qualifier, SeverityValueId):
+            self.severity_qualifier = SeverityValueId(self.severity_qualifier)
+
+        if self.onset_qualifier is not None and not isinstance(self.onset_qualifier, OnsetId):
+            self.onset_qualifier = OnsetId(self.onset_qualifier)
+
         super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
 class OrganismalEntityAsAModelOfDiseaseAssociation(Association):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.OrganismalEntityAsAModelOfDiseaseAssociation
+    class_class_uri: ClassVar[URIRef] = BIOLINK["OrganismalEntityAsAModelOfDiseaseAssociation"]
     class_class_curie: ClassVar[str] = "biolink:OrganismalEntityAsAModelOfDiseaseAssociation"
     class_name: ClassVar[str] = "organismal entity as a model of disease association"
     class_model_uri: ClassVar[URIRef] = BIOLINK.OrganismalEntityAsAModelOfDiseaseAssociation
@@ -8440,6 +9614,9 @@ class OrganismalEntityAsAModelOfDiseaseAssociation(Association):
     predicate: Union[str, PredicateType] = None
     object: Union[str, NamedThingId] = None
     subject: Union[str, OrganismalEntityId] = None
+    frequency_qualifier: Optional[Union[str, FrequencyValue]] = None
+    severity_qualifier: Optional[Union[str, SeverityValueId]] = None
+    onset_qualifier: Optional[Union[str, OnsetId]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
@@ -8452,14 +9629,26 @@ class OrganismalEntityAsAModelOfDiseaseAssociation(Association):
         if not isinstance(self.subject, OrganismalEntityId):
             self.subject = OrganismalEntityId(self.subject)
 
+        if self.frequency_qualifier is not None and not isinstance(self.frequency_qualifier, FrequencyValue):
+            self.frequency_qualifier = FrequencyValue(self.frequency_qualifier)
+
+        if self.severity_qualifier is not None and not isinstance(self.severity_qualifier, SeverityValueId):
+            self.severity_qualifier = SeverityValueId(self.severity_qualifier)
+
+        if self.onset_qualifier is not None and not isinstance(self.onset_qualifier, OnsetId):
+            self.onset_qualifier = OnsetId(self.onset_qualifier)
+
         super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
 class OrganismToOrganismAssociation(Association):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.OrganismToOrganismAssociation
+    class_class_uri: ClassVar[URIRef] = BIOLINK["OrganismToOrganismAssociation"]
     class_class_curie: ClassVar[str] = "biolink:OrganismToOrganismAssociation"
     class_name: ClassVar[str] = "organism to organism association"
     class_model_uri: ClassVar[URIRef] = BIOLINK.OrganismToOrganismAssociation
@@ -8486,13 +9675,16 @@ class OrganismToOrganismAssociation(Association):
             self.object = IndividualOrganismId(self.object)
 
         super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
 class TaxonToTaxonAssociation(Association):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.TaxonToTaxonAssociation
+    class_class_uri: ClassVar[URIRef] = BIOLINK["TaxonToTaxonAssociation"]
     class_class_curie: ClassVar[str] = "biolink:TaxonToTaxonAssociation"
     class_name: ClassVar[str] = "taxon to taxon association"
     class_model_uri: ClassVar[URIRef] = BIOLINK.TaxonToTaxonAssociation
@@ -8519,13 +9711,16 @@ class TaxonToTaxonAssociation(Association):
             self.object = OrganismTaxonId(self.object)
 
         super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
 class GeneHasVariantThatContributesToDiseaseAssociation(GeneToDiseaseAssociation):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.GeneHasVariantThatContributesToDiseaseAssociation
+    class_class_uri: ClassVar[URIRef] = BIOLINK["GeneHasVariantThatContributesToDiseaseAssociation"]
     class_class_curie: ClassVar[str] = "biolink:GeneHasVariantThatContributesToDiseaseAssociation"
     class_name: ClassVar[str] = "gene has variant that contributes to disease association"
     class_model_uri: ClassVar[URIRef] = BIOLINK.GeneHasVariantThatContributesToDiseaseAssociation
@@ -8561,6 +9756,9 @@ class GeneHasVariantThatContributesToDiseaseAssociation(GeneToDiseaseAssociation
             self.subject_form_or_variant_qualifier = str(self.subject_form_or_variant_qualifier)
 
         super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -8570,7 +9768,7 @@ class GeneToExpressionSiteAssociation(Association):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.GeneToExpressionSiteAssociation
+    class_class_uri: ClassVar[URIRef] = BIOLINK["GeneToExpressionSiteAssociation"]
     class_class_curie: ClassVar[str] = "biolink:GeneToExpressionSiteAssociation"
     class_name: ClassVar[str] = "gene to expression site association"
     class_model_uri: ClassVar[URIRef] = BIOLINK.GeneToExpressionSiteAssociation
@@ -8610,6 +9808,9 @@ class GeneToExpressionSiteAssociation(Association):
             self.quantifier_qualifier = OntologyClassId(self.quantifier_qualifier)
 
         super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -8620,7 +9821,7 @@ class SequenceVariantModulatesTreatmentAssociation(Association):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.SequenceVariantModulatesTreatmentAssociation
+    class_class_uri: ClassVar[URIRef] = BIOLINK["SequenceVariantModulatesTreatmentAssociation"]
     class_class_curie: ClassVar[str] = "biolink:SequenceVariantModulatesTreatmentAssociation"
     class_name: ClassVar[str] = "sequence variant modulates treatment association"
     class_model_uri: ClassVar[URIRef] = BIOLINK.SequenceVariantModulatesTreatmentAssociation
@@ -8642,6 +9843,9 @@ class SequenceVariantModulatesTreatmentAssociation(Association):
             self.object = TreatmentId(self.object)
 
         super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -8652,7 +9856,7 @@ class FunctionalAssociation(Association):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.FunctionalAssociation
+    class_class_uri: ClassVar[URIRef] = BIOLINK["FunctionalAssociation"]
     class_class_curie: ClassVar[str] = "biolink:FunctionalAssociation"
     class_name: ClassVar[str] = "functional association"
     class_model_uri: ClassVar[URIRef] = BIOLINK.FunctionalAssociation
@@ -8679,6 +9883,9 @@ class FunctionalAssociation(Association):
             self.object = OntologyClassId(self.object)
 
         super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -8688,7 +9895,7 @@ class MacromolecularMachineToEntityAssociationMixin(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.MacromolecularMachineToEntityAssociationMixin
+    class_class_uri: ClassVar[URIRef] = BIOLINK["MacromolecularMachineToEntityAssociationMixin"]
     class_class_curie: ClassVar[str] = "biolink:MacromolecularMachineToEntityAssociationMixin"
     class_name: ClassVar[str] = "macromolecular machine to entity association mixin"
     class_model_uri: ClassVar[URIRef] = BIOLINK.MacromolecularMachineToEntityAssociationMixin
@@ -8713,7 +9920,7 @@ class MacromolecularMachineToMolecularActivityAssociation(FunctionalAssociation)
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.MacromolecularMachineToMolecularActivityAssociation
+    class_class_uri: ClassVar[URIRef] = BIOLINK["MacromolecularMachineToMolecularActivityAssociation"]
     class_class_curie: ClassVar[str] = "biolink:MacromolecularMachineToMolecularActivityAssociation"
     class_name: ClassVar[str] = "macromolecular machine to molecular activity association"
     class_model_uri: ClassVar[URIRef] = BIOLINK.MacromolecularMachineToMolecularActivityAssociation
@@ -8735,6 +9942,9 @@ class MacromolecularMachineToMolecularActivityAssociation(FunctionalAssociation)
             self.object = MolecularActivityId(self.object)
 
         super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -8746,7 +9956,7 @@ class MacromolecularMachineToBiologicalProcessAssociation(FunctionalAssociation)
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.MacromolecularMachineToBiologicalProcessAssociation
+    class_class_uri: ClassVar[URIRef] = BIOLINK["MacromolecularMachineToBiologicalProcessAssociation"]
     class_class_curie: ClassVar[str] = "biolink:MacromolecularMachineToBiologicalProcessAssociation"
     class_name: ClassVar[str] = "macromolecular machine to biological process association"
     class_model_uri: ClassVar[URIRef] = BIOLINK.MacromolecularMachineToBiologicalProcessAssociation
@@ -8768,6 +9978,9 @@ class MacromolecularMachineToBiologicalProcessAssociation(FunctionalAssociation)
             self.object = BiologicalProcessId(self.object)
 
         super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -8779,7 +9992,7 @@ class MacromolecularMachineToCellularComponentAssociation(FunctionalAssociation)
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.MacromolecularMachineToCellularComponentAssociation
+    class_class_uri: ClassVar[URIRef] = BIOLINK["MacromolecularMachineToCellularComponentAssociation"]
     class_class_curie: ClassVar[str] = "biolink:MacromolecularMachineToCellularComponentAssociation"
     class_name: ClassVar[str] = "macromolecular machine to cellular component association"
     class_model_uri: ClassVar[URIRef] = BIOLINK.MacromolecularMachineToCellularComponentAssociation
@@ -8801,6 +10014,9 @@ class MacromolecularMachineToCellularComponentAssociation(FunctionalAssociation)
             self.object = CellularComponentId(self.object)
 
         super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -8811,7 +10027,7 @@ class MolecularActivityToChemicalEntityAssociation(Association):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.MolecularActivityToChemicalEntityAssociation
+    class_class_uri: ClassVar[URIRef] = BIOLINK["MolecularActivityToChemicalEntityAssociation"]
     class_class_curie: ClassVar[str] = "biolink:MolecularActivityToChemicalEntityAssociation"
     class_name: ClassVar[str] = "molecular activity to chemical entity association"
     class_model_uri: ClassVar[URIRef] = BIOLINK.MolecularActivityToChemicalEntityAssociation
@@ -8838,6 +10054,9 @@ class MolecularActivityToChemicalEntityAssociation(Association):
             self.object = ChemicalEntityId(self.object)
 
         super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -8848,7 +10067,7 @@ class MolecularActivityToMolecularActivityAssociation(Association):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.MolecularActivityToMolecularActivityAssociation
+    class_class_uri: ClassVar[URIRef] = BIOLINK["MolecularActivityToMolecularActivityAssociation"]
     class_class_curie: ClassVar[str] = "biolink:MolecularActivityToMolecularActivityAssociation"
     class_name: ClassVar[str] = "molecular activity to molecular activity association"
     class_model_uri: ClassVar[URIRef] = BIOLINK.MolecularActivityToMolecularActivityAssociation
@@ -8875,13 +10094,16 @@ class MolecularActivityToMolecularActivityAssociation(Association):
             self.object = MolecularActivityId(self.object)
 
         super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
 class GeneToGoTermAssociation(FunctionalAssociation):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.GeneToGoTermAssociation
+    class_class_uri: ClassVar[URIRef] = BIOLINK["GeneToGoTermAssociation"]
     class_class_curie: ClassVar[str] = "biolink:GeneToGoTermAssociation"
     class_name: ClassVar[str] = "gene to go term association"
     class_model_uri: ClassVar[URIRef] = BIOLINK.GeneToGoTermAssociation
@@ -8908,13 +10130,16 @@ class GeneToGoTermAssociation(FunctionalAssociation):
             self.object = OntologyClassId(self.object)
 
         super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
 class EntityToDiseaseAssociation(Association):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.EntityToDiseaseAssociation
+    class_class_uri: ClassVar[URIRef] = BIOLINK["EntityToDiseaseAssociation"]
     class_class_curie: ClassVar[str] = "biolink:EntityToDiseaseAssociation"
     class_name: ClassVar[str] = "entity to disease association"
     class_model_uri: ClassVar[URIRef] = BIOLINK.EntityToDiseaseAssociation
@@ -8935,13 +10160,16 @@ class EntityToDiseaseAssociation(Association):
             self.FDA_approval_status = FDAApprovalStatusEnum(self.FDA_approval_status)
 
         super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
 class EntityToPhenotypicFeatureAssociation(Association):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.EntityToPhenotypicFeatureAssociation
+    class_class_uri: ClassVar[URIRef] = BIOLINK["EntityToPhenotypicFeatureAssociation"]
     class_class_curie: ClassVar[str] = "biolink:EntityToPhenotypicFeatureAssociation"
     class_name: ClassVar[str] = "entity to phenotypic feature association"
     class_model_uri: ClassVar[URIRef] = BIOLINK.EntityToPhenotypicFeatureAssociation
@@ -8962,6 +10190,9 @@ class EntityToPhenotypicFeatureAssociation(Association):
             self.FDA_approval_status = FDAApprovalStatusEnum(self.FDA_approval_status)
 
         super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -8971,7 +10202,7 @@ class SequenceAssociation(Association):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.SequenceAssociation
+    class_class_uri: ClassVar[URIRef] = BIOLINK["SequenceAssociation"]
     class_class_curie: ClassVar[str] = "biolink:SequenceAssociation"
     class_name: ClassVar[str] = "sequence association"
     class_model_uri: ClassVar[URIRef] = BIOLINK.SequenceAssociation
@@ -8988,6 +10219,9 @@ class SequenceAssociation(Association):
             self.id = SequenceAssociationId(self.id)
 
         super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -8998,7 +10232,7 @@ class GenomicSequenceLocalization(SequenceAssociation):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.GenomicSequenceLocalization
+    class_class_uri: ClassVar[URIRef] = BIOLINK["GenomicSequenceLocalization"]
     class_class_curie: ClassVar[str] = "biolink:GenomicSequenceLocalization"
     class_name: ClassVar[str] = "genomic sequence localization"
     class_model_uri: ClassVar[URIRef] = BIOLINK.GenomicSequenceLocalization
@@ -9050,6 +10284,9 @@ class GenomicSequenceLocalization(SequenceAssociation):
             self.phase = PhaseEnum(self.phase)
 
         super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -9059,7 +10296,7 @@ class SequenceFeatureRelationship(Association):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.SequenceFeatureRelationship
+    class_class_uri: ClassVar[URIRef] = BIOLINK["SequenceFeatureRelationship"]
     class_class_curie: ClassVar[str] = "biolink:SequenceFeatureRelationship"
     class_name: ClassVar[str] = "sequence feature relationship"
     class_model_uri: ClassVar[URIRef] = BIOLINK.SequenceFeatureRelationship
@@ -9086,6 +10323,9 @@ class SequenceFeatureRelationship(Association):
             self.object = NucleicAcidEntityId(self.object)
 
         super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -9095,7 +10335,7 @@ class TranscriptToGeneRelationship(SequenceFeatureRelationship):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.TranscriptToGeneRelationship
+    class_class_uri: ClassVar[URIRef] = BIOLINK["TranscriptToGeneRelationship"]
     class_class_curie: ClassVar[str] = "biolink:TranscriptToGeneRelationship"
     class_name: ClassVar[str] = "transcript to gene relationship"
     class_model_uri: ClassVar[URIRef] = BIOLINK.TranscriptToGeneRelationship
@@ -9122,6 +10362,9 @@ class TranscriptToGeneRelationship(SequenceFeatureRelationship):
             self.object = GeneId(self.object)
 
         super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -9131,7 +10374,7 @@ class GeneToGeneProductRelationship(SequenceFeatureRelationship):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.GeneToGeneProductRelationship
+    class_class_uri: ClassVar[URIRef] = BIOLINK["GeneToGeneProductRelationship"]
     class_class_curie: ClassVar[str] = "biolink:GeneToGeneProductRelationship"
     class_name: ClassVar[str] = "gene to gene product relationship"
     class_model_uri: ClassVar[URIRef] = BIOLINK.GeneToGeneProductRelationship
@@ -9163,6 +10406,9 @@ class GeneToGeneProductRelationship(SequenceFeatureRelationship):
             self.predicate = PredicateType(self.predicate)
 
         super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -9172,7 +10418,7 @@ class ExonToTranscriptRelationship(SequenceFeatureRelationship):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.ExonToTranscriptRelationship
+    class_class_uri: ClassVar[URIRef] = BIOLINK["ExonToTranscriptRelationship"]
     class_class_curie: ClassVar[str] = "biolink:ExonToTranscriptRelationship"
     class_name: ClassVar[str] = "exon to transcript relationship"
     class_model_uri: ClassVar[URIRef] = BIOLINK.ExonToTranscriptRelationship
@@ -9199,6 +10445,9 @@ class ExonToTranscriptRelationship(SequenceFeatureRelationship):
             self.object = TranscriptId(self.object)
 
         super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -9208,7 +10457,7 @@ class ChemicalEntityOrGeneOrGeneProductRegulatesGeneAssociation(Association):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.ChemicalEntityOrGeneOrGeneProductRegulatesGeneAssociation
+    class_class_uri: ClassVar[URIRef] = BIOLINK["ChemicalEntityOrGeneOrGeneProductRegulatesGeneAssociation"]
     class_class_curie: ClassVar[str] = "biolink:ChemicalEntityOrGeneOrGeneProductRegulatesGeneAssociation"
     class_name: ClassVar[str] = "chemical entity or gene or gene product regulates gene association"
     class_model_uri: ClassVar[URIRef] = BIOLINK.ChemicalEntityOrGeneOrGeneProductRegulatesGeneAssociation
@@ -9244,13 +10493,16 @@ class ChemicalEntityOrGeneOrGeneProductRegulatesGeneAssociation(Association):
             self.object_direction_qualifier = DirectionQualifierEnum(self.object_direction_qualifier)
 
         super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
 class AnatomicalEntityToAnatomicalEntityAssociation(Association):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.AnatomicalEntityToAnatomicalEntityAssociation
+    class_class_uri: ClassVar[URIRef] = BIOLINK["AnatomicalEntityToAnatomicalEntityAssociation"]
     class_class_curie: ClassVar[str] = "biolink:AnatomicalEntityToAnatomicalEntityAssociation"
     class_name: ClassVar[str] = "anatomical entity to anatomical entity association"
     class_model_uri: ClassVar[URIRef] = BIOLINK.AnatomicalEntityToAnatomicalEntityAssociation
@@ -9272,6 +10524,9 @@ class AnatomicalEntityToAnatomicalEntityAssociation(Association):
             self.object = AnatomicalEntityId(self.object)
 
         super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -9283,7 +10538,7 @@ class AnatomicalEntityToAnatomicalEntityPartOfAssociation(AnatomicalEntityToAnat
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.AnatomicalEntityToAnatomicalEntityPartOfAssociation
+    class_class_uri: ClassVar[URIRef] = BIOLINK["AnatomicalEntityToAnatomicalEntityPartOfAssociation"]
     class_class_curie: ClassVar[str] = "biolink:AnatomicalEntityToAnatomicalEntityPartOfAssociation"
     class_name: ClassVar[str] = "anatomical entity to anatomical entity part of association"
     class_model_uri: ClassVar[URIRef] = BIOLINK.AnatomicalEntityToAnatomicalEntityPartOfAssociation
@@ -9315,6 +10570,9 @@ class AnatomicalEntityToAnatomicalEntityPartOfAssociation(AnatomicalEntityToAnat
             self.predicate = PredicateType(self.predicate)
 
         super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -9326,7 +10584,7 @@ class AnatomicalEntityToAnatomicalEntityOntogenicAssociation(AnatomicalEntityToA
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.AnatomicalEntityToAnatomicalEntityOntogenicAssociation
+    class_class_uri: ClassVar[URIRef] = BIOLINK["AnatomicalEntityToAnatomicalEntityOntogenicAssociation"]
     class_class_curie: ClassVar[str] = "biolink:AnatomicalEntityToAnatomicalEntityOntogenicAssociation"
     class_name: ClassVar[str] = "anatomical entity to anatomical entity ontogenic association"
     class_model_uri: ClassVar[URIRef] = BIOLINK.AnatomicalEntityToAnatomicalEntityOntogenicAssociation
@@ -9358,6 +10616,9 @@ class AnatomicalEntityToAnatomicalEntityOntogenicAssociation(AnatomicalEntityToA
             self.predicate = PredicateType(self.predicate)
 
         super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -9367,7 +10628,7 @@ class OrganismTaxonToEntityAssociation(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.OrganismTaxonToEntityAssociation
+    class_class_uri: ClassVar[URIRef] = BIOLINK["OrganismTaxonToEntityAssociation"]
     class_class_curie: ClassVar[str] = "biolink:OrganismTaxonToEntityAssociation"
     class_name: ClassVar[str] = "organism taxon to entity association"
     class_model_uri: ClassVar[URIRef] = BIOLINK.OrganismTaxonToEntityAssociation
@@ -9390,7 +10651,7 @@ class OrganismTaxonToOrganismTaxonAssociation(Association):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.OrganismTaxonToOrganismTaxonAssociation
+    class_class_uri: ClassVar[URIRef] = BIOLINK["OrganismTaxonToOrganismTaxonAssociation"]
     class_class_curie: ClassVar[str] = "biolink:OrganismTaxonToOrganismTaxonAssociation"
     class_name: ClassVar[str] = "organism taxon to organism taxon association"
     class_model_uri: ClassVar[URIRef] = BIOLINK.OrganismTaxonToOrganismTaxonAssociation
@@ -9412,6 +10673,9 @@ class OrganismTaxonToOrganismTaxonAssociation(Association):
             self.object = OrganismTaxonId(self.object)
 
         super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -9421,7 +10685,7 @@ class OrganismTaxonToOrganismTaxonSpecialization(OrganismTaxonToOrganismTaxonAss
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.OrganismTaxonToOrganismTaxonSpecialization
+    class_class_uri: ClassVar[URIRef] = BIOLINK["OrganismTaxonToOrganismTaxonSpecialization"]
     class_class_curie: ClassVar[str] = "biolink:OrganismTaxonToOrganismTaxonSpecialization"
     class_name: ClassVar[str] = "organism taxon to organism taxon specialization"
     class_model_uri: ClassVar[URIRef] = BIOLINK.OrganismTaxonToOrganismTaxonSpecialization
@@ -9453,6 +10717,9 @@ class OrganismTaxonToOrganismTaxonSpecialization(OrganismTaxonToOrganismTaxonAss
             self.predicate = PredicateType(self.predicate)
 
         super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
@@ -9464,7 +10731,7 @@ class OrganismTaxonToOrganismTaxonInteraction(OrganismTaxonToOrganismTaxonAssoci
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.OrganismTaxonToOrganismTaxonInteraction
+    class_class_uri: ClassVar[URIRef] = BIOLINK["OrganismTaxonToOrganismTaxonInteraction"]
     class_class_curie: ClassVar[str] = "biolink:OrganismTaxonToOrganismTaxonInteraction"
     class_name: ClassVar[str] = "organism taxon to organism taxon interaction"
     class_model_uri: ClassVar[URIRef] = BIOLINK.OrganismTaxonToOrganismTaxonInteraction
@@ -9500,13 +10767,16 @@ class OrganismTaxonToOrganismTaxonInteraction(OrganismTaxonToOrganismTaxonAssoci
             self.associated_environmental_context = str(self.associated_environmental_context)
 
         super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 @dataclass
 class OrganismTaxonToEnvironmentAssociation(Association):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = BIOLINK.OrganismTaxonToEnvironmentAssociation
+    class_class_uri: ClassVar[URIRef] = BIOLINK["OrganismTaxonToEnvironmentAssociation"]
     class_class_curie: ClassVar[str] = "biolink:OrganismTaxonToEnvironmentAssociation"
     class_name: ClassVar[str] = "organism taxon to environment association"
     class_model_uri: ClassVar[URIRef] = BIOLINK.OrganismTaxonToEnvironmentAssociation
@@ -9533,6 +10803,9 @@ class OrganismTaxonToEnvironmentAssociation(Association):
             self.predicate = PredicateType(self.predicate)
 
         super().__post_init__(**kwargs)
+        if not isinstance(self.category, list):
+            self.category = [self.category] if self.category is not None else []
+        self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
 
 # Enumerations
@@ -9715,11 +10988,11 @@ class LogicalInterpretationEnum(EnumDefinitionImpl):
     some_some = PermissibleValue(
         text="some_some",
         description="A modifier on a triple that causes the triple to be interpreted as a some-some statement",
-        meaning=OS.SomeSomeInterpretation)
+        meaning=OS["SomeSomeInterpretation"])
     all_some = PermissibleValue(
         text="all_some",
         description="A modifier on a triple that causes the triple to be interpreted as an all-some statement.",
-        meaning=OS.AllSomeInterpretation)
+        meaning=OS["AllSomeInterpretation"])
     inverse_all_some = PermissibleValue(text="inverse_all_some")
 
     _defn = EnumDefinition(
@@ -10049,7 +11322,7 @@ slots.has_percentage = Slot(uri=BIOLINK.has_percentage, name="has percentage", c
                    model_uri=BIOLINK.has_percentage, domain=NamedThing, range=Optional[float])
 
 slots.has_taxonomic_rank = Slot(uri=BIOLINK.has_taxonomic_rank, name="has taxonomic rank", curie=BIOLINK.curie('has_taxonomic_rank'),
-                   model_uri=BIOLINK.has_taxonomic_rank, domain=NamedThing, range=Optional[Union[str, TaxonomicRankId]], mappings = [WIKIDATA.P105])
+                   model_uri=BIOLINK.has_taxonomic_rank, domain=NamedThing, range=Optional[Union[str, TaxonomicRankId]], mappings = [WIKIDATA["P105"]])
 
 slots.has_dataset = Slot(uri=DCT.source, name="has dataset", curie=DCT.curie('source'),
                    model_uri=BIOLINK.has_dataset, domain=DatasetVersion, range=Optional[Union[str, DatasetId]])
@@ -10832,10 +12105,10 @@ slots.has_active_ingredient = Slot(uri=BIOLINK.has_active_ingredient, name="has 
                    model_uri=BIOLINK.has_active_ingredient, domain=Drug, range=Optional[Union[Union[str, MolecularEntityId], List[Union[str, MolecularEntityId]]]], mappings = [RO["0002248"]])
 
 slots.is_excipient_of = Slot(uri=BIOLINK.is_excipient_of, name="is excipient of", curie=BIOLINK.curie('is_excipient_of'),
-                   model_uri=BIOLINK.is_excipient_of, domain=MolecularEntity, range=Optional[Union[Union[str, DrugId], List[Union[str, DrugId]]]], mappings = [WIKIDATA.Q902638])
+                   model_uri=BIOLINK.is_excipient_of, domain=MolecularEntity, range=Optional[Union[Union[str, DrugId], List[Union[str, DrugId]]]], mappings = [WIKIDATA["Q902638"]])
 
 slots.has_excipient = Slot(uri=BIOLINK.has_excipient, name="has excipient", curie=BIOLINK.curie('has_excipient'),
-                   model_uri=BIOLINK.has_excipient, domain=Drug, range=Optional[Union[Union[str, MolecularEntityId], List[Union[str, MolecularEntityId]]]], mappings = [WIKIDATA.Q902638])
+                   model_uri=BIOLINK.has_excipient, domain=Drug, range=Optional[Union[Union[str, MolecularEntityId], List[Union[str, MolecularEntityId]]]], mappings = [WIKIDATA["Q902638"]])
 
 slots.manifestation_of = Slot(uri=BIOLINK.manifestation_of, name="manifestation of", curie=BIOLINK.curie('manifestation_of'),
                    model_uri=BIOLINK.manifestation_of, domain=NamedThing, range=Optional[Union[Union[str, DiseaseId], List[Union[str, DiseaseId]]]])
@@ -11205,7 +12478,7 @@ slots.named_thing_category = Slot(uri=BIOLINK.category, name="named thing_catego
                    pattern=re.compile(r'^biolink:\d+$'))
 
 slots.organism_taxon_has_taxonomic_rank = Slot(uri=BIOLINK.has_taxonomic_rank, name="organism taxon_has taxonomic rank", curie=BIOLINK.curie('has_taxonomic_rank'),
-                   model_uri=BIOLINK.organism_taxon_has_taxonomic_rank, domain=OrganismTaxon, range=Optional[Union[str, TaxonomicRankId]], mappings = [WIKIDATA.P105])
+                   model_uri=BIOLINK.organism_taxon_has_taxonomic_rank, domain=OrganismTaxon, range=Optional[Union[str, TaxonomicRankId]], mappings = [WIKIDATA["P105"]])
 
 slots.agent_id = Slot(uri=BIOLINK.id, name="agent_id", curie=BIOLINK.curie('id'),
                    model_uri=BIOLINK.agent_id, domain=Agent, range=Union[str, AgentId])

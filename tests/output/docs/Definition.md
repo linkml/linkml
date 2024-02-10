@@ -52,7 +52,7 @@ URI: [linkml:Definition](https://w3id.org/linkml/Definition)
      * Description: Used to extend class or slot definitions. For example, if we have a core schema where a gene has two slots for identifier and symbol, and we have a specialized schema for my_organism where we wish to add a slot systematic_name, we can avoid subclassing by defining a class gene_my_organism, adding the slot to this class, and then adding an apply_to pointing to the gene class. The new slot will be 'injected into' the gene class.
      * Range: [Definition](Definition.md)
  * [values_from](values_from.md)  <sub>0..\*</sub>
-     * Description: The identifier of a "value set" -- a set of identifiers that form the possible values for the range of a slot. Note: this is different than 'subproperty_of' in that 'subproperty_of' is intended to be a single ontology term while 'values_from' is the identifier of an entire value set.  Additionally, this is different than an enumeration in that in an enumeration, the values of the enumeration are listed directly in the model itself. Setting this property on a slot does not guarantee an expansion of the ontological hiearchy into an enumerated list of possible values in every serialization of the model.
+     * Description: The identifier of a "value set" -- a set of identifiers that form the possible values for the range of a slot. Note: this is different than 'subproperty_of' in that 'subproperty_of' is intended to be a single ontology term while 'values_from' is the identifier of an entire value set.  Additionally, this is different than an enumeration in that in an enumeration, the values of the enumeration are listed directly in the model itself. Setting this property on a slot does not guarantee an expansion of the ontological hierarchy into an enumerated list of possible values in every serialization of the model.
      * Range: [Uriorcurie](types/Uriorcurie.md)
  * [string_serialization](string_serialization.md)  <sub>0..1</sub>
      * Description: Used on a slot that stores the string serialization of the containing object. The syntax follows python formatted strings, with slot names enclosed in {}s. These are expanded using the values of those slots.
@@ -72,6 +72,9 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
      * Description: An allowed list of prefixes for which identifiers must conform. The identifier of this class or slot must begin with the URIs referenced by this prefix
      * Range: [Ncname](types/Ncname.md)
      * in subsets: (SpecificationSubset,BasicSubset)
+ * [id_prefixes_are_closed](id_prefixes_are_closed.md)  <sub>0..1</sub>
+     * Description: If true, then the id_prefixes slot is treated as being closed, and any use of an id that does not have this prefix is considered a violation.
+     * Range: [Boolean](types/Boolean.md)
  * [definition_uri](definition_uri.md)  <sub>0..1</sub>
      * Description: The native URI of the element. This is always within the namespace of the containing schema. Contrast with the assigned URI, via class_uri or slot_uri
      * Range: [Uriorcurie](types/Uriorcurie.md)
@@ -83,6 +86,9 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
      * in subsets: (BasicSubset)
  * [implements](implements.md)  <sub>0..\*</sub>
      * Description: An element in another schema which this element conforms to. The referenced element is not imported into the schema for the implementing element. However, the referenced schema may be used to check conformance of the implementing element.
+     * Range: [Uriorcurie](types/Uriorcurie.md)
+ * [instantiates](instantiates.md)  <sub>0..\*</sub>
+     * Description: An element in another schema which this element instantiates.
      * Range: [Uriorcurie](types/Uriorcurie.md)
 
 ## Other properties

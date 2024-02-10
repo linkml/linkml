@@ -12,7 +12,9 @@ URI: [linkml:CommonMetadata](https://w3id.org/linkml/CommonMetadata)
 ## Mixin for
 
  * [AnonymousExpression](AnonymousExpression.md) (mixin)  - An abstract parent class for any nested expression
+ * [ArrayExpression](ArrayExpression.md) (mixin)  - defines the dimensions of an array
  * [ClassRule](ClassRule.md) (mixin)  - A rule that applies to instances of a class
+ * [DimensionExpression](DimensionExpression.md) (mixin)  - defines one of the dimensions of an array
  * [Element](Element.md) (mixin)  - A named element in the model
  * [ImportExpression](ImportExpression.md) (mixin)  - an expression describing an import
  * [PathExpression](PathExpression.md) (mixin)  - An expression that describes an abstract path from an object to another through a sequence of slot lookups
@@ -118,6 +120,10 @@ URI: [linkml:CommonMetadata](https://w3id.org/linkml/CommonMetadata)
      * Description: agent that created the element
      * Range: [Uriorcurie](types/Uriorcurie.md)
      * in subsets: (BasicSubset)
+ * [contributors](contributors.md)  <sub>0..\*</sub>
+     * Description: agent that contributed to the element
+     * Range: [Uriorcurie](types/Uriorcurie.md)
+     * in subsets: (BasicSubset)
  * [created_on](created_on.md)  <sub>0..1</sub>
      * Description: time at which the element was created
      * Range: [Datetime](types/Datetime.md)
@@ -139,6 +145,14 @@ URI: [linkml:CommonMetadata](https://w3id.org/linkml/CommonMetadata)
      * Description: the relative order in which the element occurs, lower values are given precedence
      * Range: [Integer](types/Integer.md)
      * in subsets: (SpecificationSubset,BasicSubset)
+ * [categories](categories.md)  <sub>0..\*</sub>
+     * Description: Controlled terms used to categorize an element.
+     * Range: [Uriorcurie](types/Uriorcurie.md)
+     * in subsets: (BasicSubset)
+ * [keywords](keywords.md)  <sub>0..\*</sub>
+     * Description: Keywords or tags used to describe the element
+     * Range: [String](types/String.md)
+     * in subsets: (BasicSubset)
 
 ## Other properties
 

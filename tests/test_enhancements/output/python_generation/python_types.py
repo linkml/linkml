@@ -1,5 +1,5 @@
 # Auto generated from python_types.yaml by pythongen.py version: 0.0.1
-# Generation date: 2023-09-22T11:49:32
+# Generation date: 2024-02-07T21:04:06
 # Schema: ptypes
 #
 # id: http://examples.org/linkml/test/ptypes
@@ -39,21 +39,21 @@ DEFAULT_ = PTYPES
 
 # Types
 class InheritedType(Integer):
-    type_class_uri = XSD.integer
+    type_class_uri = XSD["integer"]
     type_class_curie = "xsd:integer"
     type_name = "InheritedType"
     type_model_uri = PTYPES.InheritedType
 
 
 class InheritedType2(Uriorcurie):
-    type_class_uri = XSD.anyURI
+    type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "InheritedType2"
     type_model_uri = PTYPES.InheritedType2
 
 
 class InheritedType3(InheritedType2):
-    type_class_uri = XSD.anyURI
+    type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "InheritedType3"
     type_model_uri = PTYPES.InheritedType3
@@ -75,7 +75,7 @@ class Strings(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = PTYPES.Strings
+    class_class_uri: ClassVar[URIRef] = PTYPES["Strings"]
     class_class_curie: ClassVar[str] = "ptypes:Strings"
     class_name: ClassVar[str] = "Strings"
     class_model_uri: ClassVar[URIRef] = PTYPES.Strings
@@ -114,7 +114,7 @@ class InheritedStrings1(Strings):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = PTYPES.InheritedStrings1
+    class_class_uri: ClassVar[URIRef] = PTYPES["InheritedStrings1"]
     class_class_curie: ClassVar[str] = "ptypes:InheritedStrings1"
     class_name: ClassVar[str] = "InheritedStrings1"
     class_model_uri: ClassVar[URIRef] = PTYPES.InheritedStrings1
@@ -129,7 +129,7 @@ class InheritedStrings2(Strings):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = PTYPES.InheritedStrings2
+    class_class_uri: ClassVar[URIRef] = PTYPES["InheritedStrings2"]
     class_class_curie: ClassVar[str] = "ptypes:InheritedStrings2"
     class_name: ClassVar[str] = "InheritedStrings2"
     class_model_uri: ClassVar[URIRef] = PTYPES.InheritedStrings2
@@ -152,7 +152,7 @@ class Integers(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = PTYPES.Integers
+    class_class_uri: ClassVar[URIRef] = PTYPES["Integers"]
     class_class_curie: ClassVar[str] = "ptypes:Integers"
     class_name: ClassVar[str] = "Integers"
     class_model_uri: ClassVar[URIRef] = PTYPES.Integers
@@ -191,7 +191,7 @@ class Booleans(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = PTYPES.Booleans
+    class_class_uri: ClassVar[URIRef] = PTYPES["Booleans"]
     class_class_curie: ClassVar[str] = "ptypes:Booleans"
     class_name: ClassVar[str] = "Booleans"
     class_model_uri: ClassVar[URIRef] = PTYPES.Booleans
@@ -230,7 +230,7 @@ class Floats(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = PTYPES.Floats
+    class_class_uri: ClassVar[URIRef] = PTYPES["Floats"]
     class_class_curie: ClassVar[str] = "ptypes:Floats"
     class_name: ClassVar[str] = "Floats"
     class_model_uri: ClassVar[URIRef] = PTYPES.Floats
@@ -269,7 +269,7 @@ class Doubles(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = PTYPES.Doubles
+    class_class_uri: ClassVar[URIRef] = PTYPES["Doubles"]
     class_class_curie: ClassVar[str] = "ptypes:Doubles"
     class_name: ClassVar[str] = "Doubles"
     class_model_uri: ClassVar[URIRef] = PTYPES.Doubles
@@ -308,7 +308,7 @@ class Times(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = PTYPES.Times
+    class_class_uri: ClassVar[URIRef] = PTYPES["Times"]
     class_class_curie: ClassVar[str] = "ptypes:Times"
     class_name: ClassVar[str] = "Times"
     class_model_uri: ClassVar[URIRef] = PTYPES.Times
@@ -347,7 +347,7 @@ class Dates(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = PTYPES.Dates
+    class_class_uri: ClassVar[URIRef] = PTYPES["Dates"]
     class_class_curie: ClassVar[str] = "ptypes:Dates"
     class_name: ClassVar[str] = "Dates"
     class_model_uri: ClassVar[URIRef] = PTYPES.Dates
@@ -386,7 +386,7 @@ class DateTimes(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = PTYPES.DateTimes
+    class_class_uri: ClassVar[URIRef] = PTYPES["DateTimes"]
     class_class_curie: ClassVar[str] = "ptypes:DateTimes"
     class_name: ClassVar[str] = "DateTimes"
     class_model_uri: ClassVar[URIRef] = PTYPES.DateTimes
@@ -425,7 +425,7 @@ class URIorCURIEs(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = PTYPES.URIorCURIEs
+    class_class_uri: ClassVar[URIRef] = PTYPES["URIorCURIEs"]
     class_class_curie: ClassVar[str] = "ptypes:URIorCURIEs"
     class_name: ClassVar[str] = "URIorCURIEs"
     class_model_uri: ClassVar[URIRef] = PTYPES.URIorCURIEs
@@ -464,7 +464,7 @@ class URIs(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = PTYPES.URIs
+    class_class_uri: ClassVar[URIRef] = PTYPES["URIs"]
     class_class_curie: ClassVar[str] = "ptypes:URIs"
     class_name: ClassVar[str] = "URIs"
     class_model_uri: ClassVar[URIRef] = PTYPES.URIs
@@ -503,7 +503,7 @@ class NCNames(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = PTYPES.NCNames
+    class_class_uri: ClassVar[URIRef] = PTYPES["NCNames"]
     class_class_curie: ClassVar[str] = "ptypes:NCNames"
     class_name: ClassVar[str] = "NCNames"
     class_model_uri: ClassVar[URIRef] = PTYPES.NCNames
@@ -542,7 +542,7 @@ class ObjectIdentifiers(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = PTYPES.ObjectIdentifiers
+    class_class_uri: ClassVar[URIRef] = PTYPES["ObjectIdentifiers"]
     class_class_curie: ClassVar[str] = "ptypes:ObjectIdentifiers"
     class_name: ClassVar[str] = "ObjectIdentifiers"
     class_model_uri: ClassVar[URIRef] = PTYPES.ObjectIdentifiers
@@ -581,7 +581,7 @@ class NodeIdentifiers(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = PTYPES.NodeIdentifiers
+    class_class_uri: ClassVar[URIRef] = PTYPES["NodeIdentifiers"]
     class_class_curie: ClassVar[str] = "ptypes:NodeIdentifiers"
     class_name: ClassVar[str] = "NodeIdentifiers"
     class_model_uri: ClassVar[URIRef] = PTYPES.NodeIdentifiers
@@ -620,7 +620,7 @@ class InheritedTypes(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = PTYPES.InheritedTypes
+    class_class_uri: ClassVar[URIRef] = PTYPES["InheritedTypes"]
     class_class_curie: ClassVar[str] = "ptypes:InheritedTypes"
     class_name: ClassVar[str] = "InheritedTypes"
     class_model_uri: ClassVar[URIRef] = PTYPES.InheritedTypes
@@ -659,7 +659,7 @@ class InheritedType2s(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = PTYPES.InheritedType2s
+    class_class_uri: ClassVar[URIRef] = PTYPES["InheritedType2s"]
     class_class_curie: ClassVar[str] = "ptypes:InheritedType2s"
     class_name: ClassVar[str] = "InheritedType2s"
     class_model_uri: ClassVar[URIRef] = PTYPES.InheritedType2s
@@ -698,7 +698,7 @@ class InheritedType3s(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = PTYPES.InheritedType3s
+    class_class_uri: ClassVar[URIRef] = PTYPES["InheritedType3s"]
     class_class_curie: ClassVar[str] = "ptypes:InheritedType3s"
     class_name: ClassVar[str] = "InheritedType3s"
     class_model_uri: ClassVar[URIRef] = PTYPES.InheritedType3s
@@ -737,7 +737,7 @@ class KeyedElement(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = PTYPES.KeyedElement
+    class_class_uri: ClassVar[URIRef] = PTYPES["KeyedElement"]
     class_class_curie: ClassVar[str] = "ptypes:KeyedElement"
     class_name: ClassVar[str] = "KeyedElement"
     class_model_uri: ClassVar[URIRef] = PTYPES.KeyedElement
@@ -764,7 +764,7 @@ class IdentifiedElement(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = PTYPES.IdentifiedElement
+    class_class_uri: ClassVar[URIRef] = PTYPES["IdentifiedElement"]
     class_class_curie: ClassVar[str] = "ptypes:IdentifiedElement"
     class_name: ClassVar[str] = "IdentifiedElement"
     class_model_uri: ClassVar[URIRef] = PTYPES.IdentifiedElement
