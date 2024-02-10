@@ -1818,8 +1818,20 @@ def test_value_presence_in_rules(framework, multivalued, data_name, instance, is
 @pytest.mark.parametrize(
     "name,quantification,expression,instance,is_valid",
     [
-        ("all_obj_members_equals_curie_string", "has_member", {"range": CLASS_D, "equals_string": "X:1"}, ["X:1"], True),
-        ("all_obj_members_equals_curie_string", "all_members", {"range": CLASS_D, "equals_string": "X:1"}, ["X:1"], True),
+        (
+            "all_obj_members_equals_curie_string",
+            "has_member",
+            {"range": CLASS_D, "equals_string": "X:1"},
+            ["X:1"],
+            True,
+        ),
+        (
+            "all_obj_members_equals_curie_string",
+            "all_members",
+            {"range": CLASS_D, "equals_string": "X:1"},
+            ["X:1"],
+            True,
+        ),
         ("all_obj_members_equals_string", "all_members", {"range": CLASS_D, "equals_string": "foo"}, ["X:1"], False),
         ("has_member_equals_string", "has_member", {"range": "string", "equals_string": "x"}, ["x"], True),
         ("has_member_equals_number", "has_member", {"range": "integer", "equals_number": 10}, [10], True),
