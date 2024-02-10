@@ -5,7 +5,6 @@ def test_golanggen(kitchen_sink_path):
     """typescript"""
     code = GolangGenerator(kitchen_sink_path, mergeimports=True).serialize()
 
-    print(code)
     def assert_in(s: str) -> None:
         assert s.replace(" ", "") in code.replace(" ", "")
 
