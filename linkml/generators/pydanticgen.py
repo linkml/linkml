@@ -6,7 +6,7 @@ from copy import deepcopy
 from dataclasses import dataclass, field
 from enum import Enum
 from types import ModuleType
-from typing import ClassVar, Dict, List, Optional, Set, Type
+from typing import Annotated, Any, ClassVar, Dict, Generic, List, Optional, Set, Type, TypeVar, get_args
 
 import click
 from jinja2 import Template
@@ -257,12 +257,53 @@ def _get_pyrange(t: TypeDefinition, sv: SchemaView) -> str:
     return pyrange
 
 
+# --------------------------------------------------
+# Arrays
+# --------------------------------------------------
+
+
 class ArrayRepresentation(Enum):
     LIST = "list"
     NPARRAY = "nparray"  # numpy and nptyping must be installed to use this
 
 
 _ANONYMOUS_ARRAY_FIELDS = ("exact_number_dimensions", "minimum_number_dimensions", "maximum_number_dimensions")
+
+_T = TypeVar("_T")
+_RecursiveListType = List[_T | List["_RecursiveListType"]]
+if int(PYDANTIC_VERSION[0]) >= 2:
+    from pydantic import GetCoreSchemaHandler
+    from pydantic_core import CoreSchema, core_schema
+
+    class AnyShapeArrayType(Generic[_T]):
+        @classmethod
+        def __get_pydantic_core_schema__(cls, source_type: Any, handler: GetCoreSchemaHandler) -> CoreSchema:
+            # double-nested parameterized types here
+            # source_type: List[Union[T,List[...]]]
+            item_type = Any if get_args(get_args(source_type)[0])[0] is _T else get_args(get_args(source_type)[0])[0]
+
+            item_schema = handler.generate_schema(item_type)
+            array_ref = f"any-shape-array-{item_type.__name__}"
+
+            schema = core_schema.definitions_schema(
+                core_schema.list_schema(core_schema.definition_reference_schema(array_ref)),
+                [
+                    core_schema.union_schema(
+                        [
+                            core_schema.list_schema(core_schema.definition_reference_schema(array_ref)),
+                            item_schema,
+                        ],
+                        ref=array_ref,
+                    )
+                ],
+            )
+
+            return schema
+
+    AnyShapeArray = Annotated[_RecursiveListType, AnyShapeArrayType]
+
+else:
+    AnyShapeArray = _RecursiveListType
 
 
 class ArrayRangeGenerator(ABC):
@@ -344,21 +385,52 @@ class ListOfListsArray(ArrayRangeGenerator):
 
     REPR = ArrayRepresentation.LIST
 
+    @staticmethod
+    def _list_of_lists(dimensions: int, dtype: str) -> str:
+        return ("List[" * dimensions) + dtype + ("]" * dimensions)
+
+    def any_shape(self, array: None) -> str:
+        if self.dtype == "Any":
+            return "AnyShapeArray"
+        else:
+            return f"AnyShapeArray[{self.dtype}]"
+
     def anonymous_shape(self, array: ArrayExpression) -> str:
         if array.exact_number_dimensions:
-            return "List[" * array.exact_number_dimensions + self.dtype + "]" * array.exact_number_dimensions
-        elif not array.maximum_number_dimensions:
-            # in this case, false and none both mean unbounded number of max dimensions
-            # commenting out to avoid unused variable linter error, but ya this is what we want
-            # min = 1 if array.minimum_number_dimensions is None else array.minimum_number_dimensions
+            return self._list_of_lists(array.exact_number_dimensions, self.dtype)
+        elif not array.maximum_number_dimensions and (
+            array.minimum_number_dimensions is None or array.minimum_number_dimensions == 1
+        ):
+            return self.any_shape(array)
+        elif array.maximum_number_dimensions:
+            min_dims = array.minimum_number_dimensions if array.minimum_number_dimensions else 1
+            annotations = [
+                self._list_of_lists(i, self.dtype) for i in range(min_dims, array.maximum_number_dimensions + 1)
+            ]
+            # TODO: Format this nicely!
+            return "Union[" + ", ".join(annotations) + "]"
+        else:
+            raise NotImplementedError("Minimum without maximum anonymous dimensions not implemented")
 
-            # here we want to use a generic type for List[T] | T
-            # that can be evaluated recursively - to type arbitrary nesting depth, at each depth, the
-            # validator should check if it is a list or the type, if it's a list, check it with the same type
-            # that continues checking for list or type... and so on.
-            pass
+    def labeled_shape(self, array: ArrayExpression) -> str:
+        """
+        For now, just a list of lists
 
-        raise NotImplementedError("Not finished yet!")
+        TODO:
+        - cardinality validation wth conlist
+        - preservation of aliases
+        - (what other metadata is allowable on labeled dimensions?)
+        """
+        return self._list_of_lists(len(array.dimensions), self.dtype)
+
+    def mixed_shape(self, array: ArrayExpression) -> str:
+        """
+        For now, just a list of lists
+
+        TODO:
+        - combine representations from :meth:`.anonymous_shape` and :meth:`.labeled_shape`
+        """
+        return self.anonymous_shape(array)
 
 
 class NPTypingArray(ArrayRangeGenerator):
