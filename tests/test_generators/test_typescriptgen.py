@@ -15,7 +15,7 @@ def test_tsgen(kitchen_sink_path):
     assert "export type OrganizationId" in tss
     assert_in("export interface Person  extends HasAliases")
     assert_in("has_familial_relationships?: FamilialRelationship[]")
-    assert_in("code_systems?: {[index: CodeSystemId]: CodeSystem }")
+    assert_in("code_systems?: CodeSystem[]")
 
 
 def test_required_slots():
