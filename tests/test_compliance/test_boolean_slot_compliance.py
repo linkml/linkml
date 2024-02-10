@@ -1922,7 +1922,7 @@ def test_membership(framework, name, quantification, expression, instance, is_va
         expected_behavior = ValidationBehavior.INCOMPLETE
     check_data(
         schema,
-        "_".join([str(x) for x in instance]),
+        "_".join([str(x).replace(":", "_") for x in instance]),
         framework,
         {SLOT_S1: instance},
         is_valid,
