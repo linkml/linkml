@@ -3,7 +3,7 @@ import os
 from collections import defaultdict
 from dataclasses import dataclass
 from types import ModuleType
-from typing import List, Union
+from typing import List, Union, Optional
 
 import click
 from jinja2 import Template
@@ -49,7 +49,7 @@ class SQLAlchemyGenerator(Generator):
     valid_formats = ["sqla"]
     file_extension = "py"
     uses_schemaloader = False
-    template: TemplateEnum = None
+    template: Optional[TemplateEnum] = None
 
     # ObjectVars
     original_schema: Union[SchemaDefinition, str] = None
@@ -61,18 +61,15 @@ class SQLAlchemyGenerator(Generator):
 
     def generate_sqla(
         self,
-        model_path: str = None,
-        no_model_import=False,
-        template: TemplateEnum = None,
-        foreign_key_policy: ForeignKeyPolicy = None,
+        model_path: Optional[str] = None,
+        no_model_import: bool = False,
+        template: Optional[TemplateEnum] = None,
+        foreign_key_policy: Optional[ForeignKeyPolicy] = None,
         **kwargs,
     ) -> str:
         # src_sv = SchemaView(self.schema)
         # self.schema = src_sv.schema
-        if template is None:
-            template = self.template
-        if template is None:
-            template = TemplateEnum.IMPERATIVE
+        template = template or self.template or TemplateEnum.IMPERATIVE
         sqltr = RelationalModelTransformer(self.schemaview)
         if foreign_key_policy:
             sqltr.foreign_key_policy = foreign_key_policy
