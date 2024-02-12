@@ -560,7 +560,7 @@ def test_fetch_slots_of_class(kitchen_sink_path, input_path):
 
     # test assertion for own attributes of a class
     actual_result = gen.get_direct_slot_names(cls)
-    expected_result = ["street", "city"]
+    expected_result = ["street", "city", "altitude"]
 
     assert expected_result == actual_result
 
