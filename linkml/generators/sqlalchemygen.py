@@ -179,7 +179,6 @@ class SQLAlchemyGenerator(Generator):
                 a.alias = underscore(a.name)
 
     @staticmethod
-    @staticmethod
     def skip() -> bool:
         is_skip = len(cls.attributes) == 0
         if is_skip:
