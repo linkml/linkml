@@ -315,30 +315,27 @@
 <p>We use the sphinx framework.</p>
 <section id="instructions">
 <h2>Instructions<a class="headerlink" href="#instructions" title="Permalink to this heading">#</a></h2>
-<p>To build the docs locally, first make sure you have the poetry dev dependencies installed, then use poetry to run make html (don’t run “make html” directly):</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>poetry<span class="w"> </span>install<span class="w"> </span>--with<span class="w"> </span>dev
-<span class="nb">cd</span><span class="w"> </span>docs
-poetry<span class="w"> </span>run<span class="w"> </span>make<span class="w"> </span>html
+<p>To build the docs locally, first make sure you have the development dependencies installed which may not be the case if you pip-installed linkML. In the root folder of the linkML code, run</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>poetry<span class="w"> </span>install
+</pre></div>
+</div>
+<p>Then use the make to build the documentation:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make<span class="w"> </span>docs
 </pre></div>
 </div>
 <p>This will build docs in <code class="docutils literal notranslate"><span class="pre">_build/html/</span></code>. You can check these with your browser.</p>
-<p>After you are satisfied they look good run:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make<span class="w"> </span>deploy
+<p>If you don’t have make (on Windows) you can build the docs by:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>docs
+poetry<span class="w"> </span>run<span class="w"> </span>make<span class="w"> </span>html
 </pre></div>
 </div>
-<p>(this is a simple copy and doesn’t need to be done in poetry)</p>
-<p>This will copy to <a class="reference external" href="https://github.com/linkml/linkml/tree/main/docs">docs/</a> where they can be committed</p>
-<p><strong>NOTE</strong>: remember to <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">add</span></code> any new HTML files or assets</p>
-<p>Currently we do not do these steps by github actions. It is recommended you commit changes to docs in a separate PR. The PRs can be more easily evaluated if they are only the source change, and conflicts are easier to resolve.</p>
+<p>New versions of the documentation are published to GitHub pages by a workflow job for every merge to main.</p>
 </section>
 <section id="important">
 <h2>IMPORTANT<a class="headerlink" href="#important" title="Permalink to this heading">#</a></h2>
 <p><strong>never</strong> run <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">html</span></code> directly</p>
-<p><strong>always</strong> run this from inside the poetry shell or via:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>poetry<span class="w"> </span>run<span class="w"> </span>make<span class="w"> </span>html
-</pre></div>
-</div>
-<p>If you don’t do this then docstrings from linkml will not be included. Always check the generator docs to ensure command line options are present.</p>
+<p>If you do this then docstrings from linkml will not be included.
+Always check the generator docs to ensure command line options are present.</p>
 </section>
 </section>
 
