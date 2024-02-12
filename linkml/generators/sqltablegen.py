@@ -220,8 +220,12 @@ class SQLTableGenerator(Generator):
             schema = SchemaLoader(data=self.schema).resolve()
 
         if range in schema.classes:
-            # FKs treated as Text
-            return Text()
+            # FK type should be the same as the identifier of the foreign key
+            fk = SchemaView(schema).get_identifier_slot(range)
+            if fk:
+                return self.get_sql_range(fk, schema)
+            else:
+                return Text()
         if range in schema.enums:
             e = schema.enums[range]
             if e.permissible_values is not None:
