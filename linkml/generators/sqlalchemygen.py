@@ -172,16 +172,14 @@ class SQLAlchemyGenerator(Generator):
             return compile_python(code, package_path=model_path)
 
     @staticmethod
-    @staticmethod
-    def add_safe_aliases() -> None:
+    def add_safe_aliases(schema: SchemaDefinition) -> None:
         for c in schema.classes.values():
             # c.alias = underscore(c.name)
             for a in c.attributes.values():
                 a.alias = underscore(a.name)
 
     @staticmethod
-    @staticmethod
-    def skip() -> bool:
+    def skip(cls: ClassDefinition) -> bool:
         is_skip = len(cls.attributes) == 0
         if is_skip:
             logging.error(f"SKIPPING: {cls.name}")
@@ -189,8 +187,7 @@ class SQLAlchemyGenerator(Generator):
 
     # TODO: move this
     @staticmethod
-    @staticmethod
-    def order_classes_by_hierarchy() -> List[ClassDefinitionName]:
+    def order_classes_by_hierarchy(sv: SchemaView) -> List[ClassDefinitionName]:
         olist = sv.class_roots()
         unprocessed = [cn for cn in sv.all_classes() if cn not in olist]
         while len(unprocessed) > 0:
