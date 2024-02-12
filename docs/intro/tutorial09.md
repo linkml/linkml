@@ -223,11 +223,11 @@ believe ORMs to be add unnecessary complexity, and others finding them
 indispensable. Use of ORMs is completely optional with LinkML, but if
 you are using a RDBMS you may find them useful.
 
-Currently the only ORM directly supported in SQL Alchemy
+Currently the only ORM directly supported is SQL Alchemy.
 
 ### SQL Alchemy (advanced)
 
-[SQL Alchemy](https://docs.sqlalchemy.org/) is a SQL framework for python. It has a core layer, and an ORM later.
+[SQL Alchemy](https://docs.sqlalchemy.org/) is a SQL framework for python. It has a core layer, and an ORM layer.
 
 You can generate SQL Alchemy classes using:
 
