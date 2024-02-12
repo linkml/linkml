@@ -1,6 +1,6 @@
 import os
 from contextlib import redirect_stdout
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from io import StringIO
 from typing import Any, Callable, Dict, List, Optional, Set, Union
 

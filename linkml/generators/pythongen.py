@@ -3,7 +3,7 @@ import logging
 import os
 import re
 from copy import copy
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from types import ModuleType
 from typing import Callable, Dict, Iterator, List, Optional, Set, Tuple, Union
 

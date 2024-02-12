@@ -1,5 +1,5 @@
 import os
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 import click
 from linkml_runtime.linkml_model.meta import ClassDefinition, SlotDefinition

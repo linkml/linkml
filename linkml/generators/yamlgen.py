@@ -3,7 +3,7 @@
 """
 
 import os
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 import click
 from linkml_runtime.utils.yamlutils import as_yaml

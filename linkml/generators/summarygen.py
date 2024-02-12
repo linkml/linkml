@@ -5,7 +5,7 @@
 import os
 import sys
 from csv import DictWriter
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Optional
 
 import click

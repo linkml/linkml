@@ -7,7 +7,7 @@ Generate a JSON LD representation of the model
 
 import os
 import urllib.parse as urlparse
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import List, Optional
 
 import click
