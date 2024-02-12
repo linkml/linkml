@@ -10,7 +10,7 @@ def test_javagen_records(kitchen_sink_path, tmp_path):
     gen.serialize(directory=str(tmp_path))
     assert_file_contains(
         tmp_path / "Address.java",
-        "public record Address(String street, String city)",
+        "public record Address(String street, String city, BigDecimal altitude)",
         after="package org.sink.kitchen",
     )
 
