@@ -144,12 +144,8 @@ pytest = "^7.4.0"
 pytest-subtests = "^0.11.0"
 numpy = ">=1.24.3"
 
-
 [tool.poetry.group.shacl.dependencies]
 pyshacl = "^0.25.0"
-
-[tool.poetry.extras]
-docs = ["Sphinx", "sphinxcontrib-mermaid", "furo"]
 
 [build-system]
 requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning"]
