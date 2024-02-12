@@ -45,12 +45,12 @@ class ContextGenerator(Generator):
     default_ns: str = None
     context_body: Dict = field(default_factory=lambda: dict())
     slot_class_maps: Dict = field(default_factory=lambda: dict())
-    emit_metadata: bool = field(default_factory=lambda: False)
-    model: Optional[bool] = field(default_factory=lambda: True)
+    emit_metadata: bool = False
+    model: Optional[bool] = True
     base: Optional[str] = None
     output: Optional[str] = None
-    prefixes: Optional[bool] = field(default_factory=lambda: True)
-    flatprefixes: Optional[bool] = field(default_factory=lambda: False)
+    prefixes: Optional[bool] = True
+    flatprefixes: Optional[bool] = False
 
     def __post_init__(self) -> None:
         super().__post_init__()

@@ -124,7 +124,7 @@ class Generator(metaclass=abc.ABCMeta):
 
     file_extension: ClassVar[str] = None
 
-    metadata: bool = field(default_factory=lambda: True)
+    metadata: bool = True
     """True means include date, generator, etc. information in source header if appropriate"""
 
     useuris: Optional[bool] = None
@@ -133,7 +133,7 @@ class Generator(metaclass=abc.ABCMeta):
     log_level: int = DEFAULT_LOG_LEVEL_INT
     """Logging level, 0 is minimum"""
 
-    mergeimports: Optional[bool] = field(default_factory=lambda: True)
+    mergeimports: Optional[bool] = True
     """True means merge non-linkml sources into importing package.  False means separate packages"""
 
     source_file_date: Optional[str] = None

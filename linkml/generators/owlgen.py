@@ -118,29 +118,29 @@ class OwlSchemaGenerator(Generator):
     """By default, use the linkml metadata profile,
     this allows for overrides."""
 
-    metaclasses: bool = field(default_factory=lambda: True)
+    metaclasses: bool = True
     """if True, include OWL representations of ClassDefinition, SlotDefinition, etc. Introduces punning"""
 
-    add_root_classes: bool = field(default_factory=lambda: False)
+    add_root_classes: bool = False
 
-    add_ols_annotations: bool = field(default_factory=lambda: True)
+    add_ols_annotations: bool = True
     graph: Optional[Graph] = None
     """Mutable graph that is being built up during OWL generation."""
 
     top_value_uri: Optional[URIRef] = None
     """If metaclasses=True, then this property is used to connect object shadows to literals"""
 
-    type_objects: bool = field(default_factory=lambda: True)
+    type_objects: bool = True
     """if True, represents types as classes (and thus all slots are object properties);
     typed object classes effectively shadow the main xsd literal types.
     The purpose of this is to allow a uniform ObjectProperty representation for all slots,
     without having to commit to being either Data or Object property (OWL-DL does not
     allow a property to be both."""
 
-    assert_equivalent_classes: bool = field(default_factory=lambda: False)
+    assert_equivalent_classes: bool = False
     """If True, assert equivalence between definition_uris and class_uris"""
 
-    use_native_uris: bool = field(default_factory=lambda: True)
+    use_native_uris: bool = True
     """If True, use the definition_uris, otherwise use class_uris."""
 
     mixins_as_expressions: bool = None
@@ -152,10 +152,10 @@ class OwlSchemaGenerator(Generator):
     node_owltypes: Mapping[Union[BNode, URIRef], Set[OWL_TYPE]] = field(default_factory=lambda: defaultdict(set))
     """rdfs:Datatype, owl:Thing"""
 
-    simplify: bool = field(default_factory=lambda: True)
+    simplify: bool = True
     """Reduce complex expressions to simpler forms"""
 
-    use_swrl: bool = field(default_factory=lambda: False)
+    use_swrl: bool = False
     """Use of SWRL is experimental"""
 
     target_profile: OWLProfile = field(default_factory=lambda: OWLProfile.dl)

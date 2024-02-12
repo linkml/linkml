@@ -126,7 +126,7 @@ class DocGenerator(Generator):
     # ObjectVars
     dialect: Optional[Union[DIALECT, str]] = None
     """markdown dialect (e.g MyST, Python)"""
-    sort_by: str = field(default_factory=lambda: "name")
+    sort_by: str = "name"
     visit_all_class_slots = False
     template_mappings: Dict[str, str] = None
     directory: str = None
@@ -141,19 +141,19 @@ class DocGenerator(Generator):
     diagram_type: Optional[Union[DiagramType, str]] = None
     """style of diagram (ER, UML)"""
 
-    include_top_level_diagram: bool = field(default_factory=lambda: False)
+    include_top_level_diagram: bool = False
     """Whether the index page should include a schema diagram"""
 
     example_directory: Optional[str] = None
     example_runner: ExampleRunner = field(default_factory=lambda: ExampleRunner())
 
-    genmeta: bool = field(default_factory=lambda: False)
-    gen_classvars: bool = field(default_factory=lambda: True)
-    gen_slots: bool = field(default_factory=lambda: True)
-    no_types_dir: bool = field(default_factory=lambda: False)
-    use_slot_uris: bool = field(default_factory=lambda: False)
-    use_class_uris: bool = field(default_factory=lambda: False)
-    hierarchical_class_view: bool = field(default_factory=lambda: False)
+    genmeta: bool = False
+    gen_classvars: bool = True
+    gen_slots: bool = True
+    no_types_dir: bool = False
+    use_slot_uris: bool = False
+    use_class_uris: bool = False
+    hierarchical_class_view: bool = False
 
     def __post_init__(self):
         dialect = self.dialect

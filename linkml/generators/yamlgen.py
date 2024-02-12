@@ -26,7 +26,7 @@ class YAMLGenerator(Generator):
     uses_schemaloader = True
 
     # ObjectVars
-    validateonly: bool = field(default_factory=lambda: False)
+    validateonly: bool = False
 
     def serialize(self, validateonly: bool = False, **kwargs) -> str:
         if validateonly:

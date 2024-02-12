@@ -47,7 +47,7 @@ class MarkdownGenerator(Generator):
     image_directory: Optional[str] = None
     classes: Set[ClassDefinitionName] = None
     image_dir: bool = False
-    index_file: str = field(default_factory=lambda: "index.md")
+    index_file: str = "index.md"
     noimages: bool = False
     noyuml: bool = False
     no_types_dir: bool = False

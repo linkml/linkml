@@ -30,8 +30,8 @@ class LinkmlGenerator(Generator):
     uses_schemaloader = False
     requires_metamodel = False
 
-    materialize_attributes: bool = field(default_factory=lambda: False)
-    materialize_patterns: bool = field(default_factory=lambda: False)
+    materialize_attributes: bool = False
+    materialize_patterns: bool = False
 
     def __post_init__(self):
         # TODO: consider moving up a level

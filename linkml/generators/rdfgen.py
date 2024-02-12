@@ -33,7 +33,7 @@ class RDFGenerator(Generator):
     uses_schemaloader = True
 
     # ObjectVars
-    emit_metadata: bool = field(default_factory=lambda: False)
+    emit_metadata: bool = False
     context: List[str] = None
 
     def _data(self, g: Graph) -> str:

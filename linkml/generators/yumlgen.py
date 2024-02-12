@@ -49,7 +49,7 @@ class YumlGenerator(Generator):
     classes: Set[ClassDefinitionName] = None
     directory: Optional[str] = None
     diagram_name: Optional[str] = None
-    load_image: bool = field(default_factory=lambda: True)
+    load_image: bool = True
 
     def visit_schema(
         self,

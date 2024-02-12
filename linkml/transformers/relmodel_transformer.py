@@ -140,11 +140,11 @@ class RelationalModelTransformer:
     """
 
     schemaview: SchemaView = None
-    # dialect: str = field(default_factory=lambda : 'sqlite')
-    skip_tree_root: bool = field(default_factory=lambda: False)
-    skip_abstract: bool = field(default_factory=lambda: True)
-    skip_mixins: bool = field(default_factory=lambda: True)
-    join_table_separator: str = field(default_factory=lambda: "_")
+    # dialect: str = 'sqlite'
+    skip_tree_root: bool = False
+    skip_abstract: bool = True
+    skip_mixins: bool = True
+    join_table_separator: str = "_"
     foreign_key_policy: ForeignKeyPolicy = field(default_factory=lambda: ForeignKeyPolicy.INJECT_FK_FOR_NESTED)
 
     def transform(self, tgt_schema_name: str = None, top_class: ClassDefinitionName = None) -> TransformationResult:

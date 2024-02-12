@@ -26,7 +26,7 @@ class SummaryGenerator(Generator):
     dirname: str = None
     classtab: Optional[DictWriter] = None
     slottab: Optional[DictWriter] = None
-    dialect: str = field(default_factory=lambda: "excel-tab")
+    dialect: str = "excel-tab"
 
     def visit_schema(self, **_) -> None:
         self.classtab = DictWriter(

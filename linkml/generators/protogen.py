@@ -24,7 +24,7 @@ class ProtoGenerator(Generator):
     uses_schemaloader = True
 
     # ObjectVars
-    relative_slot_num: int = field(default_factory=lambda: 0)
+    relative_slot_num: int = 0
 
     def __post_init__(self):
         super().__post_init__()

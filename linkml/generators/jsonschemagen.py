@@ -179,7 +179,7 @@ class JsonSchemaGenerator(Generator):
     # @deprecated("Use top_class")
     topClass: Optional[str] = None
 
-    not_closed: Optional[bool] = field(default_factory=lambda: True)
+    not_closed: Optional[bool] = True
     """If not closed, then an open-ended set of attributes can be instantiated for any object"""
 
     indent: int = 4
@@ -188,7 +188,7 @@ class JsonSchemaGenerator(Generator):
     top_class: Optional[Union[ClassDefinitionName, str]] = None  # JSON object is one instance of this
     """Class instantiated by the root node of the document tree"""
 
-    include_range_class_descendants: bool = field(default_factory=lambda: False)
+    include_range_class_descendants: bool = False
     """If set, use an open world assumption and allow the range of a slot to be any descendant of the declared range.
     Note that if the range of a slot has a type designator, descendants will always be included.
     """

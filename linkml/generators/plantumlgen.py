@@ -48,7 +48,7 @@ class PlantumlGenerator(Generator):
     classes: Set[ClassDefinitionName] = None
     directory: Optional[str] = None
     kroki_server: Optional[str] = "https://kroki.io"
-    load_image: bool = field(default_factory=lambda: True)
+    load_image: bool = True
 
     def visit_schema(
         self,
