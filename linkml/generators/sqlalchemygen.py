@@ -172,7 +172,6 @@ class SQLAlchemyGenerator(Generator):
             return compile_python(code, package_path=model_path)
 
     @staticmethod
-    @staticmethod
     def add_safe_aliases() -> None:
         for c in schema.classes.values():
             # c.alias = underscore(c.name)
