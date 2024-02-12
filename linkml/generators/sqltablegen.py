@@ -1,6 +1,6 @@
 import logging
 import os
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Optional
 
 import click
@@ -123,12 +123,12 @@ class SQLTableGenerator(Generator):
 
     # ObjectVars
     use_inherits: bool = False  # postgresql supports inheritance
-    dialect: str = field(default_factory=lambda: "sqlite")
-    inject_primary_keys: bool = field(default_factory=lambda: True)
-    use_foreign_keys: bool = field(default_factory=lambda: True)
-    rename_foreign_keys: bool = field(default_factory=lambda: False)
-    direct_mapping: bool = field(default_factory=lambda: False)
-    relative_slot_num: bool = field(default_factory=lambda: 0)
+    dialect: str = "sqlite"
+    inject_primary_keys: bool = True
+    use_foreign_keys: bool = True
+    rename_foreign_keys: bool = False
+    direct_mapping: bool = False
+    relative_slot_num: bool = False
 
     def serialize(self, **kwargs) -> str:
         return self.generate_ddl(**kwargs)

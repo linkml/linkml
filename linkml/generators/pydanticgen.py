@@ -270,14 +270,14 @@ class PydanticGenerator(OOCodeGenerator):
     # ObjectVars
     pydantic_version: str = field(default_factory=lambda: PYDANTIC_VERSION[0])
     template_file: str = None
-    extra_fields: str = field(default_factory=lambda: "forbid")
-    gen_mixin_inheritance: bool = field(default_factory=lambda: True)
+    extra_fields: str = "forbid"
+    gen_mixin_inheritance: bool = True
 
     # ObjectVars (identical to pythongen)
-    gen_classvars: bool = field(default_factory=lambda: True)
-    gen_slots: bool = field(default_factory=lambda: True)
-    genmeta: bool = field(default_factory=lambda: False)
-    emit_metadata: bool = field(default_factory=lambda: True)
+    gen_classvars: bool = True
+    gen_slots: bool = True
+    genmeta: bool = False
+    emit_metadata: bool = True
 
     def compile_module(self, **kwargs) -> ModuleType:
         """

@@ -3,7 +3,7 @@ import logging
 import os
 import re
 from copy import copy
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from types import ModuleType
 from typing import Callable, Dict, Iterator, List, Optional, Set, Tuple, Union
 
@@ -60,10 +60,10 @@ class PythonGenerator(Generator):
     uses_schemaloader = True
 
     # ObjectVars
-    gen_classvars: bool = field(default_factory=lambda: True)
-    gen_slots: bool = field(default_factory=lambda: True)
-    genmeta: bool = field(default_factory=lambda: False)
-    emit_metadata: bool = field(default_factory=lambda: True)
+    gen_classvars: bool = True
+    gen_slots: bool = True
+    genmeta: bool = False
+    emit_metadata: bool = True
 
     def __post_init__(self) -> None:
         self.sourcefile = self.schema

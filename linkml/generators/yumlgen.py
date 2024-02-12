@@ -5,7 +5,7 @@ https://yuml.me/diagram/scruffy/class/samples
 """
 
 import os
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Callable, List, Optional, Set, cast
 
 import click
@@ -49,7 +49,7 @@ class YumlGenerator(Generator):
     classes: Set[ClassDefinitionName] = None
     directory: Optional[str] = None
     diagram_name: Optional[str] = None
-    load_image: bool = field(default_factory=lambda: True)
+    load_image: bool = True
 
     def visit_schema(
         self,

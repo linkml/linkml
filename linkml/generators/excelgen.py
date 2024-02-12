@@ -1,5 +1,5 @@
 import logging
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
 from typing import List
 
@@ -22,8 +22,8 @@ class ExcelGenerator(Generator):
     uses_schemaloader = False
     requires_metamodel = False
 
-    split_workbook_by_class: bool = field(default_factory=lambda: False)
-    include_mixins: bool = field(default_factory=lambda: False)
+    split_workbook_by_class: bool = False
+    include_mixins: bool = False
 
     def __post_init__(self) -> None:
         super().__post_init__()

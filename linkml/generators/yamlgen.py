@@ -3,7 +3,7 @@
 """
 
 import os
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 import click
 from linkml_runtime.utils.yamlutils import as_yaml
@@ -26,7 +26,7 @@ class YAMLGenerator(Generator):
     uses_schemaloader = True
 
     # ObjectVars
-    validateonly: bool = field(default_factory=lambda: False)
+    validateonly: bool = False
 
     def serialize(self, validateonly: bool = False, **kwargs) -> str:
         if validateonly:
