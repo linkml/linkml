@@ -189,7 +189,6 @@ class SQLAlchemyGenerator(Generator):
 
     # TODO: move this
     @staticmethod
-    @staticmethod
     def order_classes_by_hierarchy() -> List[ClassDefinitionName]:
         olist = sv.class_roots()
         unprocessed = [cn for cn in sv.all_classes() if cn not in olist]
