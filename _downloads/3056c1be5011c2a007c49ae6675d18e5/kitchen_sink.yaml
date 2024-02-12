@@ -146,6 +146,7 @@ classes:
     slots:
       - street
       - city
+      - altitude
 
   Concept:
     slots:
@@ -285,7 +286,7 @@ classes:
         range: class with spaces
   # these below two sub classes at the same depth have
   # been added to check if class hierarchy methods
-  # follow lexigraphic sorting
+  # follow lexicographic sorting
   Sub sub class 2:
     is_a: subclass test
   tub sub class 1:
@@ -383,7 +384,8 @@ slots:
   life_status:
     range: LifeStatusEnum
   cordialness:
-    
+  altitude:
+    range: decimal
 
 enums:
   FamilialRelationshipType:
