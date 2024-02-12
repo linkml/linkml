@@ -46,6 +46,7 @@ from enum import Enum
 {% if uses_numpy -%}
 import numpy as np
 {%- endif %}
+from decimal import Decimal
 from typing import List, Dict, Optional, Any, Union"""
     if pydantic_ver == "1":
         template += """
