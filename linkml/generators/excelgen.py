@@ -30,7 +30,8 @@ class ExcelGenerator(Generator):
         self.logger = logging.getLogger(__name__)
         self.schemaview = SchemaView(self.schema)
 
-    def create_workbook(self, workbook_path: Path) -> Workbook:
+    @staticmethod
+    def create_workbook(workbook_path: Path) -> Workbook:
         """
         Creates an Excel workbook using the openpyxl library and returns it.
 
@@ -87,7 +88,8 @@ class ExcelGenerator(Generator):
         if self.split_workbook_by_class:
             self.logger.info(f"The Excel workbooks have been written to {output_path}")
 
-    def add_columns_to_worksheet(self, workbook: Workbook, worksheet_name: str, sheet_headings: List[str]) -> None:
+    @staticmethod
+    def add_columns_to_worksheet(workbook: Workbook, worksheet_name: str, sheet_headings: List[str]) -> None:
         """
         Get a worksheet by name and add a column to it in an existing workbook.
 
@@ -102,9 +104,9 @@ class ExcelGenerator(Generator):
         for i, heading in enumerate(sheet_headings):
             worksheet.cell(row=1, column=i + 1, value=heading)
 
+    @staticmethod
     def column_enum_validation(
-        self,
-        workbook: Workbook,
+            workbook: Workbook,
         worksheet_name: str,
         column_name: str,
         dv_formula: str,

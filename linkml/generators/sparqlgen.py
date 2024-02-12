@@ -169,7 +169,8 @@ class SparqlGenerator(Generator):
                     stream.write(q)
         return self.sparql
 
-    def split_sparql(self, sparql: str) -> Dict[str, str]:
+    @staticmethod
+    def split_sparql(sparql: str) -> Dict[str, str]:
         lines = sparql.split("\n")
         prolog = ""
         queries = defaultdict(str)
