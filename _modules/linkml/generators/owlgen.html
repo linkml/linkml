@@ -423,29 +423,29 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;By default, use the linkml metadata profile,</span>
 <span class="sd">    this allows for overrides.&quot;&quot;&quot;</span>
 
-    <span class="n">metaclasses</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="n">metaclasses</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;if True, include OWL representations of ClassDefinition, SlotDefinition, etc. Introduces punning&quot;&quot;&quot;</span>
 
-    <span class="n">add_root_classes</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="kc">False</span><span class="p">)</span>
+    <span class="n">add_root_classes</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
 
-    <span class="n">add_ols_annotations</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="n">add_ols_annotations</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">graph</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Graph</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Mutable graph that is being built up during OWL generation.&quot;&quot;&quot;</span>
 
     <span class="n">top_value_uri</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">URIRef</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;If metaclasses=True, then this property is used to connect object shadows to literals&quot;&quot;&quot;</span>
 
-    <span class="n">type_objects</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="n">type_objects</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;if True, represents types as classes (and thus all slots are object properties);</span>
 <span class="sd">    typed object classes effectively shadow the main xsd literal types.</span>
 <span class="sd">    The purpose of this is to allow a uniform ObjectProperty representation for all slots,</span>
 <span class="sd">    without having to commit to being either Data or Object property (OWL-DL does not</span>
 <span class="sd">    allow a property to be both.&quot;&quot;&quot;</span>
 
-    <span class="n">assert_equivalent_classes</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="kc">False</span><span class="p">)</span>
+    <span class="n">assert_equivalent_classes</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;If True, assert equivalence between definition_uris and class_uris&quot;&quot;&quot;</span>
 
-    <span class="n">use_native_uris</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="n">use_native_uris</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;If True, use the definition_uris, otherwise use class_uris.&quot;&quot;&quot;</span>
 
     <span class="n">mixins_as_expressions</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">None</span>
@@ -457,10 +457,10 @@
     <span class="n">node_owltypes</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">BNode</span><span class="p">,</span> <span class="n">URIRef</span><span class="p">],</span> <span class="n">Set</span><span class="p">[</span><span class="n">OWL_TYPE</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">set</span><span class="p">))</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;rdfs:Datatype, owl:Thing&quot;&quot;&quot;</span>
 
-    <span class="n">simplify</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="n">simplify</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Reduce complex expressions to simpler forms&quot;&quot;&quot;</span>
 
-    <span class="n">use_swrl</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="kc">False</span><span class="p">)</span>
+    <span class="n">use_swrl</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Use of SWRL is experimental&quot;&quot;&quot;</span>
 
     <span class="n">target_profile</span><span class="p">:</span> <span class="n">OWLProfile</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">OWLProfile</span><span class="o">.</span><span class="n">dl</span><span class="p">)</span>
