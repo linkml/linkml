@@ -14,6 +14,7 @@ from linkml_runtime.linkml_model.meta import ClassDefinition, ClassDefinitionNam
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from rdflib import Namespace
 
+from linkml import REQUESTS_TIMEOUT
 from linkml.utils.generator import Generator, shared_arguments
 
 yuml_is_a = "^-"
@@ -95,10 +96,10 @@ class YumlGenerator(Generator):
                 payload = "dsl_text=" + (",".join(yumlclassdef))
                 payload = payload.replace("%3F", "?").replace("%2B", "+")
                 url = "https://yuml.me/diagram/plain/class/"
-                resp = requests.post(url, data=payload)
+                resp = requests.post(url, data=payload, timeout=REQUESTS_TIMEOUT)
                 if resp.ok:
                     filename = resp.text.strip().replace(".svg", file_suffix)
-                    resp = requests.get(f"https://yuml.me/{filename}", stream=True)
+                    resp = requests.get(f"https://yuml.me/{filename}", stream=True, timeout=REQUESTS_TIMEOUT)
                     with open(self.output_file_name, "wb") as f:
                         for chunk in resp.iter_content(chunk_size=2048):
                             f.write(chunk)
