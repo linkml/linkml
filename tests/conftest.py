@@ -160,11 +160,7 @@ def pytest_addoption(parser):
         action="store_true",
         help="Generate new files into __snapshot__ directories instead of checking against existing files",
     )
-    parser.addoption(
-        "--slow",
-        action="store_true",
-        help="include tests marked slow"
-    )
+    parser.addoption("--slow", action="store_true", help="include tests marked slow")
 
 
 def pytest_collection_modifyitems(config, items):
