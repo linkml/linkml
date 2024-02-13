@@ -770,7 +770,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return an ordered list of ancestor names for the supplied slot or class</span>
 
 <span class="sd">        @param element: Slot or class name or definition</span>
-<span class="sd">        @return: Ordered list of of ancestor names</span>
+<span class="sd">        @return: Ordered list of ancestor names</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">element</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">+</span> <span class="p">([]</span> <span class="k">if</span> <span class="n">element</span><span class="o">.</span><span class="n">is_a</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">ancestors</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">(</span><span class="n">element</span><span class="p">)))</span></div>
 
@@ -925,7 +925,7 @@
 
 <div class="viewcode-block" id="Generator.slot_range_path"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.generator.Generator.slot_range_path">[docs]</a>    <span class="k">def</span> <span class="nf">slot_range_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slot_or_name</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">SlotDefinition</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return a ordered list of slot ranges from distal to proximal</span>
+<span class="sd">        Return an ordered list of slot ranges from distal to proximal</span>
 
 <span class="sd">        :param slot_or_name: slot whose range is being typed</span>
 <span class="sd">        :return: ordered list of types from base type forward</span>
