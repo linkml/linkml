@@ -5,8 +5,8 @@ from typing import Optional
 import pytest
 
 from tests.test_compliance.helper import (
-    JSONLD_CONTEXT,
     JSON_SCHEMA,
+    JSONLD_CONTEXT,
     OWL,
     PYDANTIC,
     PYTHON_DATACLASSES,
