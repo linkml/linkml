@@ -18,6 +18,7 @@ from tests.test_utils import INPUT_DIR
 SCHEMA_NO_IMPORTS = Path(INPUT_DIR) / 'kitchen_sink_noimports.yaml'
 SCHEMA_WITH_IMPORTS = Path(INPUT_DIR) / 'kitchen_sink.yaml'
 SCHEMA_WITH_STRUCTURED_PATTERNS = Path(INPUT_DIR) / "pattern-example.yaml"
+SCHEMA_IMPORT_TREE = Path(INPUT_DIR) / 'imports' / 'main.yaml'
 
 yaml_loader = YAMLLoader()
 IS_CURRENT = 'is current'
@@ -477,6 +478,13 @@ class SchemaViewTestCase(unittest.TestCase):
         view2 = SchemaView(view.schema)
         self.assertCountEqual(view.all_classes(), view2.all_classes())
         self.assertCountEqual(view.all_classes(imports=False), view2.all_classes(imports=False))
+
+    def test_imports_order(self):
+        """
+        Imports should override in a python-like order.
+
+        See https://github.com/linkml/linkml/issues/1839
+        """
 
     def test_direct_remote_imports(self):
         """

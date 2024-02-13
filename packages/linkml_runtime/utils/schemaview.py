@@ -1,4 +1,5 @@
 import os
+import pdb
 import uuid
 import logging
 import collections
@@ -231,6 +232,7 @@ class SchemaView(object):
                 self.schema_map[sn] = imported_schema
             s = self.schema_map[sn]
             if sn not in closure:
+                #closure.insert(0, sn)
                 closure.append(sn)
             for i in s.imports:
                 if i not in visited:
@@ -434,6 +436,7 @@ class SchemaView(object):
     def _get_dict(self, slot_name: str, imports=True) -> Dict:
         schemas = self.all_schema(imports)
         d = {}
+        # pdb.set_trace()
         # iterate through all schemas and merge the list together
         for s in schemas:
             # get the value of element name from the schema, if empty, return empty dictionary.
