@@ -334,7 +334,7 @@ class PydanticGenerator(OOCodeGenerator):
         )
     
     """
-    imports: Optional[Dict[str, Union[Dict[str, str], List[Union[str, Dict[str, str]]]]]] = None
+    imports: Optional[Dict[str, Union[None, Dict[str, str], List[Union[str, Dict[str, str]]]]]] = None
     """
     Additional imports to inject into generated module. 
     
