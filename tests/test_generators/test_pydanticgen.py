@@ -1,7 +1,7 @@
 import inspect
 import typing
 from importlib.metadata import version
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Optional, Union, get_args, get_origin
 
 import pytest
 import yaml
@@ -10,6 +10,7 @@ from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.linkml_model import SlotDefinition
 from linkml_runtime.utils.compile_python import compile_python
 from pydantic import ValidationError
+from pydantic.version import VERSION as PYDANTIC_VERSION
 
 from linkml.generators.pydanticgen import PydanticGenerator
 from linkml.utils.schema_builder import SchemaBuilder
@@ -663,8 +664,19 @@ def test_inject_field(kitchen_sink_path, tmp_path, input_path, inject, name, typ
 
     base = getattr(module, "ConfiguredBaseModel")
 
-    assert name in base.model_fields
-    field = base.model_fields[name]
-    assert field.annotation == type
-    assert field.default == default
-    assert field.description == description
+    if int(PYDANTIC_VERSION.split(".")[0]) >= 2:
+        assert name in base.model_fields
+        field = base.model_fields[name]
+        assert field.annotation == type
+        assert field.default == default
+        assert field.description == description
+    else:
+        assert name in base.__fields__
+        field = base.__fields__[name]
+        # pydantic <2 mangles annotations so can't do direct annotation comparison
+        assert not field.required
+        if get_origin(type):
+            assert field.type_ is get_args(type)[0]
+        else:
+            assert field.type_ is type
+        assert field.field_info.description == description
