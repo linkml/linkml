@@ -1224,15 +1224,16 @@ class SchemaView(object):
         :param imports: include imports closure
         :return: dynamic slot constructed by inference
         """
-        slot = self.get_slot(slot_name, imports, attributes=False)
         if class_name:
             cls = self.get_class(class_name, imports, strict=True)
         else:
             cls = None
+
         # attributes take priority over schema-level slot definitions, IF
         # the attributes is declared for the class or an ancestor
         slot_comes_from_attribute = False
         if cls:
+            slot = self.get_slot(slot_name, imports, attributes=False)
             # traverse ancestors (reflexive), starting with
             # the main class
             for an in self.class_ancestors(class_name):
@@ -1243,11 +1244,13 @@ class SchemaView(object):
                     break
         else:
             slot = self.get_slot(slot_name, imports, attributes=True)
+
         if slot is None:
             raise ValueError(f"No such slot {slot_name} as an attribute of {class_name} ancestors "
                              "or as a slot definition in the schema")
+
         # copy the slot, as it will be modified
-        induced_slot = deepcopy(slot)
+        induced_slot = copy(slot)
         if not slot_comes_from_attribute:
             slot_anc_names = self.slot_ancestors(slot_name, reflexive=True)
             # inheritable slot: first propagate from ancestors
@@ -1255,7 +1258,7 @@ class SchemaView(object):
                 anc_slot = self.get_slot(anc_sn, attributes=False)
                 for metaslot_name in SlotDefinition._inherited_slots:
                     if getattr(anc_slot, metaslot_name, None):
-                        setattr(induced_slot, metaslot_name, deepcopy(getattr(anc_slot, metaslot_name)))
+                        setattr(induced_slot, metaslot_name, copy(getattr(anc_slot, metaslot_name)))
         COMBINE = {
             'maximum_value': lambda x, y: min(x, y),
             'minimum_value': lambda x, y: max(x, y),
@@ -1302,7 +1305,7 @@ class SchemaView(object):
             if induced_slot.name in c.slots or induced_slot.name in c.attributes:
                 if c.name not in induced_slot.domain_of:
                     induced_slot.domain_of.append(c.name)
-        return deepcopy(induced_slot)
+        return induced_slot
 
     @lru_cache()
     def _metaslots_for_slot(self):
