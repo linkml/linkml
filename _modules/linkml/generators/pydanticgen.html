@@ -303,13 +303,14 @@
         </div>
         <article role="main">
           <h1>Source code for linkml.generators.pydanticgen</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span></span><span class="kn">import</span> <span class="nn">inspect</span>
+<span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
 <span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
 <span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">ModuleType</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Set</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">click</span>
 <span class="kn">from</span> <span class="nn">jinja2</span> <span class="kn">import</span> <span class="n">Template</span>
@@ -337,7 +338,9 @@
 <span class="kn">from</span> <span class="nn">linkml.utils.ifabsent_functions</span> <span class="kn">import</span> <span class="n">ifabsent_value_declaration</span>
 
 
-<div class="viewcode-block" id="default_template"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.pydanticgen.default_template">[docs]</a><span class="k">def</span> <span class="nf">default_template</span><span class="p">(</span><span class="n">pydantic_ver</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="n">extra_fields</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;forbid&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="viewcode-block" id="default_template"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.pydanticgen.default_template">[docs]</a><span class="k">def</span> <span class="nf">default_template</span><span class="p">(</span>
+    <span class="n">pydantic_ver</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="n">extra_fields</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;forbid&quot;</span><span class="p">,</span> <span class="n">injected_classes</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Type</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Constructs a default template for pydantic classes based on the version of pydantic&quot;&quot;&quot;</span>
     <span class="c1">### HEADER ###</span>
     <span class="n">template</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
@@ -367,7 +370,26 @@
 <span class="s2">else:</span>
 <span class="s2">    from typing_extensions import Literal</span>
 
-
+<span class="s2">{</span><span class="si">% i</span><span class="s2">f imports is not none %}</span>
+<span class="s2">{</span><span class="si">%- f</span><span class="s2">or import_module, import_classes in imports.items() -%}</span>
+<span class="s2">{</span><span class="si">% i</span><span class="s2">f import_classes is none -%}</span>
+<span class="s2">import {{ import_module }}</span>
+<span class="s2">{</span><span class="si">% e</span><span class="s2">lif import_classes is mapping -%}</span>
+<span class="s2">import {{ import_module }} as {{ import_classes[&#39;as&#39;] }}</span>
+<span class="s2">{</span><span class="si">% e</span><span class="s2">lse -%}</span>
+<span class="s2">from {{ import_module }} import (</span>
+<span class="s2">    {</span><span class="si">% f</span><span class="s2">or imported_class in import_classes %}</span>
+<span class="s2">    {</span><span class="si">%- i</span><span class="s2">f imported_class is string -%}</span>
+<span class="s2">    {{ imported_class }}</span>
+<span class="s2">    {</span><span class="si">%- e</span><span class="s2">lse -%}</span>
+<span class="s2">    {{ imported_class[&#39;name&#39;] }} as {{ imported_class[&#39;as&#39;] }}</span>
+<span class="s2">    {</span><span class="si">%- e</span><span class="s2">ndif -%}</span>
+<span class="s2">    {</span><span class="si">%- i</span><span class="s2">f not loop.last %},{{ &#39;</span><span class="se">\n</span><span class="s2">    &#39; }}{</span><span class="si">% e</span><span class="s2">lse %}{{ &#39;</span><span class="se">\n</span><span class="s2">&#39; }}{</span><span class="si">%- e</span><span class="s2">ndif -%}</span>
+<span class="s2">    {</span><span class="si">% e</span><span class="s2">ndfor -%}</span>
+<span class="s2">)</span>
+<span class="s2">{</span><span class="si">% e</span><span class="s2">ndif -%}</span>
+<span class="s2">{</span><span class="si">% e</span><span class="s2">ndfor -%}</span>
+<span class="s2">{</span><span class="si">% e</span><span class="s2">ndif %}</span>
 <span class="s2">metamodel_version = &quot;{{metamodel_version}}&quot;</span>
 <span class="s2">version = &quot;{{version if version else None}}&quot;</span>
 <span class="s2">&quot;&quot;&quot;</span>
@@ -384,7 +406,6 @@
 <span class="s2">                extra = &#39;</span><span class="si">{</span><span class="n">extra_fields</span><span class="si">}</span><span class="s2">&#39;,</span>
 <span class="s2">                arbitrary_types_allowed = True,</span>
 <span class="s2">                use_enum_values = True):</span>
-<span class="s2">    pass</span>
 <span class="s2">&quot;&quot;&quot;</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">template</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
@@ -395,8 +416,26 @@
 <span class="s2">        extra = &#39;</span><span class="si">{</span><span class="n">extra_fields</span><span class="si">}</span><span class="s2">&#39;,</span>
 <span class="s2">        arbitrary_types_allowed=True,</span>
 <span class="s2">        use_enum_values = True)</span>
-<span class="s2">    pass</span>
 <span class="s2">&quot;&quot;&quot;</span>
+
+    <span class="c1">### Fields injected into base model</span>
+    <span class="n">template</span> <span class="o">+=</span> <span class="s2">&quot;&quot;&quot;{</span><span class="si">% i</span><span class="s2">f injected_fields is not none %}</span>
+<span class="s2">    {</span><span class="si">% f</span><span class="s2">or field in injected_fields -%}</span>
+<span class="s2">    {{ field }}</span>
+<span class="s2">    {</span><span class="si">% e</span><span class="s2">ndfor %}</span>
+<span class="s2">{</span><span class="si">% e</span><span class="s2">lse %}</span>
+<span class="s2">    pass</span>
+<span class="s2">{</span><span class="si">% e</span><span class="s2">ndif %}</span>
+<span class="s2">        &quot;&quot;&quot;</span>
+
+    <span class="c1">### Extra classes</span>
+    <span class="k">if</span> <span class="n">injected_classes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">injected_classes</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">template</span> <span class="o">+=</span> <span class="s2">&quot;&quot;&quot;{{ &#39;</span><span class="se">\n\n</span><span class="s2">&#39; }}&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="n">injected_classes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="n">template</span> <span class="o">+=</span> <span class="bp">cls</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">template</span> <span class="o">+=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getsource</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span>
 
     <span class="c1">### ENUMS ###</span>
     <span class="n">template</span> <span class="o">+=</span> <span class="s2">&quot;&quot;&quot;</span>
@@ -578,6 +617,67 @@
     <span class="n">template_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">extra_fields</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;forbid&quot;</span>
     <span class="n">gen_mixin_inheritance</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">injected_classes</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Type</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A list/tuple of classes to inject into the generated module.</span>
+<span class="sd">    </span>
+<span class="sd">    Accepts either live classes or strings. Live classes will have their source code</span>
+<span class="sd">    extracted with inspect.get - so they need to be standard python classes declared in a</span>
+<span class="sd">    source file (ie. the module they are contained in needs a ``__file__`` attr, </span>
+<span class="sd">    see: :func:`inspect.getsource` )</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">injected_fields</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A list/tuple of field strings to inject into the base class.</span>
+<span class="sd">    </span>
+<span class="sd">    Examples:</span>
+<span class="sd">    </span>
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        injected_fields = (</span>
+<span class="sd">            &#39;object_id: Optional[str] = Field(None, description=&quot;Unique UUID for each object&quot;)&#39;,</span>
+<span class="sd">        )</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">imports</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]]]]]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Additional imports to inject into generated module. </span>
+<span class="sd">    </span>
+<span class="sd">    A dictionary mapping a module to a list of objects to import. </span>
+<span class="sd">    If the value of an entry is ``None`` , import the whole module.</span>
+<span class="sd">    </span>
+<span class="sd">    Import Aliases:</span>
+<span class="sd">    If the value of a module import is a dictionary with a key &quot;as&quot;,</span>
+<span class="sd">    or a class is specified as a dictionary with a &quot;name&quot; and &quot;as&quot;,</span>
+<span class="sd">    then the import is renamed like &quot;from module import class as renamedClass&quot;.</span>
+<span class="sd">    </span>
+<span class="sd">    Examples:</span>
+<span class="sd">        </span>
+<span class="sd">    .. code-block:: python</span>
+<span class="sd">    </span>
+<span class="sd">        imports = {</span>
+<span class="sd">            &#39;typing&#39;: [&#39;Dict&#39;, &#39;List&#39;, &#39;Union&#39;],</span>
+<span class="sd">            &#39;types&#39;: None,</span>
+<span class="sd">            &#39;numpy&#39;: {&#39;as&#39;: &#39;np&#39;},</span>
+<span class="sd">            &#39;collections&#39;: [{&#39;name&#39;: &#39;OrderedDict&#39;, &#39;as&#39;: &#39;odict&#39;}]</span>
+<span class="sd">        }</span>
+<span class="sd">        </span>
+<span class="sd">    becomes:</span>
+<span class="sd">    </span>
+<span class="sd">    .. code-block:: python</span>
+<span class="sd">    </span>
+<span class="sd">        from typing import (</span>
+<span class="sd">            Dict,</span>
+<span class="sd">            List,</span>
+<span class="sd">            Union</span>
+<span class="sd">        )</span>
+<span class="sd">        import types</span>
+<span class="sd">        import numpy as np</span>
+<span class="sd">        from collections import (</span>
+<span class="sd">            OrderedDict as odict</span>
+<span class="sd">        )</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># ObjectVars (identical to pythongen)</span>
     <span class="n">gen_classvars</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
@@ -872,7 +972,7 @@
             <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">template_file</span><span class="p">)</span> <span class="k">as</span> <span class="n">template_file</span><span class="p">:</span>
                 <span class="n">template_obj</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="n">template_file</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">template_obj</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="n">default_template</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pydantic_version</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">extra_fields</span><span class="p">))</span>
+            <span class="n">template_obj</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="n">default_template</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pydantic_version</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">extra_fields</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">injected_classes</span><span class="p">))</span>
 
         <span class="n">sv</span><span class="p">:</span> <span class="n">SchemaView</span>
         <span class="n">sv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span>
@@ -973,6 +1073,8 @@
             <span class="n">metamodel_version</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">metamodel_version</span><span class="p">,</span>
             <span class="n">version</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">version</span><span class="p">,</span>
             <span class="n">class_isa_plus_mixins</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_class_isa_plus_mixins</span><span class="p">(),</span>
+            <span class="n">imports</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">imports</span><span class="p">,</span>
+            <span class="n">injected_fields</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">injected_fields</span><span class="p">,</span>
             <span class="n">uses_numpy</span><span class="o">=</span><span class="n">uses_numpy</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">code</span></div>
