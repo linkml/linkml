@@ -765,7 +765,6 @@ def check_data(
             else:
                 expected_behavior = ValidationBehavior.UNTESTED
         elif isinstance(gen, ShaclGenerator):
-            # TODO: enable this when the shacl plugin can accept arbitrary objects.
             # currently requires translating via python objects
             if not exclude_rdf:
                 plugins = [ShaclValidationPlugin(closed=True)]
