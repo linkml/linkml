@@ -603,9 +603,15 @@ class OwlSchemaGenerator(Generator):
         if slot.exactly_one_of:
             disj_exprs = []
             for i, operand in enumerate(slot.exactly_one_of):
-                rest = slot.exactly_one_of[0:i] + slot.exactly_one_of[i + 1:]
-                neg_expr = self._complement_of_union_of([self.transform_class_slot_expression(cls, x, main_slot, owl_types) for x in rest], owl_types=owl_types)
-                pos_expr = self._intersection_of([self.transform_class_slot_expression(cls, operand, main_slot, owl_types), neg_expr], owl_types=owl_types)
+                rest = slot.exactly_one_of[0:i] + slot.exactly_one_of[i + 1 :]
+                neg_expr = self._complement_of_union_of(
+                    [self.transform_class_slot_expression(cls, x, main_slot, owl_types) for x in rest],
+                    owl_types=owl_types,
+                )
+                pos_expr = self._intersection_of(
+                    [self.transform_class_slot_expression(cls, operand, main_slot, owl_types), neg_expr],
+                    owl_types=owl_types,
+                )
                 disj_exprs.append(pos_expr)
             owl_exprs.append(self._union_of(disj_exprs, owl_types=owl_types))
         range = slot.range
@@ -980,7 +986,9 @@ class OwlSchemaGenerator(Generator):
     def _metaslot_uri(self, name: str) -> URIRef:
         return URIRef("https://w3id.org/linkml/" + name)
 
-    def _complement_of_union_of(self, exprs: List[Union[BNode, URIRef]], owl_types: Set[OWL_TYPE] = None, **kwargs) -> Optional[Union[BNode, URIRef]]:
+    def _complement_of_union_of(
+        self, exprs: List[Union[BNode, URIRef]], owl_types: Set[OWL_TYPE] = None, **kwargs
+    ) -> Optional[Union[BNode, URIRef]]:
         if not exprs:
             raise ValueError("Must pass at least one")
         neg_expr = BNode()
