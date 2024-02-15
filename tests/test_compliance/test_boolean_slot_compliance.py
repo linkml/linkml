@@ -47,7 +47,7 @@ from tests.test_compliance.test_compliance import (
         ("int", 1, True),
         ("str", "abc", False),
         ("obj", {SLOT_S2: "abc"}, True),
-        ("bad_obj", {SLOT_S1: "abc"}, False),
+        ("bad_obj", {SLOT_S1: "abc"}, False),  # neither an integer nor a valid instance of D
     ],
 )
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
@@ -55,8 +55,22 @@ def test_slot_any_of(framework, data_name, value, is_valid, use_any_type, use_de
     """
     Tests behavior of any_of at the slot level.
 
-    This test creates a test schema with a slot S1 whose values
-    are either an integer or an inlined instance of class D.
+    This test creates a test schema with a slot C.S1 whose values
+    are EITHER an integer OR an inlined instance of class D, where D
+    has a slot S2.
+
+    E.g.
+
+    ```yaml
+    C--[S1]-->D-->[S2]-->
+        |
+        +-->int
+    ```
+
+    This also tests in combination with default range and whether there is
+    an explicit Any range set for S1.
+
+    Various values are tested for slot S1 in a C object.
 
     any_of is a special case of boolean metaslot,
     as it cleanly maps to many language constructs (e.g. Union in Python),
@@ -75,9 +89,12 @@ def test_slot_any_of(framework, data_name, value, is_valid, use_any_type, use_de
     """
     expected_json_schema = {"s1": {"anyOf": [{"$ref": "#/$defs/D"}, {"type": "integer"}]}}
     if use_default_range and not use_any_type:
+        # default_range is set to string, any no explicit range set.
+        # in this case the schema is violating monotonicity.
         # TODO: undesired behavior, see https://github.com/linkml/linkml/issues/1483
         expected_json_schema["s1"]["type"] = "string"
     if use_any_type:
+        # Using an explicit type (even if Any) *should* block the application of the default range
         # TODO: undesired behavior, see https://github.com/linkml/linkml/issues/1483
         expected_json_schema["s1"]["$ref"] = "#/$defs/Any"
     classes = {
@@ -127,9 +144,9 @@ def test_slot_any_of(framework, data_name, value, is_valid, use_any_type, use_de
     if framework in [PYTHON_DATACLASSES, SQL_DDL_SQLITE]:
         expected_behavior = ValidationBehavior.INCOMPLETE
     if framework == JSON_SCHEMA:
-        if use_default_range and not is_valid:
-            # https://github.com/linkml/linkml/issues/1483
-            expected_behavior = ValidationBehavior.INCOMPLETE
+        # if use_default_range and not is_valid:
+        #    # https://github.com/linkml/linkml/issues/1483
+        #    #expected_behavior = ValidationBehavior.INCOMPLETE
         if data_name == "bad_obj":
             expected_behavior = ValidationBehavior.INCOMPLETE
         if is_valid and (use_any_type or use_default_range):
@@ -199,7 +216,7 @@ def test_slot_exactly_one_of(framework, data_name, value, is_valid):
         core_elements=["exactly_one_of", "minimum_value", "maximum_value"],
     )
     expected_behavior = ValidationBehavior.IMPLEMENTS
-    if framework != JSON_SCHEMA:
+    if framework not in [JSON_SCHEMA, OWL]:
         expected_behavior = ValidationBehavior.INCOMPLETE
     check_data(
         schema,
@@ -278,7 +295,7 @@ def test_slot_all_of(framework, data_name, value, is_valid):
         core_elements=["all_of", "minimum_value", "maximum_value"],
     )
     expected_behavior = ValidationBehavior.IMPLEMENTS
-    if framework != JSON_SCHEMA:
+    if framework not in [JSON_SCHEMA, OWL]:
         expected_behavior = ValidationBehavior.INCOMPLETE
     check_data(
         schema,
@@ -344,7 +361,7 @@ def test_slot_none_of(framework, data_name, value, is_valid):
         core_elements=["none_of", "minimum_value", "maximum_value"],
     )
     expected_behavior = ValidationBehavior.IMPLEMENTS
-    if framework != JSON_SCHEMA:
+    if framework not in [JSON_SCHEMA, OWL]:
         expected_behavior = ValidationBehavior.INCOMPLETE
     check_data(
         schema,
@@ -485,7 +502,8 @@ def test_class_any_of(framework, data_name, s1value, s2value, is_valid):
         core_elements=["any_of", "ClassDefinition"],
     )
     expected_behavior = ValidationBehavior.IMPLEMENTS
-    if framework != OWL:
+    if framework not in [OWL]:
+        # TODO: rdflib transformer has issues around ranges
         expected_behavior = ValidationBehavior.INCOMPLETE
     # TODO: rdflib transformer has issues around ranges
     check_data(
@@ -504,6 +522,31 @@ def test_class_any_of(framework, data_name, s1value, s2value, is_valid):
 @pytest.mark.parametrize(
     "schema_name,s1_range,s2_range,op,s1_expression,s2_expression,data_name,s1value,s2value,is_valid",
     [
+        # exactly one of
+        (
+            "exactly_one_of_streq",
+            "string",
+            "string",
+            "exactly_one_of",
+            {"equals_string": "x"},
+            {"equals_string": "y"},
+            "none",
+            "x",
+            "y",
+            False,
+        ),
+        (
+            "exactly_one_of_streq",
+            "string",
+            "string",
+            "exactly_one_of",
+            {"equals_string": "x"},
+            {"equals_string": "y"},
+            "none",
+            "x",
+            "z",
+            True,
+        ),
         # strings
         (
             "any_of_streq",
@@ -999,7 +1042,7 @@ def test_class_boolean_with_expressions(
     framework, schema_name, s1_range, s2_range, op, s1_expression, s2_expression, data_name, s1value, s2value, is_valid
 ):
     """
-    Tests behavior of any_of for class expressions.
+    Tests behavior of multiple kinds of boolean quantifiers.
 
     :param framework: generator to test
     :param schema_name: unique name of generated schema
@@ -1529,7 +1572,7 @@ def test_preconditions(framework, s1, s2, is_valid):
     )
     expected_behavior = ValidationBehavior.IMPLEMENTS
     if framework not in [JSON_SCHEMA, OWL]:
-        # only JSON Schema supports rules
+        # only JSON Schema and OWL supports rules
         expected_behavior = ValidationBehavior.INCOMPLETE
     check_data(
         schema,
@@ -1540,6 +1583,200 @@ def test_preconditions(framework, s1, s2, is_valid):
         target_class=CLASS_C,
         expected_behavior=expected_behavior,
         description=f"validity {is_valid} check for value {s1} {s2}",
+    )
+
+
+@pytest.mark.parametrize(
+    "schema_name,s1def,s2def,preconditions,postconditions,data_name,object,is_valid",
+    [
+        (
+            "if0then0",
+            {"range": "integer"},
+            {"range": "integer"},
+            {SLOT_S1: {"equals_number": 0}},
+            {SLOT_S2: {"equals_number": 0}},
+            "00",
+            {SLOT_S1: 0, SLOT_S2: 0},
+            True,
+        ),
+        (
+            "if0then0",
+            {"range": "integer"},
+            {"range": "integer"},
+            {SLOT_S1: {"equals_number": 0}},
+            {SLOT_S2: {"equals_number": 0}},
+            "0-10",
+            {SLOT_S1: 0, SLOT_S2: 10},
+            False,
+        ),
+        (
+            "if0then0",
+            {"range": "integer"},
+            {"range": "integer"},
+            {SLOT_S1: {"equals_number": 0}},
+            {SLOT_S2: {"equals_number": 0}},
+            "None-10",
+            {SLOT_S2: 10},
+            True,
+        ),
+        (
+            "no_preconditions",
+            {"range": "integer"},
+            {"range": "integer"},
+            None,
+            {SLOT_S2: {"minimum_value": 10}},
+            "None-10",
+            {SLOT_S2: 10},
+            True,
+        ),
+        (
+            "no_preconditions",
+            {"range": "integer"},
+            {"range": "integer"},
+            None,
+            {SLOT_S2: {"minimum_value": 10}},
+            "None-1",
+            {SLOT_S2: 1},
+            True,
+        ),
+        (
+            "no_postconditions",
+            {"range": "integer"},
+            {"range": "integer"},
+            {SLOT_S1: {"minimum_value": 10}},
+            None,
+            "1-10",
+            {SLOT_S1: 1, SLOT_S2: 1},
+            True,
+        ),
+        (
+            "ifAthenB",
+            {"range": "string"},
+            {"range": "string"},
+            {SLOT_S1: {"equals_string": "A"}},
+            {SLOT_S2: {"equals_string": "B"}},
+            "AA",
+            {SLOT_S1: "A", SLOT_S2: "A"},
+            False,
+        ),
+        (
+            "Disjunctive",
+            {"range": "integer"},
+            {"range": "integer"},
+            {SLOT_S1: {"exactly_one_of": [{"minimum_value": 1}, {"maximum_value": 10}]}},
+            {SLOT_S2: {"equals_number": 3}},
+            "11-1",
+            {SLOT_S1: 11, SLOT_S2: 1},
+            False,
+        ),
+        (
+            "if1or2then3or4",
+            {"range": "integer"},
+            {"range": "integer"},
+            {SLOT_S1: {"any_of": [{"equals_number": 1}, {"equals_number": 2}]}},
+            {SLOT_S2: {"any_of": [{"equals_number": 3}, {"equals_number": 4}]}},
+            "11",
+            {SLOT_S1: 1, SLOT_S2: 1},
+            False,
+        ),
+        (
+            "ifAorBthenCorD",
+            {"range": "string"},
+            {"range": "string"},
+            {SLOT_S1: {"any_of": [{"equals_string": "A"}, {"equals_string": "B"}]}},
+            {SLOT_S2: {"any_of": [{"equals_string": "C"}, {"equals_string": "D"}]}},
+            "AA",
+            {SLOT_S1: "A", SLOT_S2: "A"},
+            False,
+        ),
+        (
+            "ifAorBthenCorD",
+            {"range": "string"},
+            {"range": "string"},
+            {SLOT_S1: {"any_of": [{"equals_string": "A"}, {"equals_string": "B"}]}},
+            {SLOT_S2: {"any_of": [{"equals_string": "C"}, {"equals_string": "D"}]}},
+            "ZZ",
+            {SLOT_S1: "Z", SLOT_S2: "Z"},
+            True,
+        ),
+        (
+            "ifAorBthenCorD",
+            {"range": "string"},
+            {"range": "string"},
+            {SLOT_S1: {"any_of": [{"equals_string": "A"}, {"equals_string": "B"}]}},
+            {SLOT_S2: {"any_of": [{"equals_string": "C"}, {"equals_string": "D"}]}},
+            "AC",
+            {SLOT_S1: "A", SLOT_S2: "C"},
+            True,
+        ),
+    ],
+)
+@pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
+def test_preconditions_combos(
+    framework, schema_name, s1def, s2def, preconditions, postconditions, data_name, object, is_valid
+):
+    """
+    Tests behavior of rules (preconditions and postconditions).
+
+    :param framework:
+    :param schema_name:
+    :param s1def:
+    :param s2def:
+    :param preconditions:
+    :param postconditions:
+    :param data_name:
+    :param object:
+    :param is_valid:
+    :return:
+    """
+    if framework == SHACL:
+        pytest.skip("shaclgen does not support rules yet")
+    rule = {}
+    if preconditions:
+        rule["preconditions"] = {
+            "slot_conditions": preconditions,
+        }
+    if postconditions:
+        rule["postconditions"] = {
+            "slot_conditions": postconditions,
+        }
+    classes = {
+        CLASS_C: {
+            "description": schema_name,
+            "attributes": {
+                SLOT_S1: s1def,
+                SLOT_S2: s2def,
+            },
+            "rules": [rule],
+        },
+    }
+    schema = validated_schema(
+        test_preconditions_combos,
+        schema_name,
+        framework,
+        classes=classes,
+        core_elements=[
+            "preconditions",
+            "postconditions",
+            "slot_conditions",
+        ],
+    )
+    expected_behavior = ValidationBehavior.IMPLEMENTS
+    if framework not in [JSON_SCHEMA, OWL]:
+        # only JSON Schema and OWL supports rules
+        expected_behavior = ValidationBehavior.INCOMPLETE
+    if framework == OWL and schema_name == "Disjunctive":
+        # TODO: investigate why the OWLAPI does not correctly parse the resulting structure
+        expected_behavior = ValidationBehavior.INCOMPLETE
+    check_data(
+        schema,
+        data_name,
+        framework,
+        object,
+        is_valid,
+        target_class=CLASS_C,
+        expected_behavior=expected_behavior,
+        description=f"validity {is_valid} check for value {data_name} against {schema_name}",
     )
 
 
