@@ -1776,6 +1776,7 @@ def test_preconditions_combos(
         is_valid,
         target_class=CLASS_C,
         expected_behavior=expected_behavior,
+        description=f"validity {is_valid} check for value {data_name} against {schema_name}",
     )
 
 
