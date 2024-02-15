@@ -102,7 +102,7 @@ jobs:
       #----------------------------------------------
       - name: Generate coverage results
         run: |
-          poetry run coverage run -m pytest --slow
+          poetry run coverage run -m pytest --with-slow
           poetry run coverage xml
           poetry run coverage report -m
         shell: bash

@@ -160,12 +160,12 @@ def pytest_addoption(parser):
         action="store_true",
         help="Generate new files into __snapshot__ directories instead of checking against existing files",
     )
-    parser.addoption("--slow", action="store_true", help="include tests marked slow")
+    parser.addoption("--with-slow", action="store_true", help="include tests marked slow")
 
 
 def pytest_collection_modifyitems(config, items):
-    if not config.getoption("--slow"):
-        skip_slow = pytest.mark.skip(reason="need --slow option to run")
+    if not config.getoption("--with-slow"):
+        skip_slow = pytest.mark.skip(reason="need --with-slow option to run")
         for item in items:
             if item.get_closest_marker("slow"):
                 item.add_marker(skip_slow)
