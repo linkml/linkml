@@ -1,0 +1,12 @@
+{#-
+  Jinja2 Template for a pydantic classes
+-#}
+{% from 'imports.py.jinja' import import_, conditional_import %}
+
+{%- for an_import in imports %}
+{% if an_import.condition is string -%}
+{{ conditional_import(an_import.module, an_import.alias, an_import.objects, an_import.condition, an_import.alternative) }}
+{% else -%}
+{{ import_(an_import.module, an_import.alias, an_import.objects) }}
+{% endif -%}
+{% endfor -%}

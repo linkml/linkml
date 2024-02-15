@@ -28,7 +28,7 @@ from linkml.generators.common.type_designators import (
     get_type_designator_value,
 )
 from linkml.generators.oocodegen import OOCodeGenerator
-from linkml.generators.pydanticgen.template import default_template
+from linkml.generators.pydanticgen.template import default_template, Imports, Import, ConditionalImport
 from linkml.utils.generator import shared_arguments
 from linkml.utils.ifabsent_functions import ifabsent_value_declaration
 
@@ -46,6 +46,32 @@ def _get_pyrange(t: TypeDefinition, sv: SchemaView) -> str:
     if pyrange is None:
         raise Exception(f"No python type for range: {t.name} // {t}")
     return pyrange
+
+
+DEFAULT_IMPORTS = (
+    Imports()
+    + Import(module="__future__", objects=[{"name": "annotations"}])
+    + Import(module="datetime", objects=[{"name": "datetime"}, {"name": "date"}])
+    + Import(module="enum", objects=[{"name": "Enum"}])
+    + Import(module="decimal", objects=[{"name": "Decimal"}])
+    + Import(module="re")
+    + Import(module="sys")
+    + ConditionalImport(
+        condition="sys.version_info >= (3, 8)",
+        module="typing",
+        objects=[{"name": "Literal"}],
+        alternative=Import(module="typing_extensions", objects=[{"name": "Literal"}]),
+    )
+)
+if int(PYDANTIC_VERSION[0]) >= 2:
+    DEFAULT_IMPORTS += Import(
+        module="pydantic",
+        objects=[{"name": "BaseModel"}, {"name": "ConfigDict"}, {"name": "Field"}, {"name": "field_validator"}],
+    )
+else:
+    DEFAULT_IMPORTS += Import(
+        module="pydantic", objects=[{"name": "BaseModel"}, {"name": "Field"}, {"name": "validator"}]
+    )
 
 
 @dataclass
