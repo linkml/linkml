@@ -1,4 +1,7 @@
+import inspect
+import typing
 from importlib.metadata import version
+from typing import Dict, List, Optional, Union, get_args, get_origin
 
 import pytest
 import yaml
@@ -7,9 +10,12 @@ from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.linkml_model import SlotDefinition
 from linkml_runtime.utils.compile_python import compile_python
 from pydantic import ValidationError
+from pydantic.version import VERSION as PYDANTIC_VERSION
 
 from linkml.generators.pydanticgen import PydanticGenerator
 from linkml.utils.schema_builder import SchemaBuilder
+
+from .conftest import MyInjectedClass
 
 PACKAGE = "kitchen_sink"
 
@@ -595,3 +601,82 @@ classes:
     gen = PydanticGenerator(schema=unit_test_schema)
     with pytest.raises(NotImplementedError):
         gen.serialize()
+
+
+@pytest.mark.parametrize(
+    "imports,expected",
+    [
+        ({"typing": ["Dict", "List", "Union"]}, (("Dict", Dict), ("List", List), ("Union", Union))),
+        ({"typing": None}, (("typing", typing),)),
+        (
+            {"typing": [{"name": "Dict", "as": "DictRenamed"}, {"name": "List", "as": "ListRenamed"}]},
+            (("DictRenamed", Dict), ("ListRenamed", List)),
+        ),
+        ({"typing": {"as": "tp"}}, (("tp", typing),)),
+    ],
+)
+def test_inject_imports(kitchen_sink_path, tmp_path, input_path, imports, expected):
+    gen = PydanticGenerator(kitchen_sink_path, package=PACKAGE, imports=imports)
+    code = gen.serialize()
+    module = compile_python(code, PACKAGE)
+    for condition in expected:
+        assert hasattr(module, condition[0])
+        assert getattr(module, condition[0]) is condition[1]
+
+
+_StringClass = (
+    """class MyInjectedClass:\n    field: str = 'field'\n    def __init__(self):\n        self.apple = 'banana'"""
+)
+
+
+@pytest.mark.parametrize(
+    "inject,expected", ((MyInjectedClass, inspect.getsource(MyInjectedClass)), (_StringClass, _StringClass))
+)
+def test_inject_classes(kitchen_sink_path, tmp_path, input_path, inject, expected):
+    gen = PydanticGenerator(
+        kitchen_sink_path,
+        package=PACKAGE,
+        injected_classes=[inject],
+    )
+    code = gen.serialize()
+    module = compile_python(code, PACKAGE)
+    assert hasattr(module, "MyInjectedClass")
+    # can't do inspect on the compiled module since it doesn't have a file
+    assert expected in code
+
+
+@pytest.mark.parametrize(
+    "inject,name,type,default,description",
+    (
+        (
+            'object_id: Optional[str] = Field(None, description="Unique UUID for each object")',
+            "object_id",
+            Optional[str],
+            None,
+            "Unique UUID for each object",
+        ),
+    ),
+)
+def test_inject_field(kitchen_sink_path, tmp_path, input_path, inject, name, type, default, description):
+    gen = PydanticGenerator(kitchen_sink_path, package=PACKAGE, injected_fields=[inject])
+    code = gen.serialize()
+    module = compile_python(code, PACKAGE)
+
+    base = getattr(module, "ConfiguredBaseModel")
+
+    if int(PYDANTIC_VERSION.split(".")[0]) >= 2:
+        assert name in base.model_fields
+        field = base.model_fields[name]
+        assert field.annotation == type
+        assert field.default == default
+        assert field.description == description
+    else:
+        assert name in base.__fields__
+        field = base.__fields__[name]
+        # pydantic <2 mangles annotations so can't do direct annotation comparison
+        assert not field.required
+        if get_origin(type):
+            assert field.type_ is get_args(type)[0]
+        else:
+            assert field.type_ is type
+        assert field.field_info.description == description

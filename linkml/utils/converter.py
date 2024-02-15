@@ -1,7 +1,6 @@
 import logging
 import os
 import sys
-from typing import List
 
 import click
 from linkml_runtime.linkml_model import Prefix
@@ -77,7 +76,7 @@ def cli(
     output=None,
     input_format=None,
     output_format=None,
-    prefix: List = [],
+    prefix=None,
     target_class_from_path=None,
     schema=None,
     validate=None,
@@ -98,6 +97,8 @@ def cli(
 
     For more information, see https://linkml.io/linkml/data/index.html
     """
+    if prefix is None:
+        prefix = []
     if module is None:
         if schema is None:
             raise Exception("must pass one of module OR schema")

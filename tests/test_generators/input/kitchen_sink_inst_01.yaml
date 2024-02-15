@@ -31,6 +31,7 @@ persons:
     addresses:
       - street: 1 foo street
         city: foo city
+        altitude: 923.3
 companies:
   - id: ROR:1
     name: foo

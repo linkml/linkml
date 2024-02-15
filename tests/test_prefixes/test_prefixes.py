@@ -161,11 +161,14 @@ class PrefixTestCase(unittest.TestCase):
         assert "ENVO" not in obj
 
     @staticmethod
-    def _check_triples(g, exceptions=[]):
+    def _check_triples(self, g, exceptions=None):
         """
         currently testing is fairly weak: simply checks if the expected expanded URIs are
         present as objects
         """
+
+        if exceptions is None:
+            exceptions = []
 
         expected = [
             "http://purl.obolibrary.org/obo/PR_000000001",

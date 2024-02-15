@@ -150,7 +150,8 @@ class ContextGenerator(Generator):
         else:
             slot_def = {}
             if not slot.usage_slot_name:
-                if slot.range in self.schema.classes:
+                any_of_ranges = [any_of_el.range for any_of_el in slot.any_of]
+                if slot.range in self.schema.classes or any(rng in self.schema.classes for rng in any_of_ranges):
                     slot_def["@type"] = "@id"
                 elif slot.range in self.schema.enums:
                     slot_def["@context"] = ENUM_CONTEXT

@@ -5,7 +5,7 @@ import pytest
 from linkml_runtime.linkml_model.meta import SlotDefinition
 from linkml_runtime.utils.introspection import package_schemaview
 from linkml_runtime.utils.schemaview import SchemaView
-from sqlalchemy.sql.sqltypes import Enum, Text
+from sqlalchemy.sql.sqltypes import Enum, Integer, Text
 
 from linkml.generators.sqltablegen import SQLTableGenerator
 from linkml.utils.schema_builder import SchemaBuilder
@@ -151,6 +151,8 @@ def test_get_sql_range(schema):
 
     case_3_slot = SlotDefinition(name="NonExistentSlot", range="NonExistentRange")
 
+    case_4_slot = SlotDefinition(name="ForeignKeySlot", range="IntegerPrimaryKeyObject")
+
     # Slot range in list of schema classes
     actual_1_output = gen.get_sql_range(case_1_slot)
 
@@ -160,9 +162,13 @@ def test_get_sql_range(schema):
     # Slot not present in schema
     actual_3_output = gen.get_sql_range(case_3_slot)
 
+    # foreign key slot type
+    actual_4_output = gen.get_sql_range(case_4_slot)
+
     assert isinstance(actual_1_output, Text)
     assert isinstance(actual_2_output, Enum)
     assert isinstance(actual_3_output, Text)
+    assert isinstance(actual_4_output, Integer)
 
 
 def test_get_foreign_key(schema):

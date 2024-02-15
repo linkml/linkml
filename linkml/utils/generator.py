@@ -465,7 +465,7 @@ class Generator(metaclass=abc.ABCMeta):
         """Return an ordered list of ancestor names for the supplied slot or class
 
         @param element: Slot or class name or definition
-        @return: Ordered list of of ancestor names
+        @return: Ordered list of ancestor names
         """
         return [element.name] + ([] if element.is_a is None else self.ancestors(self.parent(element)))
 
@@ -621,7 +621,7 @@ class Generator(metaclass=abc.ABCMeta):
 
     def slot_range_path(self, slot_or_name: Union[str, SlotDefinition]) -> List[str]:
         """
-        Return a ordered list of slot ranges from distal to proximal
+        Return an ordered list of slot ranges from distal to proximal
 
         :param slot_or_name: slot whose range is being typed
         :return: ordered list of types from base type forward
