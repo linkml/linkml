@@ -1,7 +1,6 @@
 import logging
 import os
 import sys
-from typing import List
 
 import click
 from linkml_runtime.linkml_model import Prefix
