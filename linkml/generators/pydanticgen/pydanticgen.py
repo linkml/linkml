@@ -127,40 +127,50 @@ class PydanticGenerator(OOCodeGenerator):
     """
     Additional imports to inject into generated module. 
     
-    A dictionary mapping a module to a list of objects to import. 
-    If the value of an entry is ``None`` , import the whole module.
-    
-    Import Aliases:
-    If the value of a module import is a dictionary with a key "as",
-    or a class is specified as a dictionary with a "name" and "as",
-    then the import is renamed like "from module import class as renamedClass".
-    
     Examples:
         
     .. code-block:: python
     
-        imports = {
-            'typing': ['Dict', 'List', 'Union'],
-            'types': None,
-            'numpy': {'as': 'np'},
-            'collections': [{'name': 'OrderedDict', 'as': 'odict'}]
-        }
+        from linkml.generators.pydanticgen.template import (
+            ConditionalImport,
+            ObjectImport,
+            Import,
+            Imports
+        )
+        
+        imports = (Imports() + 
+            Import(module='sys') + 
+            Import(module='numpy', alias='np') + 
+            Import(module='pathlib', objects=[
+                ObjectImport(name="Path"),
+                ObjectImport(name="PurePath", alias="RenamedPurePath")
+            ]) + 
+            ConditionalImport(
+                module="typing",
+                objects=[ObjectImport(name="Literal")],
+                condition="sys.version_info >= (3, 8)",
+                alternative=Import(
+                    module="typing_extensions", 
+                    objects=[ObjectImport(name="Literal")]
+                ),
+            ).imports
+        )
         
     becomes:
     
     .. code-block:: python
     
-        from typing import (
-            Dict,
-            List,
-            Union
-        )
-        import types
+        import sys
         import numpy as np
-        from collections import (
-            OrderedDict as odict
+        from pathlib import (
+            Path,
+            PurePath as RenamedPurePath
         )
-    
+        if sys.version_info >= (3, 8):
+            from typing import Literal
+        else:
+            from typing_extensions import Literal
+        
     """
 
     # ObjectVars (identical to pythongen)

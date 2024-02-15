@@ -48,6 +48,10 @@ class Enum(TemplateModel):
 
 
 class PydanticBaseModel(TemplateModel):
+    """
+    Parameterization of the base model that generated pydantic classes inherit from
+    """
+
     default_name: ClassVar[str] = "ConfiguredBaseModel"
     name: str = Field(default_factory=lambda: PydanticBaseModel.default_name)
     extra_fields: Literal["allow", "forbid", "ignore"] = "forbid"
