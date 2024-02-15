@@ -3,12 +3,12 @@ import logging
 import os
 from collections import defaultdict
 from copy import deepcopy
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from types import ModuleType
 from typing import Dict, List, Optional, Set, Type, Union
 
 import click
-from jinja2 import Template, Environment, PackageLoader
+from jinja2 import Environment, PackageLoader, Template
 
 # from linkml.generators import pydantic_GEN_VERSION
 from linkml_runtime.linkml_model.meta import (
@@ -30,12 +30,12 @@ from linkml.generators.common.type_designators import (
 )
 from linkml.generators.oocodegen import OOCodeGenerator
 from linkml.generators.pydanticgen.template import (
-    Imports,
-    Import,
     ConditionalImport,
-    PydanticModule,
-    PydanticClass,
+    Import,
+    Imports,
     PydanticAttribute,
+    PydanticClass,
+    PydanticModule,
 )
 from linkml.utils.generator import shared_arguments
 from linkml.utils.ifabsent_functions import ifabsent_value_declaration
@@ -469,8 +469,6 @@ class PydanticGenerator(OOCodeGenerator):
         )
         enums = self.generate_enums(sv.all_enums())
 
-        uses_numpy = False
-
         sorted_classes = self.sort_classes(list(sv.all_classes().values()))
         self.sorted_class_names = [camelcase(c.name) for c in sorted_classes]
 
@@ -528,7 +526,6 @@ class PydanticGenerator(OOCodeGenerator):
                     pyrange = "np.ndarray"
                     if "linkml:ColumnOrderedArray" in class_def.implements:
                         raise NotImplementedError("Cannot generate Pydantic code for ColumnOrderedArrays.")
-                    uses_numpy = True
                 elif s.multivalued:
                     if s.inlined or s.inlined_as_list:
                         collection_key = self.generate_collection_key(slot_ranges, s, class_def)

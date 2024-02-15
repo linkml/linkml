@@ -1,6 +1,5 @@
-import inspect
-from typing import ClassVar, Dict, Optional, List, Union, Type
 import sys
+from typing import ClassVar, Dict, List, Optional
 
 if sys.version_info >= (3, 8):
     from typing import Literal
