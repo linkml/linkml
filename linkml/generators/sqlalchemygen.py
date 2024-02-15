@@ -3,7 +3,7 @@ import os
 from collections import defaultdict
 from dataclasses import dataclass
 from types import ModuleType
-from typing import List, Union, Optional
+from typing import List, Optional, Union
 
 import click
 from jinja2 import Template
