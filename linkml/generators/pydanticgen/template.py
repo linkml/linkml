@@ -1,5 +1,5 @@
 import sys
-from typing import ClassVar, Dict, List, Optional
+from typing import ClassVar, Dict, List, Optional, Union
 
 if sys.version_info >= (3, 8):
     from typing import Literal
@@ -73,9 +73,9 @@ class PydanticAttribute(TemplateModel):
     annotations: Optional[dict] = None
     title: Optional[str] = None
     description: Optional[str] = None
-    equals_number: Optional[int | float] = None
-    minimum_value: Optional[int | float] = None
-    maximum_value: Optional[int | float] = None
+    equals_number: Optional[Union[int, float]] = None
+    minimum_value: Optional[Union[int, float]] = None
+    maximum_value: Optional[Union[int, float]] = None
     pattern: Optional[str] = None
 
     if int(PYDANTIC_VERSION[0]) >= 2:
@@ -110,7 +110,7 @@ class PydanticClass(TemplateModel):
     """
 
     name: str
-    bases: List[str] | str = PydanticBaseModel.default_name
+    bases: Union[List[str], str] = PydanticBaseModel.default_name
     attributes: Optional[Dict[str, PydanticAttribute]] = None
 
 
