@@ -1,0 +1,18 @@
+{% macro enum(name, values=None, description=None) %}
+class {{ name }}(str{% if values %}, Enum{% endif %}):
+{% if description %}
+    """
+    {{ description }}
+    """
+{% endif %}
+{% if values is not none %}
+{% for pv in values.values() -%}
+{% if pv.description %}
+    # {{pv.description}}
+{% endif %}
+    {{pv.label}} = "{{pv.value}}"
+{% endfor %}
+{% else %}
+    dummy = "dummy"
+{% endif %}
+{% endmacro %}

@@ -1,5 +1,7 @@
+import inspect
 import logging
 import os
+import pdb
 from collections import defaultdict
 from copy import deepcopy
 from dataclasses import dataclass, field
@@ -7,7 +9,7 @@ from types import ModuleType
 from typing import Dict, List, Optional, Set, Type, Union
 
 import click
-from jinja2 import Template
+from jinja2 import Template, Environment, PackageLoader
 
 # from linkml.generators import pydantic_GEN_VERSION
 from linkml_runtime.linkml_model.meta import (
@@ -28,7 +30,7 @@ from linkml.generators.common.type_designators import (
     get_type_designator_value,
 )
 from linkml.generators.oocodegen import OOCodeGenerator
-from linkml.generators.pydanticgen.template import default_template, Imports, Import, ConditionalImport
+from linkml.generators.pydanticgen.template import default_template, Imports, Import, ConditionalImport, PydanticModule
 from linkml.utils.generator import shared_arguments
 from linkml.utils.ifabsent_functions import ifabsent_value_declaration
 
@@ -89,7 +91,7 @@ class PydanticGenerator(OOCodeGenerator):
     file_extension = "py"
 
     # ObjectVars
-    pydantic_version: str = field(default_factory=lambda: PYDANTIC_VERSION[0])
+    pydantic_version: int = field(default_factory=lambda: int(PYDANTIC_VERSION[0]))
     template_file: str = None
     extra_fields: str = "forbid"
     gen_mixin_inheritance: bool = True
@@ -115,7 +117,7 @@ class PydanticGenerator(OOCodeGenerator):
         )
     
     """
-    imports: Optional[Dict[str, Union[None, Dict[str, str], List[Union[str, Dict[str, str]]]]]] = None
+    imports: Optional[List[Import]] = None
     """
     Additional imports to inject into generated module. 
     
@@ -448,7 +450,8 @@ class PydanticGenerator(OOCodeGenerator):
             with open(self.template_file) as template_file:
                 template_obj = Template(template_file.read())
         else:
-            template_obj = Template(default_template(self.pydantic_version, self.extra_fields, self.injected_classes))
+            env = Environment(loader=PackageLoader("linkml.generators.pydanticgen", "templates"), trim_blocks=True)
+            template_obj = env.get_template("module.py.jinja")
 
         sv: SchemaView
         sv = self.schemaview
@@ -540,18 +543,42 @@ class PydanticGenerator(OOCodeGenerator):
                     pyrange = f"Optional[{pyrange}]"
                 ann = Annotation("python_range", pyrange)
                 s.annotations[ann.tag] = ann
-        code = template_obj.render(
-            schema=pyschema,
-            enums=enums,
-            predefined_slot_values=self.get_predefined_slot_values(),
-            extra_fields=self.extra_fields,
+
+        imports = DEFAULT_IMPORTS
+        if self.imports is not None:
+            for i in self.imports:
+                imports += i
+
+        if self.injected_classes is not None:
+            injected_classes = [c if isinstance(c, str) else inspect.getsource(c) for c in self.injected_classes]
+        else:
+            injected_classes = None
+
+        module = PydanticModule(
+            pydantic_ver=self.pydantic_version,
             metamodel_version=self.schema.metamodel_version,
             version=self.schema.version,
-            class_isa_plus_mixins=self.get_class_isa_plus_mixins(),
-            imports=self.imports,
-            injected_fields=self.injected_fields,
-            uses_numpy=uses_numpy,
+            imports=imports.imports,
+            injected_classes=injected_classes,
+            enums=enums,
         )
+
+        pdb.set_trace()
+        code = template_obj.render(**module.dict())
+        pdb.set_trace()
+
+        # code = template_obj.render(
+        #     schema=pyschema,
+        #     enums=enums,
+        #     predefined_slot_values=self.get_predefined_slot_values(),
+        #     extra_fields=self.extra_fields,
+        #     metamodel_version=self.schema.metamodel_version,
+        #     version=self.schema.version,
+        #     class_isa_plus_mixins=self.get_class_isa_plus_mixins(),
+        #     imports=self.imports,
+        #     injected_fields=self.injected_fields,
+        #     uses_numpy=uses_numpy,
+        # )
         return code
 
     def default_value_for_type(self, typ: str) -> str:

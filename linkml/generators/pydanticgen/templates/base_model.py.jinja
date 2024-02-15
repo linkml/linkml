@@ -1,0 +1,29 @@
+{% macro base_model(name, extra_fields="forbid", fields=None, pydantic_ver=2) %}
+{% if pydantic_ver == 1 %}
+class WeakRefShimBaseModel(BaseModel):
+    __slots__ = '__weakref__'
+
+class {{ name }}(WeakRefShimBaseModel,
+                validate_assignment = True,
+                validate_all = True,
+                underscore_attrs_are_private = True,
+                extra = "{{ extra_fields }}",
+                arbitrary_types_allowed = True,
+                use_enum_values = True):
+{% else %}
+class {{ name }}(BaseModel):
+    model_config = ConfigDict(
+        validate_assignment=True,
+        validate_default=True,
+        extra = "{{ extra_fields }}",
+        arbitrary_types_allowed=True,
+        use_enum_values = True)
+{% endif %}
+{% if fields is not none %}
+    {% for field in fields -%}
+    {{ field }}
+    {% endfor %}
+{% else %}
+    {{ "pass" }}
+{% endif %}
+{% endmacro %}

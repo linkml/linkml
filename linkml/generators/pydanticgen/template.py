@@ -164,6 +164,10 @@ class PydanticModule(TemplateModel):
     Top-level container model for generating a pydantic module
     """
 
+    metamodel_version: Optional[str] = None
+    version: Optional[str] = None
+    base_model: BaseModel = BaseModel()
+    injected_classes: Optional[List[str]] = None
     imports: List[Import] = Field(default_factory=list)
     enums: Dict[str, Enum] = Field(default_factory=dict)
     classes: Dict[str, PydanticClass] = Field(default_factory=dict)
