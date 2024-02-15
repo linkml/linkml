@@ -4,6 +4,7 @@
 {% from 'imports.py.jinja' import import_, conditional_import %}
 {% from 'base_model.py.jinja' import base_model as base_model_ %}
 {% from 'enum.py.jinja' import enum %}
+{% from 'class.py.jinja' import class %}
 
 {%- for an_import in imports %}
 {% if an_import.condition is string -%}
@@ -21,3 +22,9 @@ version = "{{version if version else None}}"
 {% for e in enums.values() %}
 {{ enum(e.name, e['values'], e.description) }}
 {% endfor %}
+
+{% for c in classes.values() %}
+{{ class(c.name, c.bases, c.attributes, c.description, pydantic_ver) }}
+{% endfor %}
+
+{% include 'footer.py.jinja' %}

@@ -1,0 +1,35 @@
+{% from "attribute.py.jinja" import attribute %}
+{% from "validator.py.jinja" import validator %}
+{% macro class(name, bases, attributes = None, description=None, pydantic_ver=2) %}
+{% if pydantic_ver == 1 %}
+class {{ name }}({% if bases is string %}{{ bases }}{% else %}{{ bases | join(', ') }}{% endif %}):
+{% if description %}
+    """
+    {{ description }}
+    """
+{%- endif %}
+{% if attributes %}
+{% for attr in attributes.values() %}
+    {{ attribute(attr.name, attr.annotations, attr.field, attr.title, attr.description, attr.equals_number, attr.minimum_value, attr.maximum_value, pydantic_ver) }}
+{% endfor -%}
+{% for attr in attributes.values() %}
+    {{ validator(attr.name, attr.pattern, pydantic_ver) }}
+{% endfor -%}
+{% endif %}
+{% else %}
+class {{ name }}({{ bases | join(', ') }}):
+{% if description -%}
+    """
+    {{ description }}
+    """
+{%- endif %}
+{% if attributes %}
+{% for attr in attributes.values() if attributes %}
+    {{ attribute(attr.name, attr.annotations, attr.field, attr.title, attr.description, attr.equals_number, attr.minimum_value, attr.maximum_value, pydantic_ver) }}
+{% endfor -%}
+{% for attr in attributes.values() if attributes %}
+    {{ validator(attr.name, attr.pattern, pydantic_ver) }}
+{% endfor -%}
+{% endif %}
+{% endif %}
+{% endmacro %}

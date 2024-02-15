@@ -1,7 +1,6 @@
 import inspect
 import logging
 import os
-import pdb
 from collections import defaultdict
 from copy import deepcopy
 from dataclasses import dataclass, field
@@ -30,7 +29,14 @@ from linkml.generators.common.type_designators import (
     get_type_designator_value,
 )
 from linkml.generators.oocodegen import OOCodeGenerator
-from linkml.generators.pydanticgen.template import default_template, Imports, Import, ConditionalImport, PydanticModule
+from linkml.generators.pydanticgen.template import (
+    Imports,
+    Import,
+    ConditionalImport,
+    PydanticModule,
+    PydanticClass,
+    PydanticAttribute,
+)
 from linkml.utils.generator import shared_arguments
 from linkml.utils.ifabsent_functions import ifabsent_value_declaration
 
@@ -91,7 +97,7 @@ class PydanticGenerator(OOCodeGenerator):
     file_extension = "py"
 
     # ObjectVars
-    pydantic_version: int = field(default_factory=lambda: int(PYDANTIC_VERSION[0]))
+    pydantic_version: int = int(PYDANTIC_VERSION[0])
     template_file: str = None
     extra_fields: str = "forbid"
     gen_mixin_inheritance: bool = True
@@ -554,6 +560,33 @@ class PydanticGenerator(OOCodeGenerator):
         else:
             injected_classes = None
 
+        classes = {}
+        predefined = self.get_predefined_slot_values()
+        bases = self.get_class_isa_plus_mixins()
+        for k, c in pyschema.classes.items():
+            attrs = {}
+            for attr_name, src_attr in c.attributes.items():
+                if self.pydantic_version == 1:
+                    new_fields = {
+                        k: src_attr._as_dict.get(k, None)
+                        for k in PydanticAttribute.__fields__.keys()
+                        if src_attr._as_dict.get(k, None) is not None
+                    }
+                else:
+                    new_fields = {
+                        k: src_attr._as_dict.get(k, None)
+                        for k in PydanticAttribute.model_fields.keys()
+                        if src_attr._as_dict.get(k, None) is not None
+                    }
+                new_fields["predefined"] = predefined.get(k, {}).get(attr_name, None)
+                new_fields["name"] = attr_name
+                attrs[attr_name] = PydanticAttribute(**new_fields)
+
+            new_class = PydanticClass(name=k, attributes=attrs)
+            if k in bases:
+                new_class.bases = bases[k]
+            classes[k] = new_class
+
         module = PydanticModule(
             pydantic_ver=self.pydantic_version,
             metamodel_version=self.schema.metamodel_version,
@@ -561,24 +594,10 @@ class PydanticGenerator(OOCodeGenerator):
             imports=imports.imports,
             injected_classes=injected_classes,
             enums=enums,
+            classes=classes,
         )
 
-        pdb.set_trace()
         code = template_obj.render(**module.dict())
-        pdb.set_trace()
-
-        # code = template_obj.render(
-        #     schema=pyschema,
-        #     enums=enums,
-        #     predefined_slot_values=self.get_predefined_slot_values(),
-        #     extra_fields=self.extra_fields,
-        #     metamodel_version=self.schema.metamodel_version,
-        #     version=self.schema.version,
-        #     class_isa_plus_mixins=self.get_class_isa_plus_mixins(),
-        #     imports=self.imports,
-        #     injected_fields=self.injected_fields,
-        #     uses_numpy=uses_numpy,
-        # )
         return code
 
     def default_value_for_type(self, typ: str) -> str:
@@ -609,7 +628,7 @@ def cli(
     genmeta=False,
     classvars=True,
     slots=True,
-    pydantic_version="1",
+    pydantic_version=1,
     extra_fields="forbid",
     **args,
 ):
