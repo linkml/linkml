@@ -35,6 +35,7 @@ from linkml.generators.pydanticgen.template import (
     Imports,
     ObjectImport,
     PydanticAttribute,
+    PydanticBaseModel,
     PydanticClass,
     PydanticModule,
 )
@@ -496,6 +497,11 @@ class PydanticGenerator(OOCodeGenerator):
         )
         enums = self.generate_enums(sv.all_enums())
 
+        imports = DEFAULT_IMPORTS
+        if self.imports is not None:
+            for i in self.imports:
+                imports += i
+
         sorted_classes = self.sort_classes(list(sv.all_classes().values()))
         self.sorted_class_names = [camelcase(c.name) for c in sorted_classes]
 
@@ -551,6 +557,7 @@ class PydanticGenerator(OOCodeGenerator):
                 if "linkml:elements" in s.implements:
                     # TODO add support for xarray
                     pyrange = "np.ndarray"
+                    imports += Import(module="numpy", alias="np")
                     if "linkml:ColumnOrderedArray" in class_def.implements:
                         raise NotImplementedError("Cannot generate Pydantic code for ColumnOrderedArrays.")
                 elif s.multivalued:
@@ -574,15 +581,14 @@ class PydanticGenerator(OOCodeGenerator):
                 ann = Annotation("python_range", pyrange)
                 s.annotations[ann.tag] = ann
 
-        imports = DEFAULT_IMPORTS
-        if self.imports is not None:
-            for i in self.imports:
-                imports += i
-
         if self.injected_classes is not None:
             injected_classes = [c if isinstance(c, str) else inspect.getsource(c) for c in self.injected_classes]
         else:
             injected_classes = None
+
+        base_model = PydanticBaseModel(
+            pydantic_ver=self.pydantic_version, extra_fields=self.extra_fields, fields=self.injected_fields
+        )
 
         classes = {}
         predefined = self.get_predefined_slot_values()
@@ -616,6 +622,7 @@ class PydanticGenerator(OOCodeGenerator):
             metamodel_version=self.schema.metamodel_version,
             version=self.schema.version,
             imports=imports.imports,
+            base_model=base_model,
             injected_classes=injected_classes,
             enums=enums,
             classes=classes,

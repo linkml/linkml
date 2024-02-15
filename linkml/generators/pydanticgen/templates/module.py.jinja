@@ -23,6 +23,12 @@ version = "{{version if version else None}}"
 {{ enum(e.name, e['values'], e.description) }}
 {% endfor %}
 
+{% if injected_classes -%}
+{% for c in injected_classes %}
+{{ c }}
+{% endfor %}
+{% endif %}
+
 {% for c in classes.values() %}
 {{ class(c.name, c.bases, c.attributes, c.description, pydantic_ver) }}
 {% endfor %}

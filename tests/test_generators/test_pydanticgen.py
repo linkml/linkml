@@ -13,6 +13,7 @@ from pydantic import ValidationError
 from pydantic.version import VERSION as PYDANTIC_VERSION
 
 from linkml.generators.pydanticgen import PydanticGenerator
+from linkml.generators.pydanticgen.template import Import, Imports, ObjectImport
 from linkml.utils.schema_builder import SchemaBuilder
 
 from .conftest import MyInjectedClass
@@ -606,13 +607,29 @@ classes:
 @pytest.mark.parametrize(
     "imports,expected",
     [
-        ({"typing": ["Dict", "List", "Union"]}, (("Dict", Dict), ("List", List), ("Union", Union))),
-        ({"typing": None}, (("typing", typing),)),
         (
-            {"typing": [{"name": "Dict", "as": "DictRenamed"}, {"name": "List", "as": "ListRenamed"}]},
+            [
+                Import(
+                    module="typing",
+                    objects=[ObjectImport(name="Dict"), ObjectImport(name="List"), ObjectImport(name="Union")],
+                )
+            ],
+            (("Dict", Dict), ("List", List), ("Union", Union)),
+        ),
+        ([Import(module="typing")], (("typing", typing),)),
+        (
+            [
+                Import(
+                    module="typing",
+                    objects=[
+                        ObjectImport(name="Dict", alias="DictRenamed"),
+                        ObjectImport(name="List", alias="ListRenamed"),
+                    ],
+                )
+            ],
             (("DictRenamed", Dict), ("ListRenamed", List)),
         ),
-        ({"typing": {"as": "tp"}}, (("tp", typing),)),
+        ([Import(module="typing", alias="tp")], (("tp", typing),)),
     ],
 )
 def test_inject_imports(kitchen_sink_path, tmp_path, input_path, imports, expected):
