@@ -316,7 +316,7 @@ class SchemaFixer:
 
     @staticmethod
     def fix_element_names(
-            schema: SchemaDefinition,
+        schema: SchemaDefinition,
         schema_dict: Dict[str, Any] = None,
         rules: Dict[str, Callable] = None,
         imports=False,

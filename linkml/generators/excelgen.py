@@ -106,7 +106,7 @@ class ExcelGenerator(Generator):
 
     @staticmethod
     def column_enum_validation(
-            workbook: Workbook,
+        workbook: Workbook,
         worksheet_name: str,
         column_name: str,
         dv_formula: str,
