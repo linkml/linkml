@@ -845,7 +845,7 @@ class DocGenerator(Generator):
     def example_object_blobs(self, class_name: str) -> List[Tuple[str, str]]:
         """Fetch list of all examples of a class.
 
-        :param cls: class for which we want to determine the examples
+        :param class_name: class for which we want to determine the examples
         :return: list of all examples of a class
         """
         if not self.example_runner:

@@ -24,7 +24,7 @@ def make_and_clear_directory(dirbase: str) -> None:
 def file_text(txt_or_fname: str) -> str:
     """
     Determine whether text_or_fname is a file name or a string and, if a file name, read it
-    :param text_or_fname:
+    :param txt_or_fname:
     :return:
     """
     if len(txt_or_fname) > 4 and "\n" not in txt_or_fname:
