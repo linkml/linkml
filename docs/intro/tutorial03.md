@@ -129,10 +129,10 @@ JSON-Schema - note that there are some features of LinkML not
 supported by JSON-Schema, so the current validator is not guaranteed
 to be complete.
 
-If you prefer you can use your own JSON Schema validator. First compile to jsonschema:
+If you prefer you can use your own JSON Schema validator. First compile to jsonschema. Unlike the `linkml-validate` command, the `gen-json-schema` command does not attempt to automatically infer which class in your schema to use for validation. You must either identify it in your schema by setting `tree_root: true` on one class or pass the `-t/--top-class` option to `gen-json-schema`.
 
 ```bash
-gen-json-schema personinfo.yaml > personinfo.schema.json
+gen-json-schema personinfo.yaml --top-class Container > personinfo.schema.json
 ```
 
 You can then use the `jsonschema` command that comes with the python library (any jsonschema validator will do here)
@@ -166,6 +166,7 @@ The next section deals with working with RDF data.
     * [required](https://w3id.org/linkml/required) slot
     * [minimum_value](https://w3id.org/linkml/minimum_value) slot
     * [maximum_value](https://w3id.org/linkml/maximum_value) slot
+    * [tree_root](https://w3id.org/linkml/tree_root) slot
 * FAQ:
     - {ref}`LinkML vs shape languages <faq/why-linkml:why should i use linkml over shex/shacl?>`
 * Generators:
