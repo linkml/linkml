@@ -570,10 +570,8 @@ class OwlSchemaGenerator(Generator):
         :param cls:
         :param slot:
         :param main_slot:
+        :param owl_types:
         :return:
-
-        Args:
-            owl_types:
         """
         sv = self.schemaview
         if main_slot is None:
