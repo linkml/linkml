@@ -2349,7 +2349,10 @@ are recursively transformed (each such inner expression is
 an anonymous expression)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>cls</strong> – LinkML class expression (anonymous if called recursively)</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cls</strong> – LinkML class expression (anonymous if called recursively)</p></li>
+<li><p><strong>quantifier_predicate</strong> – </p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>blank node representing the OWL expression</p>
@@ -2367,6 +2370,7 @@ an anonymous expression)</p>
 <li><p><strong>cls</strong> – </p></li>
 <li><p><strong>slot</strong> – </p></li>
 <li><p><strong>main_slot</strong> – </p></li>
+<li><p><strong>owl_types</strong> – </p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -4933,7 +4937,10 @@ are recursively transformed (each such inner expression is
 an anonymous expression)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>cls</strong> – LinkML class expression (anonymous if called recursively)</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cls</strong> – LinkML class expression (anonymous if called recursively)</p></li>
+<li><p><strong>quantifier_predicate</strong> – </p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>blank node representing the OWL expression</p>
@@ -4951,6 +4958,7 @@ an anonymous expression)</p>
 <li><p><strong>cls</strong> – </p></li>
 <li><p><strong>slot</strong> – </p></li>
 <li><p><strong>main_slot</strong> – </p></li>
+<li><p><strong>owl_types</strong> – </p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -5706,6 +5714,7 @@ open file or a pre-parsed schema</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>compile_python_dataclasses</strong> – (default False)</p></li>
+<li><p><strong>pydantic</strong> – </p></li>
 <li><p><strong>model_path</strong> – </p></li>
 <li><p><strong>template</strong> – </p></li>
 <li><p><strong>kwargs</strong> – </p></li>

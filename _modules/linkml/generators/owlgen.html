@@ -764,6 +764,7 @@
 <span class="sd">        an anonymous expression)</span>
 
 <span class="sd">        :param cls: LinkML class expression (anonymous if called recursively)</span>
+<span class="sd">        :param quantifier_predicate:</span>
 <span class="sd">        :return: blank node representing the OWL expression</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">cls</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -874,6 +875,7 @@
 <span class="sd">        :param cls:</span>
 <span class="sd">        :param slot:</span>
 <span class="sd">        :param main_slot:</span>
+<span class="sd">        :param owl_types:</span>
 <span class="sd">        :return:</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">sv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span>
