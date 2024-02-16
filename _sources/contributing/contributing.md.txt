@@ -59,6 +59,16 @@ runs the entire test suite with the new test case that you added, on that test c
 Note: You will see a number of issues which are named `test_issue_NNN.py`. The numbers and convention for those
 issues are with reference to the old [biolinkml](https://github.com/biolink/biolinkml) issue numbering convention.
 
+#### Marks
+
+Use marks to run or exclude groups of tests:
+
+- `network` - (currently unused in CI) - tests marked as requiring network access/making network requests in order to succeed. 
+- `slow` - tests that are necessary to test technical correctness but are sufficiently long that it's worth excluding them during routine development/when running tests locally. 
+  By default, tests marked `slow` are not run, and require the `--with-slow` flag to run. Slow tests are included in the CI testing action. Typical use is to do most development
+  work without running `slow` tests, and then running the full test suite `--with-slow` before submitting or merging a pull request.
+- `skip`, `xfail` - see [skip and xfail docs](https://docs.pytest.org/en/latest/how-to/skipping.html)
+
 #### General Tips
 
 * Always make sure to use `assert` statements to compare the expected value with the actual value, rather than simply printing or logging the expected and actual values.

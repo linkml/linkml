@@ -364,6 +364,17 @@ runs the entire test suite with the new test case that you added, on that test c
 <p>Note: You will see a number of issues which are named <code class="docutils literal notranslate"><span class="pre">test_issue_NNN.py</span></code>. The numbers and convention for those
 issues are with reference to the old <a class="reference external" href="https://github.com/biolink/biolinkml">biolinkml</a> issue numbering convention.</p>
 </section>
+<section id="marks">
+<h3>Marks<a class="headerlink" href="#marks" title="Permalink to this heading">#</a></h3>
+<p>Use marks to run or exclude groups of tests:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">network</span></code> - (currently unused in CI) - tests marked as requiring network access/making network requests in order to succeed.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">slow</span></code> - tests that are necessary to test technical correctness but are sufficiently long that it’s worth excluding them during routine development/when running tests locally.
+By default, tests marked <code class="docutils literal notranslate"><span class="pre">slow</span></code> are not run, and require the <code class="docutils literal notranslate"><span class="pre">--with-slow</span></code> flag to run. Slow tests are included in the CI testing action. Typical use is to do most development
+work without running <code class="docutils literal notranslate"><span class="pre">slow</span></code> tests, and then running the full test suite <code class="docutils literal notranslate"><span class="pre">--with-slow</span></code> before submitting or merging a pull request.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">skip</span></code>, <code class="docutils literal notranslate"><span class="pre">xfail</span></code> - see <a class="reference external" href="https://docs.pytest.org/en/latest/how-to/skipping.html">skip and xfail docs</a></p></li>
+</ul>
+</section>
 <section id="general-tips">
 <h3>General Tips<a class="headerlink" href="#general-tips" title="Permalink to this heading">#</a></h3>
 <ul class="simple">
@@ -584,6 +595,7 @@ insight into your work and allows them to provide feedback early on.</p></li>
 <li><a class="reference internal" href="#development-environment-setup">Development Environment Setup</a></li>
 <li><a class="reference internal" href="#linkml-testing-framework">LinkML Testing Framework</a><ul>
 <li><a class="reference internal" href="#directions-for-creating-a-unit-test">Directions for creating a unit test</a></li>
+<li><a class="reference internal" href="#marks">Marks</a></li>
 <li><a class="reference internal" href="#general-tips">General Tips</a></li>
 <li><a class="reference internal" href="#ide-tips">IDE Tips</a></li>
 <li><a class="reference internal" href="#unittest-to-pytest-conversion">Unittest to pytest conversion</a></li>
