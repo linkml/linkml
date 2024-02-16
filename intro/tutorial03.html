@@ -417,8 +417,8 @@ to use a JSON Schema validator. This involves converting LinkML to
 JSON-Schema - note that there are some features of LinkML not
 supported by JSON-Schema, so the current validator is not guaranteed
 to be complete.</p>
-<p>If you prefer you can use your own JSON Schema validator. First compile to jsonschema:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gen-json-schema<span class="w"> </span>personinfo.yaml<span class="w"> </span>&gt;<span class="w"> </span>personinfo.schema.json
+<p>If you prefer you can use your own JSON Schema validator. First compile to jsonschema. Unlike the <code class="docutils literal notranslate"><span class="pre">linkml-validate</span></code> command, the <code class="docutils literal notranslate"><span class="pre">gen-json-schema</span></code> command does not attempt to automatically infer which class in your schema to use for validation. You must either identify it in your schema by setting <code class="docutils literal notranslate"><span class="pre">tree_root:</span> <span class="pre">true</span></code> on one class or pass the <code class="docutils literal notranslate"><span class="pre">-t/--top-class</span></code> option to <code class="docutils literal notranslate"><span class="pre">gen-json-schema</span></code>.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gen-json-schema<span class="w"> </span>personinfo.yaml<span class="w"> </span>--top-class<span class="w"> </span>Container<span class="w"> </span>&gt;<span class="w"> </span>personinfo.schema.json
 </pre></div>
 </div>
 <p>You can then use the <code class="docutils literal notranslate"><span class="pre">jsonschema</span></code> command that comes with the python library (any jsonschema validator will do here)</p>
@@ -453,6 +453,7 @@ to be complete.</p>
 <li><p><a class="reference external" href="https://w3id.org/linkml/required">required</a> slot</p></li>
 <li><p><a class="reference external" href="https://w3id.org/linkml/minimum_value">minimum_value</a> slot</p></li>
 <li><p><a class="reference external" href="https://w3id.org/linkml/maximum_value">maximum_value</a> slot</p></li>
+<li><p><a class="reference external" href="https://w3id.org/linkml/tree_root">tree_root</a> slot</p></li>
 </ul>
 </li>
 <li><p>FAQ:</p>
