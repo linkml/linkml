@@ -960,7 +960,8 @@ class OwlSchemaGenerator(Generator):
         self.graph.add((node, OWL.hasValue, filler))
         return node
 
-    def _swrl_var(self, var: str) -> URIRef:
+    @staticmethod
+    def _swrl_var(var: str) -> URIRef:
         return URIRef(var)
 
     def _swrl_class_atom(self, cls_ref: Union[BNode, URIRef], var: str) -> BNode:
@@ -985,7 +986,8 @@ class OwlSchemaGenerator(Generator):
         self.graph.add((node, SWRL.head, head))
         return node
 
-    def _metaslot_uri(self, name: str) -> URIRef:
+    @staticmethod
+    def _metaslot_uri(name: str) -> URIRef:
         return URIRef("https://w3id.org/linkml/" + name)
 
     def _complement_of_union_of(
@@ -1088,7 +1090,8 @@ class OwlSchemaGenerator(Generator):
         else:
             return self._class_uri(ClassDefinitionName(slot.range))
 
-    def _mixin_grouping_class_uri(self):
+    @staticmethod
+    def _mixin_grouping_class_uri():
         return URIRef(ClassDefinition.class_class_uri + "#Mixin")
 
     def _class_uri(self, cn: Union[str, ClassDefinitionName]) -> URIRef:

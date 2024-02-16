@@ -579,7 +579,8 @@ class Generator(metaclass=abc.ABCMeta):
                 return slotname
         return None
 
-    def enum_identifier_path(self, enum_or_enumname: Union[str, EnumDefinition]) -> List[str]:
+    @staticmethod
+    def enum_identifier_path(enum_or_enumname: Union[str, EnumDefinition]) -> List[str]:
         """Return an enum_identifier path"""
         return [
             "str",
@@ -862,7 +863,8 @@ class Generator(metaclass=abc.ABCMeta):
         else:
             return slot_name
 
-    def is_class_unconstrained(self, cls: ClassDefinition):
+    @staticmethod
+    def is_class_unconstrained(cls: ClassDefinition):
         """
         Determine if the class is mapped to typing.Any, i.e the unconstrained class
 

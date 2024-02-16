@@ -368,7 +368,8 @@ class RelationalModelTransformer:
         result = TransformationResult(target, mappings=mappings)
         return result
 
-    def get_direct_identifier_attribute(self, sv: SchemaView, cn: ClassDefinitionName) -> Optional[SlotDefinition]:
+    @staticmethod
+    def get_direct_identifier_attribute(sv: SchemaView, cn: ClassDefinitionName) -> Optional[SlotDefinition]:
         c = sv.get_class(cn)
         for a in c.attributes.values():
             if a.identifier:
@@ -414,7 +415,8 @@ class RelationalModelTransformer:
             or (c.tree_root and self.skip_tree_root)
         )
 
-    def add_primary_key(self, cn: str, sv: SchemaView) -> SlotDefinition:
+    @staticmethod
+    def add_primary_key(cn: str, sv: SchemaView) -> SlotDefinition:
         """
         Adds a surrogate/autoincrement primary key to a class
 

@@ -693,7 +693,8 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
         )
 
     # sort classes such that if C is a child of P then C appears after P in the list
-    def _sort_classes(self, clist: List[ClassDefinition]) -> List[ClassDefinition]:
+    @staticmethod
+    def _sort_classes(clist: List[ClassDefinition]) -> List[ClassDefinition]:
         clist = list(clist)
         slist = []  # sorted
         while len(clist) > 0:
@@ -1043,7 +1044,8 @@ class {enum_name}(EnumDefinitionImpl):
     {self.gen_enum_description(enum, enum_name)}
 """.strip()
 
-    def gen_enum_comment(self, enum: EnumDefinition) -> str:
+    @staticmethod
+    def gen_enum_comment(enum: EnumDefinition) -> str:
         if not be(enum.description):
             return ""
         desc_text = enum.description.replace('"""', "---")
@@ -1153,7 +1155,8 @@ class {enum_name}(EnumDefinitionImpl):
 
         return "PermissibleValue(\n" + ",\n".join(pv_attrs) + ")"
 
-    def process_multiline_string(self, input: str, prefix_string: str) -> str:
+    @staticmethod
+    def process_multiline_string(input: str, prefix_string: str) -> str:
         """
         Process a (potentially multi-line) string, preserving existing formatting
 

@@ -85,7 +85,8 @@ class Linter:
             ]
         )
 
-    def validate_schema(self, schema_path: str):
+    @staticmethod
+    def validate_schema(schema_path: str):
         with open(schema_path) as schema_file:
             schema = yaml.safe_load(schema_file)
 

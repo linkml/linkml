@@ -393,7 +393,8 @@ class PydanticGenerator(OOCodeGenerator):
             logging.error(f"Error compiling generated python code: {e}")
             raise e
 
-    def sort_classes(self, clist: List[ClassDefinition]) -> List[ClassDefinition]:
+    @staticmethod
+    def sort_classes(clist: List[ClassDefinition]) -> List[ClassDefinition]:
         """
         sort classes such that if C is a child of P then C appears after P in the list
 
@@ -626,7 +627,8 @@ class PydanticGenerator(OOCodeGenerator):
             return list(collection_keys)[0]
         return None
 
-    def _inline_as_simple_dict_with_value(self, slot_def: SlotDefinition, sv: SchemaView) -> Optional[str]:
+    @staticmethod
+    def _inline_as_simple_dict_with_value(slot_def: SlotDefinition, sv: SchemaView) -> Optional[str]:
         """
         Determine if a slot should be inlined as a simple dict with a value.
 

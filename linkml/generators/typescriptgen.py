@@ -134,7 +134,8 @@ class TypescriptGenerator(OOCodeGenerator):
         )
         return out_str
 
-    def name(self, element: Element) -> str:
+    @staticmethod
+    def name(element: Element) -> str:
         """
         Returns the name of the element in its canonical form
 
