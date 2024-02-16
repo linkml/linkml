@@ -145,6 +145,7 @@ class SQLAlchemyGenerator(Generator):
              - if compile_python_dataclasses is True then a standard datamodel is generated
 
         :param compile_python_dataclasses: (default False)
+        :param pydantic:
         :param model_path:
         :param template:
         :param kwargs:

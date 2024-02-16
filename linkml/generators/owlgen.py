@@ -459,6 +459,7 @@ class OwlSchemaGenerator(Generator):
         an anonymous expression)
 
         :param cls: LinkML class expression (anonymous if called recursively)
+        :param quantifier_predicate:
         :return: blank node representing the OWL expression
         """
         if cls is None:
@@ -570,6 +571,9 @@ class OwlSchemaGenerator(Generator):
         :param slot:
         :param main_slot:
         :return:
+
+        Args:
+            owl_types:
         """
         sv = self.schemaview
         if main_slot is None:
