@@ -998,7 +998,8 @@
         <span class="p">)</span></div>
 
     <span class="c1"># sort classes such that if C is a child of P then C appears after P in the list</span>
-    <span class="k">def</span> <span class="nf">_sort_classes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">clist</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ClassDefinition</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">ClassDefinition</span><span class="p">]:</span>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_sort_classes</span><span class="p">(</span><span class="n">clist</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ClassDefinition</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">ClassDefinition</span><span class="p">]:</span>
         <span class="n">clist</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">clist</span><span class="p">)</span>
         <span class="n">slist</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># sorted</span>
         <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">clist</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
@@ -1348,7 +1349,8 @@
 <span class="s2">    </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">gen_enum_description</span><span class="p">(</span><span class="n">enum</span><span class="p">,</span><span class="w"> </span><span class="n">enum_name</span><span class="p">)</span><span class="si">}</span>
 <span class="s2">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="PythonGenerator.gen_enum_comment"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.pythongen.PythonGenerator.gen_enum_comment">[docs]</a>    <span class="k">def</span> <span class="nf">gen_enum_comment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">enum</span><span class="p">:</span> <span class="n">EnumDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="viewcode-block" id="PythonGenerator.gen_enum_comment"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.pythongen.PythonGenerator.gen_enum_comment">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">gen_enum_comment</span><span class="p">(</span><span class="n">enum</span><span class="p">:</span> <span class="n">EnumDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">be</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">description</span><span class="p">):</span>
             <span class="k">return</span> <span class="s2">&quot;&quot;</span>
         <span class="n">desc_text</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">description</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&quot;&quot;&quot;&#39;</span><span class="p">,</span> <span class="s2">&quot;---&quot;</span><span class="p">)</span>
@@ -1458,7 +1460,8 @@
 
         <span class="k">return</span> <span class="s2">&quot;PermissibleValue(</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;,</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">pv_attrs</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;)&quot;</span></div>
 
-<div class="viewcode-block" id="PythonGenerator.process_multiline_string"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.pythongen.PythonGenerator.process_multiline_string">[docs]</a>    <span class="k">def</span> <span class="nf">process_multiline_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">prefix_string</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="viewcode-block" id="PythonGenerator.process_multiline_string"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.pythongen.PythonGenerator.process_multiline_string">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">process_multiline_string</span><span class="p">(</span><span class="nb">input</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">prefix_string</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Process a (potentially multi-line) string, preserving existing formatting</span>
 

@@ -552,7 +552,8 @@
         <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">mixin</span> <span class="ow">or</span> <span class="bp">cls</span><span class="o">.</span><span class="n">abstract</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_class_unconstrained</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
             <span class="k">return</span> <span class="kc">True</span>
 
-    <span class="k">def</span> <span class="nf">_class_name_to_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cn</span><span class="p">:</span> <span class="n">ClassDefinitionName</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_class_name_to_table</span><span class="p">(</span><span class="n">cn</span><span class="p">:</span> <span class="n">ClassDefinitionName</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        https://stackoverflow.com/questions/1881123/table-naming-underscore-vs-camelcase-namespaces-singular-vs-plural</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -698,7 +699,8 @@
                 <span class="n">pk</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">alias</span> <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">alias</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">s</span><span class="o">.</span><span class="n">name</span>
         <span class="k">return</span> <span class="n">pk</span>
 
-    <span class="k">def</span> <span class="nf">_get_sqla_var_for_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_get_sqla_var_for_table</span><span class="p">(</span><span class="n">t</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;tbl_</span><span class="si">{</span><span class="n">underscore</span><span class="p">(</span><span class="n">t</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
 
 <div class="viewcode-block" id="SQLDDLGenerator.generate_ddl"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.sqlddlgen.SQLDDLGenerator.generate_ddl">[docs]</a>    <span class="k">def</span> <span class="nf">generate_ddl</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>

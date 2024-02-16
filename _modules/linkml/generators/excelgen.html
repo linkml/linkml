@@ -335,7 +335,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span> <span class="o">=</span> <span class="n">SchemaView</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="p">)</span>
 
-<div class="viewcode-block" id="ExcelGenerator.create_workbook"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.excelgen.ExcelGenerator.create_workbook">[docs]</a>    <span class="k">def</span> <span class="nf">create_workbook</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">workbook_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Workbook</span><span class="p">:</span>
+<div class="viewcode-block" id="ExcelGenerator.create_workbook"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.excelgen.ExcelGenerator.create_workbook">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">create_workbook</span><span class="p">(</span><span class="n">workbook_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Workbook</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates an Excel workbook using the openpyxl library and returns it.</span>
 
@@ -392,7 +393,8 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">split_workbook_by_class</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The Excel workbooks have been written to </span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ExcelGenerator.add_columns_to_worksheet"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.excelgen.ExcelGenerator.add_columns_to_worksheet">[docs]</a>    <span class="k">def</span> <span class="nf">add_columns_to_worksheet</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">workbook</span><span class="p">:</span> <span class="n">Workbook</span><span class="p">,</span> <span class="n">worksheet_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">sheet_headings</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="ExcelGenerator.add_columns_to_worksheet"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.excelgen.ExcelGenerator.add_columns_to_worksheet">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">add_columns_to_worksheet</span><span class="p">(</span><span class="n">workbook</span><span class="p">:</span> <span class="n">Workbook</span><span class="p">,</span> <span class="n">worksheet_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">sheet_headings</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get a worksheet by name and add a column to it in an existing workbook.</span>
 
@@ -407,8 +409,8 @@
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">heading</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">sheet_headings</span><span class="p">):</span>
             <span class="n">worksheet</span><span class="o">.</span><span class="n">cell</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">heading</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ExcelGenerator.column_enum_validation"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.excelgen.ExcelGenerator.column_enum_validation">[docs]</a>    <span class="k">def</span> <span class="nf">column_enum_validation</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
+<div class="viewcode-block" id="ExcelGenerator.column_enum_validation"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.excelgen.ExcelGenerator.column_enum_validation">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">column_enum_validation</span><span class="p">(</span>
         <span class="n">workbook</span><span class="p">:</span> <span class="n">Workbook</span><span class="p">,</span>
         <span class="n">worksheet_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">column_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
