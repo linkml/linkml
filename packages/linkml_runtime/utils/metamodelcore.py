@@ -278,6 +278,8 @@ class XSDDate(str, TypedNode):
             value = value.value
         if isinstance(value, datetime.date):
             value = value.isoformat()
+        if not re.match(r'^\d{4}-\d{2}-\d{2}$', value):
+            return False
         try:
             datetime.date.fromisoformat(str(value))
         except ValueError:
