@@ -741,12 +741,12 @@ class SchemaViewTestCase(unittest.TestCase):
         actual_result = sv.get_classes_by_slot(slot)
         expected_result = ["Person"]
 
-        self.assertListEqual(expected_result, actual_result)
+        self.assertListEqual(sorted(expected_result), sorted(actual_result))
 
         actual_result = sv.get_classes_by_slot(slot, include_induced=True)
         expected_result = ["Person", "Adult"]
 
-        self.assertListEqual(actual_result, expected_result)
+        self.assertListEqual(sorted(actual_result), sorted(expected_result))
 
     def test_materialize_patterns(self):
         sv = SchemaView(SCHEMA_WITH_STRUCTURED_PATTERNS)
