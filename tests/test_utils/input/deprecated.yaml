@@ -1,0 +1,57 @@
+id: https://w3id.org/deprecated_test/deprecated_test
+name: Deprecated-Elements
+title: Schema Deprecated Elements
+description: Elements that have been deprecated over time.
+license: https://creativecommons.org/publicdomain/zero/1.0/
+
+prefixes:
+  KEGG.COMPOUND: "https://bioregistry.io/kegg.compound:"
+  SIO: http://semanticscience.org/resource/SIO_
+  UniProtKB: "https://bioregistry.io/uniprot:"
+  biolink: https://w3id.org/biolink/vocab/
+  dcterms: http://purl.org/dc/terms/
+  linkml: https://w3id.org/linkml/
+  nmdc: https://w3id.org/nmdc/
+  qud: http://qudt.org/1.1/schema/qudt#
+  rdf: http://www.w3.org/1999/02/22-rdf-syntax-ns#
+  schema: http://schema.org/
+  wgs84: http://www.w3.org/2003/01/geo/wgs84_pos#
+  OBI: http://purl.obolibrary.org/obo/OBI_
+  skos: http://www.w3.org/2004/02/skos/core#
+  COG: "https://bioregistry.io/cog:"
+  EC: "https://bioregistry.io/eccode:"
+  GO: http://purl.obolibrary.org/obo/GO_
+  KEGG.ORTHOLOGY: "https://bioregistry.io/kegg.orthology:"
+  KEGG.REACTION: "https://bioregistry.io/kegg.reaction:"
+  KEGG_PATHWAY: "https://bioregistry.io/kegg.pathway:"
+  MetaCyc: "https://bioregistry.io/metacyc.compound:"
+  RHEA: "https://bioregistry.io/rhea:"
+  SEED: "https://bioregistry.io/seed:"
+  gold: "https://bioregistry.io/gold:"
+
+default_prefix: ex
+default_range: string
+
+default_curi_maps:
+    - semweb_context
+
+imports:
+  - linkml:types
+
+classes:
+
+slots:
+  type:
+    deprecated: >-
+      Due to confusion about what values are used for this slot, it is best not to use this slot.
+      See https://github.com/microbiomedata/nmdc-schema/issues/248.
+      MAM removed designates_type and rdf:type slot uri 2022-11-30
+    range: string
+    description: >-
+      An optional string that specifies the type object. 
+      This is used to allow for searches for different kinds of objects.
+    examples:
+      - value: nmdc:Biosample
+      - value: nmdc:Study
+    see_also:
+      - https://github.com/microbiomedata/nmdc-schema/issues/1233

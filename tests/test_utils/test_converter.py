@@ -2,7 +2,6 @@ import json
 
 import pytest
 from click.testing import CliRunner
-
 from linkml.utils.converter import cli
 
 
