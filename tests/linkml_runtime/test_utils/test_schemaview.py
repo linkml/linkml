@@ -488,7 +488,7 @@ class SchemaViewTestCase(unittest.TestCase):
             - input/imports/README.md for explanation of the test schema
         """
         sv = SchemaView(SCHEMA_IMPORT_TREE)
-        closure = sv.imports_closure(imports=True, traverse=True)
+        closure = sv.imports_closure(imports=True)
         target = [
             'linkml:types',
             's1_1',

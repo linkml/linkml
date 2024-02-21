@@ -1,11 +1,10 @@
 import os
-import pdb
 import uuid
 import logging
 import collections
 from functools import lru_cache
 from copy import copy, deepcopy
-from collections import defaultdict
+from collections import defaultdict, deque
 from pathlib import Path
 from typing import Mapping, Tuple
 
@@ -208,35 +207,48 @@ class SchemaView(object):
         return schema
 
     @lru_cache()
-    def imports_closure(self, imports: bool = True, traverse=True, inject_metadata=True) -> List[SchemaDefinitionName]:
+    def imports_closure(self, imports: bool = True, inject_metadata=True) -> List[SchemaDefinitionName]:
         """
         Return all imports
 
         :param traverse: if true, traverse recursively
         :return: all schema names in the transitive reflexive imports closure
         """
-        if not imports:
-            return [self.schema.name]
         if self.schema_map is None:
             self.schema_map = {self.schema.name: self.schema}
-        closure = []
+
+        closure = deque()
         visited = set()
         todo = [self.schema.name]
-        if not traverse:
+
+        if not imports:
             return todo
+
         while len(todo) > 0:
+            # visit item
             sn = todo.pop()
-            visited.add(sn)
             if sn not in self.schema_map:
                 imported_schema = self.load_import(sn)
                 self.schema_map[sn] = imported_schema
-            s = self.schema_map[sn]
-            if sn not in closure:
-                #closure.insert(0, sn)
-                closure.append(sn)
-            for i in s.imports:
-                if i not in visited:
-                    todo.append(i)
+
+            # resolve item's imports if it has not been visited already
+            # we will get duplicates, but not cycles this way, and
+            # filter out dupes, preserving the first entry, at the end.
+            if sn not in visited:
+                for i in self.schema_map[sn].imports:
+                    # no self imports ;)
+                    if i != sn:
+                        todo.append(i)
+
+            # add item to closure
+            # append + pop (above) is FILO queue, which correctly extends tree leaves,
+            # but in backwards order.
+            closure.appendleft(sn)
+            visited.add(sn)
+
+        # filter duplicates, keeping first entry
+        closure = list({k:None for k in closure}.keys())
+
         if inject_metadata:
             for s in self.schema_map.values():
                 for x in {**s.classes, **s.enums, **s.slots, **s.subsets, **s.types}.values():
