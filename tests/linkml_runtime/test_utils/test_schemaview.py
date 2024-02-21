@@ -479,12 +479,49 @@ class SchemaViewTestCase(unittest.TestCase):
         self.assertCountEqual(view.all_classes(), view2.all_classes())
         self.assertCountEqual(view.all_classes(imports=False), view2.all_classes(imports=False))
 
-    def test_imports_order(self):
+    def test_imports_closure_order(self):
         """
         Imports should override in a python-like order.
 
-        See https://github.com/linkml/linkml/issues/1839
+        See
+            - https://github.com/linkml/linkml/issues/1839 for initial discussion
+            - input/imports/README.md for explanation of the test schema
         """
+        sv = SchemaView(SCHEMA_IMPORT_TREE)
+        closure = sv.imports_closure(imports=True, traverse=True)
+        target = [
+            'linkml:types',
+            's1_1',
+            's1_2_1_1_1', 's1_2_1_1_2',
+            's1_2_1_1', 's1_2_1', 's1_2',
+            's1',
+            's2_1', 's2_2', 's2',
+            's3_1', 's3_2', 's3',
+            'main'
+        ]
+        self.assertEqual(closure, target)
+
+    def test_imports_overrides(self):
+        """
+        Classes defined in the importing module should override same-named classes in
+        imported modules.
+
+        Tests recursively across an import tree. Each class defines all classes lower
+        in the tree with a `value` attribute with an `ifabsent` value matching the
+        current schema. Lower (closer to the importing schema) schemas should override
+        each class at that level or lower, keeping the rest.
+
+        See `input/imports/README.md` for further explanation.
+        """
+        sv = SchemaView(SCHEMA_IMPORT_TREE)
+        defaults = {}
+        target = {}
+        for name, cls in sv.all_classes(imports=True).items():
+            target[name] = name
+            defaults[name] = cls.attributes['value'].ifabsent
+
+        self.assertEqual(defaults, target)
+
 
     def test_direct_remote_imports(self):
         """
