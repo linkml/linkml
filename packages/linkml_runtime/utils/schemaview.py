@@ -207,7 +207,7 @@ class SchemaView(object):
         return schema
 
     @lru_cache()
-    def imports_closure(self, imports: bool = True, inject_metadata=True) -> List[SchemaDefinitionName]:
+    def imports_closure(self, imports: bool = True, traverse: Optional[bool] = None, inject_metadata=True) -> List[SchemaDefinitionName]:
         """
         Return all imports
 
@@ -221,7 +221,10 @@ class SchemaView(object):
         visited = set()
         todo = [self.schema.name]
 
-        if not imports:
+        if traverse is not None:
+            DeprecationWarning('traverse behaves identically to imports and will be removed in a future version. Use imports instead.')
+
+        if not imports or (not traverse and traverse is not None):
             return todo
 
         while len(todo) > 0:
