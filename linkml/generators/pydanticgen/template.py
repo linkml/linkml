@@ -1,5 +1,5 @@
 import sys
-from typing import ClassVar, Dict, List, Optional, Union
+from typing import ClassVar, Dict, Generator, List, Optional, Union, overload
 
 if sys.version_info >= (3, 8):
     from typing import Literal
@@ -17,6 +17,19 @@ class TemplateModel(BaseModel):
     """Metaclass to group template models"""
 
     pydantic_ver: int = int(PYDANTIC_VERSION[0])
+
+    if int(PYDANTIC_VERSION[0]) < 2:
+
+        @overload
+        def model_dump(self, mode: Literal["python"] = "python") -> dict: ...
+
+        @overload
+        def model_dump(self, mode: Literal["json"] = "json") -> str: ...
+
+        def model_dump(self, mode: Literal["python", "json"] = "python", **kwargs) -> Union[dict, str]:
+            if mode == "json":
+                return self.json(**kwargs)
+            return self.dict(**kwargs)
 
 
 class EnumValue(TemplateModel):
@@ -111,6 +124,7 @@ class PydanticClass(TemplateModel):
 
     name: str
     bases: Union[List[str], str] = PydanticBaseModel.default_name
+    description: Optional[str] = None
     attributes: Optional[Dict[str, PydanticAttribute]] = None
 
 
@@ -130,11 +144,8 @@ class Import(TemplateModel):
             return [self, other]
 
         # handle conditionals
-        if isinstance(self, ConditionalImport) and isinstance(other, ConditionalImport):
-            # we don't have a good way of combining conditionals, update with the other
-            return [other]
-        elif isinstance(self, ConditionalImport) or isinstance(other, ConditionalImport):
-            # conditionals and nonconditionals are orthogonal
+        if isinstance(self, ConditionalImport) or isinstance(other, ConditionalImport):
+            # we don't have a good way of combining conditionals, just return both
             return [self, other]
 
         # handle module vs. object imports
@@ -174,18 +185,39 @@ class Imports(TemplateModel):
 
     def __add__(self, other: Import) -> "Imports":
         # check if we have one of these already
-        existing = [i for i in self.imports if i.module == other.module]
+        imports = self.imports.copy()
+        existing = [i for i in imports if i.module == other.module]
 
         # if we have nothing importing from this module yet, add it!
         if len(existing) == 0:
-            self.imports.append(other)
+            imports.append(other)
+        elif len(existing) == 1:
+            imports.remove(existing[0])
+            imports.extend(existing[0].merge(other))
         else:
-            merged = []
-            for e in existing:
-                self.imports.remove(e)
-                merged.extend(e.merge(other))
-            self.imports.extend(merged)
-        return self
+            # we have both a conditional and at least one nonconditional already.
+            # If this is another conditional, we just add it, otherwise, we merge it
+            # with the single nonconditional
+            if isinstance(other, ConditionalImport):
+                imports.append(other)
+            else:
+                for e in existing:
+                    if isinstance(e, Import):
+                        imports.remove(e)
+                        merged = e.merge(other)
+                        imports.extend(merged)
+                        break
+        return Imports(imports=imports)
+
+    def __len__(self) -> int:
+        return len(self.imports)
+
+    def __iter__(self) -> Generator[Import, None, None]:
+        for i in self.imports:
+            yield i
+
+    def __getitem__(self, item: int) -> Import:
+        return self.imports[item]
 
 
 class PydanticModule(TemplateModel):

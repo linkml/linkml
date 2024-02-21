@@ -612,7 +612,7 @@ class PydanticGenerator(OOCodeGenerator):
                 new_fields["name"] = attr_name
                 attrs[attr_name] = PydanticAttribute(**new_fields)
 
-            new_class = PydanticClass(name=k, attributes=attrs)
+            new_class = PydanticClass(name=k, attributes=attrs, description=c.description)
             if k in bases:
                 new_class.bases = bases[k]
             classes[k] = new_class
