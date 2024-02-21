@@ -163,6 +163,8 @@ class MetamodelCoreTest(unittest.TestCase):
         self.assertEqual('2019-07-06', XSDDate(XSDDate(v)))                     # An existing date
         strict()
         with self.assertRaises(ValueError):
+            XSDDate('20190706')
+        with self.assertRaises(ValueError):
             XSDDate('Jan 12, 2019')
         with self.assertRaises(ValueError):
             XSDDate(datetime.datetime.now())

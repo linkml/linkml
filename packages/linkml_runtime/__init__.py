@@ -6,10 +6,7 @@ from rdflib import RDF, RDFS, SKOS, XSD, OWL
 # use importlib.metadata to read the version provided
 # by the package during installation. Do not hardcode
 # the version in the code
-try:
-    import importlib.metadata as importlib_metadata
-except ModuleNotFoundError:
-    import importlib_metadata
+import importlib.metadata as importlib_metadata
 
 LINKML = CurieNamespace('linkml', 'https://w3id.org/linkml/')
 TCCM = CurieNamespace('tccm', 'https://ontologies.r.us/tccm/')
