@@ -7,6 +7,7 @@ from copy import copy, deepcopy
 from collections import defaultdict, deque
 from pathlib import Path
 from typing import Mapping, Tuple
+import warnings
 
 from linkml_runtime.utils.namespaces import Namespaces
 from deprecated.classic import deprecated
@@ -222,7 +223,10 @@ class SchemaView(object):
         todo = [self.schema.name]
 
         if traverse is not None:
-            DeprecationWarning('traverse behaves identically to imports and will be removed in a future version. Use imports instead.')
+            warnings.warn(
+                'traverse behaves identically to imports and will be removed in a future version. Use imports instead.',
+                DeprecationWarning
+            )
 
         if not imports or (not traverse and traverse is not None):
             return todo
