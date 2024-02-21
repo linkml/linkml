@@ -212,7 +212,29 @@ class SchemaView(object):
         """
         Return all imports
 
-        :param traverse: if true, traverse recursively
+        Objects in imported classes override one another in a "python-like" order -
+        from the point of view of the importing schema, imports will override one
+        another from first to last, recursively for each layer of imports.
+
+        An import tree like::
+
+            - main
+              - s1
+                - s1_1
+                - s1_2
+                    - s1_2_1
+                    - s1_2_2
+              - s2
+                - s2_1
+                - s2_2
+
+        will override objects with the same name, in order::
+
+            ['s1_1', 's1_2_1', 's1_2_2', 's1_2', 's1', 's2_1', 's2_2', 's2']
+
+        :param imports: bool (default: ``True`` ) include imported schemas, recursively
+        :param traverse: bool, optional (default: ``True`` ) (Deprecated, use
+            ``imports`` ). if true, traverse recursively
         :return: all schema names in the transitive reflexive imports closure
         """
         if self.schema_map is None:
