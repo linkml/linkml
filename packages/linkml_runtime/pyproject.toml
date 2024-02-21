@@ -59,7 +59,6 @@ pydantic = ">=1.10.2, <3.0.0"
 
 [tool.poetry.dev-dependencies]
 coverage = "^6.2"
-importlib-metadata = {version = "^4.12.0", python = "<3.8"}
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
