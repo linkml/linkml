@@ -247,7 +247,8 @@ class SQLDDLGenerator(Generator):
         if cls.mixin or cls.abstract or self.is_class_unconstrained(cls):
             return True
 
-    def _class_name_to_table(self, cn: ClassDefinitionName) -> str:
+    @staticmethod
+    def _class_name_to_table(cn: ClassDefinitionName) -> str:
         """
         https://stackoverflow.com/questions/1881123/table-naming-underscore-vs-camelcase-namespaces-singular-vs-plural
         """
@@ -393,7 +394,8 @@ class SQLDDLGenerator(Generator):
                 pk = s.alias if s.alias is not None else s.name
         return pk
 
-    def _get_sqla_var_for_table(self, t: str) -> str:
+    @staticmethod
+    def _get_sqla_var_for_table(t: str) -> str:
         return f"tbl_{underscore(t)}"
 
     def generate_ddl(self) -> None:

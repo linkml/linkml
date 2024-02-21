@@ -42,7 +42,7 @@ class SchemaRenamer:
         """
         Rename all elements in the schema using rename_function_map
 
-        :param sv:
+        :param schema:
         :return:
         """
         schema = SchemaDefinition(**as_dict(schema))

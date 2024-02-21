@@ -378,8 +378,12 @@ class OwlSchemaGenerator(Generator):
         # rules yield OWL GCI subClassOf axioms
         for rule in cls.rules:
             pre_node = condition_to_bnode(rule.preconditions)
+            if not pre_node:
+                continue
             pre_node = self._intersection_of([pre_node, subject_expr])
             post_node = condition_to_bnode(rule.postconditions)
+            if not post_node:
+                continue
             self.graph.add((pre_node, RDFS.subClassOf, post_node))
         # classification rules yield OWL GCI subClassOf axioms
         for expr in cls.classification_rules:
@@ -433,15 +437,10 @@ class OwlSchemaGenerator(Generator):
             if slot.name in slot_map:
                 for k, v in slot.__dict__.items():
                     curr = slot_map[slot.name].get(k, None)
-                    # print(f"MERGE={slot.name}.{k} = {v} // CURR={curr}")
                     if v and not curr:
                         slot_map[slot.name][k] = v
-                        # print(f"OVERRIDE={slot.name}, k={k}, v={v}")
             else:
                 slot_map[slot.name] = copy(slot.__dict__)
-                # print(f"INIT={slot.name}, vals={slot_map[slot.name]}")
-
-            # print(f"SN={slot.name}, vals={slot_map[slot.name]}")
         own_slots = [SlotDefinition(**v) for v in slot_map.values()]
         # sort by name
         own_slots.sort(key=lambda x: x.name)
@@ -460,8 +459,11 @@ class OwlSchemaGenerator(Generator):
         an anonymous expression)
 
         :param cls: LinkML class expression (anonymous if called recursively)
+        :param quantifier_predicate:
         :return: blank node representing the OWL expression
         """
+        if cls is None:
+            cls = AnonymousClassExpression()
         graph = self.graph
         sv = self.schemaview
         own_slots = self.get_own_slots(cls)
@@ -477,11 +479,13 @@ class OwlSchemaGenerator(Generator):
                 graph.add((cls_uri, OWL.disjointUnionOf, listnode))
             else:
                 sub_sub_exprs = []
-                for i, x in enumerate(sub_exprs):
-                    rest = sub_exprs[0:i] + sub_exprs[i + 1 :]
-                    neg_expr = self._complement_of_union_of(rest)
-                    sub_sub_exprs.append(self._intersection_of([x, neg_expr]))
-                sub_exprs.append(self._union_of(sub_sub_exprs))
+                for i, x in enumerate(cls.exactly_one_of):
+                    rest = cls.exactly_one_of[0:i] + cls.exactly_one_of[i + 1 :]
+                    neg_expr = self._complement_of_union_of([self.transform_class_expression(nx) for nx in rest])
+                    pos_expr = self._intersection_of([self.transform_class_expression(x), neg_expr])
+                    sub_sub_exprs.append(pos_expr)
+                owl_exprs.append(self._union_of(sub_sub_exprs))
+                # owl_exprs.extend(sub_exprs)
         if cls.all_of:
             owl_exprs.append(self._intersection_of([self.transform_class_expression(x) for x in cls.all_of]))
         if cls.none_of:
@@ -566,6 +570,7 @@ class OwlSchemaGenerator(Generator):
         :param cls:
         :param slot:
         :param main_slot:
+        :param owl_types:
         :return:
         """
         sv = self.schemaview
@@ -598,11 +603,19 @@ class OwlSchemaGenerator(Generator):
                 )
             )
         if slot.exactly_one_of:
-            owl_exprs.append(
-                self._exactly_one_of(
-                    [self.transform_class_slot_expression(cls, x, main_slot, owl_types) for x in slot.exactly_one_of]
+            disj_exprs = []
+            for i, operand in enumerate(slot.exactly_one_of):
+                rest = slot.exactly_one_of[0:i] + slot.exactly_one_of[i + 1 :]
+                neg_expr = self._complement_of_union_of(
+                    [self.transform_class_slot_expression(cls, x, main_slot, owl_types) for x in rest],
+                    owl_types=owl_types,
                 )
-            )
+                pos_expr = self._intersection_of(
+                    [self.transform_class_slot_expression(cls, operand, main_slot, owl_types), neg_expr],
+                    owl_types=owl_types,
+                )
+                disj_exprs.append(pos_expr)
+            owl_exprs.append(self._union_of(disj_exprs, owl_types=owl_types))
         range = slot.range
         # if not range and not owl_exprs:
         #    range = sv.schema.default_range
@@ -947,7 +960,8 @@ class OwlSchemaGenerator(Generator):
         self.graph.add((node, OWL.hasValue, filler))
         return node
 
-    def _swrl_var(self, var: str) -> URIRef:
+    @staticmethod
+    def _swrl_var(var: str) -> URIRef:
         return URIRef(var)
 
     def _swrl_class_atom(self, cls_ref: Union[BNode, URIRef], var: str) -> BNode:
@@ -972,14 +986,18 @@ class OwlSchemaGenerator(Generator):
         self.graph.add((node, SWRL.head, head))
         return node
 
-    def _metaslot_uri(self, name: str) -> URIRef:
+    @staticmethod
+    def _metaslot_uri(name: str) -> URIRef:
         return URIRef("https://w3id.org/linkml/" + name)
 
-    def _complement_of_union_of(self, exprs: List[Union[BNode, URIRef]], **kwargs) -> Optional[Union[BNode, URIRef]]:
+    def _complement_of_union_of(
+        self, exprs: List[Union[BNode, URIRef]], owl_types: Set[OWL_TYPE] = None, **kwargs
+    ) -> Optional[Union[BNode, URIRef]]:
         if not exprs:
             raise ValueError("Must pass at least one")
         neg_expr = BNode()
-        owl_types = self._get_owltypes(set(), exprs)
+        if not owl_types:
+            owl_types = self._get_owltypes(set(), exprs)
         complement_predicate = OWL.complementOf
         if len(owl_types) == 1:
             if RDFS.Literal in owl_types:
@@ -1072,7 +1090,8 @@ class OwlSchemaGenerator(Generator):
         else:
             return self._class_uri(ClassDefinitionName(slot.range))
 
-    def _mixin_grouping_class_uri(self):
+    @staticmethod
+    def _mixin_grouping_class_uri():
         return URIRef(ClassDefinition.class_class_uri + "#Mixin")
 
     def _class_uri(self, cn: Union[str, ClassDefinitionName]) -> URIRef:

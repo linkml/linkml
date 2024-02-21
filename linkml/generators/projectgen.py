@@ -96,7 +96,8 @@ class ProjectGenerator:
     Note this doesn't conform to overall generator framework, as it is a meta-generator
     """
 
-    def generate(self, schema_path: str, config: ProjectConfiguration = ProjectConfiguration()):
+    @staticmethod
+    def generate(schema_path: str, config: ProjectConfiguration = ProjectConfiguration()):
         if config.directory is None:
             raise Exception("Must pass directory")
         Path(config.directory).mkdir(parents=True, exist_ok=True)

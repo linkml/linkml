@@ -11,7 +11,6 @@ def compare_dicts(expected: Dict[str, Any], actual: Dict[str, Any]) -> Optional[
     Compare two dicts
     :param expected: expected yaml -- can either be yaml text or a file name
     :param actual: generated yaml -- text or file name
-    :param expected_path: path where expected will be stored
     :return: Differences or issues if any, else None
     """
     patches = jsonpatch.make_patch(expected, actual)

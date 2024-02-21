@@ -95,7 +95,8 @@ class OOCodeGenerator(Generator):
     def default_value_for_type(self, typ: str) -> str:
         raise NotImplementedError
 
-    def get_class_name(self, cn):
+    @staticmethod
+    def get_class_name(cn):
         return camelcase(cn)
 
     def get_slot_name(self, sn):
@@ -108,10 +109,12 @@ class OOCodeGenerator(Generator):
     def map_type(self, t: TypeDefinition, required: bool = False) -> str:
         return t.base
 
-    def make_multivalued(self, range: str) -> str:
+    @staticmethod
+    def make_multivalued(range: str) -> str:
         return f"List<{range}>"
 
-    def replace_invalid_identifier_character(self, char: str) -> str:
+    @staticmethod
+    def replace_invalid_identifier_character(char: str) -> str:
         if char.isalpha() or char.isnumeric() or char == "_":
             return char
         else:

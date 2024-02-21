@@ -19,6 +19,7 @@ from linkml_runtime.linkml_model.meta import (
 )
 from linkml_runtime.utils.formatutils import camelcase, underscore
 
+from linkml import REQUESTS_TIMEOUT
 from linkml._version import __version__
 from linkml.utils.generator import Generator, shared_arguments
 
@@ -101,7 +102,7 @@ class PlantumlGenerator(Generator):
                 camelcase(sorted(classes)[0] if classes else self.schema.name) + file_suffix,
             )
             if load_image:
-                resp = requests.get(plantuml_url, stream=True)
+                resp = requests.get(plantuml_url, stream=True, timeout=REQUESTS_TIMEOUT)
                 if resp.ok:
                     with open(self.output_file_name, "wb") as f:
                         for chunk in resp.iter_content(chunk_size=2048):

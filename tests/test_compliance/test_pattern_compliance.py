@@ -19,17 +19,17 @@ from tests.test_compliance.test_compliance import CLASS_C, CORE_FRAMEWORKS, SLOT
 
 
 @pytest.mark.parametrize(
-    "schema_name,pattern,data_name,value",
+    "schema_name,range,pattern,data_name,value",
     [
-        ("complete_match", r"^\S+$", "no_ws", "ab"),
-        ("complete_match", r"^\S+$", "ws", "a b"),
-        ("partial_match", r"ab", "partial_ab", "abcd"),
-        ("partial_match", r"ab", "complete_ab", "ab"),
-        ("partial_match", r"ab", "ws", "a b"),
+        ("complete_match", "string", r"^\S+$", "no_ws", "ab"),
+        ("complete_match", "string", r"^\S+$", "ws", "a b"),
+        ("partial_match", "string", r"ab", "partial_ab", "abcd"),
+        ("partial_match", "string", r"ab", "complete_ab", "ab"),
+        ("partial_match", "string", r"ab", "ws", "a b"),
     ],
 )
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
-def test_pattern(framework, schema_name, pattern, data_name, value):
+def test_pattern(framework, range, schema_name, pattern, data_name, value):
     """
     Tests behavior of pattern slots.
 
@@ -47,6 +47,7 @@ def test_pattern(framework, schema_name, pattern, data_name, value):
             "attributes": {
                 SLOT_S1: {
                     "pattern": pattern,
+                    "range": range,
                 },
             }
         }

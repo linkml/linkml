@@ -244,7 +244,8 @@ class SQLTableGenerator(Generator):
             logging.error(f"UNKNOWN range base: {range_base} for {slot.name} = {slot.range}")
             return Text()
 
-    def get_foreign_key(self, cn: str, sv: SchemaView) -> str:
+    @staticmethod
+    def get_foreign_key(cn: str, sv: SchemaView) -> str:
         pk = sv.get_identifier_slot(cn)
         # TODO: move this to SV
         if pk is None:

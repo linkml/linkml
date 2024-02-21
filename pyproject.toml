@@ -182,7 +182,8 @@ filterwarnings = [
   "ignore:.*_pytestfixturefunction is not defined in namespace:UserWarning"
 ]
 markers = [
-  "network: mark tests that make external network requests"
+  "network: mark tests that make external network requests",
+  "slow: mark test as slow to run"
 ]
 
 [tool.ruff]
