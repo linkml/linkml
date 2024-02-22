@@ -366,8 +366,6 @@ else:
 
             return _validate(v)
 
-    # AnyShapeArray = _RecursiveListType
-
 
 class ArrayRangeGenerator(ABC):
     """

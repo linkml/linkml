@@ -8,6 +8,9 @@ from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.linkml_model import SlotDefinition
 from linkml_runtime.utils.compile_python import compile_python
 from pydantic import ValidationError, BaseModel
+from pydantic.version import VERSION as PYDANTIC_VERSION
+
+PYDANTIC_VERSION = int(PYDANTIC_VERSION[0])
 import numpy as np
 
 from linkml.generators.pydanticgen import PydanticGenerator, AnyShapeArray
@@ -584,5 +587,8 @@ def test_arrays_anyshape():
         arr = np.random.random((2, 5, 3))
         model = MyModel(array=arr.tolist())
 
-    # pdb.set_trace()
-    # assert MyModel.schema() == {}
+    if PYDANTIC_VERSION < 2:
+        assert (
+            model.schema_json()
+            == '{"title": "MyModel", "type": "object", "properties": {"array": {"title": "Array", "anyOf": [{"type": "integer"}, {"type": "array", "items": {"$ref": "#any-shape-array-integer"}}], "$id": "#any-shape-array-integer"}}, "required": ["array"]}'
+        )
