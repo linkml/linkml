@@ -1,0 +1,20 @@
+id: labeled_shape_array
+name: labeled_shape_array
+title: labeled_shape_array
+imports:
+  - linkml:types
+
+classes:
+  LabeledArray:
+    attributes:
+      array:
+        range: integer
+        array:
+          dimensions:
+            - alias: max_card
+              maximum_cardinality: 5
+            - alias: min_card
+              minimum_cardinality: 2
+            - alias: range_card
+              minimum_cardinality: 2
+              maximum_cardinality: 5

@@ -1,0 +1,9 @@
+id: all_arrays
+name: all_arrays
+title: all_arrays
+imports:
+  - linkml:types
+  - any_shape
+  - anonymous_shape
+  - labeled_shape
+  - mixed_shape

@@ -1,0 +1,18 @@
+id: any_shape_array
+name: any_shape_array
+title: any_shape_array
+imports:
+  - linkml:types
+
+classes:
+  AnyType:
+    attributes:
+      array:
+        range: AnyType
+        array: {}
+
+  Typed:
+    attributes:
+      array:
+        range: integer
+        array: {}

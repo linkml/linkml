@@ -1,0 +1,55 @@
+id: mixed_shape_array
+name: mixed_shape_array
+title: mixed_shape_array
+imports:
+  - linkml:types
+
+classes:
+  MixedAnyShapeArray:
+    attributes:
+      array:
+        range: integer
+        array:
+          maximum_number_dimensions: false
+          dimensions:
+            - alias: max_card
+              maximum_cardinality: 5
+            - alias: min_card
+              minimum_cardinality: 2
+
+  MixedMaxShapeArray:
+    attributes:
+      array:
+        range: integer
+        array:
+          maximum_number_dimensions: 5
+          dimensions:
+            - alias: max_card
+              maximum_cardinality: 5
+            - alias: min_card
+              minimum_cardinality: 2
+
+  MixedRangeShapeArray:
+    attributes:
+      array:
+        range: integer
+        array:
+          minimum_number_dimensions: 4
+          maximum_number_dimensions: 5
+          dimensions:
+            - alias: max_card
+              maximum_cardinality: 5
+            - alias: min_card
+              minimum_cardinality: 2
+
+  MixedExactShapeArray:
+    attributes:
+      array:
+        range: integer
+        array:
+          exact_number_dimensions: 5
+          dimensions:
+            - alias: max_card
+              maximum_cardinality: 5
+            - alias: min_card
+              minimum_cardinality: 2

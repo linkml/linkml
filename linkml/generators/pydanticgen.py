@@ -21,7 +21,7 @@ from typing import (
     TypeVar,
     Union,
     get_args,
-    _GenericAlias
+    _GenericAlias,
 )
 
 import click
@@ -420,12 +420,12 @@ class ArrayRangeGenerator(ABC):
 
     def make(self) -> SlotResult:
         """Create the string form of the array representation"""
-        if self.array is None:
+        if not self.array.dimensions and not self.has_anonymous_dimensions:
             # any-shaped array
             return self.any_shape(self.array)
-        elif self.array.dimensions is None and self.has_anonymous_dimensions:
+        elif not self.array.dimensions and self.has_anonymous_dimensions:
             return self.anonymous_shape(self.array)
-        elif self.array.dimensions is not None and not self.has_anonymous_dimensions:
+        elif self.array.dimensions and not self.has_anonymous_dimensions:
             return self.labeled_shape(self.array)
         else:
             return self.mixed_shape(self.array)
@@ -492,15 +492,15 @@ class ListOfListsArray(ArrayRangeGenerator):
             # TODO: handle labels for labeled but unshaped arrays
             return SlotResult(annotation="List[" + dtype + "]")
 
-        annotation = (
-            "conlist(" f"min_items={dmin}"
-            if dmin is not None
-            else "" ", "
-            if dmin is not None and dmax is not None
-            else "" f"max_items={dmax}"
-            if dmax is not None
-            else "" f", item_type={dtype}" ")"
-        )
+        items = []
+        if dmin is not None:
+            items.append(f"min_items={dmin}")
+        if dmax is not None:
+            items.append(f"max_items={dmax}")
+        items.append(f"item_type={dtype}")
+        items = ", ".join(items)
+        annotation = f"conlist({items})"
+
         return SlotResult(annotation=annotation, imports={"pydantic": ["conlist"]})
 
     def any_shape(self, array: Optional[ArrayRepresentation] = None) -> SlotResult:
@@ -541,7 +541,7 @@ class ListOfListsArray(ArrayRangeGenerator):
         # generate dimensions from inside out and then format
         range = self.dtype
         for dimension in reversed(array.dimensions):
-            range = self._labeled_dimension(dimension, range)
+            range = self._labeled_dimension(dimension, range).annotation
 
         return SlotResult(annotation=range, imports={"pydantic": ["conlist"]})
 
@@ -575,8 +575,9 @@ class ListOfListsArray(ArrayRangeGenerator):
             raise ValueError(
                 "Cannot specify a minimum_number_dimensions while maximum is None while using labeled dimensions - either use exact_number_dimensions > len(dimensions) for extra anonymous dimensions or set maximum_number_dimensions explicitly to False for unbounded dimensions"
             )
-        elif array.minimum_number_dimensions and array.maximum_number_dimensions:
-            dmin = max(len(array.dimensions), array.minimum_number_dimensions) - len(array.dimensions)
+        elif array.maximum_number_dimensions:
+            initial_min = array.minimum_number_dimensions if array.minimum_number_dimensions is not None else 0
+            dmin = max(len(array.dimensions), initial_min) - len(array.dimensions)
             dmax = array.maximum_number_dimensions - len(array.dimensions)
 
             annotation = self.anonymous_shape(
@@ -586,7 +587,7 @@ class ListOfListsArray(ArrayRangeGenerator):
             raise ValueError("Unsupported array specification! this is almost certainly a bug!")
 
         for dim in array.dimensions:
-            annotation = self._labeled_dimension(dim, dtype=annotation)
+            annotation = self._labeled_dimension(dim, dtype=annotation).annotation
 
         return SlotResult(annotation=annotation, injected_classes=injected_classes, imports=imports)
 
@@ -876,14 +877,16 @@ class PydanticGenerator(OOCodeGenerator):
             return list(collection_keys)[0]
         return None
 
-    def get_array_representations_range(self, slot: SlotDefinition) -> str:
+    def get_array_representations_range(self, slot: SlotDefinition, range: str) -> str:
         """
         Generate the python range for array representations
         """
         array_reps = []
         for repr in self.array_representations:
             generator = ArrayRangeGenerator.get_generator(repr)
-            array_reps.append(generator(slot.array, slot.range, self.pydantic_version).make())
+            result = generator(slot.array, range, self.pydantic_version).make()
+            array_reps.append(result.annotation)
+            # TODO: Handle imports, injected classes
 
         if len(array_reps) == 0:
             raise ValueError("No array representation generated, but one was requested!")
@@ -964,9 +967,9 @@ class PydanticGenerator(OOCodeGenerator):
                 else:
                     raise Exception(f"Could not generate python range for {class_name}.{s.name}")
 
-                if s.array or "linkml:elements" in s.implements:
+                if s.array is not None or "linkml:elements" in s.implements:
                     # TODO add support for xarray
-                    pyrange = self.get_array_representations_range(s)
+                    pyrange = self.get_array_representations_range(s, pyrange)
                     if "linkml:ColumnOrderedArray" in class_def.implements:
                         raise NotImplementedError("Cannot generate Pydantic code for ColumnOrderedArrays.")
                     uses_numpy = True
