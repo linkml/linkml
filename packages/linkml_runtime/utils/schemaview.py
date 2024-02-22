@@ -1696,7 +1696,7 @@ class SchemaView(object):
         :param slot_name: slot to be deleted
         :return:
         """
-        del self.schema.slotes[slot_name]
+        del self.schema.slots[slot_name]
         self.set_modified()
 
     def delete_enum(self, enum_name: EnumDefinitionName) -> None:
@@ -1704,7 +1704,7 @@ class SchemaView(object):
         :param enum_name: enum to be deleted
         :return:
         """
-        del self.schema.enumes[enum_name]
+        del self.schema.enums[enum_name]
         self.set_modified()
 
     def delete_type(self, type_name: TypeDefinitionName) -> None:
@@ -1720,7 +1720,7 @@ class SchemaView(object):
         :param subset_name: subset to be deleted
         :return:
         """
-        del self.schema.subsetes[subset_name]
+        del self.schema.subsets[subset_name]
         self.set_modified()
 
     # def rename(self, old_name: str, new_name: str):
