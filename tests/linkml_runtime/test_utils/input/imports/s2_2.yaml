@@ -1,0 +1,24 @@
+id: s2_2
+name: s2_2
+title: s2_2
+imports:
+  - linkml:types
+classes:
+  Main:
+    description: "The class we use to test overrides on imports!"
+    attributes:
+      value:
+        range: string
+        ifabsent: "S2_2"
+  S2:
+    description: "A class from one of the imported classes!"
+    attributes:
+      value:
+        range: string
+        ifabsent: "S2_2"
+  S2_2:
+    description: "A class from one of the imported classes!"
+    attributes:
+      value:
+        range: string
+        ifabsent: "S2_2"

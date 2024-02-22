@@ -4,9 +4,10 @@ import logging
 import collections
 from functools import lru_cache
 from copy import copy, deepcopy
-from collections import defaultdict
+from collections import defaultdict, deque
 from pathlib import Path
 from typing import Mapping, Tuple
+import warnings
 
 from linkml_runtime.utils.namespaces import Namespaces
 from deprecated.classic import deprecated
@@ -207,34 +208,76 @@ class SchemaView(object):
         return schema
 
     @lru_cache()
-    def imports_closure(self, imports: bool = True, traverse=True, inject_metadata=True) -> List[SchemaDefinitionName]:
+    def imports_closure(self, imports: bool = True, traverse: Optional[bool] = None, inject_metadata=True) -> List[SchemaDefinitionName]:
         """
         Return all imports
 
-        :param traverse: if true, traverse recursively
+        Objects in imported classes override one another in a "python-like" order -
+        from the point of view of the importing schema, imports will override one
+        another from first to last, recursively for each layer of imports.
+
+        An import tree like::
+
+            - main
+              - s1
+                - s1_1
+                - s1_2
+                    - s1_2_1
+                    - s1_2_2
+              - s2
+                - s2_1
+                - s2_2
+
+        will override objects with the same name, in order::
+
+            ['s1_1', 's1_2_1', 's1_2_2', 's1_2', 's1', 's2_1', 's2_2', 's2']
+
+        :param imports: bool (default: ``True`` ) include imported schemas, recursively
+        :param traverse: bool, optional (default: ``True`` ) (Deprecated, use
+            ``imports`` ). if true, traverse recursively
         :return: all schema names in the transitive reflexive imports closure
         """
-        if not imports:
-            return [self.schema.name]
         if self.schema_map is None:
             self.schema_map = {self.schema.name: self.schema}
-        closure = []
+
+        closure = deque()
         visited = set()
         todo = [self.schema.name]
-        if not traverse:
+
+        if traverse is not None:
+            warnings.warn(
+                'traverse behaves identically to imports and will be removed in a future version. Use imports instead.',
+                DeprecationWarning
+            )
+
+        if not imports or (not traverse and traverse is not None):
             return todo
+
         while len(todo) > 0:
+            # visit item
             sn = todo.pop()
-            visited.add(sn)
             if sn not in self.schema_map:
                 imported_schema = self.load_import(sn)
                 self.schema_map[sn] = imported_schema
-            s = self.schema_map[sn]
-            if sn not in closure:
-                closure.append(sn)
-            for i in s.imports:
-                if i not in visited:
-                    todo.append(i)
+
+            # resolve item's imports if it has not been visited already
+            # we will get duplicates, but not cycles this way, and
+            # filter out dupes, preserving the first entry, at the end.
+            if sn not in visited:
+                for i in self.schema_map[sn].imports:
+                    # no self imports ;)
+                    if i != sn:
+                        todo.append(i)
+
+            # add item to closure
+            # append + pop (above) is FILO queue, which correctly extends tree leaves,
+            # but in backwards order.
+            closure.appendleft(sn)
+            visited.add(sn)
+
+        # filter duplicates, keeping first entry
+        closure = list({k:None for k in closure}.keys())
+
         if inject_metadata:
             for s in self.schema_map.values():
                 for x in {**s.classes, **s.enums, **s.slots, **s.subsets, **s.types}.values():
@@ -434,6 +477,7 @@ class SchemaView(object):
     def _get_dict(self, slot_name: str, imports=True) -> Dict:
         schemas = self.all_schema(imports)
         d = {}
+        # pdb.set_trace()
         # iterate through all schemas and merge the list together
         for s in schemas:
             # get the value of element name from the schema, if empty, return empty dictionary.
