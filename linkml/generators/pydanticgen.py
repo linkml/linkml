@@ -21,17 +21,26 @@ from typing import (
     TypeVar,
     Union,
     get_args,
-    _GenericAlias,
+    _GenericAlias
 )
 
 import click
 from jinja2 import Template
+from pydantic import BaseModel, Field
+from pydantic.version import VERSION as PYDANTIC_VERSION
+
+if int(PYDANTIC_VERSION[0]) < 2:
+    from pydantic.fields import ModelField
+else:
+    from pydantic import GetCoreSchemaHandler
+    from pydantic_core import CoreSchema, core_schema
 
 # from linkml.generators import pydantic_GEN_VERSION
 from linkml_runtime.linkml_model.meta import (
     Annotation,
     ArrayExpression,
     ClassDefinition,
+    DimensionExpression,
     Element,
     SchemaDefinition,
     SlotDefinition,
@@ -40,10 +49,6 @@ from linkml_runtime.linkml_model.meta import (
 from linkml_runtime.utils.compile_python import compile_python
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.schemaview import SchemaView
-from pydantic.version import VERSION as PYDANTIC_VERSION
-
-if int(PYDANTIC_VERSION[0]) < 2:
-    from pydantic.fields import ModelField
 
 from linkml._version import __version__
 from linkml.generators.common.type_designators import (
@@ -281,6 +286,28 @@ def _get_pyrange(t: TypeDefinition, sv: SchemaView) -> str:
 # --------------------------------------------------
 
 
+class BuildResult(BaseModel):
+    """
+    The result of any build phase for any linkML object
+
+    BuildResults are merged in the serialization process, and are used
+    to keep track of not only the particular representation
+    of the thing in question, but any "side effects" that need to happen
+    elsewhere in the generation process (like adding imports, injecting classes, etc.)
+    """
+
+    # FIXME: PLACEHOLDER TYPES PENDING MERGE OF OTHER PULL REQUESTS
+    imports: Optional[dict[str, Any]] = None
+    injected_classes: Optional[list[Any]] = None
+
+
+class SlotResult(BuildResult):
+    annotation: str
+    """The type annotation used in the generated model"""
+    field_extras: Optional[dict] = None
+    """Additional metadata for this slot to be held in the Field object"""
+
+
 class ArrayRepresentation(Enum):
     LIST = "list"
     NPARRAY = "nparray"  # numpy and nptyping must be installed to use this
@@ -291,8 +318,6 @@ _ANONYMOUS_ARRAY_FIELDS = ("exact_number_dimensions", "minimum_number_dimensions
 _T = TypeVar("_T")
 _RecursiveListType = Iterable[_T | Iterable["_RecursiveListType"]]
 if int(PYDANTIC_VERSION[0]) >= 2:
-    from pydantic import GetCoreSchemaHandler
-    from pydantic_core import CoreSchema, core_schema
 
     class AnyShapeArrayType(Generic[_T]):
         @classmethod
@@ -393,7 +418,7 @@ class ArrayRangeGenerator(ABC):
         self.dtype = dtype
         self.pydantic_ver = pydantic_ver
 
-    def make(self) -> str:
+    def make(self) -> SlotResult:
         """Create the string form of the array representation"""
         if self.array is None:
             # any-shaped array
@@ -419,22 +444,22 @@ class ArrayRangeGenerator(ABC):
         raise ValueError(f"Generator for array representation {repr} not found!")
 
     @abstractmethod
-    def any_shape(self, array: None) -> str:
+    def any_shape(self, array: Optional[ArrayRepresentation] = None) -> SlotResult:
         """Any shaped array!"""
         pass
 
     @abstractmethod
-    def anonymous_shape(self, array: ArrayExpression) -> str:
+    def anonymous_shape(self, array: ArrayExpression) -> SlotResult:
         """Array shape specified numerically, without axis parameterization"""
         pass
 
     @abstractmethod
-    def labeled_shape(self, array: ArrayExpression) -> str:
+    def labeled_shape(self, array: ArrayExpression) -> SlotResult:
         """Array shape specified with ``dimensions`` without additional anonymous axes"""
         pass
 
     @abstractmethod
-    def mixed_shape(self, array: ArrayExpression) -> str:
+    def mixed_shape(self, array: ArrayExpression) -> SlotResult:
         """Array shape with both ``dimensions`` and a ``max_number_dimensions`` for anonymous axes"""
         pass
 
@@ -442,6 +467,8 @@ class ArrayRangeGenerator(ABC):
 class ListOfListsArray(ArrayRangeGenerator):
     """
     Represent arrays as lists of lists!
+
+    TODO: Move all validation of values (eg. anywhere we raise a ValueError) to the dataclass and out of the generator class
     """
 
     REPR = ArrayRepresentation.LIST
@@ -450,48 +477,118 @@ class ListOfListsArray(ArrayRangeGenerator):
     def _list_of_lists(dimensions: int, dtype: str) -> str:
         return ("List[" * dimensions) + dtype + ("]" * dimensions)
 
-    def any_shape(self, array: None) -> str:
-        if self.dtype == "Any":
-            return "AnyShapeArray"
+    @staticmethod
+    def _labeled_dimension(dimension: DimensionExpression, dtype: str) -> SlotResult:
+        # TODO: Preserve label representation in some readable way! doing the MVP now of using conlist
+        if dimension.exact_cardinality and (dimension.minimum_cardinality or dimension.maximum_cardinality):
+            raise ValueError("Can only specify EITHER exact_cardinality OR minimum/maximum cardinality")
+        elif dimension.exact_cardinality:
+            dmin = dimension.exact_cardinality
+            dmax = dimension.exact_cardinality
+        elif dimension.minimum_cardinality or dimension.maximum_cardinality:
+            dmin = dimension.minimum_cardinality
+            dmax = dimension.maximum_cardinality
         else:
-            return f"AnyShapeArray[{self.dtype}]"
+            # TODO: handle labels for labeled but unshaped arrays
+            return SlotResult(annotation="List[" + dtype + "]")
 
-    def anonymous_shape(self, array: ArrayExpression) -> str:
+        annotation = (
+            "conlist(" f"min_items={dmin}"
+            if dmin is not None
+            else "" ", "
+            if dmin is not None and dmax is not None
+            else "" f"max_items={dmax}"
+            if dmax is not None
+            else "" f", item_type={dtype}" ")"
+        )
+        return SlotResult(annotation=annotation, imports={"pydantic": ["conlist"]})
+
+    def any_shape(self, array: Optional[ArrayRepresentation] = None) -> SlotResult:
+        if self.dtype == "Any":
+            annotation = "AnyShapeArray"
+        else:
+            annotation = f"AnyShapeArray[{self.dtype}]"
+        return SlotResult(annotation=annotation, injected_classes=[AnyShapeArray])
+
+    def anonymous_shape(self, array: ArrayExpression) -> SlotResult:
         if array.exact_number_dimensions:
-            return self._list_of_lists(array.exact_number_dimensions, self.dtype)
+            return SlotResult(annotation=self._list_of_lists(array.exact_number_dimensions, self.dtype))
         elif not array.maximum_number_dimensions and (
             array.minimum_number_dimensions is None or array.minimum_number_dimensions == 1
         ):
-            return self.any_shape(array)
+            return self.any_shape()
         elif array.maximum_number_dimensions:
             min_dims = array.minimum_number_dimensions if array.minimum_number_dimensions else 1
             annotations = [
                 self._list_of_lists(i, self.dtype) for i in range(min_dims, array.maximum_number_dimensions + 1)
             ]
             # TODO: Format this nicely!
-            return "Union[" + ", ".join(annotations) + "]"
+            return SlotResult(annotation="Union[" + ", ".join(annotations) + "]")
         else:
-            raise NotImplementedError("Minimum without maximum anonymous dimensions not implemented")
+            return SlotResult(
+                annotation=self._list_of_lists(array.minimum_number_dimensions, self.any_shape().annotation),
+                injected_classes=[AnyShapeArray],
+            )
 
-    def labeled_shape(self, array: ArrayExpression) -> str:
+    def labeled_shape(self, array: ArrayExpression) -> SlotResult:
         """
-        For now, just a list of lists
+        Constrained shapes using :func:`pydantic.conlist`
 
         TODO:
-        - cardinality validation wth conlist
         - preservation of aliases
         - (what other metadata is allowable on labeled dimensions?)
         """
-        return self._list_of_lists(len(array.dimensions), self.dtype)
+        # generate dimensions from inside out and then format
+        range = self.dtype
+        for dimension in reversed(array.dimensions):
+            range = self._labeled_dimension(dimension, range)
 
-    def mixed_shape(self, array: ArrayExpression) -> str:
-        """
-        For now, just a list of lists
+        return SlotResult(annotation=range, imports={"pydantic": ["conlist"]})
 
-        TODO:
-        - combine representations from :meth:`.anonymous_shape` and :meth:`.labeled_shape`
+    def mixed_shape(self, array: ArrayExpression) -> SlotResult:
         """
-        return self.anonymous_shape(array)
+        Mixture of labeled dimensions with a max or min (or both) shape for anonymous dimensions
+        """
+        injected_classes = []
+        imports = {"typing": ["conlist"]}
+        if array.exact_number_dimensions is not None:
+            if array.exact_number_dimensions > len(array.dimensions):
+                annotation = self._list_of_lists(array.exact_number_dimensions - len(array.dimensions), self.dtype)
+            elif array.exact_number_dimensions == len(array.dimensions):
+                # equivalent to labeled shape
+                return self.labeled_shape(array)
+            else:
+                raise ValueError(
+                    "if exact_number_dimensions is provided, it must be greater than the parameterized dimensions"
+                )
+
+        elif array.maximum_number_dimensions is not None and not array.maximum_number_dimensions:
+            injected_classes.append(AnyShapeArray)
+
+            # unlimited n dimensions, so innermost is AnyShape with dtype
+            annotation = self.any_shape().annotation
+            if array.minimum_number_dimensions and array.minimum_number_dimensions > len(array.dimensions):
+                # some minimum anonymous dimensions but unlimited max dimensions
+                annotation = self._list_of_lists(array.minimum_number_dimensions - len(array.dimensions), inner)
+
+        elif array.minimum_number_dimensions and array.maximum_number_dimensions is None:
+            raise ValueError(
+                "Cannot specify a minimum_number_dimensions while maximum is None while using labeled dimensions - either use exact_number_dimensions > len(dimensions) for extra anonymous dimensions or set maximum_number_dimensions explicitly to False for unbounded dimensions"
+            )
+        elif array.minimum_number_dimensions and array.maximum_number_dimensions:
+            dmin = max(len(array.dimensions), array.minimum_number_dimensions) - len(array.dimensions)
+            dmax = array.maximum_number_dimensions - len(array.dimensions)
+
+            annotation = self.anonymous_shape(
+                ArrayExpression(minimum_number_dimensions=dmin, maximum_number_dimensions=dmax)
+            ).annotation
+        else:
+            raise ValueError("Unsupported array specification! this is almost certainly a bug!")
+
+        for dim in array.dimensions:
+            annotation = self._labeled_dimension(dim, dtype=annotation)
+
+        return SlotResult(annotation=annotation, injected_classes=injected_classes, imports=imports)
 
 
 class NPTypingArray(ArrayRangeGenerator):
