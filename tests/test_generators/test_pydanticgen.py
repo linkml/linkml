@@ -1,21 +1,19 @@
-import pdb
 from importlib.metadata import version
 
+import numpy as np
 import pytest
 import yaml
 from linkml_runtime import SchemaView
 from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.linkml_model import SlotDefinition
 from linkml_runtime.utils.compile_python import compile_python
-from pydantic import ValidationError, BaseModel
+from pydantic import BaseModel, ValidationError
 from pydantic.version import VERSION as PYDANTIC_VERSION
 
-PYDANTIC_VERSION = int(PYDANTIC_VERSION[0])
-import numpy as np
-
-from linkml.generators.pydanticgen import PydanticGenerator, AnyShapeArray
+from linkml.generators.pydanticgen import AnyShapeArray, PydanticGenerator
 from linkml.utils.schema_builder import SchemaBuilder
 
+PYDANTIC_VERSION = int(PYDANTIC_VERSION[0])
 PACKAGE = "kitchen_sink"
 
 
@@ -588,7 +586,9 @@ def test_arrays_anyshape():
         model = MyModel(array=arr.tolist())
 
     if PYDANTIC_VERSION < 2:
-        assert (
-            model.schema_json()
-            == '{"title": "MyModel", "type": "object", "properties": {"array": {"title": "Array", "anyOf": [{"type": "integer"}, {"type": "array", "items": {"$ref": "#any-shape-array-integer"}}], "$id": "#any-shape-array-integer"}}, "required": ["array"]}'
+        assert model.schema_json() == (
+            '{"title": "MyModel", "type": "object", "properties": {"array": {"title": '
+            '"Array", "anyOf": [{"type": "integer"}, {"type": "array", "items": '
+            '{"$ref": "#any-shape-array-integer"}}], "$id": "#any-shape-array-integer"}}, '
+            '"required": ["array"]}'
         )

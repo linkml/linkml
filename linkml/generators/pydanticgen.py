@@ -1,6 +1,5 @@
 import logging
 import os
-import pdb
 from abc import ABC, abstractmethod
 from collections import defaultdict
 from copy import deepcopy
@@ -20,17 +19,17 @@ from typing import (
     Type,
     TypeVar,
     Union,
-    get_args,
     _GenericAlias,
+    get_args,
 )
 
 import click
 from jinja2 import Template
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from pydantic.version import VERSION as PYDANTIC_VERSION
 
 if int(PYDANTIC_VERSION[0]) < 2:
-    from pydantic.fields import ModelField
+    pass
 else:
     from pydantic import GetCoreSchemaHandler
     from pydantic_core import CoreSchema, core_schema
@@ -383,7 +382,10 @@ else:
                     elif cls.type_ is not Any:
                         if not isinstance(item, cls.type_):
                             raise TypeError(
-                                f"List items must be list of lists, or the type used in the subscript ({cls.type_}. Got item {item} and outer value {v}"
+                                (
+                                    f"List items must be list of lists, or the type used in "
+                                    f"the subscript ({cls.type_}. Got item {item} and outer value {v}"
+                                )
                             )
                 return _v
 
@@ -466,7 +468,8 @@ class ListOfListsArray(ArrayRangeGenerator):
     """
     Represent arrays as lists of lists!
 
-    TODO: Move all validation of values (eg. anywhere we raise a ValueError) to the dataclass and out of the generator class
+    TODO: Move all validation of values (eg. anywhere we raise a ValueError) to the
+    dataclass and out of the generator class
     """
 
     REPR = ArrayRepresentation.LIST
@@ -567,11 +570,15 @@ class ListOfListsArray(ArrayRangeGenerator):
             annotation = self.any_shape().annotation
             if array.minimum_number_dimensions and array.minimum_number_dimensions > len(array.dimensions):
                 # some minimum anonymous dimensions but unlimited max dimensions
-                annotation = self._list_of_lists(array.minimum_number_dimensions - len(array.dimensions), inner)
+                annotation = self._list_of_lists(array.minimum_number_dimensions - len(array.dimensions), annotation)
 
         elif array.minimum_number_dimensions and array.maximum_number_dimensions is None:
             raise ValueError(
-                "Cannot specify a minimum_number_dimensions while maximum is None while using labeled dimensions - either use exact_number_dimensions > len(dimensions) for extra anonymous dimensions or set maximum_number_dimensions explicitly to False for unbounded dimensions"
+                (
+                    "Cannot specify a minimum_number_dimensions while maximum is None while using labeled dimensions - "
+                    "either use exact_number_dimensions > len(dimensions) for extra anonymous dimensions or set "
+                    "maximum_number_dimensions explicitly to False for unbounded dimensions"
+                )
             )
         elif array.maximum_number_dimensions:
             initial_min = array.minimum_number_dimensions if array.minimum_number_dimensions is not None else 0
