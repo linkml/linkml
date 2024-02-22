@@ -361,17 +361,15 @@ else:
             yield cls.validate
 
         @classmethod
-        def __modify_schema__(cls, field_schema, field: ModelField):
+        def __modify_schema__(cls, field_schema):
             item_type = field_schema["allOf"][0]["type"]
             array_id = f"#any-shape-array-{item_type}"
-            field.field_info.extra["$id"] = array_id
             field_schema["anyOf"] = [
                 {"type": item_type},
                 {"type": "array", "items": {"$ref": array_id}},
             ]
             field_schema["$id"] = array_id
             del field_schema["allOf"]
-            return field
 
         @classmethod
         def validate(cls, v: Union[List[_T], list]):
