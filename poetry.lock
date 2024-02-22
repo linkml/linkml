@@ -3477,4 +3477,4 @@ tests = ["pyshacl"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8.1"
-content-hash = "b1e30f107b0265e63e10eea8291909324ebd34b1eb471d7d24a4c930ce196cce"
+content-hash = "2c7fd4cf564249dc506c34148733275b3d96f43efc5fa2a2f79819eeb096c8ce"
