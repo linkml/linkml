@@ -1,3 +1,4 @@
+import pdb
 from importlib.metadata import version
 
 import pytest
@@ -6,9 +7,10 @@ from linkml_runtime import SchemaView
 from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.linkml_model import SlotDefinition
 from linkml_runtime.utils.compile_python import compile_python
-from pydantic import ValidationError
+from pydantic import ValidationError, BaseModel
+import numpy as np
 
-from linkml.generators.pydanticgen import PydanticGenerator
+from linkml.generators.pydanticgen import PydanticGenerator, AnyShapeArray
 from linkml.utils.schema_builder import SchemaBuilder
 
 PACKAGE = "kitchen_sink"
@@ -568,3 +570,19 @@ classes:
     gen = PydanticGenerator(schema=unit_test_schema)
     with pytest.raises(NotImplementedError):
         gen.serialize()
+
+
+def test_arrays_anyshape():
+    class MyModel(BaseModel):
+        array: AnyShapeArray[int]
+
+    # pdb.set_trace()
+    arr = np.ones((2, 4, 5, 3, 2), dtype=int)
+    model = MyModel(array=arr.tolist())
+
+    with pytest.raises(ValidationError):
+        arr = np.random.random((2, 5, 3))
+        model = MyModel(array=arr.tolist())
+
+    # pdb.set_trace()
+    # assert MyModel.schema() == {}

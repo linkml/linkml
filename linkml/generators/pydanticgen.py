@@ -1,12 +1,28 @@
 import logging
 import os
+import pdb
 from abc import ABC, abstractmethod
 from collections import defaultdict
 from copy import deepcopy
 from dataclasses import dataclass, field
 from enum import Enum
 from types import ModuleType
-from typing import Annotated, Any, ClassVar, Dict, Generic, List, Optional, Set, Type, TypeVar, get_args
+from typing import (
+    Annotated,
+    Any,
+    ClassVar,
+    Dict,
+    Generic,
+    Iterable,
+    List,
+    Optional,
+    Set,
+    Type,
+    TypeVar,
+    Union,
+    get_args,
+    _GenericAlias,
+)
 
 import click
 from jinja2 import Template
@@ -25,6 +41,9 @@ from linkml_runtime.utils.compile_python import compile_python
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.schemaview import SchemaView
 from pydantic.version import VERSION as PYDANTIC_VERSION
+
+if int(PYDANTIC_VERSION[0]) < 2:
+    from pydantic.fields import ModelField
 
 from linkml._version import __version__
 from linkml.generators.common.type_designators import (
@@ -270,7 +289,7 @@ class ArrayRepresentation(Enum):
 _ANONYMOUS_ARRAY_FIELDS = ("exact_number_dimensions", "minimum_number_dimensions", "maximum_number_dimensions")
 
 _T = TypeVar("_T")
-_RecursiveListType = List[_T | List["_RecursiveListType"]]
+_RecursiveListType = Iterable[_T | Iterable["_RecursiveListType"]]
 if int(PYDANTIC_VERSION[0]) >= 2:
     from pydantic import GetCoreSchemaHandler
     from pydantic_core import CoreSchema, core_schema
@@ -303,7 +322,51 @@ if int(PYDANTIC_VERSION[0]) >= 2:
     AnyShapeArray = Annotated[_RecursiveListType, AnyShapeArrayType]
 
 else:
-    AnyShapeArray = _RecursiveListType
+
+    class AnyShapeArray(Generic[_T]):
+        type_: Any
+
+        def __class_getitem__(cls, item):
+            alias = _GenericAlias(origin=AnyShapeArray, args=item)
+            alias.type_ = item
+            return alias
+
+        @classmethod
+        def __get_validators__(cls):
+            yield cls.validate
+
+        @classmethod
+        def __modify_schema__(cls, field_schema, field: ModelField):
+            item_type = field_schema["allOf"][0]["type"]
+            array_id = f"#any-shape-array-{item_type}"
+            field.field_info.extra["$id"] = array_id
+            field_schema["anyOf"] = [
+                {"type": item_type},
+                {"type": "array", "items": {"$ref": array_id}},
+            ]
+            field_schema["$id"] = array_id
+            del field_schema["allOf"]
+            return field
+
+        @classmethod
+        def validate(cls, v: Union[List[_T], list]):
+            if not isinstance(v, list):
+                raise TypeError(f"Must be a list of lists! got {v}")
+
+            def _validate(_v: Union[List[_T], list]):
+                for item in _v:
+                    if isinstance(item, list):
+                        _validate(item)
+                    elif cls.type_ is not Any:
+                        if not isinstance(item, cls.type_):
+                            raise TypeError(
+                                f"List items must be list of lists, or the type used in the subscript ({cls.type_}. Got item {item} and outer value {v}"
+                            )
+                return _v
+
+            return _validate(v)
+
+    # AnyShapeArray = _RecursiveListType
 
 
 class ArrayRangeGenerator(ABC):
