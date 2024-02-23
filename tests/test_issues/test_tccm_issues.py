@@ -61,10 +61,8 @@ def test_minimal_model(input_path, snapshot, tmp_path):
     ).serialize(validateonly=True)
 
     for generator in Generator.__subclasses__():
-        if (
-            not generator.__module__.startswith("linkml.generators")
-            or generator.__name__ == "SQLDDLGenerator"
-            or getattr(generator.serialize, "__isabstractmethod__", True)
+        if not generator.__module__.startswith("linkml.generators") or getattr(
+            generator.serialize, "__isabstractmethod__", True
         ):
             pass
         elif not generator.directory_output:

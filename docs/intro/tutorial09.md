@@ -21,10 +21,10 @@ cp ../tutorial09/personinfo.yaml .
 
 ### Generating SQL CREATE TABLE statements
 
-Use the [gen-sqlddl](/generators/sqlddl) command to make a SQL schema:
+Use the [gen-sqltables](/generators/sqltable) command to make a SQL schema:
 
 ```bash
-gen-sqlddl personinfo.yaml
+gen-sqltables personinfo.yaml
 ```
 
 Outputs:
@@ -235,5 +235,5 @@ You can generate SQL Alchemy classes using:
 gen-sqla -s personinfo.yaml
 ```
 
-See the SQLDDL generator docs for more details.
+See the SQLTables generator docs for more details.
 

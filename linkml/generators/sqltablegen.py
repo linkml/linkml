@@ -207,7 +207,6 @@ class SQLTableGenerator(Generator):
         schema_metadata.create_all(engine)
         return ddl_str
 
-    # TODO: merge with code from sqlddlgen
     def get_sql_range(self, slot: SlotDefinition, schema: SchemaDefinition = None):
         """
         returns a SQL Alchemy column type

@@ -22,7 +22,7 @@ from linkml.generators.protogen import ProtoGenerator
 from linkml.generators.pythongen import PythonGenerator
 from linkml.generators.shaclgen import ShaclGenerator
 from linkml.generators.shexgen import ShExGenerator
-from linkml.generators.sqlddlgen import SQLDDLGenerator
+from linkml.generators.sqltablegen import SQLTableGenerator
 from linkml.utils.cli_utils import log_level_option
 from linkml.utils.generator import Generator
 
@@ -53,7 +53,7 @@ GEN_MAP = {
     #    'rdf': (RDFGenerator, 'rdf/{name}.ttl', {'context': '{parent}/../jsonld/{name}.context.jsonld'}),
     "shex": (ShExGenerator, "shex/{name}.shex", {}),
     "shacl": (ShaclGenerator, "shacl/{name}.shacl.ttl", {}),
-    "sqlddl": (SQLDDLGenerator, "sqlschema/{name}.sql", {}),
+    "sqltable": (SQLTableGenerator, "sqlschema/{name}.sql", {}),
     # # linkml/generators/javagen.py uses different architecture from most of the other generators
     # # also linkml/generators/excelgen.py, which has a different mechanism for determining the output path
     # 'java': (JavaGenerator, 'java/{name}.java', {'directory': '{parent}'}),

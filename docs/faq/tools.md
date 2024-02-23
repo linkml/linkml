@@ -260,7 +260,7 @@ Yes, and in fact providing semantics and expressivity to relational databases is
 
 With LinkML you can:
 
-- [Generate a relational database schema](https://linkml.io/linkml/generators/sqlddl.html) from a LinkML schema
+- [Generate a relational database schema](https://linkml.io/linkml/generators/sqltable.html) from a LinkML schema
 - Reverse engineer a LinkML schema [from a Relational Database schema](https://linkml.io/schema-automator/packages/importers.html#importing-from-sql)
 - Create [ORM helper code](https://linkml.io/linkml/generators/sqlalchemy.html)
 

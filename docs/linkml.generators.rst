@@ -204,10 +204,10 @@ linkml.generators.sparqlgen module
    :undoc-members:
    :show-inheritance:
 
-linkml.generators.sqlddlgen module
+linkml.generators.sqltablegen module
 ----------------------------------
 
-.. automodule:: linkml.generators.sqlddlgen
+.. automodule:: linkml.generators.sqltablegen
    :members:
    :undoc-members:
    :show-inheritance:
