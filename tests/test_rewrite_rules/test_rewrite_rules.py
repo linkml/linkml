@@ -24,6 +24,7 @@ github_io = "https://linkml.github.io/"
 
 @dataclass
 class TestEntry:
+    __test__ = False
     input_url: Union[str, URIRef, Namespace]
     expected_url: str
     accept_header: Optional[str] = None
@@ -43,6 +44,8 @@ def build_test_entry_set(input_url: Namespace, model: str) -> List[TestEntry]:
 
 
 class TestLists:
+    __test__ = False
+
     def __init__(self, server: str) -> None:
         if not server.endswith(("#", "/")):
             server += "/"

@@ -59,7 +59,7 @@ SELECT
 }  {{ limit }}
 {% endif %}
 
-{% if slot.range in schema_view.all_class() %}
+{% if slot.range in schema_view.all_classes() %}
 # @CHECK object_range_{{cn}}_{{slot.name}}
 SELECT
   ?check
@@ -108,13 +108,13 @@ def materialize_schema(schemaview: SchemaView):
         for pfxn, pfx in schemaview.schema_map[scn].prefixes.items():
             if pfxn not in schema:
                 schema.prefixes[pfxn] = pfx
-    for cn, c in schemaview.all_class().items():
+    for cn, c in schemaview.all_classes().items():
         for a in list(c.attributes.values()):
             schema.slots[a.name] = a
             c.slots.append(a.name)
             del c.attributes[a.name]
     schemaview.set_modified()
-    for cn, c in schemaview.all_class().items():
+    for cn, c in schemaview.all_classes().items():
         for s in schemaview.class_induced_slots(cn):
             if s.name not in c.slots:
                 c.slots.append(s.name)
