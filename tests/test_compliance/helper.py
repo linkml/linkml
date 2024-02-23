@@ -15,13 +15,13 @@ from pathlib import Path
 from typing import Any, Callable, Dict, Iterator, List, Optional, Set, Tuple, Type, Union
 
 import linkml_runtime
-from linkml_runtime.linkml_model import SchemaDefinition
 import pydantic
 import pytest
 import rdflib
 import yaml
 from linkml_runtime import SchemaView
 from linkml_runtime.dumpers import rdflib_dumper, yaml_dumper
+from linkml_runtime.linkml_model import SchemaDefinition
 from linkml_runtime.linkml_model import meta as meta
 from linkml_runtime.loaders import rdflib_loader
 from linkml_runtime.utils.compile_python import compile_python
@@ -29,6 +29,7 @@ from linkml_runtime.utils.introspection import package_schemaview
 from linkml_runtime.utils.yamlutils import YAMLRoot
 from pydantic import BaseModel
 
+import tests
 from linkml import generators as generators
 from linkml.generators import (
     JsonSchemaGenerator,
@@ -44,7 +45,6 @@ from linkml.utils.sqlutils import SQLStore
 from linkml.validator import JsonschemaValidationPlugin, Validator
 from linkml.validator.plugins.shacl_validation_plugin import ShaclValidationPlugin
 from tests.output.types import Decimal
-import tests
 
 THIS_DIR = Path(__file__).parent
 OUTPUT_DIR = THIS_DIR / "output"
