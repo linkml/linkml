@@ -5,6 +5,7 @@ from typing import Dict, List, Optional, Union, get_args, get_origin
 
 import pytest
 import yaml
+from click.testing import CliRunner
 from linkml_runtime import SchemaView
 from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.linkml_model import SlotDefinition
@@ -12,12 +13,40 @@ from linkml_runtime.utils.compile_python import compile_python
 from pydantic import ValidationError
 from pydantic.version import VERSION as PYDANTIC_VERSION
 
+from linkml.generators import pydanticgen
 from linkml.generators.pydanticgen import PydanticGenerator
 from linkml.utils.schema_builder import SchemaBuilder
 
 from .conftest import MyInjectedClass
 
 PACKAGE = "kitchen_sink"
+
+
+@pytest.fixture
+def runner():
+    return CliRunner()
+
+
+@pytest.mark.parametrize(
+    "arguments",
+    [
+        ["--pydantic-version", "1"],
+        ["--pydantic-version", "2"],
+        ["--pydantic_version", "1"],
+        ["--pydantic_version", "2"],
+        ["--extra-fields", "allow"],
+    ],
+)
+def test_metamodel_valid_cli_arguments(arguments, kitchen_sink_path):
+    runner = CliRunner()
+    arguments_str = " ".join(arguments)
+    result = runner.invoke(pydanticgen.cli, f"{arguments_str} {kitchen_sink_path}")
+    assert result.exit_code == 0
+
+
+def test_non_functional_cli_options(runner, kitchen_sink_path):
+    result = runner.invoke(pydanticgen.cli, [kitchen_sink_path, "--weird_parameter", "foo"])
+    assert result.exit_code == 2
 
 
 def test_pydantic(kitchen_sink_path, tmp_path, input_path):

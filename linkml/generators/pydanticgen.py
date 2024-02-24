@@ -9,8 +9,6 @@ from typing import Dict, List, Optional, Set, Type, Union
 
 import click
 from jinja2 import Template
-
-# from linkml.generators import pydantic_GEN_VERSION
 from linkml_runtime.linkml_model.meta import (
     Annotation,
     ClassDefinition,
@@ -784,9 +782,17 @@ class PydanticGenerator(OOCodeGenerator):
 @click.option("--template-file", help="Optional jinja2 template to use for class generation")
 @click.option(
     "--pydantic-version",
+    "pydantic_version",
     type=click.Choice(["1", "2"]),
     default="1",
     help="Pydantic version to use (1 or 2)",
+)
+@click.option(
+    "--pydantic_version",
+    "pydantic_version",
+    type=click.Choice(["1", "2"]),
+    default="1",
+    help="DEPRECATED: Use --pydantic-version instead. Pydantic version to use (1 or 2).",
 )
 @click.option(
     "--extra-fields",
