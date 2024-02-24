@@ -31,6 +31,7 @@ class MismatchAction(Enum):
 
 
 class TestEnvironment:
+    __test__ = False
     import_map_warning_emitted: bool = False
 
     """ Testing environment """
