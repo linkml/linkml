@@ -364,7 +364,7 @@
 <span class="s2">}  {{ limit }}</span>
 <span class="s2">{</span><span class="si">% e</span><span class="s2">ndif %}</span>
 
-<span class="s2">{</span><span class="si">% i</span><span class="s2">f slot.range in schema_view.all_class() %}</span>
+<span class="s2">{</span><span class="si">% i</span><span class="s2">f slot.range in schema_view.all_classes() %}</span>
 <span class="s2"># @CHECK object_range_{{cn}}_{{slot.name}}</span>
 <span class="s2">SELECT</span>
 <span class="s2">  ?check</span>
@@ -413,13 +413,13 @@
         <span class="k">for</span> <span class="n">pfxn</span><span class="p">,</span> <span class="n">pfx</span> <span class="ow">in</span> <span class="n">schemaview</span><span class="o">.</span><span class="n">schema_map</span><span class="p">[</span><span class="n">scn</span><span class="p">]</span><span class="o">.</span><span class="n">prefixes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">pfxn</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">schema</span><span class="p">:</span>
                 <span class="n">schema</span><span class="o">.</span><span class="n">prefixes</span><span class="p">[</span><span class="n">pfxn</span><span class="p">]</span> <span class="o">=</span> <span class="n">pfx</span>
-    <span class="k">for</span> <span class="n">cn</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">schemaview</span><span class="o">.</span><span class="n">all_class</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="k">for</span> <span class="n">cn</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">schemaview</span><span class="o">.</span><span class="n">all_classes</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
             <span class="n">schema</span><span class="o">.</span><span class="n">slots</span><span class="p">[</span><span class="n">a</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">a</span>
             <span class="n">c</span><span class="o">.</span><span class="n">slots</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
             <span class="k">del</span> <span class="n">c</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="n">a</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
     <span class="n">schemaview</span><span class="o">.</span><span class="n">set_modified</span><span class="p">()</span>
-    <span class="k">for</span> <span class="n">cn</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">schemaview</span><span class="o">.</span><span class="n">all_class</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="k">for</span> <span class="n">cn</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">schemaview</span><span class="o">.</span><span class="n">all_classes</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">schemaview</span><span class="o">.</span><span class="n">class_induced_slots</span><span class="p">(</span><span class="n">cn</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">slots</span><span class="p">:</span>
                 <span class="n">c</span><span class="o">.</span><span class="n">slots</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
