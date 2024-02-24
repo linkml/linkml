@@ -177,8 +177,6 @@ class Curie(URIorCURIE):
             if not NCName.is_valid(prefix):
                 return None
             reference = curie_split[1]
-            if not cls.term_name.match(reference):
-                return None
         return prefix, reference
 
     @classmethod
