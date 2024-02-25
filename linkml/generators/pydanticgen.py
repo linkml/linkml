@@ -504,7 +504,7 @@ class ListOfListsArray(ArrayRangeGenerator):
 
         return SlotResult(annotation=annotation, imports={"pydantic": ["conlist"]})
 
-    def any_shape(self, array: Optional[ArrayRepresentation] = None) -> SlotResult:
+    def any_shape(self, array: Optional[ArrayExpression] = None) -> SlotResult:
         if self.dtype == "Any":
             annotation = "AnyShapeArray"
         else:
