@@ -318,16 +318,16 @@
 <h2>Docs<a class="headerlink" href="#docs" title="Permalink to this heading">#</a></h2>
 <section id="command-line">
 <h3>Command Line<a class="headerlink" href="#command-line" title="Permalink to this heading">#</a></h3>
-<section id="gen-sqlddl">
-<h4>gen-sqlddl<a class="headerlink" href="#gen-sqlddl" title="Permalink to this heading">#</a></h4>
+<section id="gen-sqltables">
+<h4>gen-sqltables<a class="headerlink" href="#gen-sqltables" title="Permalink to this heading">#</a></h4>
 <p>Generate SQL DDL representation</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>gen-sqlddl<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>YAMLFILE
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>gen-sqltables<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>YAMLFILE
 </pre></div>
 </div>
 <p class="rubric">Options</p>
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-sqlddl-dialect">
-<span class="sig-name descname"><span class="pre">--dialect</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;dialect&gt;</span></span><a class="headerlink" href="#cmdoption-gen-sqlddl-dialect" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object std" id="cmdoption-gen-sqltables-dialect">
+<span class="sig-name descname"><span class="pre">--dialect</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;dialect&gt;</span></span><a class="headerlink" href="#cmdoption-gen-sqltables-dialect" title="Permalink to this definition">#</a></dt>
 <dd><p>SQL-Alchemy dialect, e.g. sqlite, mysql+odbc</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
@@ -337,31 +337,26 @@
 </dd></dl>
 
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-sqlddl-sqla-file">
-<span class="sig-name descname"><span class="pre">--sqla-file</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;sqla_file&gt;</span></span><a class="headerlink" href="#cmdoption-gen-sqlddl-sqla-file" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object std" id="cmdoption-gen-sqltables-sqla-file">
+<span class="sig-name descname"><span class="pre">--sqla-file</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;sqla_file&gt;</span></span><a class="headerlink" href="#cmdoption-gen-sqltables-sqla-file" title="Permalink to this definition">#</a></dt>
 <dd><p>Path to sqlalchemy generated python</p>
 </dd></dl>
 
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-sqlddl-python-import">
-<span class="sig-name descname"><span class="pre">--python-import</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;python_import&gt;</span></span><a class="headerlink" href="#cmdoption-gen-sqlddl-python-import" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object std" id="cmdoption-gen-sqltables-relmodel-output">
+<span class="sig-name descname"><span class="pre">--relmodel-output</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;relmodel_output&gt;</span></span><a class="headerlink" href="#cmdoption-gen-sqltables-relmodel-output" title="Permalink to this definition">#</a></dt>
+<dd><p>Path to intermediate LinkML YAML of transformed relational model</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-sqltables-python-import">
+<span class="sig-name descname"><span class="pre">--python-import</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;python_import&gt;</span></span><a class="headerlink" href="#cmdoption-gen-sqltables-python-import" title="Permalink to this definition">#</a></dt>
 <dd><p>Python import header for generated sql-alchemy code</p>
 </dd></dl>
 
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-sqlddl-direct-mapping">
-<span id="cmdoption-gen-sqlddl-no-direct-mapping"></span><span class="sig-name descname"><span class="pre">--direct-mapping</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-direct-mapping</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-sqlddl-direct-mapping" title="Permalink to this definition">#</a></dt>
-<dd><p>Map classes directly to</p>
-<dl class="field-list simple">
-<dt class="field-odd">Default<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-sqlddl-use-foreign-keys">
-<span id="cmdoption-gen-sqlddl-no-use-foreign-keys"></span><span class="sig-name descname"><span class="pre">--use-foreign-keys</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-use-foreign-keys</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-sqlddl-use-foreign-keys" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object std" id="cmdoption-gen-sqltables-use-foreign-keys">
+<span id="cmdoption-gen-sqltables-no-use-foreign-keys"></span><span class="sig-name descname"><span class="pre">--use-foreign-keys</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-use-foreign-keys</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-sqltables-use-foreign-keys" title="Permalink to this definition">#</a></dt>
 <dd><p>Emit FK declarations</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
@@ -371,14 +366,14 @@
 </dd></dl>
 
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-sqlddl-V">
-<span id="cmdoption-gen-sqlddl-version"></span><span class="sig-name descname"><span class="pre">-V</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--version</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-sqlddl-V" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object std" id="cmdoption-gen-sqltables-V">
+<span id="cmdoption-gen-sqltables-version"></span><span class="sig-name descname"><span class="pre">-V</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--version</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-sqltables-V" title="Permalink to this definition">#</a></dt>
 <dd><p>Show the version and exit.</p>
 </dd></dl>
 
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-sqlddl-f">
-<span id="cmdoption-gen-sqlddl-format"></span><span class="sig-name descname"><span class="pre">-f</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--format</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;format&gt;</span></span><a class="headerlink" href="#cmdoption-gen-sqlddl-f" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object std" id="cmdoption-gen-sqltables-f">
+<span id="cmdoption-gen-sqltables-format"></span><span class="sig-name descname"><span class="pre">-f</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--format</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;format&gt;</span></span><a class="headerlink" href="#cmdoption-gen-sqltables-f" title="Permalink to this definition">#</a></dt>
 <dd><p>Output format</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
@@ -391,8 +386,8 @@
 </dd></dl>
 
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-sqlddl-metadata">
-<span id="cmdoption-gen-sqlddl-no-metadata"></span><span class="sig-name descname"><span class="pre">--metadata</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-metadata</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-sqlddl-metadata" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object std" id="cmdoption-gen-sqltables-metadata">
+<span id="cmdoption-gen-sqltables-no-metadata"></span><span class="sig-name descname"><span class="pre">--metadata</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-metadata</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-sqltables-metadata" title="Permalink to this definition">#</a></dt>
 <dd><p>Include metadata in output</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
@@ -402,8 +397,8 @@
 </dd></dl>
 
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-sqlddl-useuris">
-<span id="cmdoption-gen-sqlddl-metauris"></span><span class="sig-name descname"><span class="pre">--useuris</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--metauris</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-sqlddl-useuris" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object std" id="cmdoption-gen-sqltables-useuris">
+<span id="cmdoption-gen-sqltables-metauris"></span><span class="sig-name descname"><span class="pre">--useuris</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--metauris</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-sqltables-useuris" title="Permalink to this definition">#</a></dt>
 <dd><p>Use class and slot URIs over model uris</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
@@ -413,14 +408,14 @@
 </dd></dl>
 
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-sqlddl-im">
-<span id="cmdoption-gen-sqlddl-importmap"></span><span class="sig-name descname"><span class="pre">-im</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--importmap</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;importmap&gt;</span></span><a class="headerlink" href="#cmdoption-gen-sqlddl-im" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object std" id="cmdoption-gen-sqltables-im">
+<span id="cmdoption-gen-sqltables-importmap"></span><span class="sig-name descname"><span class="pre">-im</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--importmap</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;importmap&gt;</span></span><a class="headerlink" href="#cmdoption-gen-sqltables-im" title="Permalink to this definition">#</a></dt>
 <dd><p>Import mapping file</p>
 </dd></dl>
 
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-sqlddl-log_level">
-<span class="sig-name descname"><span class="pre">--log_level</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;log_level&gt;</span></span><a class="headerlink" href="#cmdoption-gen-sqlddl-log_level" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object std" id="cmdoption-gen-sqltables-log_level">
+<span class="sig-name descname"><span class="pre">--log_level</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;log_level&gt;</span></span><a class="headerlink" href="#cmdoption-gen-sqltables-log_level" title="Permalink to this definition">#</a></dt>
 <dd><p>Logging level</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
@@ -433,20 +428,20 @@
 </dd></dl>
 
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-sqlddl-v">
-<span id="cmdoption-gen-sqlddl-verbose"></span><span class="sig-name descname"><span class="pre">-v</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--verbose</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-sqlddl-v" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object std" id="cmdoption-gen-sqltables-v">
+<span id="cmdoption-gen-sqltables-verbose"></span><span class="sig-name descname"><span class="pre">-v</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--verbose</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-sqltables-v" title="Permalink to this definition">#</a></dt>
 <dd><p>Verbosity. Takes precedence over –log_level.</p>
 </dd></dl>
 
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-sqlddl-mergeimports">
-<span id="cmdoption-gen-sqlddl-no-mergeimports"></span><span class="sig-name descname"><span class="pre">--mergeimports</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-mergeimports</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-sqlddl-mergeimports" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object std" id="cmdoption-gen-sqltables-mergeimports">
+<span id="cmdoption-gen-sqltables-no-mergeimports"></span><span class="sig-name descname"><span class="pre">--mergeimports</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-mergeimports</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-sqltables-mergeimports" title="Permalink to this definition">#</a></dt>
 <dd><p>Merge imports into source file (default=mergeimports)</p>
 </dd></dl>
 
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-sqlddl-stacktrace">
-<span id="cmdoption-gen-sqlddl-no-stacktrace"></span><span class="sig-name descname"><span class="pre">--stacktrace</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-stacktrace</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-sqlddl-stacktrace" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object std" id="cmdoption-gen-sqltables-stacktrace">
+<span id="cmdoption-gen-sqltables-no-stacktrace"></span><span class="sig-name descname"><span class="pre">--stacktrace</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-stacktrace</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-sqltables-stacktrace" title="Permalink to this definition">#</a></dt>
 <dd><p>Print a stack trace when an error occurs</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
@@ -457,8 +452,8 @@
 
 <p class="rubric">Arguments</p>
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-sqlddl-arg-YAMLFILE">
-<span class="sig-name descname"><span class="pre">YAMLFILE</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-sqlddl-arg-YAMLFILE" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object std" id="cmdoption-gen-sqltables-arg-YAMLFILE">
+<span class="sig-name descname"><span class="pre">YAMLFILE</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-sqltables-arg-YAMLFILE" title="Permalink to this definition">#</a></dt>
 <dd><p>Required argument</p>
 </dd></dl>
 
@@ -466,6 +461,85 @@
 </section>
 <section id="code">
 <h3>Code<a class="headerlink" href="#code" title="Permalink to this heading">#</a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="linkml.generators.sqltablegen.SQLTableGenerator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linkml.generators.sqltablegen.</span></span><span class="sig-name descname"><span class="pre">SQLTableGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">~typing.TextIO</span> <span class="pre">|</span> <span class="pre">~linkml_runtime.linkml_model.meta.SchemaDefinition</span> <span class="pre">|</span> <span class="pre">~linkml.utils.generator.Generator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schemaview:</span> <span class="pre">~linkml_runtime.utils.schemaview.SchemaView</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">useuris:</span> <span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_level:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mergeimports:</span> <span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_file_date:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_file_size:</span> <span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger:</span> <span class="pre">~logging.Logger</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose:</span> <span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">namespaces:</span> <span class="pre">~linkml_runtime.utils.namespaces.Namespaces</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">directory_output:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_dir:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metamodel_name_map:</span> <span class="pre">~typing.Dict[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">str]</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">importmap:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">~typing.Mapping[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">str]</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">emit_prefixes:</span> <span class="pre">~typing.Set[str]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metamodel:</span> <span class="pre">~linkml.utils.schemaloader.SchemaLoader</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stacktrace:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_inherits:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dialect:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'sqlite'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inject_primary_keys:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_foreign_keys:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rename_foreign_keys:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">direct_mapping:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relative_slot_num:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**_kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/linkml/generators/sqltablegen.html#SQLTableGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.sqltablegen.SQLTableGenerator" title="Permalink to this definition">#</a></dt>
+<dd><p>A <span class="xref std std-ref">Generator</span> for creating SQL DDL</p>
+<p>The basic algorithm for mapping a linkml schema S is as follows:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Each schema S corresponds to one database schema D (see SQLSchema)</p></li>
+<li><p>Each Class C in S is mapped to a table T (see SQLTable)</p></li>
+<li><p>Each slot S in each C is mapped to a column Col (see SQLColumn)</p></li>
+</ul>
+</div></blockquote>
+<p>if the direct_mapping attribute is set to true, then no further transformations
+are applied. Note that this means:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>inline objects are modeled as Text strings</p></li>
+<li><p>multivalued fields are modeled as single Text strings</p></li>
+</ul>
+</div></blockquote>
+<p>this direct mapping is useful for simple spreadsheet/denormalized representations of complex data.
+however, for other applications, additional transformations should occur. these are:</p>
+<p>MULTIVALUED SLOTS</p>
+<p>The relational model does not have direct representation of lists. These are normalized as follows.</p>
+<p>If the range of the slot is a class, and there are no other slots whose range is this class,
+and the slot is for a class that has a singular primary key, then a backref is added.</p>
+<p>E.g. if we have User 0..* Address,
+then add a field User_id to Address.</p>
+<p>When SQLAlchemy bindings are created, a backref mapping is added</p>
+<p>If the range of the slot is an enum or type, then a new linktable is created, and a backref added</p>
+<p>E.g. if a class User has a multivalues slot alias whose range is a string,
+then create a table user_aliases, with two columns (1) alias [a string] and (2) a backref to user</p>
+<blockquote>
+<div><p>Each mapped slot C.S has a range R</p>
+<dl>
+<dt>ranges that are types (literals):</dt><dd><blockquote>
+<div><ul class="simple">
+<li><p>If R is a type, and the slot is NOT multivalued, do a direct type conversion</p></li>
+<li><p>If R is a type, and the slot is multivalued:
+* do not include the mapped column
+* create a new table T_S, with 2 columns: S, and a backref to T</p></li>
+</ul>
+</div></blockquote>
+<dl>
+<dt>ranges that are classes:</dt><dd><p>Ref = map_class_to_table(R)
+- if R is a class, and the slot is NOT multivalued, and Ref has a singular primary key:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Col.type = ForeignKey(Ref.PK)</p></li>
+</ul>
+</div></blockquote>
+<ul class="simple">
+<li><p>if R is a class, and the slot is NOT multivalued, and Ref has NO singular primary key:
+* add a foreign key C.pk to Ref
+* add a backref C.S =&gt; Ref, C.pk
+* remove Col from T</p></li>
+<li><p>If R is a class, and the slot IS multivalued</p></li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</div></blockquote>
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml.generators.sqltablegen.SQLTableGenerator.serialize">
+<span class="sig-name descname"><span class="pre">serialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/linkml/generators/sqltablegen.html#SQLTableGenerator.serialize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.sqltablegen.SQLTableGenerator.serialize" title="Permalink to this definition">#</a></dt>
+<dd><p>Generate output in the required format</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>kwargs</strong> – Generator specific parameters</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Generated output</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 </section>
 </section>
@@ -530,10 +604,16 @@
 <li><a class="reference internal" href="#overview">Overview</a></li>
 <li><a class="reference internal" href="#docs">Docs</a><ul>
 <li><a class="reference internal" href="#command-line">Command Line</a><ul>
-<li><a class="reference internal" href="#gen-sqlddl">gen-sqlddl</a></li>
+<li><a class="reference internal" href="#gen-sqltables">gen-sqltables</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#code">Code</a></li>
+<li><a class="reference internal" href="#code">Code</a><ul>
+<li><a class="reference internal" href="#linkml.generators.sqltablegen.SQLTableGenerator"><code class="docutils literal notranslate"><span class="pre">SQLTableGenerator</span></code></a><ul>
+<li><a class="reference internal" href="#linkml.generators.sqltablegen.SQLTableGenerator.serialize"><code class="docutils literal notranslate"><span class="pre">SQLTableGenerator.serialize()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

@@ -217,7 +217,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../generators/pydantic.html">Pydantic</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generators/java.html">Java</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generators/typescript.html">Typescript</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../generators/sqlddl.html">SQL DDL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generators/sqltable.html">SQL DDL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generators/sqlalchemy.html">SQL Alchemy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generators/linkml.html">LinkML Generators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generators/sssom.html">SSSOM</a></li>
@@ -322,10 +322,10 @@
 <span class="kn">from</span> <span class="nn">linkml.utils.schemaloader</span> <span class="kn">import</span> <span class="n">SchemaLoader</span>
 
 
-<span class="k">class</span> <span class="nc">SqlNamingPolicy</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<div class="viewcode-block" id="SqlNamingPolicy"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.sqltablegen.SqlNamingPolicy">[docs]</a><span class="k">class</span> <span class="nc">SqlNamingPolicy</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
     <span class="n">preserve</span> <span class="o">=</span> <span class="s2">&quot;preserve&quot;</span>
     <span class="n">underscore</span> <span class="o">=</span> <span class="s2">&quot;underscore&quot;</span>
-    <span class="n">camelcase</span> <span class="o">=</span> <span class="s2">&quot;camelcase&quot;</span>
+    <span class="n">camelcase</span> <span class="o">=</span> <span class="s2">&quot;camelcase&quot;</span></div>
 
 
 <span class="c1"># TODO: move this up</span>
@@ -363,7 +363,7 @@
 <span class="p">}</span>
 
 
-<div class="viewcode-block" id="SQLTableGenerator"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.SQLTableGenerator">[docs]</a><span class="nd">@dataclass</span>
+<div class="viewcode-block" id="SQLTableGenerator"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.sqltablegen.SQLTableGenerator">[docs]</a><span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">SQLTableGenerator</span><span class="p">(</span><span class="n">Generator</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A :ref:`Generator` for creating SQL DDL</span>
@@ -435,10 +435,10 @@
     <span class="n">direct_mapping</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">relative_slot_num</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
 
-<div class="viewcode-block" id="SQLTableGenerator.serialize"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.SQLTableGenerator.serialize">[docs]</a>    <span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="viewcode-block" id="SQLTableGenerator.serialize"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.sqltablegen.SQLTableGenerator.serialize">[docs]</a>    <span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_ddl</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="SQLTableGenerator.generate_ddl"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.SQLTableGenerator.generate_ddl">[docs]</a>    <span class="k">def</span> <span class="nf">generate_ddl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">naming_policy</span><span class="p">:</span> <span class="n">SqlNamingPolicy</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="viewcode-block" id="SQLTableGenerator.generate_ddl"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.sqltablegen.SQLTableGenerator.generate_ddl">[docs]</a>    <span class="k">def</span> <span class="nf">generate_ddl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">naming_policy</span><span class="p">:</span> <span class="n">SqlNamingPolicy</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="n">ddl_str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
 
         <span class="k">def</span> <span class="nf">dump</span><span class="p">(</span><span class="n">sql</span><span class="p">,</span> <span class="o">*</span><span class="n">multiparams</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">):</span>
@@ -450,7 +450,9 @@
         <span class="n">sqltr</span> <span class="o">=</span> <span class="n">RelationalModelTransformer</span><span class="p">(</span><span class="n">SchemaView</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="p">))</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_foreign_keys</span><span class="p">:</span>
             <span class="n">sqltr</span><span class="o">.</span><span class="n">foreign_key_policy</span> <span class="o">=</span> <span class="n">ForeignKeyPolicy</span><span class="o">.</span><span class="n">NO_FOREIGN_KEYS</span>
-        <span class="n">tr_result</span> <span class="o">=</span> <span class="n">sqltr</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">tr_result</span> <span class="o">=</span> <span class="n">sqltr</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span>
+            <span class="n">tgt_schema_name</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tgt_schema_name&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="n">top_class</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;top_class&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="p">)</span>
         <span class="n">schema</span> <span class="o">=</span> <span class="n">tr_result</span><span class="o">.</span><span class="n">schema</span>
 
         <span class="k">def</span> <span class="nf">sql_name</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -512,8 +514,7 @@
         <span class="n">schema_metadata</span><span class="o">.</span><span class="n">create_all</span><span class="p">(</span><span class="n">engine</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">ddl_str</span></div>
 
-    <span class="c1"># TODO: merge with code from sqlddlgen</span>
-<div class="viewcode-block" id="SQLTableGenerator.get_sql_range"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.SQLTableGenerator.get_sql_range">[docs]</a>    <span class="k">def</span> <span class="nf">get_sql_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="n">SchemaDefinition</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="SQLTableGenerator.get_sql_range"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.sqltablegen.SQLTableGenerator.get_sql_range">[docs]</a>    <span class="k">def</span> <span class="nf">get_sql_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="n">SchemaDefinition</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        returns a SQL Alchemy column type</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -549,7 +550,7 @@
             <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;UNKNOWN range base: </span><span class="si">{</span><span class="n">range_base</span><span class="si">}</span><span class="s2"> for </span><span class="si">{</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">Text</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="SQLTableGenerator.get_foreign_key"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.SQLTableGenerator.get_foreign_key">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="SQLTableGenerator.get_foreign_key"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.sqltablegen.SQLTableGenerator.get_foreign_key">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">get_foreign_key</span><span class="p">(</span><span class="n">cn</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">sv</span><span class="p">:</span> <span class="n">SchemaView</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="n">pk</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">get_identifier_slot</span><span class="p">(</span><span class="n">cn</span><span class="p">)</span>
         <span class="c1"># TODO: move this to SV</span>

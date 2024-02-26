@@ -216,7 +216,7 @@
 <li class="toctree-l2"><a class="reference internal" href="generators/pydantic.html">Pydantic</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generators/java.html">Java</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generators/typescript.html">Typescript</a></li>
-<li class="toctree-l2"><a class="reference internal" href="generators/sqlddl.html">SQL DDL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generators/sqltable.html">SQL DDL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generators/sqlalchemy.html">SQL Alchemy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generators/linkml.html">LinkML Generators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generators/sssom.html">SSSOM</a></li>
@@ -397,14 +397,14 @@
     --declarative
 
         <ul>
-          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqlddl-declarative">gen-sqlddl command line option</a>
+          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqla-declarative">gen-sqla command line option</a>
 </li>
         </ul></li>
         <li>
     --dialect
 
         <ul>
-          <li><a href="generators/sqlddl.html#cmdoption-gen-sqlddl-dialect">gen-sqlddl command line option</a>
+          <li><a href="generators/sqltable.html#cmdoption-gen-sqltables-dialect">gen-sqltables command line option</a>
 </li>
         </ul></li>
         <li>
@@ -416,13 +416,6 @@
           <li><a href="generators/project-generator.html#cmdoption-gen-project-d">gen-project command line option</a>
 </li>
           <li><a href="generators/sparql.html#cmdoption-gen-sparql-d">gen-sparql command line option</a>
-</li>
-        </ul></li>
-        <li>
-    --direct-mapping
-
-        <ul>
-          <li><a href="generators/sqlddl.html#cmdoption-gen-sqlddl-direct-mapping">gen-sqlddl command line option</a>
 </li>
         </ul></li>
         <li>
@@ -508,7 +501,9 @@
 </li>
           <li><a href="generators/sparql.html#cmdoption-gen-sparql-f">gen-sparql command line option</a>
 </li>
-          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqlddl-f">gen-sqlddl command line option</a>, <a href="generators/sqlddl.html#cmdoption-gen-sqlddl-f">[1]</a>
+          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqla-f">gen-sqla command line option</a>
+</li>
+          <li><a href="generators/sqltable.html#cmdoption-gen-sqltables-f">gen-sqltables command line option</a>
 </li>
           <li><a href="generators/sssom.html#cmdoption-gen-sssom-f">gen-sssom command line option</a>
 </li>
@@ -526,7 +521,7 @@
     --generate-classes
 
         <ul>
-          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqlddl-generate-classes">gen-sqlddl command line option</a>
+          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqla-generate-classes">gen-sqla command line option</a>
 </li>
         </ul></li>
         <li>
@@ -598,7 +593,9 @@
 </li>
           <li><a href="generators/sparql.html#cmdoption-gen-sparql-im">gen-sparql command line option</a>
 </li>
-          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqlddl-im">gen-sqlddl command line option</a>, <a href="generators/sqlddl.html#cmdoption-gen-sqlddl-im">[1]</a>
+          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqla-im">gen-sqla command line option</a>
+</li>
+          <li><a href="generators/sqltable.html#cmdoption-gen-sqltables-im">gen-sqltables command line option</a>
 </li>
           <li><a href="generators/sssom.html#cmdoption-gen-sssom-im">gen-sssom command line option</a>
 </li>
@@ -740,7 +737,9 @@
 </li>
           <li><a href="generators/sparql.html#cmdoption-gen-sparql-log_level">gen-sparql command line option</a>
 </li>
-          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqlddl-log_level">gen-sqlddl command line option</a>, <a href="generators/sqlddl.html#cmdoption-gen-sqlddl-log_level">[1]</a>
+          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqla-log_level">gen-sqla command line option</a>
+</li>
+          <li><a href="generators/sqltable.html#cmdoption-gen-sqltables-log_level">gen-sqltables command line option</a>
 </li>
           <li><a href="generators/sssom.html#cmdoption-gen-sssom-log_level">gen-sssom command line option</a>
 </li>
@@ -797,7 +796,9 @@
 </li>
           <li><a href="generators/sparql.html#cmdoption-gen-sparql-mergeimports">gen-sparql command line option</a>
 </li>
-          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqlddl-mergeimports">gen-sqlddl command line option</a>, <a href="generators/sqlddl.html#cmdoption-gen-sqlddl-mergeimports">[1]</a>
+          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqla-mergeimports">gen-sqla command line option</a>
+</li>
+          <li><a href="generators/sqltable.html#cmdoption-gen-sqltables-mergeimports">gen-sqltables command line option</a>
 </li>
           <li><a href="generators/sssom.html#cmdoption-gen-sssom-mergeimports">gen-sssom command line option</a>
 </li>
@@ -845,7 +846,9 @@
 </li>
           <li><a href="generators/sparql.html#cmdoption-gen-sparql-metadata">gen-sparql command line option</a>
 </li>
-          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqlddl-metadata">gen-sqlddl command line option</a>, <a href="generators/sqlddl.html#cmdoption-gen-sqlddl-metadata">[1]</a>
+          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqla-metadata">gen-sqla command line option</a>
+</li>
+          <li><a href="generators/sqltable.html#cmdoption-gen-sqltables-metadata">gen-sqltables command line option</a>
 </li>
           <li><a href="generators/sssom.html#cmdoption-gen-sssom-metadata">gen-sssom command line option</a>
 </li>
@@ -893,7 +896,9 @@
 </li>
           <li><a href="generators/sparql.html#cmdoption-gen-sparql-useuris">gen-sparql command line option</a>
 </li>
-          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqlddl-useuris">gen-sqlddl command line option</a>, <a href="generators/sqlddl.html#cmdoption-gen-sqlddl-useuris">[1]</a>
+          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqla-useuris">gen-sqla command line option</a>
+</li>
+          <li><a href="generators/sqltable.html#cmdoption-gen-sqltables-useuris">gen-sqltables command line option</a>
 </li>
           <li><a href="generators/sssom.html#cmdoption-gen-sssom-useuris">gen-sssom command line option</a>
 </li>
@@ -962,14 +967,7 @@
     --no-declarative
 
         <ul>
-          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqlddl-declarative">gen-sqlddl command line option</a>
-</li>
-        </ul></li>
-        <li>
-    --no-direct-mapping
-
-        <ul>
-          <li><a href="generators/sqlddl.html#cmdoption-gen-sqlddl-direct-mapping">gen-sqlddl command line option</a>
+          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqla-declarative">gen-sqla command line option</a>
 </li>
         </ul></li>
         <li>
@@ -997,7 +995,7 @@
     --no-generate-classes
 
         <ul>
-          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqlddl-generate-classes">gen-sqlddl command line option</a>
+          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqla-generate-classes">gen-sqla command line option</a>
 </li>
         </ul></li>
         <li>
@@ -1064,7 +1062,9 @@
 </li>
           <li><a href="generators/sparql.html#cmdoption-gen-sparql-mergeimports">gen-sparql command line option</a>
 </li>
-          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqlddl-mergeimports">gen-sqlddl command line option</a>, <a href="generators/sqlddl.html#cmdoption-gen-sqlddl-mergeimports">[1]</a>
+          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqla-mergeimports">gen-sqla command line option</a>
+</li>
+          <li><a href="generators/sqltable.html#cmdoption-gen-sqltables-mergeimports">gen-sqltables command line option</a>
 </li>
           <li><a href="generators/sssom.html#cmdoption-gen-sssom-mergeimports">gen-sssom command line option</a>
 </li>
@@ -1112,7 +1112,9 @@
 </li>
           <li><a href="generators/sparql.html#cmdoption-gen-sparql-metadata">gen-sparql command line option</a>
 </li>
-          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqlddl-metadata">gen-sqlddl command line option</a>, <a href="generators/sqlddl.html#cmdoption-gen-sqlddl-metadata">[1]</a>
+          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqla-metadata">gen-sqla command line option</a>
+</li>
+          <li><a href="generators/sqltable.html#cmdoption-gen-sqltables-metadata">gen-sqltables command line option</a>
 </li>
           <li><a href="generators/sssom.html#cmdoption-gen-sssom-metadata">gen-sssom command line option</a>
 </li>
@@ -1144,7 +1146,7 @@
     --no-pydantic
 
         <ul>
-          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqlddl-pydantic">gen-sqlddl command line option</a>
+          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqla-pydantic">gen-sqla command line option</a>
 </li>
         </ul></li>
         <li>
@@ -1197,7 +1199,9 @@
 </li>
           <li><a href="generators/sparql.html#cmdoption-gen-sparql-stacktrace">gen-sparql command line option</a>
 </li>
-          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqlddl-stacktrace">gen-sqlddl command line option</a>, <a href="generators/sqlddl.html#cmdoption-gen-sqlddl-stacktrace">[1]</a>
+          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqla-stacktrace">gen-sqla command line option</a>
+</li>
+          <li><a href="generators/sqltable.html#cmdoption-gen-sqltables-stacktrace">gen-sqltables command line option</a>
 </li>
           <li><a href="generators/sssom.html#cmdoption-gen-sssom-stacktrace">gen-sssom command line option</a>
 </li>
@@ -1231,7 +1235,9 @@
     --no-use-foreign-keys
 
         <ul>
-          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqlddl-use-foreign-keys">gen-sqlddl command line option</a>, <a href="generators/sqlddl.html#cmdoption-gen-sqlddl-use-foreign-keys">[1]</a>
+          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqla-use-foreign-keys">gen-sqla command line option</a>
+</li>
+          <li><a href="generators/sqltable.html#cmdoption-gen-sqltables-use-foreign-keys">gen-sqltables command line option</a>
 </li>
         </ul></li>
         <li>
@@ -1352,7 +1358,7 @@
     --pydantic
 
         <ul>
-          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqlddl-pydantic">gen-sqlddl command line option</a>
+          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqla-pydantic">gen-sqla command line option</a>
 </li>
         </ul></li>
         <li>
@@ -1366,7 +1372,7 @@
     --python-import
 
         <ul>
-          <li><a href="generators/sqlddl.html#cmdoption-gen-sqlddl-python-import">gen-sqlddl command line option</a>
+          <li><a href="generators/sqltable.html#cmdoption-gen-sqltables-python-import">gen-sqltables command line option</a>
 </li>
         </ul></li>
         <li>
@@ -1374,6 +1380,13 @@
 
         <ul>
           <li><a href="developers/sqlstore.html#cmdoption-linkml-sqldb-q">linkml-sqldb command line option</a>
+</li>
+        </ul></li>
+        <li>
+    --relmodel-output
+
+        <ul>
+          <li><a href="generators/sqltable.html#cmdoption-gen-sqltables-relmodel-output">gen-sqltables command line option</a>
 </li>
         </ul></li>
         <li>
@@ -1405,7 +1418,7 @@
     --sqla-file
 
         <ul>
-          <li><a href="generators/sqlddl.html#cmdoption-gen-sqlddl-sqla-file">gen-sqlddl command line option</a>
+          <li><a href="generators/sqltable.html#cmdoption-gen-sqltables-sqla-file">gen-sqltables command line option</a>
 </li>
         </ul></li>
         <li>
@@ -1442,7 +1455,9 @@
 </li>
           <li><a href="generators/sparql.html#cmdoption-gen-sparql-stacktrace">gen-sparql command line option</a>
 </li>
-          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqlddl-stacktrace">gen-sqlddl command line option</a>, <a href="generators/sqlddl.html#cmdoption-gen-sqlddl-stacktrace">[1]</a>
+          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqla-stacktrace">gen-sqla command line option</a>
+</li>
+          <li><a href="generators/sqltable.html#cmdoption-gen-sqltables-stacktrace">gen-sqltables command line option</a>
 </li>
           <li><a href="generators/sssom.html#cmdoption-gen-sssom-stacktrace">gen-sssom command line option</a>
 </li>
@@ -1506,7 +1521,9 @@
     --use-foreign-keys
 
         <ul>
-          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqlddl-use-foreign-keys">gen-sqlddl command line option</a>, <a href="generators/sqlddl.html#cmdoption-gen-sqlddl-use-foreign-keys">[1]</a>
+          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqla-use-foreign-keys">gen-sqla command line option</a>
+</li>
+          <li><a href="generators/sqltable.html#cmdoption-gen-sqltables-use-foreign-keys">gen-sqltables command line option</a>
 </li>
         </ul></li>
         <li>
@@ -1550,7 +1567,9 @@
 </li>
           <li><a href="generators/sparql.html#cmdoption-gen-sparql-useuris">gen-sparql command line option</a>
 </li>
-          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqlddl-useuris">gen-sqlddl command line option</a>, <a href="generators/sqlddl.html#cmdoption-gen-sqlddl-useuris">[1]</a>
+          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqla-useuris">gen-sqla command line option</a>
+</li>
+          <li><a href="generators/sqltable.html#cmdoption-gen-sqltables-useuris">gen-sqltables command line option</a>
 </li>
           <li><a href="generators/sssom.html#cmdoption-gen-sssom-useuris">gen-sssom command line option</a>
 </li>
@@ -1600,7 +1619,9 @@
 </li>
           <li><a href="generators/sparql.html#cmdoption-gen-sparql-v">gen-sparql command line option</a>
 </li>
-          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqlddl-v">gen-sqlddl command line option</a>, <a href="generators/sqlddl.html#cmdoption-gen-sqlddl-v">[1]</a>
+          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqla-v">gen-sqla command line option</a>
+</li>
+          <li><a href="generators/sqltable.html#cmdoption-gen-sqltables-v">gen-sqltables command line option</a>
 </li>
           <li><a href="generators/sssom.html#cmdoption-gen-sssom-v">gen-sssom command line option</a>
 </li>
@@ -1645,7 +1666,9 @@
 </li>
           <li><a href="generators/sparql.html#cmdoption-gen-sparql-V">gen-sparql command line option</a>
 </li>
-          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqlddl-V">gen-sqlddl command line option</a>, <a href="generators/sqlddl.html#cmdoption-gen-sqlddl-V">[1]</a>
+          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqla-V">gen-sqla command line option</a>
+</li>
+          <li><a href="generators/sqltable.html#cmdoption-gen-sqltables-V">gen-sqltables command line option</a>
 </li>
           <li><a href="generators/sssom.html#cmdoption-gen-sssom-V">gen-sssom command line option</a>
 </li>
@@ -1741,7 +1764,9 @@
 </li>
           <li><a href="generators/sparql.html#cmdoption-gen-sparql-f">gen-sparql command line option</a>
 </li>
-          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqlddl-f">gen-sqlddl command line option</a>, <a href="generators/sqlddl.html#cmdoption-gen-sqlddl-f">[1]</a>
+          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqla-f">gen-sqla command line option</a>
+</li>
+          <li><a href="generators/sqltable.html#cmdoption-gen-sqltables-f">gen-sqltables command line option</a>
 </li>
           <li><a href="generators/sssom.html#cmdoption-gen-sssom-f">gen-sssom command line option</a>
 </li>
@@ -1815,7 +1840,9 @@
 </li>
           <li><a href="generators/sparql.html#cmdoption-gen-sparql-im">gen-sparql command line option</a>
 </li>
-          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqlddl-im">gen-sqlddl command line option</a>, <a href="generators/sqlddl.html#cmdoption-gen-sqlddl-im">[1]</a>
+          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqla-im">gen-sqla command line option</a>
+</li>
+          <li><a href="generators/sqltable.html#cmdoption-gen-sqltables-im">gen-sqltables command line option</a>
 </li>
           <li><a href="generators/sssom.html#cmdoption-gen-sssom-im">gen-sssom command line option</a>
 </li>
@@ -1959,7 +1986,9 @@
 </li>
           <li><a href="generators/sparql.html#cmdoption-gen-sparql-V">gen-sparql command line option</a>
 </li>
-          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqlddl-V">gen-sqlddl command line option</a>, <a href="generators/sqlddl.html#cmdoption-gen-sqlddl-V">[1]</a>
+          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqla-V">gen-sqla command line option</a>
+</li>
+          <li><a href="generators/sqltable.html#cmdoption-gen-sqltables-V">gen-sqltables command line option</a>
 </li>
           <li><a href="generators/sssom.html#cmdoption-gen-sssom-V">gen-sssom command line option</a>
 </li>
@@ -2008,7 +2037,9 @@
 </li>
           <li><a href="generators/sparql.html#cmdoption-gen-sparql-v">gen-sparql command line option</a>
 </li>
-          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqlddl-v">gen-sqlddl command line option</a>, <a href="generators/sqlddl.html#cmdoption-gen-sqlddl-v">[1]</a>
+          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqla-v">gen-sqla command line option</a>
+</li>
+          <li><a href="generators/sqltable.html#cmdoption-gen-sqltables-v">gen-sqltables command line option</a>
 </li>
           <li><a href="generators/sssom.html#cmdoption-gen-sssom-v">gen-sssom command line option</a>
 </li>
@@ -2046,8 +2077,6 @@
           <li><a href="developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.add_class">(linkml_runtime.utils.schemaview.SchemaView method)</a>
 </li>
         </ul></li>
-        <li><a href="linkml.generators.html#linkml.generators.sqlddlgen.SQLTable.add_column">add_column() (linkml.generators.sqlddlgen.SQLTable method)</a>
-</li>
         <li><a href="linkml.generators.html#linkml.generators.excelgen.ExcelGenerator.add_columns_to_worksheet">add_columns_to_worksheet() (linkml.generators.excelgen.ExcelGenerator static method)</a>
 </li>
         <li><a href="linkml.generators.html#linkml.generators.owlgen.OwlSchemaGenerator.add_constraints">add_constraints() (linkml.generators.owlgen.OwlSchemaGenerator method)</a>
@@ -2120,8 +2149,6 @@
         </ul></li>
         <li><a href="developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.add_subset">add_subset() (linkml_runtime.utils.schemaview.SchemaView method)</a>
 </li>
-        <li><a href="linkml.generators.html#linkml.generators.sqlddlgen.SQLSchema.add_table">add_table() (linkml.generators.sqlddlgen.SQLSchema method)</a>
-</li>
         <li><a href="linkml.generators.html#linkml.generators.owlgen.OwlSchemaGenerator.add_type">add_type() (linkml.generators.owlgen.OwlSchemaGenerator method)</a>
 
         <ul>
@@ -2147,8 +2174,6 @@
         <li><a href="developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.all_class">all_class() (linkml_runtime.utils.schemaview.SchemaView method)</a>
 </li>
         <li><a href="developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.all_classes">all_classes() (linkml_runtime.utils.schemaview.SchemaView method)</a>
-</li>
-        <li><a href="linkml.generators.html#linkml.generators.sqlddlgen.SQLSchema.all_columns">all_columns() (linkml.generators.sqlddlgen.SQLSchema method)</a>
 </li>
         <li><a href="developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.all_element">all_element() (linkml_runtime.utils.schemaview.SchemaView method)</a>
 </li>
@@ -2200,8 +2225,6 @@
 </li>
         <li><a href="linkml.generators.html#linkml.generators.jsonschemagen.JsonSchema.array_of">array_of() (linkml.generators.jsonschemagen.JsonSchema class method)</a>
 </li>
-        <li><a href="linkml.generators.html#linkml.generators.sqlddlgen.SQLColumn.as_ddlstr">as_ddlstr() (linkml.generators.sqlddlgen.SQLColumn method)</a>
-</li>
         <li><a href="developers/schemabuilder.html#linkml.utils.schema_builder.SchemaBuilder.as_dict">as_dict() (linkml.utils.schema_builder.SchemaBuilder method)</a>
 </li>
         <li><a href="linkml.generators.html#linkml.generators.owlgen.OwlSchemaGenerator.as_graph">as_graph() (linkml.generators.owlgen.OwlSchemaGenerator method)</a>
@@ -2214,8 +2237,6 @@
           <li><a href="linkml.generators.html#linkml.generators.ShaclGenerator.as_graph">(linkml.generators.ShaclGenerator method)</a>
 </li>
         </ul></li>
-        <li><a href="linkml.generators.html#linkml.generators.sqlddlgen.SQLTable.as_var">as_var() (linkml.generators.sqlddlgen.SQLTable method)</a>
-</li>
         <li><a href="linkml.generators.html#linkml.generators.owlgen.OwlSchemaGenerator.assert_equivalent_classes">assert_equivalent_classes (linkml.generators.owlgen.OwlSchemaGenerator attribute)</a>
 
         <ul>
@@ -2232,12 +2253,6 @@
   <h2>B</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="linkml.generators.html#linkml.generators.sqlddlgen.Backref">Backref (class in linkml.generators.sqlddlgen)</a>
-</li>
-        <li><a href="linkml.generators.html#linkml.generators.sqlddlgen.Backref.backref_column">backref_column (linkml.generators.sqlddlgen.Backref attribute)</a>
-</li>
-        <li><a href="linkml.generators.html#linkml.generators.sqlddlgen.SQLTable.backrefs">backrefs (linkml.generators.sqlddlgen.SQLTable attribute)</a>
-</li>
         <li><a href="linkml.generators.html#linkml.generators.ContextGenerator.base">base (linkml.generators.ContextGenerator attribute)</a>
 
         <ul>
@@ -2246,12 +2261,10 @@
           <li><a href="linkml.generators.html#linkml.generators.prefixmapgen.PrefixGenerator.base">(linkml.generators.prefixmapgen.PrefixGenerator attribute)</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="linkml.utils.html#linkml.utils.generator.Generator.base_dir">base_dir (linkml.utils.generator.Generator attribute)</a>
 </li>
-        <li><a href="linkml.generators.html#linkml.generators.sqlddlgen.SQLColumn.base_type">base_type (linkml.generators.sqlddlgen.SQLColumn attribute)</a>
-</li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="linkml.generators.html#linkml.generators.markdowngen.MarkdownGenerator.bbin">bbin() (linkml.generators.markdowngen.MarkdownGenerator method)</a>
 </li>
         <li><a href="linkml.utils.html#linkml.utils.execute_tutorial.Block">Block (class in linkml.utils.execute_tutorial)</a>
@@ -2268,6 +2281,8 @@
   <h2>C</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="linkml.generators.html#linkml.generators.sqltablegen.SqlNamingPolicy.camelcase">camelcase (linkml.generators.sqltablegen.SqlNamingPolicy attribute)</a>
+</li>
         <li><a href="linkml.generators.html#linkml.generators.golrgen.GOLRField.cardinality">cardinality (linkml.generators.golrgen.GOLRField attribute)</a>
 </li>
         <li><a href="linkml.generators.html#linkml.generators.yumlgen.YumlGenerator.cardinality">cardinality() (linkml.generators.yumlgen.YumlGenerator static method)</a>
@@ -2380,10 +2395,10 @@
           <li><a href="linkml.reporting.html#linkml.reporting.Report.class_name">(linkml.reporting.Report attribute)</a>
 </li>
         </ul></li>
-        <li><a href="developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.class_name_mappings">class_name_mappings() (linkml_runtime.utils.schemaview.SchemaView method)</a>
-</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.class_name_mappings">class_name_mappings() (linkml_runtime.utils.schemaview.SchemaView method)</a>
+</li>
         <li><a href="linkml.generators.html#linkml.generators.golrgen.GolrSchemaGenerator.class_obj">class_obj (linkml.generators.golrgen.GolrSchemaGenerator attribute)</a>
 </li>
         <li><a href="linkml.utils.html#linkml.utils.generator.Generator.class_or_type_for">class_or_type_for() (linkml.utils.generator.Generator method)</a>
@@ -2443,8 +2458,6 @@
         <li><a href="linkml.utils.html#linkml.utils.schemasynopsis.SchemaSynopsis.codesets">codesets (linkml.utils.schemasynopsis.SchemaSynopsis attribute)</a>
 </li>
         <li><a href="linkml.generators.html#linkml.generators.excelgen.ExcelGenerator.column_enum_validation">column_enum_validation() (linkml.generators.excelgen.ExcelGenerator static method)</a>
-</li>
-        <li><a href="linkml.generators.html#linkml.generators.sqlddlgen.SQLTable.columns">columns (linkml.generators.sqlddlgen.SQLTable attribute)</a>
 </li>
         <li><a href="developers/sqlstore.html#linkml.utils.sqlutils.SQLStore.compile">compile() (linkml.utils.sqlutils.SQLStore method)</a>
 </li>
@@ -2523,8 +2536,6 @@
 </li>
         <li><a href="developers/sqlstore.html#linkml.utils.sqlutils.SQLStore.db_exists">db_exists() (linkml.utils.sqlutils.SQLStore method)</a>
 </li>
-        <li><a href="linkml.generators.html#linkml.generators.sqlddlgen.DDLEntity">DDLEntity (class in linkml.generators.sqlddlgen)</a>
-</li>
         <li><a href="linkml.utils.html#linkml.utils.ifabsent_functions.default_curie_or_uri">default_curie_or_uri() (in module linkml.utils.ifabsent_functions)</a>
 </li>
         <li><a href="linkml.generators.html#linkml.generators.ContextGenerator.default_ns">default_ns (linkml.generators.ContextGenerator attribute)</a>
@@ -2578,14 +2589,10 @@
 </li>
           <li><a href="linkml.generators.html#linkml.generators.oocodegen.OOClass.description">(linkml.generators.oocodegen.OOClass attribute)</a>
 </li>
-          <li><a href="linkml.generators.html#linkml.generators.sqlddlgen.DDLEntity.description">(linkml.generators.sqlddlgen.DDLEntity attribute)</a>
-</li>
         </ul></li>
         <li><a href="linkml.generators.html#linkml.generators.yumlgen.YumlGenerator.diagram_name">diagram_name (linkml.generators.yumlgen.YumlGenerator attribute)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="linkml.generators.html#linkml.generators.sqlddlgen.SQLDDLGenerator.dialect">dialect (linkml.generators.sqlddlgen.SQLDDLGenerator attribute)</a>
+        <li><a href="linkml.generators.html#linkml.generators.sqltablegen.SQLTableGenerator.dialect">dialect (linkml.generators.sqltablegen.SQLTableGenerator attribute)</a>
 
         <ul>
           <li><a href="linkml.generators.html#linkml.generators.SQLTableGenerator.dialect">(linkml.generators.SQLTableGenerator attribute)</a>
@@ -2593,10 +2600,16 @@
           <li><a href="linkml.generators.html#linkml.generators.summarygen.SummaryGenerator.dialect">(linkml.generators.summarygen.SummaryGenerator attribute)</a>
 </li>
         </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="linkml.generators.html#linkml.generators.markdowngen.MarkdownGenerator.dir_path">dir_path() (linkml.generators.markdowngen.MarkdownGenerator method)</a>
 </li>
-        <li><a href="linkml.generators.html#linkml.generators.SQLTableGenerator.direct_mapping">direct_mapping (linkml.generators.SQLTableGenerator attribute)</a>
+        <li><a href="linkml.generators.html#linkml.generators.sqltablegen.SQLTableGenerator.direct_mapping">direct_mapping (linkml.generators.sqltablegen.SQLTableGenerator attribute)</a>
+
+        <ul>
+          <li><a href="linkml.generators.html#linkml.generators.SQLTableGenerator.direct_mapping">(linkml.generators.SQLTableGenerator attribute)</a>
 </li>
+        </ul></li>
         <li><a href="linkml.generators.html#linkml.generators.dotgen.DotGenerator.directory">directory (linkml.generators.dotgen.DotGenerator attribute)</a>
 
         <ul>
@@ -2718,6 +2731,8 @@
 </li>
           <li><a href="linkml.generators.html#linkml.generators.ShExGenerator.emit_prefixes">(linkml.generators.ShExGenerator attribute)</a>
 </li>
+          <li><a href="linkml.generators.html#linkml.generators.SQLTableGenerator.emit_prefixes">(linkml.generators.SQLTableGenerator attribute)</a>
+</li>
           <li><a href="linkml.utils.html#linkml.utils.generator.Generator.emit_prefixes">(linkml.utils.generator.Generator attribute)</a>
 </li>
         </ul></li>
@@ -2735,8 +2750,6 @@
           <li><a href="linkml.generators.html#linkml.generators.shexgen.ShExGenerator.end_class">(linkml.generators.shexgen.ShExGenerator method)</a>
 </li>
           <li><a href="linkml.generators.html#linkml.generators.ShExGenerator.end_class">(linkml.generators.ShExGenerator method)</a>
-</li>
-          <li><a href="linkml.generators.html#linkml.generators.sqlddlgen.SQLDDLGenerator.end_class">(linkml.generators.sqlddlgen.SQLDDLGenerator method)</a>
 </li>
           <li><a href="linkml.utils.html#linkml.utils.generator.Generator.end_class">(linkml.utils.generator.Generator method)</a>
 </li>
@@ -2763,8 +2776,6 @@
           <li><a href="linkml.generators.html#linkml.generators.shexgen.ShExGenerator.end_schema">(linkml.generators.shexgen.ShExGenerator method)</a>
 </li>
           <li><a href="linkml.generators.html#linkml.generators.ShExGenerator.end_schema">(linkml.generators.ShExGenerator method)</a>
-</li>
-          <li><a href="linkml.generators.html#linkml.generators.sqlddlgen.SQLDDLGenerator.end_schema">(linkml.generators.sqlddlgen.SQLDDLGenerator method)</a>
 </li>
           <li><a href="linkml.utils.html#linkml.utils.generator.Generator.end_schema">(linkml.utils.generator.Generator method)</a>
 </li>
@@ -2864,6 +2875,8 @@
 </li>
           <li><a href="linkml.generators.html#linkml.generators.SQLAlchemyGenerator.file_extension">(linkml.generators.SQLAlchemyGenerator attribute)</a>
 </li>
+          <li><a href="linkml.generators.html#linkml.generators.sqltablegen.SQLTableGenerator.file_extension">(linkml.generators.sqltablegen.SQLTableGenerator attribute)</a>
+</li>
           <li><a href="linkml.generators.html#linkml.generators.SQLTableGenerator.file_extension">(linkml.generators.SQLTableGenerator attribute)</a>
 </li>
           <li><a href="linkml.utils.html#linkml.utils.generator.Generator.file_extension">(linkml.utils.generator.Generator attribute)</a>
@@ -2884,8 +2897,6 @@
 </li>
         </ul></li>
         <li><a href="linkml.generators.html#linkml.generators.yumlgen.YumlGenerator.focus_classes">focus_classes (linkml.generators.yumlgen.YumlGenerator attribute)</a>
-</li>
-        <li><a href="linkml.generators.html#linkml.generators.sqlddlgen.SQLColumn.foreign_key">foreign_key (linkml.generators.sqlddlgen.SQLColumn attribute)</a>
 </li>
         <li><a href="linkml.utils.html#linkml.utils.generator.Generator.format">format (linkml.utils.generator.Generator attribute)</a>
 </li>
@@ -3651,8 +3662,6 @@
           <li><a href="generators/shacl.html#cmdoption-gen-shacl-arg-YAMLFILE">YAMLFILE</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     gen-shex command line option
 
@@ -3698,6 +3707,8 @@
           <li><a href="generators/shex.html#cmdoption-gen-shex-arg-YAMLFILE">YAMLFILE</a>
 </li>
         </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     gen-sparql command line option
 
@@ -3744,70 +3755,113 @@
 </li>
         </ul></li>
         <li>
-    gen-sqlddl command line option
+    gen-sqla command line option
 
         <ul>
-          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqlddl-declarative">--declarative</a>
+          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqla-declarative">--declarative</a>
 </li>
-          <li><a href="generators/sqlddl.html#cmdoption-gen-sqlddl-dialect">--dialect</a>
+          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqla-f">--format</a>
 </li>
-          <li><a href="generators/sqlddl.html#cmdoption-gen-sqlddl-direct-mapping">--direct-mapping</a>
+          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqla-generate-classes">--generate-classes</a>
 </li>
-          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqlddl-f">--format</a>, <a href="generators/sqlddl.html#cmdoption-gen-sqlddl-f">[1]</a>
+          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqla-im">--importmap</a>
 </li>
-          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqlddl-generate-classes">--generate-classes</a>
+          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqla-log_level">--log_level</a>
 </li>
-          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqlddl-im">--importmap</a>, <a href="generators/sqlddl.html#cmdoption-gen-sqlddl-im">[1]</a>
+          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqla-mergeimports">--mergeimports</a>
 </li>
-          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqlddl-log_level">--log_level</a>, <a href="generators/sqlddl.html#cmdoption-gen-sqlddl-log_level">[1]</a>
+          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqla-metadata">--metadata</a>
 </li>
-          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqlddl-mergeimports">--mergeimports</a>, <a href="generators/sqlddl.html#cmdoption-gen-sqlddl-mergeimports">[1]</a>
+          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqla-useuris">--metauris</a>
 </li>
-          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqlddl-metadata">--metadata</a>, <a href="generators/sqlddl.html#cmdoption-gen-sqlddl-metadata">[1]</a>
+          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqla-declarative">--no-declarative</a>
 </li>
-          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqlddl-useuris">--metauris</a>, <a href="generators/sqlddl.html#cmdoption-gen-sqlddl-useuris">[1]</a>
+          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqla-generate-classes">--no-generate-classes</a>
 </li>
-          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqlddl-declarative">--no-declarative</a>
+          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqla-mergeimports">--no-mergeimports</a>
 </li>
-          <li><a href="generators/sqlddl.html#cmdoption-gen-sqlddl-direct-mapping">--no-direct-mapping</a>
+          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqla-metadata">--no-metadata</a>
 </li>
-          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqlddl-generate-classes">--no-generate-classes</a>
+          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqla-pydantic">--no-pydantic</a>
 </li>
-          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqlddl-mergeimports">--no-mergeimports</a>, <a href="generators/sqlddl.html#cmdoption-gen-sqlddl-mergeimports">[1]</a>
+          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqla-stacktrace">--no-stacktrace</a>
 </li>
-          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqlddl-metadata">--no-metadata</a>, <a href="generators/sqlddl.html#cmdoption-gen-sqlddl-metadata">[1]</a>
+          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqla-use-foreign-keys">--no-use-foreign-keys</a>
 </li>
-          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqlddl-pydantic">--no-pydantic</a>
+          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqla-pydantic">--pydantic</a>
 </li>
-          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqlddl-stacktrace">--no-stacktrace</a>, <a href="generators/sqlddl.html#cmdoption-gen-sqlddl-stacktrace">[1]</a>
+          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqla-stacktrace">--stacktrace</a>
 </li>
-          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqlddl-use-foreign-keys">--no-use-foreign-keys</a>, <a href="generators/sqlddl.html#cmdoption-gen-sqlddl-use-foreign-keys">[1]</a>
+          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqla-use-foreign-keys">--use-foreign-keys</a>
 </li>
-          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqlddl-pydantic">--pydantic</a>
+          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqla-useuris">--useuris</a>
 </li>
-          <li><a href="generators/sqlddl.html#cmdoption-gen-sqlddl-python-import">--python-import</a>
+          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqla-v">--verbose</a>
 </li>
-          <li><a href="generators/sqlddl.html#cmdoption-gen-sqlddl-sqla-file">--sqla-file</a>
+          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqla-V">--version</a>
 </li>
-          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqlddl-stacktrace">--stacktrace</a>, <a href="generators/sqlddl.html#cmdoption-gen-sqlddl-stacktrace">[1]</a>
+          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqla-f">-f</a>
 </li>
-          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqlddl-use-foreign-keys">--use-foreign-keys</a>, <a href="generators/sqlddl.html#cmdoption-gen-sqlddl-use-foreign-keys">[1]</a>
+          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqla-im">-im</a>
 </li>
-          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqlddl-useuris">--useuris</a>, <a href="generators/sqlddl.html#cmdoption-gen-sqlddl-useuris">[1]</a>
+          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqla-V">-V</a>
 </li>
-          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqlddl-v">--verbose</a>, <a href="generators/sqlddl.html#cmdoption-gen-sqlddl-v">[1]</a>
+          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqla-v">-v</a>
 </li>
-          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqlddl-V">--version</a>, <a href="generators/sqlddl.html#cmdoption-gen-sqlddl-V">[1]</a>
+          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqla-arg-YAMLFILE">YAMLFILE</a>
 </li>
-          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqlddl-f">-f</a>, <a href="generators/sqlddl.html#cmdoption-gen-sqlddl-f">[1]</a>
+        </ul></li>
+        <li>
+    gen-sqltables command line option
+
+        <ul>
+          <li><a href="generators/sqltable.html#cmdoption-gen-sqltables-dialect">--dialect</a>
 </li>
-          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqlddl-im">-im</a>, <a href="generators/sqlddl.html#cmdoption-gen-sqlddl-im">[1]</a>
+          <li><a href="generators/sqltable.html#cmdoption-gen-sqltables-f">--format</a>
 </li>
-          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqlddl-V">-V</a>, <a href="generators/sqlddl.html#cmdoption-gen-sqlddl-V">[1]</a>
+          <li><a href="generators/sqltable.html#cmdoption-gen-sqltables-im">--importmap</a>
 </li>
-          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqlddl-v">-v</a>, <a href="generators/sqlddl.html#cmdoption-gen-sqlddl-v">[1]</a>
+          <li><a href="generators/sqltable.html#cmdoption-gen-sqltables-log_level">--log_level</a>
 </li>
-          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqlddl-arg-YAMLFILE">YAMLFILE</a>, <a href="generators/sqlddl.html#cmdoption-gen-sqlddl-arg-YAMLFILE">[1]</a>
+          <li><a href="generators/sqltable.html#cmdoption-gen-sqltables-mergeimports">--mergeimports</a>
+</li>
+          <li><a href="generators/sqltable.html#cmdoption-gen-sqltables-metadata">--metadata</a>
+</li>
+          <li><a href="generators/sqltable.html#cmdoption-gen-sqltables-useuris">--metauris</a>
+</li>
+          <li><a href="generators/sqltable.html#cmdoption-gen-sqltables-mergeimports">--no-mergeimports</a>
+</li>
+          <li><a href="generators/sqltable.html#cmdoption-gen-sqltables-metadata">--no-metadata</a>
+</li>
+          <li><a href="generators/sqltable.html#cmdoption-gen-sqltables-stacktrace">--no-stacktrace</a>
+</li>
+          <li><a href="generators/sqltable.html#cmdoption-gen-sqltables-use-foreign-keys">--no-use-foreign-keys</a>
+</li>
+          <li><a href="generators/sqltable.html#cmdoption-gen-sqltables-python-import">--python-import</a>
+</li>
+          <li><a href="generators/sqltable.html#cmdoption-gen-sqltables-relmodel-output">--relmodel-output</a>
+</li>
+          <li><a href="generators/sqltable.html#cmdoption-gen-sqltables-sqla-file">--sqla-file</a>
+</li>
+          <li><a href="generators/sqltable.html#cmdoption-gen-sqltables-stacktrace">--stacktrace</a>
+</li>
+          <li><a href="generators/sqltable.html#cmdoption-gen-sqltables-use-foreign-keys">--use-foreign-keys</a>
+</li>
+          <li><a href="generators/sqltable.html#cmdoption-gen-sqltables-useuris">--useuris</a>
+</li>
+          <li><a href="generators/sqltable.html#cmdoption-gen-sqltables-v">--verbose</a>
+</li>
+          <li><a href="generators/sqltable.html#cmdoption-gen-sqltables-V">--version</a>
+</li>
+          <li><a href="generators/sqltable.html#cmdoption-gen-sqltables-f">-f</a>
+</li>
+          <li><a href="generators/sqltable.html#cmdoption-gen-sqltables-im">-im</a>
+</li>
+          <li><a href="generators/sqltable.html#cmdoption-gen-sqltables-V">-V</a>
+</li>
+          <li><a href="generators/sqltable.html#cmdoption-gen-sqltables-v">-v</a>
+</li>
+          <li><a href="generators/sqltable.html#cmdoption-gen-sqltables-arg-YAMLFILE">YAMLFILE</a>
 </li>
         </ul></li>
         <li>
@@ -4124,7 +4178,7 @@
           <li><a href="linkml.generators.html#linkml.generators.PydanticGenerator.generate_collection_key">(linkml.generators.PydanticGenerator method)</a>
 </li>
         </ul></li>
-        <li><a href="linkml.generators.html#linkml.generators.sqlddlgen.SQLDDLGenerator.generate_ddl">generate_ddl() (linkml.generators.sqlddlgen.SQLDDLGenerator method)</a>
+        <li><a href="linkml.generators.html#linkml.generators.sqltablegen.SQLTableGenerator.generate_ddl">generate_ddl() (linkml.generators.sqltablegen.SQLTableGenerator method)</a>
 
         <ul>
           <li><a href="linkml.generators.html#linkml.generators.SQLTableGenerator.generate_ddl">(linkml.generators.SQLTableGenerator method)</a>
@@ -4150,8 +4204,6 @@
           <li><a href="linkml.generators.html#linkml.generators.shexgen.ShExGenerator.generate_header">(linkml.generators.shexgen.ShExGenerator method)</a>
 </li>
           <li><a href="linkml.generators.html#linkml.generators.ShExGenerator.generate_header">(linkml.generators.ShExGenerator method)</a>
-</li>
-          <li><a href="linkml.generators.html#linkml.generators.sqlddlgen.SQLDDLGenerator.generate_header">(linkml.generators.sqlddlgen.SQLDDLGenerator method)</a>
 </li>
         </ul></li>
         <li><a href="linkml.generators.html#linkml.generators.pydanticgen.PydanticGenerator.generate_python_range">generate_python_range() (linkml.generators.pydanticgen.PydanticGenerator method)</a>
@@ -4235,7 +4287,7 @@
 </li>
           <li><a href="linkml.generators.html#linkml.generators.SQLAlchemyGenerator.generatorname">(linkml.generators.SQLAlchemyGenerator attribute)</a>
 </li>
-          <li><a href="linkml.generators.html#linkml.generators.sqlddlgen.SQLDDLGenerator.generatorname">(linkml.generators.sqlddlgen.SQLDDLGenerator attribute)</a>
+          <li><a href="linkml.generators.html#linkml.generators.sqltablegen.SQLTableGenerator.generatorname">(linkml.generators.sqltablegen.SQLTableGenerator attribute)</a>
 </li>
           <li><a href="linkml.generators.html#linkml.generators.SQLTableGenerator.generatorname">(linkml.generators.SQLTableGenerator attribute)</a>
 </li>
@@ -4305,7 +4357,7 @@
 </li>
           <li><a href="linkml.generators.html#linkml.generators.SQLAlchemyGenerator.generatorversion">(linkml.generators.SQLAlchemyGenerator attribute)</a>
 </li>
-          <li><a href="linkml.generators.html#linkml.generators.sqlddlgen.SQLDDLGenerator.generatorversion">(linkml.generators.sqlddlgen.SQLDDLGenerator attribute)</a>
+          <li><a href="linkml.generators.html#linkml.generators.sqltablegen.SQLTableGenerator.generatorversion">(linkml.generators.sqltablegen.SQLTableGenerator attribute)</a>
 </li>
           <li><a href="linkml.generators.html#linkml.generators.SQLTableGenerator.generatorversion">(linkml.generators.SQLTableGenerator attribute)</a>
 </li>
@@ -4364,8 +4416,12 @@
 </li>
         <li><a href="developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.get_enum">get_enum() (linkml_runtime.utils.schemaview.SchemaView method)</a>
 </li>
-        <li><a href="linkml.generators.html#linkml.generators.SQLTableGenerator.get_foreign_key">get_foreign_key() (linkml.generators.SQLTableGenerator static method)</a>
+        <li><a href="linkml.generators.html#linkml.generators.sqltablegen.SQLTableGenerator.get_foreign_key">get_foreign_key() (linkml.generators.sqltablegen.SQLTableGenerator static method)</a>
+
+        <ul>
+          <li><a href="linkml.generators.html#linkml.generators.SQLTableGenerator.get_foreign_key">(linkml.generators.SQLTableGenerator static method)</a>
 </li>
+        </ul></li>
         <li><a href="developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.get_identifier_slot">get_identifier_slot() (linkml_runtime.utils.schemaview.SchemaView method)</a>
 </li>
         <li><a href="developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.get_key_slot">get_key_slot() (linkml_runtime.utils.schemaview.SchemaView method)</a>
@@ -4398,15 +4454,13 @@
           <li><a href="linkml.generators.html#linkml.generators.PydanticGenerator.get_predefined_slot_values">(linkml.generators.PydanticGenerator method)</a>
 </li>
         </ul></li>
-        <li><a href="linkml.generators.html#linkml.generators.sqlddlgen.SQLTable.get_singular_primary_key">get_singular_primary_key() (linkml.generators.sqlddlgen.SQLTable method)</a>
-</li>
         <li><a href="developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.get_slot">get_slot() (linkml_runtime.utils.schemaview.SchemaView method)</a>
 </li>
         <li><a href="linkml.generators.html#linkml.generators.oocodegen.OOCodeGenerator.get_slot_name">get_slot_name() (linkml.generators.oocodegen.OOCodeGenerator method)</a>
 </li>
         <li><a href="developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.get_slots_by_enum">get_slots_by_enum() (linkml_runtime.utils.schemaview.SchemaView method)</a>
 </li>
-        <li><a href="linkml.generators.html#linkml.generators.sqlddlgen.SQLDDLGenerator.get_sql_range">get_sql_range() (linkml.generators.sqlddlgen.SQLDDLGenerator method)</a>
+        <li><a href="linkml.generators.html#linkml.generators.sqltablegen.SQLTableGenerator.get_sql_range">get_sql_range() (linkml.generators.sqltablegen.SQLTableGenerator method)</a>
 
         <ul>
           <li><a href="linkml.generators.html#linkml.generators.SQLTableGenerator.get_sql_range">(linkml.generators.SQLTableGenerator method)</a>
@@ -4425,8 +4479,6 @@
 </li>
         </ul></li>
         <li><a href="developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.get_subset">get_subset() (linkml_runtime.utils.schemaview.SchemaView method)</a>
-</li>
-        <li><a href="linkml.generators.html#linkml.generators.sqlddlgen.SQLSchema.get_table_by_class_name">get_table_by_class_name() (linkml.generators.sqlddlgen.SQLSchema method)</a>
 </li>
         <li><a href="developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.get_type">get_type() (linkml_runtime.utils.schemaview.SchemaView method)</a>
 </li>
@@ -4538,8 +4590,6 @@
         </ul></li>
         <li><a href="developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.imports_closure">imports_closure() (linkml_runtime.utils.schemaview.SchemaView method)</a>
 </li>
-        <li><a href="linkml.generators.html#linkml.generators.sqlddlgen.SQLTable.in_schema">in_schema (linkml.generators.sqlddlgen.SQLTable attribute)</a>
-</li>
         <li><a href="developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.in_schema">in_schema() (linkml_runtime.utils.schemaview.SchemaView method)</a>
 </li>
         <li><a href="linkml.generators.html#linkml.generators.excelgen.ExcelGenerator.include_mixins">include_mixins (linkml.generators.excelgen.ExcelGenerator attribute)</a>
@@ -4586,14 +4636,14 @@
 </li>
         <li><a href="linkml.reporting.html#linkml.reporting.model.slots.info">info (linkml.reporting.model.slots attribute)</a>
 </li>
-        <li><a href="linkml.generators.html#linkml.generators.sqlddlgen.SQLDDLGenerator.inject_primary_keys">inject_primary_keys (linkml.generators.sqlddlgen.SQLDDLGenerator attribute)</a>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="linkml.generators.html#linkml.generators.sqltablegen.SQLTableGenerator.inject_primary_keys">inject_primary_keys (linkml.generators.sqltablegen.SQLTableGenerator attribute)</a>
 
         <ul>
           <li><a href="linkml.generators.html#linkml.generators.SQLTableGenerator.inject_primary_keys">(linkml.generators.SQLTableGenerator attribute)</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="linkml.generators.html#linkml.generators.pydanticgen.PydanticGenerator.injected_classes">injected_classes (linkml.generators.pydanticgen.PydanticGenerator attribute)</a>
 
         <ul>
@@ -4657,13 +4707,9 @@
 </li>
         <li><a href="linkml.generators.html#linkml.generators.jsonschemagen.JsonSchema.is_object">is_object (linkml.generators.jsonschemagen.JsonSchema property)</a>
 </li>
-        <li><a href="linkml.generators.html#linkml.generators.sqlddlgen.SQLColumn.is_primary_key">is_primary_key() (linkml.generators.sqlddlgen.SQLColumn method)</a>
-</li>
         <li><a href="developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.is_relationship">is_relationship() (linkml_runtime.utils.schemaview.SchemaView method)</a>
 </li>
         <li><a href="linkml.generators.html#linkml.generators.markdowngen.MarkdownGenerator.is_secondary_ref">is_secondary_ref() (linkml.generators.markdowngen.MarkdownGenerator method)</a>
-</li>
-        <li><a href="linkml.generators.html#linkml.generators.sqlddlgen.SQLColumn.is_singular_primary_key">is_singular_primary_key (linkml.generators.sqlddlgen.SQLColumn attribute)</a>
 </li>
         <li><a href="developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.is_slot_percent_encoded">is_slot_percent_encoded() (linkml_runtime.utils.schemaview.SchemaView method)</a>
 </li>
@@ -5074,10 +5120,10 @@
 </li>
         </ul></li>
         <li>
-    linkml.generators.sqlddlgen
+    linkml.generators.sqltablegen
 
         <ul>
-          <li><a href="linkml.generators.html#module-linkml.generators.sqlddlgen">module</a>
+          <li><a href="linkml.generators.html#module-linkml.generators.sqltablegen">module</a>
 </li>
         </ul></li>
         <li>
@@ -5320,16 +5366,6 @@
           <li><a href="linkml.generators.html#linkml.generators.oocodegen.OOCodeGenerator.map_type">(linkml.generators.oocodegen.OOCodeGenerator method)</a>
 </li>
         </ul></li>
-        <li><a href="linkml.generators.html#linkml.generators.sqlddlgen.SQLColumn.mapped_to">mapped_to (linkml.generators.sqlddlgen.SQLColumn attribute)</a>
-
-        <ul>
-          <li><a href="linkml.generators.html#linkml.generators.sqlddlgen.SQLSchema.mapped_to">(linkml.generators.sqlddlgen.SQLSchema attribute)</a>
-</li>
-          <li><a href="linkml.generators.html#linkml.generators.sqlddlgen.SQLTable.mapped_to">(linkml.generators.sqlddlgen.SQLTable attribute)</a>
-</li>
-        </ul></li>
-        <li><a href="linkml.generators.html#linkml.generators.sqlddlgen.SQLColumn.mapped_to_alias">mapped_to_alias (linkml.generators.sqlddlgen.SQLColumn attribute)</a>
-</li>
         <li><a href="linkml.generators.html#linkml.generators.markdowngen.MarkdownGenerator.mappings">mappings() (linkml.generators.markdowngen.MarkdownGenerator method)</a>
 </li>
         <li><a href="generators/markdown.html#linkml.generators.markdowngen.MarkdownGenerator">MarkdownGenerator (class in linkml.generators.markdowngen)</a>, <a href="linkml.generators.html#linkml.generators.markdowngen.MarkdownGenerator">[1]</a>
@@ -5476,7 +5512,7 @@
 </li>
           <li><a href="linkml.generators.html#module-linkml.generators.sparqlgen">linkml.generators.sparqlgen</a>
 </li>
-          <li><a href="linkml.generators.html#module-linkml.generators.sqlddlgen">linkml.generators.sqlddlgen</a>
+          <li><a href="linkml.generators.html#module-linkml.generators.sqltablegen">linkml.generators.sqltablegen</a>
 </li>
           <li><a href="linkml.generators.html#module-linkml.generators.summarygen">linkml.generators.summarygen</a>
 </li>
@@ -5542,12 +5578,6 @@
 </li>
           <li><a href="linkml.generators.html#linkml.generators.oocodegen.OOField.name">(linkml.generators.oocodegen.OOField attribute)</a>
 </li>
-          <li><a href="linkml.generators.html#linkml.generators.sqlddlgen.SQLColumn.name">(linkml.generators.sqlddlgen.SQLColumn attribute)</a>
-</li>
-          <li><a href="linkml.generators.html#linkml.generators.sqlddlgen.SQLSchema.name">(linkml.generators.sqlddlgen.SQLSchema attribute)</a>
-</li>
-          <li><a href="linkml.generators.html#linkml.generators.sqlddlgen.SQLTable.name">(linkml.generators.sqlddlgen.SQLTable attribute)</a>
-</li>
           <li><a href="developers/schemabuilder.html#linkml.utils.schema_builder.SchemaBuilder.name">(linkml.utils.schema_builder.SchemaBuilder attribute)</a>
 </li>
           <li><a href="linkml.utils.html#linkml.utils.typereferences.RefType.name">(linkml.utils.typereferences.RefType attribute)</a>
@@ -5557,10 +5587,10 @@
 </li>
         <li><a href="linkml.generators.html#linkml.generators.namespacegen.NamespaceGenerator">NamespaceGenerator (class in linkml.generators.namespacegen)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="linkml.utils.html#linkml.utils.generator.Generator.namespaces">namespaces (linkml.utils.generator.Generator attribute)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="linkml.utils.html#linkml.utils.generator.Generator.neighborhood">neighborhood() (linkml.utils.generator.Generator method)</a>
 </li>
         <li><a href="linkml.generators.html#linkml.generators.markdowngen.MarkdownGenerator.no_types_dir">no_types_dir (linkml.generators.markdowngen.MarkdownGenerator attribute)</a>
@@ -5627,13 +5657,9 @@
 </li>
         <li><a href="linkml.generators.html#linkml.generators.jsonschemagen.JsonSchema.OPTIONAL_IDENTIFIER_SUFFIX">OPTIONAL_IDENTIFIER_SUFFIX (linkml.generators.jsonschemagen.JsonSchema attribute)</a>
 </li>
-        <li><a href="linkml.generators.html#linkml.generators.sqlddlgen.Backref.order_by">order_by (linkml.generators.sqlddlgen.Backref attribute)</a>
-</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="linkml.generators.html#linkml.generators.SQLAlchemyGenerator.order_classes_by_hierarchy">order_classes_by_hierarchy() (linkml.generators.SQLAlchemyGenerator static method)</a>
-</li>
-        <li><a href="linkml.generators.html#linkml.generators.sqlddlgen.Backref.original_column">original_column (linkml.generators.sqlddlgen.Backref attribute)</a>
 </li>
         <li><a href="linkml.generators.html#linkml.generators.jsonldgen.JSONLDGenerator.original_schema">original_schema (linkml.generators.jsonldgen.JSONLDGenerator attribute)</a>
 
@@ -5721,7 +5747,7 @@
         </ul></li>
         <li><a href="linkml.generators.html#linkml.generators.prefixmapgen.PrefixGenerator">PrefixGenerator (class in linkml.generators.prefixmapgen)</a>
 </li>
-        <li><a href="linkml.generators.html#linkml.generators.sqlddlgen.SQLTable.primary_keys">primary_keys (linkml.generators.sqlddlgen.SQLTable attribute)</a>
+        <li><a href="linkml.generators.html#linkml.generators.sqltablegen.SqlNamingPolicy.preserve">preserve (linkml.generators.sqltablegen.SqlNamingPolicy attribute)</a>
 </li>
         <li><a href="linkml.generators.html#linkml.generators.pythongen.PythonGenerator.primary_keys_for">primary_keys_for() (linkml.generators.pythongen.PythonGenerator method)</a>
 
@@ -5837,8 +5863,6 @@
 </li>
         <li><a href="linkml.generators.html#linkml.generators.yumlgen.YumlGenerator.referenced">referenced (linkml.generators.yumlgen.YumlGenerator attribute)</a>
 </li>
-        <li><a href="linkml.generators.html#linkml.generators.sqlddlgen.SQLTable.referenced_by">referenced_by (linkml.generators.sqlddlgen.SQLTable attribute)</a>
-</li>
         <li><a href="linkml.utils.html#linkml.utils.typereferences.References">References (class in linkml.utils.typereferences)</a>
 </li>
         <li><a href="linkml.utils.html#linkml.utils.typereferences.RefType">RefType (class in linkml.utils.typereferences)</a>
@@ -5846,17 +5870,21 @@
         <li><a href="linkml.generators.html#linkml.generators.protogen.ProtoGenerator.relative_slot_num">relative_slot_num (linkml.generators.protogen.ProtoGenerator attribute)</a>
 
         <ul>
+          <li><a href="linkml.generators.html#linkml.generators.sqltablegen.SQLTableGenerator.relative_slot_num">(linkml.generators.sqltablegen.SQLTableGenerator attribute)</a>
+</li>
           <li><a href="linkml.generators.html#linkml.generators.SQLTableGenerator.relative_slot_num">(linkml.generators.SQLTableGenerator attribute)</a>
 </li>
         </ul></li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="linkml.generators.html#linkml.generators.sqlddlgen.SQLTable.remove_column">remove_column() (linkml.generators.sqlddlgen.SQLTable method)</a>
-</li>
         <li><a href="linkml.utils.html#linkml.utils.helpers.remove_duplicates">remove_duplicates() (in module linkml.utils.helpers)</a>
 </li>
-        <li><a href="linkml.generators.html#linkml.generators.SQLTableGenerator.rename_foreign_keys">rename_foreign_keys (linkml.generators.SQLTableGenerator attribute)</a>
+        <li><a href="linkml.generators.html#linkml.generators.sqltablegen.SQLTableGenerator.rename_foreign_keys">rename_foreign_keys (linkml.generators.sqltablegen.SQLTableGenerator attribute)</a>
+
+        <ul>
+          <li><a href="linkml.generators.html#linkml.generators.SQLTableGenerator.rename_foreign_keys">(linkml.generators.SQLTableGenerator attribute)</a>
 </li>
+        </ul></li>
         <li><a href="linkml.generators.html#linkml.generators.oocodegen.OOCodeGenerator.replace_invalid_identifier_character">replace_invalid_identifier_character() (linkml.generators.oocodegen.OOCodeGenerator static method)</a>
 </li>
         <li><a href="linkml.reporting.html#linkml.reporting.Report">Report (class in linkml.reporting)</a>
@@ -5926,6 +5954,8 @@
 </li>
           <li><a href="linkml.generators.html#linkml.generators.ShExGenerator.schema">(linkml.generators.ShExGenerator attribute)</a>
 </li>
+          <li><a href="linkml.generators.html#linkml.generators.SQLTableGenerator.schema">(linkml.generators.SQLTableGenerator attribute)</a>
+</li>
           <li><a href="linkml.utils.html#linkml.utils.datavalidator.DataValidator.schema">(linkml.utils.datavalidator.DataValidator attribute)</a>
 </li>
           <li><a href="linkml.utils.html#linkml.utils.generator.Generator.schema">(linkml.utils.generator.Generator attribute)</a>
@@ -5993,6 +6023,8 @@
           <li><a href="generators/sqlalchemy.html#linkml.generators.sqlalchemygen.SQLAlchemyGenerator.serialize">(linkml.generators.sqlalchemygen.SQLAlchemyGenerator method)</a>
 </li>
           <li><a href="linkml.generators.html#linkml.generators.SQLAlchemyGenerator.serialize">(linkml.generators.SQLAlchemyGenerator method)</a>
+</li>
+          <li><a href="generators/sqltable.html#linkml.generators.sqltablegen.SQLTableGenerator.serialize">(linkml.generators.sqltablegen.SQLTableGenerator method)</a>, <a href="linkml.generators.html#linkml.generators.sqltablegen.SQLTableGenerator.serialize">[1]</a>
 </li>
           <li><a href="linkml.generators.html#linkml.generators.SQLTableGenerator.serialize">(linkml.generators.SQLTableGenerator method)</a>
 </li>
@@ -6173,20 +6205,16 @@
           <li><a href="generators/sqlalchemy.html#linkml.generators.sqlalchemygen.SQLAlchemyGenerator">(class in linkml.generators.sqlalchemygen)</a>
 </li>
         </ul></li>
-        <li><a href="linkml.generators.html#linkml.generators.sqlddlgen.SQLColumn">SQLColumn (class in linkml.generators.sqlddlgen)</a>
-</li>
-        <li><a href="linkml.generators.html#linkml.generators.sqlddlgen.SQLDDLGenerator">SQLDDLGenerator (class in linkml.generators.sqlddlgen)</a>
-</li>
-        <li><a href="linkml.generators.html#linkml.generators.sqlddlgen.SQLSchema">SQLSchema (class in linkml.generators.sqlddlgen)</a>
-</li>
-        <li><a href="linkml.generators.html#linkml.generators.sqlddlgen.SQLDDLGenerator.sqlschema">sqlschema (linkml.generators.sqlddlgen.SQLDDLGenerator attribute)</a>
+        <li><a href="linkml.generators.html#linkml.generators.sqltablegen.SqlNamingPolicy">SqlNamingPolicy (class in linkml.generators.sqltablegen)</a>
 </li>
         <li><a href="developers/sqlstore.html#linkml.utils.sqlutils.SQLStore">SQLStore (class in linkml.utils.sqlutils)</a>
 </li>
-        <li><a href="linkml.generators.html#linkml.generators.sqlddlgen.SQLTable">SQLTable (class in linkml.generators.sqlddlgen)</a>
-</li>
         <li><a href="linkml.generators.html#linkml.generators.SQLTableGenerator">SQLTableGenerator (class in linkml.generators)</a>
+
+        <ul>
+          <li><a href="generators/sqltable.html#linkml.generators.sqltablegen.SQLTableGenerator">(class in linkml.generators.sqltablegen)</a>, <a href="linkml.generators.html#linkml.generators.sqltablegen.SQLTableGenerator">[1]</a>
 </li>
+        </ul></li>
         <li><a href="linkml.utils.html#linkml.utils.generator.Generator.stacktrace">stacktrace (linkml.utils.generator.Generator attribute)</a>
 </li>
         <li><a href="linkml.generators.html#linkml.generators.jsonschemagen.JsonSchemaGenerator.start_schema">start_schema() (linkml.generators.jsonschemagen.JsonSchemaGenerator method)</a>
@@ -6241,10 +6269,6 @@
   <h2>T</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="linkml.generators.html#linkml.generators.sqlddlgen.SQLColumn.table">table (linkml.generators.sqlddlgen.SQLColumn attribute)</a>
-</li>
-        <li><a href="linkml.generators.html#linkml.generators.sqlddlgen.SQLSchema.tables">tables (linkml.generators.sqlddlgen.SQLSchema attribute)</a>
-</li>
         <li><a href="linkml.generators.html#linkml.generators.owlgen.OwlSchemaGenerator.target_profile">target_profile (linkml.generators.owlgen.OwlSchemaGenerator attribute)</a>
 
         <ul>
@@ -6359,15 +6383,21 @@
   <h2>U</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="linkml.generators.html#linkml.generators.sqltablegen.SqlNamingPolicy.underscore">underscore (linkml.generators.sqltablegen.SqlNamingPolicy attribute)</a>
+</li>
         <li><a href="linkml.utils.html#linkml.utils.typereferences.References.update">update() (linkml.utils.typereferences.References method)</a>
 </li>
         <li><a href="linkml.utils.html#linkml.utils.ifabsent_functions.uri_for">uri_for() (in module linkml.utils.ifabsent_functions)</a>
 </li>
         <li><a href="developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.usage_index">usage_index() (linkml_runtime.utils.schemaview.SchemaView method)</a>
 </li>
-        <li><a href="linkml.generators.html#linkml.generators.SQLTableGenerator.use_foreign_keys">use_foreign_keys (linkml.generators.SQLTableGenerator attribute)</a>
+        <li><a href="linkml.generators.html#linkml.generators.sqltablegen.SQLTableGenerator.use_foreign_keys">use_foreign_keys (linkml.generators.sqltablegen.SQLTableGenerator attribute)</a>
+
+        <ul>
+          <li><a href="linkml.generators.html#linkml.generators.SQLTableGenerator.use_foreign_keys">(linkml.generators.SQLTableGenerator attribute)</a>
 </li>
-        <li><a href="linkml.generators.html#linkml.generators.sqlddlgen.SQLDDLGenerator.use_inherits">use_inherits (linkml.generators.sqlddlgen.SQLDDLGenerator attribute)</a>
+        </ul></li>
+        <li><a href="linkml.generators.html#linkml.generators.sqltablegen.SQLTableGenerator.use_inherits">use_inherits (linkml.generators.sqltablegen.SQLTableGenerator attribute)</a>
 
         <ul>
           <li><a href="linkml.generators.html#linkml.generators.SQLTableGenerator.use_inherits">(linkml.generators.SQLTableGenerator attribute)</a>
@@ -6437,6 +6467,8 @@
           <li><a href="linkml.generators.html#linkml.generators.sparqlgen.SparqlGenerator.uses_schemaloader">(linkml.generators.sparqlgen.SparqlGenerator attribute)</a>
 </li>
           <li><a href="linkml.generators.html#linkml.generators.SQLAlchemyGenerator.uses_schemaloader">(linkml.generators.SQLAlchemyGenerator attribute)</a>
+</li>
+          <li><a href="linkml.generators.html#linkml.generators.sqltablegen.SQLTableGenerator.uses_schemaloader">(linkml.generators.sqltablegen.SQLTableGenerator attribute)</a>
 </li>
           <li><a href="linkml.generators.html#linkml.generators.SQLTableGenerator.uses_schemaloader">(linkml.generators.SQLTableGenerator attribute)</a>
 </li>
@@ -6516,7 +6548,7 @@
 </li>
           <li><a href="linkml.generators.html#linkml.generators.SQLAlchemyGenerator.valid_formats">(linkml.generators.SQLAlchemyGenerator attribute)</a>
 </li>
-          <li><a href="linkml.generators.html#linkml.generators.sqlddlgen.SQLDDLGenerator.valid_formats">(linkml.generators.sqlddlgen.SQLDDLGenerator attribute)</a>
+          <li><a href="linkml.generators.html#linkml.generators.sqltablegen.SQLTableGenerator.valid_formats">(linkml.generators.sqltablegen.SQLTableGenerator attribute)</a>
 </li>
           <li><a href="linkml.generators.html#linkml.generators.SQLTableGenerator.valid_formats">(linkml.generators.SQLTableGenerator attribute)</a>
 </li>
@@ -6590,8 +6622,6 @@
 </li>
           <li><a href="linkml.generators.html#linkml.generators.sparqlgen.SparqlGenerator.visit_all_class_slots">(linkml.generators.sparqlgen.SparqlGenerator attribute)</a>
 </li>
-          <li><a href="linkml.generators.html#linkml.generators.sqlddlgen.SQLDDLGenerator.visit_all_class_slots">(linkml.generators.sqlddlgen.SQLDDLGenerator attribute)</a>
-</li>
           <li><a href="linkml.generators.html#linkml.generators.yumlgen.YumlGenerator.visit_all_class_slots">(linkml.generators.yumlgen.YumlGenerator attribute)</a>
 </li>
           <li><a href="linkml.utils.html#linkml.utils.generator.Generator.visit_all_class_slots">(linkml.utils.generator.Generator attribute)</a>
@@ -6628,8 +6658,6 @@
 </li>
           <li><a href="linkml.generators.html#linkml.generators.ShExGenerator.visit_class">(linkml.generators.ShExGenerator method)</a>
 </li>
-          <li><a href="linkml.generators.html#linkml.generators.sqlddlgen.SQLDDLGenerator.visit_class">(linkml.generators.sqlddlgen.SQLDDLGenerator method)</a>
-</li>
           <li><a href="linkml.generators.html#linkml.generators.summarygen.SummaryGenerator.visit_class">(linkml.generators.summarygen.SummaryGenerator method)</a>
 </li>
           <li><a href="linkml.utils.html#linkml.utils.generator.Generator.visit_class">(linkml.utils.generator.Generator method)</a>
@@ -6647,8 +6675,6 @@
           <li><a href="linkml.generators.html#linkml.generators.shexgen.ShExGenerator.visit_class_slot">(linkml.generators.shexgen.ShExGenerator method)</a>
 </li>
           <li><a href="linkml.generators.html#linkml.generators.ShExGenerator.visit_class_slot">(linkml.generators.ShExGenerator method)</a>
-</li>
-          <li><a href="linkml.generators.html#linkml.generators.sqlddlgen.SQLDDLGenerator.visit_class_slot">(linkml.generators.sqlddlgen.SQLDDLGenerator method)</a>
 </li>
           <li><a href="linkml.generators.html#linkml.generators.summarygen.SummaryGenerator.visit_class_slot">(linkml.generators.summarygen.SummaryGenerator method)</a>
 </li>
@@ -6749,8 +6775,6 @@
     <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="linkml.utils.html#linkml.utils.execute_tutorial.write_lines">write_lines() (in module linkml.utils.execute_tutorial)</a>
 </li>
-        <li><a href="linkml.generators.html#linkml.generators.sqlddlgen.SQLDDLGenerator.write_sqla_python_imperative">write_sqla_python_imperative() (linkml.generators.sqlddlgen.SQLDDLGenerator method)</a>
-</li>
         <li><a href="linkml.utils.html#linkml.utils.helpers.write_to_file">write_to_file() (in module linkml.utils.helpers)</a>
 </li>
         <li><a href="linkml.generators.html#linkml.generators.csvgen.CsvGenerator.writer">writer (linkml.generators.csvgen.CsvGenerator attribute)</a>
@@ -6811,7 +6835,9 @@
 </li>
           <li><a href="generators/sparql.html#cmdoption-gen-sparql-arg-YAMLFILE">gen-sparql command line option</a>
 </li>
-          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqlddl-arg-YAMLFILE">gen-sqlddl command line option</a>, <a href="generators/sqlddl.html#cmdoption-gen-sqlddl-arg-YAMLFILE">[1]</a>
+          <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqla-arg-YAMLFILE">gen-sqla command line option</a>
+</li>
+          <li><a href="generators/sqltable.html#cmdoption-gen-sqltables-arg-YAMLFILE">gen-sqltables command line option</a>
 </li>
           <li><a href="generators/sssom.html#cmdoption-gen-sssom-arg-YAMLFILE">gen-sssom command line option</a>
 </li>

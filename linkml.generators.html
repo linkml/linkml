@@ -218,7 +218,7 @@
 <li class="toctree-l2"><a class="reference internal" href="generators/pydantic.html">Pydantic</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generators/java.html">Java</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generators/typescript.html">Typescript</a></li>
-<li class="toctree-l2"><a class="reference internal" href="generators/sqlddl.html">SQL DDL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generators/sqltable.html">SQL DDL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generators/sqlalchemy.html">SQL Alchemy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generators/linkml.html">LinkML Generators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generators/sssom.html">SSSOM</a></li>
@@ -3627,100 +3627,13 @@ for any class that is inherited (class itself, is_a, mixin, apply_to).  Otherwis
 <dd></dd></dl>
 
 </section>
-<section id="module-linkml.generators.sqlddlgen">
-<span id="linkml-generators-sqlddlgen-module"></span><h2>linkml.generators.sqlddlgen module<a class="headerlink" href="#module-linkml.generators.sqlddlgen" title="Permalink to this heading">#</a></h2>
-<p>DEPRECATED: Use SQLTableGenerator instead</p>
-<dl class="py class">
-<dt class="sig sig-object py" id="linkml.generators.sqlddlgen.Backref">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linkml.generators.sqlddlgen.</span></span><span class="sig-name descname"><span class="pre">Backref</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">original_column</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'SQLColumn'</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backref_column</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'SQLColumn'</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order_by</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/linkml/generators/sqlddlgen.html#Backref"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.sqlddlgen.Backref" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.generators.sqlddlgen.Backref.backref_column">
-<span class="sig-name descname"><span class="pre">backref_column</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLColumn" title="linkml.generators.sqlddlgen.SQLColumn"><span class="pre">SQLColumn</span></a></em><a class="headerlink" href="#linkml.generators.sqlddlgen.Backref.backref_column" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.generators.sqlddlgen.Backref.order_by">
-<span class="sig-name descname"><span class="pre">order_by</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#linkml.generators.sqlddlgen.Backref.order_by" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.generators.sqlddlgen.Backref.original_column">
-<span class="sig-name descname"><span class="pre">original_column</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLColumn" title="linkml.generators.sqlddlgen.SQLColumn"><span class="pre">SQLColumn</span></a></em><a class="headerlink" href="#linkml.generators.sqlddlgen.Backref.original_column" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="linkml.generators.sqlddlgen.DDLEntity">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linkml.generators.sqlddlgen.</span></span><span class="sig-name descname"><span class="pre">DDLEntity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/linkml/generators/sqlddlgen.html#DDLEntity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.sqlddlgen.DDLEntity" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>abstract grouping</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.generators.sqlddlgen.DDLEntity.description">
-<span class="sig-name descname"><span class="pre">description</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#linkml.generators.sqlddlgen.DDLEntity.description" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="linkml.generators.sqlddlgen.SQLColumn">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linkml.generators.sqlddlgen.</span></span><span class="sig-name descname"><span class="pre">SQLColumn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/linkml/generators/sqlddlgen.html#SQLColumn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.sqlddlgen.SQLColumn" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#linkml.generators.sqlddlgen.DDLEntity" title="linkml.generators.sqlddlgen.DDLEntity"><code class="xref py py-class docutils literal notranslate"><span class="pre">DDLEntity</span></code></a></p>
-<p>represents a Relational Table Column</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="linkml.generators.sqlddlgen.SQLColumn.as_ddlstr">
-<span class="sig-name descname"><span class="pre">as_ddlstr</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/linkml/generators/sqlddlgen.html#SQLColumn.as_ddlstr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.sqlddlgen.SQLColumn.as_ddlstr" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.generators.sqlddlgen.SQLColumn.base_type">
-<span class="sig-name descname"><span class="pre">base_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#linkml.generators.sqlddlgen.SQLColumn.base_type" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.generators.sqlddlgen.SQLColumn.foreign_key">
-<span class="sig-name descname"><span class="pre">foreign_key</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLColumn" title="linkml.generators.sqlddlgen.SQLColumn"><span class="pre">SQLColumn</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#linkml.generators.sqlddlgen.SQLColumn.foreign_key" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="linkml.generators.sqlddlgen.SQLColumn.is_primary_key">
-<span class="sig-name descname"><span class="pre">is_primary_key</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/linkml/generators/sqlddlgen.html#SQLColumn.is_primary_key"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.sqlddlgen.SQLColumn.is_primary_key" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.generators.sqlddlgen.SQLColumn.is_singular_primary_key">
-<span class="sig-name descname"><span class="pre">is_singular_primary_key</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#linkml.generators.sqlddlgen.SQLColumn.is_singular_primary_key" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.generators.sqlddlgen.SQLColumn.mapped_to">
-<span class="sig-name descname"><span class="pre">mapped_to</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.SlotDefinition" title="linkml_runtime.linkml_model.meta.SlotDefinition"><span class="pre">SlotDefinition</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#linkml.generators.sqlddlgen.SQLColumn.mapped_to" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.generators.sqlddlgen.SQLColumn.mapped_to_alias">
-<span class="sig-name descname"><span class="pre">mapped_to_alias</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#linkml.generators.sqlddlgen.SQLColumn.mapped_to_alias" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.generators.sqlddlgen.SQLColumn.name">
-<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#linkml.generators.sqlddlgen.SQLColumn.name" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.generators.sqlddlgen.SQLColumn.table">
-<span class="sig-name descname"><span class="pre">table</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLTable" title="linkml.generators.sqlddlgen.SQLTable"><span class="pre">SQLTable</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#linkml.generators.sqlddlgen.SQLColumn.table" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="linkml.generators.sqlddlgen.SQLDDLGenerator">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linkml.generators.sqlddlgen.</span></span><span class="sig-name descname"><span class="pre">SQLDDLGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/linkml/generators/sqlddlgen.html#SQLDDLGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.sqlddlgen.SQLDDLGenerator" title="Permalink to this definition">#</a></dt>
+<section id="linkml-generators-sqltablegen-module">
+<h2>linkml.generators.sqltablegen module<a class="headerlink" href="#linkml-generators-sqltablegen-module" title="Permalink to this heading">#</a></h2>
+<span class="target" id="module-linkml.generators.sqltablegen"></span><dl class="py class">
+<dt class="sig sig-object py" id="linkml.generators.sqltablegen.SQLTableGenerator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linkml.generators.sqltablegen.</span></span><span class="sig-name descname"><span class="pre">SQLTableGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">~typing.TextIO</span> <span class="pre">|</span> <span class="pre">~linkml_runtime.linkml_model.meta.SchemaDefinition</span> <span class="pre">|</span> <span class="pre">~linkml.utils.generator.Generator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schemaview:</span> <span class="pre">~linkml_runtime.utils.schemaview.SchemaView</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">useuris:</span> <span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_level:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mergeimports:</span> <span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_file_date:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_file_size:</span> <span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger:</span> <span class="pre">~logging.Logger</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose:</span> <span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">namespaces:</span> <span class="pre">~linkml_runtime.utils.namespaces.Namespaces</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">directory_output:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_dir:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metamodel_name_map:</span> <span class="pre">~typing.Dict[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">str]</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">importmap:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">~typing.Mapping[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">str]</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">emit_prefixes:</span> <span class="pre">~typing.Set[str]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metamodel:</span> <span class="pre">~linkml.utils.schemaloader.SchemaLoader</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stacktrace:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_inherits:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dialect:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'sqlite'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inject_primary_keys:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_foreign_keys:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rename_foreign_keys:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">direct_mapping:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relative_slot_num:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**_kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/linkml/generators/sqltablegen.html#SQLTableGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.sqltablegen.SQLTableGenerator" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="linkml.utils.html#linkml.utils.generator.Generator" title="linkml.utils.generator.Generator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generator</span></code></a></p>
-<p>A <cite>Generator</cite> for creating SQL DDL</p>
-<p>DEPRECATED: Use SQLTableGenerator instead</p>
+<p>A <span class="xref std std-ref">Generator</span> for creating SQL DDL</p>
 <p>The basic algorithm for mapping a linkml schema S is as follows:</p>
 <blockquote>
 <div><ul class="simple">
@@ -3781,208 +3694,118 @@ then create a table user_aliases, with two columns (1) alias [a string] and (2) 
 </dl>
 </div></blockquote>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.generators.sqlddlgen.SQLDDLGenerator.dialect">
-<span class="sig-name descname"><span class="pre">dialect</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#linkml.generators.sqlddlgen.SQLDDLGenerator.dialect" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="linkml.generators.sqlddlgen.SQLDDLGenerator.end_class">
-<span class="sig-name descname"><span class="pre">end_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.ClassDefinition" title="linkml_runtime.linkml_model.meta.ClassDefinition"><span class="pre">ClassDefinition</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/linkml/generators/sqlddlgen.html#SQLDDLGenerator.end_class"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.sqlddlgen.SQLDDLGenerator.end_class" title="Permalink to this definition">#</a></dt>
-<dd><p>Visited after visit_class_slots (if visit_class returned true)</p>
-<p>&#64;param cls: class being visited</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="linkml.generators.sqlddlgen.SQLDDLGenerator.end_schema">
-<span class="sig-name descname"><span class="pre">end_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/linkml/generators/sqlddlgen.html#SQLDDLGenerator.end_schema"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.sqlddlgen.SQLDDLGenerator.end_schema" title="Permalink to this definition">#</a></dt>
-<dd><p>Visited once at the end of generation</p>
-<p>&#64;param kwargs: Arguments passed through from CLI – implementation dependent</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="linkml.generators.sqlddlgen.SQLDDLGenerator.generate_ddl">
-<span class="sig-name descname"><span class="pre">generate_ddl</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/linkml/generators/sqlddlgen.html#SQLDDLGenerator.generate_ddl"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.sqlddlgen.SQLDDLGenerator.generate_ddl" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="linkml.generators.sqlddlgen.SQLDDLGenerator.generate_header">
-<span class="sig-name descname"><span class="pre">generate_header</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/linkml/generators/sqlddlgen.html#SQLDDLGenerator.generate_header"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.sqlddlgen.SQLDDLGenerator.generate_header" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="linkml.generators.sqltablegen.SQLTableGenerator.dialect">
+<span class="sig-name descname"><span class="pre">dialect</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'sqlite'</span></em><a class="headerlink" href="#linkml.generators.sqltablegen.SQLTableGenerator.dialect" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.generators.sqlddlgen.SQLDDLGenerator.generatorname">
-<span class="sig-name descname"><span class="pre">generatorname</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'sqlddlgen.py'</span></em><a class="headerlink" href="#linkml.generators.sqlddlgen.SQLDDLGenerator.generatorname" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="linkml.generators.sqltablegen.SQLTableGenerator.direct_mapping">
+<span class="sig-name descname"><span class="pre">direct_mapping</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#linkml.generators.sqltablegen.SQLTableGenerator.direct_mapping" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="linkml.generators.sqltablegen.SQLTableGenerator.file_extension">
+<span class="sig-name descname"><span class="pre">file_extension</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'sql'</span></em><a class="headerlink" href="#linkml.generators.sqltablegen.SQLTableGenerator.file_extension" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml.generators.sqltablegen.SQLTableGenerator.generate_ddl">
+<span class="sig-name descname"><span class="pre">generate_ddl</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">naming_policy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#linkml.generators.sqltablegen.SqlNamingPolicy" title="linkml.generators.sqltablegen.SqlNamingPolicy"><span class="pre">SqlNamingPolicy</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/linkml/generators/sqltablegen.html#SQLTableGenerator.generate_ddl"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.sqltablegen.SQLTableGenerator.generate_ddl" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="linkml.generators.sqltablegen.SQLTableGenerator.generatorname">
+<span class="sig-name descname"><span class="pre">generatorname</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'sqltablegen.py'</span></em><a class="headerlink" href="#linkml.generators.sqltablegen.SQLTableGenerator.generatorname" title="Permalink to this definition">#</a></dt>
 <dd><p>Name of the generator. Override with os.path.basename(__file__)</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.generators.sqlddlgen.SQLDDLGenerator.generatorversion">
-<span class="sig-name descname"><span class="pre">generatorversion</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'0.1.1'</span></em><a class="headerlink" href="#linkml.generators.sqlddlgen.SQLDDLGenerator.generatorversion" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="linkml.generators.sqltablegen.SQLTableGenerator.generatorversion">
+<span class="sig-name descname"><span class="pre">generatorversion</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'0.1.1'</span></em><a class="headerlink" href="#linkml.generators.sqltablegen.SQLTableGenerator.generatorversion" title="Permalink to this definition">#</a></dt>
 <dd><p>Version of the generator. Consider deprecating and instead use overall linkml version</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="linkml.generators.sqlddlgen.SQLDDLGenerator.get_sql_range">
-<span class="sig-name descname"><span class="pre">get_sql_range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slot</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.SlotDefinition" title="linkml_runtime.linkml_model.meta.SlotDefinition"><span class="pre">SlotDefinition</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/linkml/generators/sqlddlgen.html#SQLDDLGenerator.get_sql_range"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.sqlddlgen.SQLDDLGenerator.get_sql_range" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="linkml.generators.sqltablegen.SQLTableGenerator.get_foreign_key">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_foreign_key</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sv</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView" title="linkml_runtime.utils.schemaview.SchemaView"><span class="pre">SchemaView</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/linkml/generators/sqltablegen.html#SQLTableGenerator.get_foreign_key"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.sqltablegen.SQLTableGenerator.get_foreign_key" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml.generators.sqltablegen.SQLTableGenerator.get_sql_range">
+<span class="sig-name descname"><span class="pre">get_sql_range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slot</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.SlotDefinition" title="linkml_runtime.linkml_model.meta.SlotDefinition"><span class="pre">SlotDefinition</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.SchemaDefinition" title="linkml_runtime.linkml_model.meta.SchemaDefinition"><span class="pre">SchemaDefinition</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/linkml/generators/sqltablegen.html#SQLTableGenerator.get_sql_range"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.sqltablegen.SQLTableGenerator.get_sql_range" title="Permalink to this definition">#</a></dt>
 <dd><p>returns a SQL Alchemy column type</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.generators.sqlddlgen.SQLDDLGenerator.inject_primary_keys">
-<span class="sig-name descname"><span class="pre">inject_primary_keys</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#linkml.generators.sqlddlgen.SQLDDLGenerator.inject_primary_keys" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="linkml.generators.sqltablegen.SQLTableGenerator.inject_primary_keys">
+<span class="sig-name descname"><span class="pre">inject_primary_keys</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#linkml.generators.sqltablegen.SQLTableGenerator.inject_primary_keys" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.generators.sqlddlgen.SQLDDLGenerator.sqlschema">
-<span class="sig-name descname"><span class="pre">sqlschema</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLSchema" title="linkml.generators.sqlddlgen.SQLSchema"><span class="pre">SQLSchema</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">SQLSchema(description=None,</span> <span class="pre">name=None,</span> <span class="pre">mapped_to=None,</span> <span class="pre">tables={})</span></em><a class="headerlink" href="#linkml.generators.sqlddlgen.SQLDDLGenerator.sqlschema" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="linkml.generators.sqltablegen.SQLTableGenerator.relative_slot_num">
+<span class="sig-name descname"><span class="pre">relative_slot_num</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#linkml.generators.sqltablegen.SQLTableGenerator.relative_slot_num" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.generators.sqlddlgen.SQLDDLGenerator.use_inherits">
-<span class="sig-name descname"><span class="pre">use_inherits</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#linkml.generators.sqlddlgen.SQLDDLGenerator.use_inherits" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="linkml.generators.sqltablegen.SQLTableGenerator.rename_foreign_keys">
+<span class="sig-name descname"><span class="pre">rename_foreign_keys</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#linkml.generators.sqltablegen.SQLTableGenerator.rename_foreign_keys" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml.generators.sqltablegen.SQLTableGenerator.serialize">
+<span class="sig-name descname"><span class="pre">serialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/linkml/generators/sqltablegen.html#SQLTableGenerator.serialize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.sqltablegen.SQLTableGenerator.serialize" title="Permalink to this definition">#</a></dt>
+<dd><p>Generate output in the required format</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>kwargs</strong> – Generator specific parameters</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Generated output</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="linkml.generators.sqltablegen.SQLTableGenerator.use_foreign_keys">
+<span class="sig-name descname"><span class="pre">use_foreign_keys</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#linkml.generators.sqltablegen.SQLTableGenerator.use_foreign_keys" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.generators.sqlddlgen.SQLDDLGenerator.valid_formats">
-<span class="sig-name descname"><span class="pre">valid_formats</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['sql']</span></em><a class="headerlink" href="#linkml.generators.sqlddlgen.SQLDDLGenerator.valid_formats" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="linkml.generators.sqltablegen.SQLTableGenerator.use_inherits">
+<span class="sig-name descname"><span class="pre">use_inherits</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#linkml.generators.sqltablegen.SQLTableGenerator.use_inherits" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="linkml.generators.sqltablegen.SQLTableGenerator.uses_schemaloader">
+<span class="sig-name descname"><span class="pre">uses_schemaloader</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#linkml.generators.sqltablegen.SQLTableGenerator.uses_schemaloader" title="Permalink to this definition">#</a></dt>
+<dd><p>Old-style generator that uses the SchemaLoader and visitor pattern</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="linkml.generators.sqltablegen.SQLTableGenerator.valid_formats">
+<span class="sig-name descname"><span class="pre">valid_formats</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['sql']</span></em><a class="headerlink" href="#linkml.generators.sqltablegen.SQLTableGenerator.valid_formats" title="Permalink to this definition">#</a></dt>
 <dd><p>Allowed formats - first format is default</p>
 </dd></dl>
 
-<dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.generators.sqlddlgen.SQLDDLGenerator.visit_all_class_slots">
-<span class="sig-name descname"><span class="pre">visit_all_class_slots</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#linkml.generators.sqlddlgen.SQLDDLGenerator.visit_all_class_slots" title="Permalink to this definition">#</a></dt>
-<dd><p>Visitor ClassVar: False means only visit own slots, True means visit all slots</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="linkml.generators.sqlddlgen.SQLDDLGenerator.visit_class">
-<span class="sig-name descname"><span class="pre">visit_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.ClassDefinition" title="linkml_runtime.linkml_model.meta.ClassDefinition"><span class="pre">ClassDefinition</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/linkml/generators/sqlddlgen.html#SQLDDLGenerator.visit_class"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.sqlddlgen.SQLDDLGenerator.visit_class" title="Permalink to this definition">#</a></dt>
-<dd><p>Visited once per schema class</p>
-<p>&#64;param cls: class being visited
-&#64;return: Visit slots and end class.  False means skip and go on</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="linkml.generators.sqlddlgen.SQLDDLGenerator.visit_class_slot">
-<span class="sig-name descname"><span class="pre">visit_class_slot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.ClassDefinition" title="linkml_runtime.linkml_model.meta.ClassDefinition"><span class="pre">ClassDefinition</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">aliased_slot_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slot</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.SlotDefinition" title="linkml_runtime.linkml_model.meta.SlotDefinition"><span class="pre">SlotDefinition</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/linkml/generators/sqlddlgen.html#SQLDDLGenerator.visit_class_slot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.sqlddlgen.SQLDDLGenerator.visit_class_slot" title="Permalink to this definition">#</a></dt>
-<dd><p>Visited for each slot in a class.  If class level visit_all_slots is true, this is visited once
-for any class that is inherited (class itself, is_a, mixin, apply_to).  Otherwise, just the own slots.</p>
-<p>&#64;param cls: containing class
-&#64;param aliased_slot_name: Aliased slot name.  May not be unique across all class slots
-&#64;param slot: being visited</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="linkml.generators.sqlddlgen.SQLDDLGenerator.write_sqla_python_imperative">
-<span class="sig-name descname"><span class="pre">write_sqla_python_imperative</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/linkml/generators/sqlddlgen.html#SQLDDLGenerator.write_sqla_python_imperative"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.sqlddlgen.SQLDDLGenerator.write_sqla_python_imperative" title="Permalink to this definition">#</a></dt>
-<dd><p>imperative mapping:
-<a class="reference external" href="https://docs.sqlalchemy.org/en/14/orm/dataclasses.html#mapping-dataclasses-using-imperative-mapping">https://docs.sqlalchemy.org/en/14/orm/dataclasses.html#mapping-dataclasses-using-imperative-mapping</a></p>
-<p>maps to the python classes generated using PythonGenerator</p>
-<p><a href="#id1"><span class="problematic" id="id2">``</span></a>`
-output = StringIO()
-with redirect_stdout(output):</p>
-<blockquote>
-<div><p>gen.write_sqla_python_imperative()</p>
-</div></blockquote>
-</dd></dl>
-
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="linkml.generators.sqlddlgen.SQLSchema">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linkml.generators.sqlddlgen.</span></span><span class="sig-name descname"><span class="pre">SQLSchema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/linkml/generators/sqlddlgen.html#SQLSchema"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.sqlddlgen.SQLSchema" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#linkml.generators.sqlddlgen.DDLEntity" title="linkml.generators.sqlddlgen.DDLEntity"><code class="xref py py-class docutils literal notranslate"><span class="pre">DDLEntity</span></code></a></p>
-<p>represents a Relational Schema</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="linkml.generators.sqlddlgen.SQLSchema.add_table">
-<span class="sig-name descname"><span class="pre">add_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLTable" title="linkml.generators.sqlddlgen.SQLTable"><span class="pre">SQLTable</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/linkml/generators/sqlddlgen.html#SQLSchema.add_table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.sqlddlgen.SQLSchema.add_table" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="linkml.generators.sqlddlgen.SQLSchema.all_columns">
-<span class="sig-name descname"><span class="pre">all_columns</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLColumn" title="linkml.generators.sqlddlgen.SQLColumn"><span class="pre">SQLColumn</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/linkml/generators/sqlddlgen.html#SQLSchema.all_columns"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.sqlddlgen.SQLSchema.all_columns" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="linkml.generators.sqlddlgen.SQLSchema.get_table_by_class_name">
-<span class="sig-name descname"><span class="pre">get_table_by_class_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ClassDefinitionName</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLTable" title="linkml.generators.sqlddlgen.SQLTable"><span class="pre">SQLTable</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="_modules/linkml/generators/sqlddlgen.html#SQLSchema.get_table_by_class_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.sqlddlgen.SQLSchema.get_table_by_class_name" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="linkml.generators.sqltablegen.SqlNamingPolicy">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linkml.generators.sqltablegen.</span></span><span class="sig-name descname"><span class="pre">SqlNamingPolicy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">enums</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/linkml/generators/sqltablegen.html#SqlNamingPolicy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.sqltablegen.SqlNamingPolicy" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="linkml.generators.sqltablegen.SqlNamingPolicy.camelcase">
+<span class="sig-name descname"><span class="pre">camelcase</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'camelcase'</span></em><a class="headerlink" href="#linkml.generators.sqltablegen.SqlNamingPolicy.camelcase" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.generators.sqlddlgen.SQLSchema.mapped_to">
-<span class="sig-name descname"><span class="pre">mapped_to</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.SchemaDefinition" title="linkml_runtime.linkml_model.meta.SchemaDefinition"><span class="pre">SchemaDefinition</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#linkml.generators.sqlddlgen.SQLSchema.mapped_to" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="linkml.generators.sqltablegen.SqlNamingPolicy.preserve">
+<span class="sig-name descname"><span class="pre">preserve</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'preserve'</span></em><a class="headerlink" href="#linkml.generators.sqltablegen.SqlNamingPolicy.preserve" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.generators.sqlddlgen.SQLSchema.name">
-<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#linkml.generators.sqlddlgen.SQLSchema.name" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.generators.sqlddlgen.SQLSchema.tables">
-<span class="sig-name descname"><span class="pre">tables</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLTable" title="linkml.generators.sqlddlgen.SQLTable"><span class="pre">SQLTable</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#linkml.generators.sqlddlgen.SQLSchema.tables" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="linkml.generators.sqlddlgen.SQLTable">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linkml.generators.sqlddlgen.</span></span><span class="sig-name descname"><span class="pre">SQLTable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/linkml/generators/sqlddlgen.html#SQLTable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.sqlddlgen.SQLTable" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#linkml.generators.sqlddlgen.DDLEntity" title="linkml.generators.sqlddlgen.DDLEntity"><code class="xref py py-class docutils literal notranslate"><span class="pre">DDLEntity</span></code></a></p>
-<p>represents a Relational Table</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="linkml.generators.sqlddlgen.SQLTable.add_column">
-<span class="sig-name descname"><span class="pre">add_column</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">c</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLColumn" title="linkml.generators.sqlddlgen.SQLColumn"><span class="pre">SQLColumn</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/linkml/generators/sqlddlgen.html#SQLTable.add_column"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.sqlddlgen.SQLTable.add_column" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="linkml.generators.sqlddlgen.SQLTable.as_var">
-<span class="sig-name descname"><span class="pre">as_var</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/linkml/generators/sqlddlgen.html#SQLTable.as_var"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.sqlddlgen.SQLTable.as_var" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.generators.sqlddlgen.SQLTable.backrefs">
-<span class="sig-name descname"><span class="pre">backrefs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#linkml.generators.sqlddlgen.Backref" title="linkml.generators.sqlddlgen.Backref"><span class="pre">Backref</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#linkml.generators.sqlddlgen.SQLTable.backrefs" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.generators.sqlddlgen.SQLTable.columns">
-<span class="sig-name descname"><span class="pre">columns</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLColumn" title="linkml.generators.sqlddlgen.SQLColumn"><span class="pre">SQLColumn</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#linkml.generators.sqlddlgen.SQLTable.columns" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="linkml.generators.sqlddlgen.SQLTable.get_singular_primary_key">
-<span class="sig-name descname"><span class="pre">get_singular_primary_key</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLColumn" title="linkml.generators.sqlddlgen.SQLColumn"><span class="pre">SQLColumn</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="_modules/linkml/generators/sqlddlgen.html#SQLTable.get_singular_primary_key"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.sqlddlgen.SQLTable.get_singular_primary_key" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.generators.sqlddlgen.SQLTable.in_schema">
-<span class="sig-name descname"><span class="pre">in_schema</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLSchema" title="linkml.generators.sqlddlgen.SQLSchema"><span class="pre">SQLSchema</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#linkml.generators.sqlddlgen.SQLTable.in_schema" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.generators.sqlddlgen.SQLTable.mapped_to">
-<span class="sig-name descname"><span class="pre">mapped_to</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.ClassDefinition" title="linkml_runtime.linkml_model.meta.ClassDefinition"><span class="pre">ClassDefinition</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#linkml.generators.sqlddlgen.SQLTable.mapped_to" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.generators.sqlddlgen.SQLTable.name">
-<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#linkml.generators.sqlddlgen.SQLTable.name" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.generators.sqlddlgen.SQLTable.primary_keys">
-<span class="sig-name descname"><span class="pre">primary_keys</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLColumn" title="linkml.generators.sqlddlgen.SQLColumn"><span class="pre">SQLColumn</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#linkml.generators.sqlddlgen.SQLTable.primary_keys" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.generators.sqlddlgen.SQLTable.referenced_by">
-<span class="sig-name descname"><span class="pre">referenced_by</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLColumn" title="linkml.generators.sqlddlgen.SQLColumn"><span class="pre">SQLColumn</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#linkml.generators.sqlddlgen.SQLTable.referenced_by" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="linkml.generators.sqlddlgen.SQLTable.remove_column">
-<span class="sig-name descname"><span class="pre">remove_column</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">c</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/linkml/generators/sqlddlgen.html#SQLTable.remove_column"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.sqlddlgen.SQLTable.remove_column" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="linkml.generators.sqltablegen.SqlNamingPolicy.underscore">
+<span class="sig-name descname"><span class="pre">underscore</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'underscore'</span></em><a class="headerlink" href="#linkml.generators.sqltablegen.SqlNamingPolicy.underscore" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -5871,13 +5694,19 @@ then create a table user_aliases, with two columns (1) alias [a string] and (2) 
 <dd></dd></dl>
 
 <dl class="py attribute">
+<dt class="sig sig-object py" id="linkml.generators.SQLTableGenerator.emit_prefixes">
+<span class="sig-name descname"><span class="pre">emit_prefixes</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#linkml.generators.SQLTableGenerator.emit_prefixes" title="Permalink to this definition">#</a></dt>
+<dd><p>Prefixes to emit, for RDF-based generators</p>
+</dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="linkml.generators.SQLTableGenerator.file_extension">
 <span class="sig-name descname"><span class="pre">file_extension</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'sql'</span></em><a class="headerlink" href="#linkml.generators.SQLTableGenerator.file_extension" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="linkml.generators.SQLTableGenerator.generate_ddl">
-<span class="sig-name descname"><span class="pre">generate_ddl</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">naming_policy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SqlNamingPolicy</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/linkml/generators/sqltablegen.html#SQLTableGenerator.generate_ddl"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.SQLTableGenerator.generate_ddl" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">generate_ddl</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">naming_policy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#linkml.generators.sqltablegen.SqlNamingPolicy" title="linkml.generators.sqltablegen.SqlNamingPolicy"><span class="pre">SqlNamingPolicy</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/linkml/generators/sqltablegen.html#SQLTableGenerator.generate_ddl"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.SQLTableGenerator.generate_ddl" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -5917,6 +5746,13 @@ then create a table user_aliases, with two columns (1) alias [a string] and (2) 
 <dt class="sig sig-object py" id="linkml.generators.SQLTableGenerator.rename_foreign_keys">
 <span class="sig-name descname"><span class="pre">rename_foreign_keys</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#linkml.generators.SQLTableGenerator.rename_foreign_keys" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="linkml.generators.SQLTableGenerator.schema">
+<span class="sig-name descname"><span class="pre">schema</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">TextIO</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="code.html#linkml_runtime.linkml_model.meta.SchemaDefinition" title="linkml_runtime.linkml_model.meta.SchemaDefinition"><span class="pre">SchemaDefinition</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="s"><span class="pre">'Generator'</span></span></em><a class="headerlink" href="#linkml.generators.SQLTableGenerator.schema" title="Permalink to this definition">#</a></dt>
+<dd><p>metamodel compliant schema.  Can be URI, file name, actual schema, another generator, an
+open file or a pre-parsed schema</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="linkml.generators.SQLTableGenerator.serialize">
@@ -6819,69 +6655,30 @@ open file or a pre-parsed schema</p>
 <li><a class="reference internal" href="#linkml.generators.sparqlgen.materialize_schema"><code class="docutils literal notranslate"><span class="pre">materialize_schema()</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#module-linkml.generators.sqlddlgen">linkml.generators.sqlddlgen module</a><ul>
-<li><a class="reference internal" href="#linkml.generators.sqlddlgen.Backref"><code class="docutils literal notranslate"><span class="pre">Backref</span></code></a><ul>
-<li><a class="reference internal" href="#linkml.generators.sqlddlgen.Backref.backref_column"><code class="docutils literal notranslate"><span class="pre">Backref.backref_column</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.sqlddlgen.Backref.order_by"><code class="docutils literal notranslate"><span class="pre">Backref.order_by</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.sqlddlgen.Backref.original_column"><code class="docutils literal notranslate"><span class="pre">Backref.original_column</span></code></a></li>
+<li><a class="reference internal" href="#linkml-generators-sqltablegen-module">linkml.generators.sqltablegen module</a><ul>
+<li><a class="reference internal" href="#linkml.generators.sqltablegen.SQLTableGenerator"><code class="docutils literal notranslate"><span class="pre">SQLTableGenerator</span></code></a><ul>
+<li><a class="reference internal" href="#linkml.generators.sqltablegen.SQLTableGenerator.dialect"><code class="docutils literal notranslate"><span class="pre">SQLTableGenerator.dialect</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.sqltablegen.SQLTableGenerator.direct_mapping"><code class="docutils literal notranslate"><span class="pre">SQLTableGenerator.direct_mapping</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.sqltablegen.SQLTableGenerator.file_extension"><code class="docutils literal notranslate"><span class="pre">SQLTableGenerator.file_extension</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.sqltablegen.SQLTableGenerator.generate_ddl"><code class="docutils literal notranslate"><span class="pre">SQLTableGenerator.generate_ddl()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.sqltablegen.SQLTableGenerator.generatorname"><code class="docutils literal notranslate"><span class="pre">SQLTableGenerator.generatorname</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.sqltablegen.SQLTableGenerator.generatorversion"><code class="docutils literal notranslate"><span class="pre">SQLTableGenerator.generatorversion</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.sqltablegen.SQLTableGenerator.get_foreign_key"><code class="docutils literal notranslate"><span class="pre">SQLTableGenerator.get_foreign_key()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.sqltablegen.SQLTableGenerator.get_sql_range"><code class="docutils literal notranslate"><span class="pre">SQLTableGenerator.get_sql_range()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.sqltablegen.SQLTableGenerator.inject_primary_keys"><code class="docutils literal notranslate"><span class="pre">SQLTableGenerator.inject_primary_keys</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.sqltablegen.SQLTableGenerator.relative_slot_num"><code class="docutils literal notranslate"><span class="pre">SQLTableGenerator.relative_slot_num</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.sqltablegen.SQLTableGenerator.rename_foreign_keys"><code class="docutils literal notranslate"><span class="pre">SQLTableGenerator.rename_foreign_keys</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.sqltablegen.SQLTableGenerator.serialize"><code class="docutils literal notranslate"><span class="pre">SQLTableGenerator.serialize()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.sqltablegen.SQLTableGenerator.use_foreign_keys"><code class="docutils literal notranslate"><span class="pre">SQLTableGenerator.use_foreign_keys</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.sqltablegen.SQLTableGenerator.use_inherits"><code class="docutils literal notranslate"><span class="pre">SQLTableGenerator.use_inherits</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.sqltablegen.SQLTableGenerator.uses_schemaloader"><code class="docutils literal notranslate"><span class="pre">SQLTableGenerator.uses_schemaloader</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.sqltablegen.SQLTableGenerator.valid_formats"><code class="docutils literal notranslate"><span class="pre">SQLTableGenerator.valid_formats</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#linkml.generators.sqlddlgen.DDLEntity"><code class="docutils literal notranslate"><span class="pre">DDLEntity</span></code></a><ul>
-<li><a class="reference internal" href="#linkml.generators.sqlddlgen.DDLEntity.description"><code class="docutils literal notranslate"><span class="pre">DDLEntity.description</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLColumn"><code class="docutils literal notranslate"><span class="pre">SQLColumn</span></code></a><ul>
-<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLColumn.as_ddlstr"><code class="docutils literal notranslate"><span class="pre">SQLColumn.as_ddlstr()</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLColumn.base_type"><code class="docutils literal notranslate"><span class="pre">SQLColumn.base_type</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLColumn.foreign_key"><code class="docutils literal notranslate"><span class="pre">SQLColumn.foreign_key</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLColumn.is_primary_key"><code class="docutils literal notranslate"><span class="pre">SQLColumn.is_primary_key()</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLColumn.is_singular_primary_key"><code class="docutils literal notranslate"><span class="pre">SQLColumn.is_singular_primary_key</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLColumn.mapped_to"><code class="docutils literal notranslate"><span class="pre">SQLColumn.mapped_to</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLColumn.mapped_to_alias"><code class="docutils literal notranslate"><span class="pre">SQLColumn.mapped_to_alias</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLColumn.name"><code class="docutils literal notranslate"><span class="pre">SQLColumn.name</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLColumn.table"><code class="docutils literal notranslate"><span class="pre">SQLColumn.table</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLDDLGenerator"><code class="docutils literal notranslate"><span class="pre">SQLDDLGenerator</span></code></a><ul>
-<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLDDLGenerator.dialect"><code class="docutils literal notranslate"><span class="pre">SQLDDLGenerator.dialect</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLDDLGenerator.end_class"><code class="docutils literal notranslate"><span class="pre">SQLDDLGenerator.end_class()</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLDDLGenerator.end_schema"><code class="docutils literal notranslate"><span class="pre">SQLDDLGenerator.end_schema()</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLDDLGenerator.generate_ddl"><code class="docutils literal notranslate"><span class="pre">SQLDDLGenerator.generate_ddl()</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLDDLGenerator.generate_header"><code class="docutils literal notranslate"><span class="pre">SQLDDLGenerator.generate_header()</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLDDLGenerator.generatorname"><code class="docutils literal notranslate"><span class="pre">SQLDDLGenerator.generatorname</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLDDLGenerator.generatorversion"><code class="docutils literal notranslate"><span class="pre">SQLDDLGenerator.generatorversion</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLDDLGenerator.get_sql_range"><code class="docutils literal notranslate"><span class="pre">SQLDDLGenerator.get_sql_range()</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLDDLGenerator.inject_primary_keys"><code class="docutils literal notranslate"><span class="pre">SQLDDLGenerator.inject_primary_keys</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLDDLGenerator.sqlschema"><code class="docutils literal notranslate"><span class="pre">SQLDDLGenerator.sqlschema</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLDDLGenerator.use_inherits"><code class="docutils literal notranslate"><span class="pre">SQLDDLGenerator.use_inherits</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLDDLGenerator.valid_formats"><code class="docutils literal notranslate"><span class="pre">SQLDDLGenerator.valid_formats</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLDDLGenerator.visit_all_class_slots"><code class="docutils literal notranslate"><span class="pre">SQLDDLGenerator.visit_all_class_slots</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLDDLGenerator.visit_class"><code class="docutils literal notranslate"><span class="pre">SQLDDLGenerator.visit_class()</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLDDLGenerator.visit_class_slot"><code class="docutils literal notranslate"><span class="pre">SQLDDLGenerator.visit_class_slot()</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLDDLGenerator.write_sqla_python_imperative"><code class="docutils literal notranslate"><span class="pre">SQLDDLGenerator.write_sqla_python_imperative()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLSchema"><code class="docutils literal notranslate"><span class="pre">SQLSchema</span></code></a><ul>
-<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLSchema.add_table"><code class="docutils literal notranslate"><span class="pre">SQLSchema.add_table()</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLSchema.all_columns"><code class="docutils literal notranslate"><span class="pre">SQLSchema.all_columns()</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLSchema.get_table_by_class_name"><code class="docutils literal notranslate"><span class="pre">SQLSchema.get_table_by_class_name()</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLSchema.mapped_to"><code class="docutils literal notranslate"><span class="pre">SQLSchema.mapped_to</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLSchema.name"><code class="docutils literal notranslate"><span class="pre">SQLSchema.name</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLSchema.tables"><code class="docutils literal notranslate"><span class="pre">SQLSchema.tables</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLTable"><code class="docutils literal notranslate"><span class="pre">SQLTable</span></code></a><ul>
-<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLTable.add_column"><code class="docutils literal notranslate"><span class="pre">SQLTable.add_column()</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLTable.as_var"><code class="docutils literal notranslate"><span class="pre">SQLTable.as_var()</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLTable.backrefs"><code class="docutils literal notranslate"><span class="pre">SQLTable.backrefs</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLTable.columns"><code class="docutils literal notranslate"><span class="pre">SQLTable.columns</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLTable.get_singular_primary_key"><code class="docutils literal notranslate"><span class="pre">SQLTable.get_singular_primary_key()</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLTable.in_schema"><code class="docutils literal notranslate"><span class="pre">SQLTable.in_schema</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLTable.mapped_to"><code class="docutils literal notranslate"><span class="pre">SQLTable.mapped_to</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLTable.name"><code class="docutils literal notranslate"><span class="pre">SQLTable.name</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLTable.primary_keys"><code class="docutils literal notranslate"><span class="pre">SQLTable.primary_keys</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLTable.referenced_by"><code class="docutils literal notranslate"><span class="pre">SQLTable.referenced_by</span></code></a></li>
-<li><a class="reference internal" href="#linkml.generators.sqlddlgen.SQLTable.remove_column"><code class="docutils literal notranslate"><span class="pre">SQLTable.remove_column()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.sqltablegen.SqlNamingPolicy"><code class="docutils literal notranslate"><span class="pre">SqlNamingPolicy</span></code></a><ul>
+<li><a class="reference internal" href="#linkml.generators.sqltablegen.SqlNamingPolicy.camelcase"><code class="docutils literal notranslate"><span class="pre">SqlNamingPolicy.camelcase</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.sqltablegen.SqlNamingPolicy.preserve"><code class="docutils literal notranslate"><span class="pre">SqlNamingPolicy.preserve</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.sqltablegen.SqlNamingPolicy.underscore"><code class="docutils literal notranslate"><span class="pre">SqlNamingPolicy.underscore</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -7163,6 +6960,7 @@ open file or a pre-parsed schema</p>
 <li><a class="reference internal" href="#linkml.generators.SQLTableGenerator"><code class="docutils literal notranslate"><span class="pre">SQLTableGenerator</span></code></a><ul>
 <li><a class="reference internal" href="#linkml.generators.SQLTableGenerator.dialect"><code class="docutils literal notranslate"><span class="pre">SQLTableGenerator.dialect</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.SQLTableGenerator.direct_mapping"><code class="docutils literal notranslate"><span class="pre">SQLTableGenerator.direct_mapping</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.SQLTableGenerator.emit_prefixes"><code class="docutils literal notranslate"><span class="pre">SQLTableGenerator.emit_prefixes</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.SQLTableGenerator.file_extension"><code class="docutils literal notranslate"><span class="pre">SQLTableGenerator.file_extension</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.SQLTableGenerator.generate_ddl"><code class="docutils literal notranslate"><span class="pre">SQLTableGenerator.generate_ddl()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.SQLTableGenerator.generatorname"><code class="docutils literal notranslate"><span class="pre">SQLTableGenerator.generatorname</span></code></a></li>
@@ -7172,6 +6970,7 @@ open file or a pre-parsed schema</p>
 <li><a class="reference internal" href="#linkml.generators.SQLTableGenerator.inject_primary_keys"><code class="docutils literal notranslate"><span class="pre">SQLTableGenerator.inject_primary_keys</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.SQLTableGenerator.relative_slot_num"><code class="docutils literal notranslate"><span class="pre">SQLTableGenerator.relative_slot_num</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.SQLTableGenerator.rename_foreign_keys"><code class="docutils literal notranslate"><span class="pre">SQLTableGenerator.rename_foreign_keys</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.SQLTableGenerator.schema"><code class="docutils literal notranslate"><span class="pre">SQLTableGenerator.schema</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.SQLTableGenerator.serialize"><code class="docutils literal notranslate"><span class="pre">SQLTableGenerator.serialize()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.SQLTableGenerator.use_foreign_keys"><code class="docutils literal notranslate"><span class="pre">SQLTableGenerator.use_foreign_keys</span></code></a></li>
 <li><a class="reference internal" href="#linkml.generators.SQLTableGenerator.use_inherits"><code class="docutils literal notranslate"><span class="pre">SQLTableGenerator.use_inherits</span></code></a></li>

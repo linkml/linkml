@@ -218,7 +218,7 @@
 <li class="toctree-l2"><a class="reference internal" href="generators/pydantic.html">Pydantic</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generators/java.html">Java</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generators/typescript.html">Typescript</a></li>
-<li class="toctree-l2"><a class="reference internal" href="generators/sqlddl.html">SQL DDL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generators/sqltable.html">SQL DDL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generators/sqlalchemy.html">SQL Alchemy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generators/linkml.html">LinkML Generators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generators/sssom.html">SSSOM</a></li>
@@ -931,69 +931,30 @@
 <li class="toctree-l3"><a class="reference internal" href="linkml.generators.html#linkml.generators.sparqlgen.materialize_schema"><code class="docutils literal notranslate"><span class="pre">materialize_schema()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="linkml.generators.html#module-linkml.generators.sqlddlgen">linkml.generators.sqlddlgen module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="linkml.generators.html#linkml.generators.sqlddlgen.Backref"><code class="docutils literal notranslate"><span class="pre">Backref</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="linkml.generators.html#linkml.generators.sqlddlgen.Backref.backref_column"><code class="docutils literal notranslate"><span class="pre">Backref.backref_column</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="linkml.generators.html#linkml.generators.sqlddlgen.Backref.order_by"><code class="docutils literal notranslate"><span class="pre">Backref.order_by</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="linkml.generators.html#linkml.generators.sqlddlgen.Backref.original_column"><code class="docutils literal notranslate"><span class="pre">Backref.original_column</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="linkml.generators.html#linkml-generators-sqltablegen-module">linkml.generators.sqltablegen module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="linkml.generators.html#linkml.generators.sqltablegen.SQLTableGenerator"><code class="docutils literal notranslate"><span class="pre">SQLTableGenerator</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="linkml.generators.html#linkml.generators.sqltablegen.SQLTableGenerator.dialect"><code class="docutils literal notranslate"><span class="pre">SQLTableGenerator.dialect</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="linkml.generators.html#linkml.generators.sqltablegen.SQLTableGenerator.direct_mapping"><code class="docutils literal notranslate"><span class="pre">SQLTableGenerator.direct_mapping</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="linkml.generators.html#linkml.generators.sqltablegen.SQLTableGenerator.file_extension"><code class="docutils literal notranslate"><span class="pre">SQLTableGenerator.file_extension</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="linkml.generators.html#linkml.generators.sqltablegen.SQLTableGenerator.generate_ddl"><code class="docutils literal notranslate"><span class="pre">SQLTableGenerator.generate_ddl()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="linkml.generators.html#linkml.generators.sqltablegen.SQLTableGenerator.generatorname"><code class="docutils literal notranslate"><span class="pre">SQLTableGenerator.generatorname</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="linkml.generators.html#linkml.generators.sqltablegen.SQLTableGenerator.generatorversion"><code class="docutils literal notranslate"><span class="pre">SQLTableGenerator.generatorversion</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="linkml.generators.html#linkml.generators.sqltablegen.SQLTableGenerator.get_foreign_key"><code class="docutils literal notranslate"><span class="pre">SQLTableGenerator.get_foreign_key()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="linkml.generators.html#linkml.generators.sqltablegen.SQLTableGenerator.get_sql_range"><code class="docutils literal notranslate"><span class="pre">SQLTableGenerator.get_sql_range()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="linkml.generators.html#linkml.generators.sqltablegen.SQLTableGenerator.inject_primary_keys"><code class="docutils literal notranslate"><span class="pre">SQLTableGenerator.inject_primary_keys</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="linkml.generators.html#linkml.generators.sqltablegen.SQLTableGenerator.relative_slot_num"><code class="docutils literal notranslate"><span class="pre">SQLTableGenerator.relative_slot_num</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="linkml.generators.html#linkml.generators.sqltablegen.SQLTableGenerator.rename_foreign_keys"><code class="docutils literal notranslate"><span class="pre">SQLTableGenerator.rename_foreign_keys</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="linkml.generators.html#linkml.generators.sqltablegen.SQLTableGenerator.serialize"><code class="docutils literal notranslate"><span class="pre">SQLTableGenerator.serialize()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="linkml.generators.html#linkml.generators.sqltablegen.SQLTableGenerator.use_foreign_keys"><code class="docutils literal notranslate"><span class="pre">SQLTableGenerator.use_foreign_keys</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="linkml.generators.html#linkml.generators.sqltablegen.SQLTableGenerator.use_inherits"><code class="docutils literal notranslate"><span class="pre">SQLTableGenerator.use_inherits</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="linkml.generators.html#linkml.generators.sqltablegen.SQLTableGenerator.uses_schemaloader"><code class="docutils literal notranslate"><span class="pre">SQLTableGenerator.uses_schemaloader</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="linkml.generators.html#linkml.generators.sqltablegen.SQLTableGenerator.valid_formats"><code class="docutils literal notranslate"><span class="pre">SQLTableGenerator.valid_formats</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="linkml.generators.html#linkml.generators.sqlddlgen.DDLEntity"><code class="docutils literal notranslate"><span class="pre">DDLEntity</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="linkml.generators.html#linkml.generators.sqlddlgen.DDLEntity.description"><code class="docutils literal notranslate"><span class="pre">DDLEntity.description</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="linkml.generators.html#linkml.generators.sqlddlgen.SQLColumn"><code class="docutils literal notranslate"><span class="pre">SQLColumn</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="linkml.generators.html#linkml.generators.sqlddlgen.SQLColumn.as_ddlstr"><code class="docutils literal notranslate"><span class="pre">SQLColumn.as_ddlstr()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="linkml.generators.html#linkml.generators.sqlddlgen.SQLColumn.base_type"><code class="docutils literal notranslate"><span class="pre">SQLColumn.base_type</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="linkml.generators.html#linkml.generators.sqlddlgen.SQLColumn.foreign_key"><code class="docutils literal notranslate"><span class="pre">SQLColumn.foreign_key</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="linkml.generators.html#linkml.generators.sqlddlgen.SQLColumn.is_primary_key"><code class="docutils literal notranslate"><span class="pre">SQLColumn.is_primary_key()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="linkml.generators.html#linkml.generators.sqlddlgen.SQLColumn.is_singular_primary_key"><code class="docutils literal notranslate"><span class="pre">SQLColumn.is_singular_primary_key</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="linkml.generators.html#linkml.generators.sqlddlgen.SQLColumn.mapped_to"><code class="docutils literal notranslate"><span class="pre">SQLColumn.mapped_to</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="linkml.generators.html#linkml.generators.sqlddlgen.SQLColumn.mapped_to_alias"><code class="docutils literal notranslate"><span class="pre">SQLColumn.mapped_to_alias</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="linkml.generators.html#linkml.generators.sqlddlgen.SQLColumn.name"><code class="docutils literal notranslate"><span class="pre">SQLColumn.name</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="linkml.generators.html#linkml.generators.sqlddlgen.SQLColumn.table"><code class="docutils literal notranslate"><span class="pre">SQLColumn.table</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="linkml.generators.html#linkml.generators.sqlddlgen.SQLDDLGenerator"><code class="docutils literal notranslate"><span class="pre">SQLDDLGenerator</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="linkml.generators.html#linkml.generators.sqlddlgen.SQLDDLGenerator.dialect"><code class="docutils literal notranslate"><span class="pre">SQLDDLGenerator.dialect</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="linkml.generators.html#linkml.generators.sqlddlgen.SQLDDLGenerator.end_class"><code class="docutils literal notranslate"><span class="pre">SQLDDLGenerator.end_class()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="linkml.generators.html#linkml.generators.sqlddlgen.SQLDDLGenerator.end_schema"><code class="docutils literal notranslate"><span class="pre">SQLDDLGenerator.end_schema()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="linkml.generators.html#linkml.generators.sqlddlgen.SQLDDLGenerator.generate_ddl"><code class="docutils literal notranslate"><span class="pre">SQLDDLGenerator.generate_ddl()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="linkml.generators.html#linkml.generators.sqlddlgen.SQLDDLGenerator.generate_header"><code class="docutils literal notranslate"><span class="pre">SQLDDLGenerator.generate_header()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="linkml.generators.html#linkml.generators.sqlddlgen.SQLDDLGenerator.generatorname"><code class="docutils literal notranslate"><span class="pre">SQLDDLGenerator.generatorname</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="linkml.generators.html#linkml.generators.sqlddlgen.SQLDDLGenerator.generatorversion"><code class="docutils literal notranslate"><span class="pre">SQLDDLGenerator.generatorversion</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="linkml.generators.html#linkml.generators.sqlddlgen.SQLDDLGenerator.get_sql_range"><code class="docutils literal notranslate"><span class="pre">SQLDDLGenerator.get_sql_range()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="linkml.generators.html#linkml.generators.sqlddlgen.SQLDDLGenerator.inject_primary_keys"><code class="docutils literal notranslate"><span class="pre">SQLDDLGenerator.inject_primary_keys</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="linkml.generators.html#linkml.generators.sqlddlgen.SQLDDLGenerator.sqlschema"><code class="docutils literal notranslate"><span class="pre">SQLDDLGenerator.sqlschema</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="linkml.generators.html#linkml.generators.sqlddlgen.SQLDDLGenerator.use_inherits"><code class="docutils literal notranslate"><span class="pre">SQLDDLGenerator.use_inherits</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="linkml.generators.html#linkml.generators.sqlddlgen.SQLDDLGenerator.valid_formats"><code class="docutils literal notranslate"><span class="pre">SQLDDLGenerator.valid_formats</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="linkml.generators.html#linkml.generators.sqlddlgen.SQLDDLGenerator.visit_all_class_slots"><code class="docutils literal notranslate"><span class="pre">SQLDDLGenerator.visit_all_class_slots</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="linkml.generators.html#linkml.generators.sqlddlgen.SQLDDLGenerator.visit_class"><code class="docutils literal notranslate"><span class="pre">SQLDDLGenerator.visit_class()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="linkml.generators.html#linkml.generators.sqlddlgen.SQLDDLGenerator.visit_class_slot"><code class="docutils literal notranslate"><span class="pre">SQLDDLGenerator.visit_class_slot()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="linkml.generators.html#linkml.generators.sqlddlgen.SQLDDLGenerator.write_sqla_python_imperative"><code class="docutils literal notranslate"><span class="pre">SQLDDLGenerator.write_sqla_python_imperative()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="linkml.generators.html#linkml.generators.sqlddlgen.SQLSchema"><code class="docutils literal notranslate"><span class="pre">SQLSchema</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="linkml.generators.html#linkml.generators.sqlddlgen.SQLSchema.add_table"><code class="docutils literal notranslate"><span class="pre">SQLSchema.add_table()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="linkml.generators.html#linkml.generators.sqlddlgen.SQLSchema.all_columns"><code class="docutils literal notranslate"><span class="pre">SQLSchema.all_columns()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="linkml.generators.html#linkml.generators.sqlddlgen.SQLSchema.get_table_by_class_name"><code class="docutils literal notranslate"><span class="pre">SQLSchema.get_table_by_class_name()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="linkml.generators.html#linkml.generators.sqlddlgen.SQLSchema.mapped_to"><code class="docutils literal notranslate"><span class="pre">SQLSchema.mapped_to</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="linkml.generators.html#linkml.generators.sqlddlgen.SQLSchema.name"><code class="docutils literal notranslate"><span class="pre">SQLSchema.name</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="linkml.generators.html#linkml.generators.sqlddlgen.SQLSchema.tables"><code class="docutils literal notranslate"><span class="pre">SQLSchema.tables</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="linkml.generators.html#linkml.generators.sqlddlgen.SQLTable"><code class="docutils literal notranslate"><span class="pre">SQLTable</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="linkml.generators.html#linkml.generators.sqlddlgen.SQLTable.add_column"><code class="docutils literal notranslate"><span class="pre">SQLTable.add_column()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="linkml.generators.html#linkml.generators.sqlddlgen.SQLTable.as_var"><code class="docutils literal notranslate"><span class="pre">SQLTable.as_var()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="linkml.generators.html#linkml.generators.sqlddlgen.SQLTable.backrefs"><code class="docutils literal notranslate"><span class="pre">SQLTable.backrefs</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="linkml.generators.html#linkml.generators.sqlddlgen.SQLTable.columns"><code class="docutils literal notranslate"><span class="pre">SQLTable.columns</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="linkml.generators.html#linkml.generators.sqlddlgen.SQLTable.get_singular_primary_key"><code class="docutils literal notranslate"><span class="pre">SQLTable.get_singular_primary_key()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="linkml.generators.html#linkml.generators.sqlddlgen.SQLTable.in_schema"><code class="docutils literal notranslate"><span class="pre">SQLTable.in_schema</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="linkml.generators.html#linkml.generators.sqlddlgen.SQLTable.mapped_to"><code class="docutils literal notranslate"><span class="pre">SQLTable.mapped_to</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="linkml.generators.html#linkml.generators.sqlddlgen.SQLTable.name"><code class="docutils literal notranslate"><span class="pre">SQLTable.name</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="linkml.generators.html#linkml.generators.sqlddlgen.SQLTable.primary_keys"><code class="docutils literal notranslate"><span class="pre">SQLTable.primary_keys</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="linkml.generators.html#linkml.generators.sqlddlgen.SQLTable.referenced_by"><code class="docutils literal notranslate"><span class="pre">SQLTable.referenced_by</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="linkml.generators.html#linkml.generators.sqlddlgen.SQLTable.remove_column"><code class="docutils literal notranslate"><span class="pre">SQLTable.remove_column()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="linkml.generators.html#linkml.generators.sqltablegen.SqlNamingPolicy"><code class="docutils literal notranslate"><span class="pre">SqlNamingPolicy</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="linkml.generators.html#linkml.generators.sqltablegen.SqlNamingPolicy.camelcase"><code class="docutils literal notranslate"><span class="pre">SqlNamingPolicy.camelcase</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="linkml.generators.html#linkml.generators.sqltablegen.SqlNamingPolicy.preserve"><code class="docutils literal notranslate"><span class="pre">SqlNamingPolicy.preserve</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="linkml.generators.html#linkml.generators.sqltablegen.SqlNamingPolicy.underscore"><code class="docutils literal notranslate"><span class="pre">SqlNamingPolicy.underscore</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -1275,6 +1236,7 @@
 <li class="toctree-l3"><a class="reference internal" href="linkml.generators.html#linkml.generators.SQLTableGenerator"><code class="docutils literal notranslate"><span class="pre">SQLTableGenerator</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="linkml.generators.html#linkml.generators.SQLTableGenerator.dialect"><code class="docutils literal notranslate"><span class="pre">SQLTableGenerator.dialect</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="linkml.generators.html#linkml.generators.SQLTableGenerator.direct_mapping"><code class="docutils literal notranslate"><span class="pre">SQLTableGenerator.direct_mapping</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="linkml.generators.html#linkml.generators.SQLTableGenerator.emit_prefixes"><code class="docutils literal notranslate"><span class="pre">SQLTableGenerator.emit_prefixes</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="linkml.generators.html#linkml.generators.SQLTableGenerator.file_extension"><code class="docutils literal notranslate"><span class="pre">SQLTableGenerator.file_extension</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="linkml.generators.html#linkml.generators.SQLTableGenerator.generate_ddl"><code class="docutils literal notranslate"><span class="pre">SQLTableGenerator.generate_ddl()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="linkml.generators.html#linkml.generators.SQLTableGenerator.generatorname"><code class="docutils literal notranslate"><span class="pre">SQLTableGenerator.generatorname</span></code></a></li>
@@ -1284,6 +1246,7 @@
 <li class="toctree-l4"><a class="reference internal" href="linkml.generators.html#linkml.generators.SQLTableGenerator.inject_primary_keys"><code class="docutils literal notranslate"><span class="pre">SQLTableGenerator.inject_primary_keys</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="linkml.generators.html#linkml.generators.SQLTableGenerator.relative_slot_num"><code class="docutils literal notranslate"><span class="pre">SQLTableGenerator.relative_slot_num</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="linkml.generators.html#linkml.generators.SQLTableGenerator.rename_foreign_keys"><code class="docutils literal notranslate"><span class="pre">SQLTableGenerator.rename_foreign_keys</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="linkml.generators.html#linkml.generators.SQLTableGenerator.schema"><code class="docutils literal notranslate"><span class="pre">SQLTableGenerator.schema</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="linkml.generators.html#linkml.generators.SQLTableGenerator.serialize"><code class="docutils literal notranslate"><span class="pre">SQLTableGenerator.serialize()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="linkml.generators.html#linkml.generators.SQLTableGenerator.use_foreign_keys"><code class="docutils literal notranslate"><span class="pre">SQLTableGenerator.use_foreign_keys</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="linkml.generators.html#linkml.generators.SQLTableGenerator.use_inherits"><code class="docutils literal notranslate"><span class="pre">SQLTableGenerator.use_inherits</span></code></a></li>

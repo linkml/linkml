@@ -218,7 +218,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../generators/pydantic.html">Pydantic</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/java.html">Java</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/typescript.html">Typescript</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../generators/sqlddl.html">SQL DDL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/sqltable.html">SQL DDL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/sqlalchemy.html">SQL Alchemy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/linkml.html">LinkML Generators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/sssom.html">SSSOM</a></li>
@@ -332,8 +332,8 @@
 </section>
 <section id="generating-sql-create-table-statements">
 <h3>Generating SQL CREATE TABLE statements<a class="headerlink" href="#generating-sql-create-table-statements" title="Permalink to this heading">#</a></h3>
-<p>Use the <code class="docutils literal notranslate"><span class="pre">gen-sqlddl</span></code> command to make a SQL schema:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gen-sqlddl<span class="w"> </span>personinfo.yaml
+<p>Use the <code class="docutils literal notranslate"><span class="pre">gen-sqltables</span></code> command to make a SQL schema:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gen-sqltables<span class="w"> </span>personinfo.yaml
 </pre></div>
 </div>
 <p>Outputs:</p>
@@ -533,7 +533,7 @@ you are using a RDBMS you may find them useful.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gen-sqla<span class="w"> </span>personinfo.yaml
 </pre></div>
 </div>
-<p>See the SQLDDL generator docs for more details.</p>
+<p>See the SQLTables generator docs for more details.</p>
 </section>
 </section>
 </section>
