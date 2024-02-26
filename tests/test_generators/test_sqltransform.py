@@ -35,7 +35,7 @@ def _translate(builder: SchemaBuilder) -> TransformationResult:
 
 def test_inject_primary_key():
     """
-    test a minimal schema with no primary names declared
+    test a minimal schema with no primary keys declared
     """
     b = SchemaBuilder()
     slots = ["name", "description"]

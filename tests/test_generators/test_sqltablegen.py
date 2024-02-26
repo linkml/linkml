@@ -21,6 +21,13 @@ from linkml.utils.schema_builder import SchemaBuilder
 # DB = env.expected_path("personinfo.db")
 DUMMY_CLASS = "dummy class"
 
+to_sql_yaml = """
+
+
+
+"""
+
+
 
 @pytest.fixture
 def schema(input_path):

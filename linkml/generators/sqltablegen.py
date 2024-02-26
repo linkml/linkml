@@ -111,6 +111,7 @@ class SQLTableGenerator(Generator):
          * add a backref C.S => Ref, C.pk
          * remove Col from T
        - If R is a class, and the slot IS multivalued
+        * create a new table T_S, with 2 columns: S, and a backref to T
 
     """
 
