@@ -10,7 +10,7 @@ See [Using SQL DBs](../developers/using-sql-dbs.html) in the Developers Guide
     
 ## Mapping from a LinkML model to SQL Schemas
 
-The [SQL DDL Generator](../generators/sqlddl.html) can be used to generate SQL DDL (`CREATE TABLE` statements) from a schema.
+The [SQL Table Generator](../generators/sqltable.html) can be used to generate SQL DDL (`CREATE TABLE` statements) from a schema.
 
 There are many *possible* ways of mapping a LinkML schema to SQL DDL.
 The existing generator makes a specific set of decisions, in future it may be possible to customize this more to your needs.

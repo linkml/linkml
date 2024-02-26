@@ -271,7 +271,7 @@ drive dynamic tooltips in an application that collects or displays data.
 
 See also:
 
- * [SQL Table generator](https://linkml.io/linkml/generators/sqlddl.html)
+ * [SQL Table generator](https://linkml.io/linkml/generators/sqltable.html)
 
 ## Why should I use LinkML over UML?
 
