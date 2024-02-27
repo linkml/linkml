@@ -313,7 +313,7 @@
 <section id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Permalink to this heading">#</a></h2>
 <p>Web Ontology Language
-<a class="reference external" href="https://www.w3.org/TR/2012/REC-owl2-overview-20121211/">OWL</a> is
+<a class="reference external" href="https://www.w3.org/TR/2012/REC-owl2-overview-20121211/">OWL</a> is a
 modeling language used to author ontologies.</p>
 <p>OWL is used for building <em>ontologies</em>, whereas LinkML is a <em>schema</em>
 language. Nevertheless, it can be useful to render Schemas as OWL (and
@@ -446,8 +446,8 @@ OWL General Class Inclusion (GCI) axioms will be used to preserve semantics.</p>
 </pre></div>
 </div>
 </section>
-<section id="semantics-of-mappings">
-<h3>Semantics of mappings<a class="headerlink" href="#semantics-of-mappings" title="Permalink to this heading">#</a></h3>
+<section id="semantics-of-mapping-from-linkml">
+<h3>Semantics of mapping from LinkML<a class="headerlink" href="#semantics-of-mapping-from-linkml" title="Permalink to this heading">#</a></h3>
 <p>Generated OWL should be a faithful open-world rendering of the LinkML schema. This means that it may not be
 <em>complete</em> for the purposes of data validation. If a slot is not required, then an OWL reasoner will infer
 the presence of a slot value, even if not explicitly stated. However, it does not treat this as an error.</p>
@@ -456,6 +456,16 @@ with data converted to RDF, and then perform reasoning. If you use an ontology d
 like Protege, this can be an intuitive way of debugging errors with your schema.</p>
 <p>Note that currently only a subset of LinkML rules can be expressed as OWL. In future, we may
 add support to generate auxhiliary SWRL files including rules.</p>
+</section>
+<section id="pitfalls">
+<h3>Pitfalls<a class="headerlink" href="#pitfalls" title="Permalink to this heading">#</a></h3>
+<p>Many OWL tools such as those based on the OWL API are intended to consume a [profile](<a class="reference external" href="https://www.w3.org/TR/owl2-profiles/">https://www.w3.org/TR/owl2-profiles/</a>)
+of OWL called OWL-DL. It’s relatively easy to create LinkML that can’t be <em>directly</em> expressed in
+OWL-DL, and the resulting RDF triples are said to be [OWL Full](<a class="reference external" href="https://www.w3.org/TR/owl2-overview/#Semantics">https://www.w3.org/TR/owl2-overview/#Semantics</a>).</p>
+<p>For example, if you have slots in your schema that have an <cite>Any</cite>
+range, then there is no direct translation of that slot to an OWL-DL
+property, since each property needs to explicitly commit to being a
+<cite>DatatypeProperty</cite> or <cite>ObjectProperty</cite> in OWL-DL.</p>
 </section>
 <section id="other-examples">
 <h3>Other examples<a class="headerlink" href="#other-examples" title="Permalink to this heading">#</a></h3>
@@ -754,7 +764,8 @@ to include metaclasses. To restore this behavior:</p>
 <li><a class="reference internal" href="#overview">Overview</a><ul>
 <li><a class="reference internal" href="#mapping">Mapping</a></li>
 <li><a class="reference internal" href="#tips">Tips</a></li>
-<li><a class="reference internal" href="#semantics-of-mappings">Semantics of mappings</a></li>
+<li><a class="reference internal" href="#semantics-of-mapping-from-linkml">Semantics of mapping from LinkML</a></li>
+<li><a class="reference internal" href="#pitfalls">Pitfalls</a></li>
 <li><a class="reference internal" href="#other-examples">Other examples</a></li>
 </ul>
 </li>

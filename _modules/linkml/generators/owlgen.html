@@ -994,6 +994,14 @@
                 <span class="n">eq_uris</span> <span class="o">=</span> <span class="p">[</span><span class="n">URIRef</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">expand_curie</span><span class="p">(</span><span class="n">s</span><span class="p">))</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">equals_string_in</span><span class="p">]</span>
                 <span class="n">owl_exprs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_union_of</span><span class="p">(</span><span class="n">eq_uris</span><span class="p">))</span>
         <span class="k">for</span> <span class="n">constraint_prop</span><span class="p">,</span> <span class="n">constraint_val</span> <span class="ow">in</span> <span class="n">constraints</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">is_literal</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">is_literal</span><span class="p">:</span>
+                <span class="c1"># In LinkML, it is permissible to have a literal constraints on slots that refer to</span>
+                <span class="c1"># other objects. E.g. a pattern on a in_organization slot which refers to an Organization</span>
+                <span class="c1"># will be applied to the id of that Organization.</span>
+                <span class="c1"># To support this in OWL we would need to change this to a complex expression - for</span>
+                <span class="c1"># now we will skip this.</span>
+                <span class="c1"># See: https://github.com/linkml/linkml/issues/1841</span>
+                <span class="k">continue</span>
             <span class="k">if</span> <span class="n">constraint_val</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">owl_types</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">RDFS</span><span class="o">.</span><span class="n">Literal</span><span class="p">)</span>
                 <span class="n">dr</span> <span class="o">=</span> <span class="n">BNode</span><span class="p">()</span>
