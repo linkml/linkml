@@ -17,18 +17,18 @@
 metamodel_version = "{{metamodel_version}}"
 version = "{{version if version else None}}"
 
-{{ base_model_(base_model.name, base_model.extra_fields, base_model.fields, pydantic_ver) }}
 
+{{ base_model_(base_model.name, base_model.extra_fields, base_model.fields, pydantic_ver) }}
 {% for e in enums.values() %}
+
 {{ enum(e.name, e['values'], e.description) }}
 {% endfor %}
-
 {% if injected_classes -%}
     {% for c in injected_classes %}
+
 {{ c }}
     {% endfor %}
 {% endif %}
-
 {% for c in classes.values() %}
 
 {{ class(c.name, c.bases, c.attributes, c.description, pydantic_ver) }}

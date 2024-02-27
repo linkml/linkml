@@ -21,10 +21,12 @@ class TemplateModel(BaseModel):
     if int(PYDANTIC_VERSION[0]) < 2:
 
         @overload
-        def model_dump(self, mode: Literal["python"] = "python") -> dict: ...
+        def model_dump(self, mode: Literal["python"] = "python") -> dict:
+            ...
 
         @overload
-        def model_dump(self, mode: Literal["json"] = "json") -> str: ...
+        def model_dump(self, mode: Literal["json"] = "json") -> str:
+            ...
 
         def model_dump(self, mode: Literal["python", "json"] = "python", **kwargs) -> Union[dict, str]:
             if mode == "json":
@@ -181,7 +183,7 @@ class ConditionalImport(Import):
 class Imports(TemplateModel):
     """Container class for imports that can handle merging!"""
 
-    imports: List[Import] = Field(default_factory=list)
+    imports: List[Union[Import, ConditionalImport]] = Field(default_factory=list)
 
     def __add__(self, other: Import) -> "Imports":
         # check if we have one of these already
@@ -229,6 +231,6 @@ class PydanticModule(TemplateModel):
     version: Optional[str] = None
     base_model: PydanticBaseModel = PydanticBaseModel()
     injected_classes: Optional[List[str]] = None
-    imports: List[Import] = Field(default_factory=list)
+    imports: List[Union[Import, ConditionalImport]] = Field(default_factory=list)
     enums: Dict[str, Enum] = Field(default_factory=dict)
     classes: Dict[str, PydanticClass] = Field(default_factory=dict)

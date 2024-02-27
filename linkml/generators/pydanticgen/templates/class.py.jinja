@@ -5,7 +5,7 @@
 class {{ name }}({% if bases is string %}{{ bases }}{% else %}{{ bases | join(', ') }}{% endif %}):
     {% if description %}
     """
-    {{ description }}
+    {{ description | indent(width=4) }}
     """
     {% endif -%}
     {% if attributes %}
@@ -14,6 +14,7 @@ class {{ name }}({% if bases is string %}{{ bases }}{% else %}{{ bases | join(',
         {% endfor -%}
         {% for attr in attributes.values() %}
             {% if attr.pattern %}
+
     {{ validator(attr.name, attr.pattern, pydantic_ver) }}
             {% endif %}
         {% endfor -%}
@@ -24,7 +25,7 @@ class {{ name }}({% if bases is string %}{{ bases }}{% else %}{{ bases | join(',
 class {{ name }}({% if bases is string %}{{ bases }}{% else %}{{ bases | join(', ') }}{% endif %}):
     {% if description %}
     """
-    {{ description }}
+    {{ description | indent(width=4) }}
     """
     {% endif -%}
     {% if attributes %}
@@ -33,6 +34,7 @@ class {{ name }}({% if bases is string %}{{ bases }}{% else %}{{ bases | join(',
         {% endfor -%}
         {% for attr in attributes.values() %}
             {% if attr.pattern %}
+
     {{ validator(attr.name, attr.pattern, pydantic_ver) }}
             {% endif %}
         {% endfor -%}
