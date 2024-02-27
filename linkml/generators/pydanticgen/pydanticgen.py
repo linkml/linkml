@@ -62,29 +62,23 @@ DEFAULT_IMPORTS = (
     Imports()
     + Import(module="__future__", objects=[ObjectImport(name="annotations")])
     + Import(module="datetime", objects=[ObjectImport(name="datetime"), ObjectImport(name="date")])
-    + Import(module="enum", objects=[ObjectImport(name="Enum")])
     + Import(module="decimal", objects=[ObjectImport(name="Decimal")])
+    + Import(module="enum", objects=[ObjectImport(name="Enum")])
     + Import(module="re")
-    + Import(module="sys")
     + Import(
         module="typing",
         objects=[
+            ObjectImport(name="Any"),
             ObjectImport(name="List"),
+            ObjectImport(name="Literal"),
             ObjectImport(name="Dict"),
             ObjectImport(name="Optional"),
-            ObjectImport(name="Any"),
             ObjectImport(name="Union"),
         ],
     )
+    + Import(module="pydantic.version", objects=[ObjectImport(name="VERSION", alias="PYDANTIC_VERSION")])
     + ConditionalImport(
-        condition="sys.version_info >= (3, 8)",
-        module="typing",
-        objects=[ObjectImport(name="Literal")],
-        alternative=Import(module="typing_extensions", objects=[ObjectImport(name="Literal")]),
-    )
-)
-if int(PYDANTIC_VERSION[0]) >= 2:
-    DEFAULT_IMPORTS += Import(
+        condition="int(PYDANTIC_VERSION)>=2",
         module="pydantic",
         objects=[
             ObjectImport(name="BaseModel"),
@@ -92,12 +86,12 @@ if int(PYDANTIC_VERSION[0]) >= 2:
             ObjectImport(name="Field"),
             ObjectImport(name="field_validator"),
         ],
+        alternative=Import(
+            module="pydantic",
+            objects=[ObjectImport(name="BaseModel"), ObjectImport(name="Field"), ObjectImport(name="validator")],
+        ),
     )
-else:
-    DEFAULT_IMPORTS += Import(
-        module="pydantic",
-        objects=[ObjectImport(name="BaseModel"), ObjectImport(name="Field"), ObjectImport(name="validator")],
-    )
+)
 
 
 @dataclass
