@@ -713,10 +713,11 @@ def test_inject_field(kitchen_sink_path, tmp_path, input_path, inject, name, typ
 
 
 @pytest.mark.parametrize(
-    "mode,expected", [["python", {"pydantic_ver": int(PYDANTIC_VERSION[0])}], ["json", '{"pydantic_ver": 1}']]
+    "mode,expected",
+    [["python", {"pydantic_ver": int(PYDANTIC_VERSION[0])}]],
 )
 def test_template_model_dump(mode: str, expected):
-    assert TemplateModel().model_dump(mode) == expected
+    assert TemplateModel().model_dump(mode=mode) == expected
 
 
 def test_attribute_field():

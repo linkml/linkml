@@ -606,7 +606,7 @@ class PydanticGenerator(OOCodeGenerator):
                         for k in PydanticAttribute.model_fields.keys()
                         if src_attr._as_dict.get(k, None) is not None
                     }
-                new_fields["predefined"] = predefined.get(k, {}).get(attr_name, None)
+                new_fields["predefined"] = str(predefined.get(k, {}).get(attr_name, None))
                 new_fields["name"] = attr_name
                 attrs[attr_name] = PydanticAttribute(**new_fields)
 
@@ -626,7 +626,7 @@ class PydanticGenerator(OOCodeGenerator):
             classes=classes,
         )
 
-        code = template_obj.render(**module.dict())
+        code = template_obj.render(**module.model_dump())
         return code
 
     def default_value_for_type(self, typ: str) -> str:
