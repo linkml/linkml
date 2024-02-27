@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Callable, Optional
 
 import pytest
+import requests_cache
 from _pytest.assertion.util import _diff_text
 from linkml_runtime.linkml_model.meta import SchemaDefinition
 
@@ -182,3 +183,22 @@ def pytest_sessionstart(session: pytest.Session):
 def pytest_assertrepr_compare(config, op, left, right):
     if op == "==" and isinstance(right, Snapshot):
         return [f"value matches snapshot {right.path}"] + right.eq_state.split("\n")
+
+
+@pytest.fixture(scope="session", autouse=True)
+def patch_requests_cache(pytestconfig):
+    """
+    Cache network requests - for each unique network request, store it in
+    an sqlite cache. only do unique requests once per session.
+    """
+    cache_file = Path(__file__).parent / "output" / "requests-cache.sqlite"
+    requests_cache.install_cache(
+        str(cache_file),
+        backend="sqlite",
+        urls_expire_after={"localhost": requests_cache.DO_NOT_CACHE},
+    )
+    requests_cache.clear()
+    yield
+    # delete cache file unless we have requested it to persist for inspection
+    if not pytestconfig.getoption("--with-output"):
+        cache_file.unlink(missing_ok=True)

@@ -137,6 +137,7 @@ sphinx = "*"
 sphinx-click = "*"
 sphinx-rtd-theme = "*"
 myst-parser = "*"
+requests-cache = "^1.2.0"
 
 [tool.poetry.group.tests.dependencies]
 pytest = "^7.4.0"
