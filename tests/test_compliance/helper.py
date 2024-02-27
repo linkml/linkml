@@ -21,6 +21,7 @@ import rdflib
 import yaml
 from linkml_runtime import SchemaView
 from linkml_runtime.dumpers import rdflib_dumper, yaml_dumper
+from linkml_runtime.linkml_model import SchemaDefinition
 from linkml_runtime.linkml_model import meta as meta
 from linkml_runtime.loaders import rdflib_loader
 from linkml_runtime.utils.compile_python import compile_python
@@ -28,6 +29,7 @@ from linkml_runtime.utils.introspection import package_schemaview
 from linkml_runtime.utils.yamlutils import YAMLRoot
 from pydantic import BaseModel
 
+import tests
 from linkml import generators as generators
 from linkml.generators import (
     JsonSchemaGenerator,
@@ -274,7 +276,8 @@ def _generate_framework_output(schema: Dict, framework: str, mappings: List = No
             gen_class, gen_args = gen_class
         else:
             gen_args = {}
-        gen = gen_class(schema=yaml.dump(schema), **gen_args)
+
+        gen = gen_class(schema=SchemaDefinition(**schema), **gen_args)
         if framework == JAVA:
             temp_dir = tempfile.TemporaryDirectory()
             gen.serialize(temp_dir.name)
@@ -486,32 +489,34 @@ def _make_schema(
             raise AssertionError(f"No core elements defined for for {schema_name}")
         for el in core_elements:
             stream.write(f"* [{el}](https://w3id.org/linkml/{el})\n")
-    # Write README for this schema combo
-    with open(out_dir / "README.md", "w", encoding="utf-8") as stream:
-        dlines = [x.strip() for x in schema["description"].split("\n")]
-        dlines = [x for x in dlines if not x.startswith(":")]
-        desc = "\n".join(dlines)
-        stream.write(f"# {schema_name.replace('test_', '')}\n\n")
-        stream.write(f"{desc}\n\n")
-        schema_minimal = deepcopy(schema)
-        builtin = [
-            tn
-            for tn, t in schema_minimal.get("types", {}).items()
-            if t.get("from_schema", None) == "https://w3id.org/linkml/types"
-        ]
-        for t in builtin:
-            del schema_minimal["types"][t]
-        if "imports" not in schema_minimal:
-            schema_minimal["imports"] = []
-        schema_minimal["imports"].append("linkml:types")
-        stream.write("## Schema\n\n")
-        stream.write("```yaml\n")
-        yaml.safe_dump(schema_minimal, stream, sort_keys=False)
-        stream.write("```\n\n")
-    with open(out_dir / "schema.yaml", "w", encoding="utf-8") as stream:
-        yaml.safe_dump(schema, stream, sort_keys=False)
-    with open(out_dir / "mappings.txt", "w", encoding="utf-8") as stream:
-        stream.write(str(mappings))
+
+    if tests.WITH_OUTPUT:
+        # Write README for this schema combo
+        with open(out_dir / "README.md", "w", encoding="utf-8") as stream:
+            dlines = [x.strip() for x in schema["description"].split("\n")]
+            dlines = [x for x in dlines if not x.startswith(":")]
+            desc = "\n".join(dlines)
+            stream.write(f"# {schema_name.replace('test_', '')}\n\n")
+            stream.write(f"{desc}\n\n")
+            schema_minimal = deepcopy(schema)
+            builtin = [
+                tn
+                for tn, t in schema_minimal.get("types", {}).items()
+                if t.get("from_schema", None) == "https://w3id.org/linkml/types"
+            ]
+            for t in builtin:
+                del schema_minimal["types"][t]
+            if "imports" not in schema_minimal:
+                schema_minimal["imports"] = []
+            schema_minimal["imports"].append("linkml:types")
+            stream.write("## Schema\n\n")
+            stream.write("```yaml\n")
+            yaml.safe_dump(schema_minimal, stream, sort_keys=False)
+            stream.write("```\n\n")
+        with open(out_dir / "schema.yaml", "w", encoding="utf-8") as stream:
+            yaml.safe_dump(schema, stream, sort_keys=False)
+        with open(out_dir / "mappings.txt", "w", encoding="utf-8") as stream:
+            stream.write(str(mappings))
     if not schema["name"]:
         raise ValueError(f"Schema name not set: {schema}")
     return schema, mappings
@@ -672,23 +677,24 @@ def check_data(
     feature = feature_dict[schema_name_to_feature[schema["name"]]]
     feature.num_tests += 1
     # TODO: avoid repeated rewrites of same object shared across frameworks
-    with open(out_dir / f"README.{data_name}.md", "w", encoding="utf-8") as stream:
-        stream.write(f"# {data_name}\n")
-        if description:
-            stream.write(f"_{description}_\n")
-        stream.write("\n## Schema:\n")
-        stream.write(" * [../schema.yaml](../schema.yaml)\n")
-        stream.write("\n## Object:\n")
-        stream.write("```yaml\n")
-        yaml.safe_dump(object_to_validate, stream)
-        stream.write("```\n")
-        stream.write("\nExpected behavior:\n\n")
-        if valid:
-            stream.write("* valid (frameworks must accept the data object)\n")
-        else:
-            stream.write("* invalid (frameworks must flag the data object)\n")
-    with open(out_dir / f"{data_name}.yaml", "w", encoding="utf-8") as stream:
-        yaml.safe_dump(object_to_validate, stream)
+    if tests.WITH_OUTPUT:
+        with open(out_dir / f"README.{data_name}.md", "w", encoding="utf-8") as stream:
+            stream.write(f"# {data_name}\n")
+            if description:
+                stream.write(f"_{description}_\n")
+            stream.write("\n## Schema:\n")
+            stream.write(" * [../schema.yaml](../schema.yaml)\n")
+            stream.write("\n## Object:\n")
+            stream.write("```yaml\n")
+            yaml.safe_dump(object_to_validate, stream)
+            stream.write("```\n")
+            stream.write("\nExpected behavior:\n\n")
+            if valid:
+                stream.write("* valid (frameworks must accept the data object)\n")
+            else:
+                stream.write("* invalid (frameworks must flag the data object)\n")
+        with open(out_dir / f"{data_name}.yaml", "w", encoding="utf-8") as stream:
+            yaml.safe_dump(object_to_validate, stream)
     notes = None
     plugins = []
     if isinstance(expected_behavior, tuple):

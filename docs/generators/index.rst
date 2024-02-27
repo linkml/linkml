@@ -90,7 +90,7 @@ Generators specific to database frameworks. Currently only SQL databases.
    :maxdepth: 3
    :caption: Contents:
 
-   sqlddl
+   sqltable
    sqlalchemy
              
 Others

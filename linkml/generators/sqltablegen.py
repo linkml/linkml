@@ -145,7 +145,9 @@ class SQLTableGenerator(Generator):
         sqltr = RelationalModelTransformer(SchemaView(self.schema))
         if not self.use_foreign_keys:
             sqltr.foreign_key_policy = ForeignKeyPolicy.NO_FOREIGN_KEYS
-        tr_result = sqltr.transform(**kwargs)
+        tr_result = sqltr.transform(
+            tgt_schema_name=kwargs.get("tgt_schema_name", None), top_class=kwargs.get("top_class", None)
+        )
         schema = tr_result.schema
 
         def sql_name(n: str) -> str:
@@ -207,7 +209,6 @@ class SQLTableGenerator(Generator):
         schema_metadata.create_all(engine)
         return ddl_str
 
-    # TODO: merge with code from sqlddlgen
     def get_sql_range(self, slot: SlotDefinition, schema: SchemaDefinition = None):
         """
         returns a SQL Alchemy column type

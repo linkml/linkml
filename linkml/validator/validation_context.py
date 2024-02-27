@@ -4,6 +4,7 @@ from functools import lru_cache
 from typing import Optional
 
 import jsonschema
+from jsonschema.protocols import Validator
 from linkml_runtime import SchemaView
 from linkml_runtime.linkml_model import SchemaDefinition
 
@@ -36,7 +37,7 @@ class ValidationContext:
         closed: bool,
         include_range_class_descendants: bool,
         path_override: Optional[os.PathLike] = None,
-    ) -> jsonschema.Validator:
+    ) -> Validator:
         if path_override:
             with open(path_override) as json_schema_file:
                 json_schema = json.load(json_schema_file)

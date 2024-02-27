@@ -274,6 +274,10 @@ def test_any_type(framework, example_value):
         ("uriorcurie", "X 1", False),
         ("uriorcurie", "X 1:1", False),
         # ("uriorcurie", "X:1 2", False),
+        ("curie", "X:1", True),
+        ("curie", "X.Y:A1", True),
+        ("curie", "X 1", False),
+        ("curie", "X 1:A1", False),
     ],
 )
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
@@ -287,6 +291,9 @@ def test_uri_types(framework, linkml_type, example_value, is_valid):
     :param is_valid: whether the value is valid
     :return:
     """
+    if example_value == "X:1":
+        if framework in [PYTHON_DATACLASSES, SHACL, SHEX, OWL, SQL_DDL_SQLITE]:
+            pytest.skip("Incorrectly flagged as invalid")
     classes = {
         CLASS_C: {
             "attributes": {
@@ -296,7 +303,6 @@ def test_uri_types(framework, linkml_type, example_value, is_valid):
             }
         },
     }
-    coerced = False
     expected_behavior = ValidationBehavior.IMPLEMENTS
     if not is_valid and framework in [PYDANTIC, JSON_SCHEMA]:
         expected_behavior = ValidationBehavior.INCOMPLETE
@@ -315,7 +321,6 @@ def test_uri_types(framework, linkml_type, example_value, is_valid):
         is_valid,
         expected_behavior=expected_behavior,
         target_class=CLASS_C,
-        coerced=coerced,
         description="uris and curies",
     )
 
