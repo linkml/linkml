@@ -3,7 +3,7 @@ import logging
 import os
 import re
 from copy import copy
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from types import ModuleType
 from typing import Callable, Dict, Iterator, List, Optional, Set, Tuple, Union
 
@@ -60,10 +60,10 @@ class PythonGenerator(Generator):
     uses_schemaloader = True
 
     # ObjectVars
-    gen_classvars: bool = field(default_factory=lambda: True)
-    gen_slots: bool = field(default_factory=lambda: True)
-    genmeta: bool = field(default_factory=lambda: False)
-    emit_metadata: bool = field(default_factory=lambda: True)
+    gen_classvars: bool = True
+    gen_slots: bool = True
+    genmeta: bool = False
+    emit_metadata: bool = True
 
     def __post_init__(self) -> None:
         self.sourcefile = self.schema
@@ -693,7 +693,8 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
         )
 
     # sort classes such that if C is a child of P then C appears after P in the list
-    def _sort_classes(self, clist: List[ClassDefinition]) -> List[ClassDefinition]:
+    @staticmethod
+    def _sort_classes(clist: List[ClassDefinition]) -> List[ClassDefinition]:
         clist = list(clist)
         slist = []  # sorted
         while len(clist) > 0:
@@ -966,7 +967,8 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
             return False
         if slot_range in self.schema.enums:
             return True
-        for cname in self.schema.classes:
+        clist = [x.name for x in self._sort_classes(self.schema.classes.values())]
+        for cname in clist:
             if cname == owning_class:
                 logging.info(f"TRUE: OCCURS SAME: {cname} == {slot_range} owning: {owning_class}")
                 return True  # Occurs on or after
@@ -1042,7 +1044,8 @@ class {enum_name}(EnumDefinitionImpl):
     {self.gen_enum_description(enum, enum_name)}
 """.strip()
 
-    def gen_enum_comment(self, enum: EnumDefinition) -> str:
+    @staticmethod
+    def gen_enum_comment(enum: EnumDefinition) -> str:
         if not be(enum.description):
             return ""
         desc_text = enum.description.replace('"""', "---")
@@ -1152,7 +1155,8 @@ class {enum_name}(EnumDefinitionImpl):
 
         return "PermissibleValue(\n" + ",\n".join(pv_attrs) + ")"
 
-    def process_multiline_string(self, input: str, prefix_string: str) -> str:
+    @staticmethod
+    def process_multiline_string(input: str, prefix_string: str) -> str:
         """
         Process a (potentially multi-line) string, preserving existing formatting
 

@@ -47,7 +47,7 @@ class MyClass(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = EX.MyClass
+    class_class_uri: ClassVar[URIRef] = EX["MyClass"]
     class_class_curie: ClassVar[str] = "ex:MyClass"
     class_name: ClassVar[str] = "my class"
     class_model_uri: ClassVar[URIRef] = EX.MyClass
@@ -60,7 +60,7 @@ class MyClass2(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = EX.MyClass2
+    class_class_uri: ClassVar[URIRef] = EX["MyClass2"]
     class_class_curie: ClassVar[str] = "ex:MyClass2"
     class_name: ClassVar[str] = "my class 2"
     class_model_uri: ClassVar[URIRef] = EX.MyClass2

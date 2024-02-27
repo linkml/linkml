@@ -16,7 +16,8 @@ NGS = [
 
 
 class RemoteSparqlValidatorTestCase(unittest.TestCase):
-    def test_remote_sparql_validation(self):
+    @staticmethod
+    def test_remote_sparql_validation():
         """Validate a schema"""
         sv = SparqlDataValidator()
         sv.load_schema(SCHEMA)

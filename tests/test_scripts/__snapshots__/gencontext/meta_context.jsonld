@@ -11,6 +11,10 @@
       },
       "NCIT": "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#",
       "OIO": "http://www.geneontology.org/formats/oboInOwl#",
+      "SIO": {
+         "@id": "http://semanticscience.org/resource/SIO_",
+         "@prefix": true
+      },
       "bibo": "http://purl.org/ontology/bibo/",
       "cdisc": "http://rdf.cdisc.org/mms#",
       "dcterms": "http://purl.org/dc/terms/",
@@ -58,6 +62,9 @@
          "@type": "@id"
       },
       "apply_to": {
+         "@type": "@id"
+      },
+      "array": {
          "@type": "@id"
       },
       "asymmetric": {
@@ -132,6 +139,9 @@
       "designates_type": {
          "@type": "xsd:boolean"
       },
+      "dimensions": {
+         "@type": "@id"
+      },
       "disjoint_with": {
          "@type": "@id"
       },
@@ -161,6 +171,12 @@
       },
       "exact_mappings": {
          "@type": "@id"
+      },
+      "exact_cardinality": {
+         "@type": "xsd:integer"
+      },
+      "exact_number_dimensions": {
+         "@type": "xsd:integer"
       },
       "exactly_one_of": {
          "@type": "@id"
@@ -194,6 +210,9 @@
       },
       "id": {
          "@type": "@id"
+      },
+      "id_prefixes_are_closed": {
+         "@type": "xsd:boolean"
       },
       "identifier": {
          "@type": "xsd:boolean"
@@ -291,8 +310,11 @@
       "maximum_cardinality": {
          "@type": "xsd:integer"
       },
+      "maximum_number_dimensions": {
+         "@type": "@id"
+      },
       "maximum_value": {
-         "@type": "xsd:integer"
+         "@type": "@id"
       },
       "meaning": {
          "@type": "@id"
@@ -300,8 +322,11 @@
       "minimum_cardinality": {
          "@type": "xsd:integer"
       },
-      "minimum_value": {
+      "minimum_number_dimensions": {
          "@type": "xsd:integer"
+      },
+      "minimum_value": {
+         "@type": "@id"
       },
       "minus": {
          "@type": "@id"

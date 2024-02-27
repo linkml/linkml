@@ -1,6 +1,6 @@
 import logging
 import os
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Optional
 
 import click
@@ -123,12 +123,12 @@ class SQLTableGenerator(Generator):
 
     # ObjectVars
     use_inherits: bool = False  # postgresql supports inheritance
-    dialect: str = field(default_factory=lambda: "sqlite")
-    inject_primary_keys: bool = field(default_factory=lambda: True)
-    use_foreign_keys: bool = field(default_factory=lambda: True)
-    rename_foreign_keys: bool = field(default_factory=lambda: False)
-    direct_mapping: bool = field(default_factory=lambda: False)
-    relative_slot_num: bool = field(default_factory=lambda: 0)
+    dialect: str = "sqlite"
+    inject_primary_keys: bool = True
+    use_foreign_keys: bool = True
+    rename_foreign_keys: bool = False
+    direct_mapping: bool = False
+    relative_slot_num: bool = False
 
     def serialize(self, **kwargs) -> str:
         return self.generate_ddl(**kwargs)
@@ -145,7 +145,9 @@ class SQLTableGenerator(Generator):
         sqltr = RelationalModelTransformer(SchemaView(self.schema))
         if not self.use_foreign_keys:
             sqltr.foreign_key_policy = ForeignKeyPolicy.NO_FOREIGN_KEYS
-        tr_result = sqltr.transform(**kwargs)
+        tr_result = sqltr.transform(
+            tgt_schema_name=kwargs.get("tgt_schema_name", None), top_class=kwargs.get("top_class", None)
+        )
         schema = tr_result.schema
 
         def sql_name(n: str) -> str:
@@ -207,7 +209,6 @@ class SQLTableGenerator(Generator):
         schema_metadata.create_all(engine)
         return ddl_str
 
-    # TODO: merge with code from sqlddlgen
     def get_sql_range(self, slot: SlotDefinition, schema: SchemaDefinition = None):
         """
         returns a SQL Alchemy column type
@@ -220,8 +221,12 @@ class SQLTableGenerator(Generator):
             schema = SchemaLoader(data=self.schema).resolve()
 
         if range in schema.classes:
-            # FKs treated as Text
-            return Text()
+            # FK type should be the same as the identifier of the foreign key
+            fk = SchemaView(schema).get_identifier_slot(range)
+            if fk:
+                return self.get_sql_range(fk, schema)
+            else:
+                return Text()
         if range in schema.enums:
             e = schema.enums[range]
             if e.permissible_values is not None:
@@ -240,7 +245,8 @@ class SQLTableGenerator(Generator):
             logging.error(f"UNKNOWN range base: {range_base} for {slot.name} = {slot.range}")
             return Text()
 
-    def get_foreign_key(self, cn: str, sv: SchemaView) -> str:
+    @staticmethod
+    def get_foreign_key(cn: str, sv: SchemaView) -> str:
         pk = sv.get_identifier_slot(cn)
         # TODO: move this to SV
         if pk is None:

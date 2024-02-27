@@ -1,5 +1,4 @@
 # metamodel_version: 1.7.0
-# version: 2.0.0
 id	mappings	description
 alt_description		an attributed description
 annotatable		mixin for classes that support annotations
@@ -11,12 +10,14 @@ anonymous_slot_expression
 anonymous_type_expression		A type expression that is not a top-level named type definition. Used for nesting.
 Anything		
 AnyValue		
+array_expression		defines the dimensions of an array
 class_definition		an element whose instances are complex objects that may have slot-value assignments
 class_expression		A boolean expression that can be used to dynamically determine membership of a class
 class_level_rule		A rule that is applied to classes
 class_rule		A rule that applies to instances of a class
 common_metadata		Generic metadata shared across definitions
 definition		abstract base class for core metaclasses
+dimension_expression		defines one of the dimensions of an array
 element		A named element in the model
 enum_definition		an element whose instances must be drawn from a specified set of permissible values
 enum_expression		An expression that constrains the range of a slot

@@ -42,7 +42,7 @@ DEFAULT_ = TCCM
 # Types
 class DateAndTime(XSDDateTime):
     """ Represents an “Instant” as defined in the OWL Time Specification . Implementations must be able to support temporal units of second, minute, hour, day, month, and year, and be able to represent and compare instances represented in any of these units. DateAndTime can only provide a partial ordering and, as a consequence, i s never used as an index, unique identifier, or to sequence data or events. """
-    type_class_uri = XSD.dateTime
+    type_class_uri = XSD["dateTime"]
     type_class_curie = "xsd:dateTime"
     type_name = "DateAndTime"
     type_model_uri = TCCM.DateAndTime
@@ -50,7 +50,7 @@ class DateAndTime(XSDDateTime):
 
 class NaturalNumber(int):
     """ A non-negative integer (N). NatrualNumber is used exclusively for representing quantities. """
-    type_class_uri = XSD.nonNegativeInteger
+    type_class_uri = XSD["nonNegativeInteger"]
     type_class_curie = "xsd:nonNegativeInteger"
     type_name = "NaturalNumber"
     type_model_uri = TCCM.NaturalNumber
@@ -58,7 +58,7 @@ class NaturalNumber(int):
 
 class NamespaceIdentifier(NCName):
     """ An identifier that uniquely references the scoping namespace of an Entity (class, role, or individual) within the context of a TCCM service. NameSpaceIdentifier syntax must match the PNAME NS production as defined in the SPARQL Query Specification - meaning that it must begin with an alphabetic character """
-    type_class_uri = XSD.NMTOKEN
+    type_class_uri = XSD["NMTOKEN"]
     type_class_curie = "xsd:NMTOKEN"
     type_name = "NamespaceIdentifier"
     type_model_uri = TCCM.NamespaceIdentifier
@@ -66,14 +66,14 @@ class NamespaceIdentifier(NCName):
 
 class URI(URI):
     """ A Universal Resource Identifier (URI) as defined in IETF RFC 3986. TCCM implementations are encouraged to consider implementing this data type using the IRI (RFC3987) specification """
-    type_class_uri = XSD.anyURI
+    type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "URI"
     type_model_uri = TCCM.URI
 
 
 class CURIE(Curie):
-    type_class_uri = XSD.anyURI
+    type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "CURIE"
     type_model_uri = TCCM.CURIE
@@ -81,7 +81,7 @@ class CURIE(Curie):
 
 class URIorCurie(URIorCURIE):
     """ a URI or a CURIE """
-    type_class_uri = XSD.anyURI
+    type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "URIorCurie"
     type_model_uri = TCCM.URIorCurie
@@ -89,7 +89,7 @@ class URIorCurie(URIorCURIE):
 
 class LocalIdentifier(String):
     """ An identifier that uniquely references a class, individual, property, or other resource within the context of a specific TCCM service implementation. LocalIdentifier syntax must match the PNAME production as defined in the SPARQL Query Specification . LocalIdentifiers may begin with leading digits, where XML Local Identifiers and NameSpaceIdentifiers may not. """
-    type_class_uri = XSD.string
+    type_class_uri = XSD["string"]
     type_class_curie = "xsd:string"
     type_name = "LocalIdentifier"
     type_model_uri = TCCM.LocalIdentifier
@@ -97,7 +97,7 @@ class LocalIdentifier(String):
 
 class PersistentURI(URIorCurie):
     """ A Universal Resource Identifier (URI) that persists across service instances. PersistentURIs have enduring reference and meaning. """
-    type_class_uri = XSD.anyURI
+    type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "PersistentURI"
     type_model_uri = TCCM.PersistentURI
@@ -105,7 +105,7 @@ class PersistentURI(URIorCurie):
 
 class LocalURI(URIorCurie):
     """ A URI or handle whose scope is local to the implementing service. LocalURI cannot be used as a permanent identifier in a message or a data record. """
-    type_class_uri = XSD.anyURI
+    type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "LocalURI"
     type_model_uri = TCCM.LocalURI
@@ -113,7 +113,7 @@ class LocalURI(URIorCurie):
 
 class ValueSet(URIorCurie):
     """ A URI that can be indirectly resolved to a set of entity descriptions """
-    type_class_uri = XSD.anyURI
+    type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "ValueSet"
     type_model_uri = TCCM.ValueSet
@@ -121,7 +121,7 @@ class ValueSet(URIorCurie):
 
 class ChangeSetURI(PersistentURI):
     """ The unique identifier of a set of change instructions that can potentially transform the contents of a TCCM service instance from one state to another. """
-    type_class_uri = XSD.anyURI
+    type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "ChangeSetURI"
     type_model_uri = TCCM.ChangeSetURI
@@ -129,7 +129,7 @@ class ChangeSetURI(PersistentURI):
 
 class DocumentURI(PersistentURI):
     """ A reference to a “work” in the bibliographic sense. It is not necessary that a Document URI be directly or indirectly resolvable to a digital resource - it may simply be the name of a book, publication, or other abstraction. """
-    type_class_uri = XSD.anyURI
+    type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "DocumentURI"
     type_model_uri = TCCM.DocumentURI
@@ -137,7 +137,7 @@ class DocumentURI(PersistentURI):
 
 class ExternalURI(PersistentURI):
     """ A URI that names a unique resource. CTS2 implementations should never assume that ExternalURI is resolvable via an http: GET operation - ExternalURIs should always be passed as parameters to service implementations to get the sanctioned equivalent in a given service context. """
-    type_class_uri = XSD.anyURI
+    type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "ExternalURI"
     type_model_uri = TCCM.ExternalURI
@@ -145,7 +145,7 @@ class ExternalURI(PersistentURI):
 
 class ServiceURI(LocalURI):
     """ The URI or CURIE of a service implementation """
-    type_class_uri = XSD.anyURI
+    type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "ServiceURI"
     type_model_uri = TCCM.ServiceURI
@@ -153,7 +153,7 @@ class ServiceURI(LocalURI):
 
 class RenderingURI(LocalURI):
     """ A URI or handle that is directly readable by a specific instance of a TCCM service implementation. RenderingURI must resolve to Changeable CTS2 element. """
-    type_class_uri = XSD.anyURI
+    type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "RenderingURI"
     type_model_uri = TCCM.RenderingURI
@@ -161,7 +161,7 @@ class RenderingURI(LocalURI):
 
 class DirectoryURI(LocalURI):
     """ The unique name of a query that when executed results in a list of resources that, in the context of a given service, satisfy the query. """
-    type_class_uri = XSD.anyURI
+    type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "DirectoryURI"
     type_model_uri = TCCM.DirectoryURI
@@ -169,7 +169,7 @@ class DirectoryURI(LocalURI):
 
 class ASSOCIATION(ValueSet):
     """ A formal “semantic” assertion about a named entity, in the form of subject, predicate, and object including any provenance, qualifiers, or internal BNODEs. """
-    type_class_uri = XSD.anyURI
+    type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "ASSOCIATION"
     type_model_uri = TCCM.ASSOCIATION
@@ -178,7 +178,7 @@ class ASSOCIATION(ValueSet):
 class BINDINGQUALIFIER(ValueSet):
     """ An assertion about the semantics of a concept domain / value set binding. This model element exists specifically to address section 2.4.2.23 of the HL7 SFM14, which needs a qualifier that indicates whether the binding is “overall,” “minimal,” or “maximum.”
 The TCCM specification does not formally define the semantics of the various possible BINDING_QUALIFIER elements: it is up to specific implementations and service clients to interpret the meaning of the specific binding qualifiers that may be represented in references of this type. """
-    type_class_uri = XSD.anyURI
+    type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "BINDING_QUALIFIER"
     type_model_uri = TCCM.BINDINGQUALIFIER
@@ -186,7 +186,7 @@ The TCCM specification does not formally define the semantics of the various pos
 
 class CASESIGNIFICANCE(ValueSet):
     """ Identifies the significance of case in a term or designation. """
-    type_class_uri = XSD.anyURI
+    type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "CASE_SIGNIFICANCE"
     type_model_uri = TCCM.CASESIGNIFICANCE
@@ -194,7 +194,7 @@ class CASESIGNIFICANCE(ValueSet):
 
 class CODESYSTEMCATEGORY(ValueSet):
     """ The general category of a code system (flat list, subject heading system, taxonomy, thesaurus, classification, terminology, description logic ontology, first order predicate logic, etc.) (same as KnowledgeRepresentationParadigm: OMV 5.8). """
-    type_class_uri = XSD.anyURI
+    type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "CODE_SYSTEM_CATEGORY"
     type_model_uri = TCCM.CODESYSTEMCATEGORY
@@ -202,7 +202,7 @@ class CODESYSTEMCATEGORY(ValueSet):
 
 class CODESYSTEM(ValueSet):
     """ A collection of metadata about the provenance, use, and distribution of a code system or ontology. """
-    type_class_uri = XSD.anyURI
+    type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "CODE_SYSTEM"
     type_model_uri = TCCM.CODESYSTEM
@@ -210,7 +210,7 @@ class CODESYSTEM(ValueSet):
 
 class CODESYSTEMVERSION(ValueSet):
     """ A collection of metadata about content and distribution format of a particular version or release of a code system. """
-    type_class_uri = XSD.anyURI
+    type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "CODE_SYSTEM_VERSION"
     type_model_uri = TCCM.CODESYSTEMVERSION
@@ -218,7 +218,7 @@ class CODESYSTEMVERSION(ValueSet):
 
 class CONCEPTDOMAIN(ValueSet):
     """ The description of the conceptual domain of a field in a message, column in a database, field on a form, etc. Equivalent to the ISO 11179-3 “Data Element Concept.” """
-    type_class_uri = XSD.anyURI
+    type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "CONCEPT_DOMAIN"
     type_model_uri = TCCM.CONCEPTDOMAIN
@@ -226,7 +226,7 @@ class CONCEPTDOMAIN(ValueSet):
 
 class CONTEXT(ValueSet):
     """ External and environmental factors that serve to discriminate among multiple possible selections. While it is assumed that the specific contexts referenced by CONTEXT are represented by entity descriptions contained in some ontology or coding scheme, the CTS2 specification does not recommend any targets. Note, however, the TCCM context is intended to represent the notion of “jurisdictional domain” or “realm” as described in the HL7 CTS2 SFM . """
-    type_class_uri = XSD.anyURI
+    type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "CONTEXT"
     type_model_uri = TCCM.CONTEXT
@@ -234,7 +234,7 @@ class CONTEXT(ValueSet):
 
 class DESIGNATIONFIDELITY(ValueSet):
     """ Identifies how well a particular designation represents the intended meaning of the referenced entity. TCCM implementations may consider using the SKOS16 semantic relations to represent this relationship. """
-    type_class_uri = XSD.anyURI
+    type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "DESIGNATION_FIDELITY"
     type_model_uri = TCCM.DESIGNATIONFIDELITY
@@ -242,7 +242,7 @@ class DESIGNATIONFIDELITY(ValueSet):
 
 class DESIGNATIONTYPE(ValueSet):
     """ The particular form or type of a given designation: can be “short name,” “long name,” “abbreviation,” “eponym.” """
-    type_class_uri = XSD.anyURI
+    type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "DESIGNATION_TYPE"
     type_model_uri = TCCM.DESIGNATIONTYPE
@@ -250,7 +250,7 @@ class DESIGNATIONTYPE(ValueSet):
 
 class FORMALITYLEVEL(ValueSet):
     """ The level of formality of an ontology (OMV 5.9). """
-    type_class_uri = XSD.anyURI
+    type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "FORMALITY_LEVEL"
     type_model_uri = TCCM.FORMALITYLEVEL
@@ -258,7 +258,7 @@ class FORMALITYLEVEL(ValueSet):
 
 class FORMAT(ValueSet):
     """ A particular way that information is encoded for storage in a computer file """
-    type_class_uri = XSD.anyURI
+    type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "FORMAT"
     type_model_uri = TCCM.FORMAT
@@ -266,7 +266,7 @@ class FORMAT(ValueSet):
 
 class LANGUAGE(ValueSet):
     """ A spoken or written language intended for human consumption. """
-    type_class_uri = XSD.anyURI
+    type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "LANGUAGE"
     type_model_uri = TCCM.LANGUAGE
@@ -274,7 +274,7 @@ class LANGUAGE(ValueSet):
 
 class MATCHALGORITHM(ValueSet):
     """ A predicate that determines whether an entity resource qualities for membership in a set based on supplied matching criteria. """
-    type_class_uri = XSD.anyURI
+    type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "MATCH_ALGORITHM"
     type_model_uri = TCCM.MATCHALGORITHM
@@ -282,7 +282,7 @@ class MATCHALGORITHM(ValueSet):
 
 class MAP(ValueSet):
     """ A set of rules that associate a set of entity references from one domain into those in another. """
-    type_class_uri = XSD.anyURI
+    type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "MAP"
     type_model_uri = TCCM.MAP
@@ -290,7 +290,7 @@ class MAP(ValueSet):
 
 class MAPCORRELATION(ValueSet):
     """ An assertion about the strength or significance of a specific rule in a Map. """
-    type_class_uri = XSD.anyURI
+    type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "MAP_CORRELATION"
     type_model_uri = TCCM.MAPCORRELATION
@@ -298,7 +298,7 @@ class MAPCORRELATION(ValueSet):
 
 class MAPVERSION(ValueSet):
     """ The state of a Map at a given point in time. """
-    type_class_uri = XSD.anyURI
+    type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "MAP_VERSION"
     type_model_uri = TCCM.MAPVERSION
@@ -306,7 +306,7 @@ class MAPVERSION(ValueSet):
 
 class MODELATTRIBUTE(ValueSet):
     """ An attribute defined in CTS2 information model. """
-    type_class_uri = XSD.anyURI
+    type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "MODEL_ATTRIBUTE"
     type_model_uri = TCCM.MODELATTRIBUTE
@@ -314,7 +314,7 @@ class MODELATTRIBUTE(ValueSet):
 
 class NAMESPACE(ValueSet):
     """ A reference to a conceptual space that groups identifiers to avoid conflict with items that have the same name but different meanings. """
-    type_class_uri = XSD.anyURI
+    type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "NAMESPACE"
     type_model_uri = TCCM.NAMESPACE
@@ -322,7 +322,7 @@ class NAMESPACE(ValueSet):
 
 class ONTOLOGYENGINEERINGMETHODOLOGY(ValueSet):
     """ Information about the ontology engineering methodology (OMV 5.4) (sic). """
-    type_class_uri = XSD.anyURI
+    type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "ONTOLOGY_ENGINEERING_METHODOLOGY"
     type_model_uri = TCCM.ONTOLOGYENGINEERINGMETHODOLOGY
@@ -330,7 +330,7 @@ class ONTOLOGYENGINEERINGMETHODOLOGY(ValueSet):
 
 class ONTOLOGYENGINEERINGTOOL(ValueSet):
     """ A tool used to create the ontology (OMV 5.5). """
-    type_class_uri = XSD.anyURI
+    type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "ONTOLOGY_ENGINEERING_TOOL"
     type_model_uri = TCCM.ONTOLOGYENGINEERINGTOOL
@@ -338,7 +338,7 @@ class ONTOLOGYENGINEERINGTOOL(ValueSet):
 
 class ONTOLOGYDOMAIN(ValueSet):
     """ While the domain can refer to any topic ontology it is advised to use one of the established general purpose topic hierarchy like DMOZ or domain specific topic like ACM for the computer science domain. Only this way it can be ensured that meaningful information about the relation of the domains of two separate ontologies can be deduced (OMV 5.1 1)(sic). """
-    type_class_uri = XSD.anyURI
+    type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "ONTOLOGY_DOMAIN"
     type_model_uri = TCCM.ONTOLOGYDOMAIN
@@ -346,7 +346,7 @@ class ONTOLOGYDOMAIN(ValueSet):
 
 class ONTOLOGYLANGUAGE(ValueSet):
     """ Information about the language in which the ontology is implemented (OMV 5.7). """
-    type_class_uri = XSD.anyURI
+    type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "ONTOLOGY_LANGUAGE"
     type_model_uri = TCCM.ONTOLOGYLANGUAGE
@@ -354,7 +354,7 @@ class ONTOLOGYLANGUAGE(ValueSet):
 
 class ONTOLOGYSYNTAX(ValueSet):
     """ Information about the syntax used by an ontology (OMV 5.6). """
-    type_class_uri = XSD.anyURI
+    type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "ONTOLOGY_SYNTAX"
     type_model_uri = TCCM.ONTOLOGYSYNTAX
@@ -362,7 +362,7 @@ class ONTOLOGYSYNTAX(ValueSet):
 
 class ONTOLOGYTASK(ValueSet):
     """ Information about the task the ontology was intended to be used for (OMV 5.10). """
-    type_class_uri = XSD.anyURI
+    type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "ONTOLOGY_TASK"
     type_model_uri = TCCM.ONTOLOGYTASK
@@ -370,7 +370,7 @@ class ONTOLOGYTASK(ValueSet):
 
 class ONTOLOGYTYPE(ValueSet):
     """ Categorizes ontologies (OMV 5.2). """
-    type_class_uri = XSD.anyURI
+    type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "ONTOLOGY_TYPE"
     type_model_uri = TCCM.ONTOLOGYTYPE
@@ -378,7 +378,7 @@ class ONTOLOGYTYPE(ValueSet):
 
 class PREDICATE(ValueSet):
     """ A property or relation between entities. """
-    type_class_uri = XSD.anyURI
+    type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "PREDICATE"
     type_model_uri = TCCM.PREDICATE
@@ -386,7 +386,7 @@ class PREDICATE(ValueSet):
 
 class REASONINGALGORITHM(ValueSet):
     """ A set of formal rules that allow the deduction of additional assertions from a supplied list of axioms. """
-    type_class_uri = XSD.anyURI
+    type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "REASONING_ALGORITHM"
     type_model_uri = TCCM.REASONINGALGORITHM
@@ -394,7 +394,7 @@ class REASONINGALGORITHM(ValueSet):
 
 class RESOURCETYPE(ValueSet):
     """ A class of which a referencing resource is an instance of. """
-    type_class_uri = XSD.anyURI
+    type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "RESOURCE TYPE"
     type_model_uri = TCCM.RESOURCETYPE
@@ -402,7 +402,7 @@ class RESOURCETYPE(ValueSet):
 
 class ROLE(ValueSet):
     """ A role that a SOURCE can play in the construction or dissemination of a terminological resource. """
-    type_class_uri = XSD.anyURI
+    type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "ROLE"
     type_model_uri = TCCM.ROLE
@@ -410,7 +410,7 @@ class ROLE(ValueSet):
 
 class SOURCE(ValueSet):
     """ An individual, organization, or bibliographic reference. """
-    type_class_uri = XSD.anyURI
+    type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "SOURCE"
     type_model_uri = TCCM.SOURCE
@@ -418,7 +418,7 @@ class SOURCE(ValueSet):
 
 class STATEMENT(ValueSet):
     """ An atomic assertion about a CTS2 resource. """
-    type_class_uri = XSD.anyURI
+    type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "STATEMENT"
     type_model_uri = TCCM.STATEMENT
@@ -426,7 +426,7 @@ class STATEMENT(ValueSet):
 
 class STATUS(ValueSet):
     """ The state of a resource or other entry in an external workflow. """
-    type_class_uri = XSD.anyURI
+    type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "STATUS"
     type_model_uri = TCCM.STATUS
@@ -434,7 +434,7 @@ class STATUS(ValueSet):
 
 class VALUESET(ValueSet):
     """ A set of entity references. """
-    type_class_uri = XSD.anyURI
+    type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "VALUE_SET"
     type_model_uri = TCCM.VALUESET
@@ -442,7 +442,7 @@ class VALUESET(ValueSet):
 
 class VALUESETDEFINITION(ValueSet):
     """ A set of rules that can be applied to specified versions or one or more code systems to yield a set of entity references. """
-    type_class_uri = XSD.anyURI
+    type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "VALUE_SET_DEFINITION"
     type_model_uri = TCCM.VALUESETDEFINITION
@@ -450,7 +450,7 @@ class VALUESETDEFINITION(ValueSet):
 
 class VERSIONTAG(ValueSet):
     """ An identifier that can be assigned to resource versions by a service implementation to identify their state in the service workflow. Examples might include “development,” “test,” “production,” etc. """
-    type_class_uri = XSD.anyURI
+    type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "VERSION_TAG"
     type_model_uri = TCCM.VERSIONTAG
@@ -469,7 +469,7 @@ class ResourceDescription(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = TCCM.ResourceDescription
+    class_class_uri: ClassVar[URIRef] = TCCM["ResourceDescription"]
     class_class_curie: ClassVar[str] = "tccm:ResourceDescription"
     class_name: ClassVar[str] = "ResourceDescription"
     class_model_uri: ClassVar[URIRef] = TCCM.ResourceDescription
@@ -530,7 +530,7 @@ class SourceAndNotation(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = TCCM.SourceAndNotation
+    class_class_uri: ClassVar[URIRef] = TCCM["SourceAndNotation"]
     class_class_curie: ClassVar[str] = "tccm:SourceAndNotation"
     class_name: ClassVar[str] = "SourceAndNotation"
     class_model_uri: ClassVar[URIRef] = TCCM.SourceAndNotation
@@ -563,7 +563,7 @@ class AbstractResourceDescription(ResourceDescription):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = TCCM.AbstractResourceDescription
+    class_class_uri: ClassVar[URIRef] = TCCM["AbstractResourceDescription"]
     class_class_curie: ClassVar[str] = "tccm:AbstractResourceDescription"
     class_name: ClassVar[str] = "AbstractResourceDescription"
     class_model_uri: ClassVar[URIRef] = TCCM.AbstractResourceDescription
@@ -592,7 +592,7 @@ class ResourceVersionDescription(ResourceDescription):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = TCCM.ResourceVersionDescription
+    class_class_uri: ClassVar[URIRef] = TCCM["ResourceVersionDescription"]
     class_class_curie: ClassVar[str] = "tccm:ResourceVersionDescription"
     class_name: ClassVar[str] = "ResourceVersionDescription"
     class_model_uri: ClassVar[URIRef] = TCCM.ResourceVersionDescription
@@ -637,7 +637,7 @@ class NameAndMeaningReference(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = TCCM.NameAndMeaningReference
+    class_class_uri: ClassVar[URIRef] = TCCM["NameAndMeaningReference"]
     class_class_curie: ClassVar[str] = "tccm:NameAndMeaningReference"
     class_name: ClassVar[str] = "NameAndMeaningReference"
     class_model_uri: ClassVar[URIRef] = TCCM.NameAndMeaningReference
@@ -668,7 +668,7 @@ class AssociationReference(NameAndMeaningReference):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = TCCM.AssociationReference
+    class_class_uri: ClassVar[URIRef] = TCCM["AssociationReference"]
     class_class_curie: ClassVar[str] = "tccm:AssociationReference"
     class_name: ClassVar[str] = "AssociationReference"
     class_model_uri: ClassVar[URIRef] = TCCM.AssociationReference
@@ -684,7 +684,7 @@ class BindingQualifierReference(NameAndMeaningReference):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = TCCM.BindingQualifierReference
+    class_class_uri: ClassVar[URIRef] = TCCM["BindingQualifierReference"]
     class_class_curie: ClassVar[str] = "tccm:BindingQualifierReference"
     class_name: ClassVar[str] = "BindingQualifierReference"
     class_model_uri: ClassVar[URIRef] = TCCM.BindingQualifierReference
@@ -698,7 +698,7 @@ class CaseSignificanceReference(NameAndMeaningReference):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = TCCM.CaseSignificanceReference
+    class_class_uri: ClassVar[URIRef] = TCCM["CaseSignificanceReference"]
     class_class_curie: ClassVar[str] = "tccm:CaseSignificanceReference"
     class_name: ClassVar[str] = "CaseSignificanceReference"
     class_model_uri: ClassVar[URIRef] = TCCM.CaseSignificanceReference
@@ -713,7 +713,7 @@ class CodeSystemCategoryReference(NameAndMeaningReference):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = TCCM.CodeSystemCategoryReference
+    class_class_uri: ClassVar[URIRef] = TCCM["CodeSystemCategoryReference"]
     class_class_curie: ClassVar[str] = "tccm:CodeSystemCategoryReference"
     class_name: ClassVar[str] = "CodeSystemCategoryReference"
     class_model_uri: ClassVar[URIRef] = TCCM.CodeSystemCategoryReference
@@ -727,7 +727,7 @@ class CodeSystemReference(NameAndMeaningReference):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = TCCM.CodeSystemReference
+    class_class_uri: ClassVar[URIRef] = TCCM["CodeSystemReference"]
     class_class_curie: ClassVar[str] = "tccm:CodeSystemReference"
     class_name: ClassVar[str] = "CodeSystemReference"
     class_model_uri: ClassVar[URIRef] = TCCM.CodeSystemReference
@@ -741,7 +741,7 @@ class CodeSystemVersionReference(NameAndMeaningReference):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = TCCM.CodeSystemVersionReference
+    class_class_uri: ClassVar[URIRef] = TCCM["CodeSystemVersionReference"]
     class_class_curie: ClassVar[str] = "tccm:CodeSystemVersionReference"
     class_name: ClassVar[str] = "CodeSystemVersionReference"
     class_model_uri: ClassVar[URIRef] = TCCM.CodeSystemVersionReference
@@ -763,7 +763,7 @@ class ConceptDomainReference(NameAndMeaningReference):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = TCCM.ConceptDomainReference
+    class_class_uri: ClassVar[URIRef] = TCCM["ConceptDomainReference"]
     class_class_curie: ClassVar[str] = "tccm:ConceptDomainReference"
     class_name: ClassVar[str] = "ConceptDomainReference"
     class_model_uri: ClassVar[URIRef] = TCCM.ConceptDomainReference
@@ -777,7 +777,7 @@ class ContextReference(NameAndMeaningReference):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = TCCM.ContextReference
+    class_class_uri: ClassVar[URIRef] = TCCM["ContextReference"]
     class_class_curie: ClassVar[str] = "tccm:ContextReference"
     class_name: ClassVar[str] = "ContextReference"
     class_model_uri: ClassVar[URIRef] = TCCM.ContextReference
@@ -791,7 +791,7 @@ class DesignationFidelityReference(NameAndMeaningReference):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = TCCM.DesignationFidelityReference
+    class_class_uri: ClassVar[URIRef] = TCCM["DesignationFidelityReference"]
     class_class_curie: ClassVar[str] = "tccm:DesignationFidelityReference"
     class_name: ClassVar[str] = "DesignationFidelityReference"
     class_model_uri: ClassVar[URIRef] = TCCM.DesignationFidelityReference
@@ -805,7 +805,7 @@ class DesignationTypeReference(NameAndMeaningReference):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = TCCM.DesignationTypeReference
+    class_class_uri: ClassVar[URIRef] = TCCM["DesignationTypeReference"]
     class_class_curie: ClassVar[str] = "tccm:DesignationTypeReference"
     class_name: ClassVar[str] = "DesignationTypeReference"
     class_model_uri: ClassVar[URIRef] = TCCM.DesignationTypeReference
@@ -819,7 +819,7 @@ class FormalityLevelReference(NameAndMeaningReference):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = TCCM.FormalityLevelReference
+    class_class_uri: ClassVar[URIRef] = TCCM["FormalityLevelReference"]
     class_class_curie: ClassVar[str] = "tccm:FormalityLevelReference"
     class_name: ClassVar[str] = "FormalityLevelReference"
     class_model_uri: ClassVar[URIRef] = TCCM.FormalityLevelReference
@@ -833,7 +833,7 @@ class FormatReference(NameAndMeaningReference):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = TCCM.FormatReference
+    class_class_uri: ClassVar[URIRef] = TCCM["FormatReference"]
     class_class_curie: ClassVar[str] = "tccm:FormatReference"
     class_name: ClassVar[str] = "FormatReference"
     class_model_uri: ClassVar[URIRef] = TCCM.FormatReference
@@ -847,7 +847,7 @@ class LanguageReference(NameAndMeaningReference):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = TCCM.LanguageReference
+    class_class_uri: ClassVar[URIRef] = TCCM["LanguageReference"]
     class_class_curie: ClassVar[str] = "tccm:LanguageReference"
     class_name: ClassVar[str] = "LanguageReference"
     class_model_uri: ClassVar[URIRef] = TCCM.LanguageReference
@@ -861,7 +861,7 @@ class MapCorrelationReference(NameAndMeaningReference):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = TCCM.MapCorrelationReference
+    class_class_uri: ClassVar[URIRef] = TCCM["MapCorrelationReference"]
     class_class_curie: ClassVar[str] = "tccm:MapCorrelationReference"
     class_name: ClassVar[str] = "MapCorrelationReference"
     class_model_uri: ClassVar[URIRef] = TCCM.MapCorrelationReference
@@ -875,7 +875,7 @@ class MapReference(NameAndMeaningReference):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = TCCM.MapReference
+    class_class_uri: ClassVar[URIRef] = TCCM["MapReference"]
     class_class_curie: ClassVar[str] = "tccm:MapReference"
     class_name: ClassVar[str] = "MapReference"
     class_model_uri: ClassVar[URIRef] = TCCM.MapReference
@@ -889,7 +889,7 @@ class MapVersionReference(NameAndMeaningReference):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = TCCM.MapVersionReference
+    class_class_uri: ClassVar[URIRef] = TCCM["MapVersionReference"]
     class_class_curie: ClassVar[str] = "tccm:MapVersionReference"
     class_name: ClassVar[str] = "MapVersionReference"
     class_model_uri: ClassVar[URIRef] = TCCM.MapVersionReference
@@ -911,7 +911,7 @@ class MatchAlgorithmReference(NameAndMeaningReference):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = TCCM.MatchAlgorithmReference
+    class_class_uri: ClassVar[URIRef] = TCCM["MatchAlgorithmReference"]
     class_class_curie: ClassVar[str] = "tccm:MatchAlgorithmReference"
     class_name: ClassVar[str] = "MatchAlgorithmReference"
     class_model_uri: ClassVar[URIRef] = TCCM.MatchAlgorithmReference
@@ -925,7 +925,7 @@ class ModelAttributeReference(NameAndMeaningReference):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = TCCM.ModelAttributeReference
+    class_class_uri: ClassVar[URIRef] = TCCM["ModelAttributeReference"]
     class_class_curie: ClassVar[str] = "tccm:ModelAttributeReference"
     class_name: ClassVar[str] = "ModelAttributeReference"
     class_model_uri: ClassVar[URIRef] = TCCM.ModelAttributeReference
@@ -940,7 +940,7 @@ class NamespaceReference(NameAndMeaningReference):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = TCCM.NamespaceReference
+    class_class_uri: ClassVar[URIRef] = TCCM["NamespaceReference"]
     class_class_curie: ClassVar[str] = "tccm:NamespaceReference"
     class_name: ClassVar[str] = "NamespaceReference"
     class_model_uri: ClassVar[URIRef] = TCCM.NamespaceReference
@@ -954,7 +954,7 @@ class OntologyDomainReference(NameAndMeaningReference):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = TCCM.OntologyDomainReference
+    class_class_uri: ClassVar[URIRef] = TCCM["OntologyDomainReference"]
     class_class_curie: ClassVar[str] = "tccm:OntologyDomainReference"
     class_name: ClassVar[str] = "OntologyDomainReference"
     class_model_uri: ClassVar[URIRef] = TCCM.OntologyDomainReference
@@ -968,7 +968,7 @@ class OntologyEngineeringMethodologyReference(NameAndMeaningReference):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = TCCM.OntologyEngineeringMethodologyReference
+    class_class_uri: ClassVar[URIRef] = TCCM["OntologyEngineeringMethodologyReference"]
     class_class_curie: ClassVar[str] = "tccm:OntologyEngineeringMethodologyReference"
     class_name: ClassVar[str] = "OntologyEngineeringMethodologyReference"
     class_model_uri: ClassVar[URIRef] = TCCM.OntologyEngineeringMethodologyReference
@@ -982,7 +982,7 @@ class OntologyEngineeringToolReference(NameAndMeaningReference):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = TCCM.OntologyEngineeringToolReference
+    class_class_uri: ClassVar[URIRef] = TCCM["OntologyEngineeringToolReference"]
     class_class_curie: ClassVar[str] = "tccm:OntologyEngineeringToolReference"
     class_name: ClassVar[str] = "OntologyEngineeringToolReference"
     class_model_uri: ClassVar[URIRef] = TCCM.OntologyEngineeringToolReference
@@ -996,7 +996,7 @@ class OntologyLanguageReference(NameAndMeaningReference):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = TCCM.OntologyLanguageReference
+    class_class_uri: ClassVar[URIRef] = TCCM["OntologyLanguageReference"]
     class_class_curie: ClassVar[str] = "tccm:OntologyLanguageReference"
     class_name: ClassVar[str] = "OntologyLanguageReference"
     class_model_uri: ClassVar[URIRef] = TCCM.OntologyLanguageReference
@@ -1010,7 +1010,7 @@ class OntologySyntaxReference(NameAndMeaningReference):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = TCCM.OntologySyntaxReference
+    class_class_uri: ClassVar[URIRef] = TCCM["OntologySyntaxReference"]
     class_class_curie: ClassVar[str] = "tccm:OntologySyntaxReference"
     class_name: ClassVar[str] = "OntologySyntaxReference"
     class_model_uri: ClassVar[URIRef] = TCCM.OntologySyntaxReference
@@ -1024,7 +1024,7 @@ class OntologyTaskReference(NameAndMeaningReference):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = TCCM.OntologyTaskReference
+    class_class_uri: ClassVar[URIRef] = TCCM["OntologyTaskReference"]
     class_class_curie: ClassVar[str] = "tccm:OntologyTaskReference"
     class_name: ClassVar[str] = "OntologyTaskReference"
     class_model_uri: ClassVar[URIRef] = TCCM.OntologyTaskReference
@@ -1038,7 +1038,7 @@ class OntologyTypeReference(NameAndMeaningReference):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = TCCM.OntologyTypeReference
+    class_class_uri: ClassVar[URIRef] = TCCM["OntologyTypeReference"]
     class_class_curie: ClassVar[str] = "tccm:OntologyTypeReference"
     class_name: ClassVar[str] = "OntologyTypeReference"
     class_model_uri: ClassVar[URIRef] = TCCM.OntologyTypeReference
@@ -1054,7 +1054,7 @@ class PredicateReference(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = TCCM.PredicateReference
+    class_class_uri: ClassVar[URIRef] = TCCM["PredicateReference"]
     class_class_curie: ClassVar[str] = "tccm:PredicateReference"
     class_name: ClassVar[str] = "PredicateReference"
     class_model_uri: ClassVar[URIRef] = TCCM.PredicateReference
@@ -1091,7 +1091,7 @@ class ReasoningAlgorithmReference(NameAndMeaningReference):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = TCCM.ReasoningAlgorithmReference
+    class_class_uri: ClassVar[URIRef] = TCCM["ReasoningAlgorithmReference"]
     class_class_curie: ClassVar[str] = "tccm:ReasoningAlgorithmReference"
     class_name: ClassVar[str] = "ReasoningAlgorithmReference"
     class_model_uri: ClassVar[URIRef] = TCCM.ReasoningAlgorithmReference
@@ -1106,7 +1106,7 @@ class RoleReference(NameAndMeaningReference):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = TCCM.RoleReference
+    class_class_uri: ClassVar[URIRef] = TCCM["RoleReference"]
     class_class_curie: ClassVar[str] = "tccm:RoleReference"
     class_name: ClassVar[str] = "RoleReference"
     class_model_uri: ClassVar[URIRef] = TCCM.RoleReference
@@ -1121,7 +1121,7 @@ class SourceAndRoleReference(NameAndMeaningReference):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = TCCM.SourceAndRoleReference
+    class_class_uri: ClassVar[URIRef] = TCCM["SourceAndRoleReference"]
     class_class_curie: ClassVar[str] = "tccm:SourceAndRoleReference"
     class_name: ClassVar[str] = "SourceAndRoleReference"
     class_model_uri: ClassVar[URIRef] = TCCM.SourceAndRoleReference
@@ -1143,7 +1143,7 @@ class SourceReference(NameAndMeaningReference):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = TCCM.SourceReference
+    class_class_uri: ClassVar[URIRef] = TCCM["SourceReference"]
     class_class_curie: ClassVar[str] = "tccm:SourceReference"
     class_name: ClassVar[str] = "SourceReference"
     class_model_uri: ClassVar[URIRef] = TCCM.SourceReference
@@ -1157,7 +1157,7 @@ class StatusReference(NameAndMeaningReference):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = TCCM.StatusReference
+    class_class_uri: ClassVar[URIRef] = TCCM["StatusReference"]
     class_class_curie: ClassVar[str] = "tccm:StatusReference"
     class_name: ClassVar[str] = "StatusReference"
     class_model_uri: ClassVar[URIRef] = TCCM.StatusReference
@@ -1171,7 +1171,7 @@ class ValueSetDefinitionReference(NameAndMeaningReference):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = TCCM.ValueSetDefinitionReference
+    class_class_uri: ClassVar[URIRef] = TCCM["ValueSetDefinitionReference"]
     class_class_curie: ClassVar[str] = "tccm:ValueSetDefinitionReference"
     class_name: ClassVar[str] = "ValueSetDefinitionReference"
     class_model_uri: ClassVar[URIRef] = TCCM.ValueSetDefinitionReference
@@ -1185,7 +1185,7 @@ class ValueSetReference(NameAndMeaningReference):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = TCCM.ValueSetReference
+    class_class_uri: ClassVar[URIRef] = TCCM["ValueSetReference"]
     class_class_curie: ClassVar[str] = "tccm:ValueSetReference"
     class_name: ClassVar[str] = "ValueSetReference"
     class_model_uri: ClassVar[URIRef] = TCCM.ValueSetReference
@@ -1199,7 +1199,7 @@ class VersionTagReference(NameAndMeaningReference):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = TCCM.VersionTagReference
+    class_class_uri: ClassVar[URIRef] = TCCM["VersionTagReference"]
     class_class_curie: ClassVar[str] = "tccm:VersionTagReference"
     class_name: ClassVar[str] = "VersionTagReference"
     class_model_uri: ClassVar[URIRef] = TCCM.VersionTagReference

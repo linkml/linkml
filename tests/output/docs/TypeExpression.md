@@ -53,12 +53,12 @@ URI: [linkml:TypeExpression](https://w3id.org/linkml/TypeExpression)
      * Description: the slot must have range of a number and the value of the slot must equal the specified value
      * Range: [Integer](types/Integer.md)
  * [minimum_value](minimum_value.md)  <sub>0..1</sub>
-     * Description: for slots with ranges of type number, the value must be equal to or higher than this
-     * Range: [Integer](types/Integer.md)
+     * Description: For ordinal ranges, the value must be equal to or higher than this
+     * Range: [Anything](Anything.md)
      * in subsets: (SpecificationSubset,BasicSubset)
  * [maximum_value](maximum_value.md)  <sub>0..1</sub>
-     * Description: for slots with ranges of type number, the value must be equal to or lowe than this
-     * Range: [Integer](types/Integer.md)
+     * Description: For ordinal ranges, the value must be equal to or lower than this
+     * Range: [Anything](Anything.md)
      * in subsets: (SpecificationSubset,BasicSubset)
  * [type_expression➞none_of](type_expression_none_of.md)  <sub>0..\*</sub>
      * Description: holds if none of the expressions hold

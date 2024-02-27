@@ -7,34 +7,42 @@ import re
 import pytest
 
 from tests.test_compliance.helper import (
+    JSON_SCHEMA,
     OWL,
     PYDANTIC,
     PYTHON_DATACLASSES,
+    SHACL,
     SQL_DDL_SQLITE,
     ValidationBehavior,
     check_data,
     validated_schema,
 )
-from tests.test_compliance.test_compliance import CLASS_C, CORE_FRAMEWORKS, SLOT_ID, SLOT_S1
+from tests.test_compliance.test_compliance import CLASS_C, CLASS_D, CORE_FRAMEWORKS, SLOT_ID, SLOT_S1
 
 
 @pytest.mark.parametrize(
-    "schema_name,pattern,data_name,value",
+    "schema_name,range,pattern,data_name,value",
     [
-        ("complete_match", r"^\S+$", "no_ws", "ab"),
-        ("complete_match", r"^\S+$", "ws", "a b"),
-        ("partial_match", r"ab", "partial_ab", "abcd"),
-        ("partial_match", r"ab", "complete_ab", "ab"),
-        ("partial_match", r"ab", "ws", "a b"),
+        ("complete_match", "string", r"^\S+$", "no_ws", "ab"),
+        ("complete_match", "string", r"^\S+$", "ws", "a b"),
+        ("partial_match", "string", r"ab", "partial_ab", "abcd"),
+        ("partial_match", "string", r"ab", "complete_ab", "ab"),
+        ("partial_match", "string", r"ab", "ws", "a b"),
+        ("partial_match_curie", "uriorcurie", r".*ab.*", "partial_ab_curie", "X:ab"),
+        ("full_match_int", "integer", r"^12$", "full_match_int", 12),
+        ("full_match_int", "integer", r"^12$", "non_full_match_int", 123),
+        ("full_match_D", CLASS_D, r"^X:1$", "full_match_ref", "X:1"),
+        ("full_match_D", CLASS_D, r"^X:1$", "non_full_match_ref", "X:12"),
     ],
 )
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
-def test_pattern(framework, schema_name, pattern, data_name, value):
+def test_pattern(framework, range, schema_name, pattern, data_name, value):
     """
     Tests behavior of pattern slots.
 
     Pattern slots allow for regular expression constraints.
-    Currently not supported for validation by python frameworks.
+
+    Note: Currently not supported for validation by python frameworks.
 
     :param framework: not supported by python dataclasses
     :param schema_name: the name reflects which constraints are implemented
@@ -47,18 +55,37 @@ def test_pattern(framework, schema_name, pattern, data_name, value):
             "attributes": {
                 SLOT_S1: {
                     "pattern": pattern,
+                    "range": range,
                 },
             }
         }
     }
-    schema = validated_schema(test_pattern, schema_name, framework, classes=classes, core_elements=["pattern"])
+    if range == CLASS_D:
+        classes[CLASS_D] = {
+            "attributes": {
+                SLOT_ID: {
+                    "identifier": True,
+                    "range": "uriorcurie",
+                },
+            }
+        }
+    prefixes = {
+        "X": "http://example.org/",
+    }
+    schema = validated_schema(
+        test_pattern, schema_name, framework, classes=classes, prefixes=prefixes, core_elements=["pattern"]
+    )
     implementation_status = ValidationBehavior.IMPLEMENTS
-    is_valid = bool(re.match(pattern, value))
+    is_valid = bool(re.match(pattern, str(value)))
     if framework in [PYTHON_DATACLASSES, SQL_DDL_SQLITE]:
         if not is_valid:
             implementation_status = ValidationBehavior.INCOMPLETE
+    if range == "integer" and not is_valid and framework in [PYDANTIC, JSON_SCHEMA]:
+        implementation_status = ValidationBehavior.INCOMPLETE
     if framework == OWL:
         pytest.skip("Hermit reasoning over xsd regular expressions is broken")
+    if framework == SHACL and range == CLASS_D:
+        pytest.skip("SHACL correctly notices integrity violations, but that's not the subject of this test")
     check_data(
         schema,
         data_name,

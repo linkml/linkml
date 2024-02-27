@@ -1,4 +1,4 @@
-# metamodel_version: 1.7.0# version: 2.0.0id: schema_definition
+# metamodel_version: 1.7.0id: schema_definition
 schema_generating: true
 description: A collection of definitions that make up a schema or a data model.
 display_name: schema_definition
@@ -10,6 +10,10 @@ fields:
     identifier of this class or slot must begin with the URIs referenced by this prefix
   display_name: id_prefixes
   cardinality: multi
+- id: id_prefixes_are_closed
+  description: If true, then the id_prefixes slot is treated as being closed, and
+    any use of an id that does not have this prefix is considered a violation.
+  display_name: id_prefixes_are_closed
 - id: definition_uri
   description: The native URI of the element. This is always within the namespace
     of the containing schema. Contrast with the assigned URI, via class_uri or slot_uri

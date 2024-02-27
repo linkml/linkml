@@ -39,7 +39,6 @@ class GeneratorTestCase(TestEnvironmentTestCase):
     ) -> None:
         """Invoke generator specified in gen
 
-        :param env: Input environment
         :param suffix: File suffix (without '.')
         :param gen: Generator to invoke
         :param format: Generator format argument

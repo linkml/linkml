@@ -22,25 +22,27 @@ from tests.test_compliance.test_compliance import (
 
 
 @pytest.mark.parametrize(
-    "description,type_range,object,is_valid,override_uri",
+    "description,type_range,object,is_valid,override_uri,abstract_classes",
     [
-        ("t0 type optional", "string", {}, True, False),
-        ("t1", "string", {SLOT_TYPE: CLASS_C1a}, True, False),
-        ("t2", "string", {SLOT_TYPE: "fake"}, False, False),
-        ("t2 generic A", "string", {SLOT_TYPE: CLASS_C1, SLOT_S1a: "..."}, False, False),
-        ("t2 generic B", "string", {SLOT_TYPE: CLASS_C1, SLOT_S1b: "..."}, False, False),
-        ("t3", "string", {SLOT_TYPE: CLASS_C1a, SLOT_S1a: "..."}, True, False),
-        ("t3b", "string", {SLOT_TYPE: CLASS_C1a1, SLOT_S1a: "..."}, True, False),
-        ("t4", "string", {SLOT_TYPE: CLASS_C1a, SLOT_S1b: "..."}, False, False),
-        ("t5", "string", {SLOT_TYPE: CLASS_C1b, SLOT_S1b: "..."}, True, False),
-        ("t6", "uriorcurie", {SLOT_TYPE: f"ex:{CLASS_C1a}"}, True, False),
-        ("t6", "uriorcurie", {SLOT_TYPE: f"altns:{CLASS_C1a}"}, True, True),
-        ("t7", "uri", {SLOT_TYPE: f"http://example.org/{CLASS_C1a}"}, True, False),
-        ("t7", "uri", {SLOT_TYPE: f"http://example.org/altns/{CLASS_C1a}"}, True, True),
+        ("t0 type optional", "string", {}, True, False, []),
+        ("t1", "string", {SLOT_TYPE: CLASS_C1a}, True, False, []),
+        ("t1a", "string", {SLOT_TYPE: CLASS_C1a}, True, False, [CLASS_C1]),
+        ("t1a2", "string", {SLOT_TYPE: CLASS_C1a}, False, False, [CLASS_C1, CLASS_C1a]),
+        ("t2", "string", {SLOT_TYPE: "fake"}, False, False, []),
+        ("t2 generic A", "string", {SLOT_TYPE: CLASS_C1, SLOT_S1a: "..."}, False, False, []),
+        ("t2 generic B", "string", {SLOT_TYPE: CLASS_C1, SLOT_S1b: "..."}, False, False, []),
+        ("t3", "string", {SLOT_TYPE: CLASS_C1a, SLOT_S1a: "..."}, True, False, []),
+        ("t3b", "string", {SLOT_TYPE: CLASS_C1a1, SLOT_S1a: "..."}, True, False, []),
+        ("t4", "string", {SLOT_TYPE: CLASS_C1a, SLOT_S1b: "..."}, False, False, []),
+        ("t5", "string", {SLOT_TYPE: CLASS_C1b, SLOT_S1b: "..."}, True, False, []),
+        ("t6", "uriorcurie", {SLOT_TYPE: f"ex:{CLASS_C1a}"}, True, False, []),
+        ("t6", "uriorcurie", {SLOT_TYPE: f"altns:{CLASS_C1a}"}, True, True, []),
+        ("t7", "uri", {SLOT_TYPE: f"http://example.org/{CLASS_C1a}"}, True, False, []),
+        ("t7", "uri", {SLOT_TYPE: f"http://example.org/altns/{CLASS_C1a}"}, True, True, []),
     ],
 )
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
-def test_designates_type(framework, description, type_range, object, is_valid, override_uri):
+def test_designates_type(framework, description, type_range, object, is_valid, override_uri, abstract_classes):
     """
     Tests behavior of designates_type.
 
@@ -105,12 +107,14 @@ def test_designates_type(framework, description, type_range, object, is_valid, o
             "is_a": CLASS_C1a,
         },
     }
+    for c in abstract_classes:
+        classes[c]["abstract"] = True
     if override_uri:
         for cn, cls in classes.items():
             cls["class_uri"] = f"altns:{cn}"
     schema = validated_schema(
         test_designates_type,
-        f"R{type_range}",
+        f"R{type_range}_override{override_uri}_ab{'_'.join(abstract_classes)}",
         framework,
         classes=classes,
         prefixes={
@@ -123,6 +127,8 @@ def test_designates_type(framework, description, type_range, object, is_valid, o
         expected_behavior = ValidationBehavior.INCOMPLETE
     if override_uri and framework in [PYDANTIC, PYTHON_DATACLASSES]:
         # Pydantic and dataclasses don't support using class_uri to override the type
+        expected_behavior = ValidationBehavior.INCOMPLETE
+    if description == "t1a2":
         expected_behavior = ValidationBehavior.INCOMPLETE
     check_data(
         schema,

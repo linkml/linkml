@@ -1,4 +1,4 @@
-# metamodel_version: 1.7.0# version: 2.0.0id: anonymous_class_expression
+# metamodel_version: 1.7.0id: anonymous_class_expression
 schema_generating: true
 display_name: anonymous_class_expression
 document_category: anonymous_class_expression

@@ -1,7 +1,7 @@
 import logging
 import os
 from typing import Callable
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 import click
 from linkml_runtime.linkml_model.meta import ElementName
@@ -33,7 +33,7 @@ LINK_ML_TYPES_NODE_ID = URIRef("http://www.w3.org/ns/shex#nonLiteral")
 @dataclass
 class ShaclGenerator(Generator):
     # ClassVars
-    closed: bool = field(default_factory=lambda: True)
+    closed: bool = True
     """True means add 'sh:closed=true' to all shapes, except of mixin shapes and shapes, that have parents"""
 
     generatorname = os.path.basename(__file__)

@@ -47,7 +47,7 @@ class ContaineeId(URIorCURIE):
 class Container(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = SCT.Container
+    class_class_uri: ClassVar[URIRef] = SCT["Container"]
     class_class_curie: ClassVar[str] = "sct:Container"
     class_name: ClassVar[str] = "container"
     class_model_uri: ClassVar[URIRef] = SCT.Container
@@ -64,7 +64,7 @@ class Container(YAMLRoot):
 class Containee(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = SCT.Containee
+    class_class_uri: ClassVar[URIRef] = SCT["Containee"]
     class_class_curie: ClassVar[str] = "sct:Containee"
     class_name: ClassVar[str] = "containee"
     class_model_uri: ClassVar[URIRef] = SCT.Containee

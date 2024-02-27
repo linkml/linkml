@@ -22,4 +22,5 @@ URI: [linkml:pv_formula_options](https://w3id.org/linkml/pv_formula_options)
 | CURIE | The permissible values are the set of CURIES in the code set |  |  |
 | URI | The permissible values are the set of code URIs in the code set |  |  |
 | FHIR_CODING | The permissible values are the set of FHIR coding elements derived from the code set |  |  |
+| LABEL | The permissible values are the set of human readable labels in the code set |  |  |
 

@@ -1,12 +1,9 @@
 import os
 import sys
 
-import rdflib_shim
 from linkml_runtime.linkml_model import linkml_files
 from linkml_runtime.linkml_model.linkml_files import Format, Source
 from rdflib.plugins.serializers.turtle import TurtleSerializer
-
-shim = rdflib_shim.RDFLIB_SHIM
 
 assert sys.version_info > (
     3,
@@ -74,3 +71,10 @@ BIOLINK_MODEL_URI = "https://w3id.org/biolink/biolink-model"
 BIOLINK_MODEL_PYTHON_LOC = "biolink.model"
 
 TurtleSerializer.roundtrip_prefixes = [""]
+
+REQUESTS_TIMEOUT = 10
+"""
+Time (in seconds) to wait before failing a network request
+
+See: https://docs.python-requests.org/en/latest/user/advanced/#timeouts
+"""

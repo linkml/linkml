@@ -36,14 +36,14 @@ DEFAULT_ = CurieNamespace('', 'http://example.org/example/multi_id/')
 
 # Types
 class Uri(URIorCURIE):
-    type_class_uri = XSD.anyURI
+    type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "uri"
     type_model_uri = URIRef("http://example.org/example/multi_id/Uri")
 
 
 class IdentifierType(Uri):
-    type_class_uri = XSD.anyURI
+    type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "identifier type"
     type_model_uri = URIRef("http://example.org/example/multi_id/IdentifierType")

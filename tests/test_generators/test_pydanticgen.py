@@ -1,4 +1,7 @@
+import inspect
+import typing
 from importlib.metadata import version
+from typing import Dict, List, Optional, Union, get_args, get_origin
 
 import pytest
 import yaml
@@ -7,9 +10,12 @@ from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.linkml_model import SlotDefinition
 from linkml_runtime.utils.compile_python import compile_python
 from pydantic import ValidationError
+from pydantic.version import VERSION as PYDANTIC_VERSION
 
 from linkml.generators.pydanticgen import PydanticGenerator
 from linkml.utils.schema_builder import SchemaBuilder
+
+from .conftest import MyInjectedClass
 
 PACKAGE = "kitchen_sink"
 
@@ -18,9 +24,9 @@ def test_pydantic(kitchen_sink_path, tmp_path, input_path):
     """Generate pydantic classes"""
     gen = PydanticGenerator(kitchen_sink_path, package=PACKAGE)
     code = gen.serialize()
-    # TODO: lowering the bar for the pydantic test until list to dict normalization is supported
+    # TODO: also check for expanded dicts
     #  https://github.com/linkml/linkml/issues/1304
-    with open(input_path("kitchen_sink_normalized_inst_01.yaml")) as stream:
+    with open(input_path("kitchen_sink_inst_01.yaml")) as stream:
         dataset_dict = yaml.safe_load(stream)
 
     module = compile_python(code, PACKAGE)
@@ -77,6 +83,35 @@ enums:
     assert enum["values"]["PLUS_SIGN"]["value"] == "+"
     assert enum["values"]["This_AMPERSAND_that_plus_maybe_a_TOP_HAT"]["value"] == "This & that, plus maybe a 🎩"
     assert enum["values"]["Ohio"]["value"] == "Ohio"
+
+
+def test_pydantic_enum_titles():
+    unit_test_schema = """
+id: unit_test
+name: unit_test
+
+prefixes:
+  ex: https://example.org/
+default_prefix: ex
+
+enums:
+  TestEnum:
+    permissible_values:
+      value1:
+        title: label1
+      value2:
+        title: label2
+      value3:
+    """
+    sv = SchemaView(unit_test_schema)
+    gen = PydanticGenerator(schema=unit_test_schema)
+    enums = gen.generate_enums(sv.all_enums())
+    assert enums
+    enum = enums["TestEnum"]
+    assert enum
+    assert enum["values"]["label1"]["value"] == "value1"
+    assert enum["values"]["label2"]["value"] == "value2"
+    assert enum["values"]["value3"]["value"] == "value3"
 
 
 def test_pydantic_any_of():
@@ -136,14 +171,9 @@ slots:
     assert lines[ix + 5] == "    not_inlined_things: Optional[List[str]] = Field(default_factory=list)"
 
 
-def test_pydantic_inlining():
-    # Case = namedtuple("multivalued", "inlined", "inlined_as_list", "B_has_identities")
-    expected_default_factories = {
-        "Optional[List[str]]": "Field(default_factory=list)",
-        "Optional[List[B]]": "Field(default_factory=list)",
-        "Optional[Dict[str, B]]": "Field(default_factory=dict)",
-    }
-    cases = [
+@pytest.mark.parametrize(
+    "range,multivalued,inlined,inlined_as_list,B_has_identifier,expected,notes",
+    [
         # block 1: primitives are NEVER inlined
         (
             "T",
@@ -199,7 +229,7 @@ def test_pydantic_inlining():
             True,
             False,
             True,
-            "Optional[Dict[str, B]]",
+            "Optional[Dict[str, str]]",
             "references to class with identifier inlined ONLY ON REQUEST, with dict as default",
         ),
         # TODO: fix the next two
@@ -213,42 +243,45 @@ def test_pydantic_inlining():
             "references to class with identifier inlined as list ONLY ON REQUEST",
         ),
         ("B", True, False, False, True, "Optional[List[str]]", ""),
-    ]
-    for (
-        range,
-        multivalued,
-        inlined,
-        inlined_as_list,
-        B_has_identifier,
-        expected,
-        notes,
-    ) in cases:
-        sb = SchemaBuilder("test")
-        sb.add_type("T", typeof="string")
-        a2b = SlotDefinition(
-            "a2b",
-            range=range,
-            multivalued=multivalued,
-            inlined=inlined,
-            inlined_as_list=inlined_as_list,
-        )
-        sb.add_class("A", slots=[a2b])
-        b_id = SlotDefinition("id", identifier=B_has_identifier)
-        sb.add_class("B", slots=[b_id, "name"])
-        sb.add_defaults()
-        schema = sb.schema
-        schema_str = yaml_dumper.dumps(schema)
-        gen = PydanticGenerator(schema_str, package=PACKAGE)
-        code = gen.serialize()
-        lines = code.splitlines()
-        ix = lines.index("class A(ConfiguredBaseModel):")
-        assert ix > 0
-        # assume a single blank line separating
-        slot_line = lines[ix + 2]
-        assert f"a2b: {expected}" in slot_line
-        if expected not in expected_default_factories:
-            raise ValueError(f"unexpected default factory for {expected}")
-        assert expected_default_factories[expected] in slot_line
+    ],
+)
+def test_pydantic_inlining(range, multivalued, inlined, inlined_as_list, B_has_identifier, expected, notes):
+    # Case = namedtuple("multivalued", "inlined", "inlined_as_list", "B_has_identities")
+    expected_default_factories = {
+        "Optional[List[str]]": "Field(default_factory=list)",
+        "Optional[List[B]]": "Field(default_factory=list)",
+        "Optional[Dict[str, B]]": "Field(default_factory=dict)",
+        "Optional[Dict[str, str]]": "Field(default_factory=dict)",
+    }
+
+    sb = SchemaBuilder("test")
+    sb.add_type("T", typeof="string")
+    a2b = SlotDefinition(
+        "a2b",
+        range=range,
+        multivalued=multivalued,
+        inlined=inlined,
+        inlined_as_list=inlined_as_list,
+    )
+    sb.add_class("A", slots=[a2b])
+    b_id = SlotDefinition("id", identifier=B_has_identifier)
+    sb.add_class("B", slots=[b_id, "name"])
+    sb.add_defaults()
+    schema = sb.schema
+    schema_str = yaml_dumper.dumps(schema)
+    gen = PydanticGenerator(schema_str, package=PACKAGE)
+    code = gen.serialize()
+    lines = code.splitlines()
+    ix = lines.index("class A(ConfiguredBaseModel):")
+    assert ix > 0
+    # assume a single blank line separating
+    slot_line = lines[ix + 2]
+    assert f"a2b: {expected}" in slot_line, f"did not find expected {expected} in {slot_line}"
+    if expected not in expected_default_factories:
+        raise ValueError(f"unexpected default factory for {expected}")
+    assert (
+        expected_default_factories[expected] in slot_line
+    ), f"did not find expected default factory {expected_default_factories[expected]}"
 
 
 def test_ifabsent():
@@ -568,3 +601,82 @@ classes:
     gen = PydanticGenerator(schema=unit_test_schema)
     with pytest.raises(NotImplementedError):
         gen.serialize()
+
+
+@pytest.mark.parametrize(
+    "imports,expected",
+    [
+        ({"typing": ["Dict", "List", "Union"]}, (("Dict", Dict), ("List", List), ("Union", Union))),
+        ({"typing": None}, (("typing", typing),)),
+        (
+            {"typing": [{"name": "Dict", "as": "DictRenamed"}, {"name": "List", "as": "ListRenamed"}]},
+            (("DictRenamed", Dict), ("ListRenamed", List)),
+        ),
+        ({"typing": {"as": "tp"}}, (("tp", typing),)),
+    ],
+)
+def test_inject_imports(kitchen_sink_path, tmp_path, input_path, imports, expected):
+    gen = PydanticGenerator(kitchen_sink_path, package=PACKAGE, imports=imports)
+    code = gen.serialize()
+    module = compile_python(code, PACKAGE)
+    for condition in expected:
+        assert hasattr(module, condition[0])
+        assert getattr(module, condition[0]) is condition[1]
+
+
+_StringClass = (
+    """class MyInjectedClass:\n    field: str = 'field'\n    def __init__(self):\n        self.apple = 'banana'"""
+)
+
+
+@pytest.mark.parametrize(
+    "inject,expected", ((MyInjectedClass, inspect.getsource(MyInjectedClass)), (_StringClass, _StringClass))
+)
+def test_inject_classes(kitchen_sink_path, tmp_path, input_path, inject, expected):
+    gen = PydanticGenerator(
+        kitchen_sink_path,
+        package=PACKAGE,
+        injected_classes=[inject],
+    )
+    code = gen.serialize()
+    module = compile_python(code, PACKAGE)
+    assert hasattr(module, "MyInjectedClass")
+    # can't do inspect on the compiled module since it doesn't have a file
+    assert expected in code
+
+
+@pytest.mark.parametrize(
+    "inject,name,type,default,description",
+    (
+        (
+            'object_id: Optional[str] = Field(None, description="Unique UUID for each object")',
+            "object_id",
+            Optional[str],
+            None,
+            "Unique UUID for each object",
+        ),
+    ),
+)
+def test_inject_field(kitchen_sink_path, tmp_path, input_path, inject, name, type, default, description):
+    gen = PydanticGenerator(kitchen_sink_path, package=PACKAGE, injected_fields=[inject])
+    code = gen.serialize()
+    module = compile_python(code, PACKAGE)
+
+    base = getattr(module, "ConfiguredBaseModel")
+
+    if int(PYDANTIC_VERSION.split(".")[0]) >= 2:
+        assert name in base.model_fields
+        field = base.model_fields[name]
+        assert field.annotation == type
+        assert field.default == default
+        assert field.description == description
+    else:
+        assert name in base.__fields__
+        field = base.__fields__[name]
+        # pydantic <2 mangles annotations so can't do direct annotation comparison
+        assert not field.required
+        if get_origin(type):
+            assert field.type_ is get_args(type)[0]
+        else:
+            assert field.type_ is type
+        assert field.field_info.description == description

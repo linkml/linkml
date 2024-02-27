@@ -73,15 +73,15 @@ URI: [linkml:AnonymousTypeExpression](https://w3id.org/linkml/AnonymousTypeExpre
 ### Mixed in from type_expression:
 
  * [minimum_value](minimum_value.md)  <sub>0..1</sub>
-     * Description: for slots with ranges of type number, the value must be equal to or higher than this
-     * Range: [Integer](types/Integer.md)
+     * Description: For ordinal ranges, the value must be equal to or higher than this
+     * Range: [Anything](Anything.md)
      * in subsets: (SpecificationSubset,BasicSubset)
 
 ### Mixed in from type_expression:
 
  * [maximum_value](maximum_value.md)  <sub>0..1</sub>
-     * Description: for slots with ranges of type number, the value must be equal to or lowe than this
-     * Range: [Integer](types/Integer.md)
+     * Description: For ordinal ranges, the value must be equal to or lower than this
+     * Range: [Anything](Anything.md)
      * in subsets: (SpecificationSubset,BasicSubset)
 
 ### Mixed in from type_expression:

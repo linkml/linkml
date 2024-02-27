@@ -7,7 +7,7 @@ Generate a JSON LD representation of the model
 
 import os
 import urllib.parse as urlparse
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import List, Optional
 
 import click
@@ -33,7 +33,7 @@ class RDFGenerator(Generator):
     uses_schemaloader = True
 
     # ObjectVars
-    emit_metadata: bool = field(default_factory=lambda: False)
+    emit_metadata: bool = False
     context: List[str] = None
 
     def _data(self, g: Graph) -> str:

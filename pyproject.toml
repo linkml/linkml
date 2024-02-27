@@ -30,11 +30,12 @@ classifiers = [
     "Intended Audience :: Developers",
     "Intended Audience :: Science/Research",
     "Intended Audience :: Healthcare Industry",
-    "License :: CC0 1.0 Universal (CC0 1.0) Public Domain Dedication",
+    "License :: OSI Approved :: Apache Software License",
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10"
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11"
 ]
 
 packages = [
@@ -78,7 +79,6 @@ gen-yaml = "linkml.generators.yamlgen:cli"
 gen-erdiagram = "linkml.generators.erdiagramgen:cli"
 gen-sqla = "linkml.generators.sqlalchemygen:cli"
 gen-sqlddl = "linkml.generators.sqltablegen:cli"
-gen-sqlddl-legacy = "linkml.generators.sqlddlgen:cli"
 gen-sqltables = "linkml.generators.sqltablegen:cli"
 gen-summary = "linkml.generators.summarygen:cli"
 gen-project = "linkml.generators.projectgen:cli"
@@ -106,7 +106,7 @@ jinja2 = ">= 3.1.0"
 jsonasobj2 = "==1.*,>=1.0.0,>=1.0.3"
 jsonschema = {extras = ["format"], version = ">=4.0.0"}
 linkml-dataops = "*"
-linkml-runtime = ">=1.6.0"
+linkml-runtime = ">=1.7.0"
 openpyxl = "*"
 parse = "*"
 prefixcommons = ">=0.1.7"
@@ -123,7 +123,7 @@ sqlalchemy = ">=1.4.31"
 watchdog = ">=0.9.0"
 typing-extensions = {version = "^4.5.0", python = "3.7"}
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
 chardet = "*"
 ipykernel = "*"
 ipython-genutils = "*"
@@ -143,12 +143,8 @@ pytest = "^7.4.0"
 pytest-subtests = "^0.11.0"
 numpy = ">=1.24.3"
 
-
 [tool.poetry.group.shacl.dependencies]
 pyshacl = "^0.25.0"
-
-[tool.poetry.extras]
-docs = ["Sphinx", "sphinxcontrib-mermaid", "furo"]
 
 [build-system]
 requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning"]
@@ -156,7 +152,7 @@ build-backend = "poetry_dynamic_versioning.backend"
 
 [tool.codespell]
 # TODO: bring in tests in too
-skip = '.git,*.pdf,*.svg,./tests,pyproject.toml,*.dill'
+skip = '.git,*.pdf,*.svg,./tests,pyproject.toml,*.dill,poetry.lock'
 # Ignore table where words could be split across rows
 # Ignore shortcut specifications like [Ff]alse
 ignore-regex = '(\|.*\|.*\|.*\||\[[A-Z][a-z]\][a-z][a-z])'
@@ -185,7 +181,8 @@ filterwarnings = [
   "ignore:.*_pytestfixturefunction is not defined in namespace:UserWarning"
 ]
 markers = [
-  "network: mark tests that make external network requests"
+  "network: mark tests that make external network requests",
+  "slow: mark test as slow to run"
 ]
 
 [tool.ruff]

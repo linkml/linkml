@@ -46,13 +46,13 @@ DEFAULT_ = TEST
 class C1(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = TEST.C1
+    class_class_uri: ClassVar[URIRef] = TEST["C1"]
     class_class_curie: ClassVar[str] = "test:C1"
     class_name: ClassVar[str] = "c1"
     class_model_uri: ClassVar[URIRef] = TEST.C1
 
-    s1: Optional[str] = SKOS.label
-    s2: Optional[str] = SKOS.definition
+    s1: Optional[str] = SKOS["label"]
+    s2: Optional[str] = SKOS["definition"]
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self.s1 is not None and not isinstance(self.s1, str):

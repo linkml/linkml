@@ -140,11 +140,11 @@ class RelationalModelTransformer:
     """
 
     schemaview: SchemaView = None
-    # dialect: str = field(default_factory=lambda : 'sqlite')
-    skip_tree_root: bool = field(default_factory=lambda: False)
-    skip_abstract: bool = field(default_factory=lambda: True)
-    skip_mixins: bool = field(default_factory=lambda: True)
-    join_table_separator: str = field(default_factory=lambda: "_")
+    # dialect: str = 'sqlite'
+    skip_tree_root: bool = False
+    skip_abstract: bool = True
+    skip_mixins: bool = True
+    join_table_separator: str = "_"
     foreign_key_policy: ForeignKeyPolicy = field(default_factory=lambda: ForeignKeyPolicy.INJECT_FK_FOR_NESTED)
 
     def transform(self, tgt_schema_name: str = None, top_class: ClassDefinitionName = None) -> TransformationResult:
@@ -368,7 +368,8 @@ class RelationalModelTransformer:
         result = TransformationResult(target, mappings=mappings)
         return result
 
-    def get_direct_identifier_attribute(self, sv: SchemaView, cn: ClassDefinitionName) -> Optional[SlotDefinition]:
+    @staticmethod
+    def get_direct_identifier_attribute(sv: SchemaView, cn: ClassDefinitionName) -> Optional[SlotDefinition]:
         c = sv.get_class(cn)
         for a in c.attributes.values():
             if a.identifier:
@@ -414,7 +415,8 @@ class RelationalModelTransformer:
             or (c.tree_root and self.skip_tree_root)
         )
 
-    def add_primary_key(self, cn: str, sv: SchemaView) -> SlotDefinition:
+    @staticmethod
+    def add_primary_key(cn: str, sv: SchemaView) -> SlotDefinition:
         """
         Adds a surrogate/autoincrement primary key to a class
 

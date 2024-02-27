@@ -4,7 +4,7 @@ LinkML allows you to work with SQL/Relational databases in a number of different
 
 * SQL Schemas (DDL) can be generated directly from LinkML schemas
 * Optional Object Relational Mapping (ORM) layers can be generated
-    - Currently only Python / SQL Alchemy ORM layesr are supported
+    - Currently only Python / SQL Alchemy ORM layers are supported
 * SQL Backends can be used directly to store and retrieve data
     - No coding required
     - Currently only SQLite is supported
@@ -21,10 +21,10 @@ cp ../tutorial09/personinfo.yaml .
 
 ### Generating SQL CREATE TABLE statements
 
-Use the [gen-sqlddl](/generators/sqlddl) command to make a SQL schema:
+Use the [gen-sqltables](/generators/sqltable) command to make a SQL schema:
 
 ```bash
-gen-sqlddl personinfo.yaml
+gen-sqltables personinfo.yaml
 ```
 
 Outputs:
@@ -223,11 +223,11 @@ believe ORMs to be add unnecessary complexity, and others finding them
 indispensable. Use of ORMs is completely optional with LinkML, but if
 you are using a RDBMS you may find them useful.
 
-Currently the only ORM directly supported in SQL Alchemy
+Currently the only ORM directly supported is SQL Alchemy.
 
 ### SQL Alchemy (advanced)
 
-[SQL Alchemy](https://docs.sqlalchemy.org/) is a SQL framework for python. It has a core layer, and an ORM later.
+[SQL Alchemy](https://docs.sqlalchemy.org/) is a SQL framework for python. It has a core layer, and an ORM layer.
 
 You can generate SQL Alchemy classes using:
 
@@ -235,5 +235,5 @@ You can generate SQL Alchemy classes using:
 gen-sqla -s personinfo.yaml
 ```
 
-See the SQLDDL generator docs for more details.
+See the SQLTables generator docs for more details.
 

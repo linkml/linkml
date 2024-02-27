@@ -9,7 +9,8 @@ from tests.test_notebooks import output_directory
 
 
 class NotebookTests(unittest.TestCase):
-    def eval_test(self, target: str, import_module: str) -> None:
+    @staticmethod
+    def eval_test(target: str, import_module: str) -> None:
         output = StringIO()
         output_file = os.path.join(output_directory, target)
         with redirect_stdout(output):

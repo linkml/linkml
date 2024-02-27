@@ -21,6 +21,7 @@ None &#8594;  <sub>0..1</sub> [Integer](types/Integer.md)
 ## Used by
 
  * [AnonymousSlotExpression](AnonymousSlotExpression.md)
+ * [DimensionExpression](DimensionExpression.md)
  * [SlotDefinition](SlotDefinition.md)
  * [SlotExpression](SlotExpression.md)
 
@@ -28,5 +29,6 @@ None &#8594;  <sub>0..1</sub> [Integer](types/Integer.md)
 
 |  |  |  |
 | --- | --- | --- |
+| **Comments:** | | maximum_cardinality cannot be less than minimum_cardinality |
 | **In Subsets:** | | SpecificationSubset |
 

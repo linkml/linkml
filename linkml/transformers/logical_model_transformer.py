@@ -383,7 +383,8 @@ class LogicalModelTransformer(ModelTransformer):
         if new_slot_dict:
             target.all_of.append(AnonymousSlotExpression(**new_slot_dict))
 
-    def _merge_type_ancestors(self, target: TypeDefinition, source: TypeDefinition):
+    @staticmethod
+    def _merge_type_ancestors(target: TypeDefinition, source: TypeDefinition):
         """
         Generate all_ofs for type based on ancestors.
 

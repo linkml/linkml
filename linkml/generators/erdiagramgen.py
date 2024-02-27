@@ -1,5 +1,5 @@
 import os
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from enum import Enum
 from typing import List, Optional, Union
 
@@ -129,11 +129,11 @@ class ERDiagramGenerator(Generator):
     exclude_attributes: bool = False
     """If True, do not include attributes in entities"""
 
-    genmeta: bool = field(default_factory=lambda: False)
-    gen_classvars: bool = field(default_factory=lambda: True)
-    gen_slots: bool = field(default_factory=lambda: True)
-    no_types_dir: bool = field(default_factory=lambda: False)
-    use_slot_uris: bool = field(default_factory=lambda: False)
+    genmeta: bool = False
+    gen_classvars: bool = True
+    gen_slots: bool = True
+    no_types_dir: bool = False
+    use_slot_uris: bool = False
 
     def __post_init__(self):
         self.schemaview = SchemaView(self.schema)

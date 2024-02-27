@@ -1,4 +1,4 @@
-# metamodel_version: 1.7.0# version: 2.0.0id: anonymous_type_expression
+# metamodel_version: 1.7.0id: anonymous_type_expression
 schema_generating: true
 description: A type expression that is not a top-level named type definition. Used
   for nesting.
@@ -35,12 +35,10 @@ fields:
     equal the specified value
   display_name: equals_number
 - id: minimum_value
-  description: for slots with ranges of type number, the value must be equal to or
-    higher than this
+  description: For ordinal ranges, the value must be equal to or higher than this
   display_name: minimum_value
 - id: maximum_value
-  description: for slots with ranges of type number, the value must be equal to or
-    lowe than this
+  description: For ordinal ranges, the value must be equal to or lower than this
   display_name: maximum_value
 - id: none_of
   description: holds if none of the expressions hold

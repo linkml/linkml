@@ -38,7 +38,7 @@ DEFAULT_ = SAMP
 
 # Types
 class String(str):
-    type_class_uri = XSD.string
+    type_class_uri = XSD["string"]
     type_class_curie = "xsd:string"
     type_name = "string"
     type_model_uri = SAMP.String
@@ -52,7 +52,7 @@ class String(str):
 class Student(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = SAMP.Student
+    class_class_uri: ClassVar[URIRef] = SAMP["Student"]
     class_class_curie: ClassVar[str] = "samp:Student"
     class_name: ClassVar[str] = "student"
     class_model_uri: ClassVar[URIRef] = SAMP.Student
@@ -74,7 +74,7 @@ class Student(YAMLRoot):
 class Course(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = SAMP.Course
+    class_class_uri: ClassVar[URIRef] = SAMP["Course"]
     class_class_curie: ClassVar[str] = "samp:Course"
     class_name: ClassVar[str] = "course"
     class_model_uri: ClassVar[URIRef] = SAMP.Course

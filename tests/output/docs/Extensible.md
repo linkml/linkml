@@ -12,7 +12,9 @@ URI: [linkml:Extensible](https://w3id.org/linkml/Extensible)
 ## Mixin for
 
  * [AnonymousExpression](AnonymousExpression.md) (mixin)  - An abstract parent class for any nested expression
+ * [ArrayExpression](ArrayExpression.md) (mixin)  - defines the dimensions of an array
  * [ClassRule](ClassRule.md) (mixin)  - A rule that applies to instances of a class
+ * [DimensionExpression](DimensionExpression.md) (mixin)  - defines one of the dimensions of an array
  * [Element](Element.md) (mixin)  - A named element in the model
  * [ImportExpression](ImportExpression.md) (mixin)  - an expression describing an import
  * [PathExpression](PathExpression.md) (mixin)  - An expression that describes an abstract path from an object to another through a sequence of slot lookups

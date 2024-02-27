@@ -1,0 +1,18 @@
+id: b
+name: b
+title: b
+
+prefixes:
+  mm: https://b/
+  linkml: https://w3id.org/linkml/
+  schema: http://schema.org/
+default_prefix: mm
+default_range: string
+
+imports:
+  - linkml:types
+
+classes:
+  Equipment:
+    description:
+      An individually identifiable piece of equipment

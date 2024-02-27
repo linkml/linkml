@@ -1,10 +1,11 @@
+import inspect
 import logging
 import os
 from collections import defaultdict
 from copy import deepcopy
 from dataclasses import dataclass, field
 from types import ModuleType
-from typing import Dict, List, Optional, Set
+from typing import Dict, List, Optional, Set, Type, Union
 
 import click
 from jinja2 import Template
@@ -32,7 +33,9 @@ from linkml.utils.generator import shared_arguments
 from linkml.utils.ifabsent_functions import ifabsent_value_declaration
 
 
-def default_template(pydantic_ver: str = "1", extra_fields: str = "forbid") -> str:
+def default_template(
+    pydantic_ver: str = "1", extra_fields: str = "forbid", injected_classes: Optional[List[Union[Type, str]]] = None
+) -> str:
     """Constructs a default template for pydantic classes based on the version of pydantic"""
     ### HEADER ###
     template = """
@@ -46,6 +49,7 @@ from enum import Enum
 {% if uses_numpy -%}
 import numpy as np
 {%- endif %}
+from decimal import Decimal
 from typing import List, Dict, Optional, Any, Union"""
     if pydantic_ver == "1":
         template += """
@@ -61,7 +65,26 @@ if sys.version_info >= (3, 8):
 else:
     from typing_extensions import Literal
 
-
+{% if imports is not none %}
+{%- for import_module, import_classes in imports.items() -%}
+{% if import_classes is none -%}
+import {{ import_module }}
+{% elif import_classes is mapping -%}
+import {{ import_module }} as {{ import_classes['as'] }}
+{% else -%}
+from {{ import_module }} import (
+    {% for imported_class in import_classes %}
+    {%- if imported_class is string -%}
+    {{ imported_class }}
+    {%- else -%}
+    {{ imported_class['name'] }} as {{ imported_class['as'] }}
+    {%- endif -%}
+    {%- if not loop.last %},{{ '\n    ' }}{% else %}{{ '\n' }}{%- endif -%}
+    {% endfor -%}
+)
+{% endif -%}
+{% endfor -%}
+{% endif %}
 metamodel_version = "{{metamodel_version}}"
 version = "{{version if version else None}}"
 """
@@ -78,7 +101,6 @@ class ConfiguredBaseModel(WeakRefShimBaseModel,
                 extra = '{extra_fields}',
                 arbitrary_types_allowed = True,
                 use_enum_values = True):
-    pass
 """
     else:
         template += f"""
@@ -89,8 +111,26 @@ class ConfiguredBaseModel(BaseModel):
         extra = '{extra_fields}',
         arbitrary_types_allowed=True,
         use_enum_values = True)
-    pass
 """
+
+    ### Fields injected into base model
+    template += """{% if injected_fields is not none %}
+    {% for field in injected_fields -%}
+    {{ field }}
+    {% endfor %}
+{% else %}
+    pass
+{% endif %}
+        """
+
+    ### Extra classes
+    if injected_classes is not None and len(injected_classes) > 0:
+        template += """{{ '\n\n' }}"""
+        for cls in injected_classes:
+            if isinstance(cls, str):
+                template += cls + "\n\n"
+            else:
+                template += inspect.getsource(cls) + "\n\n"
 
     ### ENUMS ###
     template += """
@@ -270,14 +310,75 @@ class PydanticGenerator(OOCodeGenerator):
     # ObjectVars
     pydantic_version: str = field(default_factory=lambda: PYDANTIC_VERSION[0])
     template_file: str = None
-    extra_fields: str = field(default_factory=lambda: "forbid")
-    gen_mixin_inheritance: bool = field(default_factory=lambda: True)
+    extra_fields: str = "forbid"
+    gen_mixin_inheritance: bool = True
+    injected_classes: Optional[List[Union[Type, str]]] = None
+    """
+    A list/tuple of classes to inject into the generated module.
+    
+    Accepts either live classes or strings. Live classes will have their source code
+    extracted with inspect.get - so they need to be standard python classes declared in a
+    source file (ie. the module they are contained in needs a ``__file__`` attr, 
+    see: :func:`inspect.getsource` )
+    """
+    injected_fields: Optional[List[str]] = None
+    """
+    A list/tuple of field strings to inject into the base class.
+    
+    Examples:
+    
+    .. code-block:: python
+
+        injected_fields = (
+            'object_id: Optional[str] = Field(None, description="Unique UUID for each object")',
+        )
+    
+    """
+    imports: Optional[Dict[str, Union[None, Dict[str, str], List[Union[str, Dict[str, str]]]]]] = None
+    """
+    Additional imports to inject into generated module. 
+    
+    A dictionary mapping a module to a list of objects to import. 
+    If the value of an entry is ``None`` , import the whole module.
+    
+    Import Aliases:
+    If the value of a module import is a dictionary with a key "as",
+    or a class is specified as a dictionary with a "name" and "as",
+    then the import is renamed like "from module import class as renamedClass".
+    
+    Examples:
+        
+    .. code-block:: python
+    
+        imports = {
+            'typing': ['Dict', 'List', 'Union'],
+            'types': None,
+            'numpy': {'as': 'np'},
+            'collections': [{'name': 'OrderedDict', 'as': 'odict'}]
+        }
+        
+    becomes:
+    
+    .. code-block:: python
+    
+        from typing import (
+            Dict,
+            List,
+            Union
+        )
+        import types
+        import numpy as np
+        from collections import (
+            OrderedDict as odict
+        )
+    
+    """
 
     # ObjectVars (identical to pythongen)
-    gen_classvars: bool = field(default_factory=lambda: True)
-    gen_slots: bool = field(default_factory=lambda: True)
-    genmeta: bool = field(default_factory=lambda: False)
-    emit_metadata: bool = field(default_factory=lambda: True)
+    gen_classvars: bool = True
+    gen_slots: bool = True
+    genmeta: bool = False
+    emit_metadata: bool = True
 
     def compile_module(self, **kwargs) -> ModuleType:
         """
@@ -292,7 +393,8 @@ class PydanticGenerator(OOCodeGenerator):
             logging.error(f"Error compiling generated python code: {e}")
             raise e
 
-    def sort_classes(self, clist: List[ClassDefinition]) -> List[ClassDefinition]:
+    @staticmethod
+    def sort_classes(clist: List[ClassDefinition]) -> List[ClassDefinition]:
         """
         sort classes such that if C is a child of P then C appears after P in the list
 
@@ -525,12 +627,49 @@ class PydanticGenerator(OOCodeGenerator):
             return list(collection_keys)[0]
         return None
 
+    @staticmethod
+    def _inline_as_simple_dict_with_value(slot_def: SlotDefinition, sv: SchemaView) -> Optional[str]:
+        """
+        Determine if a slot should be inlined as a simple dict with a value.
+
+        For example, if we have a class such as Prefix, with two slots prefix and expansion,
+        then an inlined list of prefixes can be serialized as:
+
+        .. code-block:: yaml
+
+            prefixes:
+                prefix1: expansion1
+                prefix2: expansion2
+                ...
+
+        Provided that the prefix slot is the identifier slot for the Prefix class.
+
+        TODO: move this to SchemaView
+
+        :param slot_def: SlotDefinition
+        :param sv: SchemaView
+        :return: str
+        """
+        if slot_def.inlined and not slot_def.inlined_as_list:
+            if slot_def.range in sv.all_classes():
+                id_slot = sv.get_identifier_slot(slot_def.range, use_key=True)
+                if id_slot is not None:
+                    range_cls_slots = sv.class_induced_slots(slot_def.range)
+                    if len(range_cls_slots) == 2:
+                        non_id_slots = [slot for slot in range_cls_slots if slot.name != id_slot.name]
+                        if len(non_id_slots) == 1:
+                            value_slot = non_id_slots[0]
+                            value_slot_range_type = sv.get_type(value_slot.range)
+                            if value_slot_range_type is not None:
+                                return _get_pyrange(value_slot_range_type, sv)
+        return None
+
     def serialize(self) -> str:
         if self.template_file is not None:
             with open(self.template_file) as template_file:
                 template_obj = Template(template_file.read())
         else:
-            template_obj = Template(default_template(self.pydantic_version, self.extra_fields))
+            template_obj = Template(default_template(self.pydantic_version, self.extra_fields, self.injected_classes))
 
         sv: SchemaView
         sv = self.schemaview
@@ -610,7 +749,14 @@ class PydanticGenerator(OOCodeGenerator):
                     if s.inlined is False or collection_key is None or s.inlined_as_list is True:
                         pyrange = f"List[{pyrange}]"
                     else:
-                        pyrange = f"Dict[{collection_key}, {pyrange}]"
+                        simple_dict_value = None
+                        if len(slot_ranges) == 1:
+                            simple_dict_value = self._inline_as_simple_dict_with_value(s, sv)
+                        if simple_dict_value:
+                            # inlining as simple dict
+                            pyrange = f"Dict[str, {simple_dict_value}]"
+                        else:
+                            pyrange = f"Dict[{collection_key}, {pyrange}]"
                 if not (s.required or s.identifier or s.key) and not s.designates_type:
                     pyrange = f"Optional[{pyrange}]"
                 ann = Annotation("python_range", pyrange)
@@ -624,6 +770,8 @@ class PydanticGenerator(OOCodeGenerator):
             metamodel_version=self.schema.metamodel_version,
             version=self.schema.version,
             class_isa_plus_mixins=self.get_class_isa_plus_mixins(),
+            imports=self.imports,
+            injected_fields=self.injected_fields,
             uses_numpy=uses_numpy,
         )
         return code

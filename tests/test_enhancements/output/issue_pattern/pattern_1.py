@@ -1,5 +1,5 @@
 # Auto generated from pattern_1.yaml by pythongen.py version: 0.0.1
-# Generation date: 2023-09-22T11:49:31
+# Generation date: 2024-02-07T21:04:04
 # Schema: pattern_1
 #
 # id: http://example.org/test/pattern_1
@@ -46,7 +46,7 @@ class DiskDeviceLabel(extended_str):
 class DiskDevice(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = PATTERN.DiskDevice
+    class_class_uri: ClassVar[URIRef] = PATTERN["DiskDevice"]
     class_class_curie: ClassVar[str] = "pattern:DiskDevice"
     class_name: ClassVar[str] = "DiskDevice"
     class_model_uri: ClassVar[URIRef] = PATTERN.DiskDevice

@@ -45,7 +45,7 @@ class ChildId(BaseId):
 class Child(Base):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = EX.Child
+    class_class_uri: ClassVar[URIRef] = EX["Child"]
     class_class_curie: ClassVar[str] = "ex:Child"
     class_name: ClassVar[str] = "child"
     class_model_uri: ClassVar[URIRef] = EX.Child

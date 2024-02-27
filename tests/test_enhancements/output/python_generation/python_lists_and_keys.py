@@ -1,5 +1,5 @@
 # Auto generated from python_lists_and_keys.yaml by pythongen.py version: 0.0.1
-# Generation date: 2023-09-22T11:49:31
+# Generation date: 2024-02-07T21:04:05
 # Schema: lists_and_keys
 #
 # id: http://examples.org/linkml/test/lists_and_keys
@@ -48,7 +48,7 @@ class OptionalOneElementRange(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS.OptionalOneElementRange
+    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS["OptionalOneElementRange"]
     class_class_curie: ClassVar[str] = "lists_and_keys:OptionalOneElementRange"
     class_name: ClassVar[str] = "OptionalOneElementRange"
     class_model_uri: ClassVar[URIRef] = LISTS_AND_KEYS.OptionalOneElementRange
@@ -69,7 +69,7 @@ class RequiredOneElementRange(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS.RequiredOneElementRange
+    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS["RequiredOneElementRange"]
     class_class_curie: ClassVar[str] = "lists_and_keys:RequiredOneElementRange"
     class_name: ClassVar[str] = "RequiredOneElementRange"
     class_model_uri: ClassVar[URIRef] = LISTS_AND_KEYS.RequiredOneElementRange
@@ -92,7 +92,7 @@ class OptionalOneElementRangeList(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS.OptionalOneElementRangeList
+    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS["OptionalOneElementRangeList"]
     class_class_curie: ClassVar[str] = "lists_and_keys:OptionalOneElementRangeList"
     class_name: ClassVar[str] = "OptionalOneElementRangeList"
     class_model_uri: ClassVar[URIRef] = LISTS_AND_KEYS.OptionalOneElementRangeList
@@ -114,7 +114,7 @@ class RequiredOneElementRangeList(OptionalOneElementRangeList):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS.RequiredOneElementRangeList
+    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS["RequiredOneElementRangeList"]
     class_class_curie: ClassVar[str] = "lists_and_keys:RequiredOneElementRangeList"
     class_name: ClassVar[str] = "RequiredOneElementRangeList"
     class_model_uri: ClassVar[URIRef] = LISTS_AND_KEYS.RequiredOneElementRangeList
@@ -138,7 +138,7 @@ class RequiredTwoElementRangeList(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS.RequiredTwoElementRangeList
+    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS["RequiredTwoElementRangeList"]
     class_class_curie: ClassVar[str] = "lists_and_keys:RequiredTwoElementRangeList"
     class_name: ClassVar[str] = "RequiredTwoElementRangeList"
     class_model_uri: ClassVar[URIRef] = LISTS_AND_KEYS.RequiredTwoElementRangeList
@@ -162,7 +162,7 @@ class RequiredThreeElementRangeList(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS.RequiredThreeElementRangeList
+    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS["RequiredThreeElementRangeList"]
     class_class_curie: ClassVar[str] = "lists_and_keys:RequiredThreeElementRangeList"
     class_name: ClassVar[str] = "RequiredThreeElementRangeList"
     class_model_uri: ClassVar[URIRef] = LISTS_AND_KEYS.RequiredThreeElementRangeList
@@ -186,7 +186,7 @@ class OptionalKeyedOneElementRange(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS.OptionalKeyedOneElementRange
+    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS["OptionalKeyedOneElementRange"]
     class_class_curie: ClassVar[str] = "lists_and_keys:OptionalKeyedOneElementRange"
     class_name: ClassVar[str] = "OptionalKeyedOneElementRange"
     class_model_uri: ClassVar[URIRef] = LISTS_AND_KEYS.OptionalKeyedOneElementRange
@@ -207,7 +207,7 @@ class OptionalKeyedOneElementRangeList(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS.OptionalKeyedOneElementRangeList
+    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS["OptionalKeyedOneElementRangeList"]
     class_class_curie: ClassVar[str] = "lists_and_keys:OptionalKeyedOneElementRangeList"
     class_name: ClassVar[str] = "OptionalKeyedOneElementRangeList"
     class_model_uri: ClassVar[URIRef] = LISTS_AND_KEYS.OptionalKeyedOneElementRangeList
@@ -229,7 +229,7 @@ class OptionalIdentifiedOneElementRange(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS.OptionalIdentifiedOneElementRange
+    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS["OptionalIdentifiedOneElementRange"]
     class_class_curie: ClassVar[str] = "lists_and_keys:OptionalIdentifiedOneElementRange"
     class_name: ClassVar[str] = "OptionalIdentifiedOneElementRange"
     class_model_uri: ClassVar[URIRef] = LISTS_AND_KEYS.OptionalIdentifiedOneElementRange
@@ -250,7 +250,7 @@ class OptionalIdentifiedOneElementRangeList(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS.OptionalIdentifiedOneElementRangeList
+    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS["OptionalIdentifiedOneElementRangeList"]
     class_class_curie: ClassVar[str] = "lists_and_keys:OptionalIdentifiedOneElementRangeList"
     class_name: ClassVar[str] = "OptionalIdentifiedOneElementRangeList"
     class_model_uri: ClassVar[URIRef] = LISTS_AND_KEYS.OptionalIdentifiedOneElementRangeList
@@ -272,7 +272,7 @@ class OptionalKeyedTwoElementRange(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS.OptionalKeyedTwoElementRange
+    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS["OptionalKeyedTwoElementRange"]
     class_class_curie: ClassVar[str] = "lists_and_keys:OptionalKeyedTwoElementRange"
     class_name: ClassVar[str] = "OptionalKeyedTwoElementRange"
     class_model_uri: ClassVar[URIRef] = LISTS_AND_KEYS.OptionalKeyedTwoElementRange
@@ -293,7 +293,7 @@ class OptionalKeyedTwoElementRangeList(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS.OptionalKeyedTwoElementRangeList
+    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS["OptionalKeyedTwoElementRangeList"]
     class_class_curie: ClassVar[str] = "lists_and_keys:OptionalKeyedTwoElementRangeList"
     class_name: ClassVar[str] = "OptionalKeyedTwoElementRangeList"
     class_model_uri: ClassVar[URIRef] = LISTS_AND_KEYS.OptionalKeyedTwoElementRangeList
@@ -315,7 +315,7 @@ class OptionalKeyedThreeElementRange(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS.OptionalKeyedThreeElementRange
+    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS["OptionalKeyedThreeElementRange"]
     class_class_curie: ClassVar[str] = "lists_and_keys:OptionalKeyedThreeElementRange"
     class_name: ClassVar[str] = "OptionalKeyedThreeElementRange"
     class_model_uri: ClassVar[URIRef] = LISTS_AND_KEYS.OptionalKeyedThreeElementRange
@@ -336,7 +336,7 @@ class OptionalKeyedThreeElementRangeList(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS.OptionalKeyedThreeElementRangeList
+    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS["OptionalKeyedThreeElementRangeList"]
     class_class_curie: ClassVar[str] = "lists_and_keys:OptionalKeyedThreeElementRangeList"
     class_name: ClassVar[str] = "OptionalKeyedThreeElementRangeList"
     class_model_uri: ClassVar[URIRef] = LISTS_AND_KEYS.OptionalKeyedThreeElementRangeList
@@ -358,7 +358,7 @@ class RequiredIdentifiedThreeElementRange(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS.RequiredIdentifiedThreeElementRange
+    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS["RequiredIdentifiedThreeElementRange"]
     class_class_curie: ClassVar[str] = "lists_and_keys:RequiredIdentifiedThreeElementRange"
     class_name: ClassVar[str] = "RequiredIdentifiedThreeElementRange"
     class_model_uri: ClassVar[URIRef] = LISTS_AND_KEYS.RequiredIdentifiedThreeElementRange
@@ -381,7 +381,7 @@ class RequiredIdentifiedThreeElementRangeList(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS.RequiredIdentifiedThreeElementRangeList
+    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS["RequiredIdentifiedThreeElementRangeList"]
     class_class_curie: ClassVar[str] = "lists_and_keys:RequiredIdentifiedThreeElementRangeList"
     class_name: ClassVar[str] = "RequiredIdentifiedThreeElementRangeList"
     class_model_uri: ClassVar[URIRef] = LISTS_AND_KEYS.RequiredIdentifiedThreeElementRangeList
@@ -405,7 +405,7 @@ class RequiredKeyedThreeElementRangeList(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS.RequiredKeyedThreeElementRangeList
+    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS["RequiredKeyedThreeElementRangeList"]
     class_class_curie: ClassVar[str] = "lists_and_keys:RequiredKeyedThreeElementRangeList"
     class_name: ClassVar[str] = "RequiredKeyedThreeElementRangeList"
     class_model_uri: ClassVar[URIRef] = LISTS_AND_KEYS.RequiredKeyedThreeElementRangeList
@@ -429,7 +429,7 @@ class RequiredInlinedOneElementRange(RequiredOneElementRange):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS.RequiredInlinedOneElementRange
+    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS["RequiredInlinedOneElementRange"]
     class_class_curie: ClassVar[str] = "lists_and_keys:RequiredInlinedOneElementRange"
     class_name: ClassVar[str] = "RequiredInlinedOneElementRange"
     class_model_uri: ClassVar[URIRef] = LISTS_AND_KEYS.RequiredInlinedOneElementRange
@@ -453,7 +453,7 @@ class RequiredInlinedOneElementRangeList(RequiredOneElementRangeList):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS.RequiredInlinedOneElementRangeList
+    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS["RequiredInlinedOneElementRangeList"]
     class_class_curie: ClassVar[str] = "lists_and_keys:RequiredInlinedOneElementRangeList"
     class_name: ClassVar[str] = "RequiredInlinedOneElementRangeList"
     class_model_uri: ClassVar[URIRef] = LISTS_AND_KEYS.RequiredInlinedOneElementRangeList
@@ -477,7 +477,7 @@ class RequiredInlinedTwoElementRangeList(RequiredTwoElementRangeList):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS.RequiredInlinedTwoElementRangeList
+    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS["RequiredInlinedTwoElementRangeList"]
     class_class_curie: ClassVar[str] = "lists_and_keys:RequiredInlinedTwoElementRangeList"
     class_name: ClassVar[str] = "RequiredInlinedTwoElementRangeList"
     class_model_uri: ClassVar[URIRef] = LISTS_AND_KEYS.RequiredInlinedTwoElementRangeList
@@ -501,7 +501,7 @@ class RequiredInlinedThreeElementRangeList(RequiredThreeElementRangeList):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS.RequiredInlinedThreeElementRangeList
+    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS["RequiredInlinedThreeElementRangeList"]
     class_class_curie: ClassVar[str] = "lists_and_keys:RequiredInlinedThreeElementRangeList"
     class_name: ClassVar[str] = "RequiredInlinedThreeElementRangeList"
     class_model_uri: ClassVar[URIRef] = LISTS_AND_KEYS.RequiredInlinedThreeElementRangeList
@@ -525,7 +525,7 @@ class RequiredInlinedKeyedOneElementRange(OptionalKeyedOneElementRange):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS.RequiredInlinedKeyedOneElementRange
+    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS["RequiredInlinedKeyedOneElementRange"]
     class_class_curie: ClassVar[str] = "lists_and_keys:RequiredInlinedKeyedOneElementRange"
     class_name: ClassVar[str] = "RequiredInlinedKeyedOneElementRange"
     class_model_uri: ClassVar[URIRef] = LISTS_AND_KEYS.RequiredInlinedKeyedOneElementRange
@@ -547,7 +547,7 @@ class RequiredInlinedKeyedOneElementRangeList(OptionalKeyedOneElementRangeList):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS.RequiredInlinedKeyedOneElementRangeList
+    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS["RequiredInlinedKeyedOneElementRangeList"]
     class_class_curie: ClassVar[str] = "lists_and_keys:RequiredInlinedKeyedOneElementRangeList"
     class_name: ClassVar[str] = "RequiredInlinedKeyedOneElementRangeList"
     class_model_uri: ClassVar[URIRef] = LISTS_AND_KEYS.RequiredInlinedKeyedOneElementRangeList
@@ -569,7 +569,7 @@ class RequiredInlinedKeyedTwoElementRange(OptionalKeyedTwoElementRange):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS.RequiredInlinedKeyedTwoElementRange
+    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS["RequiredInlinedKeyedTwoElementRange"]
     class_class_curie: ClassVar[str] = "lists_and_keys:RequiredInlinedKeyedTwoElementRange"
     class_name: ClassVar[str] = "RequiredInlinedKeyedTwoElementRange"
     class_model_uri: ClassVar[URIRef] = LISTS_AND_KEYS.RequiredInlinedKeyedTwoElementRange
@@ -591,7 +591,7 @@ class RequiredInlinedKeyedTwoElementRangeList(OptionalKeyedTwoElementRangeList):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS.RequiredInlinedKeyedTwoElementRangeList
+    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS["RequiredInlinedKeyedTwoElementRangeList"]
     class_class_curie: ClassVar[str] = "lists_and_keys:RequiredInlinedKeyedTwoElementRangeList"
     class_name: ClassVar[str] = "RequiredInlinedKeyedTwoElementRangeList"
     class_model_uri: ClassVar[URIRef] = LISTS_AND_KEYS.RequiredInlinedKeyedTwoElementRangeList
@@ -613,7 +613,7 @@ class RequiredInlinedKeyedThreeElementRange(OptionalKeyedThreeElementRange):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS.RequiredInlinedKeyedThreeElementRange
+    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS["RequiredInlinedKeyedThreeElementRange"]
     class_class_curie: ClassVar[str] = "lists_and_keys:RequiredInlinedKeyedThreeElementRange"
     class_name: ClassVar[str] = "RequiredInlinedKeyedThreeElementRange"
     class_model_uri: ClassVar[URIRef] = LISTS_AND_KEYS.RequiredInlinedKeyedThreeElementRange
@@ -635,7 +635,7 @@ class RequiredInlinedKeyedThreeElementRangeList(OptionalKeyedThreeElementRangeLi
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS.RequiredInlinedKeyedThreeElementRangeList
+    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS["RequiredInlinedKeyedThreeElementRangeList"]
     class_class_curie: ClassVar[str] = "lists_and_keys:RequiredInlinedKeyedThreeElementRangeList"
     class_name: ClassVar[str] = "RequiredInlinedKeyedThreeElementRangeList"
     class_model_uri: ClassVar[URIRef] = LISTS_AND_KEYS.RequiredInlinedKeyedThreeElementRangeList
@@ -657,7 +657,7 @@ class RequiredInlinedIdentifiedOneElementRangeList(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS.RequiredInlinedIdentifiedOneElementRangeList
+    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS["RequiredInlinedIdentifiedOneElementRangeList"]
     class_class_curie: ClassVar[str] = "lists_and_keys:RequiredInlinedIdentifiedOneElementRangeList"
     class_name: ClassVar[str] = "RequiredInlinedIdentifiedOneElementRangeList"
     class_model_uri: ClassVar[URIRef] = LISTS_AND_KEYS.RequiredInlinedIdentifiedOneElementRangeList
@@ -676,7 +676,7 @@ class RequiredInlinedIdentifiedOneElementRangeList(YAMLRoot):
 class EntryList(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS.EntryList
+    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS["EntryList"]
     class_class_curie: ClassVar[str] = "lists_and_keys:EntryList"
     class_name: ClassVar[str] = "EntryList"
     class_model_uri: ClassVar[URIRef] = LISTS_AND_KEYS.EntryList
@@ -696,7 +696,7 @@ class OptionalThreeElementRange(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS.OptionalThreeElementRange
+    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS["OptionalThreeElementRange"]
     class_class_curie: ClassVar[str] = "lists_and_keys:OptionalThreeElementRange"
     class_name: ClassVar[str] = "OptionalThreeElementRange"
     class_model_uri: ClassVar[URIRef] = LISTS_AND_KEYS.OptionalThreeElementRange
@@ -717,7 +717,7 @@ class RequiredThreeElementRange(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS.RequiredThreeElementRange
+    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS["RequiredThreeElementRange"]
     class_class_curie: ClassVar[str] = "lists_and_keys:RequiredThreeElementRange"
     class_name: ClassVar[str] = "RequiredThreeElementRange"
     class_model_uri: ClassVar[URIRef] = LISTS_AND_KEYS.RequiredThreeElementRange
@@ -740,7 +740,7 @@ class OptionalIdentifiedThreeElementRange(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS.OptionalIdentifiedThreeElementRange
+    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS["OptionalIdentifiedThreeElementRange"]
     class_class_curie: ClassVar[str] = "lists_and_keys:OptionalIdentifiedThreeElementRange"
     class_name: ClassVar[str] = "OptionalIdentifiedThreeElementRange"
     class_model_uri: ClassVar[URIRef] = LISTS_AND_KEYS.OptionalIdentifiedThreeElementRange
@@ -761,7 +761,7 @@ class RequiredKeyedThreeElementRange(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS.RequiredKeyedThreeElementRange
+    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS["RequiredKeyedThreeElementRange"]
     class_class_curie: ClassVar[str] = "lists_and_keys:RequiredKeyedThreeElementRange"
     class_name: ClassVar[str] = "RequiredKeyedThreeElementRange"
     class_model_uri: ClassVar[URIRef] = LISTS_AND_KEYS.RequiredKeyedThreeElementRange
@@ -784,7 +784,7 @@ class OptionalInlinedKeyedThreeElementRange(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS.OptionalInlinedKeyedThreeElementRange
+    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS["OptionalInlinedKeyedThreeElementRange"]
     class_class_curie: ClassVar[str] = "lists_and_keys:OptionalInlinedKeyedThreeElementRange"
     class_name: ClassVar[str] = "OptionalInlinedKeyedThreeElementRange"
     class_model_uri: ClassVar[URIRef] = LISTS_AND_KEYS.OptionalInlinedKeyedThreeElementRange
@@ -805,7 +805,7 @@ class RequiredInlinedIdentifiedThreeElementRange(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS.RequiredInlinedIdentifiedThreeElementRange
+    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS["RequiredInlinedIdentifiedThreeElementRange"]
     class_class_curie: ClassVar[str] = "lists_and_keys:RequiredInlinedIdentifiedThreeElementRange"
     class_name: ClassVar[str] = "RequiredInlinedIdentifiedThreeElementRange"
     class_model_uri: ClassVar[URIRef] = LISTS_AND_KEYS.RequiredInlinedIdentifiedThreeElementRange
@@ -828,7 +828,7 @@ class OptionalInlinedAsListKeyedThreeElementRange(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS.OptionalInlinedAsListKeyedThreeElementRange
+    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS["OptionalInlinedAsListKeyedThreeElementRange"]
     class_class_curie: ClassVar[str] = "lists_and_keys:OptionalInlinedAsListKeyedThreeElementRange"
     class_name: ClassVar[str] = "OptionalInlinedAsListKeyedThreeElementRange"
     class_model_uri: ClassVar[URIRef] = LISTS_AND_KEYS.OptionalInlinedAsListKeyedThreeElementRange
@@ -849,7 +849,7 @@ class RequiredInlinedAsListIdentifiedThreeElementRange(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS.RequiredInlinedAsListIdentifiedThreeElementRange
+    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS["RequiredInlinedAsListIdentifiedThreeElementRange"]
     class_class_curie: ClassVar[str] = "lists_and_keys:RequiredInlinedAsListIdentifiedThreeElementRange"
     class_name: ClassVar[str] = "RequiredInlinedAsListIdentifiedThreeElementRange"
     class_model_uri: ClassVar[URIRef] = LISTS_AND_KEYS.RequiredInlinedAsListIdentifiedThreeElementRange
@@ -872,7 +872,7 @@ class OptionalMultivaluedThreeElementRange(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS.OptionalMultivaluedThreeElementRange
+    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS["OptionalMultivaluedThreeElementRange"]
     class_class_curie: ClassVar[str] = "lists_and_keys:OptionalMultivaluedThreeElementRange"
     class_name: ClassVar[str] = "OptionalMultivaluedThreeElementRange"
     class_model_uri: ClassVar[URIRef] = LISTS_AND_KEYS.OptionalMultivaluedThreeElementRange
@@ -894,7 +894,7 @@ class RequiredMultivaluedThreeElementRange(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS.RequiredMultivaluedThreeElementRange
+    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS["RequiredMultivaluedThreeElementRange"]
     class_class_curie: ClassVar[str] = "lists_and_keys:RequiredMultivaluedThreeElementRange"
     class_name: ClassVar[str] = "RequiredMultivaluedThreeElementRange"
     class_model_uri: ClassVar[URIRef] = LISTS_AND_KEYS.RequiredMultivaluedThreeElementRange
@@ -918,7 +918,7 @@ class OptionalMultivaluedKeyedThreeElementRange(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS.OptionalMultivaluedKeyedThreeElementRange
+    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS["OptionalMultivaluedKeyedThreeElementRange"]
     class_class_curie: ClassVar[str] = "lists_and_keys:OptionalMultivaluedKeyedThreeElementRange"
     class_name: ClassVar[str] = "OptionalMultivaluedKeyedThreeElementRange"
     class_model_uri: ClassVar[URIRef] = LISTS_AND_KEYS.OptionalMultivaluedKeyedThreeElementRange
@@ -940,7 +940,7 @@ class RequiredMultivaluedIdentifiedThreeElementRange(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS.RequiredMultivaluedIdentifiedThreeElementRange
+    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS["RequiredMultivaluedIdentifiedThreeElementRange"]
     class_class_curie: ClassVar[str] = "lists_and_keys:RequiredMultivaluedIdentifiedThreeElementRange"
     class_name: ClassVar[str] = "RequiredMultivaluedIdentifiedThreeElementRange"
     class_model_uri: ClassVar[URIRef] = LISTS_AND_KEYS.RequiredMultivaluedIdentifiedThreeElementRange
@@ -964,7 +964,7 @@ class OptionalMultivaluedInlinedListIdentifiedThreeElementRange(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS.OptionalMultivaluedInlinedListIdentifiedThreeElementRange
+    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS["OptionalMultivaluedInlinedListIdentifiedThreeElementRange"]
     class_class_curie: ClassVar[str] = "lists_and_keys:OptionalMultivaluedInlinedListIdentifiedThreeElementRange"
     class_name: ClassVar[str] = "OptionalMultivaluedInlinedListIdentifiedThreeElementRange"
     class_model_uri: ClassVar[URIRef] = LISTS_AND_KEYS.OptionalMultivaluedInlinedListIdentifiedThreeElementRange
@@ -984,7 +984,7 @@ class RequiredMultivaluedInlinedListKeyedThreeElementRangeList(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS.RequiredMultivaluedInlinedListKeyedThreeElementRangeList
+    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS["RequiredMultivaluedInlinedListKeyedThreeElementRangeList"]
     class_class_curie: ClassVar[str] = "lists_and_keys:RequiredMultivaluedInlinedListKeyedThreeElementRangeList"
     class_name: ClassVar[str] = "RequiredMultivaluedInlinedListKeyedThreeElementRangeList"
     class_model_uri: ClassVar[URIRef] = LISTS_AND_KEYS.RequiredMultivaluedInlinedListKeyedThreeElementRangeList
@@ -1006,7 +1006,7 @@ class OptionalMultivaluedInlinedIdentifiedThreeElementRangeList(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS.OptionalMultivaluedInlinedIdentifiedThreeElementRangeList
+    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS["OptionalMultivaluedInlinedIdentifiedThreeElementRangeList"]
     class_class_curie: ClassVar[str] = "lists_and_keys:OptionalMultivaluedInlinedIdentifiedThreeElementRangeList"
     class_name: ClassVar[str] = "OptionalMultivaluedInlinedIdentifiedThreeElementRangeList"
     class_model_uri: ClassVar[URIRef] = LISTS_AND_KEYS.OptionalMultivaluedInlinedIdentifiedThreeElementRangeList
@@ -1026,7 +1026,7 @@ class RequiredMultivaluedInlinedKeyedThreeElementRange(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS.RequiredMultivaluedInlinedKeyedThreeElementRange
+    class_class_uri: ClassVar[URIRef] = LISTS_AND_KEYS["RequiredMultivaluedInlinedKeyedThreeElementRange"]
     class_class_curie: ClassVar[str] = "lists_and_keys:RequiredMultivaluedInlinedKeyedThreeElementRange"
     class_name: ClassVar[str] = "RequiredMultivaluedInlinedKeyedThreeElementRange"
     class_model_uri: ClassVar[URIRef] = LISTS_AND_KEYS.RequiredMultivaluedInlinedKeyedThreeElementRange

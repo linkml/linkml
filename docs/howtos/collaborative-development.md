@@ -24,8 +24,8 @@ and pull requests.
 In this guide we draw from:
 
 - The O3 guidelines: [Open code, open data, and open infrastructure to promote the longevity of curated scientific resources](https://osf.io/vuzt3/)
-- The [OBook](https://oboacademy.github.io/obook), and in particular [How to be an Open Science Engineer - maximising impact for a better world](https://oboacademy.github.io/obook/howto/open-science-engineer/)
-- The Tislab collaboration guide (link TBD)
+- The [OBOOK](https://oboacademy.github.io/obook), and in particular [How to be an Open Science Engineer - maximising impact for a better world](https://oboacademy.github.io/obook/howto/open-science-engineer/)
+- The TISLab collaboration guide (link TBD)
 
 ## Principles
 
@@ -47,6 +47,8 @@ store or a repository like Zenodo or Figshare.
 Using recognizable, permissive licenses (e.g., CC0, CC BY) encourages contribution and ensures content longevity.
 Non-permissive licenses or custom terms can hinder reuse and engagement.
 Permissive licensing doesn't typically lead to a lack of credit for the original resource.
+
+CC0 and CC BY are good for non-code resources; code should be licensed with a permissive software license such as Apache-2.0 (used in the [linkml repo](https://github.com/linkml/linkml/blob/main/LICENSE)), BSD-3, or MIT.
 
 ### Use Technical Workflows (Automation) and Social Workflows
 

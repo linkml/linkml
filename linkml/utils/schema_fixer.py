@@ -271,7 +271,8 @@ class SchemaFixer:
             for k in empty_keys:
                 del cls.slot_usage[k]
 
-    def implicit_slots(self, schema: SchemaDefinition) -> Dict[str, Dict]:
+    @staticmethod
+    def implicit_slots(schema: SchemaDefinition) -> Dict[str, Dict]:
         """
         Find slots that are implicit in the schema from slot_usage
 
@@ -313,8 +314,8 @@ class SchemaFixer:
             self.history = []
         self.history.append(txt)
 
+    @staticmethod
     def fix_element_names(
-        self,
         schema: SchemaDefinition,
         schema_dict: Dict[str, Any] = None,
         rules: Dict[str, Callable] = None,

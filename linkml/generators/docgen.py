@@ -126,7 +126,7 @@ class DocGenerator(Generator):
     # ObjectVars
     dialect: Optional[Union[DIALECT, str]] = None
     """markdown dialect (e.g MyST, Python)"""
-    sort_by: str = field(default_factory=lambda: "name")
+    sort_by: str = "name"
     visit_all_class_slots = False
     template_mappings: Dict[str, str] = None
     directory: str = None
@@ -141,19 +141,19 @@ class DocGenerator(Generator):
     diagram_type: Optional[Union[DiagramType, str]] = None
     """style of diagram (ER, UML)"""
 
-    include_top_level_diagram: bool = field(default_factory=lambda: False)
+    include_top_level_diagram: bool = False
     """Whether the index page should include a schema diagram"""
 
     example_directory: Optional[str] = None
     example_runner: ExampleRunner = field(default_factory=lambda: ExampleRunner())
 
-    genmeta: bool = field(default_factory=lambda: False)
-    gen_classvars: bool = field(default_factory=lambda: True)
-    gen_slots: bool = field(default_factory=lambda: True)
-    no_types_dir: bool = field(default_factory=lambda: False)
-    use_slot_uris: bool = field(default_factory=lambda: False)
-    use_class_uris: bool = field(default_factory=lambda: False)
-    hierarchical_class_view: bool = field(default_factory=lambda: False)
+    genmeta: bool = False
+    gen_classvars: bool = True
+    gen_slots: bool = True
+    no_types_dir: bool = False
+    use_slot_uris: bool = False
+    use_class_uris: bool = False
+    hierarchical_class_view: bool = False
 
     def __post_init__(self):
         dialect = self.dialect
@@ -422,7 +422,8 @@ class DocGenerator(Generator):
         else:
             return False
 
-    def _markdown_link(self, n: str, name: str = None, subfolder: str = None) -> str:
+    @staticmethod
+    def _markdown_link(n: str, name: str = None, subfolder: str = None) -> str:
         if subfolder:
             rel_path = f"{subfolder}/{n}"
         else:
@@ -507,7 +508,8 @@ class DocGenerator(Generator):
         s += "\n"
         return s
 
-    def bullet(self, e: Element, meta_slot: SlotDefinitionName, backquote=False) -> str:
+    @staticmethod
+    def bullet(e: Element, meta_slot: SlotDefinitionName, backquote=False) -> str:
         """
         Render tag-value for an element as a bullet
 
@@ -526,7 +528,8 @@ class DocGenerator(Generator):
         else:
             return ""
 
-    def number_value_range(self, e: Union[SlotDefinition, TypeDefinition]) -> str:
+    @staticmethod
+    def number_value_range(e: Union[SlotDefinition, TypeDefinition]) -> str:
         """
         Render the minimum and maximum values for a slot or type as a range, e.g 5-100
 
@@ -547,7 +550,8 @@ class DocGenerator(Generator):
                 r = f"<= {e.maximum_value}"
         return r
 
-    def cardinality(self, slot: SlotDefinition) -> str:
+    @staticmethod
+    def cardinality(slot: SlotDefinition) -> str:
         """
         Render combination of required, multivalued, and recommended as a range, e.g. 0..*
         :param slot:
@@ -605,7 +609,8 @@ class DocGenerator(Generator):
         else:
             raise NotImplementedError(f"Diagram type {self.diagram_type} not implemented")
 
-    def latex(self, text: Optional[str]) -> str:
+    @staticmethod
+    def latex(text: Optional[str]) -> str:
         """
         Makes text safe for latex
 
@@ -757,7 +762,8 @@ class DocGenerator(Generator):
                 # depth first - place at end of stack (to be processed next)
                 stack.append((depth + 1, child))
 
-    def _is_single_file_format(self, format: str):
+    @staticmethod
+    def _is_single_file_format(format: str):
         if format == "latex":
             return True
         else:
@@ -778,7 +784,8 @@ class DocGenerator(Generator):
             slot.range = "string"
         return slot
 
-    def get_direct_slot_names(self, cls: ClassDefinition) -> List[SlotDefinitionName]:
+    @staticmethod
+    def get_direct_slot_names(cls: ClassDefinition) -> List[SlotDefinitionName]:
         """Fetch list of all own attributes of a class, i.e.,
         all slot names of slots that belong to the domain of a class.
 
@@ -845,7 +852,7 @@ class DocGenerator(Generator):
     def example_object_blobs(self, class_name: str) -> List[Tuple[str, str]]:
         """Fetch list of all examples of a class.
 
-        :param cls: class for which we want to determine the examples
+        :param class_name: class for which we want to determine the examples
         :return: list of all examples of a class
         """
         if not self.example_runner:

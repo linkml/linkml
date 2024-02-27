@@ -19,6 +19,7 @@ URI: [linkml:alias](https://w3id.org/linkml/alias)
 
 ## Used by
 
+ * [DimensionExpression](DimensionExpression.md)
  * [SlotDefinition](SlotDefinition.md)
 
 ## Other properties
