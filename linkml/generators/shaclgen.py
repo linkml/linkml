@@ -1,7 +1,7 @@
 import logging
 import os
-from typing import Callable
 from dataclasses import dataclass
+from typing import Callable
 
 import click
 from linkml_runtime.linkml_model.meta import ElementName
