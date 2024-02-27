@@ -21,18 +21,20 @@ class {{ name }}({% if bases is string %}{{ bases }}{% else %}{{ bases | join(',
     pass
     {% endif %}
 {% else %}
-class {{ name }}({{ bases | join(', ') }}):
-    {% if description -%}
+class {{ name }}({% if bases is string %}{{ bases }}{% else %}{{ bases | join(', ') }}{% endif %}):
+    {% if description %}
     """
     {{ description }}
     """
-    {%- endif %}
+    {% endif -%}
     {% if attributes %}
-        {% for attr in attributes.values() if attributes %}
+        {% for attr in attributes.values() %}
     {{ attribute(attr.name, attr.annotations, attr.field, attr.title, attr.description, attr.equals_number, attr.minimum_value, attr.maximum_value, pydantic_ver) }}
         {% endfor -%}
-        {% for attr in attributes.values() if attributes %}
+        {% for attr in attributes.values() %}
+            {% if attr.pattern %}
     {{ validator(attr.name, attr.pattern, pydantic_ver) }}
+            {% endif %}
         {% endfor -%}
     {% else %}
     pass

@@ -13,10 +13,10 @@ class {{ name }}(WeakRefShimBaseModel,
 {% else %}
 class {{ name }}(BaseModel):
     model_config = ConfigDict(
-        validate_assignment=True,
-        validate_default=True,
+        validate_assignment = True,
+        validate_default = True,
         extra = "{{ extra_fields }}",
-        arbitrary_types_allowed=True,
+        arbitrary_types_allowed = True,
         use_enum_values = True)
 {% endif %}
 {% if fields is not none %}
