@@ -7,11 +7,11 @@
 {% from 'class.py.jinja' import class %}
 
 {%- for an_import in imports %}
-{% if an_import.condition is string -%}
+    {% if an_import.condition is string -%}
 {{ conditional_import(an_import.module, an_import.alias, an_import.objects, an_import.condition, an_import.alternative) }}
-{% else -%}
+    {% else -%}
 {{ import_(an_import.module, an_import.alias, an_import.objects) }}
-{% endif -%}
+    {% endif -%}
 {% endfor -%}
 
 metamodel_version = "{{metamodel_version}}"
@@ -24,9 +24,9 @@ version = "{{version if version else None}}"
 {% endfor %}
 
 {% if injected_classes -%}
-{% for c in injected_classes %}
+    {% for c in injected_classes %}
 {{ c }}
-{% endfor %}
+    {% endfor %}
 {% endif %}
 
 {% for c in classes.values() %}

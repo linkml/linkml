@@ -480,7 +480,9 @@ class PydanticGenerator(OOCodeGenerator):
             with open(self.template_file) as template_file:
                 template_obj = Template(template_file.read())
         else:
-            env = Environment(loader=PackageLoader("linkml.generators.pydanticgen", "templates"), trim_blocks=True)
+            env = Environment(
+                loader=PackageLoader("linkml.generators.pydanticgen", "templates"), trim_blocks=True, lstrip_blocks=True
+            )
             template_obj = env.get_template("module.py.jinja")
 
         sv: SchemaView

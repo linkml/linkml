@@ -1,6 +1,6 @@
 {% macro validator(name, pattern, pydantic_ver=2) %}
 {% if pydantic_ver == 1 %}
-{%- if pattern %}
+    {%- if pattern %}
 @validator('{{name}}', allow_reuse=True)
     def pattern_{{name}}(cls, v):
         pattern=re.compile(r"{{pattern}}")
@@ -12,9 +12,9 @@
             if not pattern.match(v):
                 raise ValueError(f"Invalid {{name}} format: {v}")
         return v
-{% endif -%}
+    {% endif -%}
 {%- else -%}
-{%- if pattern %}
+    {%- if pattern %}
 @field_validator('{{name}}')
     def pattern_{{name}}(cls, v):
         pattern=re.compile(r"{{pattern}}")
@@ -26,6 +26,6 @@
             if not pattern.match(v):
                 raise ValueError(f"Invalid {{name}} format: {v}")
         return v
-{% endif -%}
+    {% endif -%}
 {% endif -%}
 {% endmacro %}

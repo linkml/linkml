@@ -5,14 +5,14 @@ class {{ name }}(str{% if values %}, Enum{% endif %}):
     {{ description }}
     """
 {% endif %}
-{% if values is not none %}
-{% for pv in values.values() -%}
-{% if pv.description %}
+{% if values %}
+    {% for pv in values.values() -%}
+        {% if pv.description %}
     # {{pv.description}}
-{% endif %}
+        {% endif %}
     {{pv.label}} = "{{pv.value}}"
-{% endfor %}
+    {% endfor %}
 {% else %}
-    dummy = "dummy"
+    pass
 {% endif %}
 {% endmacro %}
