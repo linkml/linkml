@@ -21,12 +21,10 @@ class TemplateModel(BaseModel):
     if int(PYDANTIC_VERSION[0]) < 2:
 
         @overload
-        def model_dump(self, mode: Literal["python"] = "python") -> dict:
-            ...
+        def model_dump(self, mode: Literal["python"] = "python") -> dict: ...
 
         @overload
-        def model_dump(self, mode: Literal["json"] = "json") -> str:
-            ...
+        def model_dump(self, mode: Literal["json"] = "json") -> str: ...
 
         def model_dump(self, mode: Literal["python", "json"] = "python", **kwargs) -> Union[dict, str]:
             if mode == "json":
