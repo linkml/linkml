@@ -78,7 +78,7 @@ DEFAULT_IMPORTS = (
     )
     + Import(module="pydantic.version", objects=[ObjectImport(name="VERSION", alias="PYDANTIC_VERSION")])
     + ConditionalImport(
-        condition="int(PYDANTIC_VERSION)>=2",
+        condition="int(PYDANTIC_VERSION[0])>=2",
         module="pydantic",
         objects=[
             ObjectImport(name="BaseModel"),

@@ -15,6 +15,8 @@ class {{ name }}({% if bases is string %}{{ bases }}{% else %}{{ bases | join(',
 {% for attr in attributes.values() %}
     {{ validator(attr.name, attr.pattern, pydantic_ver) }}
 {% endfor -%}
+{% else %}
+    pass
 {% endif %}
 {% else %}
 class {{ name }}({{ bases | join(', ') }}):
@@ -30,6 +32,8 @@ class {{ name }}({{ bases | join(', ') }}):
 {% for attr in attributes.values() if attributes %}
     {{ validator(attr.name, attr.pattern, pydantic_ver) }}
 {% endfor -%}
+{% else %}
+    pass
 {% endif %}
 {% endif %}
 {% endmacro %}
