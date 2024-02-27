@@ -66,12 +66,11 @@ class MetamodelCoreTest(unittest.TestCase):
         self.assertTrue(Curie.is_valid(':type'))
         self.assertTrue(Curie.is_valid('WIKIDATA_PROPERTY:P854'))
         self.assertTrue(Curie.is_valid('WIKIDATA.PROPERTY:P854'))
+        self.assertTrue(Curie.is_valid('CL:0000001'))
         with self.assertRaises(ValueError):
             Curie("1df:type")
         self.assertFalse(Curie.is_valid('1df:type'))
-        with self.assertRaises(ValueError):
-            Curie("rdf:17")
-        self.assertFalse(Curie.is_valid('rdf:17'))
+        self.assertTrue(Curie.is_valid('rdf:17'))
         nsm = Namespaces(Graph())
         self.assertEqual(RDF.type, Curie("rdf:type").as_uri(nsm))
         self.assertIsNone(Curie("ex:foo").as_uri(nsm))
