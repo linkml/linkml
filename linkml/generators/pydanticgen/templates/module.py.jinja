@@ -30,6 +30,7 @@ version = "{{version if version else None}}"
 {% endif %}
 
 {% for c in classes.values() %}
+
 {{ class(c.name, c.bases, c.attributes, c.description, pydantic_ver) }}
 {% endfor %}
 

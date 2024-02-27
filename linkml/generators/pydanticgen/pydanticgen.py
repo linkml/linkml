@@ -637,8 +637,8 @@ class PydanticGenerator(OOCodeGenerator):
 @click.option("--template-file", help="Optional jinja2 template to use for class generation")
 @click.option(
     "--pydantic-version",
-    type=click.Choice(["1", "2"]),
-    default="1",
+    type=click.IntRange(1, 2),
+    default=1,
     help="Pydantic version to use (1 or 2)",
 )
 @click.option(
