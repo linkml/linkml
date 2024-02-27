@@ -687,6 +687,14 @@ class OwlSchemaGenerator(Generator):
                 eq_uris = [URIRef(self.schemaview.expand_curie(s)) for s in equals_string_in]
                 owl_exprs.append(self._union_of(eq_uris))
         for constraint_prop, constraint_val in constraints.items():
+            if is_literal is not None and not is_literal:
+                # In LinkML, it is permissible to have a literal constraints on slots that refer to
+                # other objects. E.g. a pattern on a in_organization slot which refers to an Organization
+                # will be applied to the id of that Organization.
+                # To support this in OWL we would need to change this to a complex expression - for
+                # now we will skip this.
+                # See: https://github.com/linkml/linkml/issues/1841
+                continue
             if constraint_val is not None:
                 owl_types.add(RDFS.Literal)
                 dr = BNode()

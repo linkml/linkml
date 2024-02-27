@@ -16,6 +16,7 @@ from tests.test_compliance.helper import (
 CLASS_CONTAINER = "Container"
 CLASS_C = "C"
 CLASS_D = "D"
+CLASS_D1 = "D1"
 CLASS_X = "X"
 CLASS_Y = "Y"
 CLASS_Z = "Z"
