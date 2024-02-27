@@ -46,9 +46,9 @@ def test_valid_csv_file(cli_runner, csv_data_file):
     """Verify that two rows of a CSV file successfully validate against an appropriate target class"""
 
     data_path = csv_data_file([VALID_PERSON_1, VALID_PERSON_2])
-    result = cli_runner.invoke(cli, ["-S", PERSONINFO_SCHEMA, "-T", "Person", data_path])
+    result = cli_runner.invoke(cli, ["-s", PERSONINFO_SCHEMA, "-C", "Person", data_path])
     assert result.exception is None
-    assert result.output == "No issues found!\n"
+    assert result.output == "No issues found\n"
     assert result.exit_code == 0
 
 
@@ -56,9 +56,9 @@ def test_valid_json_file_object(tmp_path, cli_runner, json_data_file):
     """Verify that a root-level object successfully validates against the tree_root class of the schema"""
 
     data_path = json_data_file({"persons": [VALID_PERSON_1, VALID_PERSON_2]})
-    result = cli_runner.invoke(cli, ["-S", PERSONINFO_SCHEMA, data_path])
+    result = cli_runner.invoke(cli, ["-s", PERSONINFO_SCHEMA, data_path])
     assert result.exception is None
-    assert result.output == "No issues found!\n"
+    assert result.output == "No issues found\n"
     assert result.exit_code == 0
 
 
@@ -67,9 +67,9 @@ def test_valid_json_file_list(cli_runner, json_data_file):
 
     data_path = json_data_file([VALID_PERSON_1, VALID_PERSON_2])
 
-    result = cli_runner.invoke(cli, ["-S", PERSONINFO_SCHEMA, "-T", "Person", data_path])
+    result = cli_runner.invoke(cli, ["-s", PERSONINFO_SCHEMA, "-C", "Person", data_path])
     assert result.exception is None
-    assert result.output == "No issues found!\n"
+    assert result.output == "No issues found\n"
     assert result.exit_code == 0
 
 
@@ -87,7 +87,7 @@ def test_invalid_json(cli_runner, json_data_file):
     invalid_data = {**VALID_PERSON_1, "phone": "asdf"}
     data_path = json_data_file({"persons": [invalid_data]})
 
-    result = cli_runner.invoke(cli, ["-S", PERSONINFO_SCHEMA, data_path])
+    result = cli_runner.invoke(cli, ["-s", PERSONINFO_SCHEMA, data_path])
     assert "[ERROR]" in result.output
     assert "'asdf' does not match" in result.output
     assert "/persons/0/phone" in result.output
@@ -146,5 +146,42 @@ data_sources:
     result = cli_runner.invoke(cli, ["--config", str(config_path)])
     print(str(result.exception))
     assert result.exception is None
-    assert result.output == "No issues found!\n"
+    assert result.output == "No issues found\n"
     assert result.exit_code == 0
+
+
+def test_legacy_mode(csv_data_file, cli_runner):
+    """Test that validation is delegated to the old module when the --legacy-mode flag is passed"""
+    data_path = csv_data_file([VALID_PERSON_1, VALID_PERSON_2])
+    result = cli_runner.invoke(
+        cli, ["--legacy-mode", "--index-slot", "persons", "-s", PERSONINFO_SCHEMA, "-C", "Container", data_path]
+    )
+    assert result.exception is None
+    assert result.output == "✓ No problems found\n"
+    assert result.exit_code == 0
+
+
+def test_deprecated_arguments(csv_data_file, cli_runner):
+    """Test that a warning is issued when deprecated args are used without --legacy-mode"""
+    data_path = csv_data_file([VALID_PERSON_1, VALID_PERSON_2])
+    result = cli_runner.invoke(cli, ["--index-slot", "persons", "-s", PERSONINFO_SCHEMA, "-C", "Person", data_path])
+    assert result.exception is None
+    assert "Warning" in result.output
+    assert "-S/--index-slot" in result.output
+
+    result = cli_runner.invoke(cli, ["--module", "foo", "-s", PERSONINFO_SCHEMA, "-C", "Person", data_path])
+    assert result.exception is None
+    assert "Warning" in result.output
+    assert "-m/--module" in result.output
+
+    result = cli_runner.invoke(cli, ["--input-format", "yaml", "-s", PERSONINFO_SCHEMA, "-C", "Person", data_path])
+    assert result.exception is None
+    assert "Warning" in result.output
+    assert "-f/--input-format" in result.output
+
+    result = cli_runner.invoke(
+        cli, ["--include-range-class-descendants", "-s", PERSONINFO_SCHEMA, "-C", "Person", data_path]
+    )
+    assert result.exception is None
+    assert "Warning" in result.output
+    assert "--include-range-class-descendants" in result.output

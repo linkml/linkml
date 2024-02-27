@@ -4,6 +4,7 @@ YAML Schema to RDF Generator
 Generate a JSON LD representation of the model
 
 """
+
 import os
 import urllib.parse as urlparse
 from dataclasses import dataclass, field
@@ -27,9 +28,7 @@ class RDFGenerator(Generator):
     generatorversion = "0.1.1"
     # TODO: we leave ttl as default for backwards compatibility but nt is
     # recommended, see https://github.com/linkml/linkml/issues/163
-    valid_formats = ["ttl"] + sorted(
-        [x.name for x in rdflib_plugins(None, rdflib_Parser) if "/" not in str(x.name)]
-    )
+    valid_formats = ["ttl"] + sorted([x.name for x in rdflib_plugins(None, rdflib_Parser) if "/" not in str(x.name)])
     visit_all_class_slots = False
     uses_schemaloader = True
 
@@ -38,7 +37,7 @@ class RDFGenerator(Generator):
     context: List[str] = None
 
     def _data(self, g: Graph) -> str:
-        return g.serialize(format="turtle" if self.format == "ttl" else self.format).decode()
+        return g.serialize(format="turtle" if self.format == "ttl" else self.format)
 
     def end_schema(self, output: Optional[str] = None, context: str = None, **_) -> None:
         gen = JSONLDGenerator(

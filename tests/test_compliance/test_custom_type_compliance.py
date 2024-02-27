@@ -3,8 +3,10 @@ from linkml_runtime.utils.formatutils import camelcase
 
 from tests.test_compliance.helper import (
     JSON_SCHEMA,
+    OWL,
     PYDANTIC,
     PYTHON_DATACLASSES,
+    SHACL,
     SQL_DDL_SQLITE,
     ValidationBehavior,
     check_data,
@@ -30,6 +32,8 @@ def test_typeof(framework, linkml_type, example_value):
     :param example_value: value to check
     :return:
     """
+    if framework == SHACL:
+        pytest.skip("TODO: shaclgen does not support typeof")
     metamodel = metamodel_schemaview()
     ext_type = camelcase(f"my_{linkml_type}")
     type_elt = metamodel.get_type(linkml_type)
@@ -91,6 +95,10 @@ def test_typeof(framework, linkml_type, example_value):
         if not is_valid:
             # SQLite effectively coerces everything and has no type checking
             expected_behavior = ValidationBehavior.INCOMPLETE
+    if framework == OWL:
+        # OWL validation currently depends on python dataclasses to make instances;
+        # this coerces
+        expected_behavior = ValidationBehavior.INCOMPLETE
     check_data(
         schema,
         f"{type(example_value).__name__}-{example_value}",

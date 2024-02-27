@@ -23,9 +23,7 @@ TSV_OUTPUT = env.expected_path("prefix_map_prefixtest.tsv")
 class PrefixTestCase(unittest.TestCase):
     def test_owlgen(self):
         """owl"""
-        owl = OwlSchemaGenerator(
-            SCHEMA, mergeimports=False, ontology_uri_suffix=".owl.ttl", format="nt"
-        ).serialize()
+        owl = OwlSchemaGenerator(SCHEMA, mergeimports=False, ontology_uri_suffix=".owl.ttl", format="nt").serialize()
         with open(OWL_OUTPUT, "w") as stream:
             stream.write(owl)
         g = Graph()

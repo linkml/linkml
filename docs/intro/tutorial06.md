@@ -13,7 +13,7 @@ personinfo.yaml:
 ```yaml
 id: https://w3id.org/linkml/examples/personinfo
 name: personinfo
-prefixes:                                  
+prefixes:
   linkml: https://w3id.org/linkml/
   schema: http://schema.org/
   personinfo: https://w3id.org/linkml/examples/personinfo/
@@ -21,10 +21,10 @@ prefixes:
 imports:
   - linkml:types
 default_range: string
-  
+
 classes:
   Person:
-    class_uri: schema:Person             
+    class_uri: schema:Person
     attributes:
       id:
         identifier: true
@@ -32,14 +32,14 @@ classes:
         required: true
         description:
           name of the person
-        slot_uri: schema:name            
+        slot_uri: schema:name
       aliases:
         multivalued: true
         description:
           other names for the person
       phone:
         pattern: "^[\\d\\(\\)\\-]+$"
-        slot_uri: schema:telephone       
+        slot_uri: schema:telephone
       age:
         range: integer
         minimum_value: 0
@@ -90,8 +90,8 @@ linkml-validate -s personinfo.yaml data.yaml
 
 If you run this you should see that it throws an error with the message:
 
-```test
-ValueError: Unknown PersonStatus enumeration code: UNDEAD
+```text
+[ERROR] [data.yaml/0] 'UNDEAD' is not one of ['ALIVE', 'DEAD', 'UNKNOWN'] in /persons/1/status
 ```
 
 <!-- TODO: use schematools to patch the data -->
@@ -133,7 +133,7 @@ personinfo-mapped.yaml:
 ```yaml
 id: https://w3id.org/linkml/examples/personinfo
 name: personinfo
-prefixes:                                  
+prefixes:
   linkml: https://w3id.org/linkml/
   schema: http://schema.org/
   personinfo: https://w3id.org/linkml/examples/personinfo/
@@ -142,10 +142,10 @@ prefixes:
 imports:
   - linkml:types
 default_range: string
-  
+
 classes:
   Person:
-    class_uri: schema:Person             
+    class_uri: schema:Person
     attributes:
       id:
         identifier: true
@@ -153,14 +153,14 @@ classes:
         required: true
         description:
           name of the person
-        slot_uri: schema:name            
+        slot_uri: schema:name
       aliases:
         multivalued: true
         description:
           other names for the person
       phone:
         pattern: "^[\\d\\(\\)\\-]+$"
-        slot_uri: schema:telephone       
+        slot_uri: schema:telephone
       age:
         range: integer
         minimum_value: 0
@@ -183,7 +183,7 @@ enums:
     permissible_values:
       ALIVE:
         description: the person is living
-        meaning: PATO:0001421 
+        meaning: PATO:0001421
       DEAD:
         description: the person is deceased
         meaning: PATO:0001422

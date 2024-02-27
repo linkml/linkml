@@ -1,7 +1,7 @@
 import shutil
 from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import Callable
+from typing import Callable, Optional
 
 import pytest
 from _pytest.assertion.util import _diff_text
@@ -9,6 +9,10 @@ from linkml_runtime.linkml_model.meta import SchemaDefinition
 
 from tests.utils.compare_rdf import compare_rdf
 from tests.utils.dirutils import are_dir_trees_equal
+
+
+def normalize_line_endings(string: str):
+    return string.replace("\r\n", "\n").replace("\r", "\n")
 
 
 class Snapshot(ABC):
@@ -39,8 +43,9 @@ class Snapshot(ABC):
 
 
 class SnapshotFile(Snapshot):
-    def __init__(self, path: Path, config: pytest.Config) -> None:
+    def __init__(self, path: Path, config: pytest.Config, *, rdf_format: Optional[str] = None) -> None:
         super().__init__(path, config)
+        self.rdf_format: Optional[bool] = rdf_format
 
     def generate_snapshot(self, source: object) -> bool:
         # if we got a path, copy it into the snapshot directory
@@ -69,17 +74,15 @@ class SnapshotFile(Snapshot):
             __tracebackhide__ = True
             raise TypeError(f"cannot compare snapshot to {other}")
 
-        if self.path.suffix in (".ttl", ".owl"):
-            self.eq_state = compare_rdf(expected, actual)
+        if self.rdf_format or self.path.suffix in (".ttl", ".owl", ".n3"):
+            self.eq_state = compare_rdf(expected, actual, fmt=self.rdf_format if self.rdf_format else "turtle")
             return self.eq_state is None
         else:
-            is_eq = actual == expected
+            is_eq = normalize_line_endings(actual) == expected
             if not is_eq:
                 # TODO: probably better to use something other than this pytest
                 # private method. See https://docs.python.org/3/library/difflib.html
-                self.eq_state = "\n".join(
-                    _diff_text(actual, expected, self.config.getoption("verbose"))
-                )
+                self.eq_state = "\n".join(_diff_text(actual, expected, self.config.getoption("verbose")))
             return is_eq
 
 
@@ -133,12 +136,12 @@ def snapshot(snapshot_path, pytestconfig, monkeypatch) -> Callable[[str], Snapsh
 
     monkeypatch.setattr(SchemaDefinition, "__setattr__", patched)
 
-    def get_snapshot(relative_path):
+    def get_snapshot(relative_path, **kwargs):
         path = snapshot_path(relative_path)
         if not path.suffix:
             return SnapshotDirectory(path, pytestconfig)
         else:
-            return SnapshotFile(path, pytestconfig)
+            return SnapshotFile(path, pytestconfig, **kwargs)
 
     return get_snapshot
 

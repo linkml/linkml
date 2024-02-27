@@ -1,8 +1,0 @@
-# metamodel_version: 1.7.0
-# version: 2.0.0
-id,mappings,description
-definition,,base class for definitions
-element,,a named element in the model
-schema_definition,,"a collection of subset, type, slot and class definitions"
-slot_definition,,the definition of a property or a slot
-

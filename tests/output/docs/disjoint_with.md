@@ -21,3 +21,10 @@ URI: [linkml:disjoint_with](https://w3id.org/linkml/disjoint_with)
 
 ## Used by
 
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **In Subsets:** | | SpecificationSubset |
+

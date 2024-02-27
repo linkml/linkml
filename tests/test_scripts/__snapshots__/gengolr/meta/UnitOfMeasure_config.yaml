@@ -1,0 +1,39 @@
+# metamodel_version: 1.7.0# version: 2.0.0id: UnitOfMeasure
+schema_generating: true
+description: A unit of measure, or unit, is a particular quantity value that has been
+  chosen as a scale for  measuring other quantities the same kind (more generally
+  of equivalent dimension).
+display_name: UnitOfMeasure
+document_category: UnitOfMeasure
+weight: 20
+fields:
+- id: symbol
+  description: name of the unit encoded as a symbol
+  display_name: symbol
+- id: abbreviation
+  description: 'An abbreviation for a unit is a short ASCII string that is used in
+    place of the full name for the unit in  contexts where non-ASCII characters would
+    be problematic, or where using the abbreviation will enhance  readability. When
+    a power of a base unit needs to be expressed, such as squares this can be done
+    using  abbreviations rather than symbols (source: qudt)'
+  display_name: abbreviation
+- id: descriptive_name
+  description: the spelled out name of the unit, for example, meter
+  display_name: descriptive_name
+- id: exact_mappings
+  description: Used to link a unit to equivalent concepts in ontologies such as UO,
+    SNOMED, OEM, OBOE, NCIT
+  display_name: UnitOfMeasure_exact mappings
+  cardinality: multi
+- id: ucum_code
+  description: associates a QUDT unit with its UCUM code (case-sensitive).
+  display_name: ucum_code
+- id: derivation
+  description: Expression for deriving this unit from other units
+  display_name: derivation
+- id: has_quantity_kind
+  description: Concept in a vocabulary or ontology that denotes the kind of quantity
+    being measured, e.g. length
+  display_name: has_quantity_kind
+- id: iec61360code
+  display_name: iec61360code

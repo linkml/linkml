@@ -18,10 +18,16 @@ LINK_ML_TYPES_STRING = URIRef("http://www.w3.org/2001/XMLSchema#string")
 LINK_ML_TYPES_BOOL = URIRef("http://www.w3.org/2001/XMLSchema#boolean")
 LINK_ML_TYPES_DECIMAL = URIRef("http://www.w3.org/2001/XMLSchema#decimal")
 LINK_ML_TYPES_INTEGER = URIRef("http://www.w3.org/2001/XMLSchema#integer")
+LINK_ML_TYPES_FLOAT = URIRef("http://www.w3.org/2001/XMLSchema#float")
+LINK_ML_TYPES_DOUBLE = URIRef("http://www.w3.org/2001/XMLSchema#double")
 LINK_ML_TYPES_DURATION = URIRef("http://www.w3.org/2001/XMLSchema#duration")
 LINK_ML_TYPES_DATETIME = URIRef("http://www.w3.org/2001/XMLSchema#dateTime")
 LINK_ML_TYPES_DATE = URIRef("http://www.w3.org/2001/XMLSchema#date")
 LINK_ML_TYPES_TIME = URIRef("http://www.w3.org/2001/XMLSchema#time")
+LINK_ML_TYPES_DATE_TIME = URIRef("http://www.w3.org/2001/XMLSchema#datetime")
+LINK_ML_TYPES_URI = URIRef("http://www.w3.org/2001/XMLSchema#anyURI")
+LINK_ML_TYPES_OBJECT_ID = URIRef("http://www.w3.org/ns/shex#iri")
+LINK_ML_TYPES_NODE_ID = URIRef("http://www.w3.org/ns/shex#nonLiteral")
 
 
 @dataclass
@@ -47,14 +53,12 @@ class ShaclGenerator(Generator):
         if self.schema.version:
             print(f"# version: {self.schema.version}")
 
-    def serialize(self, **args) -> None:
+    def serialize(self, **args) -> str:
         g = self.as_graph()
-        data = g.serialize(
-            format="turtle" if self.format in ["owl", "ttl"] else self.format
-        ).decode()
+        data = g.serialize(format="turtle" if self.format in ["owl", "ttl"] else self.format)
         return data
 
-    def as_graph(self) -> None:
+    def as_graph(self) -> Graph:
         sv = self.schemaview
         g = Graph()
         g.bind("sh", SH)
@@ -114,7 +118,6 @@ class ShaclGenerator(Generator):
                     prop_pv_literal(SH.minCount, 1)
                 prop_pv_literal(SH.minInclusive, s.minimum_value)
                 prop_pv_literal(SH.maxInclusive, s.maximum_value)
-
                 all_classes = sv.all_classes()
                 if s.any_of:
                     or_node = BNode()
@@ -161,6 +164,7 @@ class ShaclGenerator(Generator):
                     Collection(g, or_node, range_list)
 
                 else:
+                    prop_pv_literal(SH.hasValue, s.equals_number)
                     r = s.range
                     if r in all_classes:
                         self._add_class(prop_pv, r)
@@ -206,23 +210,45 @@ class ShaclGenerator(Generator):
             logging.error(f"No URI for type {rt.name}")
 
 
-def add_simple_data_type(func: Callable, range: ElementName) -> None:
-    if range == "string":
+def add_simple_data_type(func: Callable, r: ElementName) -> None:
+    if r == "string":
         func(SH.datatype, LINK_ML_TYPES_STRING)
-    elif range == "boolean":
+    elif r == "boolean":
         func(SH.datatype, LINK_ML_TYPES_BOOL)
-    elif range == "duration":
+    elif r == "duration":
         func(SH.datatype, LINK_ML_TYPES_DURATION)
-    elif range == "datetime":
+    elif r == "datetime":
         func(SH.datatype, LINK_ML_TYPES_DATETIME)
-    elif range == "date":
+    elif r == "date":
         func(SH.datatype, LINK_ML_TYPES_DATE)
-    elif range == "time":
+    elif r == "time":
         func(SH.datatype, LINK_ML_TYPES_TIME)
-    elif range == "decimal":
+    elif r == "datetime":
+        func(SH.datatype, LINK_ML_TYPES_DATE_TIME)
+    elif r == "decimal":
         func(SH.datatype, LINK_ML_TYPES_DECIMAL)
-    elif range == "integer":
+    elif r == "integer":
         func(SH.datatype, LINK_ML_TYPES_INTEGER)
+    elif r == "float":
+        func(SH.datatype, LINK_ML_TYPES_FLOAT)
+    elif r == "double":
+        func(SH.datatype, LINK_ML_TYPES_DOUBLE)
+    elif r == "uri":
+        func(SH.datatype, LINK_ML_TYPES_URI)
+    elif r == "curi":
+        func(SH.datatype, LINK_ML_TYPES_STRING)
+    elif r == "ncname":
+        func(SH.datatype, LINK_ML_TYPES_STRING)
+    elif r == "objectidentifier":
+        func(SH.datatype, LINK_ML_TYPES_OBJECT_ID)
+    elif r == "nodeidentifier":
+        func(SH.datatype, LINK_ML_TYPES_NODE_ID)
+    elif r == "jsonpointer":
+        func(SH.datatype, LINK_ML_TYPES_STRING)
+    elif r == "jsonpath":
+        func(SH.datatype, LINK_ML_TYPES_STRING)
+    elif r == "sparqlpath":
+        func(SH.datatype, LINK_ML_TYPES_STRING)
 
 
 @shared_arguments(ShaclGenerator)

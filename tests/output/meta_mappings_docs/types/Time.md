@@ -10,3 +10,10 @@ URI: [linkml:Time](https://w3id.org/linkml/Time)
 | --- | --- | --- |
 | Root (builtin) type | | **XSDTime** |
 | Representation | | str |
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **Exact Mappings:** | | schema:Time |
+

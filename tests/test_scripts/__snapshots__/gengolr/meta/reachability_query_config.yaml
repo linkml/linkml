@@ -1,0 +1,33 @@
+# metamodel_version: 1.7.0# version: 2.0.0id: reachability_query
+schema_generating: true
+description: A query that is used on an enum expression to dynamically obtain a set
+  of permissible values via walking from a  set of source nodes to a set of descendants
+  or ancestors over a set of relationship types.
+display_name: reachability_query
+document_category: reachability_query
+weight: 20
+fields:
+- id: source_ontology
+  description: An ontology or vocabulary or terminology that is used in a query to
+    obtain a set of permissible values
+  display_name: source_ontology
+- id: source_nodes
+  description: A list of nodes that are used in the reachability query
+  display_name: source_nodes
+  cardinality: multi
+- id: relationship_types
+  description: A list of relationship types (properties) that are used in a reachability
+    query
+  display_name: relationship_types
+  cardinality: multi
+- id: is_direct
+  description: True if the reachability query should only include directly related
+    nodes, if False then include also transitively connected
+  display_name: is_direct
+- id: include_self
+  description: True if the query is reflexive
+  display_name: include_self
+- id: traverse_up
+  description: True if the direction of the reachability query is reversed and ancestors
+    are retrieved
+  display_name: traverse_up

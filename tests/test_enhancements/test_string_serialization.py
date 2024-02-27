@@ -20,9 +20,7 @@ class StringSerializationTestCase(TestEnvironmentTestCase):
                 importmap=env.import_map,
                 mergeimports=False,
             ).serialize(),
-            comparator=lambda exp, act: compare_python(
-                exp, act, self.env.expected_path(f"{self.testdir}/{file}.py")
-            ),
+            comparator=lambda exp, act: compare_python(exp, act, self.env.expected_path(f"{self.testdir}/{file}.py")),
             value_is_returned=True,
         )
 

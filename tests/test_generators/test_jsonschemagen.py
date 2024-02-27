@@ -24,9 +24,7 @@ def test_jsonschema_integration(kitchen_sink_path, input_path):
     able to validate the instance data.
     """
 
-    generator = JsonSchemaGenerator(
-        kitchen_sink_path, mergeimports=True, top_class="Dataset", not_closed=False
-    )
+    generator = JsonSchemaGenerator(kitchen_sink_path, mergeimports=True, top_class="Dataset", not_closed=False)
     kitchen_sink_json_schema = json.loads(generator.serialize())
 
     kitchen_module = make_python(kitchen_sink_path)
@@ -67,9 +65,16 @@ def test_class_uri_any(kitchen_sink_path, subtests):
     See also https://github.com/linkml/linkml/issues/579
     """
 
-    assert_schema_validates(
-        subtests, kitchen_sink_path, {"$defs": {"AnyObject": {"additionalProperties": True}}}
-    )
+    expected_json_schema_subset = {"$defs": {"AnyObject": {"additionalProperties": True}}}
+    data_cases = [
+        {"data": {"metadata": {"anything": {"goes": "here"}}}},
+        {"data": {"metadata": "anything goes here"}},
+        {"data": {"metadata": 0}},
+        {"data": {"metadata": None}},
+        {"data": {"metadata": True}},
+        {"data": {"metadata": ["array", "not", "allowed"]}, "error_message": "is not of type"},
+    ]
+    assert_schema_validates(subtests, kitchen_sink_path, expected_json_schema_subset, data_cases)
 
 
 def test_compliance_cases(kitchen_sink_path, input_path, subtests):
@@ -81,9 +86,7 @@ def test_compliance_cases(kitchen_sink_path, input_path, subtests):
     validation, but cases can also be marked with valid: true if validation should pass.
     """
 
-    generator = JsonSchemaGenerator(
-        kitchen_sink_path, mergeimports=True, top_class="Dataset", not_closed=False
-    )
+    generator = JsonSchemaGenerator(kitchen_sink_path, mergeimports=True, top_class="Dataset", not_closed=False)
     kitchen_sink_json_schema = json.loads(generator.serialize())
 
     generator.not_closed = True
@@ -110,7 +113,7 @@ def test_compliance_cases(kitchen_sink_path, input_path, subtests):
                 jsonschema.validate(
                     dataset,
                     schema,
-                    format_checker=jsonschema.Draft7Validator.FORMAT_CHECKER,
+                    format_checker=jsonschema.Draft201909Validator.FORMAT_CHECKER,
                 )
 
             if expected_valid:
@@ -134,6 +137,17 @@ def test_class_inheritance(subtests, input_path):
     external_file_test(
         subtests,
         input_path("jsonschema_class_inheritance.yaml"),
+        {"not_closed": False, "include_range_class_descendants": True},
+    )
+
+
+def test_class_inheritance_multivalued(subtests, input_path):
+    """Tests that a class hierarchy is accounted for when the hierarchy root is used
+    as the range of a multivalued (either inlined or inlined_as_list) slot."""
+
+    external_file_test(
+        subtests,
+        input_path("jsonschema_class_inheritance_multivalued.yaml"),
         {"not_closed": False, "include_range_class_descendants": True},
     )
 
@@ -194,9 +208,7 @@ def test_rules(subtests, input_path):
                 },
             )
 
-            assert_schema_validates(
-                subtests, schema, case["json_schema"], case.get("data_cases", [])
-            )
+            assert_schema_validates(subtests, schema, case["json_schema"], case.get("data_cases", []))
 
 
 def test_rules_in_non_root_class(subtests, input_path):
@@ -243,6 +255,53 @@ def test_empty_inlined_as_dict_objects(subtests, input_path):
     external_file_test(subtests, input_path("jsonschema_empty_inlined_as_dict_objects.yaml"))
 
 
+def test_required_slot_condition_in_rule(subtests, input_path):
+    """Tests required: true/false on slot conditions in rules"""
+
+    external_file_test(subtests, input_path("jsonschema_required_slot_condition_in_rule.yaml"))
+
+
+def test_missing_top_class(input_path, caplog):
+    JsonSchemaGenerator(input_path("kitchen_sink.yaml"), top_class="NotARealClass")
+    assert "No class in schema named NotARealClass" in caplog.text
+
+
+def test_rule_inheritance(subtests, input_path):
+    """Tests that rules are inherited from superclasses"""
+
+    external_file_test(subtests, input_path("jsonschema_rule_inheritance.yaml"))
+
+
+def test_title_from_name_slot(subtests, input_path):
+    """Tests that the JSON Schema title is taken from name slot."""
+    external_file_test(subtests, input_path("jsonschema_title_from_name.yaml"))
+
+
+def test_title_from_name_slot_when_title_missing(subtests, input_path):
+    """Tests that the JSON Schema title is taken from name slot when title is missing."""
+    external_file_test(subtests, input_path("jsonschema_title_from_name_missing_title.yaml"), {"title_from": "title"})
+
+
+def test_schama_title_from_title_slot(subtests, input_path):
+    """Tests that the JSON Schema title is taken from title slot if option specified."""
+    external_file_test(subtests, input_path("jsonschema_title_from_title.yaml"), {"title_from": "title"})
+
+
+def test_class_title_from_title_slot(subtests, input_path):
+    """Tests that the class-based sub-schema title is taken from title slot if option specified."""
+    external_file_test(subtests, input_path("jsonschema_class_title_from_title.yaml"), {"title_from": "title"})
+
+
+def test_enum_title_from_title_slot(subtests, input_path):
+    """Tests that the enum-based sub-schema title is taken from title slot if option specified."""
+    external_file_test(subtests, input_path("jsonschema_enum_title_from_title.yaml"), {"title_from": "title"})
+
+
+def test_slot_title_from_title_slot(subtests, input_path):
+    """Tests that the slot-based sub-schema title is taken from title slot if option specified."""
+    external_file_test(subtests, input_path("jsonschema_slot_title_from_title.yaml"), {"title_from": "title"})
+
+
 # **********************************************************
 #
 #    Utility functions
@@ -258,9 +317,7 @@ def test_empty_inlined_as_dict_objects(subtests, input_path):
 # **********************************************************
 
 
-def external_file_test(
-    subtests, file: Union[str, Path], generator_args: Optional[Dict] = None
-) -> None:
+def external_file_test(subtests, file: Union[str, Path], generator_args: Optional[Dict] = None) -> None:
     if generator_args is None:
         generator_args = {"not_closed": False}
 

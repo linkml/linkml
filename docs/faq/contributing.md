@@ -8,7 +8,7 @@ We welcome any and all kinds of contribution, including:
  * ideas for new features
  * testing
  * documentation improvements
- * stlyistic improvements on the linkml site
+ * stlyistic improvements to the linkml site
  * general suggestions on how we can do better
 
 You are free to make PRs on any LinkML repo, including:
@@ -19,13 +19,19 @@ You are free to make PRs on any LinkML repo, including:
 
 Be sure to read the CONTRIBUTING.md for the repo you wish to contribute to.
 
-For filing new issues, we prefer you to use the [main linkml repo](https://github.com/linkml/linkml/issues).
+For filing new issues, please use the [main linkml repo](https://github.com/linkml/linkml/issues).
 
-You may wish to browse the list of [good first issues](https://github.com/linkml/linkml/labels/good%20first%20issue)
+You may wish to browse the list of [good first issues](https://github.com/linkml/linkml/labels/good%20first%20issue),
+and you can [vote for your favorite issue here](https://github.com/linkml/linkml/issues/974).
 
 ## How do I stay involved?
 
-We have a Slack channel for the core team and adopters of bleeding edge new features - [join here](https://join.slack.com/t/obo-communitygroup/shared_invite/zt-1oq48ttk7-kKo0i6TwntYtAq~Jcjjg4g).
+- Mailing list (low traffic; mostly announcements about upcoming LinkML Community Meetings): [sign up](https://groups.google.com/g/linkml-community)
+- Slack channel for the core team and adopters of bleeding edge new features: [join here](https://join.slack.com/t/obo-communitygroup/shared_invite/zt-1oq48ttk7-kKo0i6TwntYtAq~Jcjjg4g)
+- LinkedIn group: [join](https://www.linkedin.com/groups/14303246/)
+- Mastodon: [follow us](https://qoto.org/@linkml)
+- Community meetings: we hold an open meeting once a month (usually the third Thursday of the month at 11am ET). Please join the mailing list or Slack channel (see above) for info on how to participate.
+
 
 ## How do I register my schema?
 

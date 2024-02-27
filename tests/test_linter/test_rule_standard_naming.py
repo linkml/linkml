@@ -31,9 +31,7 @@ class TestStandardNamingRule(unittest.TestCase):
         self.schema_view = SchemaView(builder.schema)
 
     def test_standard_naming_lower_pv(self):
-        config = StandardNamingConfig(
-            level=RuleLevel.error.text, permissible_values_upper_case=False
-        )
+        config = StandardNamingConfig(level=RuleLevel.error.text, permissible_values_upper_case=False)
 
         rule = StandardNamingRule(config)
         problems = list(rule.check(self.schema_view))
@@ -61,9 +59,7 @@ class TestStandardNamingRule(unittest.TestCase):
         self.assertIn("Enum has name 'bad_enum'", messages)
 
     def test_standard_naming_upper_pv(self):
-        config = StandardNamingConfig(
-            level=RuleLevel.error.text, permissible_values_upper_case=True
-        )
+        config = StandardNamingConfig(level=RuleLevel.error.text, permissible_values_upper_case=True)
 
         rule = StandardNamingRule(config)
         problems = list(rule.check(self.schema_view))

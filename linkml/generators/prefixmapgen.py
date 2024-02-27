@@ -2,6 +2,7 @@
 Generate JSON-LD contexts
 
 """
+
 import csv
 import os
 from dataclasses import dataclass, field
@@ -39,9 +40,7 @@ class PrefixGenerator(Generator):
     def __post_init__(self):
         super().__post_init__()
         if self.namespaces is None:
-            raise TypeError(
-                "Schema text must be supplied to context generator.  Preparsed schema will not work"
-            )
+            raise TypeError("Schema text must be supplied to context generator.  Preparsed schema will not work")
 
     def visit_schema(self, base: Optional[str] = None, output: Optional[str] = None, **_):
         # Add any explicitly declared prefixes
@@ -64,9 +63,7 @@ class PrefixGenerator(Generator):
         context = JsonObj()
         if base:
             if "://" not in base:
-                self.context_body["@base"] = os.path.relpath(
-                    base, os.path.dirname(self.schema.source_file)
-                )
+                self.context_body["@base"] = os.path.relpath(base, os.path.dirname(self.schema.source_file))
             else:
                 self.context_body["@base"] = base
         for prefix in sorted(self.emit_prefixes):

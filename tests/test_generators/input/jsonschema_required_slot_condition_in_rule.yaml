@@ -1,0 +1,82 @@
+schema:
+  id: test
+  name: test
+
+  prefixes:
+    linkml: https://w3id.org/linkml/
+  imports:
+    - linkml:types
+  default_range: string
+
+  slots:
+    drivers_license_number:
+    role:
+    gas_money:
+      range: float
+      required: true
+
+  classes:
+    CarOccupant:
+      tree_root: true
+      slots:
+        - role
+        - drivers_license_number
+        - gas_money
+      rules:
+        - title: drivers need licenses
+          description: >-
+            this rule verifies that a slot can be flipped from non-required to required in a
+            postcondition and that asserting required: false in the elsecondition is a no-op.
+          preconditions:
+            slot_conditions:
+              role:
+                equals_string: driver
+          postconditions:
+            slot_conditions:
+              drivers_license_number:
+                required: true
+          elseconditions:
+            slot_conditions:
+              drivers_license_number:
+                required: false
+        - title: driver doesn't have to pay for gas
+          description: >-
+            this rule verifies that a slot can be flipped from required to non-required in a
+            postcondition and that asserting required: true in the elsecondition is a no-op.
+          preconditions:
+            slot_conditions:
+              role:
+                equals_string: driver
+          postconditions:
+            slot_conditions:
+              gas_money:
+                required: false
+          elseconditions:
+            slot_conditions:
+              gas_money:
+                required: true
+
+data_cases:
+  - data:
+      role: driver
+      drivers_license_number: ABC123
+      gas_money: 10.0
+  - data:
+      role: driver
+      gas_money: 10.0
+    error_message: "drivers_license_number"
+# TODO: Making a slot NOT required in a rule doesn't currently work
+# https://github.com/linkml/linkml/issues/1803
+#  - data:
+#      role: driver
+#      drivers_license_number: ABC123
+  - data:
+      role: passenger
+      drivers_license_number: ABC123
+      gas_money: 10.0
+  - data:
+      role: passenger
+      gas_money: 10.0
+  - data:
+      role: passenger
+    error_message: "gas_money"

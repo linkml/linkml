@@ -1,8 +1,9 @@
 import logging
 import re
+from collections import defaultdict
 from copy import copy
 from dataclasses import dataclass
-from typing import Any, Callable, Dict, List, Union
+from typing import Any, Callable, Dict, List, Optional, Union
 
 import click
 import yaml
@@ -127,13 +128,9 @@ class SchemaFixer:
         for cn in sv.all_classes():
             for s in sv.class_induced_slots(cn):
                 ranges.add(s.range)
-        top_level_classes = [
-            c for c in sv.all_classes().values() if not c.tree_root and c.name not in ranges
-        ]
+        top_level_classes = [c for c in sv.all_classes().values() if not c.tree_root and c.name not in ranges]
         if must_have_identifier:
-            top_level_classes = [
-                c for c in top_level_classes if sv.get_identifier_slot(c.name) is not None
-            ]
+            top_level_classes = [c for c in top_level_classes if sv.get_identifier_slot(c.name) is not None]
         index_slots = []
         for c in top_level_classes:
             has_identifier = sv.get_identifier_slot(c.name)
@@ -157,9 +154,7 @@ class SchemaFixer:
             self._add_history(f"Adding container slot: {index_slot.name}")
         return index_slots
 
-    def attributes_to_slots(
-        self, schema: SchemaDefinition, remove_redundant_slot_usage=True
-    ) -> None:
+    def attributes_to_slots(self, schema: SchemaDefinition, remove_redundant_slot_usage=True) -> None:
         """
         Convert all attributes to slots
 
@@ -211,15 +206,11 @@ class SchemaFixer:
                 if v is not None and v != [] and v != {}:
                     curr_v = getattr(su, k, None)
                     if not overwrite and curr_v and curr_v != v:
-                        raise ValueError(
-                            f"Conflict in {cls.name}.{slot.name}, attr {k} {v} != {curr_v}"
-                        )
+                        raise ValueError(f"Conflict in {cls.name}.{slot.name}, attr {k} {v} != {curr_v}")
                     setattr(su, k, v)
             self._add_history(f"Merged slot usage: {slot.name}")
 
-    def remove_redundant_slot_usage(
-        self, schema: SchemaDefinition, class_name: ClassDefinitionName = None
-    ):
+    def remove_redundant_slot_usage(self, schema: SchemaDefinition, class_name: ClassDefinitionName = None):
         """
         Remove parts of slot_usage that can be inferred
 
@@ -267,15 +258,11 @@ class SchemaFixer:
                         continue
                     induced_v = getattr(induced_slot, metaslot_name, None)
                     if v is not None and v != [] and v != {} and v == induced_v:
-                        logging.info(
-                            f"REDUNDANT: {class_name}.{slot_usage_key}[{metaslot_name}] = {v}"
-                        )
+                        logging.info(f"REDUNDANT: {class_name}.{slot_usage_key}[{metaslot_name}] = {v}")
                         to_delete.append(metaslot_name)
                 for metaslot_name in to_delete:
                     del slot_usage_value[metaslot_name]
-                    self._add_history(
-                        f"Removed redundant: {class_name}.slot_usage[{slot_usage_key}].[{metaslot_name}]"
-                    )
+                    self._add_history(f"Removed redundant: {class_name}.slot_usage[{slot_usage_key}].[{metaslot_name}]")
             empty_keys = []
             for slot_usage_key, slot_usage_value in cls.slot_usage.items():
                 metaslot_keys = list(json_dumper.to_dict(slot_usage_value).keys())
@@ -283,6 +270,40 @@ class SchemaFixer:
                     empty_keys.append(slot_usage_key)
             for k in empty_keys:
                 del cls.slot_usage[k]
+
+    def implicit_slots(self, schema: SchemaDefinition) -> Dict[str, Dict]:
+        """
+        Find slots that are implicit in the schema from slot_usage
+
+        :param schema:
+        :return:
+        """
+        sv = SchemaView(schema)
+        implicit_slots1 = defaultdict(list)
+        for cls in sv.all_classes().values():
+            for slot in cls.slot_usage.values():
+                slot_name = slot.name
+                if slot_name not in sv.all_slots():
+                    implicit_slots1[slot_name].append(json_dumper.to_dict(slot))
+        new_slots = {}
+        for slot_name, slot_list in implicit_slots1.items():
+            all_keys = set()
+            for slot in slot_list:
+                all_keys.update(slot.keys())
+            harmonized_slot = {}
+            for k in all_keys:
+                vals = []
+                vals_strs = set()
+                for slot in slot_list:
+                    val = slot.get(k, None)
+                    vals_strs.add(str(val))
+                    vals.append(val)
+                if len(vals_strs) == 1:
+                    harmonized_slot[k] = vals.pop()
+                elif len(vals_strs) > 1:
+                    logging.info(f"Variable values in {slot_name}.{k}: {vals_strs}")
+            new_slots[str(slot_name)] = harmonized_slot
+        return new_slots
 
     def remove_unused_prefixes(self, schema: SchemaDefinition):
         raise NotImplementedError
@@ -298,15 +319,16 @@ class SchemaFixer:
         schema_dict: Dict[str, Any] = None,
         rules: Dict[str, Callable] = None,
         imports=False,
+        preserve_original_using: Optional[str] = None,
     ) -> Union[YAMLRoot, Dict]:
         """
         Changes element names to conform to naming conventions.
-
 
         :param schema: input schema
         :param schema_dict: if specified, the transformation will happen on this dictionary object
         :param rules: mappings between index slots and functions that normalize names
         :param imports: if True, all that imported modules are also fixed
+        :param preserve_original_using: if specified, the original name will be preserved in this slot
         :return:
         """
         if rules is None:
@@ -318,6 +340,7 @@ class SchemaFixer:
             }
         fixes = {}
         sv = SchemaView(schema)
+        preserved = []
         for n, e in sv.all_elements(imports=imports).items():
             if e.from_schema == "https://w3id.org/linkml/types":
                 continue
@@ -327,9 +350,35 @@ class SchemaFixer:
                 normalized = func(n)
                 if normalized != n:
                     fixes[n] = normalized
+                if preserve_original_using is not None:
+                    preserved.append((typ, normalized, n))
+                # if preserve_original_using is not None:
+                #    setattr(e, preserve_original_using, n)
+                #    print(f"SETTING {typ} {e.name}.{preserve_original_using} = {n}")
         if schema_dict is not None:
             schema = schema_dict
-        return yaml_rewrite(schema, fixes)
+        schema = yaml_rewrite(schema, fixes)
+        for typ, normalized, original in preserved:
+            pathmap = {
+                ClassDefinition.__name__: "classes",
+                TypeDefinition.__name__: "types",
+                SlotDefinition.__name__: "slots",
+                EnumDefinition.__name__: "enums",
+            }
+            if isinstance(schema, dict):
+                path = schema[pathmap[typ]]
+                if normalized not in path:
+                    logger.warning(f"Cannot find {typ} {normalized} in {pathmap[typ]}")
+                    continue
+                e = path[normalized]
+                if preserve_original_using not in e:
+                    path[normalized][preserve_original_using] = original
+            else:
+                path = getattr(schema, pathmap[typ])
+                e = path[normalized]
+                if not getattr(e, preserve_original_using, None):
+                    setattr(e, preserve_original_using, original)
+        return schema
 
 
 @click.group()
@@ -355,7 +404,14 @@ def main(verbose: int, quiet: bool):
     show_default=True,
     help="Apply fix to referenced elements from modules",
 )
-def fix_name(input_schema, **kwargs):
+@click.option(
+    "--preserve-original-using",
+    "-P",
+    default=None,
+    show_default=True,
+    help="If specified, original name will be preserved in this slot (e.g. title)",
+)
+def fix_names(input_schema, **kwargs):
     """Fix element names to conform to naming conventions"""
     with open(input_schema) as f:
         schema_dict = yaml.safe_load(f)
@@ -363,6 +419,26 @@ def fix_name(input_schema, **kwargs):
     fixer = SchemaFixer()
     schema = fixer.fix_element_names(sv.schema, schema_dict, **kwargs)
     print(yaml.dump(schema, sort_keys=False))
+
+
+@main.command()
+@click.argument("input_schema")
+@click.option(
+    "--imports/--no-imports",
+    default=False,
+    show_default=True,
+    help="Apply fix to referenced elements from modules",
+)
+def implicit_slots(input_schema, **kwargs):
+    """Find implicit slots in schema"""
+    with open(input_schema) as f:
+        yaml.safe_load(f)
+    sv = SchemaView(input_schema)
+    fixer = SchemaFixer()
+    slots = fixer.implicit_slots(sv.schema)
+    for slot in slots.values():
+        del slot["name"]
+    print(yaml.dump({"slots": slots}, sort_keys=False))
 
 
 if __name__ == "__main__":

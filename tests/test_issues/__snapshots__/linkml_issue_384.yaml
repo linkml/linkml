@@ -10,7 +10,10 @@ prefixes:
   sdo:
     prefix_prefix: sdo
     prefix_reference: http://schema.org/
-default_prefix: https://w3id.org/linkml/examples/personinfo/
+  ex:
+    prefix_prefix: ex
+    prefix_reference: https://w3id.org/linkml/examples/personinfo/
+default_prefix: ex
 default_range: string
 types:
   string:
@@ -286,7 +289,7 @@ slots:
     name: id
     definition_uri: https://w3id.org/linkml/examples/personinfo/id
     from_schema: https://w3id.org/linkml/examples/personinfo
-    slot_uri: https://w3id.org/linkml/examples/personinfo/id
+    slot_uri: ex:id
     owner: Thing
     domain_of:
     - Thing
@@ -296,7 +299,7 @@ slots:
     definition_uri: https://w3id.org/linkml/examples/personinfo/full_name
     title: full name
     from_schema: https://w3id.org/linkml/examples/personinfo
-    slot_uri: https://w3id.org/linkml/examples/personinfo/full_name
+    slot_uri: ex:full_name
     owner: Thing
     domain_of:
     - Thing
@@ -305,14 +308,14 @@ slots:
     name: parent
     definition_uri: https://w3id.org/linkml/examples/personinfo/parent
     from_schema: https://w3id.org/linkml/examples/personinfo
-    slot_uri: https://w3id.org/linkml/examples/personinfo/parent
+    slot_uri: ex:parent
     multivalued: true
     range: Thing
     inlined: true
   person__aliases:
     name: person__aliases
     from_schema: https://w3id.org/linkml/examples/personinfo
-    slot_uri: https://w3id.org/linkml/examples/personinfo/aliases
+    slot_uri: ex:aliases
     multivalued: true
     alias: aliases
     owner: Person
@@ -322,7 +325,7 @@ slots:
   person__phone:
     name: person__phone
     from_schema: https://w3id.org/linkml/examples/personinfo
-    slot_uri: https://w3id.org/linkml/examples/personinfo/phone
+    slot_uri: ex:phone
     alias: phone
     owner: Person
     domain_of:
@@ -332,7 +335,7 @@ slots:
     name: person__age
     description: age in years
     from_schema: https://w3id.org/linkml/examples/personinfo
-    slot_uri: https://w3id.org/linkml/examples/personinfo/age
+    slot_uri: ex:age
     alias: age
     owner: Person
     domain_of:
@@ -344,7 +347,7 @@ slots:
     - we introduce a deliberate conflict (single vs multivalied) with the aliases
       attribute that is local to person
     from_schema: https://w3id.org/linkml/examples/personinfo
-    slot_uri: https://w3id.org/linkml/examples/personinfo/aliases
+    slot_uri: ex:aliases
     multivalued: false
     alias: aliases
     owner: GeoObject
@@ -357,7 +360,7 @@ slots:
     - we introduce a deliberate conflict (type vs class range) with the age attribute
       that is local to person
     from_schema: https://w3id.org/linkml/examples/personinfo
-    slot_uri: https://w3id.org/linkml/examples/personinfo/age
+    slot_uri: ex:age
     alias: age
     owner: GeoObject
     domain_of:
@@ -367,7 +370,7 @@ slots:
   geoAge__unit:
     name: geoAge__unit
     from_schema: https://w3id.org/linkml/examples/personinfo
-    slot_uri: https://w3id.org/linkml/examples/personinfo/unit
+    slot_uri: ex:unit
     alias: unit
     owner: GeoAge
     domain_of:
@@ -376,7 +379,7 @@ slots:
   geoAge__value:
     name: geoAge__value
     from_schema: https://w3id.org/linkml/examples/personinfo
-    slot_uri: https://w3id.org/linkml/examples/personinfo/value
+    slot_uri: ex:value
     alias: value
     owner: GeoAge
     domain_of:
@@ -388,7 +391,7 @@ slots:
     from_schema: https://w3id.org/linkml/examples/personinfo
     is_a: parent
     domain: Person
-    slot_uri: https://w3id.org/linkml/examples/personinfo/parent
+    slot_uri: ex:parent
     multivalued: true
     alias: parent
     owner: Person
@@ -406,7 +409,7 @@ slots:
     from_schema: https://w3id.org/linkml/examples/personinfo
     is_a: full_name
     domain: Organization
-    slot_uri: https://w3id.org/linkml/examples/personinfo/full_name
+    slot_uri: ex:full_name
     alias: full_name
     owner: Organization
     domain_of:
@@ -420,7 +423,7 @@ slots:
     from_schema: https://w3id.org/linkml/examples/personinfo
     is_a: parent
     domain: Organization
-    slot_uri: https://w3id.org/linkml/examples/personinfo/parent
+    slot_uri: ex:parent
     multivalued: true
     alias: parent
     owner: Organization
@@ -438,7 +441,7 @@ classes:
     slots:
     - id
     - full_name
-    class_uri: https://w3id.org/linkml/examples/personinfo/Thing
+    class_uri: ex:Thing
   Person:
     name: Person
     definition_uri: https://w3id.org/linkml/examples/personinfo/Person
@@ -484,7 +487,7 @@ classes:
       parent:
         name: parent
         range: Organization
-    class_uri: https://w3id.org/linkml/examples/personinfo/Organization
+    class_uri: ex:Organization
   GeoObject:
     name: GeoObject
     definition_uri: https://w3id.org/linkml/examples/personinfo/GeoObject
@@ -508,7 +511,7 @@ classes:
         - we introduce a deliberate conflict (type vs class range) with the age attribute
           that is local to person
         range: GeoAge
-    class_uri: https://w3id.org/linkml/examples/personinfo/GeoObject
+    class_uri: ex:GeoObject
   GeoAge:
     name: GeoAge
     definition_uri: https://w3id.org/linkml/examples/personinfo/GeoAge
@@ -522,7 +525,7 @@ classes:
       value:
         name: value
         range: float
-    class_uri: https://w3id.org/linkml/examples/personinfo/GeoAge
+    class_uri: ex:GeoAge
 metamodel_version: 1.7.0
 source_file: linkml_issue_384.yaml
 source_file_date: '2000-01-01T00:00:00'

@@ -1,41 +1,28 @@
-@prefix IAO: <http://purl.obolibrary.org/obo/IAO_> .
+@prefix ex: <http://example.org/> .
 @prefix linkml: <https://w3id.org/linkml/> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
 
-<http://example.org> a owl:Ontology ;
-    rdfs:label "example.org" ;
-    IAO:0000700 <http://example.org/C> ;
-    linkml:id "http://example.org" .
-
-linkml:SubsetDefinition a owl:Class .
-
-linkml:TypeDefinition a owl:Class .
-
-linkml:topValue a owl:DatatypeProperty ;
-    rdfs:label "value" .
-
-<http://example.org/s> a owl:ObjectProperty,
+ex:s a owl:ObjectProperty,
         owl:SymmetricProperty,
         linkml:SlotDefinition ;
     rdfs:label "s" ;
-    rdfs:domain <http://example.org/C> ;
-    rdfs:range <http://example.org/C> ;
-    owl:inverseOf <http://example.org/t> .
+    rdfs:range ex:C ;
+    owl:inverseOf ex:t ;
+    skos:inScheme <http://example.org> .
 
-<http://example.org/t> a owl:ObjectProperty,
+ex:t a owl:ObjectProperty,
         linkml:SlotDefinition ;
     rdfs:label "t" ;
-    rdfs:domain <http://example.org/C> ;
-    rdfs:range <http://example.org/C> ;
-    owl:inverseOf <http://example.org/s> .
+    rdfs:range ex:C ;
+    skos:inScheme <http://example.org> .
 
-linkml:ClassDefinition a owl:Class .
-
-linkml:SlotDefinition a owl:Class .
-
-<http://example.org/C> a owl:Class,
+ex:C a owl:Class,
         linkml:ClassDefinition ;
-    rdfs:label "c" .
+    rdfs:label "c" ;
+    skos:inScheme <http://example.org> .
 
+<http://example.org> a owl:Ontology ;
+    rdfs:label "example.org" .
 

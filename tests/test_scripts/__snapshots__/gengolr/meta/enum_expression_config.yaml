@@ -1,0 +1,51 @@
+# metamodel_version: 1.7.0# version: 2.0.0id: enum_expression
+schema_generating: true
+description: An expression that constrains the range of a slot
+display_name: enum_expression
+document_category: enum_expression
+weight: 20
+fields:
+- id: code_set
+  description: the identifier of an enumeration code set.
+  display_name: code_set
+- id: code_set_tag
+  description: the version tag of the enumeration code set
+  display_name: code_set_tag
+- id: code_set_version
+  description: the version identifier of the enumeration code set
+  display_name: code_set_version
+- id: pv_formula
+  description: Defines the specific formula to be used to generate the permissible
+    values.
+  display_name: pv_formula
+- id: permissible_values
+  description: A list of possible values for a slot range
+  display_name: permissible_values
+  cardinality: multi
+- id: include
+  description: An enum expression that yields a list of permissible values that are
+    to be included, after subtracting the minus set
+  display_name: include
+  cardinality: multi
+- id: minus
+  description: An enum expression that yields a list of permissible values that are
+    to be subtracted from the enum
+  display_name: minus
+  cardinality: multi
+- id: inherits
+  description: An enum definition that is used as the basis to create a new enum
+  display_name: inherits
+  cardinality: multi
+- id: reachable_from
+  description: Specifies a query for obtaining a list of permissible values based
+    on graph reachability
+  display_name: reachable_from
+- id: matches
+  description: Specifies a match query that is used to calculate the list of permissible
+    values
+  display_name: matches
+- id: concepts
+  description: A list of identifiers that are used to construct a set of permissible
+    values
+  display_name: concepts
+  cardinality: multi

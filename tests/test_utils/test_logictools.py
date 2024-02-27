@@ -128,10 +128,8 @@ def test_eq(expr1, expr2, is_eq):
     ],
 )
 def test_logic_functions(expr, expected_contradiction, dnf, simplified):
-    print(expr)
     assert is_contradiction(expr, apply_dnf=True) == expected_contradiction
     expr_to_dnf = to_dnf(expr)
-    # print(expr_to_dnf)
     assert expr_to_dnf == dnf
     expr_simplified = simplify_full(expr_to_dnf)
     assert expr_simplified == simplified
@@ -160,8 +158,6 @@ def test_logic_functions(expr, expected_contradiction, dnf, simplified):
     ],
 )
 def test_solve(expr, expected):
-    print(f"INPUT: {expr._ordered_str()} E={expected}")
     r = to_dnf(expr)
-    print(f"SIMPLIFYING {r}")
     simplified = simplify(r)
     assert simplified == expected

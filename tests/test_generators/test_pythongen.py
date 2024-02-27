@@ -44,9 +44,7 @@ def test_pythongen(kitchen_sink_path):
         "has_birth_event=None, species_name=None, stomach_count=None, is_living=None, aliases=[])"
     )
 
-    f = kitchen_module.FamilialRelationship(
-        related_to="me", type="SIBLING_OF", cordialness="heartfelt"
-    )
+    f = kitchen_module.FamilialRelationship(related_to="me", type="SIBLING_OF", cordialness="heartfelt")
     assert str(f) == (
         "FamilialRelationship(started_at_time=None, ended_at_time=None, related_to='me', "
         "type='SIBLING_OF', cordialness=(text='heartfelt', description='warm and hearty friendliness'))"
@@ -69,3 +67,32 @@ def test_multiline_stuff(input_path):
         == 'This refers to some sort of promotion event.")\n\n\nimport os\n'
         "print('DELETING ALL YOUR STUFF. HA HA HA.')"
     )
+
+
+def test_head():
+    """Validate the head/nohead parameter"""
+    yaml = """id: "https://w3id.org/biolink/metamodel"
+description: Metamodel for biolink schema
+license: https://creativecommons.org/publicdomain/zero/1.0/
+version: 0.4.0
+default_range: string
+prefixes:
+    xsd: http://www.w3.org/2001/XMLSchema#
+types:
+   string:
+      base: str
+      uri: xsd:string"""
+
+    output = PythonGenerator(
+        yaml,
+        format="py",
+        metadata=True,
+        source_file_date="August 10, 2020",
+        source_file_size=173,
+    ).serialize()
+    assert output.startswith(
+        f"# Auto generated from None by pythongen.py version: " f"{PythonGenerator.generatorversion}"
+    )
+
+    output = PythonGenerator(yaml, format="py", metadata=False).serialize()
+    assert output.startswith("\n# id: https://w3id.org/biolink/metamodel")

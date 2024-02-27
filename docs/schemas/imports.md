@@ -1,8 +1,10 @@
 # Imports
 
-LinkML encourages modular schema development. You can split you schema into modules, and even reuse other peoples modules on the web
+LinkML encourages modular schema development. You can split you schema into modules, and even reuse other peoples
+modules on the web
 
-A schema can have a list of [imports](https://w3id.org/linkml/imports) associated with it. These are specified as [CURIEs](curies) or local imports.
+A schema can have a list of [imports](https://w3id.org/linkml/imports) associated with it. These are specified
+as [CURIEs](curies) or local imports.
 
 ## Importing external schemas
 
@@ -19,7 +21,7 @@ imports:
 
 The `prefixes` declaration (see [URIs and
 mappings](uris-and-mappings.md)) registers the linkml prefix. The
-import is exanded to `https://w3id.org/linkml/types`, and an implicit
+import is expanded to `https://w3id.org/linkml/types`, and an implicit
 file type suffix is added, yielding [https://w3id.org/linkml/types.yaml](https://w3id.org/linkml/types.yaml)
 
 ## Local imports
@@ -37,8 +39,6 @@ The `.yaml` suffix is implicitly added, and here the list elements represent a r
 If you include relative paths and make a release of your schema be
 sure that the imported modules are accessible and follow the same
 paths
-
-
 
 ## Making merged files for distribution
 

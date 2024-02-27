@@ -1,6 +1,7 @@
 """Iterate through all examples in a folder testing them for validity.
 
 """
+
 import glob
 import json
 import logging
@@ -20,8 +21,7 @@ from linkml_runtime.linkml_model import ElementName
 from linkml_runtime.utils.formatutils import camelcase
 
 from linkml.generators.pythongen import PythonGenerator
-from linkml.utils.datavalidator import DataValidator
-from linkml.validators import JsonSchemaDataValidator
+from linkml.validator import Validator, _get_default_validator
 
 
 @dataclass
@@ -77,7 +77,7 @@ class ExampleRunner:
     prefix_map: Optional[Mapping[str, str]] = None
     """Custom prefix map, for emitting RDF/turtle."""
 
-    _validator: Optional[DataValidator] = None
+    _validator: Optional[Validator] = None
 
     expand_dicts: bool = None
     """If true, then expand all dicts prior to validation."""
@@ -101,14 +101,14 @@ class ExampleRunner:
         return self._python_module
 
     @property
-    def validator(self) -> DataValidator:
+    def validator(self) -> Validator:
         """
         Get the current validator
 
         :return:
         """
         if self._validator is None:
-            self._validator = JsonSchemaDataValidator(self.schemaview.schema)
+            self._validator = _get_default_validator(self.schemaview.schema)
         return self._validator
 
     def process_examples(self):
@@ -133,9 +133,7 @@ class ExampleRunner:
             input_examples = glob.glob(os.path.join(str(input_dir), f"*.{fmt}"))
             input_counter_examples = glob.glob(os.path.join(str(counter_example_dir), f"*.{fmt}"))
             if not input_counter_examples:
-                logging.warning(
-                    f"No counter examples found in {self.counter_example_input_directory}"
-                )
+                logging.warning(f"No counter examples found in {self.counter_example_input_directory}")
             self.process_examples_from_list(input_examples, fmt, False)
             self.process_examples_from_list(input_counter_examples, fmt, True)
 
@@ -158,9 +156,7 @@ class ExampleRunner:
             all_inputs.extend(input_examples)
         return all_inputs
 
-    def process_examples_from_list(
-        self, input_examples: list, input_format: str, counter_examples: bool = True
-    ):
+    def process_examples_from_list(self, input_examples: list, input_format: str, counter_examples: bool = True):
         sv = self.schemaview
         validator = self.validator
         summary = self.summary
@@ -183,7 +179,11 @@ class ExampleRunner:
                 summary.add(f"## {stem}", "### Input", "```yaml", f"{yaml.dump(input_dict)}", "```")
                 success = True
                 try:
-                    validator.validate_dict(input_dict, tc, closed=True)
+                    report = validator.validate(input_dict, tc)
+                    if report.results:
+                        raise Exception(
+                            "\n".join(f"[{result.severity.value}] {result.message}" for result in report.results)
+                        )
                     # json validation is incomplete: also try object instantiation
                     self._load_from_dict(input_dict, target_class=tc)
                 except Exception as e:
@@ -202,9 +202,7 @@ class ExampleRunner:
                     elif fmt == "json":
                         json_dumper.dump(obj, to_file=output_file)
                     elif fmt == "ttl":
-                        rdflib_dumper.dump(
-                            obj, to_file=output_file, schemaview=sv, prefix_map=self.prefix_map
-                        )
+                        rdflib_dumper.dump(obj, to_file=output_file, schemaview=sv, prefix_map=self.prefix_map)
                     else:
                         raise NotImplementedError(f"Cannot output in format: {fmt}")
                     summary.outputs.append(f"{stem}.{fmt}")
@@ -225,9 +223,7 @@ class ExampleRunner:
         if target_class is None:
             target_class_names = [c.name for c in sv.all_classes().values() if c.tree_root]
             if len(target_class_names) != 1:
-                raise ValueError(
-                    f"Cannot determine single target class, found: {target_class_names}"
-                )
+                raise ValueError(f"Cannot determine single target class, found: {target_class_names}")
             target_class = target_class_names[0]
         if isinstance(dict_obj, dict):
             if target_class not in sv.all_classes():
@@ -242,9 +238,7 @@ class ExampleRunner:
             if ":" in target_class:
                 target_classes = [c for c in sv.all_classes() if sv.get_uri(c) == target_class]
                 if len(target_classes) != 1:
-                    raise ValueError(
-                        f"Cannot find unique class for URI {target_class}; got: {target_classes}"
-                    )
+                    raise ValueError(f"Cannot find unique class for URI {target_class}; got: {target_classes}")
                 target_class = target_classes[0]
             new_dict_obj = {}
             for k, v in dict_obj.items():
@@ -263,9 +257,7 @@ class ExampleRunner:
 @click.command()
 @click.option("--schema", "-s", required=True, help="Path to linkml schema yaml file")
 @click.option("--prefixes", "-P", help="Path to prefixes")
-@click.option(
-    "--input-directory", "-e", help="folder containing positive examples that MUST pass validation"
-)
+@click.option("--input-directory", "-e", help="folder containing positive examples that MUST pass validation")
 @click.option(
     "--counter-example-input-directory",
     "-N",

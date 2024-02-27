@@ -139,9 +139,7 @@ class MarkdownGenerator(Generator):
 
         with open(self.exist_warning(self.dir_path(cls)), "w", encoding="UTF-8") as clsfile:
             with redirect_stdout(clsfile):
-                class_curi = self.namespaces.uri_or_curie_for(
-                    str(self.namespaces._base), camelcase(cls.name)
-                )
+                class_curi = self.namespaces.uri_or_curie_for(str(self.namespaces._base), camelcase(cls.name))
                 class_uri = self.namespaces.uri_for(class_curi)
                 self.element_header(cls, cls.name, class_curi, class_uri)
                 print()
@@ -188,9 +186,7 @@ class MarkdownGenerator(Generator):
                 if cls.name in self.synopsis.mixinrefs:
                     self.header(2, f"{mixin_local_name} for")
                     for mixin in sorted(self.synopsis.mixinrefs[cls.name].classrefs):
-                        self.bullet(
-                            f'{self.class_link(mixin, use_desc=True, after_link="(mixin)")}'
-                        )
+                        self.bullet(f'{self.class_link(mixin, use_desc=True, after_link="(mixin)")}')
 
                 if cls.name in self.synopsis.classrefs:
                     self.header(2, f"Referenced by {class_local_name}")
@@ -216,9 +212,7 @@ class MarkdownGenerator(Generator):
 
                 # List all of the inherited slots
                 ancestors = set(self.ancestors(cls))
-                inherited_slots = [
-                    slot for slot in slot_list if set(slot.domain_of).intersection(ancestors)
-                ]
+                inherited_slots = [slot for slot in slot_list if set(slot.domain_of).intersection(ancestors)]
                 if inherited_slots:
                     self.header(3, "Inherited from " + cls.is_a + ":")
                     for inherited_slot in inherited_slots:
@@ -259,9 +253,7 @@ class MarkdownGenerator(Generator):
     def visit_slot(self, aliased_slot_name: str, slot: SlotDefinition) -> None:
         with open(self.exist_warning(self.dir_path(slot)), "w", encoding="UTF-8") as slotfile:
             with redirect_stdout(slotfile):
-                slot_curie = self.namespaces.uri_or_curie_for(
-                    str(self.namespaces._base), underscore(slot.name)
-                )
+                slot_curie = self.namespaces.uri_or_curie_for(str(self.namespaces._base), underscore(slot.name))
                 slot_uri = self.namespaces.uri_for(slot_curie)
                 self.element_header(slot, aliased_slot_name, slot_curie, slot_uri)
                 self.mappings(slot)
@@ -298,9 +290,7 @@ class MarkdownGenerator(Generator):
     def visit_enum(self, enum: EnumDefinition) -> None:
         with open(self.exist_warning(self.dir_path(enum)), "w", encoding="UTF-8") as enumfile:
             with redirect_stdout(enumfile):
-                enum_curie = self.namespaces.uri_or_curie_for(
-                    str(self.namespaces._base), underscore(enum.name)
-                )
+                enum_curie = self.namespaces.uri_or_curie_for(str(self.namespaces._base), underscore(enum.name))
                 enum_uri = self.namespaces.uri_for(enum_curie)
                 self.element_header(obj=enum, name=enum.name, curie=enum_curie, uri=enum_uri)
                 self.element_properties(enum)
@@ -308,9 +298,7 @@ class MarkdownGenerator(Generator):
     def visit_subset(self, subset: SubsetDefinition) -> None:
         with open(self.exist_warning(self.dir_path(subset)), "w", encoding="UTF-8") as subsetfile:
             with redirect_stdout(subsetfile):
-                curie = self.namespaces.uri_or_curie_for(
-                    str(self.namespaces._base), underscore(subset.name)
-                )
+                curie = self.namespaces.uri_or_curie_for(str(self.namespaces._base), underscore(subset.name))
                 uri = self.namespaces.uri_for(curie)
                 self.element_header(obj=subset, name=subset.name, curie=curie, uri=uri)
                 # TODO: consider showing hierarchy within a subset
@@ -352,9 +340,7 @@ class MarkdownGenerator(Generator):
         else:
             obj_type = "Class"
 
-        header_label = (
-            f"{obj_type}: ~~{name}~~ _(deprecated)_" if obj.deprecated else f"{obj_type}: {name}"
-        )
+        header_label = f"{obj_type}: ~~{name}~~ _(deprecated)_" if obj.deprecated else f"{obj_type}: {name}"
         self.header(1, header_label)
 
         self.para(be(obj.description))
@@ -470,11 +456,11 @@ class MarkdownGenerator(Generator):
         filename = (
             self.formatted_element_name(obj)
             if isinstance(obj, ClassDefinition)
-            else underscore(obj.name)
-            if isinstance(obj, SlotDefinition)
-            else underscore(obj.name)
-            if isinstance(obj, EnumDefinition)
-            else camelcase(obj.name)
+            else (
+                underscore(obj.name)
+                if isinstance(obj, SlotDefinition)
+                else underscore(obj.name) if isinstance(obj, EnumDefinition) else camelcase(obj.name)
+            )
         )
         subdir = "/types" if isinstance(obj, TypeDefinition) and not self.no_types_dir else ""
         return f"{self.directory}{subdir}/{filename}.md"
@@ -584,13 +570,7 @@ class MarkdownGenerator(Generator):
         @param obj: object name or id
         @return:
         """
-        return (
-            obj.name
-            if isinstance(obj, Element)
-            else f"**{obj}**"
-            if obj in self.synopsis.typebases
-            else obj
-        )
+        return obj.name if isinstance(obj, Element) else f"**{obj}**" if obj in self.synopsis.typebases else obj
 
     def desc_for(self, obj: Element, doing_descs: bool) -> str:
         """Return a description for object if it is unique (different than its parent)
@@ -644,9 +624,9 @@ class MarkdownGenerator(Generator):
             link_name = obj.name
             link_ref = link_name
         desc = self.desc_for(obj, use_desc)
-        return f"[{link_name}]" f"({link_ref}.{self.format})" + (
-            f" {after_link} " if after_link else ""
-        ) + (f" - {desc.split(nl)[0]}" if desc else "")
+        return f"[{link_name}]" f"({link_ref}.{self.format})" + (f" {after_link} " if after_link else "") + (
+            f" - {desc.split(nl)[0]}" if desc else ""
+        )
 
     def type_link(
         self,
@@ -702,29 +682,17 @@ class MarkdownGenerator(Generator):
         add_subset: bool = True,
     ) -> str:
         if isinstance(ref, ClassDefinition):
-            return self.class_link(
-                ref, after_link=after_link, use_desc=use_desc, add_subset=add_subset
-            )
+            return self.class_link(ref, after_link=after_link, use_desc=use_desc, add_subset=add_subset)
         elif isinstance(ref, TypeDefinition):
-            return self.type_link(
-                ref, after_link=after_link, use_desc=use_desc, add_subset=add_subset
-            )
+            return self.type_link(ref, after_link=after_link, use_desc=use_desc, add_subset=add_subset)
         elif isinstance(ref, EnumDefinition):
-            return self.type_link(
-                ref, after_link=after_link, use_desc=use_desc, add_subset=add_subset
-            )
+            return self.type_link(ref, after_link=after_link, use_desc=use_desc, add_subset=add_subset)
         elif ref in self.schema.classes:
-            return self.class_link(
-                ref, after_link=after_link, use_desc=use_desc, add_subset=add_subset
-            )
+            return self.class_link(ref, after_link=after_link, use_desc=use_desc, add_subset=add_subset)
         elif ref in self.schema.enums:
-            return self.enum_link(
-                ref, after_link=after_link, use_desc=use_desc, add_subset=add_subset
-            )
+            return self.enum_link(ref, after_link=after_link, use_desc=use_desc, add_subset=add_subset)
         else:
-            return self.type_link(
-                ref, after_link=after_link, use_desc=use_desc, add_subset=add_subset
-            )
+            return self.type_link(ref, after_link=after_link, use_desc=use_desc, add_subset=add_subset)
 
     def enum_link(
         self,

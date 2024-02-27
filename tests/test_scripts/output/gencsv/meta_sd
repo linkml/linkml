@@ -1,6 +1,0 @@
-# metamodel_version: 1.7.0
-# version: 2.0.0
-id,mappings,description
-element,,a named element in the model
-schema_definition,,"a collection of subset, type, slot and class definitions"
-

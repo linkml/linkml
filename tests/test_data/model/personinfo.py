@@ -134,22 +134,18 @@ class Person(NamedThing):
     age_in_years: Optional[int] = None
     gender: Optional[Union[str, "GenderType"]] = None
     current_address: Optional[Union[dict, "Address"]] = None
-    has_employment_history: Optional[
-        Union[Union[dict, "EmploymentEvent"], List[Union[dict, "EmploymentEvent"]]]
-    ] = empty_list()
+    has_employment_history: Optional[Union[Union[dict, "EmploymentEvent"], List[Union[dict, "EmploymentEvent"]]]] = (
+        empty_list()
+    )
     has_familial_relationships: Optional[
         Union[
             Union[dict, "FamilialRelationship"],
             List[Union[dict, "FamilialRelationship"]],
         ]
     ] = empty_list()
-    has_medical_history: Optional[
-        Union[Union[dict, "MedicalEvent"], List[Union[dict, "MedicalEvent"]]]
-    ] = empty_list()
+    has_medical_history: Optional[Union[Union[dict, "MedicalEvent"], List[Union[dict, "MedicalEvent"]]]] = empty_list()
     aliases: Optional[Union[str, List[str]]] = empty_list()
-    has_news_events: Optional[
-        Union[Union[dict, "NewsEvent"], List[Union[dict, "NewsEvent"]]]
-    ] = empty_list()
+    has_news_events: Optional[Union[Union[dict, "NewsEvent"], List[Union[dict, "NewsEvent"]]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
@@ -177,15 +173,12 @@ class Person(NamedThing):
                 [self.has_employment_history] if self.has_employment_history is not None else []
             )
         self.has_employment_history = [
-            v if isinstance(v, EmploymentEvent) else EmploymentEvent(**as_dict(v))
-            for v in self.has_employment_history
+            v if isinstance(v, EmploymentEvent) else EmploymentEvent(**as_dict(v)) for v in self.has_employment_history
         ]
 
         if not isinstance(self.has_familial_relationships, list):
             self.has_familial_relationships = (
-                [self.has_familial_relationships]
-                if self.has_familial_relationships is not None
-                else []
+                [self.has_familial_relationships] if self.has_familial_relationships is not None else []
             )
         self.has_familial_relationships = [
             v if isinstance(v, FamilialRelationship) else FamilialRelationship(**as_dict(v))
@@ -193,12 +186,9 @@ class Person(NamedThing):
         ]
 
         if not isinstance(self.has_medical_history, list):
-            self.has_medical_history = (
-                [self.has_medical_history] if self.has_medical_history is not None else []
-            )
+            self.has_medical_history = [self.has_medical_history] if self.has_medical_history is not None else []
         self.has_medical_history = [
-            v if isinstance(v, MedicalEvent) else MedicalEvent(**as_dict(v))
-            for v in self.has_medical_history
+            v if isinstance(v, MedicalEvent) else MedicalEvent(**as_dict(v)) for v in self.has_medical_history
         ]
 
         if not isinstance(self.aliases, list):
@@ -206,9 +196,7 @@ class Person(NamedThing):
         self.aliases = [v if isinstance(v, str) else str(v) for v in self.aliases]
 
         if not isinstance(self.has_news_events, list):
-            self.has_news_events = (
-                [self.has_news_events] if self.has_news_events is not None else []
-            )
+            self.has_news_events = [self.has_news_events] if self.has_news_events is not None else []
         self.has_news_events = [
             v if isinstance(v, NewsEvent) else NewsEvent(**as_dict(v)) for v in self.has_news_events
         ]
@@ -248,15 +236,11 @@ class HasNewsEvents(YAMLRoot):
     class_name: ClassVar[str] = "HasNewsEvents"
     class_model_uri: ClassVar[URIRef] = PERSONINFO.HasNewsEvents
 
-    has_news_events: Optional[
-        Union[Union[dict, "NewsEvent"], List[Union[dict, "NewsEvent"]]]
-    ] = empty_list()
+    has_news_events: Optional[Union[Union[dict, "NewsEvent"], List[Union[dict, "NewsEvent"]]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if not isinstance(self.has_news_events, list):
-            self.has_news_events = (
-                [self.has_news_events] if self.has_news_events is not None else []
-            )
+            self.has_news_events = [self.has_news_events] if self.has_news_events is not None else []
         self.has_news_events = [
             v if isinstance(v, NewsEvent) else NewsEvent(**as_dict(v)) for v in self.has_news_events
         ]
@@ -283,9 +267,7 @@ class Organization(NamedThing):
     founding_location: Optional[Union[str, PlaceId]] = None
     current_address: Optional[Union[dict, "Address"]] = None
     aliases: Optional[Union[str, List[str]]] = empty_list()
-    has_news_events: Optional[
-        Union[Union[dict, "NewsEvent"], List[Union[dict, "NewsEvent"]]]
-    ] = empty_list()
+    has_news_events: Optional[Union[Union[dict, "NewsEvent"], List[Union[dict, "NewsEvent"]]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
@@ -310,9 +292,7 @@ class Organization(NamedThing):
         self.aliases = [v if isinstance(v, str) else str(v) for v in self.aliases]
 
         if not isinstance(self.has_news_events, list):
-            self.has_news_events = (
-                [self.has_news_events] if self.has_news_events is not None else []
-            )
+            self.has_news_events = [self.has_news_events] if self.has_news_events is not None else []
         self.has_news_events = [
             v if isinstance(v, NewsEvent) else NewsEvent(**as_dict(v)) for v in self.has_news_events
         ]
@@ -631,34 +611,24 @@ class Container(YAMLRoot):
     class_model_uri: ClassVar[URIRef] = PERSONINFO.Container
 
     name: Optional[str] = None
-    persons: Optional[
-        Union[Dict[Union[str, PersonId], Union[dict, Person]], List[Union[dict, Person]]]
-    ] = empty_dict()
+    persons: Optional[Union[Dict[Union[str, PersonId], Union[dict, Person]], List[Union[dict, Person]]]] = empty_dict()
     organizations: Optional[
         Union[
             Dict[Union[str, OrganizationId], Union[dict, Organization]],
             List[Union[dict, Organization]],
         ]
     ] = empty_dict()
-    places: Optional[
-        Union[Dict[Union[str, PlaceId], Union[dict, Place]], List[Union[dict, Place]]]
-    ] = empty_dict()
+    places: Optional[Union[Dict[Union[str, PlaceId], Union[dict, Place]], List[Union[dict, Place]]]] = empty_dict()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self.name is not None and not isinstance(self.name, str):
             self.name = str(self.name)
 
-        self._normalize_inlined_as_list(
-            slot_name="persons", slot_type=Person, key_name="id", keyed=True
-        )
+        self._normalize_inlined_as_list(slot_name="persons", slot_type=Person, key_name="id", keyed=True)
 
-        self._normalize_inlined_as_list(
-            slot_name="organizations", slot_type=Organization, key_name="id", keyed=True
-        )
+        self._normalize_inlined_as_list(slot_name="organizations", slot_type=Organization, key_name="id", keyed=True)
 
-        self._normalize_inlined_as_list(
-            slot_name="places", slot_type=Place, key_name="id", keyed=True
-        )
+        self._normalize_inlined_as_list(slot_name="places", slot_type=Place, key_name="id", keyed=True)
 
         super().__post_init__(**kwargs)
 
@@ -803,9 +773,7 @@ slots.has_familial_relationships = Slot(
     curie=PERSONINFO.curie("has_familial_relationships"),
     model_uri=PERSONINFO.has_familial_relationships,
     domain=None,
-    range=Optional[
-        Union[Union[dict, FamilialRelationship], List[Union[dict, FamilialRelationship]]]
-    ],
+    range=Optional[Union[Union[dict, FamilialRelationship], List[Union[dict, FamilialRelationship]]]],
 )
 
 slots.children = Slot(
@@ -814,9 +782,7 @@ slots.children = Slot(
     curie=PERSONINFO.curie("children"),
     model_uri=PERSONINFO.children,
     domain=None,
-    range=Optional[
-        Union[Dict[Union[str, PersonId], Union[dict, Person]], List[Union[dict, Person]]]
-    ],
+    range=Optional[Union[Dict[Union[str, PersonId], Union[dict, Person]], List[Union[dict, Person]]]],
 )
 
 slots.in_location = Slot(
@@ -969,9 +935,7 @@ slots.persons = Slot(
     curie=PERSONINFO.curie("persons"),
     model_uri=PERSONINFO.persons,
     domain=None,
-    range=Optional[
-        Union[Dict[Union[str, PersonId], Union[dict, Person]], List[Union[dict, Person]]]
-    ],
+    range=Optional[Union[Dict[Union[str, PersonId], Union[dict, Person]], List[Union[dict, Person]]]],
 )
 
 slots.organizations = Slot(

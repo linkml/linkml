@@ -79,14 +79,14 @@ def infer_root_class(sv: SchemaView) -> Optional[ClassDefinitionName]:
         if c.tree_root:
             return c.name
     refs = defaultdict(int)
-    for cn in sv.all_class().keys():
+    for cn in sv.all_classes().keys():
         for sn in sv.class_slots(cn):
             slot = sv.induced_slot(sn, cn)
             r = slot.range
-            if r in sv.all_class():
+            if r in sv.all_classes():
                 for a in sv.class_ancestors(r):
                     refs[a] += 1
-    candidates = [cn for cn in sv.all_class().keys() if cn not in refs]
+    candidates = [cn for cn in sv.all_classes().keys() if cn not in refs]
 
     # throw Exception if unambiguous root cannot be inferred
     if len(candidates) > 1:
@@ -102,13 +102,11 @@ def infer_root_class(sv: SchemaView) -> Optional[ClassDefinitionName]:
         return None
 
 
-def infer_index_slot(
-    sv: SchemaView, root_class: ClassDefinitionName
-) -> Optional[SlotDefinitionName]:
+def infer_index_slot(sv: SchemaView, root_class: ClassDefinitionName) -> Optional[SlotDefinitionName]:
     index_slots = []
     for sn in sv.class_slots(root_class):
         slot = sv.induced_slot(sn, root_class)
-        if slot.multivalued and slot.range in sv.all_class():
+        if slot.multivalued and slot.range in sv.all_classes():
             index_slots.append(sn)
     if len(index_slots) == 1:
         return index_slots[0]

@@ -28,6 +28,7 @@ from linkml_runtime.utils.schemaview import SchemaView
 
 from linkml._version import __version__
 from linkml.generators.erdiagramgen import ERDiagramGenerator
+from linkml.generators.plantumlgen import PlantumlGenerator
 from linkml.utils.generator import Generator, shared_arguments
 from linkml.workspaces.example_runner import ExampleRunner
 
@@ -38,7 +39,8 @@ class MarkdownDialect(Enum):
 
 
 class DiagramType(Enum):
-    uml_class_diagram = "uml_class_diagram"
+    mermaid_class_diagram = "mermaid_class_diagram"
+    plantuml_class_diagram = "plantuml_class_diagram"
     er_diagram = "er_diagram"
 
 
@@ -130,6 +132,9 @@ class DocGenerator(Generator):
     directory: str = None
     """directory in which to write documents"""
 
+    index_name: str = "index"
+    """name of the index document"""
+
     template_directory: str = None
     """directory for custom templates"""
 
@@ -147,6 +152,7 @@ class DocGenerator(Generator):
     gen_slots: bool = field(default_factory=lambda: True)
     no_types_dir: bool = field(default_factory=lambda: False)
     use_slot_uris: bool = field(default_factory=lambda: False)
+    use_class_uris: bool = field(default_factory=lambda: False)
     hierarchical_class_view: bool = field(default_factory=lambda: False)
 
     def __post_init__(self):
@@ -188,16 +194,14 @@ class DocGenerator(Generator):
         }
         template = self._get_template("index")
         out_str = template.render(gen=self, schema=sv.schema, schemaview=sv, **template_vars)
-        self._write(out_str, directory, "index")  # TODO: make configurable
+        self._write(out_str, directory, self.index_name)
         if self._is_single_file_format(self.format):
             logging.info(f"{self.format} is a single-page format, skipping non-index elements")
             return
         template = self._get_template("schema")
         for schema_name in sv.imports_closure():
             imported_schema = sv.schema_map.get(schema_name)
-            out_str = template.render(
-                gen=self, schema=imported_schema, schemaview=sv, **template_vars
-            )
+            out_str = template.render(gen=self, schema=imported_schema, schemaview=sv, **template_vars)
             self._write(out_str, directory, imported_schema.name)
         template = self._get_template("class")
         for cn, c in sv.all_classes().items():
@@ -330,6 +334,13 @@ class DocGenerator(Generator):
                     return curie.split(":")[1]
 
             return underscore(element.name)
+        elif type(element).class_name == "class_definition":
+            if self.use_class_uris:
+                curie = self.schemaview.get_uri(element)
+                if curie:
+                    return curie.split(":")[1]
+
+            return camelcase(element.name)
         else:
             return camelcase(element.name)
 
@@ -373,6 +384,10 @@ class DocGenerator(Generator):
         if self._is_external(e):
             return self.uri_link(e)
         elif isinstance(e, ClassDefinition):
+            if self.use_class_uris:
+                curie = self.schemaview.get_uri(e)
+                if curie is not None:
+                    return self._markdown_link(n=curie.split(":")[1], name=e.name)
             return self._markdown_link(camelcase(e.name))
         elif isinstance(e, EnumDefinition):
             return self._markdown_link(camelcase(e.name))
@@ -398,9 +413,7 @@ class DocGenerator(Generator):
         return list(map(self.link, e_list))
 
     def _exclude_type(self, t: TypeDefinition) -> bool:
-        return self._is_external(t) and not self.schemaview.schema.id.startswith(
-            "https://w3id.org/linkml/"
-        )
+        return self._is_external(t) and not self.schemaview.schema.id.startswith("https://w3id.org/linkml/")
 
     def _is_external(self, element: Element) -> bool:
         # note: this is currently incomplete. See: https://github.com/linkml/linkml/issues/782
@@ -475,7 +488,7 @@ class DocGenerator(Generator):
     ) -> str:
         indent = " " * depth * 4
 
-        if self.use_slot_uris:
+        if self.use_slot_uris or self.use_class_uris:
             name = self.schemaview.get_element(element).name
         else:
             name = self.name(element)
@@ -582,8 +595,13 @@ class DocGenerator(Generator):
                 return erdgen.serialize_classes(class_names, follow_references=True, max_hops=2)
             else:
                 return erdgen.serialize()
-        elif self.diagram_type.value == DiagramType.uml_class_diagram.value:
+        elif self.diagram_type.value == DiagramType.mermaid_class_diagram.value:
             self.logger.info("This is currently handled in the jinja templates")
+        elif self.diagram_type.value == DiagramType.plantuml_class_diagram.value:
+            plantumlgen = PlantumlGenerator(self.schema)
+            plantuml_diagram = plantumlgen.serialize(classes=class_names)
+            self.logger.debug(f"Created PlantUML diagram for class: {class_names}")
+            return plantuml_diagram
         else:
             raise NotImplementedError(f"Diagram type {self.diagram_type} not implemented")
 
@@ -612,9 +630,7 @@ class DocGenerator(Generator):
             return yaml_dumper.dumps(element)
         else:
             if not isinstance(element, ClassDefinition):
-                raise ValueError(
-                    f"Inferred only applicable for classes, not {element.name} {type(element)}"
-                )
+                raise ValueError(f"Inferred only applicable for classes, not {element.name} {type(element)}")
             # TODO: move this code to schemaview
             c = deepcopy(element)
             attrs = self.schemaview.class_induced_slots(c.name)
@@ -779,8 +795,7 @@ class DocGenerator(Generator):
         :return: list of all own attributes of a class
         """
         return [
-            self.inject_slot_info(self.schemaview.induced_slot(sn, cls.name))
-            for sn in self.get_direct_slot_names(cls)
+            self.inject_slot_info(self.schemaview.induced_slot(sn, cls.name)) for sn in self.get_direct_slot_names(cls)
         ]
 
     def get_indirect_slots(self, cls: ClassDefinition) -> List[SlotDefinition]:
@@ -851,6 +866,7 @@ class DocGenerator(Generator):
     required=True,
     help="Folder to which document files are written",
 )
+@click.option("--index-name", default="index", show_default=True, help="Name of the index document.")
 @click.option("--dialect", help="Dialect or 'flavor' of Markdown used.")
 @click.option(
     "--diagram-type",
@@ -882,6 +898,11 @@ class DocGenerator(Generator):
     help="Use IDs from slot_uri instead of names",
 )
 @click.option(
+    "--use-class-uris/--no-use-class-uris",
+    default=False,
+    help="Use IDs from class_uri instead of names",
+)
+@click.option(
     "--hierarchical-class-view/--no-hierarchical-class-view",
     default=True,
     help="Render class table on index page in a hierarchically indented view",
@@ -893,7 +914,15 @@ class DocGenerator(Generator):
 @click.version_option(__version__, "-V", "--version")
 @click.command()
 def cli(
-    yamlfile, directory, dialect, template_directory, use_slot_uris, hierarchical_class_view, **args
+    yamlfile,
+    directory,
+    index_name,
+    dialect,
+    template_directory,
+    use_slot_uris,
+    use_class_uris,
+    hierarchical_class_view,
+    **args,
 ):
     """Generate documentation folder from a LinkML YAML schema
 
@@ -920,7 +949,9 @@ def cli(
         dialect=dialect,
         template_directory=template_directory,
         use_slot_uris=use_slot_uris,
+        use_class_uris=use_class_uris,
         hierarchical_class_view=hierarchical_class_view,
+        index_name=index_name,
         **args,
     )
     print(gen.serialize())

@@ -93,9 +93,7 @@ class Rules(YAMLRoot):
                 **as_dict(self.permissible_values_format)
             )
 
-        if self.tree_root_class is not None and not isinstance(
-            self.tree_root_class, TreeRootClassRuleConfig
-        ):
+        if self.tree_root_class is not None and not isinstance(self.tree_root_class, TreeRootClassRuleConfig):
             self.tree_root_class = TreeRootClassRuleConfig(**as_dict(self.tree_root_class))
 
         if self.recommended is not None and not isinstance(self.recommended, RecommendedRuleConfig):
@@ -104,19 +102,13 @@ class Rules(YAMLRoot):
         if self.no_xsd_int_type is not None and not isinstance(self.no_xsd_int_type, RuleConfig):
             self.no_xsd_int_type = RuleConfig(**as_dict(self.no_xsd_int_type))
 
-        if self.no_invalid_slot_usage is not None and not isinstance(
-            self.no_invalid_slot_usage, RuleConfig
-        ):
+        if self.no_invalid_slot_usage is not None and not isinstance(self.no_invalid_slot_usage, RuleConfig):
             self.no_invalid_slot_usage = RuleConfig(**as_dict(self.no_invalid_slot_usage))
 
-        if self.standard_naming is not None and not isinstance(
-            self.standard_naming, StandardNamingConfig
-        ):
+        if self.standard_naming is not None and not isinstance(self.standard_naming, StandardNamingConfig):
             self.standard_naming = StandardNamingConfig(**as_dict(self.standard_naming))
 
-        if self.canonical_prefixes is not None and not isinstance(
-            self.canonical_prefixes, CanonicalPrefixesConfig
-        ):
+        if self.canonical_prefixes is not None and not isinstance(self.canonical_prefixes, CanonicalPrefixesConfig):
             self.canonical_prefixes = CanonicalPrefixesConfig(**as_dict(self.canonical_prefixes))
 
         super().__post_init__(**kwargs)
@@ -190,9 +182,7 @@ class TreeRootClassRuleConfig(RuleConfig):
         if self.root_class_name is not None and not isinstance(self.root_class_name, str):
             self.root_class_name = str(self.root_class_name)
 
-        if self.validate_existing_class_name is not None and not isinstance(
-            self.validate_existing_class_name, Bool
-        ):
+        if self.validate_existing_class_name is not None and not isinstance(self.validate_existing_class_name, Bool):
             self.validate_existing_class_name = Bool(self.validate_existing_class_name)
 
         super().__post_init__(**kwargs)
@@ -244,9 +234,7 @@ class StandardNamingConfig(RuleConfig):
     permissible_values_upper_case: Optional[Union[bool, Bool]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.permissible_values_upper_case is not None and not isinstance(
-            self.permissible_values_upper_case, Bool
-        ):
+        if self.permissible_values_upper_case is not None and not isinstance(self.permissible_values_upper_case, Bool):
             self.permissible_values_upper_case = Bool(self.permissible_values_upper_case)
 
         super().__post_init__(**kwargs)
@@ -270,12 +258,8 @@ class CanonicalPrefixesConfig(RuleConfig):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if not isinstance(self.prefixmaps_contexts, list):
-            self.prefixmaps_contexts = (
-                [self.prefixmaps_contexts] if self.prefixmaps_contexts is not None else []
-            )
-        self.prefixmaps_contexts = [
-            v if isinstance(v, str) else str(v) for v in self.prefixmaps_contexts
-        ]
+            self.prefixmaps_contexts = [self.prefixmaps_contexts] if self.prefixmaps_contexts is not None else []
+        self.prefixmaps_contexts = [v if isinstance(v, str) else str(v) for v in self.prefixmaps_contexts]
 
         super().__post_init__(**kwargs)
 
@@ -286,9 +270,7 @@ class ExtendableConfigs(EnumDefinitionImpl):
     The permissible values for the `extends` field of a config file
     """
 
-    recommended = PermissibleValue(
-        text="recommended", description="Extend the recommended rule set"
-    )
+    recommended = PermissibleValue(text="recommended", description="Extend the recommended rule set")
 
     _defn = EnumDefinition(
         name="ExtendableConfigs",

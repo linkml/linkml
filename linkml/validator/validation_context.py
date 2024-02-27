@@ -1,51 +1,74 @@
+import json
+import os
 from functools import lru_cache
+from typing import Optional
 
+import jsonschema
 from linkml_runtime import SchemaView
 from linkml_runtime.linkml_model import SchemaDefinition
 
-from linkml.generators.jsonschemagen import JsonSchemaGenerator
+from linkml.generators import JsonSchemaGenerator, PydanticGenerator
+from linkml.utils.datautils import infer_root_class
 
 
 class ValidationContext:
     """Provides state that may be shared between validation plugins"""
 
-    def __init__(self, schema: SchemaDefinition, target_class: str) -> None:
-        self.schema = schema
-        self.schema_view = SchemaView(self.schema)
-        self.target_class = self._get_target_class(target_class)
-        self.cached_artefacts = {}
+    def __init__(self, schema: SchemaDefinition, target_class: Optional[str] = None) -> None:
+        # Since SchemaDefinition is not hashable, to make caching simpler we store the schema
+        # in a "private" property and assume it never changes.
+        self._schema = schema
+        self._schema_view = SchemaView(self._schema)
+        self._target_class = self._get_target_class(target_class)
 
-    def __eq__(self, other: object) -> bool:
-        if not isinstance(other, ValidationContext):
-            return False
+    @property
+    def schema_view(self):
+        return self._schema_view
 
-        return self.schema.id == other.schema.id and self.target_class == other.target_class
-
-    def __hash__(self) -> int:
-        return hash((self.schema.id, self.target_class))
+    @property
+    def target_class(self):
+        return self._target_class
 
     @lru_cache
-    def json_schema(self, *, closed):
-        not_closed = not closed
-        jsonschema_gen = JsonSchemaGenerator(
-            schema=self.schema,
-            mergeimports=True,
-            top_class=self.target_class,
-            not_closed=not_closed,
-        )
-        return jsonschema_gen.generate()
+    def json_schema_validator(
+        self,
+        *,
+        closed: bool,
+        include_range_class_descendants: bool,
+        path_override: Optional[os.PathLike] = None,
+    ) -> jsonschema.Validator:
+        if path_override:
+            with open(path_override) as json_schema_file:
+                json_schema = json.load(json_schema_file)
+        else:
+            not_closed = not closed
+            jsonschema_gen = JsonSchemaGenerator(
+                schema=self._schema,
+                mergeimports=True,
+                top_class=self._target_class,
+                not_closed=not_closed,
+                include_range_class_descendants=include_range_class_descendants,
+            )
+            json_schema = jsonschema_gen.generate()
 
-    def _get_target_class(self, target_class: str) -> str:
+        validator_cls = jsonschema.validators.validator_for(json_schema, default=jsonschema.Draft7Validator)
+        return validator_cls(json_schema, format_checker=validator_cls.FORMAT_CHECKER)
+
+    def pydantic_model(self, *, closed: bool):
+        module = self._pydantic_module(closed=closed)
+        return module.__dict__[self._target_class]
+
+    @lru_cache
+    def _pydantic_module(self, *, closed: bool):
+        return PydanticGenerator(
+            self._schema,
+            extra_fields="forbid" if closed else "ignore" if closed is None else "allow",
+        ).compile_module()
+
+    def _get_target_class(self, target_class: Optional[str] = None) -> str:
         if target_class is None:
-            roots = [
-                class_name
-                for class_name, class_def in self.schema_view.all_classes().items()
-                if class_def.tree_root
-            ]
-            if len(roots) != 1:
-                raise ValueError(f"Cannot determine tree root: {roots}")
-            return roots[0]
+            return infer_root_class(self._schema_view)
         else:
             # strict=True raises ValueError if class is not found in schema
-            class_def = self.schema_view.get_class(target_class, strict=True)
+            class_def = self._schema_view.get_class(target_class, strict=True)
             return class_def.name

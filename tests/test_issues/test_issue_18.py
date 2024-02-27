@@ -12,9 +12,7 @@ def test_issue_18(input_path, snapshot):
 
 def test_inverse_mismatch(input_path):
     """Test error detection when inverses don't match"""
-    with pytest.raises(
-        ValueError, match=r"Slot s1.inverse \(s2\) does not match slot s2.inverse \(s3\)"
-    ):
+    with pytest.raises(ValueError, match=r"Slot s1.inverse \(s2\) does not match slot s2.inverse \(s3\)"):
         SchemaLoader(input_path("issue_18_error1.yaml")).resolve()
 
 
@@ -31,7 +29,4 @@ def test_no_inverse_domain(input_path):
 
 def test_multi_domains(caplog, input_path):
     SchemaLoader(input_path("issue_18_warning1.yaml")).resolve()
-    assert (
-        "Slot s2.inverse (s1), has multi domains (c1, c2)  Multi ranges not yet implemented"
-        in caplog.text
-    )
+    assert "Slot s2.inverse (s1), has multi domains (c1, c2)  Multi ranges not yet implemented" in caplog.text

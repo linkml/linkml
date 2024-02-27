@@ -155,9 +155,7 @@ class SparqlGenerator(Generator):
             limit = f"LIMIT {limit}"
         else:
             limit = ""
-        sparql = template_obj.render(
-            schema_view=self.schemaview, schema=self.schema, limit=limit, extra=extra
-        )
+        sparql = template_obj.render(schema_view=self.schemaview, schema=self.schema, limit=limit, extra=extra)
         self.sparql = sparql
         queries = self.split_sparql(sparql)
         return queries

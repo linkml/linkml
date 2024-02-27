@@ -13,6 +13,11 @@ all-examples-%:  examples/%.py examples/%.schema.json  examples/%.shex  examples
 #RUN=pipenv run
 RUN=poetry run
 
+lint-fix:
+	$(RUN) tox -e format
+
+format: lint-fix
+
 test:
 	$(RUN) pytest
 

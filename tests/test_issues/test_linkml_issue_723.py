@@ -149,9 +149,7 @@ def test_initialized_enums(pythongen_module, schemaview):
     g = rdflib_dumper.as_rdf_graph(p, schemaview=schemaview)
     [subj] = list(g.subjects(RDF.type, EXAMPLE.Person))
     assert list(g.objects(subj, EXAMPLE.status)) == [EXAMPLE.Alive]
-    tc.assertCountEqual(
-        list(g.objects(subj, EXAMPLE.roles)), [Literal("INVESTIGATOR"), Literal("ANALYST")]
-    )
+    tc.assertCountEqual(list(g.objects(subj, EXAMPLE.roles)), [Literal("INVESTIGATOR"), Literal("ANALYST")])
 
 
 def test_assigned_enum(pythongen_module):

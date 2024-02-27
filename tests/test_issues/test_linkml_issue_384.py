@@ -87,7 +87,9 @@ def test_issue_owl_properties(input_path, snapshot):
             assert (p, RDF.type, OWL.ObjectProperty) in g
         assert _contains_restriction(g, Person, parent, OWL.allValuesFrom, Person)
         assert _contains_restriction(g, Organization, parent, OWL.allValuesFrom, Organization)
-        assert _contains_restriction(g, Person, aliases, OWL.allValuesFrom, string_rep)
+        assert _contains_restriction(
+            g, Person, aliases, OWL.allValuesFrom, string_rep
+        ), f"expected {string_rep} for {conf}"
         # TODO: also validate cardinality restrictions
         # assert self._contains_restriction(g, Thing, full_name, OWL.allValuesFrom, string_rep)
 

@@ -20,6 +20,7 @@ from linkml_runtime.linkml_model.meta import (
 from linkml_runtime.utils.compile_python import compile_python
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.schemaview import SchemaView
+from pydantic.version import VERSION as PYDANTIC_VERSION
 
 from linkml._version import __version__
 from linkml.generators.common.type_designators import (
@@ -31,7 +32,7 @@ from linkml.utils.generator import shared_arguments
 from linkml.utils.ifabsent_functions import ifabsent_value_declaration
 
 
-def default_template(pydantic_ver: str = "1") -> str:
+def default_template(pydantic_ver: str = "1", extra_fields: str = "forbid") -> str:
     """Constructs a default template for pydantic classes based on the version of pydantic"""
     ### HEADER ###
     template = """
@@ -42,8 +43,18 @@ def default_template(pydantic_ver: str = "1") -> str:
 from __future__ import annotations
 from datetime import datetime, date
 from enum import Enum
-from typing import List, Dict, Optional, Any, Union
-from pydantic import BaseModel as BaseModel, Field
+{% if uses_numpy -%}
+import numpy as np
+{%- endif %}
+from typing import List, Dict, Optional, Any, Union"""
+    if pydantic_ver == "1":
+        template += """
+from pydantic import BaseModel as BaseModel, Field, validator"""
+    elif pydantic_ver == "2":
+        template += """
+from pydantic import BaseModel as BaseModel, ConfigDict,  Field, field_validator"""
+    template += """
+import re
 import sys
 if sys.version_info >= (3, 8):
     from typing import Literal
@@ -56,7 +67,7 @@ version = "{{version if version else None}}"
 """
     ### BASE MODEL ###
     if pydantic_ver == "1":
-        template += """
+        template += f"""
 class WeakRefShimBaseModel(BaseModel):
    __slots__ = '__weakref__'
 
@@ -64,25 +75,27 @@ class ConfiguredBaseModel(WeakRefShimBaseModel,
                 validate_assignment = True,
                 validate_all = True,
                 underscore_attrs_are_private = True,
-                extra = {% if allow_extra %}'allow'{% else %}'forbid'{% endif %},
+                extra = '{extra_fields}',
                 arbitrary_types_allowed = True,
                 use_enum_values = True):
     pass
 """
     else:
-        template += """
-class ConfiguredBaseModel(BaseModel,
-                validate_assignment = True,
-                validate_default = True,
-                extra = {% if allow_extra %}'allow'{% else %}'forbid'{% endif %},
-                arbitrary_types_allowed = True,
-                use_enum_values = True):
+        template += f"""
+class ConfiguredBaseModel(BaseModel):
+    model_config = ConfigDict(
+        validate_assignment=True,
+        validate_default=True,
+        extra = '{extra_fields}',
+        arbitrary_types_allowed=True,
+        use_enum_values = True)
     pass
 """
+
     ### ENUMS ###
     template += """
 {% for e in enums.values() %}
-class {{ e.name }}(str, Enum):
+class {{ e.name }}(str{% if e['values'] %}, Enum{% endif %}):
     {% if e.description -%}
     \"\"\"
     {{ e.description }}
@@ -100,7 +113,8 @@ class {{ e.name }}(str, Enum):
 {% endfor %}
 """
     ### CLASSES ###
-    template += """
+    if pydantic_ver == "1":
+        template += """
 {%- for c in schema.classes.values() %}
 class {{ c.name }}
     {%- if class_isa_plus_mixins[c.name] -%}
@@ -116,7 +130,7 @@ class {{ c.name }}
     {%- endif %}
     {% for attr in c.attributes.values() if c.attributes -%}
     {{attr.name}}: {{ attr.annotations['python_range'].value }} = Field(
-    {%- if predefined_slot_values[c.name][attr.name] -%}
+    {%- if predefined_slot_values[c.name][attr.name] is not callable -%}
         {{ predefined_slot_values[c.name][attr.name] }}
     {%- elif (attr.required or attr.identifier or attr.key) -%}
         ...
@@ -125,14 +139,85 @@ class {{ c.name }}
     {%- endif -%}
     {%- if attr.title != None %}, title="{{attr.title}}"{% endif -%}
     {%- if attr.description %}, description=\"\"\"{{attr.description}}\"\"\"{% endif -%}
-    {%- if attr.minimum_value != None %}, ge={{attr.minimum_value}}{% endif -%}
-    {%- if attr.maximum_value != None %}, le={{attr.maximum_value}}{% endif -%}
+    {%- if attr.equals_number != None %}, le={{attr.equals_number}}, ge={{attr.equals_number}}
+    {%- else -%}
+     {%- if attr.minimum_value != None %}, ge={{attr.minimum_value}}{% endif -%}
+     {%- if attr.maximum_value != None %}, le={{attr.maximum_value}}{% endif -%}
+    {%- endif -%}
     )
     {% else -%}
     None
     {% endfor %}
+    {% for attr in c.attributes.values() if c.attributes -%}
+    {%- if attr.pattern %}
+    @validator('{{attr.name}}', allow_reuse=True)
+    def pattern_{{attr.name}}(cls, v):
+        pattern=re.compile(r"{{attr.pattern}}")
+        if isinstance(v,list):
+            for element in v:
+                if not pattern.match(element):
+                    raise ValueError(f"Invalid {{attr.name}} format: {element}")
+        elif isinstance(v,str):
+            if not pattern.match(v):
+                raise ValueError(f"Invalid {{attr.name}} format: {v}")
+        return v
+    {% endif -%}
+    {% endfor %}
 {% endfor %}
 """
+    elif pydantic_ver == "2":
+        template += """
+{%- for c in schema.classes.values() %}
+class {{ c.name }}
+    {%- if class_isa_plus_mixins[c.name] -%}
+        ({{class_isa_plus_mixins[c.name]|join(', ')}})
+    {%- else -%}
+        (ConfiguredBaseModel)
+    {%- endif -%}
+                  :
+    {% if c.description -%}
+    \"\"\"
+    {{ c.description }}
+    \"\"\"
+    {%- endif %}
+    {% for attr in c.attributes.values() if c.attributes -%}
+    {{attr.name}}: {{ attr.annotations['python_range'].value }} = Field(
+    {%- if predefined_slot_values[c.name][attr.name] is not callable -%}
+        {{ predefined_slot_values[c.name][attr.name] }}
+    {%- elif (attr.required or attr.identifier or attr.key) -%}
+        ...
+    {%- else -%}
+        None
+    {%- endif -%}
+    {%- if attr.title != None %}, title="{{attr.title}}"{% endif -%}
+    {%- if attr.description %}, description=\"\"\"{{attr.description}}\"\"\"{% endif -%}
+    {%- if attr.equals_number != None %}, le={{attr.equals_number}}, ge={{attr.equals_number}}
+    {%- else -%}
+     {%- if attr.minimum_value != None %}, ge={{attr.minimum_value}}{% endif -%}
+     {%- if attr.maximum_value != None %}, le={{attr.maximum_value}}{% endif -%}
+    {%- endif -%}
+    )
+    {% else -%}
+    None
+    {% endfor %}
+    {% for attr in c.attributes.values() if c.attributes -%}
+    {%- if attr.pattern %}
+    @field_validator('{{attr.name}}')
+    def pattern_{{attr.name}}(cls, v):
+        pattern=re.compile(r"{{attr.pattern}}")
+        if isinstance(v,list):
+            for element in v:
+                if not pattern.match(element):
+                    raise ValueError(f"Invalid {{attr.name}} format: {element}")
+        elif isinstance(v,str):
+            if not pattern.match(v):
+                raise ValueError(f"Invalid {{attr.name}} format: {v}")
+        return v
+    {% endif -%}
+    {% endfor %}
+{% endfor %}
+"""
+
     ### FWD REFS / REBUILD MODEL ###
     if pydantic_ver == "1":
         template += """
@@ -148,7 +233,7 @@ class {{ c.name }}
 # see https://pydantic-docs.helpmanual.io/usage/models/#rebuilding-a-model
 {% for c in schema.classes.values() -%}
 {{ c.name }}.model_rebuild()
-{% endfor %}    
+{% endfor %}
 """
     return template
 
@@ -183,9 +268,9 @@ class PydanticGenerator(OOCodeGenerator):
     file_extension = "py"
 
     # ObjectVars
-    pydantic_version: str = field(default_factory=lambda: "1")
+    pydantic_version: str = field(default_factory=lambda: PYDANTIC_VERSION[0])
     template_file: str = None
-    allow_extra: bool = field(default_factory=lambda: False)
+    extra_fields: str = field(default_factory=lambda: "forbid")
     gen_mixin_inheritance: bool = field(default_factory=lambda: True)
 
     # ObjectVars (identical to pythongen)
@@ -236,9 +321,7 @@ class PydanticGenerator(OOCodeGenerator):
                     del clist[i]
                     break
             if not can_add:
-                raise ValueError(
-                    f"could not find suitable element in {clist} that does not ref {slist}"
-                )
+                raise ValueError(f"could not find suitable element in {clist} that does not ref {slist}")
         return slist
 
     def get_predefined_slot_values(self) -> Dict[str, Dict[str, str]]:
@@ -257,15 +340,17 @@ class PydanticGenerator(OOCodeGenerator):
                         slot_values[camelcase(class_def.name)][slot.name] = (
                             "[" + slot_values[camelcase(class_def.name)][slot.name] + "]"
                         )
-                    slot_values[camelcase(class_def.name)][slot.name] = slot_values[
-                        camelcase(class_def.name)
-                    ][slot.name]
+                    slot_values[camelcase(class_def.name)][slot.name] = slot_values[camelcase(class_def.name)][
+                        slot.name
+                    ]
                 elif slot.ifabsent is not None:
                     value = ifabsent_value_declaration(slot.ifabsent, sv, class_def, slot)
                     slot_values[camelcase(class_def.name)][slot.name] = value
                 # Multivalued slots that are either not inlined (just an identifier) or are
                 # inlined as lists should get default_factory list, if they're inlined but
                 # not as a list, that means a dictionary
+                elif "linkml:elements" in slot.implements:
+                    slot_values[camelcase(class_def.name)][slot.name] = None
                 elif slot.multivalued:
                     has_identifier_slot = self.range_class_has_identifier_slot(slot)
 
@@ -290,15 +375,9 @@ class PydanticGenerator(OOCodeGenerator):
         if slot.any_of:
             for slot_range in slot.any_of:
                 any_of_range = slot_range.range
-                if (
-                    any_of_range in sv.all_classes()
-                    and sv.get_identifier_slot(any_of_range, use_key=True) is not None
-                ):
+                if any_of_range in sv.all_classes() and sv.get_identifier_slot(any_of_range, use_key=True) is not None:
                     has_identifier_slot = True
-        if (
-            slot.range in sv.all_classes()
-            and sv.get_identifier_slot(slot.range, use_key=True) is not None
-        ):
+        if slot.range in sv.all_classes() and sv.get_identifier_slot(slot.range, use_key=True) is not None:
             has_identifier_slot = True
         return has_identifier_slot
 
@@ -351,20 +430,13 @@ class PydanticGenerator(OOCodeGenerator):
         if (
             inlined
             or inlined_as_list
-            or (
-                sv.get_identifier_slot(range_cls.name, use_key=True) is None
-                and not sv.is_mixin(range_cls.name)
-            )
+            or (sv.get_identifier_slot(range_cls.name, use_key=True) is None and not sv.is_mixin(range_cls.name))
         ):
             if (
                 len([x for x in sv.class_induced_slots(slot_range) if x.designates_type]) > 0
                 and len(sv.class_descendants(slot_range)) > 1
             ):
-                return (
-                    "Union["
-                    + ",".join([camelcase(c) for c in sv.class_descendants(slot_range)])
-                    + "]"
-                )
+                return "Union[" + ",".join([camelcase(c) for c in sv.class_descendants(slot_range)]) + "]"
             else:
                 return f"{camelcase(slot_range)}"
 
@@ -372,11 +444,7 @@ class PydanticGenerator(OOCodeGenerator):
         range_cls_identifier_slot_range = "str"
 
         # For mixins, try to use the identifier slot of descendant classes
-        if (
-            self.gen_mixin_inheritance
-            and sv.is_mixin(range_cls.name)
-            and sv.get_identifier_slot(range_cls.name)
-        ):
+        if self.gen_mixin_inheritance and sv.is_mixin(range_cls.name) and sv.get_identifier_slot(range_cls.name):
             range_cls_identifier_slot_range = self.get_mixin_identifier_range(range_cls)
 
         # If the class itself has an identifier slot, it can be allowed to overwrite a value from mixin above
@@ -390,9 +458,7 @@ class PydanticGenerator(OOCodeGenerator):
 
         return range_cls_identifier_slot_range
 
-    def generate_python_range(
-        self, slot_range, slot_def: SlotDefinition, class_def: ClassDefinition
-    ) -> str:
+    def generate_python_range(self, slot_range, slot_def: SlotDefinition, class_def: ClassDefinition) -> str:
         """
         Generate the python range for a slot range value
         """
@@ -401,12 +467,7 @@ class PydanticGenerator(OOCodeGenerator):
         if slot_def.designates_type:
             pyrange = (
                 "Literal["
-                + ",".join(
-                    [
-                        '"' + x + '"'
-                        for x in get_accepted_type_designator_values(sv, slot_def, class_def)
-                    ]
-                )
+                + ",".join(['"' + x + '"' for x in get_accepted_type_designator_values(sv, slot_def, class_def)])
                 + "]"
             )
         elif slot_range in sv.all_classes():
@@ -457,13 +518,9 @@ class PydanticGenerator(OOCodeGenerator):
 
             identifier_slot = self.schemaview.get_identifier_slot(slot_range, use_key=True)
             if identifier_slot is not None:
-                collection_keys.add(
-                    self.generate_python_range(identifier_slot.range, slot_def, class_def)
-                )
+                collection_keys.add(self.generate_python_range(identifier_slot.range, slot_def, class_def))
         if len(collection_keys) > 1:
-            raise Exception(
-                f"Slot with any_of range has multiple identifier slot range types: {collection_keys}"
-            )
+            raise Exception(f"Slot with any_of range has multiple identifier slot range types: {collection_keys}")
         if len(collection_keys) == 1:
             return list(collection_keys)[0]
         return None
@@ -473,7 +530,7 @@ class PydanticGenerator(OOCodeGenerator):
             with open(self.template_file) as template_file:
                 template_obj = Template(template_file.read())
         else:
-            template_obj = Template(default_template(self.pydantic_version))
+            template_obj = Template(default_template(self.pydantic_version, self.extra_fields))
 
         sv: SchemaView
         sv = self.schemaview
@@ -484,6 +541,8 @@ class PydanticGenerator(OOCodeGenerator):
             description=schema.description.replace('"', '\\"') if schema.description else None,
         )
         enums = self.generate_enums(sv.all_enums())
+
+        uses_numpy = False
 
         sorted_classes = self.sort_classes(list(sv.all_classes().values()))
         self.sorted_class_names = [camelcase(c.name) for c in sorted_classes]
@@ -518,25 +577,14 @@ class PydanticGenerator(OOCodeGenerator):
 
                 # Confirm that the original slot range (ignoring the default that comes in from
                 # induced_slot) isn't in addition to setting any_of
-                if len(s.any_of) > 0 and sv.get_slot(sn).range is not None:
-                    base_range_subsumes_any_of = False
-                    base_range = sv.get_slot(sn).range
-                    base_range_cls = sv.get_class(base_range, strict=False)
-                    if base_range_cls is not None and base_range_cls.class_uri == "linkml:Any":
-                        base_range_subsumes_any_of = True
-                    if not base_range_subsumes_any_of:
-                        raise ValueError("Slot cannot have both range and any_of defined")
-
-                if s.any_of is not None and len(s.any_of) > 0:
+                any_of_ranges = [a.range if a.range else s.range for a in s.any_of]
+                if any_of_ranges:
                     # list comprehension here is pulling ranges from within AnonymousSlotExpression
-                    slot_ranges.extend([r.range for r in s.any_of])
+                    slot_ranges.extend(any_of_ranges)
                 else:
                     slot_ranges.append(s.range)
 
-                pyranges = [
-                    self.generate_python_range(slot_range, s, class_def)
-                    for slot_range in slot_ranges
-                ]
+                pyranges = [self.generate_python_range(slot_range, s, class_def) for slot_range in slot_ranges]
 
                 pyranges = list(set(pyranges))  # remove duplicates
                 pyranges.sort()
@@ -548,7 +596,13 @@ class PydanticGenerator(OOCodeGenerator):
                 else:
                     raise Exception(f"Could not generate python range for {class_name}.{s.name}")
 
-                if s.multivalued:
+                if "linkml:elements" in s.implements:
+                    # TODO add support for xarray
+                    pyrange = "np.ndarray"
+                    if "linkml:ColumnOrderedArray" in class_def.implements:
+                        raise NotImplementedError("Cannot generate Pydantic code for ColumnOrderedArrays.")
+                    uses_numpy = True
+                elif s.multivalued:
                     if s.inlined or s.inlined_as_list:
                         collection_key = self.generate_collection_key(slot_ranges, s, class_def)
                     else:
@@ -566,10 +620,11 @@ class PydanticGenerator(OOCodeGenerator):
             underscore=underscore,
             enums=enums,
             predefined_slot_values=self.get_predefined_slot_values(),
-            allow_extra=self.allow_extra,
+            extra_fields=self.extra_fields,
             metamodel_version=self.schema.metamodel_version,
             version=self.schema.version,
             class_isa_plus_mixins=self.get_class_isa_plus_mixins(),
+            uses_numpy=uses_numpy,
         )
         return code
 
@@ -578,12 +633,18 @@ class PydanticGenerator(OOCodeGenerator):
 
 
 @shared_arguments(PydanticGenerator)
-@click.option("--template_file", help="Optional jinja2 template to use for class generation")
+@click.option("--template-file", help="Optional jinja2 template to use for class generation")
 @click.option(
-    "--pydantic_version",
+    "--pydantic-version",
     type=click.Choice(["1", "2"]),
     default="1",
     help="Pydantic version to use (1 or 2)",
+)
+@click.option(
+    "--extra-fields",
+    type=click.Choice(["allow", "ignore", "forbid"], case_sensitive=False),
+    default="forbid",
+    help="How to handle extra fields in BaseModel.",
 )
 @click.version_option(__version__, "-V", "--version")
 @click.command()
@@ -596,6 +657,7 @@ def cli(
     classvars=True,
     slots=True,
     pydantic_version="1",
+    extra_fields="forbid",
     **args,
 ):
     """Generate pydantic classes to represent a LinkML model"""
@@ -603,6 +665,7 @@ def cli(
         yamlfile,
         template_file=template_file,
         pydantic_version=pydantic_version,
+        extra_fields=extra_fields,
         emit_metadata=head,
         genmeta=genmeta,
         gen_classvars=classvars,

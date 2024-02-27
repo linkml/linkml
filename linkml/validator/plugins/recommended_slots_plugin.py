@@ -6,6 +6,8 @@ from linkml.validator.validation_context import ValidationContext
 
 
 class RecommendedSlotsPlugin(ValidationPlugin):
+    """A validation plugin which validates that recommended slots are populated"""
+
     def process(self, instance: dict, context: ValidationContext) -> Iterator[ValidationResult]:
         def _do_process(
             instance: dict, class_name: str, location: Optional[List[str]] = None
@@ -34,12 +36,8 @@ class RecommendedSlotsPlugin(ValidationPlugin):
                                 yield from _do_process(v, slot_range_class.name, location + [k])
                         elif slot_def.inlined_as_list and isinstance(slot_value, list):
                             for i, v in enumerate(slot_value):
-                                yield from _do_process(
-                                    v, slot_range_class.name, location + [str(i)]
-                                )
+                                yield from _do_process(v, slot_range_class.name, location + [str(i)])
                     else:
-                        yield from _do_process(
-                            instance[slot_def.name], slot_range_class.name, location
-                        )
+                        yield from _do_process(instance[slot_def.name], slot_range_class.name, location)
 
         yield from _do_process(instance, context.target_class)

@@ -36,9 +36,7 @@ classes:
         )
 
 
-def write_config_file(
-    name: str, extends_recommended: bool = False, tree_root_level: str = "error"
-) -> None:
+def write_config_file(name: str, extends_recommended: bool = False, tree_root_level: str = "error") -> None:
     with open(name, "w") as f:
         if extends_recommended:
             f.write(
@@ -135,9 +133,7 @@ class TestLinterCli(unittest.TestCase):
             write_schema_file()
             write_config_file(config_file, extends_recommended=False, tree_root_level="warning")
 
-            result = self.runner.invoke(
-                main, ["--config", config_file, "--ignore-warnings", SCHEMA_FILE]
-            )
+            result = self.runner.invoke(main, ["--config", config_file, "--ignore-warnings", SCHEMA_FILE])
             self.assertEqual(result.exit_code, 0)
             self.assertIn(
                 "warning  Schema does not have class with `tree_root: true`  (tree_root_class)",
@@ -150,9 +146,7 @@ class TestLinterCli(unittest.TestCase):
             write_schema_file()
             write_config_file(config_file, extends_recommended=False, tree_root_level="warning")
 
-            result = self.runner.invoke(
-                main, ["--config", config_file, "--max-warnings", 1, SCHEMA_FILE]
-            )
+            result = self.runner.invoke(main, ["--config", config_file, "--max-warnings", 1, SCHEMA_FILE])
             self.assertEqual(result.exit_code, 0)
             self.assertIn(
                 "warning  Schema does not have class with `tree_root: true`  (tree_root_class)",
@@ -165,9 +159,7 @@ class TestLinterCli(unittest.TestCase):
             write_schema_file()
             write_config_file(config_file, extends_recommended=False, tree_root_level="warning")
 
-            result = self.runner.invoke(
-                main, ["--config", config_file, "--max-warnings", 0, SCHEMA_FILE]
-            )
+            result = self.runner.invoke(main, ["--config", config_file, "--max-warnings", 0, SCHEMA_FILE])
             self.assertEqual(result.exit_code, 1)
             self.assertIn(
                 "warning  Schema does not have class with `tree_root: true`  (tree_root_class)",
@@ -219,6 +211,108 @@ slots:
             )
 
             result = self.runner.invoke(main, [str(schema_dir)])
+            self.assertEqual(result.exit_code, 1)
+            self.assertIn(str(schema_a), result.stdout)
+            self.assertIn("Class has name 'person'", result.stdout)
+            self.assertIn(str(schema_b), result.stdout)
+            self.assertIn("Slot has name 'a slot'", result.stdout)
+
+    def test_ignores_dot_file_in_directory_when_all_option_omitted(self):
+        schema_dir = Path("schemas")
+        schema_a = schema_dir / "schema_a.yaml"
+        schema_b = schema_dir / ".schema_b.yaml"
+        with self.runner.isolated_filesystem():
+            schema_dir.mkdir()
+            schema_a.write_text(
+                """
+id: http://example.org/test_a
+name: test_a
+
+classes:
+  person:
+    description: An individual human
+"""
+            )
+            schema_b.write_text(
+                """
+id: http://example.org/test_b
+name: test_b
+
+slots:
+  a slot:
+    description: A slot to hold thing
+"""
+            )
+
+            result = self.runner.invoke(main, [str(schema_dir)])
+            self.assertEqual(result.exit_code, 1)
+            self.assertIn(str(schema_a), result.stdout)
+            self.assertIn("Class has name 'person'", result.stdout)
+            self.assertNotIn(str(schema_b), result.stdout)
+            self.assertNotIn("Slot has name 'a slot'", result.stdout)
+
+    def test_processes_dot_files_in_directory_when_a_option_provided(self):
+        schema_dir = Path("schemas")
+        schema_a = schema_dir / "schema_a.yaml"
+        schema_b = schema_dir / ".schema_b.yaml"
+        with self.runner.isolated_filesystem():
+            schema_dir.mkdir()
+            schema_a.write_text(
+                """
+id: http://example.org/test_a
+name: test_a
+
+classes:
+  person:
+    description: An individual human
+"""
+            )
+            schema_b.write_text(
+                """
+id: http://example.org/test_b
+name: test_b
+
+slots:
+  a slot:
+    description: A slot to hold thing
+"""
+            )
+
+            result = self.runner.invoke(main, ["-a", str(schema_dir)])
+            self.assertEqual(result.exit_code, 1)
+            self.assertIn(str(schema_a), result.stdout)
+            self.assertIn("Class has name 'person'", result.stdout)
+            self.assertIn(str(schema_b), result.stdout)
+            self.assertIn("Slot has name 'a slot'", result.stdout)
+
+    def test_processes_dot_files_in_directory_when_all_option_provided(self):
+        schema_dir = Path("schemas")
+        schema_a = schema_dir / "schema_a.yaml"
+        schema_b = schema_dir / ".schema_b.yaml"
+        with self.runner.isolated_filesystem():
+            schema_dir.mkdir()
+            schema_a.write_text(
+                """
+id: http://example.org/test_a
+name: test_a
+
+classes:
+  person:
+    description: An individual human
+"""
+            )
+            schema_b.write_text(
+                """
+id: http://example.org/test_b
+name: test_b
+
+slots:
+  a slot:
+    description: A slot to hold thing
+"""
+            )
+
+            result = self.runner.invoke(main, ["--all", str(schema_dir)])
             self.assertEqual(result.exit_code, 1)
             self.assertIn(str(schema_a), result.stdout)
             self.assertIn("Class has name 'person'", result.stdout)

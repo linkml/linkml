@@ -1,12 +1,15 @@
 """Compliance tests for core constructs."""
+
 import unicodedata
 
 import pytest
 from _decimal import Decimal
 from linkml_runtime.utils.formatutils import underscore
+from pydantic.version import VERSION as PYDANTIC_VERSION
 
 from tests.test_compliance.helper import (
     JSON_SCHEMA,
+    OWL,
     PYDANTIC,
     PYDANTIC_ROOT_CLASS,
     PYTHON_DATACLASSES,
@@ -21,6 +24,7 @@ from tests.test_compliance.helper import (
     validated_schema,
 )
 from tests.test_compliance.test_compliance import (
+    CLASS_ANY,
     CLASS_C,
     CORE_FRAMEWORKS,
     EXAMPLE_STRING_VALUE_1,
@@ -31,6 +35,8 @@ from tests.test_compliance.test_compliance import (
     SLOT_S2,
     SLOT_S3,
 )
+
+IS_PYDANTIC_V1 = PYDANTIC_VERSION[0] == "1"
 
 
 @pytest.mark.parametrize(
@@ -109,9 +115,7 @@ def test_attributes(framework, description, object, is_valid):
             },
         },
     }
-    schema = validated_schema(
-        test_attributes, "attributes", framework, classes=classes, core_elements=["attributes"]
-    )
+    schema = validated_schema(test_attributes, "attributes", framework, classes=classes, core_elements=["attributes"])
     check_data(
         schema,
         description.replace(" ", "_"),
@@ -169,7 +173,7 @@ def test_type_range(framework, linkml_type, example_value):
             }
         },
     }
-    schema = validated_schema(test_type_range, linkml_type, framework, classes=classes)
+    schema = validated_schema(test_type_range, linkml_type, framework, classes=classes, core_elements=["range"])
     expected_behavior = None
     v = example_value
     is_valid = isinstance(v, (type_py_cls, type(None)))
@@ -194,6 +198,10 @@ def test_type_range(framework, linkml_type, example_value):
             elif framework == JSON_SCHEMA:
                 if linkml_type in ["float", "double"] and isinstance(v, int):
                     expected_behavior = ValidationBehavior.ACCEPTS
+            elif framework in [OWL, SHACL, SHEX]:
+                # OWL validation currently depends on python dataclasses to make instances;
+                # this coerces
+                expected_behavior = ValidationBehavior.INCOMPLETE
     if framework == SQL_DDL_SQLITE:
         if not is_valid:
             # SQLite effectively coerces everything and has no type checking
@@ -211,6 +219,51 @@ def test_type_range(framework, linkml_type, example_value):
     )
 
 
+@pytest.mark.parametrize("example_value", ["", None, 1, 1.1, "1", True, False, Decimal("5.4"), {}, {"foo": 1}])
+@pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
+def test_any_type(framework, example_value):
+    """
+    Tests linkml:Any.
+
+    :param framework: all should support built-in types
+    :param example_value: value to check
+    :return:
+    """
+    if isinstance(example_value, Decimal):
+        pytest.skip("Decimal not supported by YAML - https://github.com/yaml/pyyaml/issues/255")
+    if framework in [SQL_DDL_SQLITE, SQL_DDL_POSTGRES]:
+        pytest.skip("TODO: add support in sqlgen")
+    classes = {
+        CLASS_ANY: {
+            "class_uri": "linkml:Any",
+        },
+        CLASS_C: {
+            "attributes": {
+                SLOT_S1: {
+                    "range": "Any",
+                    "_mappings": {
+                        # PYDANTIC: f"{SLOT_S1}: Optional[Any]",
+                        # PYTHON_DATACLASSES: f"{SLOT_S1}: Optional[Any]",
+                    },
+                },
+            }
+        },
+    }
+    schema = validated_schema(test_any_type, "linkml_any", framework, classes=classes, core_elements=["Any"])
+    expected_behavior = ValidationBehavior.IMPLEMENTS
+    check_data(
+        schema,
+        f"{type(example_value).__name__}-{example_value}",
+        framework,
+        {SLOT_S1: example_value},
+        True,
+        expected_behavior=expected_behavior,
+        target_class=CLASS_C,
+        exclude_rdf=True,
+        description=f"linkml:Any with {example_value}",
+    )
+
+
 @pytest.mark.parametrize(
     "linkml_type,example_value,is_valid",
     [
@@ -219,6 +272,8 @@ def test_type_range(framework, linkml_type, example_value):
         ("uriorcurie", "X:1", True),
         ("uriorcurie", "X.Y:1", True),
         ("uriorcurie", "X 1", False),
+        ("uriorcurie", "X 1:1", False),
+        # ("uriorcurie", "X:1 2", False),
     ],
 )
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
@@ -245,7 +300,13 @@ def test_uri_types(framework, linkml_type, example_value, is_valid):
     expected_behavior = ValidationBehavior.IMPLEMENTS
     if not is_valid and framework in [PYDANTIC, JSON_SCHEMA]:
         expected_behavior = ValidationBehavior.INCOMPLETE
-    schema = validated_schema(test_type_range, linkml_type, framework, classes=classes)
+    schema = validated_schema(
+        test_uri_types,
+        linkml_type,
+        framework,
+        classes=classes,
+        core_elements=["uri", "uriorcurie"],
+    )
     check_data(
         schema,
         ensafeify(f"{example_value}-{example_value}"),
@@ -311,7 +372,13 @@ def test_date_types(framework, linkml_type, example_value, is_valid):
     }
     coerced = False
     expected_behavior = ValidationBehavior.IMPLEMENTS
-    schema = validated_schema(test_date_types, linkml_type, framework, classes=classes)
+    schema = validated_schema(
+        test_date_types,
+        linkml_type,
+        framework,
+        classes=classes,
+        core_elements=["range", "TypeDefinition"],
+    )
     if framework == SQL_DDL_SQLITE:
         # SQLite Date type only accepts Python date objects as input
         expected_behavior = ValidationBehavior.INCOMPLETE
@@ -321,6 +388,8 @@ def test_date_types(framework, linkml_type, example_value, is_valid):
         if linkml_type == "time" and "." in example_value and is_valid:
             expected_behavior = ValidationBehavior.FALSE_POSITIVE
     if framework == PYDANTIC:
+        if not IS_PYDANTIC_V1 and linkml_type == "datetime" and example_value == "2021-01-01":
+            expected_behavior = ValidationBehavior.COERCES
         if linkml_type == "time" and is_valid is False:
             expected_behavior = ValidationBehavior.INCOMPLETE
         if linkml_type == "date" and is_valid is False and example_value.startswith("2021"):
@@ -338,6 +407,14 @@ def test_date_types(framework, linkml_type, example_value, is_valid):
             expected_behavior = ValidationBehavior.FALSE_POSITIVE
     if ("+" in example_value or "Z" in example_value) and is_valid:
         if framework in [PYDANTIC, PYTHON_DATACLASSES]:
+            expected_behavior = ValidationBehavior.FALSE_POSITIVE
+    if framework in [OWL, SHACL, SHEX]:
+        # OWL validation currently depends on python dataclasses to make instances;
+        # this coerces;
+        if not is_valid:
+            expected_behavior = ValidationBehavior.INCOMPLETE
+        else:
+            # TODO: investigate this, hermit issue?
             expected_behavior = ValidationBehavior.FALSE_POSITIVE
     check_data(
         schema,
@@ -410,15 +487,27 @@ def test_cardinality(framework, multivalued, required, data_name, value):
         "  )"
         "}"
     )
+    owl_mv = "" if multivalued else "[ a owl:Restriction ; owl:maxCardinality 1 ; owl:onProperty ex:s1 ],"
+    owl = (
+        "@prefix ex: <http://example.org/> ."
+        "@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> ."
+        "@prefix sh: <http://www.w3.org/ns/shacl#> ."
+        "@prefix xsd: <http://www.w3.org/2001/XMLSchema#> ."
+        "@prefix owl: <http://www.w3.org/2002/07/owl#> ."
+        "@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> ."
+        "ex:C a owl:Class ;"
+        'rdfs:label "C" ;'
+        "rdfs:subClassOf [ a owl:Restriction ;"
+        f"    owl:minCardinality {1 if required else 0} ;"
+        "    owl:onProperty ex:s1 ],"
+        f"{owl_mv}"
+        "    [ a owl:Restriction ;"
+        "    owl:allValuesFrom xsd:string ;"
+        "   owl:onProperty ex:s1 ] ."
+    )
     sql_nullable = "NOT NULL" if required else ""
     if not multivalued:
-        sqlite = (
-            'CREATE TABLE "C" ('
-            f"  id INTEGER NOT NULL,"
-            f"  s1 TEXT {sql_nullable},"
-            "  PRIMARY KEY (id)"
-            ");"
-        )
+        sqlite = 'CREATE TABLE "C" (' f"  id INTEGER NOT NULL," f"  s1 TEXT {sql_nullable}," "  PRIMARY KEY (id)" ");"
     else:
         sqlite = (
             'CREATE TABLE "C_s1" ('
@@ -440,6 +529,7 @@ def test_cardinality(framework, multivalued, required, data_name, value):
                         PYTHON_DATACLASSES: choices[(PYTHON_DATACLASSES, multivalued, required)],
                         SHACL: shacl,
                         SHEX: shex,
+                        OWL: owl,
                         SQL_DDL_SQLITE: sqlite,
                         SQL_DDL_POSTGRES: sqlite.replace("id INTEGER", "id SERIAL"),
                     },
@@ -448,7 +538,11 @@ def test_cardinality(framework, multivalued, required, data_name, value):
         }
     }
     schema = validated_schema(
-        test_cardinality, f"MV{multivalued}_REQ{required}", framework, classes=classes
+        test_cardinality,
+        f"MV{multivalued}_REQ{required}",
+        framework,
+        classes=classes,
+        core_elements=["required", "multivalued"],
     )
     coerced = None
     is_valid = True
@@ -472,6 +566,18 @@ def test_cardinality(framework, multivalued, required, data_name, value):
     if framework == SQL_DDL_SQLITE:
         if not is_valid:
             # SQLite effectively coerces everything and has no type checking
+            expected_behavior = ValidationBehavior.INCOMPLETE
+    if framework == OWL:
+        if not is_valid:
+            # OWL is open world
+            expected_behavior = ValidationBehavior.INCOMPLETE
+    if framework == SHACL:
+        if not is_valid:
+            if multivalued and not isinstance(value, list):
+                # RDF does not distinguish between singletons and single values
+                expected_behavior = ValidationBehavior.INCOMPLETE
+        if not multivalued and isinstance(value, list):
+            # RDF does not distinguish between singletons and single values
             expected_behavior = ValidationBehavior.INCOMPLETE
     check_data(
         schema,
@@ -506,6 +612,8 @@ def test_identifier_is_required(framework, required_asserted, data_name, instanc
     :param is_valid:
     :return:
     """
+    if framework == SHACL:
+        pytest.skip("TODO: @base CURIEs")
     classes = {
         CLASS_C: {
             "attributes": {
@@ -518,7 +626,11 @@ def test_identifier_is_required(framework, required_asserted, data_name, instanc
         }
     }
     schema = validated_schema(
-        test_cardinality, f"REQ{required_asserted}", framework, classes=classes
+        test_cardinality,
+        f"requiredEQ_{required_asserted}",
+        framework,
+        classes=classes,
+        core_elements=["identifier", "required"],
     )
     expected_behavior = ValidationBehavior.IMPLEMENTS
     check_data(
@@ -561,9 +673,7 @@ def ensafeify(name: str):
         ("C", "C", "1s", "1s", "T1"),
     ],
 )
-def test_non_standard_names(
-    framework, class_name, safe_class_name, slot_name, safe_slot_name, type_name
-):
+def test_non_standard_names(framework, class_name, safe_class_name, slot_name, safe_slot_name, type_name):
     """
     Tests that non-standard class and slot names are handled gracefully.
 
@@ -592,15 +702,19 @@ def test_non_standard_names(
             "typeof": "string",
         },
     }
-    name = ensafeify(f"CN{class_name}_SN{slot_name}_TN{type_name}")
-    schema = validated_schema(test_cardinality, name, framework, classes=classes, types=types)
+    name = ensafeify(f"ClassNameEQ_{class_name}__SlotNameEQ_{slot_name}__TypeNameEQ_{type_name}")
+    schema = validated_schema(test_cardinality, name, framework, classes=classes, types=types, core_elements=["name"])
     expected_behavior = ValidationBehavior.IMPLEMENTS
     instance = {
         safe_slot_name: "x",
     }
+    exclude_rdf = False
     if slot_name.startswith("1"):
         if framework in [PYTHON_DATACLASSES, PYDANTIC, SQL_DDL_SQLITE]:
             expected_behavior = ValidationBehavior.INCOMPLETE
+        exclude_rdf = True
+    if class_name == "c" and framework in [JSON_SCHEMA, SHACL]:
+        pytest.skip("TODO: causes schemaview error")
     check_data(
         schema,
         "test",
@@ -611,6 +725,7 @@ def test_non_standard_names(
         target_class=safe_class_name,
         # coerced=coerced,
         description="nom-standard names are allowed",
+        exclude_rdf=exclude_rdf,
     )
 
 
@@ -626,6 +741,8 @@ def test_non_standard_names(
         ("E", "1s"),
         ("E", " "),
         ("E", "'"),
+        ("E[x]", "[x]"),
+        ("E", "[x]"),
     ],
 )
 def test_non_standard_num_names(framework, enum_name, pv_name):
@@ -654,11 +771,23 @@ def test_non_standard_num_names(framework, enum_name, pv_name):
         },
     }
     name = ensafeify(f"EN{enum_name}_PV{pv_name}")
-    schema = validated_schema(test_cardinality, name, framework, classes=classes, enums=enums)
+    schema = validated_schema(
+        test_non_standard_num_names,
+        name,
+        framework,
+        classes=classes,
+        enums=enums,
+        core_elements=["name"],
+    )
     expected_behavior = ValidationBehavior.IMPLEMENTS
     instance = {
         SLOT_S1: pv_name,
     }
+    exclude_rdf = False
+    if "[" in enum_name and framework in [PYDANTIC, SQL_DDL_SQLITE, PYTHON_DATACLASSES, OWL, SHACL]:
+        # TODO: need to escape []s
+        expected_behavior = ValidationBehavior.INCOMPLETE
+        exclude_rdf = True
     if pv_name == " " and framework == PYDANTIC:
         expected_behavior = ValidationBehavior.INCOMPLETE
     check_data(
@@ -671,4 +800,5 @@ def test_non_standard_num_names(framework, enum_name, pv_name):
         target_class=CLASS_C,
         # coerced=coerced,
         description="nom-standard enum/pv names are allowed",
+        exclude_rdf=exclude_rdf,
     )

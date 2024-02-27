@@ -36,17 +36,16 @@ schema:
 json_schema:
   properties:
     alpha_obj:
-      anyOf: 
+      anyOf:
         - "$ref": "#/$defs/Alpha"
         - "$ref": "#/$defs/Beta"
         - "$ref": "#/$defs/Gamma"
     beta_obj:
-      anyOf: 
+      anyOf:
         - "$ref": "#/$defs/Beta"
         - "$ref": "#/$defs/Gamma"
     gamma_obj:
-      anyOf: 
-        - "$ref": "#/$defs/Gamma"
+      "$ref": "#/$defs/Gamma"
 
 data_cases:
   - data:
@@ -71,4 +70,3 @@ data_cases:
       gamma_obj:
         alpha_value: v1
         gamma_value: v2
-  

@@ -4,12 +4,14 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 <https://example.org/this/personinfo> a linkml:SchemaDefinition ;
-    sh:declare [ sh:namespace <https://example.org/other/> ;
-            sh:prefix "other" ],
+    sh:declare [ sh:namespace <https://example.org/this/> ;
+            sh:prefix "this" ],
         [ sh:namespace linkml: ;
             sh:prefix "linkml" ],
-        [ sh:namespace <https://example.org/this/> ;
-            sh:prefix "this" ] ;
+        [ sh:namespace xsd: ;
+            sh:prefix "xsd" ],
+        [ sh:namespace <https://example.org/other/> ;
+            sh:prefix "other" ] ;
     linkml:classes <https://example.org/this/C1>,
         <https://example.org/this/C2>,
         <https://example.org/this/C3> ;
@@ -22,8 +24,8 @@
         <https://example.org/this/c2__a>,
         <https://example.org/this/c3__a> ;
     linkml:source_file "linkml_issue_388.yaml" ;
-    linkml:source_file_date "2023-07-14T10:43:06"^^xsd:dateTime ;
-    linkml:source_file_size 648 ;
+    linkml:source_file_date "2000-01-01T00:00:00"^^xsd:dateTime ;
+    linkml:source_file_size 1 ;
     linkml:types <https://example.org/this/my_int>,
         <https://example.org/this/my_str> .
 
@@ -60,13 +62,13 @@
     skos:inScheme <https://w3id.org/linkml/examples/personinfo> ;
     linkml:base "integer" ;
     linkml:definition_uri <https://example.org/this/MyInt> ;
-    linkml:uri <http://example.org/UNKNOWN/xsd/integer> .
+    linkml:uri xsd:integer .
 
 <https://example.org/this/my_str> a linkml:TypeDefinition ;
     skos:inScheme <https://w3id.org/linkml/examples/personinfo> ;
     linkml:base "str" ;
     linkml:definition_uri <https://example.org/this/MyStr> ;
-    linkml:uri <http://example.org/UNKNOWN/xsd/string> .
+    linkml:uri xsd:string .
 
 <https://example.org/this/C2> a linkml:ClassDefinition ;
     skos:inScheme <https://w3id.org/linkml/examples/personinfo> ;

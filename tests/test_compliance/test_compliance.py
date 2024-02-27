@@ -1,6 +1,9 @@
 """Constants for compliance tests. See README.md for more information."""
+
 from tests.test_compliance.helper import (
+    JAVA,
     JSON_SCHEMA,
+    JSONLD_CONTEXT,
     OWL,
     PYDANTIC,
     PYTHON_DATACLASSES,
@@ -15,9 +18,11 @@ CLASS_C = "C"
 CLASS_D = "D"
 CLASS_X = "X"
 CLASS_Y = "Y"
+CLASS_Z = "Z"
 CLASS_U1 = "U1"
 CLASS_U2 = "U2"
 CLASS_C1 = "C1"
+CLASS_C2 = "C2"
 CLASS_C1a = "C1a"
 CLASS_C1b = "C1b"
 CLASS_C1a1 = "C1a1"
@@ -40,13 +45,22 @@ EXAMPLE_STRING_VALUE_1 = "foo"
 EXAMPLE_STRING_VALUE_2 = "bar"
 EXAMPLE_STRING_VALUE_3 = "fuz"
 EXAMPLE_STRING_VALUE_4 = "erk"
+TYPE_T = "T"
+ENUM_E = "E"
+ENUM_F = "F"
+PV_1 = "pv1"
+PV_2 = "pv2"
+PV_3 = "pv3"
+SUBSET_SS = "Subset1"
 
 CORE_FRAMEWORKS = [
     PYTHON_DATACLASSES,
     PYDANTIC,
+    JAVA,
     JSON_SCHEMA,
     SHACL,
     SHEX,
+    JSONLD_CONTEXT,
     #    SQL_ALCHEMY_IMPERATIVE,
     #    SQL_ALCHEMY_DECLARATIVE,
     SQL_DDL_SQLITE,

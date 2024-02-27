@@ -1,25 +1,24 @@
-import unittest
+from click.testing import CliRunner
 
-import click
-
+from linkml import LOCAL_METAMODEL_YAML_FILE
 from linkml.generators import graphqlgen
-from tests.test_scripts.environment import env
-from tests.utils.clicktestcase import ClickTestCase
 
 
-class GenGraphqlTestCase(ClickTestCase):
-    testdir = "gengraphql"
-    click_ep = graphqlgen.cli
-    prog_name = "gen-graphql"
-    env = env
-
-    def test_help(self):
-        self.do_test("--help", "help")
-
-    def test_meta(self):
-        self.do_test([], "meta.graphql")
-        self.do_test("-f xsv", "meta_error", expected_error=click.exceptions.BadParameter)
+def test_help():
+    runner = CliRunner()
+    result = runner.invoke(graphqlgen.cli, ["--help"])
+    assert "Generate graphql representation of a LinkML model" in result.output
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_metamodel_valid_call(snapshot):
+    runner = CliRunner()
+    result = runner.invoke(graphqlgen.cli, [LOCAL_METAMODEL_YAML_FILE])
+    assert result.exit_code == 0
+    assert result.output == snapshot("gengraphql/meta.graphql")
+
+
+def test_metamodel_invalid_call():
+    runner = CliRunner()
+    result = runner.invoke(graphqlgen.cli, ["-f", "xsv", LOCAL_METAMODEL_YAML_FILE], standalone_mode=False)
+    assert result.exit_code != 0
+    assert "xsv" in str(result.exception)

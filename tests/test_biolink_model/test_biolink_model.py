@@ -55,9 +55,7 @@ class CurrentBiolinkModelTestCase(GeneratorTestCase):
     @unittest.skip("Too slow")
     def test_biolink_markdown(self):
         """Test the markdown generator for the biolink model"""
-        self.directory_generator(
-            "markdown_no_image", MarkdownGenerator, serialize_args=dict(image_dir=False)
-        )
+        self.directory_generator("markdown_no_image", MarkdownGenerator, serialize_args=dict(image_dir=False))
         # self.directory_generator('markdown_image', MarkdownGenerator, serialize_args=dict(image_dir=True))
 
     def test_biolink_tsv(self):
@@ -146,9 +144,7 @@ class CurrentBiolinkModelTestCase(GeneratorTestCase):
             NamespaceGenerator,
             generator_args={"emit_metadata": True},
             filtr=metadata_filter,
-            comparator=lambda exp, act: compare_python(
-                exp, act, self.env.expected_path("namespaces.py")
-            ),
+            comparator=lambda exp, act: compare_python(exp, act, self.env.expected_path("namespaces.py")),
             output_name="namespaces",
         )
 
@@ -179,9 +175,7 @@ class CurrentBiolinkModelTestCase(GeneratorTestCase):
             g.load(env.expected_path("biolink_model.ttl"), format="ttl")
             focus = BIOLINK_NS.biolink_model
             start = METAMODEL_NAMESPACE.SchemaDefinition
-            results = ShExEvaluator(
-                g, env.expected_path("biolink_model.shexj"), focus, start
-            ).evaluate(debug=False)
+            results = ShExEvaluator(g, env.expected_path("biolink_model.shexj"), focus, start).evaluate(debug=False)
             self.assertTrue(self._evaluate_shex_results(results))
 
     def test_biolink_shex(self):
@@ -229,9 +223,7 @@ class CurrentBiolinkModelTestCase(GeneratorTestCase):
     @unittest.skipIf(SKIP_SHEX_VALIDATION, SKIP_SHEX_VALIDATION_REASON)
     def test_biolink_correct_rdf(self):
         """Test some conforming RDF"""
-        self.single_file_generator(
-            "shexj", ShExGenerator, format="json"
-        )  # Make sure ShEx is current
+        self.single_file_generator("shexj", ShExGenerator, format="json")  # Make sure ShEx is current
 
         shex_file = env.expected_path("biolink-model.shexj")
 

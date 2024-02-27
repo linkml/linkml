@@ -65,9 +65,7 @@ class JsonSchemaDataValidator(DataValidator):
         # return self.validate_object(obj)
         pass
 
-    def validate_object(
-        self, data: YAMLRoot, target_class: Type[YAMLRoot] = None, closed: bool = True
-    ) -> None:
+    def validate_object(self, data: YAMLRoot, target_class: Type[YAMLRoot] = None, closed: bool = True) -> None:
         """
         validates instance data against a schema
 
@@ -81,9 +79,7 @@ class JsonSchemaDataValidator(DataValidator):
         inst_dict = as_simple_dict(data)
         self.validate_dict(inst_dict, target_class.class_name, closed)
 
-    def validate_dict(
-        self, data: dict, target_class: ClassDefinitionName = None, closed: bool = True
-    ) -> None:
+    def validate_dict(self, data: dict, target_class: ClassDefinitionName = None, closed: bool = True) -> None:
         """
         validates instance data against a schema
 
@@ -109,9 +105,8 @@ class JsonSchemaDataValidator(DataValidator):
         jsonschema_obj = _generate_jsonschema(
             self._hashable_schema, target_class_name, closed, self.include_range_class_descendants
         )
-        validator = jsonschema.Draft7Validator(
-            jsonschema_obj, format_checker=jsonschema.Draft7Validator.FORMAT_CHECKER
-        )
+        validator_cls = jsonschema.validators.validator_for(jsonschema_obj, default=jsonschema.Draft7Validator)
+        validator = validator_cls(jsonschema_obj, format_checker=validator_cls.FORMAT_CHECKER)
         for error in validator.iter_errors(data):
             best_error = best_match([error])
             # TODO: This should return some kind of standard validation result
@@ -201,13 +196,9 @@ def cli(
     if schema is None:
         raise Exception("--schema must be passed in order to validate. Suppress with --no-validate")
 
-    validator = JsonSchemaDataValidator(
-        schema, include_range_class_descendants=include_range_class_descendants
-    )
+    validator = JsonSchemaDataValidator(schema, include_range_class_descendants=include_range_class_descendants)
     error_count = 0
-    for error in validator.iter_validate_dict(
-        data_as_dict, target_class_name=py_target_class.class_name
-    ):
+    for error in validator.iter_validate_dict(data_as_dict, target_class_name=py_target_class.class_name):
         error_count += 1
         click.echo(click.style("\u2717 ", fg="red") + error)
         if exit_on_first_failure:

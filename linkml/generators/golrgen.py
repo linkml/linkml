@@ -6,6 +6,7 @@ These can be converted to solr schema-xml, and used in amigo-bbop tools
 See the golr-views directory in this repo for examples
 
 """
+
 import os
 from dataclasses import dataclass
 from typing import List, Optional
@@ -88,9 +89,7 @@ class GolrSchemaGenerator(Generator):
                 f.write("".join(self.generate_header()))
                 f.write(as_yaml(self.class_obj))
 
-    def visit_class_slot(
-        self, cls: ClassDefinition, aliased_slot_name: str, slot: SlotDefinition
-    ) -> None:
+    def visit_class_slot(self, cls: ClassDefinition, aliased_slot_name: str, slot: SlotDefinition) -> None:
         field = GOLRField(
             id=underscore(aliased_slot_name),
             description=slot.description,

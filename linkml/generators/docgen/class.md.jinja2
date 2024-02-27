@@ -1,4 +1,14 @@
-# Class: {{ gen.name(element) }}
+{%- if element.title %}
+    {%- set title = element.title ~ ' (' ~ element.name ~ ')' -%}
+{%- else %}
+    {%- if gen.use_class_uris -%}
+        {%- set title = element.name -%}
+    {%- else -%}
+        {%- set title = gen.name(element) -%}
+    {%- endif -%}
+{%- endif -%}
+
+# Class: {{ title }}
 
 {%- if header -%}
 {{header}}
@@ -21,6 +31,10 @@ URI: {{ gen.uri_link(element) }}
 
 {% if diagram_type == "er_diagram" %}
 ```{{ gen.mermaid_directive() }}
+{{ gen.mermaid_diagram([element.name]) }}
+```
+{% elif diagram_type == "plantuml_class_diagram" %}
+```puml
 {{ gen.mermaid_diagram([element.name]) }}
 ```
 {% else %}

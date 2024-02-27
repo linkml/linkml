@@ -1,4 +1,5 @@
 """ Unit tests for issues encountered in the TCCM model generation """
+
 import logging
 
 import pytest
@@ -25,9 +26,7 @@ def test_slot_usage_only(input_path, snapshot):
 
 def test_mapping_prefix(caplog, input_path):
     """Prefix validation fails in"""
-    YAMLGenerator(
-        input_path("issue_tccm/illegal_mapping_prefix.yaml"), mergeimports=False
-    ).serialize(validateonly=True)
+    YAMLGenerator(input_path("issue_tccm/illegal_mapping_prefix.yaml"), mergeimports=False).serialize(validateonly=True)
 
     assert "Unrecognized prefix: DO" in caplog.text, "Basic slot mapping validation failure"
     assert "Unrecognized prefix: RE" in caplog.text, "Basic class mapping validation failure"
@@ -35,9 +34,7 @@ def test_mapping_prefix(caplog, input_path):
     assert "Unrecognized prefix: FA" in caplog.text, "Slot usage specialization validation failure"
     assert "Unrecognized prefix: SO" in caplog.text, "Slot usage variant validation failure"
     assert "Unrecognized prefix: LA" in caplog.text, "Inherited slot mapping validation failure"
-    assert (
-        "Unrecognized prefix: TI" in caplog.text
-    ), "Inherited class mapping mapping validation failure"
+    assert "Unrecognized prefix: TI" in caplog.text, "Inherited class mapping mapping validation failure"
 
 
 def test_local_imports(input_path, snapshot):

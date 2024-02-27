@@ -22,3 +22,4 @@ URI: [linkml:apply_to](https://w3id.org/linkml/apply_to)
 ## Used by
 
  * [Definition](Definition.md)
+ * [EnumDefinition](EnumDefinition.md)

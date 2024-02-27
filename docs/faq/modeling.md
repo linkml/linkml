@@ -84,7 +84,7 @@ types:
     description: A symbol is a string used as a shorthand identifier that is restricted to a subset of characters
 ```
 
-Some applications may choose to interpret this in particular ways. E.g. you may want to define all narrative text fields as being amenable to spellchecking, or machine learning natual language processing, or special kinds of indexing in ElasticSearch/Solr
+Some applications may choose to interpret this in particular ways. E.g. you may want to define all narrative text fields as being amenable to spellchecking, or machine learning natural language processing, or special kinds of indexing in ElasticSearch/Solr
 
 ## Why would I want to use enums over strings?
 
@@ -103,7 +103,7 @@ There are a variety of ways of tackling this in LinkML.
 The fundamental question is whether you want to either:
 
 1. define a fixed set of terms in the schema in advance
-2. specify the set of terms via a query (e.g. a particular ontology brannch)
+2. specify the set of terms via a query (e.g. a particular ontology branch)
 
 See the two questions below for answers to each
 
@@ -259,6 +259,54 @@ slots:
 
 See [dynamic enums](https://linkml.io/linkml/schemas/enums.html#dynamic-enums) for more details.
 
+### Can I use LinkML to develop ontologies?
+
+LinkML is intended as a schema modeling framework, rather than an ontology modeling framework.
+Schemas are intended for modeling and constraining the structure of *data*, whereas ontologies
+and ontology modeling frameworks like OWL are for modeling and constraining models of the *world*.
+
+LinkML is intended to be *combined* with OWLs and other controlled vocabularies, using terms from
+these resources as mappings in enumerations.
+
+However, the distinction here is frequently blurred, and there are many examples of schemas that
+have been modeled using OWL - e.g. BioPAX, FOAF.
+
+LinkML allows any schema to be translated to OWL using the `gen-owl <https://linkml.io/linkml/generators/owl>`_ 
+generator. There are a number of reasons to do this:
+
+- take advantage of ontology exploration and browsing tools such as BioPortal and Protege
+- use OWL reasoning over schemas and data (with the caveat that OWL uses *Open World* reasoning)
+
+You can also use `Schema Automator <https://linkml.io/schema-automator>`_ to do the reverse translation.
+
+It doesn't make sense to develop a large terminological-style ontology such as an OBO
+ontology as LinkML classes, since LinkML is intended for data modeling.
+
+One option is to use the `linkml-owl <https://linkml.io/linkml-owl>`_ framework to generate OWL
+classes from LinkML *data*
+
+### Are CURIEs used in schema definitions checked for expandability and resolution?  
+
+No, not at this time.  However, linkml_runtime does have methods to help you expand the CURIEs in your data
+using the prefixes in your model (see: linkml_runtime.utils.namespaces.py) into URIs.  In addition, the
+`curies` [python package](https://github.com/cthoyt/curies/) which provides a standalone CURIE expansion service. 
+There are many ways to check if a URI is resolvable.  One open source python package to do this 
+is: [LinkChecker](https://pypi.org/project/LinkChecker/).
+ 
+### Are CURIEs used in data that validates against a given LinkML schema checked for expandability and resolution?
+
+No, not at this time.  However, linkml_runtime does have methods to help you expand the CURIEs in your data
+using the prefixes in your model (see: linkml_runtime.utils.namespaces.py) into URIs.  Specifying a regular expression
+to constrain the CURIEs in your data to a particular pattern is also possible.  
+See the [regular expression](https://w3id.org/linkml/regular_expression) metaslot.  However, validating a CURIE
+that matches the regular expression, but is invalid in some other way (e.g. is an obsolete ontology term) is not 
+currently supported.
+
+### Is it possible for us to import only a subset of an existing LinkML model?
+
+Not yet, but we are working on a tool to this, please check out 
+[linkml-transformer](https://github.com/linkml/linkml-transformer) for more details.
+
 ### Can I combine dynamic enums using boolean expressions
 
 Yes, this is possible.
@@ -340,7 +388,7 @@ Note in the RDF/OWL representation, separate `rdfs:label` triples will be genera
 
 This has the advantage of keeping human-friendly nomenclature in the appropriate places without specifying redundant computer names and human names
 
-However, the autotmatic translation can be confusing, so some schemas opt to follow standard naming conventions in the schema:
+However, the automatic translation can be confusing, so some schemas opt to follow standard naming conventions in the schema:
 
 ```yaml
 default_prefix: my_schema

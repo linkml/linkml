@@ -8,9 +8,7 @@ def test_issue_652_scenario1(input_path):
     Generate JSON Schema in default mode, where range class
     descendants are not included
     """
-    output = JsonSchemaGenerator(
-        input_path("issue_652.yaml"), include_range_class_descendants=False
-    ).serialize()
+    output = JsonSchemaGenerator(input_path("issue_652.yaml"), include_range_class_descendants=False).serialize()
 
     issue_jsonschema = json.loads(output)
     prop4_def = issue_jsonschema["$defs"]["NamedThing"]["properties"]["prop4"]
@@ -22,9 +20,7 @@ def test_issue_652_scenario2(input_path):
     Generate JSON Schema where descendants of range class
     are included for the type of a property
     """
-    output = JsonSchemaGenerator(
-        input_path("issue_652.yaml"), include_range_class_descendants=True
-    ).serialize()
+    output = JsonSchemaGenerator(input_path("issue_652.yaml"), include_range_class_descendants=True).serialize()
 
     issue_jsonschema = json.loads(output)
     prop4_def = issue_jsonschema["$defs"]["NamedThing"]["properties"]["prop4"]

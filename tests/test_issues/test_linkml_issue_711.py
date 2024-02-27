@@ -25,6 +25,7 @@ prefixes:
   bizcodes: https://example.org/bizcodes/
   schema: http://schema.org/
   ae: http://example.org/annotation-export#
+  oa: http://www.w3.org/ns/oa#
 
 default_prefix: ae
 default_range: string
@@ -41,7 +42,7 @@ classes:
       - family name
     annotations:
       ae:metadata: "Local prefixed annotation"
-      is_current: Local unpredixed annotation
+      is_current: Local unprefixed annotation
       err:non_existing: "This annotation will be skipped silently"
       oa:describing: "Annotation not in prefxes, but present in metamodel namespaces"
 

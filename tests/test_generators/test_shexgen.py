@@ -10,9 +10,7 @@ from linkml.generators.shexgen import ShExGenerator
 from tests.test_generators.test_pythongen import make_python
 
 
-@pytest.mark.skipif(
-    sys.version_info < (3, 8), reason="ShEx has issues with python 3.7 at the moment"
-)
+@pytest.mark.skipif(sys.version_info < (3, 8), reason="ShEx has issues with python 3.7 at the moment")
 def test_shex(kitchen_sink_path, input_path, tmp_path):
     """tests generation of shex and subsequent evaluation"""
     kitchen_module = make_python(kitchen_sink_path)
@@ -21,6 +19,7 @@ def test_shex(kitchen_sink_path, input_path, tmp_path):
     shexstr = ShExGenerator(kitchen_sink_path, mergeimports=True).serialize(collections=False)
     assert "<Person> CLOSED {" in shexstr
     assert "<has_familial_relationships> @<FamilialRelationship> * ;" in shexstr
+    assert "<type> [ bizcodes:001 bizcodes:002 bizcodes:003 bizcodes:004 ] ?" in shexstr
     # validation
     # TODO: provide starting shape
     ctxt = ContextGenerator(kitchen_sink_path, mergeimports=True).serialize()

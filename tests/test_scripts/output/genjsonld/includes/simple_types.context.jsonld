@@ -1,9 +1,0 @@
-{
-   "_comments": "Auto generated from simple_types.yaml by jsonldcontextgen.py version: 0.1.1\n    Generation date: 2022-05-10T00:33:55\n    Schema: simple_types\n    metamodel version: 1.7.0\n    model version: None\n    \n    id: https://raw.githubusercontent.com/linkml/linkml/main/tests/test_scripts/input/includes/simple_types\n    description: Type definition to be used in json-ld test case\n    license: \n    ",
-   "@context": {
-      "simple_types": "https://raw.githubusercontent.com/linkml/linkml/main/tests/test_scripts/input/includes/simple_types/",
-      "slotpfx": "http://samples.r.us/slot/",
-      "xsd": "http://www.w3.org/2001/XMLSchema#",
-      "@vocab": "https://raw.githubusercontent.com/linkml/linkml/main/tests/test_scripts/input/includes/simple_types/"
-   }
-}

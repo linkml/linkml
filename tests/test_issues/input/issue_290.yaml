@@ -1,4 +1,7 @@
 id: http://example.org
+default_prefix: ex
+prefixes:
+  ex: http://example.org/
 
 classes:
   c:

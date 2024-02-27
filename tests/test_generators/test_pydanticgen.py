@@ -1,3 +1,5 @@
+from importlib.metadata import version
+
 import pytest
 import yaml
 from linkml_runtime import SchemaView
@@ -73,10 +75,7 @@ enums:
     assert enum
     assert enum["values"]["number_123"]["value"] == "123"
     assert enum["values"]["PLUS_SIGN"]["value"] == "+"
-    assert (
-        enum["values"]["This_AMPERSAND_that_plus_maybe_a_TOP_HAT"]["value"]
-        == "This & that, plus maybe a 🎩"
-    )
+    assert enum["values"]["This_AMPERSAND_that_plus_maybe_a_TOP_HAT"]["value"] == "This & that, plus maybe a 🎩"
     assert enum["values"]["Ohio"]["value"] == "Ohio"
 
 
@@ -132,17 +131,9 @@ slots:
     code = gen.serialize()
     lines = code.splitlines()
     ix = lines.index("class C(ConfiguredBaseModel):")
-    assert (
-        lines[ix + 3]
-        == "    inlined_things: Optional[Dict[str, Union[A, B]]] = Field(default_factory=dict)"
-    )
-    assert (
-        lines[ix + 4]
-        == "    inlined_as_list_things: Optional[List[Union[A, B]]] = Field(default_factory=list)"
-    )
-    assert (
-        lines[ix + 5] == "    not_inlined_things: Optional[List[str]] = Field(default_factory=list)"
-    )
+    assert lines[ix + 3] == "    inlined_things: Optional[Dict[str, Union[A, B]]] = Field(default_factory=dict)"
+    assert lines[ix + 4] == "    inlined_as_list_things: Optional[List[Union[A, B]]] = Field(default_factory=list)"
+    assert lines[ix + 5] == "    not_inlined_things: Optional[List[str]] = Field(default_factory=list)"
 
 
 def test_pydantic_inlining():
@@ -312,10 +303,7 @@ classes:
     date_slot_line = lines[ix + 8].strip()
     assert date_slot_line == "attr5: Optional[date] = Field(datetime.date(2020, 01, 01))"
     datetime_slot_line = lines[ix + 9].strip()
-    assert (
-        datetime_slot_line
-        == "attr6: Optional[datetime ] = Field(datetime.datetime(2020, 01, 01, 00, 00, 00))"
-    )
+    assert datetime_slot_line == "attr6: Optional[datetime ] = Field(datetime.datetime(2020, 01, 01, 00, 00, 00))"
 
 
 def test_multiline_module(input_path):
@@ -340,3 +328,243 @@ def test_multiline_module(input_path):
     )
 
     assert 'INTERNAL "REORGANIZATION"' in gen.schema.enums["EmploymentEventType"].permissible_values
+
+
+def test_pydantic_pattern(kitchen_sink_path, tmp_path, input_path):
+    """Check if regex patterns are enforced. Only checks scalar case"""
+    gen = PydanticGenerator(kitchen_sink_path, package=PACKAGE)
+    code = gen.serialize()
+    module = compile_python(code, PACKAGE)
+    # scalar pattern enforcement
+    p1 = module.Person(id="01", name="John Doe")
+    assert p1.name == "John Doe"
+    with pytest.raises(ValidationError):
+        module.Person(id="01", name="x")
+
+
+def test_pydantic_template_1666():
+    """
+    Regression test for https://github.com/linkml/linkml/issues/1666
+    """
+    bad_schema = """
+name: BadSchema
+id: BadSchema
+imports:
+- linkml:types
+classes:
+  BadClass:
+    attributes:
+      keys:
+        name: keys
+        range: string
+      values:
+        name: values
+        range: integer
+        ifabsent: int(1)
+    """
+    gen = PydanticGenerator(bad_schema, package=PACKAGE)
+    code = gen.serialize()
+    # test fails here if "is_string" check not applied
+    # so the test is just that this completes successfully and
+    # doesn't generate a field like
+    # keys: Optional[str] = Field(<built-in method keys of dict object at 0x10f1f13c0>)
+    mod = compile_python(code, PACKAGE)
+
+    # and we check that we haven't lost defaults when they are set
+    pydantic_major_version = int(version("pydantic").split(".")[0])
+    if pydantic_major_version >= 2:
+        assert mod.BadClass.model_fields["keys"].default is None
+        assert mod.BadClass.model_fields["values"].default == 1
+    else:
+        assert mod.BadClass.__fields__["keys"].default is None
+        assert mod.BadClass.__fields__["values"].default == 1
+
+
+def test_pydantic_arrays():
+    import numpy as np
+
+    unit_test_schema = """
+id: https://example.org/arrays
+name: arrays-temperature-example
+title: Array Temperature Example
+description: |-
+  Example LinkML schema to demonstrate a 3D DataArray of temperature values with labeled axes
+license: MIT
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+  wgs84: http://www.w3.org/2003/01/geo/wgs84_pos#
+  example: https://example.org/
+
+default_prefix: example
+
+imports:
+  - linkml:types
+
+classes:
+
+  TemperatureDataset:
+    tree_root: true
+    implements:
+      - linkml:DataArray
+    attributes:
+      name:
+        identifier: true
+        range: string
+      latitude_in_deg:
+        implements:
+          - linkml:axis
+        range: LatitudeSeries
+        required: true
+        annotations:
+          axis_index: 0
+      longitude_in_deg:
+        implements:
+          - linkml:axis
+        range: LongitudeSeries
+        required: true
+        annotations:
+          axis_index: 1
+      time_in_d:
+        implements:
+          - linkml:axis
+        range: DaySeries
+        required: true
+        annotations:
+          axis_index: 2
+      temperatures_in_K:
+        implements:
+          - linkml:array
+        range: TemperatureMatrix
+        required: true
+
+  TemperatureMatrix:
+    description: A 3D array of temperatures
+    implements:
+      - linkml:NDArray
+      - linkml:RowOrderedArray
+    attributes:
+      values:
+        range: float
+        multivalued: true
+        implements:
+          - linkml:elements
+        required: true
+        unit:
+          ucum_code: K
+    annotations:
+      dimensions: 3
+
+  LatitudeSeries:
+    description: A series whose values represent latitude
+    implements:
+      - linkml:NDArray
+    attributes:
+      values:
+        range: float
+        multivalued: true
+        implements:
+          - linkml:elements
+        required: true
+        unit:
+          ucum_code: deg
+    annotations:
+      dimensions: 1
+
+  LongitudeSeries:
+    description: A series whose values represent longitude
+    implements:
+      - linkml:NDArray
+    attributes:
+      values:
+        range: float
+        multivalued: true
+        implements:
+          - linkml:elements
+        required: true
+        unit:
+          ucum_code: deg
+    annotations:
+      dimensions: 1
+
+  DaySeries:
+    description: A series whose values represent the days since the start of the measurement period
+    implements:
+      - linkml:NDArray
+    attributes:
+      values:
+        range: float
+        multivalued: true
+        implements:
+          - linkml:elements
+        required: true
+        unit:
+          ucum_code: d
+    annotations:
+      dimensions: 1
+  """
+
+    gen = PydanticGenerator(schema=unit_test_schema)
+
+    code = gen.serialize()
+    assert "import numpy as np" in code
+    # assert code.count("values: np.ndarray = Field()") == 3
+    # assert code.count("temperatures: np.ndarray = Field()") == 1
+
+    mod = compile_python(code, PACKAGE)
+    lat = mod.LatitudeSeries(values=np.array([1, 2, 3]))
+    np.testing.assert_array_equal(lat.values, np.array([1, 2, 3]))
+    lon = mod.LongitudeSeries(values=np.array([4, 5, 6]))
+    np.testing.assert_array_equal(lon.values, np.array([4, 5, 6]))
+    day = mod.DaySeries(values=np.array([7, 8, 9]))
+    np.testing.assert_array_equal(day.values, np.array([7, 8, 9]))
+    temperatures = mod.TemperatureMatrix(values=np.ones((3, 3, 3)))
+    np.testing.assert_array_equal(temperatures.values, np.ones((3, 3, 3)))
+
+    temperature_dataset = mod.TemperatureDataset(
+        name="temperatures",
+        latitude_in_deg=lat,
+        longitude_in_deg=lon,
+        time_in_d=day,
+        temperatures_in_K=temperatures,
+    )
+    assert temperature_dataset.name == "temperatures"
+    assert temperature_dataset.latitude_in_deg == lat
+    assert temperature_dataset.longitude_in_deg == lon
+    assert temperature_dataset.time_in_d == day
+    assert temperature_dataset.temperatures_in_K == temperatures
+
+
+def test_column_ordered_array_not_supported():
+    unit_test_schema = """
+id: https://example.org/arrays
+name: arrays-example
+prefixes:
+  linkml: https://w3id.org/linkml/
+  example: https://example.org/
+  default_prefix: example
+imports:
+- linkml:types
+
+classes:
+  TemperatureMatrix:
+    tree_root: true
+    implements:
+      - linkml:NDArray
+      - linkml:ColumnOrderedArray
+    attributes:
+      temperatures:
+        implements:
+          - linkml:elements
+        multivalued: true
+        range: float
+        required: true
+        unit:
+          ucum_code: K
+    annotations:
+      dimensions: 2
+"""
+
+    gen = PydanticGenerator(schema=unit_test_schema)
+    with pytest.raises(NotImplementedError):
+        gen.serialize()

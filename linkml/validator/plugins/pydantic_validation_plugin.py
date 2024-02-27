@@ -1,6 +1,5 @@
 from typing import Any, Iterator
 
-from linkml.generators import PydanticGenerator
 from linkml.validator.plugins.validation_plugin import ValidationPlugin
 from linkml.validator.report import Severity, ValidationResult
 from linkml.validator.validation_context import ValidationContext
@@ -9,8 +8,9 @@ from linkml.validator.validation_context import ValidationContext
 class PydanticValidationPlugin(ValidationPlugin):
     """A validation plugin which validates instances using a Pydantic validator.
 
-    Note that this plugin provides less complete validation than JsonschemaValidationPlugin.
-    Also, due to the nature of pydantic, it will fail fast on errors and only report the first
+    Note that this plugin provides less complete validation than
+    :class:`JsonschemaValidationPlugin`.
+    Also, due to the nature of Pydantic, it will fail fast on errors and only report the first
     error found.
 
     For general use cases, JsonschemaValidationPlugin is recommended. However, this plugin
@@ -19,15 +19,13 @@ class PydanticValidationPlugin(ValidationPlugin):
     - You are using in a pipeline to ensure objects will be valid for loading into Pydantic.
     - You are exploring relative capabilities of Pydantic and JSON Schema validation.
     - Pydantic is faster for your use case (to be tested).
+
+    :param closed: If ``True``, additional properties are not allowed on instances.
+        Defaults to ``False``.
     """
 
-    def __init__(self, closed: bool = False, strict: bool = False) -> None:
-        """Constructor method
-
-        :param strict: If true, stop validating after the first validation problem
-            is found. Defaults to False.
-        """
-        self.strict = strict
+    def __init__(self, closed: bool = False) -> None:
+        self.closed = closed
 
     def process(self, instance: Any, context: ValidationContext) -> Iterator[ValidationResult]:
         """Perform Pydantic validation on the provided instance
@@ -37,14 +35,9 @@ class PydanticValidationPlugin(ValidationPlugin):
         :return: Iterator over validation results
         :rtype: Iterator[ValidationResult]
         """
-        if "pydantic_module" not in context.cached_artefacts:
-            context.cached_artefacts["pydantic_module"] = PydanticGenerator(
-                context.schema
-            ).compile_module()
-        pydantic_module = context.cached_artefacts["pydantic_module"]
-        target_class = pydantic_module.__dict__[context.target_class]
+        pydantic_model = context.pydantic_model(closed=self.closed)
         try:
-            instance = target_class.parse_obj(instance)
+            instance = pydantic_model.parse_obj(instance)
         except Exception as e:
             yield ValidationResult(
                 type="Pydantic validation",
@@ -53,4 +46,3 @@ class PydanticValidationPlugin(ValidationPlugin):
                 instantiates=context.target_class,
                 message=f"{e}",
             )
-        return

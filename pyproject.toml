@@ -32,7 +32,6 @@ classifiers = [
     "Intended Audience :: Healthcare Industry",
     "License :: CC0 1.0 Universal (CC0 1.0) Public Domain Dedication",
     "Topic :: Software Development :: Libraries :: Python Modules",
-    "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10"
@@ -87,7 +86,7 @@ run-tutorial = "linkml.utils.execute_tutorial:cli"
 linkml-convert = "linkml.utils.converter:cli"
 linkml-lint = "linkml.linter.cli:main"
 linkml-sqldb = "linkml.utils.sqlutils:main"
-linkml-validate = "linkml.validators.jsonschemavalidator:cli"
+linkml-validate = "linkml.validator.cli:cli"
 linkml-jsonschema-validate = "linkml.validators.jsonschemavalidator:cli"
 linkml-sparql-validate = "linkml.validators.sparqlvalidator:cli"
 linkml-run-examples = "linkml.workspaces.example_runner:cli"
@@ -97,7 +96,7 @@ gen-linkml = "linkml.generators.linkmlgen:cli"
 linkml-schema-fixer = "linkml.utils.schema_fixer:main"
 
 [tool.poetry.dependencies]
-python = "^3.7.6"
+python = "^3.8.1"
 antlr4-python3-runtime = "<4.10,==4.*,>=4.9.0"
 click = ">=7.0"
 graphviz = ">=0.10.1"
@@ -107,12 +106,12 @@ jinja2 = ">= 3.1.0"
 jsonasobj2 = "==1.*,>=1.0.0,>=1.0.3"
 jsonschema = {extras = ["format"], version = ">=4.0.0"}
 linkml-dataops = "*"
-linkml-runtime = ">=1.5.4"
+linkml-runtime = ">=1.6.0"
 openpyxl = "*"
 parse = "*"
 prefixcommons = ">=0.1.7"
 prefixmaps = ">=0.1.3"
-pydantic = "*"
+pydantic = ">=1.0.0,<3.0.0"
 pyjsg = ">=0.11.6"
 pyshex = ">=0.7.20"
 pyshexc = ">=0.8.3"
@@ -142,6 +141,11 @@ myst-parser = "*"
 [tool.poetry.group.tests.dependencies]
 pytest = "^7.4.0"
 pytest-subtests = "^0.11.0"
+numpy = ">=1.24.3"
+
+
+[tool.poetry.group.shacl.dependencies]
+pyshacl = "^0.25.0"
 
 [tool.poetry.extras]
 docs = ["Sphinx", "sphinxcontrib-mermaid", "furo"]
@@ -160,8 +164,8 @@ ignore-words-list = 'mater,connexion,infarction'
 quiet-level = 3
 
 [tool.black]
-line-length = 100
-target-versions = ["py38", "py39", "py310", "py311"]
+line-length = 120
+target-version = ["py38", "py39", "py310", "py311"]
 force-exclude = '''
 /(
   # default exclude
