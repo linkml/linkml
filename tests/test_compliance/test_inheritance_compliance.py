@@ -16,7 +16,10 @@ from tests.test_compliance.helper import (
 from tests.test_compliance.test_compliance import (
     CLASS_ANY,
     CLASS_C,
+    CLASS_C1,
+    CLASS_C2,
     CLASS_D,
+    CLASS_D1,
     CLASS_MC1,
     CLASS_MC2,
     CLASS_X,
@@ -222,6 +225,16 @@ def test_mixins(framework, description, cls, object, is_valid):
     """
     Tests behavior of mixins.
 
+    This sets sets up a schema with class C with slot s3, which mixes in MC1.s1 and MC2.s3
+
+    This schema is tested with various objects that attempt to instantiate one of these classes.
+
+    Note that the only framework to prohibit instantiating mixins is JSONSchema; the mixin
+    classes are entirely rolled down.
+
+    Currently in dataclasses, the mixins are rolled down, but in the pydantic we allow
+    multiple inheritance
+
     :param framework:
     :param description:
     :param object:
@@ -267,8 +280,22 @@ def test_mixins(framework, description, cls, object, is_valid):
             "_mappings": {
                 PYDANTIC: "class C(MC2, MC1):",
                 PYTHON_DATACLASSES: "@dataclass\nclass C(YAMLRoot):",  # DC rolls up
-                JSON_SCHEMA: {"$defs": json_schema_defs},
+                JSON_SCHEMA: json_schema_defs,
             },
+        },
+        CLASS_D: {
+            "attributes": {
+                SLOT_S4: {
+                    "range": CLASS_ANY,
+                    "any_of": [
+                        {"range": CLASS_MC1},
+                        {"range": CLASS_MC2},
+                    ],
+                }
+            }
+        },
+        CLASS_ANY: {
+            "class_uri": "linkml:Any",
         },
     }
     schema = validated_schema(test_mixins, "default", framework, classes=classes, core_elements=["mixins", "mixin"])
@@ -635,4 +662,103 @@ def test_basic_slot_inheritance(
         expected_behavior=expected_behavior,
         target_class=cls,
         description=description,
+    )
+
+
+@pytest.mark.parametrize(
+    "obj,target_class,valid",
+    [
+        (
+            {
+                SLOT_S3: {
+                    SLOT_S1: "foo",
+                    SLOT_S2: 5,
+                },
+            },
+            CLASS_D1,
+            True,
+        ),
+        (
+            {
+                SLOT_S1: "foo",
+            },
+            CLASS_C,
+            False,
+        ),
+    ],
+)
+@pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
+def test_abstract_classes(
+    framework,
+    obj,
+    target_class,
+    valid,
+):
+    """
+    Tests behavior of abstract classes.
+
+    Currently the only framework to forbid instantiation of abstract classes in JSON-Schema
+
+    :param framework:
+    :return:
+    """
+    abstract_classes = [CLASS_C, CLASS_D]
+    classes = {
+        CLASS_C: {
+            "attributes": {
+                SLOT_S1: {
+                    "required": True,
+                    "range": "string",
+                },
+            }
+        },
+        CLASS_C1: {
+            "is_a": CLASS_C,
+            "attributes": {
+                SLOT_S2: {
+                    "required": True,
+                    "range": "integer",
+                }
+            },
+        },
+        CLASS_C2: {
+            "is_a": CLASS_C,
+        },
+        CLASS_D: {
+            "attributes": {
+                SLOT_S3: {
+                    "range": CLASS_C,
+                }
+            }
+        },
+        CLASS_D1: {
+            "attributes": {
+                SLOT_S3: {
+                    "range": CLASS_C1,
+                }
+            }
+        },
+    }
+    for c in abstract_classes:
+        classes[c]["abstract"] = True
+    expected_behavior = ValidationBehavior.IMPLEMENTS
+    if not valid and target_class in abstract_classes:
+        if framework != JSON_SCHEMA:
+            expected_behavior = ValidationBehavior.INCOMPLETE
+    schema = validated_schema(
+        test_abstract_classes,
+        f"abstract_{'_'.join(abstract_classes)}",
+        framework,
+        classes=classes,
+        core_elements=["is_a", "abstract"],
+    )
+    check_data(
+        schema,
+        "test",
+        framework,
+        obj,
+        valid,
+        expected_behavior=expected_behavior,
+        target_class=target_class,
+        description="default",
     )
