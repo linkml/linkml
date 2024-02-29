@@ -27,7 +27,12 @@ class TemplateModel(BaseModel):
         if environment is None:
             environment = TemplateModel.environment()
 
-        data = {k: _render(getattr(self, k, None), environment) for k in self.model_fields.keys()}
+        if int(PYDANTIC_VERSION[0]) >= 2:
+            fields = {**self.model_fields, **self.model_computed_fields}
+        else:
+            fields = self.model_fields
+
+        data = {k: _render(getattr(self, k, None), environment) for k in fields}
         template = environment.get_template(self.template)
         return template.render(**data)
 
