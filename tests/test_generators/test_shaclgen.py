@@ -1,7 +1,9 @@
-import rdflib
 from collections import Counter
-from linkml.generators.shaclgen import ShaclGenerator
 from typing import List, Tuple
+
+import rdflib
+
+from linkml.generators.shaclgen import ShaclGenerator
 
 EXPECTED = [
     (
