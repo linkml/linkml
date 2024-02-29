@@ -1,5 +1,5 @@
 import sys
-from typing import Any, ClassVar, Dict, Generator, List, Optional, Tuple, Union, get_origin, overload
+from typing import Any, ClassVar, Dict, Generator, List, Optional, Union, overload
 
 if sys.version_info >= (3, 8):
     from typing import Literal
