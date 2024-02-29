@@ -1,5 +1,5 @@
 import sys
-from typing import Any, ClassVar, Dict, Generator, List, Optional, Union, Tuple, overload, get_origin
+from typing import Any, ClassVar, Dict, Generator, List, Optional, Tuple, Union, get_origin, overload
 
 if sys.version_info >= (3, 8):
     from typing import Literal
@@ -44,12 +44,10 @@ class TemplateModel(BaseModel):
             return self.__fields__
 
         @overload
-        def model_dump(self, mode: Literal["python"] = "python") -> dict:
-            ...
+        def model_dump(self, mode: Literal["python"] = "python") -> dict: ...
 
         @overload
-        def model_dump(self, mode: Literal["json"] = "json") -> str:
-            ...
+        def model_dump(self, mode: Literal["json"] = "json") -> str: ...
 
         def model_dump(self, mode: Literal["python", "json"] = "python", **kwargs) -> Union[dict, str]:
             if mode == "json":
@@ -75,28 +73,6 @@ def _render(
         return {k: _render(getattr(item, k, None), environment) for k in fields.keys()}
     else:
         return item
-
-
-def is_template(field) -> Tuple[bool, Union[None, List, Dict]]:
-    if int(PYDANTIC_VERSION[0]) >= 2:
-        from pydantic import FieldInfo
-
-        field: FieldInfo
-        try:
-            template = issubclass(field.annotation, TemplateModel)
-        except TypeError:
-            template = False
-        origin = get_origin(field.annotation)
-    else:
-        from pydantic.fields import ModelField
-
-        field: ModelField
-        try:
-            template = issubclass(field.type_, TemplateModel)
-        except TypeError:
-            template = False
-        origin = get_origin(field.outer_type_)
-    return template, origin
 
 
 class EnumValue(BaseModel):
@@ -278,6 +254,7 @@ class Import(TemplateModel):
 
 
 class ConditionalImport(Import):
+    template: ClassVar[str] = "conditional_import.py.jinja"
     condition: str
     alternative: Import
 
@@ -343,3 +320,21 @@ class PydanticModule(TemplateModel):
     imports: List[Union[Import, ConditionalImport]] = Field(default_factory=list)
     enums: Dict[str, Enum] = Field(default_factory=dict)
     classes: Dict[str, PydanticClass] = Field(default_factory=dict)
+
+    if int(PYDANTIC_VERSION[0]) >= 2:
+
+        @computed_field
+        def class_names(self) -> List[str]:
+            return [c.name for c in self.classes.values()]
+
+    else:
+        class_names: List[str] = Field(default_factory=list)
+
+        def __init__(self, **kwargs):
+            super(PydanticModule, self).__init__(**kwargs)
+            self.class_names = [c.name for c in self.classes.values()]
+
+        def render(self, environment: Optional[Environment] = None) -> str:
+            # refresh in case attributes have changed since init
+            self.class_names = [c.name for c in self.classes.values()]
+            return super(PydanticModule, self).render(environment)

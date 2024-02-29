@@ -1,7 +1,3 @@
-{% macro attribute(
-    name, annotations, field, title=None, description=None, 
-    equals_number=None, minimum_value=None, maximum_value=None,
-    pydantic_ver=2) %}
 {% if pydantic_ver == 1 %}
 {{name}}: {{ annotations['python_range'].value }} = Field({{ field }}
 {%- if title != None %}, title="{{title}}"{% endif -%}
@@ -25,4 +21,3 @@
 {%- endif -%}
 )
 {%- endif -%}
-{% endmacro %}

@@ -1,4 +1,3 @@
-{% macro enum(name, values=None, description=None) %}
 class {{ name }}(str{% if values %}, Enum{% endif %}):
 {% if description %}
     """
@@ -15,4 +14,3 @@ class {{ name }}(str{% if values %}, Enum{% endif %}):
 {% else %}
     pass
 {% endif %}
-{% endmacro %}

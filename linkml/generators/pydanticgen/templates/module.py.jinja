@@ -1,37 +1,27 @@
-{#-
-  Jinja2 Template for a pydantic classes
--#}
-{% from 'imports.py.jinja' import import_, conditional_import %}
-{% from 'base_model.py.jinja' import base_model as base_model_ %}
-{% from 'enum.py.jinja' import enum %}
-{% from 'class.py.jinja' import class %}
-
-{%- for an_import in imports %}
-    {% if an_import.condition is string -%}
-{{ conditional_import(an_import.module, an_import.alias, an_import.objects, an_import.condition, an_import.alternative) }}
-    {% else -%}
-{{ import_(an_import.module, an_import.alias, an_import.objects) }}
-    {% endif -%}
+{% for import in imports %}
+{{ import }}
 {% endfor -%}
 
 metamodel_version = "{{metamodel_version}}"
 version = "{{version if version else None}}"
 
 
-{{ base_model_(base_model.name, base_model.extra_fields, base_model.fields, pydantic_ver) }}
-{% for e in enums.values() %}
+{{ base_model }}
+{% if enums %}
+    {% for e in enums.values() %}
 
-{{ enum(e.name, e['values'], e.description) }}
-{% endfor %}
-{% if injected_classes -%}
-    {% for c in injected_classes %}
+{{ e }}
+    {% endfor %}
+{% endif %}
+{% if injected_classes %}
+    {% for c in injected_classes%}
 
 {{ c }}
     {% endfor %}
 {% endif %}
 {% for c in classes.values() %}
 
-{{ class(c.name, c.bases, c.attributes, c.description, pydantic_ver) }}
+{{ c }}
 {% endfor %}
 
 {% include 'footer.py.jinja' %}

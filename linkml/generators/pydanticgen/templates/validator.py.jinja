@@ -1,4 +1,3 @@
-{% macro validator(name, pattern, pydantic_ver=2) %}
 {% if pydantic_ver == 1 %}
     {%- if pattern %}
 @validator('{{name}}', allow_reuse=True)
@@ -28,4 +27,3 @@
         return v
     {% endif -%}
 {% endif -%}
-{% endmacro %}
