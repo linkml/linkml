@@ -1,6 +1,7 @@
 import inspect
 import logging
 import os
+import pdb
 from collections import defaultdict
 from copy import deepcopy
 from dataclasses import dataclass
@@ -476,14 +477,14 @@ class PydanticGenerator(OOCodeGenerator):
         return None
 
     def serialize(self) -> str:
-        if self.template_file is not None:
-            with open(self.template_file) as template_file:
-                template_obj = Template(template_file.read())
-        else:
-            env = Environment(
-                loader=PackageLoader("linkml.generators.pydanticgen", "templates"), trim_blocks=True, lstrip_blocks=True
-            )
-            template_obj = env.get_template("module.py.jinja")
+        # if self.template_file is not None:
+        #     with open(self.template_file) as template_file:
+        #         template_obj = Template(template_file.read())
+        # else:
+        #     env = Environment(
+        #         loader=PackageLoader("linkml.generators.pydanticgen", "templates"), trim_blocks=True, lstrip_blocks=True
+        #     )
+        #     template_obj = env.get_template("module.py.jinja")
 
         sv: SchemaView
         sv = self.schemaview
@@ -628,8 +629,8 @@ class PydanticGenerator(OOCodeGenerator):
             enums=enums,
             classes=classes,
         )
-
-        code = template_obj.render(**module.model_dump())
+        code = module.render()
+        pdb.set_trace()
         return code
 
     def default_value_for_type(self, typ: str) -> str:

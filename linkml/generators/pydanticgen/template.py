@@ -1,11 +1,12 @@
 import sys
-from typing import ClassVar, Dict, Generator, List, Optional, Union, overload
+from typing import Any, ClassVar, Dict, Generator, List, Optional, Union, Tuple, overload, get_origin
 
 if sys.version_info >= (3, 8):
     from typing import Literal
 else:
     from typing_extensions import Literal
 
+from jinja2 import Environment, PackageLoader
 from pydantic import BaseModel, Field
 from pydantic.version import VERSION as PYDANTIC_VERSION
 
@@ -16,15 +17,39 @@ if int(PYDANTIC_VERSION[0]) >= 2:
 class TemplateModel(BaseModel):
     """Metaclass to group template models"""
 
+    template: ClassVar[str]
     pydantic_ver: int = int(PYDANTIC_VERSION[0])
+
+    def render(self, environment: Optional[Environment] = None) -> str:
+        """
+        Recursively render to a string.
+        """
+        if environment is None:
+            environment = TemplateModel.environment()
+
+        data = {k: _render(getattr(self, k, None), environment) for k in self.model_fields.keys()}
+        template = environment.get_template(self.template)
+        return template.render(**data)
+
+    @classmethod
+    def environment(cls) -> Environment:
+        return Environment(
+            loader=PackageLoader("linkml.generators.pydanticgen", "templates"), trim_blocks=True, lstrip_blocks=True
+        )
 
     if int(PYDANTIC_VERSION[0]) < 2:
 
-        @overload
-        def model_dump(self, mode: Literal["python"] = "python") -> dict: ...
+        @property
+        def model_fields(self) -> Dict[str, Any]:
+            return self.__fields__
 
         @overload
-        def model_dump(self, mode: Literal["json"] = "json") -> str: ...
+        def model_dump(self, mode: Literal["python"] = "python") -> dict:
+            ...
+
+        @overload
+        def model_dump(self, mode: Literal["json"] = "json") -> str:
+            ...
 
         def model_dump(self, mode: Literal["python", "json"] = "python", **kwargs) -> Union[dict, str]:
             if mode == "json":
@@ -32,7 +57,49 @@ class TemplateModel(BaseModel):
             return self.dict(**kwargs)
 
 
-class EnumValue(TemplateModel):
+def _render(
+    item: Union[TemplateModel, Any, List[Union[Any, TemplateModel]], Dict[str, Union[Any, TemplateModel]]],
+    environment: Environment,
+) -> Union[str, List[str], Dict[str, str]]:
+    if isinstance(item, TemplateModel):
+        return item.render(environment)
+    elif isinstance(item, list):
+        return [_render(i, environment) for i in item]
+    elif isinstance(item, dict):
+        return {k: _render(v, environment) for k, v in item.items()}
+    elif isinstance(item, BaseModel):
+        if int(PYDANTIC_VERSION[0]) >= 2:
+            fields = item.model_fields
+        else:
+            fields = item.__fields__
+        return {k: _render(getattr(item, k, None), environment) for k in fields.keys()}
+    else:
+        return item
+
+
+def is_template(field) -> Tuple[bool, Union[None, List, Dict]]:
+    if int(PYDANTIC_VERSION[0]) >= 2:
+        from pydantic import FieldInfo
+
+        field: FieldInfo
+        try:
+            template = issubclass(field.annotation, TemplateModel)
+        except TypeError:
+            template = False
+        origin = get_origin(field.annotation)
+    else:
+        from pydantic.fields import ModelField
+
+        field: ModelField
+        try:
+            template = issubclass(field.type_, TemplateModel)
+        except TypeError:
+            template = False
+        origin = get_origin(field.outer_type_)
+    return template, origin
+
+
+class EnumValue(BaseModel):
     label: str
     value: str
     description: Optional[str] = None
@@ -46,6 +113,8 @@ class Enum(TemplateModel):
 
     TODO: use this with OOCodeGenerator when we decide where to put shared models :)
     """
+
+    template: ClassVar[str] = "enum.py.jinja"
 
     name: str
     description: Optional[str] = None
@@ -65,6 +134,8 @@ class PydanticBaseModel(TemplateModel):
     Parameterization of the base model that generated pydantic classes inherit from
     """
 
+    template: ClassVar[str] = "base_model.py.jinja"
+
     default_name: ClassVar[str] = "ConfiguredBaseModel"
     name: str = Field(default_factory=lambda: PydanticBaseModel.default_name)
     extra_fields: Literal["allow", "forbid", "ignore"] = "forbid"
@@ -76,6 +147,8 @@ class PydanticAttribute(TemplateModel):
     Reduced version of SlotDefinition that carries all and only the information
     needed by the template
     """
+
+    template: ClassVar[str] = "attribute.py.jinja"
 
     name: str
     required: bool = False
@@ -116,24 +189,55 @@ class PydanticAttribute(TemplateModel):
                 self.field = "None"
 
 
+class PydanticValidator(PydanticAttribute):
+    template: ClassVar[str] = "validator.py.jinja"
+
+
 class PydanticClass(TemplateModel):
     """
     Reduced version of ClassDefinition that carries all and only the information
     needed by the template
     """
 
+    template: ClassVar[str] = "class.py.jinja"
+
     name: str
     bases: Union[List[str], str] = PydanticBaseModel.default_name
     description: Optional[str] = None
     attributes: Optional[Dict[str, PydanticAttribute]] = None
 
+    def _validators(self) -> Optional[Dict[str, PydanticValidator]]:
+        if self.attributes is None:
+            return None
 
-class ObjectImport(TemplateModel):
+        return {k: PydanticValidator(**v.model_dump()) for k, v in self.attributes.items() if v.pattern is not None}
+
+    if int(PYDANTIC_VERSION[0]) >= 2:
+
+        @computed_field
+        def validators(self) -> Optional[Dict[str, PydanticValidator]]:
+            return self._validators()
+
+    else:
+        validators: Optional[Dict[str, PydanticValidator]]
+
+        def __init__(self, **kwargs):
+            super(PydanticClass, self).__init__(**kwargs)
+            self.validators = self._validators()
+
+        def render(self, environment: Optional[Environment] = None) -> str:
+            # refresh in case attributes have changed since init
+            self.validators = self._validators()
+            return super(PydanticClass, self).render(environment)
+
+
+class ObjectImport(BaseModel):
     name: str
     alias: Optional[str] = None
 
 
 class Import(TemplateModel):
+    template: ClassVar[str] = "imports.py.jinja"
     module: str
     alias: Optional[str] = None
     objects: Optional[List[ObjectImport]] = None
@@ -219,11 +323,18 @@ class Imports(TemplateModel):
     def __getitem__(self, item: int) -> Import:
         return self.imports[item]
 
+    def render(self, environment: Optional[Environment] = None) -> str:
+        if environment is None:
+            environment = TemplateModel.environment()
+        return "\n".join([i.render() for i in self.imports])
+
 
 class PydanticModule(TemplateModel):
     """
     Top-level container model for generating a pydantic module
     """
+
+    template: ClassVar[str] = "module.py.jinja"
 
     metamodel_version: Optional[str] = None
     version: Optional[str] = None
