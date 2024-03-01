@@ -21,10 +21,10 @@ Docs
 Command Line
 ^^^^^^^^^^^^
 
-.. currentmodule:: linkml.generators.sqlddlgen
+.. currentmodule:: linkml.generators.sqltablegen
 
-.. click:: linkml.generators.sqlddlgen:cli
-    :prog: gen-sqlddl
+.. click:: linkml.generators.sqltablegen:cli
+    :prog: gen-sqltables
     :nested: short
 
 Code

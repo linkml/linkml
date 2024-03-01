@@ -73,6 +73,9 @@ DEFAULT_MISMATCH_ACTION = eval(test_settings.get("DEFAULT_MISMATCH_ACTION", "Mis
 #  the final output
 USE_LOCAL_IMPORT_MAP = test_settings.getboolean("USE_LOCAL_IMPORT_MAP", False)
 
+# set by --with-output cli flag
+WITH_OUTPUT = False
+
 
 # Exception for use in script testing.  Global to prevent redefinition
 class CLIExitException(Exception):

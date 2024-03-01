@@ -41,6 +41,8 @@ class AcceptNothingValidationPlugin(ValidationPlugin):
 
 
 class TestDataLoader(Loader):
+    __test__ = False
+
     def __init__(self, source, how_many) -> None:
         super().__init__(source)
         self.how_many = how_many
