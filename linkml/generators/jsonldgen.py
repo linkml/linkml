@@ -107,9 +107,7 @@ class JSONLDGenerator(Generator):
                     else (
                         SubsetDefinitionName(camelcase(node))
                         if node in self.schema.subsets
-                        else TypeDefinitionName(underscore(node))
-                        if node in self.schema.types
-                        else None
+                        else TypeDefinitionName(underscore(node)) if node in self.schema.types else None
                     )
                 )
             )
