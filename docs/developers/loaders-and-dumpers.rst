@@ -33,7 +33,6 @@ JSON serialization closely follows the in-memory python serialization
 .. currentmodule:: linkml_runtime.dumpers
 
 .. autoclass:: JSONDumper
-    :members: dumps, dump
 
 .. currentmodule:: linkml_runtime.loaders
 

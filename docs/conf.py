@@ -90,5 +90,4 @@ autosectionlabel_prefix_document = True
 # dont add to these just to get em to go away, these are only here for a reason :)
 suppress_warnings = [
     'autosectionlabel.*', # several documents have a pattern with repeating headers
-    '*linkml_runtime*Unexpected indentation' # can't do anything about that here :(
 ]
