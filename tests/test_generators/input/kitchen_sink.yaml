@@ -210,7 +210,9 @@ classes:
       - type
     slot_usage:
       type:
-        range: EmploymentEventType
+        any_of:
+          - range: CordialnessEnum
+          - range: EmploymentEventType
         required: false
 
   MedicalEvent:

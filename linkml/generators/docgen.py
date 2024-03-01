@@ -196,7 +196,7 @@ class DocGenerator(Generator):
         out_str = template.render(gen=self, schema=sv.schema, schemaview=sv, **template_vars)
         self._write(out_str, directory, self.index_name)
         if self._is_single_file_format(self.format):
-            logging.info(f"{self.format} is a single-page format, skipping non-index elements")
+            self.logger.info(f"{self.format} is a single-page format, skipping non-index elements")
             return
         template = self._get_template("schema")
         for schema_name in sv.imports_closure():
@@ -294,7 +294,7 @@ class DocGenerator(Generator):
                 if p.is_file():
                     folder = self.template_directory
                 else:
-                    logging.info(
+                    self.logger.info(
                         f"Could not find {base_file_name} in {self.template_directory} - falling back to default"
                     )
             if not folder:
