@@ -1,9 +1,9 @@
 {% macro import_(module, alias=None, objects = None) %}
-{% if objects is none and alias is none %}
+{%- if objects is none and alias is none %}
 import {{ module }}
-{% elif objects is none and alias is string %}
+{%- elif objects is none and alias is string %}
 import {{ module }} as {{ alias }}
-{% else %}
+{%- else %}
     {% if objects | length == 1 %}
 from {{ module }} import {{ objects[0]['name'] }} {% if objects[0]['alias'] is not none %} as {{ objects[0]['alias'] }} {% endif %}
     {% else %}
@@ -18,6 +18,14 @@ from {{ module }} import (
     {% endfor %}
 )
     {% endif %}
-{% endif %}
+{%- endif %}
 {% endmacro %}
+{%- if module %}
 {{ import_(module, alias, objects) }}
+{% endif -%}
+{#- For when used with Imports container -#}
+{%- if imports -%}
+{%- for i in imports -%}
+{{ i }}
+{%- endfor -%}
+{% endif -%}

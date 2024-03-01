@@ -1,10 +1,4 @@
-import sys
-from typing import Any, ClassVar, Dict, Generator, List, Optional, Union, overload
-
-if sys.version_info >= (3, 8):
-    from typing import Literal
-else:
-    from typing_extensions import Literal
+from typing import Any, ClassVar, Dict, Generator, List, Literal, Optional, Union, overload
 
 from jinja2 import Environment, PackageLoader
 from pydantic import BaseModel, Field
@@ -101,14 +95,6 @@ class Enum(TemplateModel):
     description: Optional[str] = None
     values: Dict[str, EnumValue] = Field(default_factory=dict)
 
-    @classmethod
-    def from_dict(cls, enums: dict) -> Dict[str, "Enum"]:
-        """
-        Generate types enum models from dict form of enums created by
-        :meth:`~linkml.generators.OOCodeGenerator.generate_enums`
-        """
-        return {k: Enum(**v) for k, v in enums.items()}
-
 
 class PydanticBaseModel(TemplateModel):
     """
@@ -138,6 +124,16 @@ class PydanticAttribute(TemplateModel):
     predefined: Optional[str] = None
     """Fixed string to use in body of field"""
     annotations: Optional[dict] = None
+    """
+    Of the form::
+    
+        annotations = {'python_range': {'value': 'int'}} 
+    
+    .. todo::
+    
+        simplify when refactoring pydanticgen, should just be a string or a model
+    
+    """
     title: Optional[str] = None
     description: Optional[str] = None
     equals_number: Optional[Union[int, float]] = None
@@ -267,6 +263,8 @@ class ConditionalImport(Import):
 class Imports(TemplateModel):
     """Container class for imports that can handle merging!"""
 
+    template: ClassVar[str] = "imports.py.jinja"
+
     imports: List[Union[Import, ConditionalImport]] = Field(default_factory=list)
 
     def __add__(self, other: Import) -> "Imports":
@@ -304,11 +302,6 @@ class Imports(TemplateModel):
 
     def __getitem__(self, item: int) -> Import:
         return self.imports[item]
-
-    def render(self, environment: Optional[Environment] = None) -> str:
-        if environment is None:
-            environment = TemplateModel.environment()
-        return "\n".join([i.render() for i in self.imports])
 
 
 class PydanticModule(TemplateModel):
