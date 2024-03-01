@@ -38,6 +38,9 @@ extensions = [
     'sphinx.ext.coverage',
     'myst_parser',
     'sphinxcontrib.mermaid'
+    'sphinx.ext.napoleon',
+    'sphinx.ext.intersphinx',
+    'myst_parser'
 ]
 
 myst_heading_anchors = 3
@@ -91,3 +94,13 @@ autosectionlabel_prefix_document = True
 suppress_warnings = [
     'autosectionlabel.*', # several documents have a pattern with repeating headers
 ]
+# Napoleon
+napoleon_google_docstring = True
+napoleon_use_admonition_for_examples = True
+
+# Intersphinx
+intersphinx_mapping = {
+    'python': ('https://docs.python.org/3', None),
+    'pydantic': ('https://docs.pydantic.dev/latest', None),
+    'jinja2': ('https://jinja.palletsprojects.com/en/latest/', None)
+}
