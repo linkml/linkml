@@ -44,7 +44,6 @@ jobs:
         run: poetry install --no-interaction --no-root
 
       - name: Build docs
-        working-directory: docs
         env:
           SPHINXOPTS: "-W --keep-going"
-        run: make html
+        run: poetry shell && cd docs && make html

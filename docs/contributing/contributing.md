@@ -18,7 +18,7 @@ poetry install
 
 * The LinkML test suite can be found in the `tests` folder. The tests are written under specific subfolders within the main aggregated `tests/` suite.
 * If you want to formalize your test case into a unit test, you should decide the scope of your test and find the subfolder that the test might best fit under. For example, if your test is related to one of the LinkML generators, then you would create it under the `tests/test_generators/` subfolder.
-* There are a few model LinkML schemas within the test suite that you can use while creating your unit tests. You will ideally find them in an `input` directory within the scoped tests folder you are looking at. For example, the `tests/test_generators/input/kitchen_sink.yaml`.
+* There are a few model LinkML schemas within the test suite that you can use while creating your unit tests. You will ideally find them in an `input` directory within the scoped tests folder you are looking at. For example, the `input` directory under the `tests/test_generators/` subfolder. One of the main test schemas that most LinkML generator related unit tests use is the `kitchen_sink.yaml`.
 * Outside of generators, users will want to create issue specific unit tests. For that, you need to turn your attention to the `tests/test_issues/` folder.
   * The current direction is to first make an issue with specific instructions to reproduce the bug under the [issues](https://github.com/linkml/linkml/issues) tab on the main [linkml](https://github.com/linkml/linkml/) GitHub repo.
   * Then, create a test case for the above issue, with a minimal test LinkML schema in the input folder of the `tests/test_issues/` suite. A minimal test case entails that you only use the elements you need in the schema for your unit test and not bloat the test schema with more elements that necessary.
@@ -26,7 +26,7 @@ poetry install
 
 ### Directions for creating a unit test
 
-There are two cases you need to consider while writing your unit test. The first one is when you are writing a test for bugs in the LinkML library and the second is for enhancements. For bugs, you would typically create your test case in the `tests/test_utils/`, etc. subfolder.
+There are two cases you need to consider while writing your unit test. The first one is when you are writing a test for bugs in the LinkML library and the second is for enhancements. For bugs, you would typically create your test case in the `tests/test_issues/` folder, whereas for enhancements, you would typically create it in the `tests/test_generators/`, `tests/test_utils/`, subfolder.
 * While creating a test for a bug, you should make a file called `test_linkml_issue_NNN.py`. After that it is perhaps easiest to just copy over a test from an existing issue test case and modify it.
   * As discussed above, ideally, all your test issues will have an accompanying minimal test schema. One pattern is that you include the schema in your Python unit test file as strings. Another pattern is to include them as separate YAML files in the `input` folder.
 * As for new functionality, as directed above, create a test case under any of the existing Python test files if there are tests already scoped with respect to your enhancement. Or if not, then create a new Python test file with your unit test.
