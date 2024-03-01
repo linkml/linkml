@@ -57,7 +57,7 @@ info on current uses.
 
 Definitely not! While the core framework is written in Python, and
 there is strong support for Python developers in the form of
-[generation of Python dataclasses](../generators/) from a model, uses are not restricted
+[generation of Python dataclasses](/generators/python) from a model, uses are not restricted
 to Python developers.
 
 For example, some users of LinkML compile their schema down to

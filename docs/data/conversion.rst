@@ -110,17 +110,17 @@ Inferring missing values
 
 The ``--infer`` flag can be provided to perform missing value inference
 
-See :doc:`advanced schemas <../schemas/advanced>` for more information
+See :doc:`advanced schemas </schemas/advanced>` for more information
 on inference
 
 Programmatic usage
 ------------------
 
-See :doc:`developer docs <../code>` for documentation of the relevant
+See :doc:`developer docs </developers/index>` for documentation of the relevant
 python classes
 
 Command Line
--------
+------------
 
 .. currentmodule:: linkml.utils.converter
 

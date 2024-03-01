@@ -51,7 +51,7 @@ Sometimes you may want to make a pre-release. These should follow standard conve
 - Using `vX.Y.ZrcN` as the version, where this is the `N`th pre-release candidate for `X.Y.Z` (which is not yet released)
 - Select "this is a pre-release" (this will automatically tag the PyPI release as a pre-release)
 
-## Best Practices
+### Best Practices
 
 - **PR Titles:** Ensure these are descriptive yet concise. This is crucial as they are directly used in autogenerating release notes.
 - **Regular Releases:** Frequent releases help in maintaining a consistent and up-to-date package.

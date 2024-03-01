@@ -15,4 +15,5 @@ that conforms to a LinkML schema.
    rdf
    csvs
    python
+   sql-databases
 
