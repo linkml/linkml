@@ -67,12 +67,10 @@ class TemplateModel(BaseModel):
             return cls.__fields__
 
         @overload
-        def model_dump(self, mode: Literal["python"] = "python") -> dict:
-            ...
+        def model_dump(self, mode: Literal["python"] = "python") -> dict: ...
 
         @overload
-        def model_dump(self, mode: Literal["json"] = "json") -> str:
-            ...
+        def model_dump(self, mode: Literal["json"] = "json") -> str: ...
 
         def model_dump(self, mode: Literal["python", "json"] = "python", **kwargs) -> Union[dict, str]:
             if mode == "json":
