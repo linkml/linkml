@@ -2,7 +2,7 @@
 
 Making a schema release in LinkML can be streamlined and efficient if done correctly. This guide will walk you through the process, focusing on semantic versioning, using GitHub for release notes, and ensuring your releases are consistent and well-documented.
 
-Note: This guide assumes you use the [LinkML Cookiecutter](linkml-project-cookiecutter.html) to seed your repository. If you did not,
+Note: This guide assumes you use the [LinkML Cookiecutter](/howtos/linkml-project-cookiecutter) to seed your repository. If you did not,
 then you should still be able to adapt this guide to your workflow.
 
 ## Follow Semantic Versioning (SemVer)

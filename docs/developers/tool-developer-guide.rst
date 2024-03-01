@@ -131,7 +131,7 @@ Other Languages
 LinkML is programming language neutral. However, currently much of the
 stack for introspecting schemas is written in Python.
 
-For example, in Python, if you want a list of slots for that class you can use :ref:`class_slots
+For example, in Python, if you want a list of slots for that class you can use :attr:`class_slots
 <linkml_runtime.utils.schemaview.SchemaView.class_slots>`. But
 what if you are building a generic JavaScript data entry widget that
 will work for any LinkML class?

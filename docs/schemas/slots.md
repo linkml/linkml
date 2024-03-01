@@ -126,7 +126,7 @@ slots:
     designates_type: true
 ```
 
-See the [type-designators](type-designator.md) section of the docs for more details.
+See the [type-designators](type-designators.md) section of the docs for more details.
 
 ## Slot cardinality
 

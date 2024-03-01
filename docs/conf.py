@@ -54,7 +54,7 @@ templates_path = ['_templates']
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', 'README.md']
 
 
 # -- Options for HTML output -------------------------------------------------
@@ -85,3 +85,10 @@ linkcheck_ignore = [
 
 # Options for autosectionlabel
 autosectionlabel_prefix_document = True
+
+# Suppress Warnings
+# dont add to these just to get em to go away, these are only here for a reason :)
+suppress_warnings = [
+    'autosectionlabel.*', # several documents have a pattern with repeating headers
+    '*linkml_runtime*Unexpected indentation' # can't do anything about that here :(
+]

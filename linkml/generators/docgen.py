@@ -325,7 +325,7 @@ class DocGenerator(Generator):
 
         :param element: SchemaView element definition
         :return: slot name or numeric portion of CURIE prefixed
-        slot_uri
+            slot_uri
         """
         if type(element).class_name == "slot_definition":
             if self.use_slot_uris:

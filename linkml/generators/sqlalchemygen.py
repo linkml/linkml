@@ -40,7 +40,7 @@ class SQLAlchemyGenerator(Generator):
     """
     Generates SQL Alchemy classes
 
-    See also: :ref:`SQLTableGenerator`
+    See also: :class:`~linkml.generators.sqltablegen.SQLTableGenerator`
     """
 
     # ClassVars

@@ -19,9 +19,6 @@ To run:
 
    gen-python personinfo.yaml > personinfo.py
 
-Example output:   
-
-`personinfo.py <https://github.com/linkml/linkml/tree/main/examples/PersonSchema/personinfo/personinfo.py>`_
 
 This object model can now be used to create, load, and serialize
 objects. For example:
@@ -76,7 +73,7 @@ Non-inlined references
 ^^^^^^^^^^^^^^^^^^^^^^
 
 In LinkML schemas, references to other objects can be declared as
-:doc:`inlined <schemas/inlining>`. If a reference is *not* inlined,
+:doc:`inlined </schemas/inlining>`. If a reference is *not* inlined,
 and the referenced object has an identifier, then the value of the
 reference will be that identifier.
 
@@ -187,10 +184,10 @@ LinkML type definitions can take one of three forms:
 2) Python generation for basic python Type.
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
- For this example, we show basic permutations on the python
+For this example, we show basic permutations on the python
 ``int`` type as a base YAML:
 
-.. code:: yaml
+.. code-block:: yaml
 
    types:
      integer:
@@ -215,11 +212,11 @@ LinkML type definitions can take one of three forms:
              multivalued: true
              required: true
 
+
 Generated Python:
 
-.. code:: python
+.. code-block:: python
 
-   ...
 
    class Integer(int):
        """ An integer """
@@ -233,7 +230,6 @@ Generated Python:
        """
        various permutations of the integer type
        """
-       ...
 
        mand_integer: int = None
        mand_multi_integer: Union[int, List[int]] = None

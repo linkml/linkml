@@ -683,7 +683,7 @@ class Generator(metaclass=abc.ABCMeta):
 
     def slot_name(self, name: str) -> str:
         """
-        Return the underscored version of the aliased slot name if name is a slot. Prepend "unknown_" if the name
+        Return the underscored version of the aliased slot name if name is a slot. Prepend "unknown\_" if the name
         isn't valid.
         """
         slot = self.slot_for(name)
@@ -705,7 +705,7 @@ class Generator(metaclass=abc.ABCMeta):
 
         :param el_or_elname: element or name to map
         :param is_range_name: True means that we're looking for a class or type.  False means Slot or Subset. Only
-        applies if el_or_elname is an ElementName (otherwise we know what we've got
+            applies if el_or_elname is an ElementName (otherwise we know what we've got
         :return: Formatted name if type can be known else None
         """
         if isinstance(el_or_elname, str):

@@ -27,8 +27,7 @@ To run:
 Inheritance
 ^^^^^^^^^^^
 
-.. code-block:: proto
-
+::
 
     type Person implements HasAliases
       {

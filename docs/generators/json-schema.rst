@@ -472,5 +472,5 @@ Code
 .. currentmodule:: linkml.generators.jsonschemagen
                    
 .. autoclass:: JsonSchemaGenerator
-    :members: serialize, json_schema_types
+    :members: serialize
 

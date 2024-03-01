@@ -63,12 +63,11 @@ For example, if you have a schema:
 
 and a person object:
 
-.. code:: json
+.. code-block:: json
 
    {
-     ...
      "employed_at": {
-       ...
+       "...": "..."
      }
    }
 
