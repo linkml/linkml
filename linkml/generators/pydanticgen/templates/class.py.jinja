@@ -12,6 +12,7 @@ class {{ name }}({% if bases is string %}{{ bases }}{% else %}{{ bases | join(',
         {% endif %}
         {% if validators %}
             {% for validator in validators.values() %}
+
     {{ validator }}
             {% endfor -%}
         {% endif %}

@@ -36,6 +36,8 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinx.ext.todo',
     'sphinx.ext.coverage',
+    'sphinx.ext.napoleon',
+    'sphinx.ext.intersphinx',
     'myst_parser'
 ]
 
@@ -84,3 +86,14 @@ linkcheck_ignore = [
 
 # Options for autosectionlabel
 autosectionlabel_prefix_document = True
+
+# Napoleon
+napoleon_google_docstring = True
+napoleon_use_admonition_for_examples = True
+
+# Intersphinx
+intersphinx_mapping = {
+    'python': ('https://docs.python.org/3', None),
+    'pydantic': ('https://docs.pydantic.dev/latest', None),
+    'jinja2': ('https://jinja.palletsprojects.com/en/latest/', None)
+}

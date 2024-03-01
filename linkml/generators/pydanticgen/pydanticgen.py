@@ -4,10 +4,12 @@ import os
 from collections import defaultdict
 from copy import deepcopy
 from dataclasses import dataclass
+from pathlib import Path
 from types import ModuleType
-from typing import Dict, List, Optional, Set, Type, Union
+from typing import Dict, List, Literal, Optional, Set, Type, Union
 
 import click
+from jinja2 import ChoiceLoader, Environment, FileSystemLoader
 
 # from linkml.generators import pydantic_GEN_VERSION
 from linkml_runtime.linkml_model.meta import (
@@ -37,6 +39,7 @@ from linkml.generators.pydanticgen.template import (
     PydanticBaseModel,
     PydanticClass,
     PydanticModule,
+    TemplateModel,
 )
 from linkml.utils.generator import shared_arguments
 from linkml.utils.ifabsent_functions import ifabsent_value_declaration
@@ -109,8 +112,15 @@ class PydanticGenerator(OOCodeGenerator):
 
     # ObjectVars
     pydantic_version: int = int(PYDANTIC_VERSION[0])
-    template_file: str = None
-    extra_fields: str = "forbid"
+    template_dir: Optional[Union[str, Path]] = None
+    """
+    Override templates for each TemplateModel.
+    
+    Directory with templates that override the default :attr:`.TemplateModel.template`
+    for each class. If a matching template is not found in the override directory,
+    the default templates will be used.
+    """
+    extra_fields: Literal["allow", "forbid", "ignore"] = "forbid"
     gen_mixin_inheritance: bool = True
     injected_classes: Optional[List[Union[Type, str]]] = None
     """
@@ -474,6 +484,13 @@ class PydanticGenerator(OOCodeGenerator):
                                 return _get_pyrange(value_slot_range_type, sv)
         return None
 
+    def _template_environment(self) -> Environment:
+        env = TemplateModel.environment()
+        if self.template_dir is not None:
+            loader = ChoiceLoader([FileSystemLoader(self.template_dir), env.loader])
+            env.loader = loader
+        return env
+
     def serialize(self) -> str:
         sv: SchemaView
         sv = self.schemaview
@@ -584,26 +601,21 @@ class PydanticGenerator(OOCodeGenerator):
         for k, c in pyschema.classes.items():
             attrs = {}
             for attr_name, src_attr in c.attributes.items():
-                if self.pydantic_version == 1:
-                    new_fields = {
-                        k: src_attr._as_dict.get(k, None)
-                        for k in PydanticAttribute.__fields__.keys()
-                        if src_attr._as_dict.get(k, None) is not None
-                    }
-                else:
-                    new_fields = {
-                        k: src_attr._as_dict.get(k, None)
-                        for k in PydanticAttribute.model_fields.keys()
-                        if src_attr._as_dict.get(k, None) is not None
-                    }
+                new_fields = {
+                    k: src_attr._as_dict.get(k, None)
+                    for k in PydanticAttribute.model_fields.keys()
+                    if src_attr._as_dict.get(k, None) is not None
+                }
                 predef_slot = predefined.get(k, {}).get(attr_name, None)
                 if predef_slot is not None:
                     predef_slot = str(predef_slot)
                 new_fields["predefined"] = predef_slot
                 new_fields["name"] = attr_name
-                attrs[attr_name] = PydanticAttribute(**new_fields)
+                attrs[attr_name] = PydanticAttribute(**new_fields, pydantic_ver=self.pydantic_version)
 
-            new_class = PydanticClass(name=k, attributes=attrs, description=c.description)
+            new_class = PydanticClass(
+                name=k, attributes=attrs, description=c.description, pydantic_ver=self.pydantic_version
+            )
             if k in bases:
                 new_class.bases = bases[k]
             classes[k] = new_class
@@ -618,15 +630,39 @@ class PydanticGenerator(OOCodeGenerator):
             enums=enums,
             classes=classes,
         )
-        code = module.render()
+        code = module.render(self._template_environment())
         return code
 
     def default_value_for_type(self, typ: str) -> str:
         return "None"
 
 
+def _subclasses(cls: Type):
+    return set(cls.__subclasses__()).union([s for c in cls.__subclasses__() for s in _subclasses(c)])
+
+
+_TEMPLATE_NAMES = sorted(list(set([c.template for c in _subclasses(TemplateModel)])))
+
+
 @shared_arguments(PydanticGenerator)
-@click.option("--template-file", help="Optional jinja2 template to use for class generation")
+@click.option("--template-file", hidden=True)
+@click.option(
+    "--template-dir",
+    type=click.Path(),
+    help="""
+Optional jinja2 template directory to use for class generation.
+
+Pass a directory containing templates with the same name as any of the default 
+:class:`.TemplateModel` templates to override them. The given directory will be 
+searched for matching templates, and use the default templates as a fallback 
+if an override is not found
+  
+Available templates to override:
+
+\b
+"""
+    + "\n".join(["- " + name for name in _TEMPLATE_NAMES]),
+)
 @click.option(
     "--pydantic-version",
     type=click.IntRange(1, 2),
@@ -644,8 +680,8 @@ class PydanticGenerator(OOCodeGenerator):
 def cli(
     yamlfile,
     template_file=None,
+    template_dir: Optional[str] = None,
     head=True,
-    emit_metadata=False,
     genmeta=False,
     classvars=True,
     slots=True,
@@ -654,15 +690,27 @@ def cli(
     **args,
 ):
     """Generate pydantic classes to represent a LinkML model"""
+    if template_file is not None:
+        raise DeprecationWarning(
+            (
+                "Passing a single template_file is deprecated. Pass a directory of template files instead. "
+                "See help string for --template-dir"
+            )
+        )
+
+    if template_dir is not None:
+        if not Path(template_dir).exists():
+            raise FileNotFoundError(f"The template directory {template_dir} does not exist!")
+
     gen = PydanticGenerator(
         yamlfile,
-        template_file=template_file,
         pydantic_version=pydantic_version,
         extra_fields=extra_fields,
         emit_metadata=head,
         genmeta=genmeta,
         gen_classvars=classvars,
         gen_slots=slots,
+        template_dir=template_dir,
         **args,
     )
     print(gen.serialize())

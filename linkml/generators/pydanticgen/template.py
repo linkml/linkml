@@ -9,14 +9,29 @@ if int(PYDANTIC_VERSION[0]) >= 2:
 
 
 class TemplateModel(BaseModel):
-    """Metaclass to group template models"""
+    """
+    Metaclass to render pydantic models with jinja templates.
+
+    Each subclass needs to declare a :class:`typing.ClassVar` for a
+    jinja template within the `templates` directory.
+
+    Templates are written expecting each of the other TemplateModels
+    to already be rendered to strings - ie. rather than the ``class.py.jinja``
+    template receiving a full :class:`.PydanticAttribute` object or dictionary,
+    it receives it having already been rendered to a string. See the :meth:`.render` method.
+    """
 
     template: ClassVar[str]
     pydantic_ver: int = int(PYDANTIC_VERSION[0])
 
     def render(self, environment: Optional[Environment] = None) -> str:
         """
-        Recursively render to a string.
+        Recursively render a template model to a string.
+
+        For each field in the model, recurse through, rendering each :class:`.TemplateModel`
+        using the template set in :attr:`.TemplateModel.template` , but preserving the structure
+        of lists and dictionaries. Regular :class:`.BaseModel` s are rendered to dictionaries.
+        Any other value is passed through unchanged.
         """
         if environment is None:
             environment = TemplateModel.environment()
@@ -32,21 +47,32 @@ class TemplateModel(BaseModel):
 
     @classmethod
     def environment(cls) -> Environment:
+        """
+        Default environment for Template models.
+
+        uses a :class:`jinja2.PackageLoader` for the templates directory within this module
+        with the ``trim_blocks`` and ``lstrip_blocks`` parameters set to ``True`` so that the
+        default templates could be written in a more readable way.
+        """
         return Environment(
             loader=PackageLoader("linkml.generators.pydanticgen", "templates"), trim_blocks=True, lstrip_blocks=True
         )
 
     if int(PYDANTIC_VERSION[0]) < 2:
 
+        @classmethod
         @property
-        def model_fields(self) -> Dict[str, Any]:
-            return self.__fields__
+        def model_fields(cls) -> Dict[str, Any]:
+            """In pydantic 1, simulate pydantic 2 behavior"""
+            return cls.__fields__
 
         @overload
-        def model_dump(self, mode: Literal["python"] = "python") -> dict: ...
+        def model_dump(self, mode: Literal["python"] = "python") -> dict:
+            ...
 
         @overload
-        def model_dump(self, mode: Literal["json"] = "json") -> str: ...
+        def model_dump(self, mode: Literal["json"] = "json") -> str:
+            ...
 
         def model_dump(self, mode: Literal["python", "json"] = "python", **kwargs) -> Union[dict, str]:
             if mode == "json":
@@ -75,6 +101,10 @@ def _render(
 
 
 class EnumValue(BaseModel):
+    """
+    A single value within an :class:`.Enum`
+    """
+
     label: str
     value: str
     description: Optional[str] = None
@@ -82,11 +112,12 @@ class EnumValue(BaseModel):
 
 class Enum(TemplateModel):
     """
-    Model of enum definition used with enum template
+    Model used to render a :class:`enum.Enum`
 
-    (not intended to be used as an enum!)
+    .. admonition:
 
-    TODO: use this with OOCodeGenerator when we decide where to put shared models :)
+        this is **not** an Enum in itself.
+
     """
 
     template: ClassVar[str] = "enum.py.jinja"
@@ -106,7 +137,14 @@ class PydanticBaseModel(TemplateModel):
     default_name: ClassVar[str] = "ConfiguredBaseModel"
     name: str = Field(default_factory=lambda: PydanticBaseModel.default_name)
     extra_fields: Literal["allow", "forbid", "ignore"] = "forbid"
+    """
+    Sets the ``extra`` model for pydantic models
+    """
     fields: Optional[List[str]] = None
+    """
+    Extra fields that are typically injected into the base model via 
+    :attr:`~linkml.generators.pydanticgen.PydanticGenerator.injected_fields`
+    """
 
 
 class PydanticAttribute(TemplateModel):
@@ -167,13 +205,22 @@ class PydanticAttribute(TemplateModel):
 
 
 class PydanticValidator(PydanticAttribute):
+    """
+    Trivial subclass of :class:`.PydanticAttribute` that uses the ``validator.py.jinja`` template instead
+    """
+
     template: ClassVar[str] = "validator.py.jinja"
 
 
 class PydanticClass(TemplateModel):
     """
     Reduced version of ClassDefinition that carries all and only the information
-    needed by the template
+    needed by the template.
+
+    On instantiation and rendering, will create any additional :attr:`.validators`
+    that are implied by the given :attr:`.attributes`. Currently the only kind of
+    slot-level validators that are created are for those slots that have a ``pattern``
+    property.
     """
 
     template: ClassVar[str] = "class.py.jinja"
@@ -203,23 +250,68 @@ class PydanticClass(TemplateModel):
             self.validators = self._validators()
 
         def render(self, environment: Optional[Environment] = None) -> str:
+            """Overridden in pydantic 1 to ensure that validators are regenerated at rendering time"""
             # refresh in case attributes have changed since init
             self.validators = self._validators()
             return super(PydanticClass, self).render(environment)
 
 
 class ObjectImport(BaseModel):
+    """
+    An object to be imported from within a module.
+
+    See :class:`.Import` for examples
+    """
+
     name: str
     alias: Optional[str] = None
 
 
 class Import(TemplateModel):
+    """
+    A python module, or module and classes to be imported.
+
+    Examples:
+
+        Module import:
+
+        .. code-block:: python
+
+            >>> Import(module='sys').render()
+            import sys
+            >>> Import(module='numpy', alias='np').render()
+            import numpy as np
+
+        Class import:
+
+        .. code-block:: python
+
+            >>> Import(module='pathlib', objects=[
+            >>>     ObjectImport(name="Path"),
+            >>>     ObjectImport(name="PurePath", alias="RenamedPurePath")
+            >>> ]).render()
+            from pathlib import (
+                Path,
+                PurePath as RenamedPurePath
+            )
+
+    """
+
     template: ClassVar[str] = "imports.py.jinja"
     module: str
     alias: Optional[str] = None
     objects: Optional[List[ObjectImport]] = None
 
     def merge(self, other: "Import") -> List["Import"]:
+        """
+        Merge one import with another, see :meth:`.Imports` for an example.
+
+        * If module don't match, return both
+        * If one or the other are a :class:`.ConditionalImport`, return both
+        * If modules match, neither contain objects, but the other has an alias, return the other
+        * If modules match, one contains objects but the other doesn't, return both
+        * If modules match, both contain objects, merge the object lists, preferring objects with aliases
+        """
         # return both if we are orthogonal
         if self.module != other.module:
             return [self, other]
@@ -255,13 +347,81 @@ class Import(TemplateModel):
 
 
 class ConditionalImport(Import):
+    """
+    Import that depends on some condition in the environment, common when
+    using backported features or straddling dependency versions.
+
+    Make sure that everything that is needed to evaluate the condition is imported
+    before this is added to the injected imports!
+
+    Examples:
+
+        conditionally import Literal from ``typing_extensions`` if on python <= 3.8
+
+        .. code-block:: python
+            :force:
+
+            imports = (Imports() +
+                 Import(module='sys') +
+                 ConditionalImport(
+                 module="typing",
+                 objects=[ObjectImport(name="Literal")],
+                 condition="sys.version_info >= (3, 8)",
+                 alternative=Import(
+                     module="typing_extensions",
+                     objects=[ObjectImport(name="Literal")]
+                 )
+             )
+
+        Renders to:
+
+        .. code-block:: python
+            :force:
+
+            import sys
+            if sys.version_info >= (3, 8):
+                from typing import Literal
+            else:
+                from typing_extensions import Literal
+
+    """
+
     template: ClassVar[str] = "conditional_import.py.jinja"
     condition: str
     alternative: Import
 
 
 class Imports(TemplateModel):
-    """Container class for imports that can handle merging!"""
+    """
+    Container class for imports that can handle merging!
+
+    See :class:`.Import` and :class:`.ConditionalImport` for examples of declaring individual imports
+
+    Useful for generation, because each build stage will potentially generate
+    overlapping imports. This ensures that we can keep a collection of imports
+    without having many duplicates.
+
+    Defines methods for adding, iterating, and indexing from within the :attr:`Imports.imports` list.
+
+    Examples:
+
+        .. code-block:: python
+            :force:
+
+            imports = (Imports() +
+                Import(module="sys") +
+                Import(module="pathlib", objects=[ObjectImport(name="Path")]) +
+                Import(module="sys")
+            )
+
+        Renders to:
+
+        .. code-block:: python
+
+            from pathlib import Path
+            import sys
+
+    """
 
     template: ClassVar[str] = "imports.py.jinja"
 
@@ -306,7 +466,7 @@ class Imports(TemplateModel):
 
 class PydanticModule(TemplateModel):
     """
-    Top-level container model for generating a pydantic module
+    Top-level container model for generating a pydantic module :)
     """
 
     template: ClassVar[str] = "module.py.jinja"
@@ -333,6 +493,9 @@ class PydanticModule(TemplateModel):
             self.class_names = [c.name for c in self.classes.values()]
 
         def render(self, environment: Optional[Environment] = None) -> str:
-            # refresh in case attributes have changed since init
+            """
+            Trivial override of parent method for pydantic 1 to ensure that
+            :attr:`.class_names` are correct at render time
+            """
             self.class_names = [c.name for c in self.classes.values()]
             return super(PydanticModule, self).render(environment)

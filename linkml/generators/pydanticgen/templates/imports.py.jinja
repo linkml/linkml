@@ -6,7 +6,7 @@ import {{ module }} as {{ alias }}
 {%- else %}
     {% if objects | length == 1 %}
 from {{ module }} import {{ objects[0]['name'] }} {% if objects[0]['alias'] is not none %} as {{ objects[0]['alias'] }} {% endif %}
-    {% else %}
+    {%- else %}
 from {{ module }} import (
     {% for object in objects %}
         {% if object['alias'] is string %}
@@ -17,7 +17,7 @@ from {{ module }} import (
         {% if not loop.last %},{{ '\n' }}{% else %}{{ '\n' }}{% endif %}
     {% endfor %}
 )
-    {% endif %}
+    {%- endif %}
 {%- endif %}
 {% endmacro %}
 {%- if module %}
