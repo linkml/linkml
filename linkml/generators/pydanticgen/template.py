@@ -108,14 +108,9 @@ class EnumValue(BaseModel):
     description: Optional[str] = None
 
 
-class Enum(TemplateModel):
+class PydanticEnum(TemplateModel):
     """
     Model used to render a :class:`enum.Enum`
-
-    .. admonition:
-
-        this is **not** an Enum in itself.
-
     """
 
     template: ClassVar[str] = "enum.py.jinja"
@@ -474,7 +469,7 @@ class PydanticModule(TemplateModel):
     base_model: PydanticBaseModel = PydanticBaseModel()
     injected_classes: Optional[List[str]] = None
     imports: List[Union[Import, ConditionalImport]] = Field(default_factory=list)
-    enums: Dict[str, Enum] = Field(default_factory=dict)
+    enums: Dict[str, PydanticEnum] = Field(default_factory=dict)
     classes: Dict[str, PydanticClass] = Field(default_factory=dict)
 
     if int(PYDANTIC_VERSION[0]) >= 2:

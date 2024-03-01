@@ -209,8 +209,6 @@ target-version = "py38"
 # These templates can have long lines
 "linkml/generators/sqlalchemy/sqlalchemy_declarative_template.py" = ["E501"]
 "linkml/generators/sqlalchemy/sqlalchemy_imperative_template.py" = ["E501"]
-# unused imports in `__init__.py` are fine - it's about declaring a public API!
-"__init__.py" = ["F401"]
 
 # Notebooks can have unsorted imports
 "tests/test_notebooks/input/*" = ["E402"]
