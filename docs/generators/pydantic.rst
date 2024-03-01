@@ -143,7 +143,7 @@ Classes:
     cls = PydanticClass(
         name="MyClass",
         bases="BaseModel",
-        desciption="A Class I Made!",
+        description="A Class I Made!",
         attributes={"my_field": attr},
     )
 
