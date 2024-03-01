@@ -61,7 +61,7 @@ RDF Conversion
 
 
 
-.. currentmodule:: linkml_runtime.dumper
+.. currentmodule:: linkml_runtime.dumpers
                    
 .. autoclass:: RDFLibDumper
     :members: dumps, dump

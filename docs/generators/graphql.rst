@@ -63,6 +63,6 @@ Code
 
 .. currentmodule:: linkml.generators.graphqlgen
                    
-.. autoclass:: GrapghlGenerator
+.. autoclass:: GraphqlGenerator
     :members: serialize
 

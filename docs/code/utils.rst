@@ -89,14 +89,6 @@ linkml.utils.schemasynopsis module
    :undoc-members:
    :show-inheritance:
 
-linkml.utils.sqltransformer\_old module
----------------------------------------
-
-.. automodule:: linkml.utils.sqltransformer_old
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 linkml.utils.typereferences module
 ----------------------------------
 

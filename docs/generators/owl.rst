@@ -186,5 +186,5 @@ Code
 ^^^^
 
                    
-.. autoclass:: OwlGenerator
+.. autoclass:: OwlSchemaGenerator
     :members: serialize
