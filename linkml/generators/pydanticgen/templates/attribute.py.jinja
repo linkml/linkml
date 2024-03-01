@@ -1,0 +1,10 @@
+{{name}}: {{ annotations['python_range'].value }} = Field({{ field }}
+{%- if title != None %}, title="{{title}}"{% endif -%}
+{%- if description %}, description="""{{description}}"""{% endif -%}
+{%- if equals_number != None %}
+    , le={{equals_number}}, ge={{equals_number}}
+{%- else -%}
+    {%- if minimum_value != None %}, ge={{minimum_value}}{% endif -%}
+    {%- if maximum_value != None %}, le={{maximum_value}}{% endif -%}
+{%- endif -%}
+)

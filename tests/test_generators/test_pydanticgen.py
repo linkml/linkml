@@ -1,18 +1,30 @@
 import inspect
 import typing
 from importlib.metadata import version
-from typing import Dict, List, Optional, Union, get_args, get_origin
+from types import GeneratorType, ModuleType
+from typing import ClassVar, Dict, List, Optional, Union, get_args, get_origin
 
 import pytest
 import yaml
+from jinja2 import DictLoader, Environment, Template
 from linkml_runtime import SchemaView
 from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.linkml_model import SlotDefinition
 from linkml_runtime.utils.compile_python import compile_python
-from pydantic import ValidationError
+from pydantic import BaseModel, ValidationError
 from pydantic.version import VERSION as PYDANTIC_VERSION
 
 from linkml.generators.pydanticgen import PydanticGenerator
+from linkml.generators.pydanticgen.template import (
+    ConditionalImport,
+    Import,
+    Imports,
+    ObjectImport,
+    PydanticAttribute,
+    PydanticClass,
+    PydanticValidator,
+    TemplateModel,
+)
 from linkml.utils.schema_builder import SchemaBuilder
 
 from .conftest import MyInjectedClass
@@ -126,7 +138,7 @@ prefixes:
   schema: http://schema.org/
 
 imports:
-  - https://w3id.org/linkml/types
+  - linkml:types
 
 classes:
   A:
@@ -166,9 +178,9 @@ slots:
     code = gen.serialize()
     lines = code.splitlines()
     ix = lines.index("class C(ConfiguredBaseModel):")
-    assert lines[ix + 3] == "    inlined_things: Optional[Dict[str, Union[A, B]]] = Field(default_factory=dict)"
-    assert lines[ix + 4] == "    inlined_as_list_things: Optional[List[Union[A, B]]] = Field(default_factory=list)"
-    assert lines[ix + 5] == "    not_inlined_things: Optional[List[str]] = Field(default_factory=list)"
+    assert lines[ix + 2] == "    inlined_things: Optional[Dict[str, Union[A, B]]] = Field(default_factory=dict)"
+    assert lines[ix + 3] == "    inlined_as_list_things: Optional[List[Union[A, B]]] = Field(default_factory=list)"
+    assert lines[ix + 4] == "    not_inlined_things: Optional[List[str]] = Field(default_factory=list)"
 
 
 @pytest.mark.parametrize(
@@ -275,7 +287,7 @@ def test_pydantic_inlining(range, multivalued, inlined, inlined_as_list, B_has_i
     ix = lines.index("class A(ConfiguredBaseModel):")
     assert ix > 0
     # assume a single blank line separating
-    slot_line = lines[ix + 2]
+    slot_line = lines[ix + 1]
     assert f"a2b: {expected}" in slot_line, f"did not find expected {expected} in {slot_line}"
     if expected not in expected_default_factories:
         raise ValueError(f"unexpected default factory for {expected}")
@@ -295,7 +307,7 @@ prefixes:
   schema: http://schema.org/
 
 imports:
-  - https://w3id.org/linkml/types
+  - linkml:types
 
 classes:
   Test:
@@ -606,13 +618,29 @@ classes:
 @pytest.mark.parametrize(
     "imports,expected",
     [
-        ({"typing": ["Dict", "List", "Union"]}, (("Dict", Dict), ("List", List), ("Union", Union))),
-        ({"typing": None}, (("typing", typing),)),
         (
-            {"typing": [{"name": "Dict", "as": "DictRenamed"}, {"name": "List", "as": "ListRenamed"}]},
-            (("DictRenamed", Dict), ("ListRenamed", List)),
+            [
+                Import(
+                    module="typing",
+                    objects=[ObjectImport(name="Dict"), ObjectImport(name="List"), ObjectImport(name="Union")],
+                )
+            ],
+            (("Dict", Dict), ("List", List), ("Union", Union)),
         ),
-        ({"typing": {"as": "tp"}}, (("tp", typing),)),
+        ([Import(module="typing")], (("typing", typing),)),
+        (
+            [
+                Import(
+                    module="types",
+                    objects=[
+                        ObjectImport(name="ModuleType", alias="RenamedA"),
+                        ObjectImport(name="GeneratorType", alias="RenamedB"),
+                    ],
+                )
+            ],
+            (("RenamedA", ModuleType), ("RenamedB", GeneratorType)),
+        ),
+        ([Import(module="typing", alias="tp")], (("tp", typing),)),
     ],
 )
 def test_inject_imports(kitchen_sink_path, tmp_path, input_path, imports, expected):
@@ -680,3 +708,266 @@ def test_inject_field(kitchen_sink_path, tmp_path, input_path, inject, name, typ
         else:
             assert field.type_ is type
         assert field.field_info.description == description
+
+
+# --------------------------------------------------
+# pydanticgen template module tests
+# --------------------------------------------------
+
+
+@pytest.fixture
+def sample_class() -> PydanticClass:
+    # no pattern makes no validators
+    attr_1 = PydanticAttribute(name="attr_1", annotations={"python_range": {"value": "Union[str,int]"}}, required=True)
+    attr_2 = PydanticAttribute(name="attr_2", annotations={"python_range": {"value": "List[float]"}})
+    cls = PydanticClass(name="Sample", attributes={"attr_1": attr_1, "attr_2": attr_2})
+    return cls
+
+
+@pytest.mark.parametrize(
+    "mode,expected",
+    [["python", {"pydantic_ver": int(PYDANTIC_VERSION[0])}], ["json", f'{{"pydantic_ver": {PYDANTIC_VERSION[0]}}}']],
+)
+def test_template_model_dump(mode: str, expected):
+    if mode == "json" and int(PYDANTIC_VERSION[0]) >= 2:
+        return
+    assert TemplateModel().model_dump(mode=mode) == expected
+
+
+def test_attribute_field():
+    """
+    PydanticAttribute field should be able to autocompute ``field``
+    """
+    attr = PydanticAttribute(name="attr")
+    assert attr.model_dump()["field"] == "None"
+
+    predefined = "List[Union[str,int]]"
+    attr = PydanticAttribute(name="attr", predefined=predefined)
+    assert attr.model_dump()["field"] == predefined
+
+    for item in ("required", "identifier", "key"):
+        attr = PydanticAttribute(name="attr", **{item: True})
+        assert attr.model_dump()["field"] == "..."
+
+
+def test_class_validators():
+    """
+    PydanticClass should create validators from attributes that have `patterns`
+    """
+    # no attributes means no attributes!
+    no_attrs = PydanticClass(name="no_attrs")
+    assert no_attrs.validators is None
+
+    # no pattern makes no validators
+    no_validator = PydanticAttribute(name="no_validator", annotations={"python_range": {"value": "str"}})
+    no_valid_class = PydanticClass(name="no_validator_class", attributes={"no_validator": no_validator})
+    assert not no_valid_class.validators
+
+    # a pattern makes a validator!
+    validator = PydanticAttribute(
+        name="validator", annotations={"python_range": {"value": "str"}}, pattern="word.*other"
+    )
+    valid_class = PydanticClass(name="valid_class", attributes={"validator": validator})
+    assert valid_class.validators["validator"] == PydanticValidator(**validator.model_dump())
+
+    # Adding a validator after object instantiation should still result in a generated validator
+    no_valid_class.attributes["validator"] = validator
+    assert "def pattern_validator" in no_valid_class.render()
+
+
+def test_import_merge():
+    import_a = Import(module="module_a")
+    import_b = Import(module="module_b")
+    import_cond_a = ConditionalImport(module="module_a", condition="1 == 1", alternative=Import(module="module_b"))
+    import_cond_b = ConditionalImport(module="module_a", condition="2 == 2", alternative=Import(module="module_c"))
+    import_a_alias = Import(module="module_a", alias="alias_a")
+    import_a_objects = Import(module="module_a", objects=[ObjectImport(name="object_1"), ObjectImport(name="object_2")])
+    import_a_objects_2 = Import(module="module_a", objects=[ObjectImport(name="object_3")])
+    import_a_objects_combined = Import(
+        module="module_a",
+        objects=[ObjectImport(name="object_1"), ObjectImport(name="object_2"), ObjectImport(name="object_3")],
+    )
+    import_a_objects_alias = Import(module="module_a", objects=[ObjectImport(name="object_2", alias="alias_2")])
+
+    # orthogonal merges just return both
+    assert import_a.merge(import_b) == [import_a, import_b]
+
+    # adding conditionals or mixed conditionals returns both
+    assert import_cond_a.merge(import_cond_b) == [import_cond_a, import_cond_b]
+    assert import_a.merge(import_cond_a) == [import_a, import_cond_a]
+
+    # merging an alias returns the other if it updates the alias
+    assert import_a.merge(import_a_alias) == [import_a_alias]
+
+    # merging module and objects keeps both
+    assert import_a.merge(import_a_objects) == [import_a, import_a_objects]
+
+    # merging orthogonal objects adds
+    assert import_a_objects.merge(import_a_objects_2) == [import_a_objects_combined]
+
+    # merging objects with aliases updates to the new alias
+    alias_merged = import_a_objects.merge(import_a_objects_alias)
+    assert len(alias_merged) == 1
+    assert len(alias_merged[0].objects) == 2
+    assert alias_merged[0].objects[0].name == "object_1"
+    assert alias_merged[0].objects[0].alias is None
+    assert alias_merged[0].objects[1].name == "object_2"
+    assert alias_merged[0].objects[1].alias == "alias_2"
+
+
+def test_imports_add():
+    """
+    Only tests additional functionality different than :meth:`.Import.merge`
+    """
+    import_a = Import(module="module_a")
+    import_b = Import(module="module_b")
+    import_cond_a = ConditionalImport(module="module_a", condition="1 == 1", alternative=Import(module="module_b"))
+    import_cond_b = ConditionalImport(module="module_a", condition="2 == 2", alternative=Import(module="module_c"))
+
+    imports = Imports() + import_a
+
+    imports_1 = imports + import_b
+    assert len(imports_1) == len(imports) + 1
+    assert imports_1[1] == import_b
+
+    # dedupe here too
+    imports_2 = imports_1 + import_b
+    assert len(imports_2) == len(imports_1)
+
+    imports_3 = imports_2 + import_cond_a
+    imports_4 = imports_3 + import_cond_b
+    assert len(imports_4) == len(imports_3) + 1
+    assert imports_4[-1] == import_cond_b
+
+    # adding to the end means removing from the front
+    imports_5 = imports_4 + import_a
+    assert len(imports_5) == len(imports_4)
+    assert imports_5[-1] == import_a
+    assert imports_5[0] != import_a
+    rendered = imports_5.render()
+    assert (
+        rendered
+        == """import module_b
+if 1 == 1:
+    import module_a
+else:
+    import module_b
+
+if 2 == 2:
+    import module_a
+else:
+    import module_c
+
+import module_a
+"""
+    )
+
+
+def test_imports_dunder():
+    """
+    The dunder methods in Imports should do what they're supposed to
+    """
+    import_a = Import(module="module_a")
+    import_b = Import(module="module_b")
+    imports = Imports() + import_a + import_b
+
+    assert len(imports) == 2
+    assert [i for i in imports] == [import_a, import_b]
+    assert imports[1] == import_b
+
+
+def test_template_models_templates():
+    """
+    All template models should have templates!
+    """
+    for model in TemplateModel.__subclasses__():
+        assert hasattr(model, "template")
+        assert isinstance(model.template, str)
+        env = model.environment()
+        template = env.get_template(model.template)
+        assert isinstance(template, Template)
+
+
+def test_default_environment():
+    """
+    Check that the default environment has the configuration for our templates
+    """
+    env = TemplateModel.environment()
+    assert env.trim_blocks
+    assert env.lstrip_blocks
+
+
+def test_template_pass_environment(sample_class):
+    """
+    It should be possible to override default templates by passing an environment
+    """
+    templates = {
+        "class.py.jinja": """{{ name }}
+{%- for attr in attributes.values() %}
+{{ attr }} 
+{%- endfor -%}""",
+        "attribute.py.jinja": """attr: {{ name }}
+range: {{ annotations.python_range.value }}""",
+    }
+    env = Environment(loader=DictLoader(templates))
+    rendered = sample_class.render(env)
+    assert (
+        rendered
+        == """Sample
+attr: attr_1
+range: Union[str,int]
+attr: attr_2
+range: List[float]"""
+    )
+
+
+def test_template_render():
+    """
+    Template should recursively render templatemodels to strings, preserving
+    their structure as lists or dicts
+    """
+
+    class PlainModel(BaseModel):
+        plain_field: str = "plain_field"
+        second: int = 1
+
+    class InnerTemplate(TemplateModel):
+        template: ClassVar[str] = "inner.jinja"
+        value: Union[int, str] = 1
+
+    class TestTemplate(TemplateModel):
+        template: ClassVar[str] = "test.jinja"
+        a_list: List[InnerTemplate] = [InnerTemplate(value=1), InnerTemplate(value=2)]
+        a_dict: Dict[str, InnerTemplate] = {"one": InnerTemplate(value="one"), "two": InnerTemplate(value="two")}
+        a_value: int = 1
+        plain_model: PlainModel = PlainModel()
+        recursive: Optional["TestTemplate"] = None
+
+    templates = {
+        "inner.jinja": """inner_value: {{ value }}""",
+        "test.jinja": """a_list: {{ a_list }}
+a_dict: {{ a_dict }}
+a_value: {{ a_value }}
+plain_model: {{ plain_model }}
+recursive:
+{{ recursive }}""",
+    }
+    env = Environment(loader=DictLoader(templates))
+
+    inner = TestTemplate()
+    test = TestTemplate(recursive=inner)
+    rendered = test.render(env)
+    assert (
+        rendered
+        == """a_list: ['inner_value: 1', 'inner_value: 2']
+a_dict: {'one': 'inner_value: one', 'two': 'inner_value: two'}
+a_value: 1
+plain_model: {'plain_field': 'plain_field', 'second': 1}
+recursive:
+a_list: ['inner_value: 1', 'inner_value: 2']
+a_dict: {'one': 'inner_value: one', 'two': 'inner_value: two'}
+a_value: 1
+plain_model: {'plain_field': 'plain_field', 'second': 1}
+recursive:
+None"""
+    )

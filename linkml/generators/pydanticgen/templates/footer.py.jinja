@@ -1,0 +1,13 @@
+{% if pydantic_ver == 1 %}
+# Update forward refs
+# see https://pydantic-docs.helpmanual.io/usage/postponed_annotations/
+    {% for c in class_names -%}
+{{ c }}.update_forward_refs()
+    {% endfor %}
+{% else %}
+# Model rebuild
+# see https://pydantic-docs.helpmanual.io/usage/models/#rebuilding-a-model
+    {% for c in class_names -%}
+{{ c }}.model_rebuild()
+    {% endfor %}
+{% endif %}

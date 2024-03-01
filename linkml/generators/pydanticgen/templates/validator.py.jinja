@@ -1,0 +1,15 @@
+{% if pydantic_ver == 1 %}
+@validator('{{name}}', allow_reuse=True)
+{% else %}
+@field_validator('{{name}}')
+{% endif %}
+    def pattern_{{name}}(cls, v):
+        pattern=re.compile(r"{{pattern}}")
+        if isinstance(v,list):
+            for element in v:
+                if not pattern.match(element):
+                    raise ValueError(f"Invalid {{name}} format: {element}")
+        elif isinstance(v,str):
+            if not pattern.match(v):
+                raise ValueError(f"Invalid {{name}} format: {v}")
+        return v
