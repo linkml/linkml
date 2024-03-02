@@ -171,6 +171,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../intro/tutorial07.html">Part 7: Slots and inheritance</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../intro/tutorial08.html">Part 8: Generating Projects</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../intro/tutorial09.html">Part 9: Working with SQL databases</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/tutorial10.html">Part 10: Working with SQL databases</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../schemas/index.html">LinkML Schemas</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of LinkML Schemas</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -199,6 +200,7 @@
 <li class="toctree-l2"><a class="reference internal" href="rdf.html">Working with RDF and LinkML</a></li>
 <li class="toctree-l2"><a class="reference internal" href="csvs.html">CSVs and Tabular Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="python.html">Python</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sql-databases.html">Working with data in SQL Databases</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../generators/index.html">Generators</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of Generators</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -206,12 +208,16 @@
 <li class="toctree-l2"><a class="reference internal" href="../generators/protobuf.html">ProtoBuf</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/graphql.html">GraphQL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/jsonld-context.html">JSON-LD Contexts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/jsonld.html">JSON-LD</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/rdf.html">RDF</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/sparql.html">SPARQL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/shex.html">ShEx</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/shacl.html">SHACL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/owl.html">OWL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/markdown.html">Markdown</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/docgen.html">Docs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/erdiagram.html">ER Diagrams</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/yuml.html">YUML</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/plantumlgen.html">PlantUML Diagram Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/project-generator.html">Project Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/python.html">Python</a></li>
@@ -221,9 +227,12 @@
 <li class="toctree-l2"><a class="reference internal" href="../generators/sqltable.html">SQL DDL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/sqlalchemy.html">SQL Alchemy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/linkml.html">LinkML Generators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/prefixmap.html">Prefix Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/sssom.html">SSSOM</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/terminusdb.html">TerminusDB</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/excel.html">Excel Spreadsheet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/csv.html">CSV</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/yaml.html">Yaml</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../howtos/index.html">How-to Guides</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of How-to Guides</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -259,6 +268,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../developers/organization.html">GitHub Organization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../developers/notebooks.html">Jupyter Notebooks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../developers/manipulating-schemas.html">Manipulating Schemas</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../developers/manage-releases.html">How to Manage Releases of your LinkML Schema</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../developers/schemaview.html">SchemaView</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../developers/schemabuilder.html">SchemaBuilder</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../developers/loaders-and-dumpers.html">Data Conversion: Loaders and Dumpers</a></li>
@@ -269,7 +279,12 @@
 <li class="toctree-l2"><a class="reference internal" href="../developers/contributing-code.html">Contributing Code</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../code.html">Code</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../code/index.html">Code</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Code</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../code/metamodel.html">MetaModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code/utils.html">Utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code/validator.html">Validator</a></li>
+</ul>
+</li>
 </ul>
 
 </div>
@@ -327,7 +342,7 @@ of massive databases.</p>
 <p>This package contains the main entry point for various flexible validation strategies.</p>
 <section id="validation-in-python-code">
 <h3>Validation in Python code<a class="headerlink" href="#validation-in-python-code" title="Permalink to this heading">#</a></h3>
-<p>If you are writing your own Python code to perform validation the simplest approach is to use the <a class="reference internal" href="../code.html#linkml.validator.validate" title="linkml.validator.validate"><code class="xref py py-func docutils literal notranslate"><span class="pre">linkml.validator.validate()</span></code></a> function. For example:</p>
+<p>If you are writing your own Python code to perform validation the simplest approach is to use the <a class="reference internal" href="../code/validator.html#linkml.validator.validate" title="linkml.validator.validate"><code class="xref py py-func docutils literal notranslate"><span class="pre">linkml.validator.validate()</span></code></a> function. For example:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">linkml.validator</span> <span class="kn">import</span> <span class="n">validate</span>
 
 <span class="n">instance</span> <span class="o">=</span> <span class="p">{</span>
@@ -347,7 +362,7 @@ of massive databases.</p>
 </pre></div>
 </div>
 <p>This function takes a single instance (typically represented as a Python dict) and validates it according to the given schema (specified here by a path to the source file, but dict or object representation of the schema is also accepted). This example also explicitly specifies which class within the schema (<code class="docutils literal notranslate"><span class="pre">Person</span></code>) the data instance should adhere to. If this is omitted, the function will attempt to infer it.</p>
-<p>The other high-level function is <a class="reference internal" href="../code.html#linkml.validator.validate_file" title="linkml.validator.validate_file"><code class="xref py py-func docutils literal notranslate"><span class="pre">linkml.validator.validate_file()</span></code></a>. It loads data instances from a file and validates each of them according to a class in a schema. Assuming the contents of <code class="docutils literal notranslate"><span class="pre">people.csv</span></code> look like:</p>
+<p>The other high-level function is <a class="reference internal" href="../code/validator.html#linkml.validator.validate_file" title="linkml.validator.validate_file"><code class="xref py py-func docutils literal notranslate"><span class="pre">linkml.validator.validate_file()</span></code></a>. It loads data instances from a file and validates each of them according to a class in a schema. Assuming the contents of <code class="docutils literal notranslate"><span class="pre">people.csv</span></code> look like:</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>id,full_name,age,phone
 ORCID:1234,Clark Kent,32,555-555-5555
 ORCID:5678,Lois Lane,33,555-555-1234
@@ -360,8 +375,8 @@ ORCID:5678,Lois Lane,33,555-555-1234
 </pre></div>
 </div>
 <p>Under the hood, both of these functions use a strategy of generating a JSON Schema artifact from the LinkML schema and validating instances using a JSON Schema validator.</p>
-<p>While many LinkML constructs can be expressed in JSON Schema (which makes it a good default validation strategy), there are some features of LinkML not supported by JSON Schema. For more fine-grained control over the validation strategy use the <a class="reference internal" href="../code.html#linkml.validator.Validator" title="linkml.validator.Validator"><code class="xref py py-class docutils literal notranslate"><span class="pre">linkml.validator.Validator</span></code></a> class. Using this class it is possible to mix JSON Schema validation with other strategies or forego it altogether.</p>
-<p>The key idea behind the <a class="reference internal" href="../code.html#linkml.validator.Validator" title="linkml.validator.Validator"><code class="xref py py-class docutils literal notranslate"><span class="pre">linkml.validator.Validator</span></code></a> is that it does not do any validation itself. Instead, it simply orchestrates validation according to a set of validation plugins. In this example, the basic JSON Schema validation will happen (disallowing additional properties because of the <code class="docutils literal notranslate"><span class="pre">closed</span></code> option) as well as a validation that checks that recommended slots are populated:</p>
+<p>While many LinkML constructs can be expressed in JSON Schema (which makes it a good default validation strategy), there are some features of LinkML not supported by JSON Schema. For more fine-grained control over the validation strategy use the <a class="reference internal" href="../code/validator.html#linkml.validator.Validator" title="linkml.validator.Validator"><code class="xref py py-class docutils literal notranslate"><span class="pre">linkml.validator.Validator</span></code></a> class. Using this class it is possible to mix JSON Schema validation with other strategies or forego it altogether.</p>
+<p>The key idea behind the <a class="reference internal" href="../code/validator.html#linkml.validator.Validator" title="linkml.validator.Validator"><code class="xref py py-class docutils literal notranslate"><span class="pre">linkml.validator.Validator</span></code></a> is that it does not do any validation itself. Instead, it simply orchestrates validation according to a set of validation plugins. In this example, the basic JSON Schema validation will happen (disallowing additional properties because of the <code class="docutils literal notranslate"><span class="pre">closed</span></code> option) as well as a validation that checks that recommended slots are populated:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">linkml.validator</span> <span class="kn">import</span> <span class="n">Validator</span>
 <span class="kn">from</span> <span class="nn">linkml.validator.plugins</span> <span class="kn">import</span> <span class="n">JsonschemaValidationPlugin</span><span class="p">,</span> <span class="n">RecommendedSlotsPlugin</span>
 
@@ -386,7 +401,7 @@ ORCID:5678,Lois Lane,33,555-555-1234
 <span class="n">validator</span><span class="o">.</span><span class="n">validate</span><span class="p">({</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;ORCID:1234&quot;</span><span class="p">,</span> <span class="s2">&quot;full_name&quot;</span><span class="p">:</span> <span class="s2">&quot;Clark Kent&quot;</span><span class="p">,</span> <span class="s2">&quot;age&quot;</span><span class="p">:</span> <span class="mi">32</span><span class="p">,</span> <span class="s2">&quot;phone&quot;</span><span class="p">:</span> <span class="s2">&quot;555-555-5555&quot;</span><span class="p">},</span> <span class="s2">&quot;Person&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Refer to the <a class="reference internal" href="../code.html#module-linkml.validator.plugins" title="linkml.validator.plugins"><code class="xref py py-mod docutils literal notranslate"><span class="pre">linkml.validator.plugins</span></code></a> documentation for more information about the available plugins and their benefits and tradeoffs.</p>
+<p>Refer to the <a class="reference internal" href="../code/validator.html#module-linkml.validator.plugins" title="linkml.validator.plugins"><code class="xref py py-mod docutils literal notranslate"><span class="pre">linkml.validator.plugins</span></code></a> documentation for more information about the available plugins and their benefits and tradeoffs.</p>
 </section>
 <section id="the-linkml-validate-cli">
 <h3>The <code class="docutils literal notranslate"><span class="pre">linkml-validate</span></code> CLI<a class="headerlink" href="#the-linkml-validate-cli" title="Permalink to this heading">#</a></h3>
@@ -395,7 +410,7 @@ ORCID:5678,Lois Lane,33,555-555-1234
 No<span class="w"> </span>issues<span class="w"> </span>found!
 </pre></div>
 </div>
-<p>Similar to the <a class="reference internal" href="../code.html#linkml.validator.validate" title="linkml.validator.validate"><code class="xref py py-func docutils literal notranslate"><span class="pre">linkml.validator.validate()</span></code></a> and <a class="reference internal" href="../code.html#linkml.validator.validate_file" title="linkml.validator.validate_file"><code class="xref py py-func docutils literal notranslate"><span class="pre">linkml.validator.validate_file()</span></code></a> functions, this will perform basic validation based on a JSON Schema validator. If advanced customization is needed, create a configuration YAML file and provide it with the <code class="docutils literal notranslate"><span class="pre">--config</span></code> argument:</p>
+<p>Similar to the <a class="reference internal" href="../code/validator.html#linkml.validator.validate" title="linkml.validator.validate"><code class="xref py py-func docutils literal notranslate"><span class="pre">linkml.validator.validate()</span></code></a> and <a class="reference internal" href="../code/validator.html#linkml.validator.validate_file" title="linkml.validator.validate_file"><code class="xref py py-func docutils literal notranslate"><span class="pre">linkml.validator.validate_file()</span></code></a> functions, this will perform basic validation based on a JSON Schema validator. If advanced customization is needed, create a configuration YAML file and provide it with the <code class="docutils literal notranslate"><span class="pre">--config</span></code> argument:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>linkml-validate<span class="w"> </span>--config<span class="w"> </span>person-validation.config.yaml
 </pre></div>
 </div>
@@ -428,7 +443,7 @@ file path and data will be loaded from it based on
 the file extension.</p></li>
 <li><p>If the source is a dictionary it should have a
 single key representing the the name of a
-<a class="reference internal" href="../code.html#linkml.validator.loaders.Loader" title="linkml.validator.loaders.Loader"><code class="xref py py-class docutils literal notranslate"><span class="pre">linkml.validator.loaders.Loader</span></code></a> subclass.
+<a class="reference internal" href="../code/validator.html#linkml.validator.loaders.Loader" title="linkml.validator.loaders.Loader"><code class="xref py py-class docutils literal notranslate"><span class="pre">linkml.validator.loaders.Loader</span></code></a> subclass.
 The value is a dictionary that will be interpreted
 as constructor keyword arguments for the given class.</p></li>
 </ul>
@@ -439,7 +454,7 @@ passed to the CLI</p>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">plugins</span></code></p></td>
 <td><p>A dictionary where each key is the name of a
-<a class="reference internal" href="../code.html#linkml.validator.plugins.ValidationPlugin" title="linkml.validator.plugins.ValidationPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">linkml.validator.plugins.ValidationPlugin</span></code></a>
+<a class="reference internal" href="../code/validator.html#linkml.validator.plugins.ValidationPlugin" title="linkml.validator.plugins.ValidationPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">linkml.validator.plugins.ValidationPlugin</span></code></a>
 subclass. Each value is a dictionary that will be
 interpreted as constructor keyword arguments for the
 given class.</p>
@@ -784,5 +799,7 @@ $<span class="w"> </span><span class="nb">echo</span><span class="w"> </span><sp
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="../_static/scripts/furo.js?v=32e29ea5"></script>
+    <script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+    <script>mermaid.initialize({startOnLoad:true});</script>
     </body>
 </html>

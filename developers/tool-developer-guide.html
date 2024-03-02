@@ -171,6 +171,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../intro/tutorial07.html">Part 7: Slots and inheritance</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../intro/tutorial08.html">Part 8: Generating Projects</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../intro/tutorial09.html">Part 9: Working with SQL databases</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/tutorial10.html">Part 10: Working with SQL databases</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../schemas/index.html">LinkML Schemas</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of LinkML Schemas</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -199,6 +200,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../data/rdf.html">Working with RDF and LinkML</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../data/csvs.html">CSVs and Tabular Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../data/python.html">Python</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../data/sql-databases.html">Working with data in SQL Databases</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../generators/index.html">Generators</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of Generators</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -206,12 +208,16 @@
 <li class="toctree-l2"><a class="reference internal" href="../generators/protobuf.html">ProtoBuf</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/graphql.html">GraphQL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/jsonld-context.html">JSON-LD Contexts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/jsonld.html">JSON-LD</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/rdf.html">RDF</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/sparql.html">SPARQL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/shex.html">ShEx</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/shacl.html">SHACL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/owl.html">OWL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/markdown.html">Markdown</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/docgen.html">Docs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/erdiagram.html">ER Diagrams</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/yuml.html">YUML</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/plantumlgen.html">PlantUML Diagram Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/project-generator.html">Project Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/python.html">Python</a></li>
@@ -221,9 +227,12 @@
 <li class="toctree-l2"><a class="reference internal" href="../generators/sqltable.html">SQL DDL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/sqlalchemy.html">SQL Alchemy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/linkml.html">LinkML Generators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/prefixmap.html">Prefix Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/sssom.html">SSSOM</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/terminusdb.html">TerminusDB</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/excel.html">Excel Spreadsheet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/csv.html">CSV</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/yaml.html">Yaml</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../howtos/index.html">How-to Guides</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of How-to Guides</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -259,6 +268,7 @@
 <li class="toctree-l2"><a class="reference internal" href="organization.html">GitHub Organization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks.html">Jupyter Notebooks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="manipulating-schemas.html">Manipulating Schemas</a></li>
+<li class="toctree-l2"><a class="reference internal" href="manage-releases.html">How to Manage Releases of your LinkML Schema</a></li>
 <li class="toctree-l2"><a class="reference internal" href="schemaview.html">SchemaView</a></li>
 <li class="toctree-l2"><a class="reference internal" href="schemabuilder.html">SchemaBuilder</a></li>
 <li class="toctree-l2"><a class="reference internal" href="loaders-and-dumpers.html">Data Conversion: Loaders and Dumpers</a></li>
@@ -269,7 +279,12 @@
 <li class="toctree-l2"><a class="reference internal" href="contributing-code.html">Contributing Code</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../code.html">Code</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../code/index.html">Code</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Code</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../code/metamodel.html">MetaModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code/utils.html">Utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code/validator.html">Validator</a></li>
+</ul>
+</li>
 </ul>
 
 </div>
@@ -350,7 +365,7 @@ syntax for LinkML is YAML, and YAML parsers are provided with all
 major languages. However, you will likely need to do more than parse
 the model. There is a lot of “business logic” associated with a
 model. For example, the rules that govern
-<span class="xref std std-doc">inheritance and refinement of slots</span>.</p>
+<a class="reference internal" href="../schemas/inheritance.html"><span class="doc">inheritance and refinement of slots</span></a>.</p>
 <p>For Python applications, the SchemaView library provides this business
 logic, but currently this logic must be re-implemented for different
 languages. This may be a concern if you are building web applications
@@ -426,7 +441,7 @@ sufficient for certain kinds of applications.</p>
 <h2>Other Languages<a class="headerlink" href="#other-languages" title="Permalink to this heading">#</a></h2>
 <p>LinkML is programming language neutral. However, currently much of the
 stack for introspecting schemas is written in Python.</p>
-<p>For example, in Python, if you want a list of slots for that class you can use <span class="xref std std-ref">class_slots</span>. But
+<p>For example, in Python, if you want a list of slots for that class you can use <a class="reference internal" href="schemaview.html#linkml_runtime.utils.schemaview.SchemaView.class_slots" title="linkml_runtime.utils.schemaview.SchemaView.class_slots"><code class="xref py py-attr docutils literal notranslate"><span class="pre">class_slots</span></code></a>. But
 what if you are building a generic JavaScript data entry widget that
 will work for any LinkML class?</p>
 <p>There are a few broad approaches here:</p>
@@ -531,6 +546,8 @@ may help, such as the ability to generate custom language bindings.</p>
 <p>The other two approaches are fairly similar and involve providing a
 mechanism for a generic application to customize look, feel, and
 behavior in a way that doesn’t require changing software/code.</p>
+<section id="external-configuration">
+<h3>External Configuration<a class="headerlink" href="#external-configuration" title="Permalink to this heading">#</a></h3>
 <p>External configuration files may be best for “style sheet” type
 configurations for controlling colors, shapes, sizes, etc. These could
 potentially be tweaked by an individual user.</p>
@@ -538,6 +555,9 @@ potentially be tweaked by an individual user.</p>
 recommend creating a schema for your configuration data model. An
 example of this is <a class="reference external" href="https://berkeleybop.github.io/kgviz-model/">KGViz Schema</a> which is a stylesheet
 language for visualizing ontology graphs, based on <cite>Graphviz&lt;https://graphviz.org/&gt;</cite>.</p>
+</section>
+<section id="schema-hints">
+<h3>Schema Hints<a class="headerlink" href="#schema-hints" title="Permalink to this heading">#</a></h3>
 <p>Schema hints embed additional information in the schema itself. In
 contrast to external configurations, this is harder for a user to
 change, and so is best suited for ‘centralized’ configuration.</p>
@@ -603,6 +623,9 @@ application.</p>
 this kind of purpose. Furthermore, if you compile your schema to SHACL
 then it will have the dash annotations, allowing you to leverage
 generic SHACL applications (next section).</p>
+</section>
+<section id="using-ontologies-and-standard-vocabularies-to-drive-behavior">
+<h3>Using ontologies and standard vocabularies to drive behavior<a class="headerlink" href="#using-ontologies-and-standard-vocabularies-to-drive-behavior" title="Permalink to this heading">#</a></h3>
 <p>Consider a schema that reuses standard vocabularies such as wgs84 for
 slots:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">prefixes</span><span class="p">:</span>
@@ -632,6 +655,9 @@ slots:</p>
 <p>Applications may choose to have specific behavior for lat-long fields,
 for example, including a map widget. Applications may also choose to
 use mappings as well as the primary URI.</p>
+</section>
+<section id="handling-enums">
+<h3>Handling enums<a class="headerlink" href="#handling-enums" title="Permalink to this heading">#</a></h3>
 <p>In addition to the general guidance above, applications may allow for
 custom behavior with enums.</p>
 <p>Applications may choose to display enum permissible values as a
@@ -646,6 +672,9 @@ applications may choose to use an autocomplete service from an
 existing ontology. This has the advantage of lookup on multiple
 different aliases. However, note the autocomplete service may return
 more values than are present in the permissible value list.</p>
+</section>
+<section id="handling-units-and-quantities">
+<h3>Handling units and quantities<a class="headerlink" href="#handling-units-and-quantities" title="Permalink to this heading">#</a></h3>
 <p>There are a wide variety of ways to model quantities, and these are
 use case dependent. Is it important to capture ranges or
 precision/error bars? Is the unit baked in to the slot, or does the
@@ -688,6 +717,7 @@ into structured form</p></li>
 <li><p>etc</p></li>
 </ul>
 </div></blockquote>
+</section>
 </section>
 <section id="using-other-frameworks">
 <h2>Using other frameworks<a class="headerlink" href="#using-other-frameworks" title="Permalink to this heading">#</a></h2>
@@ -765,7 +795,14 @@ SHACL and DASH</a>.</p>
 </ul>
 </li>
 <li><a class="reference internal" href="#general-guidelines-for-applications">General Guidelines for applications</a></li>
-<li><a class="reference internal" href="#customizing-and-application-hints">Customizing and application hints</a></li>
+<li><a class="reference internal" href="#customizing-and-application-hints">Customizing and application hints</a><ul>
+<li><a class="reference internal" href="#external-configuration">External Configuration</a></li>
+<li><a class="reference internal" href="#schema-hints">Schema Hints</a></li>
+<li><a class="reference internal" href="#using-ontologies-and-standard-vocabularies-to-drive-behavior">Using ontologies and standard vocabularies to drive behavior</a></li>
+<li><a class="reference internal" href="#handling-enums">Handling enums</a></li>
+<li><a class="reference internal" href="#handling-units-and-quantities">Handling units and quantities</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#using-other-frameworks">Using other frameworks</a></li>
 </ul>
 </li>
@@ -782,5 +819,7 @@ SHACL and DASH</a>.</p>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="../_static/scripts/furo.js?v=32e29ea5"></script>
+    <script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+    <script>mermaid.initialize({startOnLoad:true});</script>
     </body>
 </html>

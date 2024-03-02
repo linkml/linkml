@@ -170,6 +170,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../intro/tutorial07.html">Part 7: Slots and inheritance</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../intro/tutorial08.html">Part 8: Generating Projects</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../intro/tutorial09.html">Part 9: Working with SQL databases</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/tutorial10.html">Part 10: Working with SQL databases</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../schemas/index.html">LinkML Schemas</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of LinkML Schemas</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -198,6 +199,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../data/rdf.html">Working with RDF and LinkML</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../data/csvs.html">CSVs and Tabular Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../data/python.html">Python</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../data/sql-databases.html">Working with data in SQL Databases</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../generators/index.html">Generators</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of Generators</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -205,12 +207,16 @@
 <li class="toctree-l2"><a class="reference internal" href="../generators/protobuf.html">ProtoBuf</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/graphql.html">GraphQL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/jsonld-context.html">JSON-LD Contexts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/jsonld.html">JSON-LD</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/rdf.html">RDF</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/sparql.html">SPARQL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/shex.html">ShEx</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/shacl.html">SHACL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/owl.html">OWL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/markdown.html">Markdown</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/docgen.html">Docs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/erdiagram.html">ER Diagrams</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/yuml.html">YUML</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/plantumlgen.html">PlantUML Diagram Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/project-generator.html">Project Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/python.html">Python</a></li>
@@ -220,9 +226,12 @@
 <li class="toctree-l2"><a class="reference internal" href="../generators/sqltable.html">SQL DDL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/sqlalchemy.html">SQL Alchemy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/linkml.html">LinkML Generators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/prefixmap.html">Prefix Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/sssom.html">SSSOM</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/terminusdb.html">TerminusDB</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/excel.html">Excel Spreadsheet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/csv.html">CSV</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/yaml.html">Yaml</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../howtos/index.html">How-to Guides</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of How-to Guides</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -258,6 +267,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../developers/organization.html">GitHub Organization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../developers/notebooks.html">Jupyter Notebooks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../developers/manipulating-schemas.html">Manipulating Schemas</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../developers/manage-releases.html">How to Manage Releases of your LinkML Schema</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../developers/schemaview.html">SchemaView</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../developers/schemabuilder.html">SchemaBuilder</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../developers/loaders-and-dumpers.html">Data Conversion: Loaders and Dumpers</a></li>
@@ -268,7 +278,12 @@
 <li class="toctree-l2"><a class="reference internal" href="../developers/contributing-code.html">Contributing Code</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../code.html">Code</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../code/index.html">Code</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Code</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../code/metamodel.html">MetaModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code/utils.html">Utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code/validator.html">Validator</a></li>
+</ul>
+</li>
 </ul>
 
 </div>
@@ -304,20 +319,16 @@
         <article role="main">
           <h1>All modules for which code is available</h1>
 <ul><li><a href="linkml/generators/csvgen.html">linkml.generators.csvgen</a></li>
-<li><a href="linkml/generators/dotgen.html">linkml.generators.dotgen</a></li>
+<li><a href="linkml/generators/docgen.html">linkml.generators.docgen</a></li>
 <li><a href="linkml/generators/erdiagramgen.html">linkml.generators.erdiagramgen</a></li>
-<li><a href="linkml/generators/excelgen.html">linkml.generators.excelgen</a></li>
-<li><a href="linkml/generators/golrgen.html">linkml.generators.golrgen</a></li>
 <li><a href="linkml/generators/graphqlgen.html">linkml.generators.graphqlgen</a></li>
 <li><a href="linkml/generators/javagen.html">linkml.generators.javagen</a></li>
 <li><a href="linkml/generators/jsonldcontextgen.html">linkml.generators.jsonldcontextgen</a></li>
 <li><a href="linkml/generators/jsonldgen.html">linkml.generators.jsonldgen</a></li>
 <li><a href="linkml/generators/jsonschemagen.html">linkml.generators.jsonschemagen</a></li>
+<li><a href="linkml/generators/linkmlgen.html">linkml.generators.linkmlgen</a></li>
 <li><a href="linkml/generators/markdowngen.html">linkml.generators.markdowngen</a></li>
-<li><a href="linkml/generators/namespacegen.html">linkml.generators.namespacegen</a></li>
-<li><a href="linkml/generators/oocodegen.html">linkml.generators.oocodegen</a></li>
 <li><a href="linkml/generators/owlgen.html">linkml.generators.owlgen</a></li>
-<li><a href="linkml/generators/prefixmapgen.html">linkml.generators.prefixmapgen</a></li>
 <li><a href="linkml/generators/projectgen.html">linkml.generators.projectgen</a></li>
 <li><a href="linkml/generators/protogen.html">linkml.generators.protogen</a></li>
 <li><a href="linkml/generators/pydanticgen/pydanticgen.html">linkml.generators.pydanticgen.pydanticgen</a></li>
@@ -329,10 +340,10 @@
 <li><a href="linkml/generators/sparqlgen.html">linkml.generators.sparqlgen</a></li>
 <li><a href="linkml/generators/sqlalchemygen.html">linkml.generators.sqlalchemygen</a></li>
 <li><a href="linkml/generators/sqltablegen.html">linkml.generators.sqltablegen</a></li>
-<li><a href="linkml/generators/summarygen.html">linkml.generators.summarygen</a></li>
+<li><a href="linkml/generators/terminusdbgen.html">linkml.generators.terminusdbgen</a></li>
+<li><a href="linkml/generators/typescriptgen.html">linkml.generators.typescriptgen</a></li>
 <li><a href="linkml/generators/yamlgen.html">linkml.generators.yamlgen</a></li>
 <li><a href="linkml/generators/yumlgen.html">linkml.generators.yumlgen</a></li>
-<li><a href="linkml/reporting/model.html">linkml.reporting.model</a></li>
 <li><a href="linkml/utils/datautils.html">linkml.utils.datautils</a></li>
 <li><a href="linkml/utils/datavalidator.html">linkml.utils.datavalidator</a></li>
 <li><a href="linkml/utils/execute_tutorial.html">linkml.utils.execute_tutorial</a></li>
@@ -359,6 +370,7 @@
 <li><a href="linkml/validator/validator.html">linkml.validator.validator</a></li>
 </ul><li><a href="linkml_runtime/dumpers/csv_dumper.html">linkml_runtime.dumpers.csv_dumper</a></li>
 <li><a href="linkml_runtime/dumpers/json_dumper.html">linkml_runtime.dumpers.json_dumper</a></li>
+<li><a href="linkml_runtime/dumpers/rdflib_dumper.html">linkml_runtime.dumpers.rdflib_dumper</a></li>
 <li><a href="linkml_runtime/dumpers/yaml_dumper.html">linkml_runtime.dumpers.yaml_dumper</a></li>
 <li><a href="linkml_runtime/linkml_model/meta.html">linkml_runtime.linkml_model.meta</a></li>
 <li><a href="linkml_runtime/loaders/csv_loader.html">linkml_runtime.loaders.csv_loader</a></li>
@@ -403,5 +415,7 @@
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="../_static/scripts/furo.js?v=32e29ea5"></script>
+    <script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+    <script>mermaid.initialize({startOnLoad:true});</script>
     </body>
 </html>

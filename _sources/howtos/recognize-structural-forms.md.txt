@@ -380,7 +380,7 @@ To transform the JSON representation into a more relational model, we'll create 
 [
     {"book_id": 101, "format": "Paperback", "amount": 13.50, "currency": "$"},
     {"book_id": 101, "format": "Hardback", "amount": 22.00, "currency": "$"},
-    ...
+    "...",
     {"book_id": 105, "format": "Paperback", "amount": 16.25, "currency": "$"},
     {"book_id": 105, "format": "Hardback", "amount": 26.25, "currency": "$"}
 ]

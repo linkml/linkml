@@ -171,6 +171,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../intro/tutorial07.html">Part 7: Slots and inheritance</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../intro/tutorial08.html">Part 8: Generating Projects</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../intro/tutorial09.html">Part 9: Working with SQL databases</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/tutorial10.html">Part 10: Working with SQL databases</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../schemas/index.html">LinkML Schemas</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of LinkML Schemas</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -199,6 +200,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../data/rdf.html">Working with RDF and LinkML</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../data/csvs.html">CSVs and Tabular Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../data/python.html">Python</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../data/sql-databases.html">Working with data in SQL Databases</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../generators/index.html">Generators</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of Generators</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -206,12 +208,16 @@
 <li class="toctree-l2"><a class="reference internal" href="../generators/protobuf.html">ProtoBuf</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/graphql.html">GraphQL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/jsonld-context.html">JSON-LD Contexts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/jsonld.html">JSON-LD</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/rdf.html">RDF</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/sparql.html">SPARQL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/shex.html">ShEx</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/shacl.html">SHACL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/owl.html">OWL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/markdown.html">Markdown</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/docgen.html">Docs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/erdiagram.html">ER Diagrams</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/yuml.html">YUML</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/plantumlgen.html">PlantUML Diagram Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/project-generator.html">Project Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/python.html">Python</a></li>
@@ -221,9 +227,12 @@
 <li class="toctree-l2"><a class="reference internal" href="../generators/sqltable.html">SQL DDL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/sqlalchemy.html">SQL Alchemy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/linkml.html">LinkML Generators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/prefixmap.html">Prefix Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/sssom.html">SSSOM</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/terminusdb.html">TerminusDB</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/excel.html">Excel Spreadsheet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/csv.html">CSV</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/yaml.html">Yaml</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../howtos/index.html">How-to Guides</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of How-to Guides</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -259,6 +268,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../developers/organization.html">GitHub Organization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../developers/notebooks.html">Jupyter Notebooks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../developers/manipulating-schemas.html">Manipulating Schemas</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../developers/manage-releases.html">How to Manage Releases of your LinkML Schema</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../developers/schemaview.html">SchemaView</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../developers/schemabuilder.html">SchemaBuilder</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../developers/loaders-and-dumpers.html">Data Conversion: Loaders and Dumpers</a></li>
@@ -269,7 +279,12 @@
 <li class="toctree-l2"><a class="reference internal" href="../developers/contributing-code.html">Contributing Code</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../code.html">Code</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../code/index.html">Code</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Code</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../code/metamodel.html">MetaModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code/utils.html">Utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code/validator.html">Validator</a></li>
+</ul>
+</li>
 </ul>
 
 </div>
@@ -320,20 +335,20 @@ poetry<span class="w"> </span>install
 <section id="linkml-testing-framework">
 <h2>LinkML Testing Framework<a class="headerlink" href="#linkml-testing-framework" title="Permalink to this heading">#</a></h2>
 <ul class="simple">
-<li><p>The LinkML test suite can be found in the <a class="reference internal" href="#../../tests/"><span class="xref myst">tests</span></a> folder. The tests are written under specific subfolders within the main aggregated <a class="reference internal" href="#../../tests/"><span class="xref myst">tests</span></a> suite.</p></li>
-<li><p>If you want to formalize your test case into a unit test, you should decide the scope of your test and find the subfolder that the test might best fit under. For example, if your test is related to one of the LinkML generators, then you would create it under the <a class="reference internal" href="#../../tests/test_generators/"><span class="xref myst">test_generators</span></a> subfolder.</p></li>
-<li><p>There are a few model LinkML schemas within the test suite that you can use while creating your unit tests. You will ideally find them in an <code class="docutils literal notranslate"><span class="pre">input</span></code> directory within the scoped tests folder you are looking at. For example, the <a class="reference internal" href="#../../tests/test_generators/input/"><span class="xref myst">input</span></a> directory under the <a class="reference internal" href="#../../tests/test_generators/"><span class="xref myst">test_generators</span></a> subfolder. One of the main test schemas that most LinkML generator related unit tests use is the <a class="reference download internal" download="" href="../_downloads/3056c1be5011c2a007c49ae6675d18e5/kitchen_sink.yaml"><span class="xref download myst">kitchen_sink.yaml</span></a>.</p></li>
-<li><p>Outside of generators, users will want to create issue specific unit tests. For that, you need to turn your attention to the <a class="reference internal" href="#../../tests/test_issues/"><span class="xref myst">test_issues</span></a> folder.</p>
+<li><p>The LinkML test suite can be found in the <code class="docutils literal notranslate"><span class="pre">tests</span></code> folder. The tests are written under specific subfolders within the main aggregated <code class="docutils literal notranslate"><span class="pre">tests/</span></code> suite.</p></li>
+<li><p>If you want to formalize your test case into a unit test, you should decide the scope of your test and find the subfolder that the test might best fit under. For example, if your test is related to one of the LinkML generators, then you would create it under the <code class="docutils literal notranslate"><span class="pre">tests/test_generators/</span></code> subfolder.</p></li>
+<li><p>There are a few model LinkML schemas within the test suite that you can use while creating your unit tests. You will ideally find them in an <code class="docutils literal notranslate"><span class="pre">input</span></code> directory within the scoped tests folder you are looking at. For example, the <code class="docutils literal notranslate"><span class="pre">input</span></code> directory under the <code class="docutils literal notranslate"><span class="pre">tests/test_generators/</span></code> subfolder. One of the main test schemas that most LinkML generator related unit tests use is the <code class="docutils literal notranslate"><span class="pre">kitchen_sink.yaml</span></code>.</p></li>
+<li><p>Outside of generators, users will want to create issue specific unit tests. For that, you need to turn your attention to the <code class="docutils literal notranslate"><span class="pre">tests/test_issues/</span></code> folder.</p>
 <ul>
 <li><p>The current direction is to first make an issue with specific instructions to reproduce the bug under the <a class="reference external" href="https://github.com/linkml/linkml/issues">issues</a> tab on the main <a class="reference external" href="https://github.com/linkml/linkml/">linkml</a> GitHub repo.</p></li>
-<li><p>Then, create a test case for the above issue, with a minimal test LinkML schema in the input folder of the <a class="reference internal" href="#../../tests/test_issues/"><span class="xref myst">test_issues</span></a> suite. A minimal test case entails that you only use the elements you need in the schema for your unit test and not bloat the test schema with more elements that necessary.</p></li>
-<li><p>Ideally, it is also advised not to bloat the output folders under each sub test suites with large autogenerated outputs. You can use the Python standard <a class="reference external" href="https://docs.python.org/3/library/tempfile.html">tempfile</a> module to create temporary files where you can direct the output to and then load in the temporary file however for your test case assertions. See an example <a class="reference download internal" download="" href="../_downloads/76cf7ccbaa949d8efed48ecf06d010de/test_excelgen.py"><span class="xref download myst">here</span></a>.</p></li>
+<li><p>Then, create a test case for the above issue, with a minimal test LinkML schema in the input folder of the <code class="docutils literal notranslate"><span class="pre">tests/test_issues/</span></code> suite. A minimal test case entails that you only use the elements you need in the schema for your unit test and not bloat the test schema with more elements that necessary.</p></li>
+<li><p>Ideally, it is also advised not to bloat the output folders under each sub test suites with large autogenerated outputs. You can use the Python standard <code class="docutils literal notranslate"><span class="pre">tests/test_generators/test_excelgen.py</span></code>.</p></li>
 </ul>
 </li>
 </ul>
 <section id="directions-for-creating-a-unit-test">
 <h3>Directions for creating a unit test<a class="headerlink" href="#directions-for-creating-a-unit-test" title="Permalink to this heading">#</a></h3>
-<p>There are two cases you need to consider while writing your unit test. The first one is when you are writing a test for bugs in the LinkML library and the second is for enhancements. For bugs, you would typically create your test case in the <a class="reference internal" href="#../../tests/test_issues/"><span class="xref myst">test_issues</span></a> folder, whereas for enhancements, you would typically create it in the <a class="reference internal" href="#../../tests/test_generators/"><span class="xref myst">test_generators</span></a>, <a class="reference internal" href="#../../tests/test_utils/"><span class="xref myst">test_utils</span></a>, etc. subfolder.</p>
+<p>There are two cases you need to consider while writing your unit test. The first one is when you are writing a test for bugs in the LinkML library and the second is for enhancements. For bugs, you would typically create your test case in the <code class="docutils literal notranslate"><span class="pre">tests/test_issues/</span></code> folder, whereas for enhancements, you would typically create it in the <code class="docutils literal notranslate"><span class="pre">tests/test_generators/</span></code>, <code class="docutils literal notranslate"><span class="pre">tests/test_utils/</span></code>, subfolder.</p>
 <ul class="simple">
 <li><p>While creating a test for a bug, you should make a file called <code class="docutils literal notranslate"><span class="pre">test_linkml_issue_NNN.py</span></code>. After that it is perhaps easiest to just copy over a test from an existing issue test case and modify it.</p>
 <ul>
@@ -628,5 +643,7 @@ insight into your work and allows them to provide feedback early on.</p></li>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="../_static/scripts/furo.js?v=32e29ea5"></script>
+    <script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+    <script>mermaid.initialize({startOnLoad:true});</script>
     </body>
 </html>

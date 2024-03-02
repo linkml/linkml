@@ -47,7 +47,8 @@ Some other important options that can be configured while running the generator:
 * ``--directory``: path to directory where you want the markdown files to be written to
 
 * ``--hierarchical-class-view / --no-hierarchical-class-view``: control style of rendering
-classes on index page
+  classes on index page
+
 
 ``gen-doc`` renders Mermaid UML `class diagrams <https://mermaid.js.org/syntax/classDiagram.html>`_
 by default on individual class documentation pages to summarize it's relationship with other

@@ -11,7 +11,7 @@ both semantic RDF-based frameworks, as well as frameworks that are more familiar
 to developers such as JSON.
 
 - Quick links: [ 
-    [Schemas](../schemas) | 
+    [Schemas](../schemas/index) | 
     [Spec](../specifications/linkml-spec.md) |
     [Slides](https://www.slideshare.net/cmungall/linkml-intro-july-2022pptx) |
     [Notebooks](https://github.com/linkml/linkml/blob/main/notebooks) |
@@ -65,7 +65,7 @@ LinkML offers many features of use to data modelers, while retaining a simple co
 
 - Classes can be arranged in [inheritance hierarchies](../schemas/inheritance.md)
 - Powerful yet easy to use [Semantic enumerations](../schemas/enums.md) that can optionally be backed by ontologies
-- Create [data models](../schemas/) that are independent of a database technology
+- Create [data models](/schemas/index) that are independent of a database technology
 - Develop machine-actionable reporting standards and data dictionaries 
 - Include rich annotations and [mappings](../schemas/uris-and-mappings.md) as part of a model
 - "Linked Data" ready
@@ -88,7 +88,7 @@ schema to other frameworks:
 
 - Convert to JSON-LD contexts, and instantly port your data to RDF
 - Convert to [JSON-Schema](../generators/json-schema) and using JSON-Schema validators
-- Convert to [SHACL](../generators/shac) or [ShEx](../generators/shex) and validate your RDF data
+- Convert to [SHACL](/generators/shacl) or [ShEx](../generators/shex) and validate your RDF data
 - Convert to Python [dataclasses](../generators/python) or  [pydantic](../generators/pydantic) for easy use within applications
 - Generate [SQL Schemas](../generators/sqltable) or  [SQL Alchemy](../generators/sqlalchemy) for use with relational databases
 

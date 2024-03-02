@@ -111,7 +111,7 @@ A classic mistake is trying to declare slots with names like `@id` and `@type` i
 
 E.g.
 
-```json
+```yaml
 slots:
   "@id":
     identifier: true

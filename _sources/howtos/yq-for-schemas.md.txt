@@ -10,7 +10,7 @@ As LinkML schemas are typically stored as YAML, it's possible to use yq as a way
  * inheritance and inference of slots over class hierarchies
  * inlining as dicts
 
-If you want to do semantics-aware schema processing then we recommend you use [SchemaView](developers/manipulating-schemas)
+If you want to do semantics-aware schema processing then we recommend you use [SchemaView](/developers/manipulating-schemas)
 
 However, for certain kinds of quick and dirty low-level operations, yq
 provides a fast, flexible, and easy way to query schema yaml files.

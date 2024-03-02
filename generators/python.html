@@ -171,6 +171,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../intro/tutorial07.html">Part 7: Slots and inheritance</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../intro/tutorial08.html">Part 8: Generating Projects</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../intro/tutorial09.html">Part 9: Working with SQL databases</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/tutorial10.html">Part 10: Working with SQL databases</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../schemas/index.html">LinkML Schemas</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of LinkML Schemas</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -199,6 +200,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../data/rdf.html">Working with RDF and LinkML</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../data/csvs.html">CSVs and Tabular Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../data/python.html">Python</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../data/sql-databases.html">Working with data in SQL Databases</a></li>
 </ul>
 </li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Generators</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of Generators</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
@@ -206,12 +208,16 @@
 <li class="toctree-l2"><a class="reference internal" href="protobuf.html">ProtoBuf</a></li>
 <li class="toctree-l2"><a class="reference internal" href="graphql.html">GraphQL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jsonld-context.html">JSON-LD Contexts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jsonld.html">JSON-LD</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rdf.html">RDF</a></li>
 <li class="toctree-l2"><a class="reference internal" href="sparql.html">SPARQL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="shex.html">ShEx</a></li>
 <li class="toctree-l2"><a class="reference internal" href="shacl.html">SHACL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="owl.html">OWL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="markdown.html">Markdown</a></li>
+<li class="toctree-l2"><a class="reference internal" href="docgen.html">Docs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="erdiagram.html">ER Diagrams</a></li>
+<li class="toctree-l2"><a class="reference internal" href="yuml.html">YUML</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plantumlgen.html">PlantUML Diagram Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="project-generator.html">Project Generator</a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Python</a></li>
@@ -221,9 +227,12 @@
 <li class="toctree-l2"><a class="reference internal" href="sqltable.html">SQL DDL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="sqlalchemy.html">SQL Alchemy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="linkml.html">LinkML Generators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="prefixmap.html">Prefix Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="sssom.html">SSSOM</a></li>
 <li class="toctree-l2"><a class="reference internal" href="terminusdb.html">TerminusDB</a></li>
 <li class="toctree-l2"><a class="reference internal" href="excel.html">Excel Spreadsheet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="csv.html">CSV</a></li>
+<li class="toctree-l2"><a class="reference internal" href="yaml.html">Yaml</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../howtos/index.html">How-to Guides</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of How-to Guides</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -259,6 +268,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../developers/organization.html">GitHub Organization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../developers/notebooks.html">Jupyter Notebooks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../developers/manipulating-schemas.html">Manipulating Schemas</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../developers/manage-releases.html">How to Manage Releases of your LinkML Schema</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../developers/schemaview.html">SchemaView</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../developers/schemabuilder.html">SchemaBuilder</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../developers/loaders-and-dumpers.html">Data Conversion: Loaders and Dumpers</a></li>
@@ -269,7 +279,12 @@
 <li class="toctree-l2"><a class="reference internal" href="../developers/contributing-code.html">Contributing Code</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../code.html">Code</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../code/index.html">Code</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Code</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../code/metamodel.html">MetaModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code/utils.html">Utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code/validator.html">Validator</a></li>
+</ul>
+</li>
 </ul>
 
 </div>
@@ -321,8 +336,6 @@
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gen-python<span class="w"> </span>personinfo.yaml<span class="w"> </span>&gt;<span class="w"> </span>personinfo.py
 </pre></div>
 </div>
-<p>Example output:</p>
-<p><a class="reference external" href="https://github.com/linkml/linkml/tree/main/examples/PersonSchema/personinfo/personinfo.py">personinfo.py</a></p>
 <p>This object model can now be used to create, load, and serialize
 objects. For example:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">personinfo</span> <span class="kn">import</span> <span class="n">Person</span>
@@ -366,7 +379,7 @@ adding inlined objects any of the following can be used:</p>
 <section id="non-inlined-references">
 <h3>Non-inlined references<a class="headerlink" href="#non-inlined-references" title="Permalink to this heading">#</a></h3>
 <p>In LinkML schemas, references to other objects can be declared as
-<span class="xref std std-doc">inlined</span>. If a reference is <em>not</em> inlined,
+<a class="reference internal" href="../schemas/inlining.html"><span class="doc">inlined</span></a>. If a reference is <em>not</em> inlined,
 and the referenced object has an identifier, then the value of the
 reference will be that identifier.</p>
 <p>In the generated python, class are created for these foreign keys</p>
@@ -620,6 +633,8 @@ multi-valued (<code class="docutils literal notranslate"><span class="pre">multi
 <li><p>The <code class="docutils literal notranslate"><span class="pre">default</span></code> value (not covered in this document)</p></li>
 </ul>
 <p>These various situations are described more detail below:</p>
+<section id="slot-range-is-a-linkml-type-definition">
+<h3>1) Slot range is a LinkML <code class="docutils literal notranslate"><span class="pre">type</span></code> definition<a class="headerlink" href="#slot-range-is-a-linkml-type-definition" title="Permalink to this heading">#</a></h3>
 <p>LinkML type definitions can take one of three forms:</p>
 <ul class="simple">
 <li><ol class="arabic simple">
@@ -642,10 +657,11 @@ multi-valued (<code class="docutils literal notranslate"><span class="pre">multi
 these are outlined below</p>
 </li>
 </ol>
-<blockquote>
-<div><p>For this example, we show basic permutations on the python</p>
-</div></blockquote>
-<p><code class="docutils literal notranslate"><span class="pre">int</span></code> type as a base YAML:</p>
+</section>
+<section id="python-generation-for-basic-python-type">
+<h3>2) Python generation for basic python Type.<a class="headerlink" href="#python-generation-for-basic-python-type" title="Permalink to this heading">#</a></h3>
+<p>For this example, we show basic permutations on the python
+<code class="docutils literal notranslate"><span class="pre">int</span></code> type as a base YAML:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">types</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">integer</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">xsd:integer</span>
@@ -671,9 +687,7 @@ these are outlined below</p>
 </pre></div>
 </div>
 <p>Generated Python:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="o">...</span>
-
-<span class="k">class</span> <span class="nc">Integer</span><span class="p">(</span><span class="nb">int</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Integer</span><span class="p">(</span><span class="nb">int</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; An integer &quot;&quot;&quot;</span>
     <span class="n">type_class_uri</span> <span class="o">=</span> <span class="n">XSD</span><span class="o">.</span><span class="n">integer</span>
     <span class="n">type_class_curie</span> <span class="o">=</span> <span class="s2">&quot;xsd:integer&quot;</span>
@@ -685,7 +699,6 @@ these are outlined below</p>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    various permutations of the integer type</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="o">...</span>
 
     <span class="n">mand_integer</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">mand_multi_integer</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
@@ -803,6 +816,9 @@ list:
 </ul>
 </li>
 </ol>
+</section>
+<section id="python-generation-for-a-type-defined-in-metamodelcore-py-xsddate-in-this-example">
+<h3>3) Python generation for a Type defined in <code class="docutils literal notranslate"><span class="pre">metamodelcore.py</span></code> – <code class="docutils literal notranslate"><span class="pre">XSDDate</span></code> in this example<a class="headerlink" href="#python-generation-for-a-type-defined-in-metamodelcore-py-xsddate-in-this-example" title="Permalink to this heading">#</a></h3>
 <p>YAML:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">types</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">date</span><span class="p">:</span>
@@ -887,8 +903,9 @@ class representing the element and the <code class="docutils literal notranslate
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mand_multi_date</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">XSDDate</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">XSDDate</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span>
 </pre></div>
 </div>
+</section>
 <section id="python-generation-for-an-inherited-type">
-<h3>3) Python generation for an inherited Type<a class="headerlink" href="#python-generation-for-an-inherited-type" title="Permalink to this heading">#</a></h3>
+<h3>4) Python generation for an inherited Type<a class="headerlink" href="#python-generation-for-an-inherited-type" title="Permalink to this heading">#</a></h3>
 <p>The following YAML shows three inherited types - one that inherits from
 a builtin type, a second from a metamodelcore type and a third from a
 the inherited type.</p>
@@ -969,8 +986,9 @@ the inherited type.</p>
 basic (e.g. <code class="docutils literal notranslate"><span class="pre">int</span></code>), inherited from metamodelcore.py
 (e.g. <code class="docutils literal notranslate"><span class="pre">uriorcurie</span></code>) or from another type are identical to those
 generated above for <code class="docutils literal notranslate"><span class="pre">XSDDate</span></code></p>
+</section>
 <section id="slot-range-is-a-linkml-class-definition">
-<h4>2) Slot range is a LinkML <code class="docutils literal notranslate"><span class="pre">class</span></code> definition<a class="headerlink" href="#slot-range-is-a-linkml-class-definition" title="Permalink to this heading">#</a></h4>
+<h3>5) Slot range is a LinkML <code class="docutils literal notranslate"><span class="pre">class</span></code> definition<a class="headerlink" href="#slot-range-is-a-linkml-class-definition" title="Permalink to this heading">#</a></h3>
 <p>The previous section described the Python that was generated for slot
 ranges that reference LinkML <strong>Type</strong> definitions. This section
 addresses the second use case, where the slot range references another
@@ -992,9 +1010,8 @@ slots, directly implementing the notion of a “compound key”. * The slot
 attribute * The slot <code class="docutils literal notranslate"><span class="pre">default</span></code> value</p>
 <p>Various permutations of these cases are described below:</p>
 </section>
-</section>
 <section id="non-keyed-non-identified-classes">
-<h3>1) Non-keyed, non-identified classes<a class="headerlink" href="#non-keyed-non-identified-classes" title="Permalink to this heading">#</a></h3>
+<h3>6) Non-keyed, non-identified classes<a class="headerlink" href="#non-keyed-non-identified-classes" title="Permalink to this heading">#</a></h3>
 <p>Classes without keys or identifiers cannot only be realized inline. The
 following code shows examples of various permutations of this type of
 class:</p>
@@ -1131,18 +1148,17 @@ are: 1) The <code class="docutils literal notranslate"><span class="pre">v1</spa
 (i.e. does not begin with <code class="docutils literal notranslate"><span class="pre">Optional[]</span></code>) 2) A <code class="docutils literal notranslate"><span class="pre">None</span></code> value is flagged
 as an error rather than converted to an empty list 3) An empty list is
 flagged as an error.</p>
+</section>
 <section id="keyed-or-identified-classes">
-<h4>Keyed or Identified Classes<a class="headerlink" href="#keyed-or-identified-classes" title="Permalink to this heading">#</a></h4>
+<h3>Keyed or Identified Classes<a class="headerlink" href="#keyed-or-identified-classes" title="Permalink to this heading">#</a></h3>
 <p>When the range of a slot is a LinkML class that has a <code class="docutils literal notranslate"><span class="pre">key</span></code> or an
 <code class="docutils literal notranslate"><span class="pre">identifier</span></code>, additional options present themselves: 1) Should
 elements be represented inline or as references? 2) If inline, should
 the elements be represented as lists or as dictionaries, whose key is
 the <code class="docutils literal notranslate"><span class="pre">key</span></code> or <code class="docutils literal notranslate"><span class="pre">identifier</span></code> value.</p>
 <p>We discuss each of these options below</p>
-</section>
-</section>
 <section id="key-or-identified-class-references">
-<h3>Key or identified class <em>references</em><a class="headerlink" href="#key-or-identified-class-references" title="Permalink to this heading">#</a></h3>
+<h4>Key or identified class <em>references</em><a class="headerlink" href="#key-or-identified-class-references" title="Permalink to this heading">#</a></h4>
 <p>Using the following classes as building blocks</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">KeyedThreeElementClass</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">A keyed class with an additional integer and date</span>
@@ -1354,8 +1370,10 @@ is no difference between keyed and identified class representation.</p>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </pre></div>
 </div>
+</section>
+</section>
 <section id="python-generation-options-for-single-value-non-list-slots">
-<h4>Python generation options for single-value (non-list) slots<a class="headerlink" href="#python-generation-options-for-single-value-non-list-slots" title="Permalink to this heading">#</a></h4>
+<h3>Python generation options for single-value (non-list) slots<a class="headerlink" href="#python-generation-options-for-single-value-non-list-slots" title="Permalink to this heading">#</a></h3>
 <p>The table below describes the various python generation options for
 single-valued slots (<code class="docutils literal notranslate"><span class="pre">&quot;multivalued&quot;:</span> <span class="pre">false</span></code>)</p>
 <div class="table-wrapper docutils container">
@@ -1683,7 +1701,7 @@ of the class is the range of the <code class="docutils literal notranslate"><spa
 </div>
 </section>
 <section id="python-generation-options-for-multivalued-slots">
-<h4>Python generation options for multivalued slots<a class="headerlink" href="#python-generation-options-for-multivalued-slots" title="Permalink to this heading">#</a></h4>
+<h3>Python generation options for multivalued slots<a class="headerlink" href="#python-generation-options-for-multivalued-slots" title="Permalink to this heading">#</a></h3>
 <p>The python generated for multivalued slots is a more interesting
 situation.</p>
 <div class="table-wrapper docutils container">
@@ -1968,7 +1986,6 @@ a value)</p>
 <p>Moving inwards, <code class="docutils literal notranslate"><span class="pre">Union[Dict[...],</span> <span class="pre">List[...]]</span></code> means that the inputs
 can either be in the form of a dictionary or a list.</p>
 </section>
-</section>
 <section id="input-in-the-form-of-a-dictionary">
 <h3>Input in the form of a dictionary<a class="headerlink" href="#input-in-the-form-of-a-dictionary" title="Permalink to this heading">#</a></h3>
 <p>If the input is in the form of a dictionary, its signature is
@@ -2156,8 +2173,9 @@ passed a false <code class="docutils literal notranslate"><span class="pre">inli
 while the internal storage structure is different, the initialization
 code is exactly the same – YAML emitted from a list structure can be
 loaded as a dictionary and visa-versa.</p>
+</section>
 <section id="slots">
-<h4>Slots<a class="headerlink" href="#slots" title="Permalink to this heading">#</a></h4>
+<h3>Slots<a class="headerlink" href="#slots" title="Permalink to this heading">#</a></h3>
 <p>One bit that we haven’t touched on here is the <code class="docutils literal notranslate"><span class="pre">slots</span></code> section of the
 emitted Python.</p>
 <p>At the moment, the following code is emitted:</p>
@@ -2197,7 +2215,6 @@ assigned via <code class="docutils literal notranslate"><span class="pre">slot_u
 <p>Note, however, that the slots area is still being enhanced, so keep an
 eye on entries like <a class="reference external" href="https://github.com/linkml/linkml/issues/272">Issue
 #272</a></p>
-</section>
 </section>
 </section>
 </section>
@@ -2283,24 +2300,21 @@ eye on entries like <a class="reference external" href="https://github.com/linkm
 </li>
 <li><a class="reference internal" href="#additional-notes">Additional Notes</a></li>
 <li><a class="reference internal" href="#code-generation-for-linkml-slots">Code generation for LinkML slots</a><ul>
-<li><a class="reference internal" href="#python-generation-for-an-inherited-type">3) Python generation for an inherited Type</a><ul>
-<li><a class="reference internal" href="#slot-range-is-a-linkml-class-definition">2) Slot range is a LinkML <code class="docutils literal notranslate"><span class="pre">class</span></code> definition</a></li>
+<li><a class="reference internal" href="#slot-range-is-a-linkml-type-definition">1) Slot range is a LinkML <code class="docutils literal notranslate"><span class="pre">type</span></code> definition</a></li>
+<li><a class="reference internal" href="#python-generation-for-basic-python-type">2) Python generation for basic python Type.</a></li>
+<li><a class="reference internal" href="#python-generation-for-a-type-defined-in-metamodelcore-py-xsddate-in-this-example">3) Python generation for a Type defined in <code class="docutils literal notranslate"><span class="pre">metamodelcore.py</span></code> – <code class="docutils literal notranslate"><span class="pre">XSDDate</span></code> in this example</a></li>
+<li><a class="reference internal" href="#python-generation-for-an-inherited-type">4) Python generation for an inherited Type</a></li>
+<li><a class="reference internal" href="#slot-range-is-a-linkml-class-definition">5) Slot range is a LinkML <code class="docutils literal notranslate"><span class="pre">class</span></code> definition</a></li>
+<li><a class="reference internal" href="#non-keyed-non-identified-classes">6) Non-keyed, non-identified classes</a></li>
+<li><a class="reference internal" href="#keyed-or-identified-classes">Keyed or Identified Classes</a><ul>
+<li><a class="reference internal" href="#key-or-identified-class-references">Key or identified class <em>references</em></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#non-keyed-non-identified-classes">1) Non-keyed, non-identified classes</a><ul>
-<li><a class="reference internal" href="#keyed-or-identified-classes">Keyed or Identified Classes</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#key-or-identified-class-references">Key or identified class <em>references</em></a><ul>
 <li><a class="reference internal" href="#python-generation-options-for-single-value-non-list-slots">Python generation options for single-value (non-list) slots</a></li>
 <li><a class="reference internal" href="#python-generation-options-for-multivalued-slots">Python generation options for multivalued slots</a></li>
-</ul>
-</li>
 <li><a class="reference internal" href="#input-in-the-form-of-a-dictionary">Input in the form of a dictionary</a></li>
-<li><a class="reference internal" href="#input-in-the-form-of-a-list">Input in the form of a list</a><ul>
+<li><a class="reference internal" href="#input-in-the-form-of-a-list">Input in the form of a list</a></li>
 <li><a class="reference internal" href="#slots">Slots</a></li>
-</ul>
-</li>
 </ul>
 </li>
 </ul>
@@ -2318,5 +2332,7 @@ eye on entries like <a class="reference external" href="https://github.com/linkm
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="../_static/scripts/furo.js?v=32e29ea5"></script>
+    <script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+    <script>mermaid.initialize({startOnLoad:true});</script>
     </body>
 </html>

@@ -106,3 +106,4 @@ Others
    terminusdb
    excel
    csv
+   yaml
