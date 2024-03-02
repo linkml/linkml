@@ -1,6 +1,10 @@
+---
+orphan: true
+---
+
 # Maturing the LinkML framework to catalyze data interoperability
-#### Supplement RM1HG010860 - 03S1
-#### PI: Christopher J. Mungall, LBNL
+**Supplement RM1HG010860 - 03S1**
+**PI: Christopher J. Mungall, LBNL**
 
 ## Progress for 2022-06-01 - 2023-05-31 (as of 2023-03-31)
 

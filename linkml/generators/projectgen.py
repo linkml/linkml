@@ -198,25 +198,37 @@ def cli(
 
     Generate all downstream artefacts using default configuration:
 
-       gen-project -d . personinfo.yaml
+    .. code-block: bash
+
+        gen-project -d . personinfo.yaml
 
     Exclusion lists: all except ShEx:
 
-       gen-project --exclude shex -d . personinfo.yaml
+    .. code-block: bash
+
+        gen-project --exclude shex -d . personinfo.yaml
 
     Inclusion lists: only jsonschema and python:
+
+    .. code-block: bash
 
        gen-project -I python -I jsonschema -d . personinfo.yaml
 
     Configuration, on command line:
 
+    .. code-block: bash
+
         gen-project -A 'jsonschema: {top_class: Container}' -d . personinfo.yaml
 
     Configuration, via yaml file:
 
+    .. code-block: bash
+
         gen-project --config config.yaml personinfo.yaml
 
     config.yaml:
+
+    .. code-block: yaml
 
         directory: .
         generator_args:

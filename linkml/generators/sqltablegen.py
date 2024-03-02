@@ -61,19 +61,19 @@ RANGEMAP = {
 @dataclass
 class SQLTableGenerator(Generator):
     """
-    A :ref:`Generator` for creating SQL DDL
+    A :class:`~linkml.utils.generator.Generator` for creating SQL DDL
 
     The basic algorithm for mapping a linkml schema S is as follows:
 
-     - Each schema S corresponds to one database schema D (see SQLSchema)
-     - Each Class C in S is mapped to a table T (see SQLTable)
-     - Each slot S in each C is mapped to a column Col (see SQLColumn)
+    - Each schema S corresponds to one database schema D (see SQLSchema)
+    - Each Class C in S is mapped to a table T (see SQLTable)
+    - Each slot S in each C is mapped to a column Col (see SQLColumn)
 
     if the direct_mapping attribute is set to true, then no further transformations
     are applied. Note that this means:
 
-     - inline objects are modeled as Text strings
-     - multivalued fields are modeled as single Text strings
+    - inline objects are modeled as Text strings
+    - multivalued fields are modeled as single Text strings
 
     this direct mapping is useful for simple spreadsheet/denormalized representations of complex data.
     however, for other applications, additional transformations should occur. these are:
@@ -95,22 +95,30 @@ class SQLTableGenerator(Generator):
     E.g. if a class User has a multivalues slot alias whose range is a string,
     then create a table user_aliases, with two columns (1) alias [a string] and (2) a backref to user
 
-     Each mapped slot C.S has a range R
+    Each mapped slot C.S has a range R
 
-     ranges that are types (literals):
-       - If R is a type, and the slot is NOT multivalued, do a direct type conversion
-       - If R is a type, and the slot is multivalued:
-         * do not include the mapped column
-         * create a new table T_S, with 2 columns: S, and a backref to T
-      ranges that are classes:
-       Ref = map_class_to_table(R)
-       - if R is a class, and the slot is NOT multivalued, and Ref has a singular primary key:
-         * Col.type = ForeignKey(Ref.PK)
-       - if R is a class, and the slot is NOT multivalued, and Ref has NO singular primary key:
-         * add a foreign key C.pk to Ref
-         * add a backref C.S => Ref, C.pk
-         * remove Col from T
-       - If R is a class, and the slot IS multivalued
+    ranges that are types (literals):
+
+    * If R is a type, and the slot is NOT multivalued, do a direct type conversion
+    * If R is a type, and the slot is multivalued:
+
+        * do not include the mapped column
+        * create a new table T_S, with 2 columns: S, and a backref to T
+
+    ranges that are classes:
+
+    * Ref = map_class_to_table(R)
+    * if R is a class, and the slot is NOT multivalued, and Ref has a singular primary key:
+
+        * Col.type = ForeignKey(Ref.PK)
+
+    * if R is a class, and the slot is NOT multivalued, and Ref has NO singular primary key:
+
+        * add a foreign key C.pk to Ref
+        * add a backref C.S => Ref, C.pk
+        * remove Col from T
+
+    * If R is a class, and the slot IS multivalued
 
     """
 

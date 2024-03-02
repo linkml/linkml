@@ -6,7 +6,13 @@ from typing import List
 import click
 from linkml_runtime.linkml_model.meta import ClassDefinition, SlotDefinition
 from linkml_runtime.utils.formatutils import be, camelcase, underscore
-from terminusdb_client.woqlquery import WOQLQuery as WQ
+
+try:
+    from terminusdb_client.woqlquery import WOQLQuery as WQ
+except ImportError:
+    import warnings
+
+    warnings.warn("terminusdb_client is not a requirement of this package, please install it separately")
 
 from linkml._version import __version__
 from linkml.utils.generator import Generator, shared_arguments

@@ -9,10 +9,10 @@ are applicable to that class.
 for example, if we have an object instantiating a Person class:
 
 ```json
-{"id": "PERSON001",
- "name": "....",
- "email": "....",
- ...
+{
+  "id": "PERSON001",
+  "name": "....",
+  "email": "...."
 }
 ```
 
@@ -126,7 +126,7 @@ slots:
     designates_type: true
 ```
 
-See the [type-designators](type-designator.md) section of the docs for more details.
+See the [type-designators](type-designators.md) section of the docs for more details.
 
 ## Slot cardinality
 

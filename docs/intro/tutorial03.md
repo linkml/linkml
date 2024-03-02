@@ -160,7 +160,7 @@ The next section deals with working with RDF data.
 
 ## Further reading
 
-* [Working with Data](../data/working-with-data)
+* [Working with Data](/data/index)
 * Metamodel Specification
     * [identifier](https://w3id.org/linkml/identifier) slot
     * [required](https://w3id.org/linkml/required) slot

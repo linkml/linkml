@@ -1,7 +1,7 @@
 .. _topic_generators:
 
 Mapping schemas to other frameworks
-=============================
+===================================
 
 LinkML comes with a number of *generators* which will generate a
 representation of a schema using an alternative framework. This allows

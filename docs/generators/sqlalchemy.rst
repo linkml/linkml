@@ -25,7 +25,7 @@ Overview
 Declarative Mode
 ^^^^^^^^^^^^^^^^
 
-See `declarative mapping docs<https://docs.sqlalchemy.org/en/latest/orm/declarative_mapping.html>`_ on SQL Alchemy site
+See `declarative mapping docs <https://docs.sqlalchemy.org/en/latest/orm/declarative_mapping.html>`_ on SQL Alchemy site
 
 Given input such as:
 

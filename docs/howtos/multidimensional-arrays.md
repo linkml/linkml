@@ -80,11 +80,11 @@ For scientific computing purposes, we may choose to implement a different JSON s
    [
        [111, 211, 311, 411],
        [121, 221, 321, 421],
-       ...
+       "..."
    ],
-   ...,
+   "...",
    [
-       ...,
+       "...",
        [143, 243, 343, 443]
    ]
 ]

@@ -13,7 +13,7 @@ that conforms to a LinkML schema.
    conversion
    validating-data
    rdf
-   json
    csvs
    python
+   sql-databases
 
