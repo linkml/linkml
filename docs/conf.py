@@ -37,7 +37,7 @@ extensions = [
     'sphinx.ext.todo',
     'sphinx.ext.coverage',
     'myst_parser',
-    'sphinxcontrib.mermaid'
+    'sphinxcontrib.mermaid',
     'sphinx.ext.napoleon',
     'sphinx.ext.intersphinx',
     'myst_parser'
