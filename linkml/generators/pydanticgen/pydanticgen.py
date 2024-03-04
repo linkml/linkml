@@ -7,7 +7,6 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from types import ModuleType
 from typing import (
-    Any,
     Dict,
     List,
     Literal,
@@ -29,7 +28,6 @@ from linkml_runtime.linkml_model.meta import (
 from linkml_runtime.utils.compile_python import compile_python
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.schemaview import SchemaView
-from pydantic import BaseModel
 from pydantic.version import VERSION as PYDANTIC_VERSION
 
 from linkml._version import __version__
@@ -103,40 +101,6 @@ DEFAULT_IMPORTS = (
         ),
     )
 )
-
-
-# --------------------------------------------------
-# Arrays
-# --------------------------------------------------
-
-
-class BuildResult(BaseModel):
-    """
-    The result of any build phase for any linkML object
-
-    BuildResults are merged in the serialization process, and are used
-    to keep track of not only the particular representation
-    of the thing in question, but any "side effects" that need to happen
-    elsewhere in the generation process (like adding imports, injecting classes, etc.)
-    """
-
-    # FIXME: PLACEHOLDER TYPES PENDING MERGE OF OTHER PULL REQUESTS
-    imports: Optional[dict[str, Any]] = None
-    injected_classes: Optional[list[Any]] = None
-
-
-class SlotResult(BuildResult):
-    annotation: str
-    """The type annotation used in the generated model"""
-    field_extras: Optional[dict] = None
-    """Additional metadata for this slot to be held in the Field object"""
-
-
-if int(PYDANTIC_VERSION[0]) >= 2:
-    pass
-
-else:
-    pass
 
 
 @dataclass

@@ -975,6 +975,11 @@ None"""
     )
 
 
+# --------------------------------------------------
+# Pydanticgen arrays
+# --------------------------------------------------
+
+
 def test_arrays_anyshape():
     class MyModel(BaseModel):
         array: AnyShapeArray[int]
@@ -994,3 +999,5 @@ def test_arrays_anyshape():
             '{"$ref": "#any-shape-array-integer"}}], "$id": "#any-shape-array-integer"}}, '
             '"required": ["array"]}'
         )
+    else:
+        raise NotImplementedError("Get json schema representation for pydantic 2")

@@ -25,7 +25,7 @@ else:
     from pydantic import GetCoreSchemaHandler
     from pydantic_core import CoreSchema, core_schema
 
-from linkml.generators.pydanticgen.pydanticgen import SlotResult
+from linkml.generators.pydanticgen.build import SlotResult
 
 
 class ArrayRepresentation(Enum):
