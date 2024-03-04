@@ -33,7 +33,7 @@ URI: [linkml:PatternExpression](https://w3id.org/linkml/PatternExpression)
      * Range: [Boolean](types/Boolean.md)
      * in subsets: (SpecificationSubset)
  * [partial_match](partial_match.md)  <sub>0..1</sub>
-     * Description: if true then the pattern must match the whole string, as if enclosed in ^...$
+     * Description: if not true then the pattern must match the whole string, as if enclosed in ^...$
      * Range: [Boolean](types/Boolean.md)
      * in subsets: (SpecificationSubset)
 
@@ -215,6 +215,13 @@ URI: [linkml:PatternExpression](https://w3id.org/linkml/PatternExpression)
 
 ### Mixed in from common_metadata:
 
+ * [contributors](contributors.md)  <sub>0..\*</sub>
+     * Description: agent that contributed to the element
+     * Range: [Uriorcurie](types/Uriorcurie.md)
+     * in subsets: (BasicSubset)
+
+### Mixed in from common_metadata:
+
  * [created_on](created_on.md)  <sub>0..1</sub>
      * Description: time at which the element was created
      * Range: [Datetime](types/Datetime.md)
@@ -248,3 +255,17 @@ URI: [linkml:PatternExpression](https://w3id.org/linkml/PatternExpression)
      * Description: the relative order in which the element occurs, lower values are given precedence
      * Range: [Integer](types/Integer.md)
      * in subsets: (SpecificationSubset,BasicSubset)
+
+### Mixed in from common_metadata:
+
+ * [categories](categories.md)  <sub>0..\*</sub>
+     * Description: Controlled terms used to categorize an element.
+     * Range: [Uriorcurie](types/Uriorcurie.md)
+     * in subsets: (BasicSubset)
+
+### Mixed in from common_metadata:
+
+ * [keywords](keywords.md)  <sub>0..\*</sub>
+     * Description: Keywords or tags used to describe the element
+     * Range: [String](types/String.md)
+     * in subsets: (BasicSubset)

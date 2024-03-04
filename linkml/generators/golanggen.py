@@ -100,7 +100,8 @@ class GolangGenerator(Generator):
         out_str = template_obj.render(gen=self, schema=self.schemaview.schema, view=self.schemaview)
         return out_str
 
-    def name(self, element: Element) -> str:
+    @staticmethod
+    def name(element: Element) -> str:
         """
         Returns the name of the element in its canonical form
 
@@ -112,7 +113,8 @@ class GolangGenerator(Generator):
             alias = element.alias
         return camelcase(alias)
 
-    def json_name(self, element: Element) -> str:
+    @staticmethod
+    def json_name(element: Element) -> str:
         """
         Returns the name of the element in its JSON (snake-case) form
 
@@ -160,7 +162,7 @@ class GolangGenerator(Generator):
             rc_name = self.name(rc)
             id_slot = self.get_identifier_or_key_slot(r)
             if slot.multivalued:
-                if not id_slot or slot.inlined:
+                if not id_slot or slot.inlined or slot.inlined_as_list:
                     if slot.inlined_as_list or not id_slot:
                         return f"[]{rc_name}"
                     else:
@@ -181,7 +183,8 @@ class GolangGenerator(Generator):
                     logging.warning(f"Unknown type.base: {t.name}")
             return "string"
 
-    def parents(self, cls: ClassDefinition) -> List[ClassDefinitionName]:
+    @staticmethod
+    def parents(cls: ClassDefinition) -> List[ClassDefinitionName]:
         if cls.is_a:
             parents = [cls.is_a]
         else:

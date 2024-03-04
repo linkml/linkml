@@ -68,6 +68,9 @@ implicitly asserts that X is an instance of C1
      * Description: true means that slot can have more than one value and should be represented using a list or collection structure.
      * Range: [Boolean](types/Boolean.md)
      * in subsets: (SpecificationSubset,MinimalSubset,BasicSubset,ObjectOrientedProfile)
+ * [array](array.md)  <sub>0..1</sub>
+     * Description: coerces the value of the slot into an array and defines the dimensions of that array
+     * Range: [ArrayExpression](ArrayExpression.md)
  * [inherited](inherited.md)  <sub>0..1</sub>
      * Description: true means that the *value* of a slot is inherited by subclasses
      * Range: [Boolean](types/Boolean.md)
@@ -76,8 +79,7 @@ implicitly asserts that X is an instance of C1
      * Description: If present, slot is read only.  Text explains why
      * Range: [String](types/String.md)
  * [ifabsent](ifabsent.md)  <sub>0..1</sub>
-     * Description: function that provides a default value for the slot.  Possible values for this slot are defined in
-linkml.utils.ifabsent_functions.default_library:
+     * Description: function that provides a default value for the slot.  Possible values for this slot are defined in linkml.utils.ifabsent_functions.default_library:
   * [Tt]rue -- boolean True
   * [Ff]alse -- boolean False
   * bnode -- blank node identifier
@@ -126,7 +128,7 @@ linkml.utils.ifabsent_functions.default_library:
      * Description: the class(es) that reference the slot in a "slots" or "slot_usage" context
      * Range: [ClassDefinition](ClassDefinition.md)
  * [subproperty_of](subproperty_of.md)  <sub>0..1</sub>
-     * Description: Ontology property which this slot is a subproperty of.  Note: setting this property on a slot does not guarantee an expansion of the ontological hiearchy into an enumerated list of possible values in every serialization of the model.
+     * Description: Ontology property which this slot is a subproperty of.  Note: setting this property on a slot does not guarantee an expansion of the ontological hierarchy into an enumerated list of possible values in every serialization of the model.
      * Range: [SlotDefinition](SlotDefinition.md)
      * Example: RO:HOM0000001 this is the RO term for "in homology relationship with", and used as a value of subproperty of this means that any ontological child (related to RO:HOM0000001 via an is_a relationship), is a valid value for the slot that declares this with the subproperty_of tag.  This differs from the 'values_from' meta model component in that 'values_from' requires the id of a value set (said another way, if an entire ontology had a curie/identifier that was the identifier for the entire ontology, then that identifier would be used in 'values_from.')
  * [symmetric](symmetric.md)  <sub>0..1</sub>
@@ -189,7 +191,7 @@ linkml.utils.ifabsent_functions.default_library:
      * Range: [Boolean](types/Boolean.md)
      * in subsets: (SpecificationSubset,BasicSubset)
  * [path_rule](path_rule.md)  <sub>0..1</sub>
-     * Description: a rule for inferring a slot assignment based on evaluating a path through a sequence of slot assignemnts
+     * Description: a rule for inferring a slot assignment based on evaluating a path through a sequence of slot assignments
      * Range: [PathExpression](PathExpression.md)
  * [slot_definition➞disjoint_with](slot_definition_disjoint_with.md)  <sub>0..\*</sub>
      * Description: Two classes are disjoint if they have no instances in common, two slots are disjoint if they can never hold between the same two instances
@@ -224,6 +226,9 @@ linkml.utils.ifabsent_functions.default_library:
      * Description: An allowed list of prefixes for which identifiers must conform. The identifier of this class or slot must begin with the URIs referenced by this prefix
      * Range: [Ncname](types/Ncname.md)
      * in subsets: (SpecificationSubset,BasicSubset)
+ * [id_prefixes_are_closed](id_prefixes_are_closed.md)  <sub>0..1</sub>
+     * Description: If true, then the id_prefixes slot is treated as being closed, and any use of an id that does not have this prefix is considered a violation.
+     * Range: [Boolean](types/Boolean.md)
  * [definition_uri](definition_uri.md)  <sub>0..1</sub>
      * Description: The native URI of the element. This is always within the namespace of the containing schema. Contrast with the assigned URI, via class_uri or slot_uri
      * Range: [Uriorcurie](types/Uriorcurie.md)
@@ -236,6 +241,9 @@ linkml.utils.ifabsent_functions.default_library:
  * [implements](implements.md)  <sub>0..\*</sub>
      * Description: An element in another schema which this element conforms to. The referenced element is not imported into the schema for the implementing element. However, the referenced schema may be used to check conformance of the implementing element.
      * Range: [Uriorcurie](types/Uriorcurie.md)
+ * [instantiates](instantiates.md)  <sub>0..\*</sub>
+     * Description: An element in another schema which this element instantiates.
+     * Range: [Uriorcurie](types/Uriorcurie.md)
  * [abstract](abstract.md)  <sub>0..1</sub>
      * Description: Indicates the class or slot cannot be directly instantiated and is intended for grouping purposes.
      * Range: [Boolean](types/Boolean.md)
@@ -245,7 +253,7 @@ linkml.utils.ifabsent_functions.default_library:
      * Range: [Boolean](types/Boolean.md)
      * in subsets: (SpecificationSubset,BasicSubset,ObjectOrientedProfile)
  * [values_from](values_from.md)  <sub>0..\*</sub>
-     * Description: The identifier of a "value set" -- a set of identifiers that form the possible values for the range of a slot. Note: this is different than 'subproperty_of' in that 'subproperty_of' is intended to be a single ontology term while 'values_from' is the identifier of an entire value set.  Additionally, this is different than an enumeration in that in an enumeration, the values of the enumeration are listed directly in the model itself. Setting this property on a slot does not guarantee an expansion of the ontological hiearchy into an enumerated list of possible values in every serialization of the model.
+     * Description: The identifier of a "value set" -- a set of identifiers that form the possible values for the range of a slot. Note: this is different than 'subproperty_of' in that 'subproperty_of' is intended to be a single ontology term while 'values_from' is the identifier of an entire value set.  Additionally, this is different than an enumeration in that in an enumeration, the values of the enumeration are listed directly in the model itself. Setting this property on a slot does not guarantee an expansion of the ontological hierarchy into an enumerated list of possible values in every serialization of the model.
      * Range: [Uriorcurie](types/Uriorcurie.md)
  * [string_serialization](string_serialization.md)  <sub>0..1</sub>
      * Description: Used on a slot that stores the string serialization of the containing object. The syntax follows python formatted strings, with slot names enclosed in {}s. These are expanded using the values of those slots.
@@ -316,15 +324,15 @@ implicitly asserts Y is an instance of C2
 ### Mixed in from slot_expression:
 
  * [minimum_value](minimum_value.md)  <sub>0..1</sub>
-     * Description: for slots with ranges of type number, the value must be equal to or higher than this
-     * Range: [Integer](types/Integer.md)
+     * Description: For ordinal ranges, the value must be equal to or higher than this
+     * Range: [Anything](Anything.md)
      * in subsets: (SpecificationSubset,BasicSubset)
 
 ### Mixed in from slot_expression:
 
  * [maximum_value](maximum_value.md)  <sub>0..1</sub>
-     * Description: for slots with ranges of type number, the value must be equal to or lowe than this
-     * Range: [Integer](types/Integer.md)
+     * Description: For ordinal ranges, the value must be equal to or lower than this
+     * Range: [Anything](Anything.md)
      * in subsets: (SpecificationSubset,BasicSubset)
 
 ### Mixed in from slot_expression:
@@ -385,6 +393,13 @@ implicitly asserts Y is an instance of C2
  * [equals_expression](equals_expression.md)  <sub>0..1</sub>
      * Description: the value of the slot must equal the value of the evaluated expression
      * Range: [String](types/String.md)
+     * in subsets: (SpecificationSubset)
+
+### Mixed in from slot_expression:
+
+ * [exact_cardinality](exact_cardinality.md)  <sub>0..1</sub>
+     * Description: the exact number of entries for a multivalued slot
+     * Range: [Integer](types/Integer.md)
      * in subsets: (SpecificationSubset)
 
 ### Mixed in from slot_expression:

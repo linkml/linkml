@@ -18,10 +18,11 @@ from linkml_runtime.utils.formatutils import underscore
 from linkml_runtime.utils.introspection import package_schemaview
 from linkml_runtime.utils.yamlutils import YAMLRoot
 from pydantic import BaseModel
-from sqlalchemy import StaticPool, create_engine
+from sqlalchemy import create_engine
 from sqlalchemy.engine import Engine
 from sqlalchemy.ext.associationproxy import _AssociationCollection
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.pool import StaticPool
 
 from linkml._version import __version__
 from linkml.generators.pythongen import PythonGenerator

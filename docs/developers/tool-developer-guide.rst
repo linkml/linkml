@@ -53,7 +53,7 @@ syntax for LinkML is YAML, and YAML parsers are provided with all
 major languages. However, you will likely need to do more than parse
 the model. There is a lot of "business logic" associated with a
 model. For example, the rules that govern
-:doc:`inheritance and refinement of slots <schemas/inheritance>`.
+:doc:`inheritance and refinement of slots </schemas/inheritance>`.
 
 For Python applications, the SchemaView library provides this business
 logic, but currently this logic must be re-implemented for different
@@ -131,7 +131,7 @@ Other Languages
 LinkML is programming language neutral. However, currently much of the
 stack for introspecting schemas is written in Python.
 
-For example, in Python, if you want a list of slots for that class you can use :ref:`class_slots
+For example, in Python, if you want a list of slots for that class you can use :attr:`class_slots
 <linkml_runtime.utils.schemaview.SchemaView.class_slots>`. But
 what if you are building a generic JavaScript data entry widget that
 will work for any LinkML class?
@@ -242,7 +242,7 @@ mechanism for a generic application to customize look, feel, and
 behavior in a way that doesn't require changing software/code.
 
 External Configuration
-~~~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^^
 
 External configuration files may be best for "style sheet" type
 configurations for controlling colors, shapes, sizes, etc. These could
@@ -255,7 +255,7 @@ example of this is `KGViz Schema
 language for visualizing ontology graphs, based on `Graphviz<https://graphviz.org/>`.
 
 Schema Hints
-~~~~~~~~~~~~
+^^^^^^^^^^^^
 
 Schema hints embed additional information in the schema itself. In
 contrast to external configurations, this is harder for a user to
@@ -337,7 +337,7 @@ then it will have the dash annotations, allowing you to leverage
 generic SHACL applications (next section).
 
 Using ontologies and standard vocabularies to drive behavior
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Consider a schema that reuses standard vocabularies such as wgs84 for
 slots:
@@ -374,7 +374,7 @@ for example, including a map widget. Applications may also choose to
 use mappings as well as the primary URI.
 
 Handling enums
-~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^
 
 In addition to the general guidance above, applications may allow for
 custom behavior with enums.
@@ -395,7 +395,7 @@ more values than are present in the permissible value list.
 
 
 Handling units and quantities
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 There are a wide variety of ways to model quantities, and these are
 use case dependent. Is it important to capture ranges or

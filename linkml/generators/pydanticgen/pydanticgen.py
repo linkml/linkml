@@ -1,8 +1,10 @@
+import inspect
 import logging
 import os
 from abc import ABC, abstractmethod
 from collections import defaultdict
 from copy import deepcopy
+from pathlib import Path
 from dataclasses import dataclass, field
 from enum import Enum
 from types import ModuleType
@@ -24,7 +26,7 @@ from typing import (
 )
 
 import click
-from jinja2 import Template
+from jinja2 import ChoiceLoader, Environment, FileSystemLoader, Template
 from pydantic import BaseModel
 from pydantic.version import VERSION as PYDANTIC_VERSION
 
@@ -55,214 +57,19 @@ from linkml.generators.common.type_designators import (
     get_type_designator_value,
 )
 from linkml.generators.oocodegen import OOCodeGenerator
+from linkml.generators.pydanticgen.template import (
+    ConditionalImport,
+    Import,
+    Imports,
+    ObjectImport,
+    PydanticAttribute,
+    PydanticBaseModel,
+    PydanticClass,
+    PydanticModule,
+    TemplateModel,
+)
 from linkml.utils.generator import shared_arguments
 from linkml.utils.ifabsent_functions import ifabsent_value_declaration
-
-
-def default_template(pydantic_ver: str = "1", extra_fields: str = "forbid") -> str:
-    """Constructs a default template for pydantic classes based on the version of pydantic"""
-    ### HEADER ###
-    template = """
-{#-
-
-  Jinja2 Template for a pydantic classes
--#}
-from __future__ import annotations
-from datetime import datetime, date
-from enum import Enum
-{% if uses_numpy -%}
-import numpy as np
-{%- endif %}
-from typing import List, Dict, Optional, Any, Union"""
-    if pydantic_ver == "1":
-        template += """
-from pydantic import BaseModel as BaseModel, Field, validator"""
-    elif pydantic_ver == "2":
-        template += """
-from pydantic import BaseModel as BaseModel, ConfigDict,  Field, field_validator"""
-    template += """
-import re
-import sys
-if sys.version_info >= (3, 8):
-    from typing import Literal
-else:
-    from typing_extensions import Literal
-
-
-metamodel_version = "{{metamodel_version}}"
-version = "{{version if version else None}}"
-"""
-    ### BASE MODEL ###
-    if pydantic_ver == "1":
-        template += f"""
-class WeakRefShimBaseModel(BaseModel):
-   __slots__ = '__weakref__'
-
-class ConfiguredBaseModel(WeakRefShimBaseModel,
-                validate_assignment = True,
-                validate_all = True,
-                underscore_attrs_are_private = True,
-                extra = '{extra_fields}',
-                arbitrary_types_allowed = True,
-                use_enum_values = True):
-    pass
-"""
-    else:
-        template += f"""
-class ConfiguredBaseModel(BaseModel):
-    model_config = ConfigDict(
-        validate_assignment=True,
-        validate_default=True,
-        extra = '{extra_fields}',
-        arbitrary_types_allowed=True,
-        use_enum_values = True)
-    pass
-"""
-
-    ### ENUMS ###
-    template += """
-{% for e in enums.values() %}
-class {{ e.name }}(str{% if e['values'] %}, Enum{% endif %}):
-    {% if e.description -%}
-    \"\"\"
-    {{ e.description }}
-    \"\"\"
-    {%- endif %}
-    {% for _, pv in e['values'].items() -%}
-    {% if pv.description -%}
-    # {{pv.description}}
-    {%- endif %}
-    {{pv.label}} = "{{pv.value}}"
-    {% endfor %}
-    {% if not e['values'] -%}
-    dummy = "dummy"
-    {% endif %}
-{% endfor %}
-"""
-    ### CLASSES ###
-    if pydantic_ver == "1":
-        template += """
-{%- for c in schema.classes.values() %}
-class {{ c.name }}
-    {%- if class_isa_plus_mixins[c.name] -%}
-        ({{class_isa_plus_mixins[c.name]|join(', ')}})
-    {%- else -%}
-        (ConfiguredBaseModel)
-    {%- endif -%}
-                  :
-    {% if c.description -%}
-    \"\"\"
-    {{ c.description }}
-    \"\"\"
-    {%- endif %}
-    {% for attr in c.attributes.values() if c.attributes -%}
-    {{attr.name}}: {{ attr.annotations['python_range'].value }} = Field(
-    {%- if predefined_slot_values[c.name][attr.name] is not callable -%}
-        {{ predefined_slot_values[c.name][attr.name] }}
-    {%- elif (attr.required or attr.identifier or attr.key) -%}
-        ...
-    {%- else -%}
-        None
-    {%- endif -%}
-    {%- if attr.title != None %}, title="{{attr.title}}"{% endif -%}
-    {%- if attr.description %}, description=\"\"\"{{attr.description}}\"\"\"{% endif -%}
-    {%- if attr.equals_number != None %}, le={{attr.equals_number}}, ge={{attr.equals_number}}
-    {%- else -%}
-     {%- if attr.minimum_value != None %}, ge={{attr.minimum_value}}{% endif -%}
-     {%- if attr.maximum_value != None %}, le={{attr.maximum_value}}{% endif -%}
-    {%- endif -%}
-    )
-    {% else -%}
-    None
-    {% endfor %}
-    {% for attr in c.attributes.values() if c.attributes -%}
-    {%- if attr.pattern %}
-    @validator('{{attr.name}}', allow_reuse=True)
-    def pattern_{{attr.name}}(cls, v):
-        pattern=re.compile(r"{{attr.pattern}}")
-        if isinstance(v,list):
-            for element in v:
-                if not pattern.match(element):
-                    raise ValueError(f"Invalid {{attr.name}} format: {element}")
-        elif isinstance(v,str):
-            if not pattern.match(v):
-                raise ValueError(f"Invalid {{attr.name}} format: {v}")
-        return v
-    {% endif -%}
-    {% endfor %}
-{% endfor %}
-"""
-    elif pydantic_ver == "2":
-        template += """
-{%- for c in schema.classes.values() %}
-class {{ c.name }}
-    {%- if class_isa_plus_mixins[c.name] -%}
-        ({{class_isa_plus_mixins[c.name]|join(', ')}})
-    {%- else -%}
-        (ConfiguredBaseModel)
-    {%- endif -%}
-                  :
-    {% if c.description -%}
-    \"\"\"
-    {{ c.description }}
-    \"\"\"
-    {%- endif %}
-    {% for attr in c.attributes.values() if c.attributes -%}
-    {{attr.name}}: {{ attr.annotations['python_range'].value }} = Field(
-    {%- if predefined_slot_values[c.name][attr.name] is not callable -%}
-        {{ predefined_slot_values[c.name][attr.name] }}
-    {%- elif (attr.required or attr.identifier or attr.key) -%}
-        ...
-    {%- else -%}
-        None
-    {%- endif -%}
-    {%- if attr.title != None %}, title="{{attr.title}}"{% endif -%}
-    {%- if attr.description %}, description=\"\"\"{{attr.description}}\"\"\"{% endif -%}
-    {%- if attr.equals_number != None %}, le={{attr.equals_number}}, ge={{attr.equals_number}}
-    {%- else -%}
-     {%- if attr.minimum_value != None %}, ge={{attr.minimum_value}}{% endif -%}
-     {%- if attr.maximum_value != None %}, le={{attr.maximum_value}}{% endif -%}
-    {%- endif -%}
-    )
-    {% else -%}
-    None
-    {% endfor %}
-    {% for attr in c.attributes.values() if c.attributes -%}
-    {%- if attr.pattern %}
-    @field_validator('{{attr.name}}')
-    def pattern_{{attr.name}}(cls, v):
-        pattern=re.compile(r"{{attr.pattern}}")
-        if isinstance(v,list):
-            for element in v:
-                if not pattern.match(element):
-                    raise ValueError(f"Invalid {{attr.name}} format: {element}")
-        elif isinstance(v,str):
-            if not pattern.match(v):
-                raise ValueError(f"Invalid {{attr.name}} format: {v}")
-        return v
-    {% endif -%}
-    {% endfor %}
-{% endfor %}
-"""
-
-    ### FWD REFS / REBUILD MODEL ###
-    if pydantic_ver == "1":
-        template += """
-# Update forward refs
-# see https://pydantic-docs.helpmanual.io/usage/postponed_annotations/
-{% for c in schema.classes.values() -%}
-{{ c.name }}.update_forward_refs()
-{% endfor %}
-"""
-    else:
-        template += """
-# Model rebuild
-# see https://pydantic-docs.helpmanual.io/usage/models/#rebuilding-a-model
-{% for c in schema.classes.values() -%}
-{{ c.name }}.model_rebuild()
-{% endfor %}
-"""
-    return template
 
 
 def _get_pyrange(t: TypeDefinition, sv: SchemaView) -> str:
@@ -278,6 +85,42 @@ def _get_pyrange(t: TypeDefinition, sv: SchemaView) -> str:
     if pyrange is None:
         raise Exception(f"No python type for range: {t.name} // {t}")
     return pyrange
+
+
+DEFAULT_IMPORTS = (
+    Imports()
+    + Import(module="__future__", objects=[ObjectImport(name="annotations")])
+    + Import(module="datetime", objects=[ObjectImport(name="datetime"), ObjectImport(name="date")])
+    + Import(module="decimal", objects=[ObjectImport(name="Decimal")])
+    + Import(module="enum", objects=[ObjectImport(name="Enum")])
+    + Import(module="re")
+    + Import(
+        module="typing",
+        objects=[
+            ObjectImport(name="Any"),
+            ObjectImport(name="List"),
+            ObjectImport(name="Literal"),
+            ObjectImport(name="Dict"),
+            ObjectImport(name="Optional"),
+            ObjectImport(name="Union"),
+        ],
+    )
+    + Import(module="pydantic.version", objects=[ObjectImport(name="VERSION", alias="PYDANTIC_VERSION")])
+    + ConditionalImport(
+        condition="int(PYDANTIC_VERSION[0])>=2",
+        module="pydantic",
+        objects=[
+            ObjectImport(name="BaseModel"),
+            ObjectImport(name="ConfigDict"),
+            ObjectImport(name="Field"),
+            ObjectImport(name="field_validator"),
+        ],
+        alternative=Import(
+            module="pydantic",
+            objects=[ObjectImport(name="BaseModel"), ObjectImport(name="Field"), ObjectImport(name="validator")],
+        ),
+    )
+)
 
 
 # --------------------------------------------------
@@ -624,17 +467,96 @@ class PydanticGenerator(OOCodeGenerator):
     file_extension = "py"
 
     # ObjectVars
-    pydantic_version: str = field(default_factory=lambda: PYDANTIC_VERSION[0])
-    array_representations: List[ArrayRepresentation] = field(default_factory=lambda: [ArrayRepresentation.LIST])
-    template_file: str = None
-    extra_fields: str = field(default_factory=lambda: "forbid")
-    gen_mixin_inheritance: bool = field(default_factory=lambda: True)
+    array_representations: List[ArrayRepresentation] = field(
+        default_factory=lambda: [ArrayRepresentation.LIST])
+    pydantic_version: int = int(PYDANTIC_VERSION[0])
+    template_dir: Optional[Union[str, Path]] = None
+    """
+    Override templates for each TemplateModel.
+    
+    Directory with templates that override the default :attr:`.TemplateModel.template`
+    for each class. If a matching template is not found in the override directory,
+    the default templates will be used.
+    """
+    extra_fields: Literal["allow", "forbid", "ignore"] = "forbid"
+    gen_mixin_inheritance: bool = True
+    injected_classes: Optional[List[Union[Type, str]]] = None
+    """
+    A list/tuple of classes to inject into the generated module.
+    
+    Accepts either live classes or strings. Live classes will have their source code
+    extracted with inspect.get - so they need to be standard python classes declared in a
+    source file (ie. the module they are contained in needs a ``__file__`` attr, 
+    see: :func:`inspect.getsource` )
+    """
+    injected_fields: Optional[List[str]] = None
+    """
+    A list/tuple of field strings to inject into the base class.
+    
+    Examples:
+    
+    .. code-block:: python
+
+        injected_fields = (
+            'object_id: Optional[str] = Field(None, description="Unique UUID for each object")',
+        )
+    
+    """
+    imports: Optional[List[Import]] = None
+    """
+    Additional imports to inject into generated module. 
+    
+    Examples:
+        
+    .. code-block:: python
+    
+        from linkml.generators.pydanticgen.template import (
+            ConditionalImport,
+            ObjectImport,
+            Import,
+            Imports
+        )
+        
+        imports = (Imports() + 
+            Import(module='sys') + 
+            Import(module='numpy', alias='np') + 
+            Import(module='pathlib', objects=[
+                ObjectImport(name="Path"),
+                ObjectImport(name="PurePath", alias="RenamedPurePath")
+            ]) + 
+            ConditionalImport(
+                module="typing",
+                objects=[ObjectImport(name="Literal")],
+                condition="sys.version_info >= (3, 8)",
+                alternative=Import(
+                    module="typing_extensions", 
+                    objects=[ObjectImport(name="Literal")]
+                ),
+            ).imports
+        )
+        
+    becomes:
+    
+    .. code-block:: python
+    
+        import sys
+        import numpy as np
+        from pathlib import (
+            Path,
+            PurePath as RenamedPurePath
+        )
+        if sys.version_info >= (3, 8):
+            from typing import Literal
+        else:
+            from typing_extensions import Literal
+        
+    """
 
     # ObjectVars (identical to pythongen)
-    gen_classvars: bool = field(default_factory=lambda: True)
-    gen_slots: bool = field(default_factory=lambda: True)
-    genmeta: bool = field(default_factory=lambda: False)
-    emit_metadata: bool = field(default_factory=lambda: True)
+    gen_classvars: bool = True
+    gen_slots: bool = True
+    genmeta: bool = False
+    emit_metadata: bool = True
 
     def compile_module(self, **kwargs) -> ModuleType:
         """
@@ -649,7 +571,8 @@ class PydanticGenerator(OOCodeGenerator):
             logging.error(f"Error compiling generated python code: {e}")
             raise e
 
-    def sort_classes(self, clist: List[ClassDefinition]) -> List[ClassDefinition]:
+    @staticmethod
+    def sort_classes(clist: List[ClassDefinition]) -> List[ClassDefinition]:
         """
         sort classes such that if C is a child of P then C appears after P in the list
 
@@ -882,6 +805,50 @@ class PydanticGenerator(OOCodeGenerator):
             return list(collection_keys)[0]
         return None
 
+    @staticmethod
+    def _inline_as_simple_dict_with_value(slot_def: SlotDefinition, sv: SchemaView) -> Optional[str]:
+        """
+        Determine if a slot should be inlined as a simple dict with a value.
+
+        For example, if we have a class such as Prefix, with two slots prefix and expansion,
+        then an inlined list of prefixes can be serialized as:
+
+        .. code-block:: yaml
+
+            prefixes:
+                prefix1: expansion1
+                prefix2: expansion2
+                ...
+
+        Provided that the prefix slot is the identifier slot for the Prefix class.
+
+        TODO: move this to SchemaView
+
+        :param slot_def: SlotDefinition
+        :param sv: SchemaView
+        :return: str
+        """
+        if slot_def.inlined and not slot_def.inlined_as_list:
+            if slot_def.range in sv.all_classes():
+                id_slot = sv.get_identifier_slot(slot_def.range, use_key=True)
+                if id_slot is not None:
+                    range_cls_slots = sv.class_induced_slots(slot_def.range)
+                    if len(range_cls_slots) == 2:
+                        non_id_slots = [slot for slot in range_cls_slots if slot.name != id_slot.name]
+                        if len(non_id_slots) == 1:
+                            value_slot = non_id_slots[0]
+                            value_slot_range_type = sv.get_type(value_slot.range)
+                            if value_slot_range_type is not None:
+                                return _get_pyrange(value_slot_range_type, sv)
+        return None
+
+    def _template_environment(self) -> Environment:
+        env = TemplateModel.environment()
+        if self.template_dir is not None:
+            loader = ChoiceLoader([FileSystemLoader(self.template_dir), env.loader])
+            env.loader = loader
+        return env
+
     def get_array_representations_range(self, slot: SlotDefinition, range: str) -> str:
         """
         Generate the python range for array representations
@@ -902,12 +869,6 @@ class PydanticGenerator(OOCodeGenerator):
             return f"Union[{','.join(array_reps)}]"
 
     def serialize(self) -> str:
-        if self.template_file is not None:
-            with open(self.template_file) as template_file:
-                template_obj = Template(template_file.read())
-        else:
-            template_obj = Template(default_template(self.pydantic_version, self.extra_fields))
-
         sv: SchemaView
         sv = self.schemaview
         schema = sv.schema
@@ -918,7 +879,10 @@ class PydanticGenerator(OOCodeGenerator):
         )
         enums = self.generate_enums(sv.all_enums())
 
-        uses_numpy = False
+        imports = DEFAULT_IMPORTS
+        if self.imports is not None:
+            for i in self.imports:
+                imports += i
 
         sorted_classes = self.sort_classes(list(sv.all_classes().values()))
         self.sorted_class_names = [camelcase(c.name) for c in sorted_classes]
@@ -974,10 +938,10 @@ class PydanticGenerator(OOCodeGenerator):
 
                 if s.array is not None or "linkml:elements" in s.implements:
                     # TODO add support for xarray
+                    imports += Import(module="numpy", alias="np")
                     pyrange = self.get_array_representations_range(s, pyrange)
                     if "linkml:ColumnOrderedArray" in class_def.implements:
                         raise NotImplementedError("Cannot generate Pydantic code for ColumnOrderedArrays.")
-                    uses_numpy = True
                 elif s.multivalued:
                     if s.inlined or s.inlined_as_list:
                         collection_key = self.generate_collection_key(slot_ranges, s, class_def)
@@ -986,34 +950,100 @@ class PydanticGenerator(OOCodeGenerator):
                     if s.inlined is False or collection_key is None or s.inlined_as_list is True:
                         pyrange = f"List[{pyrange}]"
                     else:
-                        pyrange = f"Dict[{collection_key}, {pyrange}]"
+                        simple_dict_value = None
+                        if len(slot_ranges) == 1:
+                            simple_dict_value = self._inline_as_simple_dict_with_value(s, sv)
+                        if simple_dict_value:
+                            # inlining as simple dict
+                            pyrange = f"Dict[str, {simple_dict_value}]"
+                        else:
+                            pyrange = f"Dict[{collection_key}, {pyrange}]"
                 if not (s.required or s.identifier or s.key) and not s.designates_type:
                     pyrange = f"Optional[{pyrange}]"
                 ann = Annotation("python_range", pyrange)
                 s.annotations[ann.tag] = ann
-        code = template_obj.render(
-            schema=pyschema,
-            underscore=underscore,
-            enums=enums,
-            predefined_slot_values=self.get_predefined_slot_values(),
-            extra_fields=self.extra_fields,
+
+        if self.injected_classes is not None:
+            injected_classes = [c if isinstance(c, str) else inspect.getsource(c) for c in self.injected_classes]
+        else:
+            injected_classes = None
+
+        base_model = PydanticBaseModel(
+            pydantic_ver=self.pydantic_version, extra_fields=self.extra_fields, fields=self.injected_fields
+        )
+
+        classes = {}
+        predefined = self.get_predefined_slot_values()
+        bases = self.get_class_isa_plus_mixins()
+        for k, c in pyschema.classes.items():
+            attrs = {}
+            for attr_name, src_attr in c.attributes.items():
+                new_fields = {
+                    k: src_attr._as_dict.get(k, None)
+                    for k in PydanticAttribute.model_fields.keys()
+                    if src_attr._as_dict.get(k, None) is not None
+                }
+                predef_slot = predefined.get(k, {}).get(attr_name, None)
+                if predef_slot is not None:
+                    predef_slot = str(predef_slot)
+                new_fields["predefined"] = predef_slot
+                new_fields["name"] = attr_name
+                attrs[attr_name] = PydanticAttribute(**new_fields, pydantic_ver=self.pydantic_version)
+
+            new_class = PydanticClass(
+                name=k, attributes=attrs, description=c.description, pydantic_ver=self.pydantic_version
+            )
+            if k in bases:
+                new_class.bases = bases[k]
+            classes[k] = new_class
+
+        module = PydanticModule(
+            pydantic_ver=self.pydantic_version,
             metamodel_version=self.schema.metamodel_version,
             version=self.schema.version,
-            class_isa_plus_mixins=self.get_class_isa_plus_mixins(),
-            uses_numpy=uses_numpy,
+            imports=imports.imports,
+            base_model=base_model,
+            injected_classes=injected_classes,
+            enums=enums,
+            classes=classes,
         )
+        code = module.render(self._template_environment())
         return code
 
     def default_value_for_type(self, typ: str) -> str:
         return "None"
 
 
+def _subclasses(cls: Type):
+    return set(cls.__subclasses__()).union([s for c in cls.__subclasses__() for s in _subclasses(c)])
+
+
+_TEMPLATE_NAMES = sorted(list(set([c.template for c in _subclasses(TemplateModel)])))
+
+
 @shared_arguments(PydanticGenerator)
-@click.option("--template-file", help="Optional jinja2 template to use for class generation")
+@click.option("--template-file", hidden=True)
+@click.option(
+    "--template-dir",
+    type=click.Path(),
+    help="""
+Optional jinja2 template directory to use for class generation.
+
+Pass a directory containing templates with the same name as any of the default 
+:class:`.TemplateModel` templates to override them. The given directory will be 
+searched for matching templates, and use the default templates as a fallback 
+if an override is not found
+  
+Available templates to override:
+
+\b
+"""
+    + "\n".join(["- " + name for name in _TEMPLATE_NAMES]),
+)
 @click.option(
     "--pydantic-version",
-    type=click.Choice(["1", "2"]),
-    default="1",
+    type=click.IntRange(1, 2),
+    default=1,
     help="Pydantic version to use (1 or 2)",
 )
 @click.option(
@@ -1034,20 +1064,31 @@ class PydanticGenerator(OOCodeGenerator):
 def cli(
     yamlfile,
     template_file=None,
+    template_dir: Optional[str] = None,
     head=True,
-    emit_metadata=False,
     genmeta=False,
     classvars=True,
     slots=True,
-    pydantic_version="1",
     array_representations=list("list"),
+    pydantic_version=1,
     extra_fields="forbid",
     **args,
 ):
     """Generate pydantic classes to represent a LinkML model"""
+    if template_file is not None:
+        raise DeprecationWarning(
+            (
+                "Passing a single template_file is deprecated. Pass a directory of template files instead. "
+                "See help string for --template-dir"
+            )
+        )
+
+    if template_dir is not None:
+        if not Path(template_dir).exists():
+            raise FileNotFoundError(f"The template directory {template_dir} does not exist!")
+
     gen = PydanticGenerator(
         yamlfile,
-        template_file=template_file,
         pydantic_version=pydantic_version,
         array_representations=[ArrayRepresentation(x) for x in array_representations],
         extra_fields=extra_fields,
@@ -1055,6 +1096,7 @@ def cli(
         genmeta=genmeta,
         gen_classvars=classvars,
         gen_slots=slots,
+        template_dir=template_dir,
         **args,
     )
     print(gen.serialize())

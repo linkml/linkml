@@ -22,7 +22,7 @@ from linkml.generators.protogen import ProtoGenerator
 from linkml.generators.pythongen import PythonGenerator
 from linkml.generators.shaclgen import ShaclGenerator
 from linkml.generators.shexgen import ShExGenerator
-from linkml.generators.sqlddlgen import SQLDDLGenerator
+from linkml.generators.sqltablegen import SQLTableGenerator
 from linkml.utils.cli_utils import log_level_option
 from linkml.utils.generator import Generator
 
@@ -53,7 +53,7 @@ GEN_MAP = {
     #    'rdf': (RDFGenerator, 'rdf/{name}.ttl', {'context': '{parent}/../jsonld/{name}.context.jsonld'}),
     "shex": (ShExGenerator, "shex/{name}.shex", {}),
     "shacl": (ShaclGenerator, "shacl/{name}.shacl.ttl", {}),
-    "sqlddl": (SQLDDLGenerator, "sqlschema/{name}.sql", {}),
+    "sqltable": (SQLTableGenerator, "sqlschema/{name}.sql", {}),
     # # linkml/generators/javagen.py uses different architecture from most of the other generators
     # # also linkml/generators/excelgen.py, which has a different mechanism for determining the output path
     # 'java': (JavaGenerator, 'java/{name}.java', {'directory': '{parent}'}),
@@ -96,7 +96,8 @@ class ProjectGenerator:
     Note this doesn't conform to overall generator framework, as it is a meta-generator
     """
 
-    def generate(self, schema_path: str, config: ProjectConfiguration = ProjectConfiguration()):
+    @staticmethod
+    def generate(schema_path: str, config: ProjectConfiguration = ProjectConfiguration()):
         if config.directory is None:
             raise Exception("Must pass directory")
         Path(config.directory).mkdir(parents=True, exist_ok=True)
@@ -197,25 +198,37 @@ def cli(
 
     Generate all downstream artefacts using default configuration:
 
-       gen-project -d . personinfo.yaml
+    .. code-block: bash
+
+        gen-project -d . personinfo.yaml
 
     Exclusion lists: all except ShEx:
 
-       gen-project --exclude shex -d . personinfo.yaml
+    .. code-block: bash
+
+        gen-project --exclude shex -d . personinfo.yaml
 
     Inclusion lists: only jsonschema and python:
+
+    .. code-block: bash
 
        gen-project -I python -I jsonschema -d . personinfo.yaml
 
     Configuration, on command line:
 
+    .. code-block: bash
+
         gen-project -A 'jsonschema: {top_class: Container}' -d . personinfo.yaml
 
     Configuration, via yaml file:
 
+    .. code-block: bash
+
         gen-project --config config.yaml personinfo.yaml
 
     config.yaml:
+
+    .. code-block: yaml
 
         directory: .
         generator_args:

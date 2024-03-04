@@ -76,7 +76,7 @@ default_range: string
      * [description](https://w3id.org/linkml/description) -- a summary of the schema. Can include markdown formatting
      * [license](https://w3id.org/linkml/license) -- CC0 recommended
  * modules
-     * [imports](https://w3id.org/linkml/imports) -- allows for modular development. See [imports](imports)
+     * [imports](https://w3id.org/linkml/imports) -- allows for modular development. See [imports](/schemas/imports)
  * prefix management
      * [prefixes](https://w3id.org/linkml/prefixes) -- A map of prefixes. See [prefixes](prefixes)
      * [default_prefixes](https://w3id.org/linkml/default_prefix) -- The prefix used for all elements in this schema

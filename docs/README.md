@@ -4,46 +4,39 @@ These instructions are for the core developers of the LinkML framework.
 
 Documentation source:
 
- * [docs/ folder](https://github.com/linkml/linkml/tree/main/docs)
- * deployed to: [https://linkml.io/linkml/](https://linkml.io/linkml/)
+* [docs/ folder](https://github.com/linkml/linkml/tree/main/docs)
+* deployed to: [https://linkml.io/linkml/](https://linkml.io/linkml/)
 
 We use the sphinx framework.
 
 ## Instructions
 
-To build the docs locally, first make sure you have the poetry dev dependencies installed, then use poetry to run make html (don't run "make html" directly):
+To build the docs locally, first make sure you have the development dependencies installed which may not be the case if you pip-installed linkML. In the root folder of the linkML code, run
 
 ```bash
-poetry install --with dev
-cd docs
-poetry run make html
+poetry install
+```
+
+Then use the make to build the documentation:
+
+```bash
+make docs
 ```
 
 This will build docs in `_build/html/`. You can check these with your browser.
 
-After you are satisfied they look good run:
+If you don't have make (on Windows) you can build the docs by:
 
 ```bash
-make deploy
+cd docs
+poetry run make html
 ```
 
-(this is a simple copy and doesn't need to be done in poetry)
-
-This will copy to [docs/](https://github.com/linkml/linkml/tree/main/docs) where they can be committed
-
-**NOTE**: remember to `git add` any new HTML files or assets
-
-Currently we do not do these steps by github actions. It is recommended you commit changes to docs in a separate PR. The PRs can be more easily evaluated if they are only the source change, and conflicts are easier to resolve.
+New versions of the documentation are published to GitHub pages by a workflow job for every merge to main.
 
 ## IMPORTANT
 
 **never** run `make html` directly
 
-**always** run this from inside the poetry shell or via:
-
-```bash
-poetry run make html
-```
-
-If you don't do this then docstrings from linkml will not be included. Always check the generator docs to ensure command line options are present.
-
+If you do this then docstrings from linkml will not be included.
+Always check the generator docs to ensure command line options are present.

@@ -40,6 +40,9 @@ URI: [linkml:Element](https://w3id.org/linkml/Element)
      * Description: An allowed list of prefixes for which identifiers must conform. The identifier of this class or slot must begin with the URIs referenced by this prefix
      * Range: [Ncname](types/Ncname.md)
      * in subsets: (SpecificationSubset,BasicSubset)
+ * [id_prefixes_are_closed](id_prefixes_are_closed.md)  <sub>0..1</sub>
+     * Description: If true, then the id_prefixes slot is treated as being closed, and any use of an id that does not have this prefix is considered a violation.
+     * Range: [Boolean](types/Boolean.md)
  * [definition_uri](definition_uri.md)  <sub>0..1</sub>
      * Description: The native URI of the element. This is always within the namespace of the containing schema. Contrast with the assigned URI, via class_uri or slot_uri
      * Range: [Uriorcurie](types/Uriorcurie.md)
@@ -51,6 +54,9 @@ URI: [linkml:Element](https://w3id.org/linkml/Element)
      * in subsets: (BasicSubset)
  * [implements](implements.md)  <sub>0..\*</sub>
      * Description: An element in another schema which this element conforms to. The referenced element is not imported into the schema for the implementing element. However, the referenced schema may be used to check conformance of the implementing element.
+     * Range: [Uriorcurie](types/Uriorcurie.md)
+ * [instantiates](instantiates.md)  <sub>0..\*</sub>
+     * Description: An element in another schema which this element instantiates.
      * Range: [Uriorcurie](types/Uriorcurie.md)
 
 ### Mixed in from extensible:
@@ -231,6 +237,13 @@ URI: [linkml:Element](https://w3id.org/linkml/Element)
 
 ### Mixed in from common_metadata:
 
+ * [contributors](contributors.md)  <sub>0..\*</sub>
+     * Description: agent that contributed to the element
+     * Range: [Uriorcurie](types/Uriorcurie.md)
+     * in subsets: (BasicSubset)
+
+### Mixed in from common_metadata:
+
  * [created_on](created_on.md)  <sub>0..1</sub>
      * Description: time at which the element was created
      * Range: [Datetime](types/Datetime.md)
@@ -264,6 +277,20 @@ URI: [linkml:Element](https://w3id.org/linkml/Element)
      * Description: the relative order in which the element occurs, lower values are given precedence
      * Range: [Integer](types/Integer.md)
      * in subsets: (SpecificationSubset,BasicSubset)
+
+### Mixed in from common_metadata:
+
+ * [categories](categories.md)  <sub>0..\*</sub>
+     * Description: Controlled terms used to categorize an element.
+     * Range: [Uriorcurie](types/Uriorcurie.md)
+     * in subsets: (BasicSubset)
+
+### Mixed in from common_metadata:
+
+ * [keywords](keywords.md)  <sub>0..\*</sub>
+     * Description: Keywords or tags used to describe the element
+     * Range: [String](types/String.md)
+     * in subsets: (BasicSubset)
 
 ## Other properties
 

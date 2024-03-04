@@ -147,7 +147,8 @@ class PythonOutputTestCase(TestEnvironmentTestCase):
             value_is_returned=True,
         )
 
-    def test_python_lists_and_keys(self):
+    @staticmethod
+    def test_python_lists_and_keys():
         """description"""
         test_dir = "python_generation"
         test_name = "python_lists_and_keys"

@@ -64,7 +64,7 @@ for you:
    :caption: Developers guide:
 
    developers/index
-   code
+   code/index
 
 
 

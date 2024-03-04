@@ -76,7 +76,7 @@ def test_inlined(framework, inlined, inlined_as_list, multivalued, foreign_key, 
         (PYDANTIC, True, False, False, False): "D",
         (PYDANTIC, True, False, False, True): "D",
         (PYDANTIC, True, False, True, False): "List[D]",
-        (PYDANTIC, True, False, True, True): "Dict[str, D]",
+        (PYDANTIC, True, False, True, True): "Dict[str, D]",  ## TODO: relax for CompactDict
         (PYDANTIC, True, True, False, False): "D",  # odd but valid combo
         # (PYDANTIC, True, True, False, True): "str",  ## TODO check this one
         (PYDANTIC, True, True, True, False): "List[D]",
@@ -339,8 +339,10 @@ def test_inlined_as_simple_dict(framework, name, attrs, data_name, values, is_va
     :param is_valid:
     :return:
     """
-    if framework in [PYDANTIC, SQL_DDL_SQLITE]:
-        pytest.skip("TODO: pydantic and SQLA do not support inlined as simple dict")
+    if framework in [SQL_DDL_SQLITE]:
+        pytest.skip("TODO: SQLA do not support inlined as simple dict")
+    if framework == PYDANTIC and name != "basic":
+        pytest.skip("TODO: pydantic-based methods are permissive")
     if name == "extra" and data_name == "t1":
         if framework != JSON_SCHEMA:
             pytest.skip("TODO: dataclasses-based methods are permissive")
@@ -366,10 +368,12 @@ def test_inlined_as_simple_dict(framework, name, attrs, data_name, values, is_va
     )
     expected_behavior = ValidationBehavior.IMPLEMENTS
     if data_name == "wrong_type":
-        if framework == PYTHON_DATACLASSES:
+        if framework in [PYTHON_DATACLASSES, PYDANTIC]:
             expected_behavior = ValidationBehavior.COERCES
         elif framework in [OWL, SHACL]:
             expected_behavior = ValidationBehavior.INCOMPLETE
+    if framework == PYDANTIC and data_name.startswith("expanded"):
+        expected_behavior = ValidationBehavior.INCOMPLETE
     check_data(
         schema,
         data_name,

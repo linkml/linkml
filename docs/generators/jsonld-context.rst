@@ -41,8 +41,7 @@ i.e this is not correct:
 
    "@context": {
        "PATO": "http://purl.obolibrary.org/obo/PATO_",
-        ...
-        },
+        }
 
 It must be represented as:
         
@@ -52,7 +51,7 @@ It must be represented as:
        "PATO": {
             "@id": "http://purl.obolibrary.org/obo/PATO_",
              "@prefix": true
-        },...          
+        }
 
 However, the former can still be convenient, so this can be done with
 a flag:

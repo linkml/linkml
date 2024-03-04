@@ -1,6 +1,6 @@
 import logging
 import os
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Optional
 
 import click
@@ -61,19 +61,19 @@ RANGEMAP = {
 @dataclass
 class SQLTableGenerator(Generator):
     """
-    A :ref:`Generator` for creating SQL DDL
+    A :class:`~linkml.utils.generator.Generator` for creating SQL DDL
 
     The basic algorithm for mapping a linkml schema S is as follows:
 
-     - Each schema S corresponds to one database schema D (see SQLSchema)
-     - Each Class C in S is mapped to a table T (see SQLTable)
-     - Each slot S in each C is mapped to a column Col (see SQLColumn)
+    - Each schema S corresponds to one database schema D (see SQLSchema)
+    - Each Class C in S is mapped to a table T (see SQLTable)
+    - Each slot S in each C is mapped to a column Col (see SQLColumn)
 
     if the direct_mapping attribute is set to true, then no further transformations
     are applied. Note that this means:
 
-     - inline objects are modeled as Text strings
-     - multivalued fields are modeled as single Text strings
+    - inline objects are modeled as Text strings
+    - multivalued fields are modeled as single Text strings
 
     this direct mapping is useful for simple spreadsheet/denormalized representations of complex data.
     however, for other applications, additional transformations should occur. these are:
@@ -95,22 +95,30 @@ class SQLTableGenerator(Generator):
     E.g. if a class User has a multivalues slot alias whose range is a string,
     then create a table user_aliases, with two columns (1) alias [a string] and (2) a backref to user
 
-     Each mapped slot C.S has a range R
+    Each mapped slot C.S has a range R
 
-     ranges that are types (literals):
-       - If R is a type, and the slot is NOT multivalued, do a direct type conversion
-       - If R is a type, and the slot is multivalued:
-         * do not include the mapped column
-         * create a new table T_S, with 2 columns: S, and a backref to T
-      ranges that are classes:
-       Ref = map_class_to_table(R)
-       - if R is a class, and the slot is NOT multivalued, and Ref has a singular primary key:
-         * Col.type = ForeignKey(Ref.PK)
-       - if R is a class, and the slot is NOT multivalued, and Ref has NO singular primary key:
-         * add a foreign key C.pk to Ref
-         * add a backref C.S => Ref, C.pk
-         * remove Col from T
-       - If R is a class, and the slot IS multivalued
+    ranges that are types (literals):
+
+    * If R is a type, and the slot is NOT multivalued, do a direct type conversion
+    * If R is a type, and the slot is multivalued:
+
+        * do not include the mapped column
+        * create a new table T_S, with 2 columns: S, and a backref to T
+
+    ranges that are classes:
+
+    * Ref = map_class_to_table(R)
+    * if R is a class, and the slot is NOT multivalued, and Ref has a singular primary key:
+
+        * Col.type = ForeignKey(Ref.PK)
+
+    * if R is a class, and the slot is NOT multivalued, and Ref has NO singular primary key:
+
+        * add a foreign key C.pk to Ref
+        * add a backref C.S => Ref, C.pk
+        * remove Col from T
+
+    * If R is a class, and the slot IS multivalued
 
     """
 
@@ -123,12 +131,12 @@ class SQLTableGenerator(Generator):
 
     # ObjectVars
     use_inherits: bool = False  # postgresql supports inheritance
-    dialect: str = field(default_factory=lambda: "sqlite")
-    inject_primary_keys: bool = field(default_factory=lambda: True)
-    use_foreign_keys: bool = field(default_factory=lambda: True)
-    rename_foreign_keys: bool = field(default_factory=lambda: False)
-    direct_mapping: bool = field(default_factory=lambda: False)
-    relative_slot_num: bool = field(default_factory=lambda: 0)
+    dialect: str = "sqlite"
+    inject_primary_keys: bool = True
+    use_foreign_keys: bool = True
+    rename_foreign_keys: bool = False
+    direct_mapping: bool = False
+    relative_slot_num: bool = False
 
     def serialize(self, **kwargs) -> str:
         return self.generate_ddl(**kwargs)
@@ -145,7 +153,9 @@ class SQLTableGenerator(Generator):
         sqltr = RelationalModelTransformer(SchemaView(self.schema))
         if not self.use_foreign_keys:
             sqltr.foreign_key_policy = ForeignKeyPolicy.NO_FOREIGN_KEYS
-        tr_result = sqltr.transform(**kwargs)
+        tr_result = sqltr.transform(
+            tgt_schema_name=kwargs.get("tgt_schema_name", None), top_class=kwargs.get("top_class", None)
+        )
         schema = tr_result.schema
 
         def sql_name(n: str) -> str:
@@ -207,7 +217,6 @@ class SQLTableGenerator(Generator):
         schema_metadata.create_all(engine)
         return ddl_str
 
-    # TODO: merge with code from sqlddlgen
     def get_sql_range(self, slot: SlotDefinition, schema: SchemaDefinition = None):
         """
         returns a SQL Alchemy column type
@@ -220,8 +229,12 @@ class SQLTableGenerator(Generator):
             schema = SchemaLoader(data=self.schema).resolve()
 
         if range in schema.classes:
-            # FKs treated as Text
-            return Text()
+            # FK type should be the same as the identifier of the foreign key
+            fk = SchemaView(schema).get_identifier_slot(range)
+            if fk:
+                return self.get_sql_range(fk, schema)
+            else:
+                return Text()
         if range in schema.enums:
             e = schema.enums[range]
             if e.permissible_values is not None:
@@ -240,7 +253,8 @@ class SQLTableGenerator(Generator):
             logging.error(f"UNKNOWN range base: {range_base} for {slot.name} = {slot.range}")
             return Text()
 
-    def get_foreign_key(self, cn: str, sv: SchemaView) -> str:
+    @staticmethod
+    def get_foreign_key(cn: str, sv: SchemaView) -> str:
         pk = sv.get_identifier_slot(cn)
         # TODO: move this to SV
         if pk is None:

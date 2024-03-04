@@ -1,0 +1,9 @@
+{% from 'imports.py.jinja' import import_ %}
+if {{ condition }}:
+    {% filter indent(width=4) %}
+    {{ import_(module, alias, objects) }}
+    {% endfilter %}
+else:
+    {% filter indent(width=4) %}
+    {{ alternative }}
+    {% endfilter %}

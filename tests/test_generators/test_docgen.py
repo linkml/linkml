@@ -296,6 +296,14 @@ def test_docgen(kitchen_sink_path, input_path, tmp_path):
         after="## Properties",
     )
 
+    # test that slots with ranges modified using any_of have union/cup
+    # separated ranges
+    assert_mdfile_contains(tmp_path / "EmploymentEvent.md", "[CordialnessEnum](CordialnessEnum.md)", after="## Slots")
+    assert_mdfile_contains(tmp_path / "EmploymentEvent.md", "&nbsp;or&nbsp;<br />", after="## Slots")
+    assert_mdfile_contains(
+        tmp_path / "EmploymentEvent.md", "[EmploymentEventType](EmploymentEventType.md)", after="## Slots"
+    )
+
     # checks correctness of the YAML representation of source schema
     person_source = gen.yaml(gen.schemaview.get_class("Person"))
     person_dict = yaml.load(person_source, Loader=yaml.Loader)
@@ -560,7 +568,7 @@ def test_fetch_slots_of_class(kitchen_sink_path, input_path):
 
     # test assertion for own attributes of a class
     actual_result = gen.get_direct_slot_names(cls)
-    expected_result = ["street", "city"]
+    expected_result = ["street", "city", "altitude"]
 
     assert expected_result == actual_result
 

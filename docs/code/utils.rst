@@ -1,8 +1,5 @@
-linkml.utils package
-====================
-
-Submodules
-----------
+Utils
+=====
 
 linkml.utils.converter module
 -----------------------------
@@ -88,14 +85,6 @@ linkml.utils.schemasynopsis module
 ----------------------------------
 
 .. automodule:: linkml.utils.schemasynopsis
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-linkml.utils.sqltransformer\_old module
----------------------------------------
-
-.. automodule:: linkml.utils.sqltransformer_old
    :members:
    :undoc-members:
    :show-inheritance:

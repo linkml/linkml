@@ -200,6 +200,7 @@ class SchemaBuilder:
 
         :param prefix:
         :param url:
+        :param replace_if_present:
         :return: builder
         :raises ValueError: if prefix already exists and replace_if_present=False
         """

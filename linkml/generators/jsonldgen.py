@@ -37,7 +37,8 @@ class JSONLDGenerator(Generator):
 
     Status: incompletely implemented
 
-    Note: this is distinct from :ref:`ContextGenerator`, which generates a JSON-LD context
+    Note: this is distinct from
+    :class:`~linkml.generators.jsonldcontextgen.ContextGenerator`, which generates a JSON-LD context
     """
 
     # ClassVars

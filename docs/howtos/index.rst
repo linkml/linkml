@@ -15,7 +15,6 @@ Some of these guides are works in progress
    yq-for-schemas
    using-jsonld
    model-measurements
-   managing-releases
    port-linkml
    multidimensional-arrays
    generate-ai-prompts

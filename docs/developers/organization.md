@@ -18,7 +18,7 @@ The two most important packages are `linkml` and `linkml-runtime`
     - this documentation
 * [linkml-runtime](https://github.com/linkml/linkml-runtime)
     - code needed by linkml python object models
-    - utility code such as [schemaview](developers/manipulating-schemas)
+    - utility code such as [schemaview](/developers/manipulating-schemas)
     - includes metamodel (linkml_runtime.linkml_model)
 
 If you are using LinkML in a Python environment, then as a general rule

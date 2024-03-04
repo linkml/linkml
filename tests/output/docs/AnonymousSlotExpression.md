@@ -90,15 +90,15 @@ implicitly asserts Y is an instance of C2
 ### Mixed in from slot_expression:
 
  * [minimum_value](minimum_value.md)  <sub>0..1</sub>
-     * Description: for slots with ranges of type number, the value must be equal to or higher than this
-     * Range: [Integer](types/Integer.md)
+     * Description: For ordinal ranges, the value must be equal to or higher than this
+     * Range: [Anything](Anything.md)
      * in subsets: (SpecificationSubset,BasicSubset)
 
 ### Mixed in from slot_expression:
 
  * [maximum_value](maximum_value.md)  <sub>0..1</sub>
-     * Description: for slots with ranges of type number, the value must be equal to or lowe than this
-     * Range: [Integer](types/Integer.md)
+     * Description: For ordinal ranges, the value must be equal to or lower than this
+     * Range: [Anything](Anything.md)
      * in subsets: (SpecificationSubset,BasicSubset)
 
 ### Mixed in from slot_expression:
@@ -159,6 +159,13 @@ implicitly asserts Y is an instance of C2
  * [equals_expression](equals_expression.md)  <sub>0..1</sub>
      * Description: the value of the slot must equal the value of the evaluated expression
      * Range: [String](types/String.md)
+     * in subsets: (SpecificationSubset)
+
+### Mixed in from slot_expression:
+
+ * [exact_cardinality](exact_cardinality.md)  <sub>0..1</sub>
+     * Description: the exact number of entries for a multivalued slot
+     * Range: [Integer](types/Integer.md)
      * in subsets: (SpecificationSubset)
 
 ### Mixed in from slot_expression:

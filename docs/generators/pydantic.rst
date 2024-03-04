@@ -1,5 +1,7 @@
+:tocdepth: 3
+
 Pydantic
-======
+========
 
 Example Output
 --------------
@@ -65,11 +67,8 @@ The generate python looks like this:
         image: Optional[str] = Field(None)
 
 
-Docs
-----
-
 Command Line
-^^^^^^^^^^^^
+------------
 
 .. currentmodule:: linkml.generators.pydanticgen
 
@@ -77,18 +76,160 @@ Command Line
     :prog: gen-pydantic
     :nested: short
         
-Code
-^^^^
+Generator
+---------
 
         
 .. autoclass:: PydanticGenerator
-    :members: serialize
+    :members:
+
+Templates
+---------
+
+The pydanticgen module has a templating system that allows each part of a
+schema to be generated independently and customized. See the documentation
+for the individual classes, but in short - each part of the output pydantic
+domain has a model with a corresponding template. At render time, each model
+is recursively rendered.
+
+The :class:`.PydanticGenerator` then serves as a translation layer between
+the source models from :mod:`linkml_runtime` and the target models in
+:mod:`.pydanticgen.template` , making clear what is needed to generate
+pydantic code as well as what parts of the linkml metamodel are supported.
+
+Usage example:
+
+Imports:
+
+.. code-block:: python
+
+    imports = (Imports() +
+        Import(module="sys") +
+        Import(module="pydantic", objects=[{"name": "BaseModel"}, {"name": "Field"}])
+    )
+
+renders to:
+
+.. code-block:: python
+
+    import sys
+    from pydantic import (
+        BaseModel,
+        Field
+    )
+
+Attributes:
+
+.. code-block:: python
+
+    attr = PydanticAttribute(
+        name="my_field",
+        annotations={"python_range": {"value": "str"}},
+        title="My Field!",
+        description="A Field that is mine!",
+        pattern="my_.*",
+    )
+
+By itself, renders to:
+
+.. code-block:: python
+
+    my_field: str = Field(None, title="My Field!", description="""A Field that is mine!""")
+
+Classes:
+
+.. code-block:: python
+
+    cls = PydanticClass(
+        name="MyClass",
+        bases="BaseModel",
+        description="A Class I Made!",
+        attributes={"my_field": attr},
+    )
+
+Renders to (along with the validator for the attribute):
+
+.. code-block:: python
+
+    class MyClass(BaseModel):
+        my_field: str = Field(None, title="My Field!", description="""A Field that is mine!""")
+
+        @validator('my_field', allow_reuse=True)
+        def pattern_my_field(cls, v):
+            pattern=re.compile(r"my_.*")
+            if isinstance(v,list):
+                for element in v:
+                    if not pattern.match(element):
+                        raise ValueError(f"Invalid my_field format: {element}")
+            elif isinstance(v,str):
+                if not pattern.match(v):
+                    raise ValueError(f"Invalid my_field format: {v}")
+            return v
+
+Modules:
+
+.. code-block:: python
+
+    module = PydanticModule(imports=imports, classes={cls.name: cls})
+
+Combine all the pieces:
+
+.. code-block:: python
+
+    import sys
+    from pydantic import (
+        BaseModel,
+        Field
+    )
+
+    metamodel_version = "None"
+    version = "None"
+
+    class WeakRefShimBaseModel(BaseModel):
+        __slots__ = '__weakref__'
+
+
+    class ConfiguredBaseModel(WeakRefShimBaseModel,
+                    validate_assignment = True,
+                    validate_all = True,
+                    underscore_attrs_are_private = True,
+                    extra = "forbid",
+                    arbitrary_types_allowed = True,
+                    use_enum_values = True):
+        pass
+
+
+    class MyClass(BaseModel):
+        my_field: str = Field(None, title="My Field!", description="""A Field that is mine!""")
+
+        @validator('my_field', allow_reuse=True)
+        def pattern_my_field(cls, v):
+            pattern=re.compile(r"my_.*")
+            if isinstance(v,list):
+                for element in v:
+                    if not pattern.match(element):
+                        raise ValueError(f"Invalid my_field format: {element}")
+            elif isinstance(v,str):
+                if not pattern.match(v):
+                    raise ValueError(f"Invalid my_field format: {v}")
+            return v
+
+
+    # Update forward refs
+    # see https://pydantic-docs.helpmanual.io/usage/postponed_annotations/
+    MyClass.update_forward_refs()
+
+
+.. automodule:: linkml.generators.pydanticgen.template
+    :members:
+    :undoc-members:
+    :member-order: bysource
 
 Additional Notes
 ----------------
 LinkML contains two Python generators. The Pydantic dataclass generator is specifically
 useful for FastAPI, but is newer and less full featured than the standard 
-:doc:`Python generator <generators/python>`.
+:doc:`Python generator </generators/python>`.
 
 
 Biolink Example

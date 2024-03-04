@@ -13,7 +13,9 @@ URI: [linkml:Annotatable](https://w3id.org/linkml/Annotatable)
 
  * [Annotation](Annotation.md) (mixin)  - a tag/value pair with the semantics of OWL Annotation
  * [AnonymousExpression](AnonymousExpression.md) (mixin)  - An abstract parent class for any nested expression
+ * [ArrayExpression](ArrayExpression.md) (mixin)  - defines the dimensions of an array
  * [ClassRule](ClassRule.md) (mixin)  - A rule that applies to instances of a class
+ * [DimensionExpression](DimensionExpression.md) (mixin)  - defines one of the dimensions of an array
  * [Element](Element.md) (mixin)  - A named element in the model
  * [ImportExpression](ImportExpression.md) (mixin)  - an expression describing an import
  * [PathExpression](PathExpression.md) (mixin)  - An expression that describes an abstract path from an object to another through a sequence of slot lookups

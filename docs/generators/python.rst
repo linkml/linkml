@@ -19,9 +19,6 @@ To run:
 
    gen-python personinfo.yaml > personinfo.py
 
-Example output:   
-
-`personinfo.py <https://github.com/linkml/linkml/tree/main/examples/PersonSchema/personinfo/personinfo.py>`_
 
 This object model can now be used to create, load, and serialize
 objects. For example:
@@ -76,7 +73,7 @@ Non-inlined references
 ^^^^^^^^^^^^^^^^^^^^^^
 
 In LinkML schemas, references to other objects can be declared as
-:doc:`inlined <schemas/inlining>`. If a reference is *not* inlined,
+:doc:`inlined </schemas/inlining>`. If a reference is *not* inlined,
 and the referenced object has an identifier, then the value of the
 reference will be that identifier.
 
@@ -166,7 +163,7 @@ The elements that control the python for slot generation include
 These various situations are described more detail below:
 
 1) Slot range is a LinkML ``type`` definition
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
    
 LinkML type definitions can take one of three forms:
 
@@ -184,13 +181,13 @@ LinkML type definitions can take one of three forms:
    ``yaml  types:     <type>:        typeof: <parent type>`` Each of
    these are outlined below
 
-1) Python generation for basic python Type.
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+2) Python generation for basic python Type.
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
- For this example, we show basic permutations on the python
+For this example, we show basic permutations on the python
 ``int`` type as a base YAML:
 
-.. code:: yaml
+.. code-block:: yaml
 
    types:
      integer:
@@ -215,11 +212,11 @@ LinkML type definitions can take one of three forms:
              multivalued: true
              required: true
 
+
 Generated Python:
 
-.. code:: python
+.. code-block:: python
 
-   ...
 
    class Integer(int):
        """ An integer """
@@ -233,7 +230,6 @@ Generated Python:
        """
        various permutations of the integer type
        """
-       ...
 
        mand_integer: int = None
        mand_multi_integer: Union[int, List[int]] = None
@@ -358,8 +354,8 @@ where we have defined four slot type permutations:
    -  Coerce all the members of the list into the range type
       ``self.opt_multi_integer = [v if isinstance(v, int) else int(v) for v in self.opt_multi_integer]``
 
-2) Python generation for a Type defined in ``metamodelcore.py`` – ``XSDDate`` in this example
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+3) Python generation for a Type defined in ``metamodelcore.py`` – ``XSDDate`` in this example
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 YAML:
 
@@ -455,7 +451,7 @@ class representing the element and the ``repr`` element
 
        mand_multi_date: Union[Union[str, XSDDate], List[Union[str, XSDDate]]] = None
 
-3) Python generation for an inherited Type
+4) Python generation for an inherited Type
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The following YAML shows three inherited types - one that inherits from
@@ -543,8 +539,8 @@ basic (e.g. ``int``), inherited from metamodelcore.py
 (e.g. ``uriorcurie``) or from another type are identical to those
 generated above for ``XSDDate``
 
-2) Slot range is a LinkML ``class`` definition
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+5) Slot range is a LinkML ``class`` definition
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The previous section described the Python that was generated for slot
 ranges that reference LinkML **Type** definitions. This section
@@ -569,7 +565,7 @@ attribute \* The slot ``default`` value
 
 Various permutations of these cases are described below:
 
-1) Non-keyed, non-identified classes
+6) Non-keyed, non-identified classes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Classes without keys or identifiers cannot only be realized inline. The
@@ -725,7 +721,7 @@ as an error rather than converted to an empty list 3) An empty list is
 flagged as an error.
 
 Keyed or Identified Classes
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 When the range of a slot is a LinkML class that has a ``key`` or an
 ``identifier``, additional options present themselves: 1) Should
@@ -736,7 +732,7 @@ the ``key`` or ``identifier`` value.
 We discuss each of these options below
 
 Key or identified class *references*
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Using the following classes as building blocks
 
@@ -964,7 +960,7 @@ is no difference between keyed and identified class representation.
            super().__post_init__(**kwargs)
 
 Python generation options for single-value (non-list) slots
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The table below describes the various python generation options for
 single-valued slots (``"multivalued": false``)
@@ -1244,7 +1240,7 @@ of the class is the range of the ``v1`` slot in Python:
            super().__post_init__(**kwargs)
 
 Python generation options for multivalued slots
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The python generated for multivalued slots is a more interesting
 situation.
@@ -1711,7 +1707,7 @@ code is exactly the same – YAML emitted from a list structure can be
 loaded as a dictionary and visa-versa.
 
 Slots
-~~~~~
+^^^^^
 
 One bit that we haven’t touched on here is the ``slots`` section of the
 emitted Python.

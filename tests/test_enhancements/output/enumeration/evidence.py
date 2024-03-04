@@ -1,5 +1,5 @@
 # Auto generated from evidence.yaml by pythongen.py version: 0.0.1
-# Generation date: 2023-09-22T11:49:29
+# Generation date: 2024-02-07T21:04:02
 # Schema: evidence
 #
 # id: http://example.org/test/evidence
@@ -47,7 +47,7 @@ class EvidencerName(extended_str):
 class Evidencer(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = EVIDENCE.Evidencer
+    class_class_uri: ClassVar[URIRef] = EVIDENCE["Evidencer"]
     class_class_curie: ClassVar[str] = "evidence:Evidencer"
     class_name: ClassVar[str] = "evidencer"
     class_model_uri: ClassVar[URIRef] = EVIDENCE.Evidencer
@@ -85,7 +85,7 @@ class Evidence(EnumDefinitionImpl):
     _defn = EnumDefinition(
         name="Evidence",
         description="Permissible values for CLUE evidence fragments",
-        code_set=CLUE.fragment_vd,
+        code_set=CLUE["fragment_vd"],
     )
 
 # Slots

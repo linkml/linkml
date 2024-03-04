@@ -26,4 +26,5 @@ URI: [linkml:domain_of](https://w3id.org/linkml/domain_of)
 |  |  |  |
 | --- | --- | --- |
 | **Exact Mappings:** | | schema:domainIncludes |
+|  | | SIO:000011 |
 

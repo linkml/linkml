@@ -1,7 +1,9 @@
 # Multidimensional Arrays
 
-__NOTE__ This is an *experimental* feature of LinkML. It may be only
-partially implemented, and subject to change.
+__NOTE__ With the release of LinkML 1.7.0. 
+[The LinkML metamodel has first-class N-dimensional array support]
+(https://github.com/linkml/linkml-model/releases/tag/v1.7.0) -- this guide
+will be updated as support is built into tooling.
 
 ## Background
 
@@ -78,11 +80,11 @@ For scientific computing purposes, we may choose to implement a different JSON s
    [
        [111, 211, 311, 411],
        [121, 221, 321, 421],
-       ...
+       "..."
    ],
-   ...,
+   "...",
    [
-       ...,
+       "...",
        [143, 243, 343, 443]
    ]
 ]

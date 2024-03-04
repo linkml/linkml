@@ -2,7 +2,7 @@
 
 Making a schema release in LinkML can be streamlined and efficient if done correctly. This guide will walk you through the process, focusing on semantic versioning, using GitHub for release notes, and ensuring your releases are consistent and well-documented.
 
-Note: This guide assumes you use the [LinkML Cookiecutter](linkml-project-cookiecutter.html) to seed your repository. If you did not,
+Note: This guide assumes you use the [LinkML Cookiecutter](/howtos/linkml-project-cookiecutter) to seed your repository. If you did not,
 then you should still be able to adapt this guide to your workflow.
 
 ## Follow Semantic Versioning (SemVer)
@@ -51,7 +51,7 @@ Sometimes you may want to make a pre-release. These should follow standard conve
 - Using `vX.Y.ZrcN` as the version, where this is the `N`th pre-release candidate for `X.Y.Z` (which is not yet released)
 - Select "this is a pre-release" (this will automatically tag the PyPI release as a pre-release)
 
-## Best Practices
+### Best Practices
 
 - **PR Titles:** Ensure these are descriptive yet concise. This is crucial as they are directly used in autogenerating release notes.
 - **Regular Releases:** Frequent releases help in maintaining a consistent and up-to-date package.

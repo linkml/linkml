@@ -124,7 +124,7 @@ class Generator(metaclass=abc.ABCMeta):
 
     file_extension: ClassVar[str] = None
 
-    metadata: bool = field(default_factory=lambda: True)
+    metadata: bool = True
     """True means include date, generator, etc. information in source header if appropriate"""
 
     useuris: Optional[bool] = None
@@ -133,7 +133,7 @@ class Generator(metaclass=abc.ABCMeta):
     log_level: int = DEFAULT_LOG_LEVEL_INT
     """Logging level, 0 is minimum"""
 
-    mergeimports: Optional[bool] = field(default_factory=lambda: True)
+    mergeimports: Optional[bool] = True
     """True means merge non-linkml sources into importing package.  False means separate packages"""
 
     source_file_date: Optional[str] = None
@@ -465,7 +465,7 @@ class Generator(metaclass=abc.ABCMeta):
         """Return an ordered list of ancestor names for the supplied slot or class
 
         @param element: Slot or class name or definition
-        @return: Ordered list of of ancestor names
+        @return: Ordered list of ancestor names
         """
         return [element.name] + ([] if element.is_a is None else self.ancestors(self.parent(element)))
 
@@ -579,7 +579,8 @@ class Generator(metaclass=abc.ABCMeta):
                 return slotname
         return None
 
-    def enum_identifier_path(self, enum_or_enumname: Union[str, EnumDefinition]) -> List[str]:
+    @staticmethod
+    def enum_identifier_path(enum_or_enumname: Union[str, EnumDefinition]) -> List[str]:
         """Return an enum_identifier path"""
         return [
             "str",
@@ -620,7 +621,7 @@ class Generator(metaclass=abc.ABCMeta):
 
     def slot_range_path(self, slot_or_name: Union[str, SlotDefinition]) -> List[str]:
         """
-        Return a ordered list of slot ranges from distal to proximal
+        Return an ordered list of slot ranges from distal to proximal
 
         :param slot_or_name: slot whose range is being typed
         :return: ordered list of types from base type forward
@@ -682,7 +683,7 @@ class Generator(metaclass=abc.ABCMeta):
 
     def slot_name(self, name: str) -> str:
         """
-        Return the underscored version of the aliased slot name if name is a slot. Prepend "unknown_" if the name
+        Return the underscored version of the aliased slot name if name is a slot. Prepend "unknown\_" if the name
         isn't valid.
         """
         slot = self.slot_for(name)
@@ -704,7 +705,7 @@ class Generator(metaclass=abc.ABCMeta):
 
         :param el_or_elname: element or name to map
         :param is_range_name: True means that we're looking for a class or type.  False means Slot or Subset. Only
-        applies if el_or_elname is an ElementName (otherwise we know what we've got
+            applies if el_or_elname is an ElementName (otherwise we know what we've got
         :return: Formatted name if type can be known else None
         """
         if isinstance(el_or_elname, str):
@@ -862,7 +863,8 @@ class Generator(metaclass=abc.ABCMeta):
         else:
             return slot_name
 
-    def is_class_unconstrained(self, cls: ClassDefinition):
+    @staticmethod
+    def is_class_unconstrained(cls: ClassDefinition):
         """
         Determine if the class is mapped to typing.Any, i.e the unconstrained class
 

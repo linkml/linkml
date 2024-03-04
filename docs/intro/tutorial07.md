@@ -215,40 +215,40 @@ You can see that even though JSON-Schema doesn't support inheritance, slots from
 
 
 ```json
-...
-      "Person": {
-         "additionalProperties": false,
-         "description": "",
-         "properties": {
-            "age": {
-               "type": "integer"
-            },
-            "aliases": {
-               "items": {
-                  "type": "string"
-               },
-               "type": "array"
-            },
-            "full_name": {
-               "description": "name of the person",
-               "type": "string"
-            },
-            "id": {
-               "type": "string"
-            },
-            "phone": {
-               "pattern": "^[\\d\\(\\)\\-]+$",
-               "type": "string"
-            }
-         },
-         "required": [
-            "id",
-            "full_name"
-         ],
-         "title": "Person",
-         "type": "object"
+{
+  "Person": {
+    "additionalProperties": false,
+    "description": "",
+    "properties": {
+      "age": {
+        "type": "integer"
+      },
+      "aliases": {
+        "items": {
+          "type": "string"
+        },
+        "type": "array"
+      },
+      "full_name": {
+        "description": "name of the person",
+        "type": "string"
+      },
+      "id": {
+        "type": "string"
+      },
+      "phone": {
+        "pattern": "^[\\d\\(\\)\\-]+$",
+        "type": "string"
       }
-...
+    },
+    "required": [
+      "id",
+      "full_name"
+    ],
+    "title": "Person",
+    "type": "object"
+  }
+}
 ```
 
 

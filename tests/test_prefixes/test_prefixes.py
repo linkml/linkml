@@ -110,7 +110,8 @@ class PrefixTestCase(unittest.TestCase):
 
         self.assertDictEqual(actual_tsv_dict, expected_tsv_dict)
 
-    def test_jsonldcontext(self):
+    @staticmethod
+    def test_jsonldcontext():
         out = ContextGenerator(SCHEMA, mergeimports=True).serialize()
         with open(CONTEXT_OUTPUT, "w") as stream:
             stream.write(out)
@@ -159,11 +160,15 @@ class PrefixTestCase(unittest.TestCase):
         assert "OBI" not in obj
         assert "ENVO" not in obj
 
-    def _check_triples(self, g, exceptions=[]):
+    @staticmethod
+    def _check_triples(g, exceptions=None):
         """
         currently testing is fairly weak: simply checks if the expected expanded URIs are
         present as objects
         """
+
+        if exceptions is None:
+            exceptions = []
 
         expected = [
             "http://purl.obolibrary.org/obo/PR_000000001",

@@ -4,9 +4,11 @@ from pathlib import Path
 from typing import Callable, Optional
 
 import pytest
+import requests_cache
 from _pytest.assertion.util import _diff_text
 from linkml_runtime.linkml_model.meta import SchemaDefinition
 
+import tests
 from tests.utils.compare_rdf import compare_rdf
 from tests.utils.dirutils import are_dir_trees_equal
 
@@ -160,8 +162,43 @@ def pytest_addoption(parser):
         action="store_true",
         help="Generate new files into __snapshot__ directories instead of checking against existing files",
     )
+    parser.addoption("--with-slow", action="store_true", help="include tests marked slow")
+    parser.addoption(
+        "--with-output", action="store_true", help="dump output in compliance test for richer debugging information"
+    )
+
+
+def pytest_collection_modifyitems(config, items):
+    if not config.getoption("--with-slow"):
+        skip_slow = pytest.mark.skip(reason="need --with-slow option to run")
+        for item in items:
+            if item.get_closest_marker("slow"):
+                item.add_marker(skip_slow)
+
+
+def pytest_sessionstart(session: pytest.Session):
+    tests.WITH_OUTPUT = session.config.getoption("--with-output")
 
 
 def pytest_assertrepr_compare(config, op, left, right):
     if op == "==" and isinstance(right, Snapshot):
         return [f"value matches snapshot {right.path}"] + right.eq_state.split("\n")
+
+
+@pytest.fixture(scope="session", autouse=True)
+def patch_requests_cache(pytestconfig):
+    """
+    Cache network requests - for each unique network request, store it in
+    an sqlite cache. only do unique requests once per session.
+    """
+    cache_file = Path(__file__).parent / "output" / "requests-cache.sqlite"
+    requests_cache.install_cache(
+        str(cache_file),
+        backend="sqlite",
+        urls_expire_after={"localhost": requests_cache.DO_NOT_CACHE},
+    )
+    requests_cache.clear()
+    yield
+    # delete cache file unless we have requested it to persist for inspection
+    if not pytestconfig.getoption("--with-output"):
+        cache_file.unlink(missing_ok=True)
