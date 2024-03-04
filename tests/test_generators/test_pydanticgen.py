@@ -28,9 +28,9 @@ from linkml.generators.pydanticgen.template import (
 )
 from linkml.utils.schema_builder import SchemaBuilder
 
-PYDANTIC_VERSION = int(PYDANTIC_VERSION[0])
 from .conftest import MyInjectedClass
 
+PYDANTIC_VERSION = int(PYDANTIC_VERSION[0])
 PACKAGE = "kitchen_sink"
 
 
