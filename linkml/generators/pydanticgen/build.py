@@ -22,7 +22,10 @@ class BuildResult(BaseModel):
     def __add__(self, other: "BuildResult"):
         self_copy = self.copy()
         if other.imports:
-            self_copy.imports += other.imports
+            if self.imports is not None:
+                self_copy.imports += other.imports
+            else:
+                self_copy.imports = other.imports
         if other.injected_classes:
             self_copy.injected_classes = self_copy.injected_classes.extend(other.injected_classes)
         return self_copy

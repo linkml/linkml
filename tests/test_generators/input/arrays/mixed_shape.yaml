@@ -16,40 +16,60 @@ classes:
               maximum_cardinality: 5
             - alias: min_card
               minimum_cardinality: 2
+            - alias: range_card
+              minimum_cardinality: 2
+              maximum_cardinality: 5
+            - alias: exact_card
+              exact_cardinality: 6
 
   MixedMaxShapeArray:
     attributes:
       array:
         range: integer
         array:
-          maximum_number_dimensions: 5
+          maximum_number_dimensions: 6
           dimensions:
             - alias: max_card
               maximum_cardinality: 5
             - alias: min_card
               minimum_cardinality: 2
+            - alias: range_card
+              minimum_cardinality: 2
+              maximum_cardinality: 5
+            - alias: exact_card
+              exact_cardinality: 6
 
   MixedRangeShapeArray:
     attributes:
       array:
         range: integer
         array:
-          minimum_number_dimensions: 4
-          maximum_number_dimensions: 5
+          minimum_number_dimensions: 5
+          maximum_number_dimensions: 7
           dimensions:
             - alias: max_card
               maximum_cardinality: 5
             - alias: min_card
               minimum_cardinality: 2
+            - alias: range_card
+              minimum_cardinality: 2
+              maximum_cardinality: 5
+            - alias: exact_card
+              exact_cardinality: 6
 
   MixedExactShapeArray:
     attributes:
       array:
         range: integer
         array:
-          exact_number_dimensions: 5
+          exact_number_dimensions: 6
           dimensions:
             - alias: max_card
               maximum_cardinality: 5
             - alias: min_card
               minimum_cardinality: 2
+            - alias: range_card
+              minimum_cardinality: 2
+              maximum_cardinality: 5
+            - alias: exact_card
+              exact_cardinality: 6

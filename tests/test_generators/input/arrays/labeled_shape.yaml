@@ -11,10 +11,10 @@ classes:
         range: integer
         array:
           dimensions:
-            - alias: max_card
-              maximum_cardinality: 5
             - alias: min_card
               minimum_cardinality: 2
+            - alias: max_card
+              maximum_cardinality: 5
             - alias: range_card
               minimum_cardinality: 2
               maximum_cardinality: 5

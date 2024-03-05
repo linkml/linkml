@@ -251,11 +251,27 @@ class ListOfListsArray(ArrayRangeGenerator):
 
         return SlotResult(annotation=annotation, imports=_ConListImports)
 
-    def any_shape(self, array: Optional[ArrayExpression] = None) -> SlotResult:
+    def any_shape(self, array: Optional[ArrayExpression] = None, with_inner_union: bool = False) -> SlotResult:
+        """
+        An AnyShaped array
+
+        .. todo::
+
+            Document the SlotReturn additions
+
+        Args:
+            array :class:`.ArrayExpression`: The array expression (not used)
+            with_inner_union (bool): If ``True`` , the innermost type is a ``Union`` of the ``AnyShapeArray`` class and ``dtype``
+                (default: ``False`` )
+
+        """
         if self.dtype == "Any":
             annotation = "AnyShapeArray"
         else:
             annotation = f"AnyShapeArray[{self.dtype}]"
+
+        if with_inner_union:
+            annotation = f"Union[{annotation}, {self.dtype}]"
         return SlotResult(annotation=annotation, injected_classes=_AnyShapeArrayInjects, imports=_AnyShapeArrayImports)
 
     def anonymous_shape(self, array: ArrayExpression) -> SlotResult:
@@ -266,7 +282,7 @@ class ListOfListsArray(ArrayRangeGenerator):
         ):
             return self.any_shape()
         elif array.maximum_number_dimensions:
-            min_dims = array.minimum_number_dimensions if array.minimum_number_dimensions else 1
+            min_dims = array.minimum_number_dimensions if array.minimum_number_dimensions is not None else 1
             annotations = [
                 self._list_of_lists(i, self.dtype) for i in range(min_dims, array.maximum_number_dimensions + 1)
             ]
@@ -274,7 +290,7 @@ class ListOfListsArray(ArrayRangeGenerator):
             return SlotResult(annotation="Union[" + ", ".join(annotations) + "]")
         else:
             return SlotResult(
-                annotation=self._list_of_lists(array.minimum_number_dimensions, self.any_shape().annotation),
+                annotation=self._list_of_lists(array.minimum_number_dimensions - 1, self.any_shape().annotation),
                 injected_classes=_AnyShapeArrayInjects,
                 imports=_AnyShapeArrayImports,
             )
@@ -313,7 +329,7 @@ class ListOfListsArray(ArrayRangeGenerator):
 
         elif array.maximum_number_dimensions is not None and not array.maximum_number_dimensions:
             # unlimited n dimensions, so innermost is AnyShape with dtype
-            res = self.any_shape()
+            res = self.any_shape(with_inner_union=True)
 
             if array.minimum_number_dimensions and array.minimum_number_dimensions > len(array.dimensions):
                 # some minimum anonymous dimensions but unlimited max dimensions
@@ -337,7 +353,7 @@ class ListOfListsArray(ArrayRangeGenerator):
             raise ValueError("Unsupported array specification! this is almost certainly a bug!")
 
         # Wrap inner dimension with labeled dimension
-        for dim in array.dimensions:
+        for dim in reversed(array.dimensions):
             res += self._labeled_dimension(dim, dtype=res.annotation)
 
         return res

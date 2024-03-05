@@ -593,7 +593,7 @@ class PydanticGenerator(OOCodeGenerator):
                 else:
                     raise Exception(f"Could not generate python range for {class_name}.{s.name}")
 
-                if s.array is not None or "linkml:elements" in s.implements:
+                if s.array is not None:
                     # TODO add support for xarray
                     results = self.get_array_representations_range(s, pyrange)
                     # pdb.set_trace()
