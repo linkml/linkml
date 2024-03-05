@@ -86,6 +86,7 @@ else:
 
         def __class_getitem__(cls, item):
             alias = type(f"AnyShape_{str(item.__name__)}", (AnyShapeArray,), {"type_": item})
+            alias.type_ = item
             return alias
 
         @classmethod
@@ -94,14 +95,23 @@ else:
 
         @classmethod
         def __modify_schema__(cls, field_schema):
-            item_type = field_schema["allOf"][0]["type"]
+            try:
+                item_type = field_schema["allOf"][0]["type"]
+                type_schema = {"type": item_type}
+                del field_schema["allOf"]
+            except KeyError as e:
+                if "allOf" in str(e):
+                    item_type = "Any"
+                    type_schema = {}
+                else:
+                    raise e
+
             array_id = f"#any-shape-array-{item_type}"
             field_schema["anyOf"] = [
-                {"type": item_type},
+                type_schema,
                 {"type": "array", "items": {"$ref": array_id}},
             ]
             field_schema["$id"] = array_id
-            del field_schema["allOf"]
 
         @classmethod
         def validate(cls, v: Union[List[_T], list]):
