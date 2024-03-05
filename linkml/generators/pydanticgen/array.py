@@ -261,8 +261,8 @@ class ListOfListsArray(ArrayRangeGenerator):
 
         Args:
             array :class:`.ArrayExpression`: The array expression (not used)
-            with_inner_union (bool): If ``True`` , the innermost type is a ``Union`` of the ``AnyShapeArray`` class and ``dtype``
-                (default: ``False`` )
+            with_inner_union (bool): If ``True`` , the innermost type is a ``Union`` of the ``AnyShapeArray`` class
+                and ``dtype`` (default: ``False`` )
 
         """
         if self.dtype == "Any":
