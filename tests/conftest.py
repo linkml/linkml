@@ -148,7 +148,7 @@ def snapshot(snapshot_path, pytestconfig, monkeypatch) -> Callable[[str], Snapsh
     return get_snapshot
 
 
-@pytest.fixture
+@pytest.fixture(scope="module")
 def input_path(request) -> Callable[[str], Path]:
     def get_path(filename):
         return str(request.path.parent / "input" / filename)

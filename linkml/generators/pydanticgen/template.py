@@ -310,6 +310,10 @@ class Import(TemplateModel):
             return [self, other]
 
         # handle conditionals
+        if isinstance(self, ConditionalImport) and isinstance(other, ConditionalImport):
+            # If our condition is the same, return the newer version
+            if self.condition == other.condition:
+                return [other]
         if isinstance(self, ConditionalImport) or isinstance(other, ConditionalImport):
             # we don't have a good way of combining conditionals, just return both
             return [self, other]
@@ -420,9 +424,16 @@ class Imports(TemplateModel):
 
     imports: List[Union[Import, ConditionalImport]] = Field(default_factory=list)
 
-    def __add__(self, other: Import) -> "Imports":
+    def __add__(self, other: Union[Import, "Imports", List[Import]]) -> "Imports":
+        if isinstance(other, Imports) or (isinstance(other, list) and all([isinstance(i, Import) for i in other])):
+            self_copy = self.copy()
+            for i in other:
+                self_copy += i
+            return self_copy
+
         # check if we have one of these already
         imports = self.imports.copy()
+
         existing = [i for i in imports if i.module == other.module]
 
         # if we have nothing importing from this module yet, add it!
@@ -444,6 +455,17 @@ class Imports(TemplateModel):
                         merged = e.merge(other)
                         imports.extend(merged)
                         break
+
+        # SPECIAL CASE - __future__ annotations must happen at the top of a file
+        # TODO: Make a sort method
+        futures = []
+        for item in imports[-2:]:
+            if item.module == "__future__":
+                futures.append(item)
+        if len(futures) > 0:
+            imports.remove(futures[0])
+            imports.insert(0, futures[0])
+
         return Imports(imports=imports)
 
     def __len__(self) -> int:

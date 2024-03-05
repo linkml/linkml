@@ -18,3 +18,5 @@ classes:
             - alias: range_card
               minimum_cardinality: 2
               maximum_cardinality: 5
+            - alias: exact_card
+              exact_cardinality: 6

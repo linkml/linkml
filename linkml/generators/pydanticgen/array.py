@@ -11,7 +11,6 @@ from typing import (
     Type,
     TypeVar,
     Union,
-    _GenericAlias,
     get_args,
 )
 
@@ -26,6 +25,7 @@ else:
     from pydantic_core import CoreSchema, core_schema
 
 from linkml.generators.pydanticgen.build import SlotResult
+from linkml.generators.pydanticgen.template import Import, Imports, ObjectImport
 
 
 class ArrayRepresentation(Enum):
@@ -66,14 +66,26 @@ if int(PYDANTIC_VERSION[0]) >= 2:
 
     AnyShapeArray = Annotated[_RecursiveListType, AnyShapeArrayType]
 
+    _AnyShapeArrayImports = (
+        Imports()
+        + Import(module="typing", objects=[ObjectImport(name="Generic"), ObjectImport(name="TypeVar")])
+        + Import(module="pydantic", objects=[ObjectImport(name="GetCoreSchemaHandler")])
+        + Import(module="pydantic_core", objects=[ObjectImport(name="CoreSchema"), ObjectImport(name="core_schema")])
+    )
+    _AnyShapeArrayInjects = [
+        '_T = TypeVar("_T")',
+        '_RecursiveListType = Iterable[_T | Iterable["_RecursiveListType"]]',
+        AnyShapeArrayType,
+        AnyShapeArray,
+    ]
+
 else:
 
     class AnyShapeArray(Generic[_T]):
         type_: Any
 
         def __class_getitem__(cls, item):
-            alias = _GenericAlias(origin=AnyShapeArray, args=item)
-            alias.type_ = item
+            alias = type(f"AnyShape_{str(item.__name__)}", (AnyShapeArray,), {"type_": item})
             return alias
 
         @classmethod
@@ -93,6 +105,9 @@ else:
 
         @classmethod
         def validate(cls, v: Union[List[_T], list]):
+            if str(type(v)) == "<class 'numpy.ndarray'>":
+                v = v.tolist()
+
             if not isinstance(v, list):
                 raise TypeError(f"Must be a list of lists! got {v}")
 
@@ -100,7 +115,7 @@ else:
                 for item in _v:
                     if isinstance(item, list):
                         _validate(item)
-                    elif cls.type_ is not Any:
+                    elif cls.type_.__name__ != "AnyType":
                         if not isinstance(item, cls.type_):
                             raise TypeError(
                                 (
@@ -111,6 +126,17 @@ else:
                 return _v
 
             return _validate(v)
+
+    _AnyShapeArrayImports = Imports() + Import(
+        module="typing",
+        objects=[ObjectImport(name="Generic"), ObjectImport(name="TypeVar"), ObjectImport(name="_GenericAlias")],
+    )
+    _AnyShapeArrayInjects = [
+        '_T = TypeVar("_T")',
+        AnyShapeArray,
+    ]
+
+_ConListImports = Imports() + Import(module="pydantic", objects=[ObjectImport(name="conlist")])
 
 
 class ArrayRangeGenerator(ABC):
@@ -189,7 +215,7 @@ class ListOfListsArray(ArrayRangeGenerator):
     """
     Represent arrays as lists of lists!
 
-    TODO: Move all validation of values (eg. anywhere we raise a ValueError) to the
+    TODO: Move all validation of values (eg. anywhere we raise a ValueError) to the ArrayExpression
     dataclass and out of the generator class
     """
 
@@ -223,14 +249,14 @@ class ListOfListsArray(ArrayRangeGenerator):
         items = ", ".join(items)
         annotation = f"conlist({items})"
 
-        return SlotResult(annotation=annotation, imports={"pydantic": ["conlist"]})
+        return SlotResult(annotation=annotation, imports=_ConListImports)
 
     def any_shape(self, array: Optional[ArrayExpression] = None) -> SlotResult:
         if self.dtype == "Any":
             annotation = "AnyShapeArray"
         else:
             annotation = f"AnyShapeArray[{self.dtype}]"
-        return SlotResult(annotation=annotation, injected_classes=[AnyShapeArray])
+        return SlotResult(annotation=annotation, injected_classes=_AnyShapeArrayInjects, imports=_AnyShapeArrayImports)
 
     def anonymous_shape(self, array: ArrayExpression) -> SlotResult:
         if array.exact_number_dimensions:
@@ -249,7 +275,8 @@ class ListOfListsArray(ArrayRangeGenerator):
         else:
             return SlotResult(
                 annotation=self._list_of_lists(array.minimum_number_dimensions, self.any_shape().annotation),
-                injected_classes=[AnyShapeArray],
+                injected_classes=_AnyShapeArrayInjects,
+                imports=_AnyShapeArrayImports,
             )
 
     def labeled_shape(self, array: ArrayExpression) -> SlotResult:
@@ -265,17 +292,17 @@ class ListOfListsArray(ArrayRangeGenerator):
         for dimension in reversed(array.dimensions):
             range = self._labeled_dimension(dimension, range).annotation
 
-        return SlotResult(annotation=range, imports={"pydantic": ["conlist"]})
+        return SlotResult(annotation=range, imports=_ConListImports)
 
     def mixed_shape(self, array: ArrayExpression) -> SlotResult:
         """
         Mixture of labeled dimensions with a max or min (or both) shape for anonymous dimensions
         """
-        injected_classes = []
-        imports = {"typing": ["conlist"]}
         if array.exact_number_dimensions is not None:
             if array.exact_number_dimensions > len(array.dimensions):
-                annotation = self._list_of_lists(array.exact_number_dimensions - len(array.dimensions), self.dtype)
+                res = SlotResult(
+                    annotation=self._list_of_lists(array.exact_number_dimensions - len(array.dimensions), self.dtype)
+                )
             elif array.exact_number_dimensions == len(array.dimensions):
                 # equivalent to labeled shape
                 return self.labeled_shape(array)
@@ -285,13 +312,12 @@ class ListOfListsArray(ArrayRangeGenerator):
                 )
 
         elif array.maximum_number_dimensions is not None and not array.maximum_number_dimensions:
-            injected_classes.append(AnyShapeArray)
-
             # unlimited n dimensions, so innermost is AnyShape with dtype
-            annotation = self.any_shape().annotation
+            res = self.any_shape()
+
             if array.minimum_number_dimensions and array.minimum_number_dimensions > len(array.dimensions):
                 # some minimum anonymous dimensions but unlimited max dimensions
-                annotation = self._list_of_lists(array.minimum_number_dimensions - len(array.dimensions), annotation)
+                res += self._list_of_lists(array.minimum_number_dimensions - len(array.dimensions), res.annotation)
 
         elif array.minimum_number_dimensions and array.maximum_number_dimensions is None:
             raise ValueError(
@@ -306,16 +332,15 @@ class ListOfListsArray(ArrayRangeGenerator):
             dmin = max(len(array.dimensions), initial_min) - len(array.dimensions)
             dmax = array.maximum_number_dimensions - len(array.dimensions)
 
-            annotation = self.anonymous_shape(
-                ArrayExpression(minimum_number_dimensions=dmin, maximum_number_dimensions=dmax)
-            ).annotation
+            res = self.anonymous_shape(ArrayExpression(minimum_number_dimensions=dmin, maximum_number_dimensions=dmax))
         else:
             raise ValueError("Unsupported array specification! this is almost certainly a bug!")
 
+        # Wrap inner dimension with labeled dimension
         for dim in array.dimensions:
-            annotation = self._labeled_dimension(dim, dtype=annotation).annotation
+            res += self._labeled_dimension(dim, dtype=res.annotation)
 
-        return SlotResult(annotation=annotation, injected_classes=injected_classes, imports=imports)
+        return res
 
 
 class NPTypingArray(ArrayRangeGenerator):

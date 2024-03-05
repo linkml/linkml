@@ -1,6 +1,7 @@
 import inspect
 import logging
 import os
+import textwrap
 from collections import defaultdict
 from copy import deepcopy
 from dataclasses import dataclass, field
@@ -37,6 +38,7 @@ from linkml.generators.common.type_designators import (
 )
 from linkml.generators.oocodegen import OOCodeGenerator
 from linkml.generators.pydanticgen.array import ArrayRangeGenerator, ArrayRepresentation
+from linkml.generators.pydanticgen.build import SlotResult
 from linkml.generators.pydanticgen.template import (
     ConditionalImport,
     Import,
@@ -499,7 +501,7 @@ class PydanticGenerator(OOCodeGenerator):
             env.loader = loader
         return env
 
-    def get_array_representations_range(self, slot: SlotDefinition, range: str) -> str:
+    def get_array_representations_range(self, slot: SlotDefinition, range: str) -> List[SlotResult]:
         """
         Generate the python range for array representations
         """
@@ -507,16 +509,18 @@ class PydanticGenerator(OOCodeGenerator):
         for repr in self.array_representations:
             generator = ArrayRangeGenerator.get_generator(repr)
             result = generator(slot.array, range, self.pydantic_version).make()
-            array_reps.append(result.annotation)
+            array_reps.append(result)
             # TODO: Handle imports, injected classes
 
         if len(array_reps) == 0:
             raise ValueError("No array representation generated, but one was requested!")
-        elif len(array_reps) == 1:
-            return array_reps[0]
-        else:
-            # TODO: lets format this nicely :)
-            return f"Union[{','.join(array_reps)}]"
+
+        return array_reps
+        # elif len(array_reps) == 1:
+        #     return array_reps[0]
+        # else:
+        #     # TODO: lets format this nicely :)
+        #     return f"Union[{','.join(array_reps)}]"
 
     def serialize(self) -> str:
         sv: SchemaView
@@ -528,6 +532,9 @@ class PydanticGenerator(OOCodeGenerator):
             description=schema.description.replace('"', '\\"') if schema.description else None,
         )
         enums = self.generate_enums(sv.all_enums())
+        injected_classes = []
+        if self.injected_classes is not None:
+            injected_classes += self.injected_classes
 
         imports = DEFAULT_IMPORTS
         if self.imports is not None:
@@ -588,8 +595,19 @@ class PydanticGenerator(OOCodeGenerator):
 
                 if s.array is not None or "linkml:elements" in s.implements:
                     # TODO add support for xarray
-                    imports += Import(module="numpy", alias="np")
-                    pyrange = self.get_array_representations_range(s, pyrange)
+                    results = self.get_array_representations_range(s, pyrange)
+                    # pdb.set_trace()
+                    # TODO: Move results unpacking to own function that is used after each slot build stage :)
+                    for res in results:
+                        if res.injected_classes:
+                            injected_classes += res.injected_classes
+                        if res.imports:
+                            imports += res.imports
+                    if len(results) == 1:
+                        pyrange = results[0].annotation
+                    else:
+                        pyrange = f"Union[{', '.join([res.annotation for res in results])}]"
+
                     if "linkml:ColumnOrderedArray" in class_def.implements:
                         raise NotImplementedError("Cannot generate Pydantic code for ColumnOrderedArrays.")
                 elif s.multivalued:
@@ -613,10 +631,11 @@ class PydanticGenerator(OOCodeGenerator):
                 ann = Annotation("python_range", pyrange)
                 s.annotations[ann.tag] = ann
 
-        if self.injected_classes is not None:
-            injected_classes = [c if isinstance(c, str) else inspect.getsource(c) for c in self.injected_classes]
-        else:
-            injected_classes = None
+        # TODO: Make cleaning injected classes its own method
+        injected_classes = list(
+            dict.fromkeys([c if isinstance(c, str) else inspect.getsource(c) for c in injected_classes])
+        )
+        injected_classes = [textwrap.dedent(c) for c in injected_classes]
 
         base_model = PydanticBaseModel(
             pydantic_ver=self.pydantic_version, extra_fields=self.extra_fields, fields=self.injected_fields

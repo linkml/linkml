@@ -1,6 +1,8 @@
-from typing import Optional, Any
+from typing import List, Optional, Type, Union
 
 from pydantic import BaseModel
+
+from linkml.generators.pydanticgen.template import Import, Imports
 
 
 class BuildResult(BaseModel):
@@ -14,8 +16,16 @@ class BuildResult(BaseModel):
     """
 
     # FIXME: PLACEHOLDER TYPES PENDING MERGE OF OTHER PULL REQUESTS
-    imports: Optional[dict[str, Any]] = None
-    injected_classes: Optional[list[Any]] = None
+    imports: Optional[Union[List[Import], Imports]] = None
+    injected_classes: Optional[List[Union[str, Type]]] = None
+
+    def __add__(self, other: "BuildResult"):
+        self_copy = self.copy()
+        if other.imports:
+            self_copy.imports += other.imports
+        if other.injected_classes:
+            self_copy.injected_classes = self_copy.injected_classes.extend(other.injected_classes)
+        return self_copy
 
 
 class SlotResult(BuildResult):
@@ -23,3 +33,9 @@ class SlotResult(BuildResult):
     """The type annotation used in the generated model"""
     field_extras: Optional[dict] = None
     """Additional metadata for this slot to be held in the Field object"""
+
+    def __add__(self, other: "SlotResult"):
+        res = super(SlotResult, self).__add__(other)
+        # Replace with other's annotation
+        res.annotation = other.annotation
+        return res

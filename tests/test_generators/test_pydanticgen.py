@@ -1,8 +1,11 @@
 import inspect
 import typing
+from contextlib import nullcontext as does_not_raise
+from dataclasses import dataclass
 from importlib.metadata import version
+from pathlib import Path
 from types import GeneratorType, ModuleType
-from typing import ClassVar, Dict, List, Optional, Union, get_args, get_origin
+from typing import ClassVar, Dict, List, Literal, Optional, Union, get_args, get_origin
 
 import numpy as np
 import pytest
@@ -10,12 +13,14 @@ import yaml
 from jinja2 import DictLoader, Environment, Template
 from linkml_runtime import SchemaView
 from linkml_runtime.dumpers import yaml_dumper
-from linkml_runtime.linkml_model import SlotDefinition
+from linkml_runtime.linkml_model import SchemaDefinition, SlotDefinition
 from linkml_runtime.utils.compile_python import compile_python
+from linkml_runtime.utils.schemaview import load_schema_wrap
 from pydantic import BaseModel, ValidationError
 from pydantic.version import VERSION as PYDANTIC_VERSION
 
-from linkml.generators.pydanticgen import AnyShapeArray, PydanticGenerator
+from linkml.generators.pydanticgen import PydanticGenerator
+from linkml.generators.pydanticgen.array import AnyShapeArray, ArrayRepresentation
 from linkml.generators.pydanticgen.template import (
     ConditionalImport,
     Import,
@@ -30,7 +35,6 @@ from linkml.utils.schema_builder import SchemaBuilder
 
 from .conftest import MyInjectedClass
 
-PYDANTIC_VERSION = int(PYDANTIC_VERSION[0])
 PACKAGE = "kitchen_sink"
 
 
@@ -976,11 +980,15 @@ None"""
 
 
 # --------------------------------------------------
-# Pydanticgen arrays
+# Pydanticgen arrays generators and objects
 # --------------------------------------------------
 
 
 def test_arrays_anyshape():
+    """
+    Test anyshape class itself
+    """
+
     class MyModel(BaseModel):
         array: AnyShapeArray[int]
 
@@ -1001,3 +1009,203 @@ def test_arrays_anyshape():
         )
     else:
         raise NotImplementedError("Get json schema representation for pydantic 2")
+
+
+# --------------------------------------------------
+# Test array generation from schema
+# --------------------------------------------------
+
+
+@pytest.fixture(scope="module")
+def array_anyshape(input_path) -> SchemaDefinition:
+    schema = str(Path(input_path("arrays")) / "any_shape.yaml")
+    return load_schema_wrap(schema)
+
+
+@pytest.fixture(scope="module")
+def array_anonymous(input_path) -> SchemaDefinition:
+    schema = str(Path(input_path("arrays")) / "anonymous_shape.yaml")
+    return load_schema_wrap(schema)
+
+
+@pytest.fixture(scope="module")
+def array_labeled(input_path) -> SchemaDefinition:
+    schema = str(Path(input_path("arrays")) / "labeled_shape.yaml")
+    return load_schema_wrap(schema)
+
+
+@pytest.fixture(scope="module")
+def array_mixed(input_path) -> SchemaDefinition:
+    schema = str(Path(input_path("arrays")) / "mixed_shape.yaml")
+    return load_schema_wrap(schema)
+
+
+@dataclass
+class TestCase:
+    type: Literal["pass", "exception"]
+    array: np.ndarray
+
+    @property
+    def expectation(self):
+        if self.type == "pass":
+            return does_not_raise()
+        else:
+            return pytest.raises(ValidationError)
+
+
+@pytest.mark.parametrize(
+    "case", [TestCase(type="pass", array=np.zeros((3, 4, 5, 6), dtype=dt)) for dt in (int, float, str)]
+)
+@pytest.mark.parametrize("representation", [[ArrayRepresentation.LIST], [ArrayRepresentation.NPARRAY]])
+def test_generate_array_anyshape(case, representation, array_anyshape):
+    if ArrayRepresentation.NPARRAY in representation or representation == ArrayRepresentation.NPARRAY:
+        return
+
+    generated = PydanticGenerator(array_anyshape, array_representations=representation).serialize()
+    mod = compile_python(generated)
+    cls = getattr(mod, "AnyType")
+    with case.expectation:
+        cls(array=case.array)
+
+
+@pytest.mark.parametrize("representation", [[ArrayRepresentation.LIST], [ArrayRepresentation.NPARRAY]])
+def test_generate_array_anyshape_typed(representation, array_anyshape):
+    if ArrayRepresentation.NPARRAY in representation or representation == ArrayRepresentation.NPARRAY:
+        return
+
+    generated = PydanticGenerator(array_anyshape, array_representations=representation).serialize()
+    mod = compile_python(generated)
+    cls = getattr(mod, "Typed")
+    print(cls)
+
+
+@pytest.mark.parametrize("representation", [[ArrayRepresentation.LIST], [ArrayRepresentation.NPARRAY]])
+def test_generate_array_anonymous_min(representation, array_anonymous):
+    if ArrayRepresentation.NPARRAY in representation or representation == ArrayRepresentation.NPARRAY:
+        return
+
+    generated = PydanticGenerator(array_anonymous, array_representations=representation).serialize()
+    mod = compile_python(generated)
+    cls = getattr(mod, "MinDimensions")
+    print(cls)
+
+
+@pytest.mark.parametrize("representation", [[ArrayRepresentation.LIST], [ArrayRepresentation.NPARRAY]])
+def test_generate_array_anonymous_max(representation, array_anonymous):
+    if ArrayRepresentation.NPARRAY in representation or representation == ArrayRepresentation.NPARRAY:
+        return
+
+    generated = PydanticGenerator(array_anonymous, array_representations=representation).serialize()
+    mod = compile_python(generated)
+    cls = getattr(mod, "MaxDimensions")
+    print(cls)
+
+
+@pytest.mark.parametrize("representation", [[ArrayRepresentation.LIST], [ArrayRepresentation.NPARRAY]])
+def test_generate_array_anonymous_range(representation, array_anonymous):
+    if ArrayRepresentation.NPARRAY in representation or representation == ArrayRepresentation.NPARRAY:
+        return
+
+    generated = PydanticGenerator(array_anonymous, array_representations=representation).serialize()
+    mod = compile_python(generated)
+    cls = getattr(mod, "RangeDimensions")
+    print(cls)
+
+
+@pytest.mark.parametrize("representation", [[ArrayRepresentation.LIST], [ArrayRepresentation.NPARRAY]])
+def test_generate_array_anonymous_exact(representation, array_anonymous):
+    if ArrayRepresentation.NPARRAY in representation or representation == ArrayRepresentation.NPARRAY:
+        return
+
+    generated = PydanticGenerator(array_anonymous, array_representations=representation).serialize()
+    mod = compile_python(generated)
+    cls = getattr(mod, "ExactDimensions")
+    print(cls)
+
+
+@pytest.mark.parametrize("representation", [[ArrayRepresentation.LIST], [ArrayRepresentation.NPARRAY]])
+def test_generate_array_labeled_min(representation, array_labeled):
+    if ArrayRepresentation.NPARRAY in representation or representation == ArrayRepresentation.NPARRAY:
+        return
+
+    generated = PydanticGenerator(array_labeled, array_representations=representation).serialize()
+    mod = compile_python(generated)
+    cls = getattr(mod, "LabeledArray")
+    print(cls)
+
+
+@pytest.mark.parametrize("representation", [[ArrayRepresentation.LIST], [ArrayRepresentation.NPARRAY]])
+def test_generate_array_labeled_max(representation, array_labeled):
+    if ArrayRepresentation.NPARRAY in representation or representation == ArrayRepresentation.NPARRAY:
+        return
+
+    generated = PydanticGenerator(array_labeled, array_representations=representation).serialize()
+    mod = compile_python(generated)
+    cls = getattr(mod, "LabeledArray")
+    print(cls)
+
+
+@pytest.mark.parametrize("representation", [[ArrayRepresentation.LIST], [ArrayRepresentation.NPARRAY]])
+def test_generate_array_labeled_range(representation, array_labeled):
+    if ArrayRepresentation.NPARRAY in representation or representation == ArrayRepresentation.NPARRAY:
+        return
+
+    generated = PydanticGenerator(array_labeled, array_representations=representation).serialize()
+    mod = compile_python(generated)
+    cls = getattr(mod, "LabeledArray")
+    print(cls)
+
+
+@pytest.mark.parametrize("representation", [[ArrayRepresentation.LIST], [ArrayRepresentation.NPARRAY]])
+def test_generate_array_labeled_exact(representation, array_labeled):
+    if ArrayRepresentation.NPARRAY in representation or representation == ArrayRepresentation.NPARRAY:
+        return
+
+    generated = PydanticGenerator(array_labeled, array_representations=representation).serialize()
+    mod = compile_python(generated)
+    cls = getattr(mod, "LabeledArray")
+    print(cls)
+
+
+@pytest.mark.parametrize("representation", [[ArrayRepresentation.LIST], [ArrayRepresentation.NPARRAY]])
+def test_generate_array_mixed_any(representation, array_mixed):
+    if ArrayRepresentation.NPARRAY in representation or representation == ArrayRepresentation.NPARRAY:
+        return
+
+    generated = PydanticGenerator(array_mixed, array_representations=representation).serialize()
+    mod = compile_python(generated)
+    cls = getattr(mod, "MixedAnyShapeArray")
+    print(cls)
+
+
+@pytest.mark.parametrize("representation", [[ArrayRepresentation.LIST], [ArrayRepresentation.NPARRAY]])
+def test_generate_array_mixed_max(representation, array_mixed):
+    if ArrayRepresentation.NPARRAY in representation or representation == ArrayRepresentation.NPARRAY:
+        return
+
+    generated = PydanticGenerator(array_mixed, array_representations=representation).serialize()
+    mod = compile_python(generated)
+    cls = getattr(mod, "MixedMaxShapeArray")
+    print(cls)
+
+
+@pytest.mark.parametrize("representation", [[ArrayRepresentation.LIST], [ArrayRepresentation.NPARRAY]])
+def test_generate_array_mixed_range(representation, array_mixed):
+    if ArrayRepresentation.NPARRAY in representation or representation == ArrayRepresentation.NPARRAY:
+        return
+
+    generated = PydanticGenerator(array_mixed, array_representations=representation).serialize()
+    mod = compile_python(generated)
+    cls = getattr(mod, "MixedRangeShapeArray")
+    print(cls)
+
+
+@pytest.mark.parametrize("representation", [[ArrayRepresentation.LIST], [ArrayRepresentation.NPARRAY]])
+def test_generate_array_mixed_exact(representation, array_mixed):
+    if ArrayRepresentation.NPARRAY in representation or representation == ArrayRepresentation.NPARRAY:
+        return
+
+    generated = PydanticGenerator(array_mixed, array_representations=representation).serialize()
+    mod = compile_python(generated)
+    cls = getattr(mod, "MixedExactShapeArray")
+    print(cls)
