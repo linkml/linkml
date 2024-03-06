@@ -44,6 +44,14 @@ jobs:
       #----------------------------------------------
       - name: Check out repository
         uses: actions/checkout@v3
+        with:
+          fetch-tags: true
+
+      - name: Ensure upstream tags are checked out
+        run: |
+          git remote add upstream https://github.com/linkml/linkml
+          git fetch upstream --tags
+        if: ${{ github.repository != 'linkml/linkml' }}
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v3
