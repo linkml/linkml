@@ -2,6 +2,7 @@ from pylab import *
 from operator import attrgetter
 from copy import deepcopy
 from mpl_toolkits.axes_grid1.axes_divider import make_axes_area_auto_adjustable
+from importlib.metadata import PackageNotFoundError
 
 from linkml.utils.deprecation import DEPRECATIONS, SemVer, Deprecation
 
@@ -23,7 +24,11 @@ deps.append(Deprecation(name="test-point", message="text", deprecated_in=SemVer.
 deps = sorted(deps, key=attrgetter('deprecated_in'))
 
 # collect all versions to use as X axis
-current_version = SemVer.from_package('linkml')
+try:
+    current_version = SemVer.from_package('linkml')
+except PackageNotFoundError:
+    current_version = SemVer.from_str('0.0.0')
+
 versions = [current_version]
 for dep in deps:
     versions.append(dep.deprecated_in)
