@@ -215,9 +215,10 @@ def deprecation_warning(name: str):
     Call this with the name of the deprecation object wherever the deprecated functionality will be used
 
     This function will
+
     - emit a warning if the current version is greater than ``deprecated_in``
-    - log that the deprecated feature was accessed in ``EMITTED`` .
-        this is used for testing and to ensure only a single warning per type is emitted.
+    - log that the deprecated feature was accessed in ``EMITTED`` for testing deprecations and muting warnings
+
     """
     global DEPRECATIONS
     global EMITTED
