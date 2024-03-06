@@ -51,7 +51,6 @@ jobs:
         run: |
           git remote add upstream https://github.com/linkml/linkml
           git fetch upstream --tags
-        if: ${{ github.repository != 'linkml/linkml' }}
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v3
@@ -83,7 +82,7 @@ jobs:
       #----------------------------------------------
       - name: Install dependencies
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-        run: poetry install --no-interaction --no-root
+        run: poetry install --no-interaction
 
       #----------------------------------------------
       # install pydantic
