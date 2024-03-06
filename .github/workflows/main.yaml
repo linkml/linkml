@@ -67,6 +67,9 @@ jobs:
           virtualenvs-create: true
           virtualenvs-in-project: true
 
+      - name: Install dynamic versioning plugin
+        run: poetry self add "poetry-dynamic-versioning[plugin]"
+
       #----------------------------------------------
       #       load cached venv if cache exists
       #----------------------------------------------
