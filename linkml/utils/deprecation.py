@@ -15,11 +15,12 @@ To deprecate something:
 - Use the :func:`.deprecation_warning` function wherever the deprecated feature would be used to emit the warning
 
 """
-from typing import Optional
-from dataclasses import dataclass
-from importlib.metadata import version
+
 import re
 import warnings
+from dataclasses import dataclass
+from importlib.metadata import version
+from typing import Optional
 
 # Stolen from https://github.com/pypa/packaging/blob/main/src/packaging/version.py
 # Updated to include major, minor, and patch versions
@@ -201,7 +202,10 @@ DEPRECATIONS = (
         name="pydantic-v1",
         deprecated_in=SemVer.from_str("1.7.5"),
         removed_in=SemVer.from_str("1.9.0"),
-        message="LinkML will set a dependency of pydantic>=2 and become incompatible with packages with pydantic<2 as a runtime dependency",
+        message=(
+            "LinkML will set a dependency of pydantic>=2 and become incompatible "
+            "with packages with pydantic<2 as a runtime dependency"
+        ),
         recommendation="Update dependent packages to use pydantic>=2",
         issue=1925,
     ),

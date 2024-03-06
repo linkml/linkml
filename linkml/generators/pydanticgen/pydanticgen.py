@@ -41,9 +41,9 @@ from linkml.generators.pydanticgen.template import (
     PydanticModule,
     TemplateModel,
 )
+from linkml.utils import deprecation_warning
 from linkml.utils.generator import shared_arguments
 from linkml.utils.ifabsent_functions import ifabsent_value_declaration
-from linkml.utils import deprecation_warning
 
 if int(PYDANTIC_VERSION[0]) == 1:
     deprecation_warning("pydantic-v1")

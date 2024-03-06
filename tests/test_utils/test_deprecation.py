@@ -1,10 +1,11 @@
-import pytest
-from operator import le, lt, gt, ge, eq
 import warnings
 from copy import deepcopy
+from operator import eq, ge, gt, le, lt
+
+import pytest
 
 from linkml.utils import deprecation as dep_mod
-from linkml.utils.deprecation import SemVer, DEPRECATIONS, Deprecation, deprecation_warning, EMITTED
+from linkml.utils.deprecation import DEPRECATIONS, EMITTED, Deprecation, SemVer, deprecation_warning
 
 all_ops = {le, lt, gt, ge, eq}
 
