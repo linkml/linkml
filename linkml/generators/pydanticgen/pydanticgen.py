@@ -187,10 +187,7 @@ class PydanticGenerator(OOCodeGenerator):
             Path,
             PurePath as RenamedPurePath
         )
-        if sys.version_info >= (3, 8):
-            from typing import Literal
-        else:
-            from typing_extensions import Literal
+        from typing_extensions import Literal
         
     """
 
