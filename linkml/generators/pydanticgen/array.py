@@ -47,6 +47,8 @@ if int(PYDANTIC_VERSION[0]) >= 2:
             item_type = Any if get_args(get_args(source_type)[0])[0] is _T else get_args(get_args(source_type)[0])[0]
 
             item_schema = handler.generate_schema(item_type)
+            if item_schema.get("type", "any") != "any":
+                item_schema["strict"] = True
             array_ref = f"any-shape-array-{item_type.__name__}"
 
             schema = core_schema.definitions_schema(
@@ -68,15 +70,26 @@ if int(PYDANTIC_VERSION[0]) >= 2:
 
     _AnyShapeArrayImports = (
         Imports()
-        + Import(module="typing", objects=[ObjectImport(name="Generic"), ObjectImport(name="TypeVar")])
-        + Import(module="pydantic", objects=[ObjectImport(name="GetCoreSchemaHandler")])
+        + Import(
+            module="typing",
+            objects=[
+                ObjectImport(name="Annotated"),
+                ObjectImport(name="Generic"),
+                ObjectImport(name="Iterable"),
+                ObjectImport(name="TypeVar"),
+                ObjectImport(name="get_args"),
+            ],
+        )
+        + Import(module="pydantic", objects=[ObjectImport(name="GetCoreSchemaHandler"), ObjectImport(name="Strict")])
         + Import(module="pydantic_core", objects=[ObjectImport(name="CoreSchema"), ObjectImport(name="core_schema")])
     )
+
+    # annotated types are special and inspect.getsource() can't stringify them
     _AnyShapeArrayInjects = [
         '_T = TypeVar("_T")',
         '_RecursiveListType = Iterable[_T | Iterable["_RecursiveListType"]]',
         AnyShapeArrayType,
-        AnyShapeArray,
+        "AnyShapeArray = Annotated[_RecursiveListType, AnyShapeArrayType]",
     ]
 
 else:
@@ -251,10 +264,16 @@ class ListOfListsArray(ArrayRangeGenerator):
             return SlotResult(annotation="List[" + dtype + "]")
 
         items = []
-        if dmin is not None:
-            items.append(f"min_items={dmin}")
-        if dmax is not None:
-            items.append(f"max_items={dmax}")
+        if int(PYDANTIC_VERSION[0]) >= 2:
+            if dmin is not None:
+                items.append(f"min_length={dmin}")
+            if dmax is not None:
+                items.append(f"max_length={dmax}")
+        else:
+            if dmin is not None:
+                items.append(f"min_items={dmin}")
+            if dmax is not None:
+                items.append(f"max_items={dmax}")
         items.append(f"item_type={dtype}")
         items = ", ".join(items)
         annotation = f"conlist({items})"
@@ -275,7 +294,7 @@ class ListOfListsArray(ArrayRangeGenerator):
                 and ``dtype`` (default: ``False`` )
 
         """
-        if self.dtype == "Any":
+        if self.dtype in ("Any", "AnyType"):
             annotation = "AnyShapeArray"
         else:
             annotation = f"AnyShapeArray[{self.dtype}]"

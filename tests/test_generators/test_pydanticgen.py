@@ -1071,6 +1071,8 @@ def test_generate_array_anyshape(case, representation, array_anyshape):
     """
     if ArrayRepresentation.NPARRAY in representation or representation == ArrayRepresentation.NPARRAY:
         return
+    if ArrayRepresentation.LIST in representation and isinstance(case.array, np.ndarray):
+        case.array = case.array.tolist()
 
     generated = PydanticGenerator(array_anyshape, array_representations=representation).serialize()
     mod = compile_python(generated)
@@ -1094,6 +1096,8 @@ def test_generate_array_anyshape_typed(case, representation, array_anyshape):
     """
     if ArrayRepresentation.NPARRAY in representation or representation == ArrayRepresentation.NPARRAY:
         return
+    if ArrayRepresentation.LIST in representation:
+        case.array = case.array.tolist()
 
     generated = PydanticGenerator(array_anyshape, array_representations=representation).serialize()
     mod = compile_python(generated)
@@ -1117,10 +1121,6 @@ def test_generate_array_anyshape_typed(case, representation, array_anyshape):
 def test_generate_array_anonymous_min(case, representation, array_anonymous):
     """
     Any integer array with greater than 2 dimensions.
-
-    Note: due to using the default `List` type as the outer type in these and following,
-    we can no longer rely on `AnyTypeArray` to convert our arrays to lists of lists. Unless we want to inject
-    a special List subclass as well, this is the best we're gonna do!
     """
     if ArrayRepresentation.NPARRAY in representation or representation == ArrayRepresentation.NPARRAY:
         return

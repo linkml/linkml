@@ -138,6 +138,17 @@ class PydanticBaseModel(TemplateModel):
     Extra fields that are typically injected into the base model via 
     :attr:`~linkml.generators.pydanticgen.PydanticGenerator.injected_fields`
     """
+    strict: bool = False
+    """
+    Enable strict mode in the base model.
+    
+    .. note::
+    
+        Pydantic 2 only! Pydantic 1 only has strict types, not strict mode. See: https://github.com/linkml/linkml/issues/1955
+    
+    References:
+        https://docs.pydantic.dev/latest/concepts/strict_mode
+    """
 
 
 class PydanticAttribute(TemplateModel):
@@ -426,7 +437,11 @@ class Imports(TemplateModel):
 
     def __add__(self, other: Union[Import, "Imports", List[Import]]) -> "Imports":
         if isinstance(other, Imports) or (isinstance(other, list) and all([isinstance(i, Import) for i in other])):
-            self_copy = self.copy()
+            if hasattr(self, "model_copy"):
+                self_copy = self.model_copy(deep=True)
+            else:
+                self_copy = self.copy()
+
             for i in other:
                 self_copy += i
             return self_copy
