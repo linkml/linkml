@@ -80,7 +80,7 @@ if int(PYDANTIC_VERSION[0]) >= 2:
                 ObjectImport(name="get_args"),
             ],
         )
-        + Import(module="pydantic", objects=[ObjectImport(name="GetCoreSchemaHandler"), ObjectImport(name="Strict")])
+        + Import(module="pydantic", objects=[ObjectImport(name="GetCoreSchemaHandler")])
         + Import(module="pydantic_core", objects=[ObjectImport(name="CoreSchema"), ObjectImport(name="core_schema")])
     )
 
