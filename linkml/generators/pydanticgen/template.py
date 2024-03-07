@@ -59,12 +59,17 @@ class TemplateModel(BaseModel):
         )
 
     if int(PYDANTIC_VERSION[0]) < 2:
-
-        @classmethod
-        @property
-        def model_fields(cls) -> Dict[str, Any]:
-            """In pydantic 1, simulate pydantic 2 behavior"""
-            return cls.__fields__
+        # simulate pydantic 2's model_fields behavior
+        # without using classmethod + property decorators
+        # see:
+        # - https://docs.python.org/3/whatsnew/3.11.html#language-builtins
+        # - https://github.com/python/cpython/issues/89519
+        # and:
+        # - https://docs.python.org/3/reference/datamodel.html#customizing-class-creation
+        # for this version.
+        def __init_subclass__(cls, **kwargs):
+            super().__init_subclass__(**kwargs)
+            cls.model_fields = cls.__fields__
 
         @overload
         def model_dump(self, mode: Literal["python"] = "python") -> dict: ...
