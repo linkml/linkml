@@ -236,7 +236,7 @@ def deprecation_warning(name: str):
         EMITTED.add(name)
         return
 
-    if dep.deprecated and dep.name not in EMITTED:
+    if dep.name not in EMITTED:
         dep.warn()
 
     EMITTED.add(name)

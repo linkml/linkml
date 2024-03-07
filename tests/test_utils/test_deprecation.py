@@ -17,6 +17,14 @@ def patch_deprecations():
     dep_mod.DEPRECATIONS = save_deps
 
 
+@pytest.fixture()
+def linkml_version() -> SemVer:
+    try:
+        return SemVer.from_package("linkml")
+    except "PackageNotFoundError":
+        return SemVer.from_str("1.0.1")
+
+
 @pytest.mark.parametrize(
     "v1,v2,ops",
     [
@@ -42,7 +50,15 @@ def test_semver(v1, v2, ops):
         assert not false_op(v1, v2)
 
 
-def test_deprecation(patch_deprecations):
+def test_semver_nomatch():
+    """
+    If no match, return None
+    """
+    ver = SemVer.from_str("definitely not a version specifier")
+    assert ver is None
+
+
+def test_deprecation_warning(patch_deprecations):
     current_ver = SemVer.from_package("linkml")
     not_dep_yet = Deprecation(
         name="test-not-dep-yet",
@@ -63,7 +79,21 @@ def test_deprecation(patch_deprecations):
         message="is removed and deprecated",
         recommendation="you are fine, this is still a test",
     )
-    dep_mod.DEPRECATIONS = (not_dep_yet, is_dep, is_removed)
+    dup_1 = Deprecation(
+        name="test-duplicate",
+        deprecated_in=SemVer(major=current_ver.major - 2, minor=0, patch=0),
+        removed_in=SemVer(major=current_ver.major - 1, minor=0, patch=0),
+        message="Same name deprecation",
+        recommendation="you are fine, this is still a test",
+    )
+    dup_2 = Deprecation(
+        name="test-duplicate",
+        deprecated_in=SemVer(major=current_ver.major - 2, minor=0, patch=0),
+        removed_in=SemVer(major=current_ver.major - 1, minor=0, patch=0),
+        message="Same name deprecation",
+        recommendation="you are fine, this is still a test",
+    )
+    dep_mod.DEPRECATIONS = (not_dep_yet, is_dep, is_removed, dup_1, dup_2)
 
     # no warnings emitted for not deprecated
     with warnings.catch_warnings():
@@ -90,9 +120,81 @@ def test_deprecation(patch_deprecations):
         for part in ("REMOVED", "Deprecated In:", "Removed In:", "Recommendation:", is_removed.message):
             assert part in msg
 
+    # duplicates raise an exception
+    with pytest.raises(RuntimeError):
+        deprecation_warning("test-duplicate")
+
+    deprecation_warning("temporary-dep")
+
     # emitted deprecation warnings are added to the emitted set
     assert "test-is-deprecated" in EMITTED
     assert "test-is-removed" in EMITTED
+    assert "temporary-dep" in EMITTED
+
+
+def test_deprecation_postinit():
+    """
+    Deprecation class should try to coerce basic types
+    """
+    dep = Deprecation(name="test-dep", message="just a test", deprecated_in="v1.0.0", removed_in="v1.2.0")
+    assert dep.deprecated_in == SemVer(major=1, minor=0, patch=0)
+    assert dep.removed_in == SemVer(major=1, minor=2, patch=0)
+
+
+def test_deprecation_str():
+    """
+    Deprecation should render a pretty string
+    """
+    dep = Deprecation(
+        name="test-dep",
+        message="testing strings",
+        deprecated_in=SemVer.from_str("1.0.1"),
+        removed_in=SemVer.from_str("1.2.1"),
+        recommendation="See if this test passes",
+        issue=1,
+    )
+    dep_str = str(dep)
+    assert (
+        dep_str
+        == """[test-dep] 
+testing strings
+Deprecated In: 1.0.1
+Removed In: 1.2.1
+Recommendation: See if this test passes
+See: https://github.com/linkml/linkml/issues/1"""
+    )
+
+
+@pytest.mark.parametrize("deprecated,deprecated_val", [[0, True], [-1, True], [1, False]])
+@pytest.mark.parametrize("removed,removed_val", [[None, False], [0, True], [-1, True], [1, False]])
+def test_deprecation_props(deprecated, deprecated_val, removed, removed_val, linkml_version):
+    """
+    Properties should tell us if we have passed the deprecation or not
+    """
+
+    depver = SemVer(major=linkml_version.major + deprecated)
+    remver = None
+    if removed is not None:
+        remver = SemVer(major=linkml_version.major + removed)
+
+    dep = Deprecation(name="test-dep", message="testing our properites", deprecated_in=depver, removed_in=remver)
+    assert dep.deprecated == deprecated_val
+    assert dep.removed == removed_val
+
+
+def test_deprecation_warns_selectively(linkml_version):
+    """
+    We should only warn when we are actually deprecated
+    """
+    dep = Deprecation(name="test-dep", message="", deprecated_in=SemVer(major=linkml_version.major + 1))
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        dep.warn()
+
+    dep = Deprecation(name="test-dep", message="", deprecated_in=SemVer(major=linkml_version.major - 1))
+    with pytest.warns() as record:
+        dep.warn()
+        assert len(record) == 1
 
 
 def test_removed_are_removed():
