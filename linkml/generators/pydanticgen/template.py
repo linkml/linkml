@@ -7,7 +7,7 @@ from pydantic.version import VERSION as PYDANTIC_VERSION
 if int(PYDANTIC_VERSION[0]) >= 2:
     from pydantic import computed_field
 else:
-    if TYPE_CHECKING:
+    if TYPE_CHECKING:  # pragma: no cover
         from pydantic.fields import ModelField
 
 
