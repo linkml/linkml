@@ -1,4 +1,4 @@
-from typing import Any, ClassVar, Dict, Generator, List, Literal, Optional, Union, overload
+from typing import TYPE_CHECKING, Any, ClassVar, Dict, Generator, List, Literal, Optional, Union, overload
 
 from jinja2 import Environment, PackageLoader
 from pydantic import BaseModel, Field
@@ -6,6 +6,9 @@ from pydantic.version import VERSION as PYDANTIC_VERSION
 
 if int(PYDANTIC_VERSION[0]) >= 2:
     from pydantic import computed_field
+else:
+    if TYPE_CHECKING:
+        from pydantic.fields import ModelField
 
 
 class TemplateModel(BaseModel):
@@ -67,6 +70,8 @@ class TemplateModel(BaseModel):
         # and:
         # - https://docs.python.org/3/reference/datamodel.html#customizing-class-creation
         # for this version.
+        model_fields: ClassVar[Dict[str, "ModelField"]]
+
         def __init_subclass__(cls, **kwargs):
             super().__init_subclass__(**kwargs)
             cls.model_fields = cls.__fields__
@@ -140,7 +145,7 @@ class PydanticBaseModel(TemplateModel):
     """
     fields: Optional[List[str]] = None
     """
-    Extra fields that are typically injected into the base model via 
+    Extra fields that are typically injected into the base model via
     :attr:`~linkml.generators.pydanticgen.PydanticGenerator.injected_fields`
     """
 
@@ -162,13 +167,13 @@ class PydanticAttribute(TemplateModel):
     annotations: Optional[dict] = None
     """
     Of the form::
-    
-        annotations = {'python_range': {'value': 'int'}} 
-    
+
+        annotations = {'python_range': {'value': 'int'}}
+
     .. todo::
-    
+
         simplify when refactoring pydanticgen, should just be a string or a model
-    
+
     """
     title: Optional[str] = None
     description: Optional[str] = None
