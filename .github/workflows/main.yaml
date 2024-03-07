@@ -44,6 +44,14 @@ jobs:
       #----------------------------------------------
       - name: Check out repository
         uses: actions/checkout@v3
+        with:
+          fetch-tags: true
+          fetch-depth: 100
+
+      - name: Ensure upstream tags are checked out
+        run: |
+          git remote add upstream https://github.com/linkml/linkml
+          git fetch upstream --tags
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v3
@@ -60,6 +68,9 @@ jobs:
           virtualenvs-create: true
           virtualenvs-in-project: true
 
+      - name: Install dynamic versioning plugin
+        run: poetry self add "poetry-dynamic-versioning[plugin]"
+
       #----------------------------------------------
       #       load cached venv if cache exists
       #----------------------------------------------
@@ -75,7 +86,7 @@ jobs:
       #----------------------------------------------
       - name: Install dependencies
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-        run: poetry install --no-interaction --no-root
+        run: poetry install --no-interaction
 
       #----------------------------------------------
       # install pydantic

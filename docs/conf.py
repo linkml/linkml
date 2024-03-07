@@ -12,7 +12,12 @@
 #
 import os
 import sys
+from operator import attrgetter
+from copy import deepcopy
+
 sys.path.insert(0, os.path.abspath('..'))
+
+from linkml.utils.deprecation import DEPRECATIONS
 
 
 # -- Project information -----------------------------------------------------
@@ -40,7 +45,9 @@ extensions = [
     'sphinxcontrib.mermaid',
     'sphinx.ext.napoleon',
     'sphinx.ext.intersphinx',
-    'myst_parser'
+    'myst_parser',
+    'matplotlib.sphinxext.plot_directive',
+    "sphinx_jinja"
 ]
 
 myst_heading_anchors = 3
@@ -103,4 +110,9 @@ intersphinx_mapping = {
     'python': ('https://docs.python.org/3', None),
     'pydantic': ('https://docs.pydantic.dev/latest', None),
     'jinja2': ('https://jinja.palletsprojects.com/en/latest/', None)
+}
+
+# Jinja
+jinja_contexts = {
+    'deprecations': {'deprecations': sorted(deepcopy(DEPRECATIONS), key=attrgetter('deprecated_in'))}
 }
