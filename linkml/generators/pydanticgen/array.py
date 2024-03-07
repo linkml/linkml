@@ -95,7 +95,7 @@ if int(PYDANTIC_VERSION[0]) >= 2:
 else:
 
     class AnyShapeArray(Generic[_T]):
-        type_: Any
+        type_: Type[Any] = Any
 
         def __class_getitem__(cls, item):
             alias = type(f"AnyShape_{str(item.__name__)}", (AnyShapeArray,), {"type_": item})
@@ -138,7 +138,7 @@ else:
                 for item in _v:
                     if isinstance(item, list):
                         _validate(item)
-                    elif cls.type_.__name__ != "AnyType":
+                    elif cls.type_.__name__ not in ("AnyType", "Any"):
                         if not isinstance(item, cls.type_):
                             raise TypeError(
                                 (
