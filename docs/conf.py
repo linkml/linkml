@@ -36,11 +36,11 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinx.ext.todo',
     'sphinx.ext.coverage',
-    'myst_parser',
     'sphinxcontrib.mermaid',
     'sphinx.ext.napoleon',
     'sphinx.ext.intersphinx',
-    'myst_parser'
+    'myst_nb',
+    'sphinx_design'
 ]
 
 myst_heading_anchors = 3

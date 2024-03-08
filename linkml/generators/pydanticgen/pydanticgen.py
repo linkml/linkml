@@ -522,7 +522,7 @@ class PydanticGenerator(OOCodeGenerator):
         #     # TODO: lets format this nicely :)
         #     return f"Union[{','.join(array_reps)}]"
 
-    def serialize(self) -> str:
+    def render(self) -> PydanticModule:
         sv: SchemaView
         sv = self.schemaview
         schema = sv.schema
@@ -676,8 +676,11 @@ class PydanticGenerator(OOCodeGenerator):
             enums=enums,
             classes=classes,
         )
-        code = module.render(self._template_environment())
-        return code
+        return module
+
+    def serialize(self) -> str:
+        module = self.render()
+        return module.render(self._template_environment())
 
     def default_value_for_type(self, typ: str) -> str:
         return "None"

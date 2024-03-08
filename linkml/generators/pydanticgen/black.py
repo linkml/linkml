@@ -1,0 +1,29 @@
+"""
+Utilities for formatting pydanticgen outputs
+
+Kept separate in case we decide we don't want it/we want it to be moved to a place
+that's better for other generators to use.
+"""
+
+from typing import Optional
+
+try:
+    from black import format_str, Mode, TargetVersion
+except ImportError:
+    import warnings
+
+    warnings.warn("Black is a development dependency, install it manually if you want to use it at runtime")
+
+
+def _default_mode() -> "Mode":
+    return Mode(
+        target_versions={TargetVersion.PY311},
+    )
+
+
+def format_black(code: str, mode: Optional["Mode"] = None) -> str:
+    if mode is None:
+        mode = _default_mode()
+
+    formatted = format_str(code, mode=mode)
+    return formatted

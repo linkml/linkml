@@ -284,12 +284,8 @@ class ListOfListsArray(ArrayRangeGenerator):
         """
         An AnyShaped array
 
-        .. todo::
-
-            Document the SlotReturn additions
-
         Args:
-            array :class:`.ArrayExpression`: The array expression (not used)
+            array (:class:`.ArrayExpression`): The array expression (not used)
             with_inner_union (bool): If ``True`` , the innermost type is a ``Union`` of the ``AnyShapeArray`` class
                 and ``dtype`` (default: ``False`` )
 
