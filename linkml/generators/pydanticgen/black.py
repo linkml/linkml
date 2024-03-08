@@ -8,7 +8,7 @@ that's better for other generators to use.
 from typing import Optional
 
 try:
-    from black import format_str, Mode, TargetVersion
+    from black import Mode, TargetVersion, format_str
 except ImportError:
     import warnings
 
