@@ -516,11 +516,6 @@ class PydanticGenerator(OOCodeGenerator):
             raise ValueError("No array representation generated, but one was requested!")
 
         return array_reps
-        # elif len(array_reps) == 1:
-        #     return array_reps[0]
-        # else:
-        #     # TODO: lets format this nicely :)
-        #     return f"Union[{','.join(array_reps)}]"
 
     def render(self) -> PydanticModule:
         sv: SchemaView
