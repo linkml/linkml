@@ -212,7 +212,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
                 path = str(self.namespaces.uri_for(path) if ":" in path else path)
                 if path.startswith(linkml_files.LINKML_NAMESPACE):
                     model_base = "." if self.genmeta else "linkml_runtime.linkml_model."
-                    innerself.v.setdefault(model_base + path[len(linkml_files.LINKML_NAMESPACE):], set()).add(name)
+                    innerself.v.setdefault(model_base + path[len(linkml_files.LINKML_NAMESPACE) :], set()).add(name)
                 elif path == linkml.BIOLINK_MODEL_URI:
                     innerself.v.setdefault(linkml.BIOLINK_MODEL_PYTHON_LOC, set()).add(name)
                 elif "://" in path:
@@ -395,13 +395,13 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
             return f"\n{self.class_or_type_name(cls.name)} = Any"
 
         cd_str = (
-                ("\n@dataclass" if slotdefs else "")
-                + f"\nclass {self.class_or_type_name(cls.name)}{parentref}:{wrapped_description}"
-                + f"{self.gen_inherited_slots(cls)}"
-                + f"{self.gen_class_meta(cls)}"
-                + (f"\n\t{slotdefs}" if slotdefs else "")
-                + (f"\n{postinits}" if postinits else "")
-                + (f"\n{constructor}" if constructor else "")
+            ("\n@dataclass" if slotdefs else "")
+            + f"\nclass {self.class_or_type_name(cls.name)}{parentref}:{wrapped_description}"
+            + f"{self.gen_inherited_slots(cls)}"
+            + f"{self.gen_class_meta(cls)}"
+            + (f"\n\t{slotdefs}" if slotdefs else "")
+            + (f"\n{postinits}" if postinits else "")
+            + (f"\n{constructor}" if constructor else "")
         )
 
         return cd_str
@@ -537,10 +537,10 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
         return f"""{slotname}: {slot_range} {default}"""
 
     def range_cardinality(
-            self,
-            slot: SlotDefinition,
-            cls: Optional[ClassDefinition],
-            positional_allowed: bool,
+        self,
+        slot: SlotDefinition,
+        cls: Optional[ClassDefinition],
+        positional_allowed: bool,
     ) -> Tuple[str, Optional[str]]:
         """
         Return the range type including initializers, etc.
@@ -616,8 +616,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
 
         # Quote forward references - note that enums always gen at the end
         if slot.range in self.schema.enums or (
-                cls and slot.inlined and slot.range in self.schema.classes and self.forward_reference(slot.range,
-                                                                                                      cls.name)
+            cls and slot.inlined and slot.range in self.schema.classes and self.forward_reference(slot.range, cls.name)
         ):
             rangelist[-1] = f'"{rangelist[-1]}"'
         return str(self.gen_class_reference(rangelist)), prox_type, prox_type_name
@@ -840,16 +839,16 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
                     raise ValueError(f"Unsupported type designator range: {slot_range}")
                 rlines.append(f"self.{aliased_slot_name} = str(self.{td_value_classvar})")
             elif (
-                    # A really weird case -- a class that has no properties
-                    slot.range in self.schema.classes
-                    and not self.schema.classes[slot.range].slots
+                # A really weird case -- a class that has no properties
+                slot.range in self.schema.classes
+                and not self.schema.classes[slot.range].slots
             ):
                 rlines.append(f"\tself.{aliased_slot_name} = {base_type_name}()")
             else:
                 if (
-                        (self.class_identifier(slot.range) and not slot.inlined)
-                        or slot.range in self.schema.types
-                        or slot.range in self.schema.enums
+                    (self.class_identifier(slot.range) and not slot.inlined)
+                    or slot.range in self.schema.types
+                    or slot.range in self.schema.enums
                 ):
                     rlines.append(f"\tself.{aliased_slot_name} = {base_type_name}(self.{aliased_slot_name})")
                 else:
@@ -908,10 +907,10 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
         return "\n\t\t".join(rlines)
 
     def _slot_iter(
-            self,
-            cls: ClassDefinition,
-            test: Callable[[SlotDefinition], bool],
-            first_hit_only: bool = False,
+        self,
+        cls: ClassDefinition,
+        test: Callable[[SlotDefinition], bool],
+        first_hit_only: bool = False,
     ) -> Iterator[SlotDefinition]:
         """Return the representation for the set of own slots in cls that pass test
 
@@ -958,7 +957,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
         """Determine whether slot_range is a forward reference"""
         # logging.info(f"CHECKING: {slot_range} {owning_class}")
         if (slot_range in self.schema.classes and self.schema.classes[slot_range].imported_from) or (
-                slot_range in self.schema.enums and self.schema.enums[slot_range].imported_from
+            slot_range in self.schema.enums and self.schema.enums[slot_range].imported_from
         ):
             logging.info(
                 f"FALSE: FORWARD: {slot_range} {owning_class} // IMP={self.schema.classes[slot_range].imported_from}"
@@ -1207,13 +1206,13 @@ class {enum_name}(EnumDefinitionImpl):
 )
 @click.version_option(__version__, "-V", "--version")
 def cli(
-        yamlfile,
-        head=True,
-        genmeta=False,
-        classvars=True,
-        slots=True,
-        validate=False,
-        **args,
+    yamlfile,
+    head=True,
+    genmeta=False,
+    classvars=True,
+    slots=True,
+    validate=False,
+    **args,
 ):
     """Generate python classes to represent a LinkML model"""
     gen = PythonGenerator(

@@ -12,22 +12,9 @@ from rdflib.collection import Collection
 from rdflib.namespace import RDF, SH
 
 from linkml._version import __version__
+from linkml.generators.shacl.ifabsent_processor import IfAbsentProcessor
+from linkml.generators.shacl.shacl_data_type import ShaclDataType
 from linkml.utils.generator import Generator, shared_arguments
-
-LINK_ML_TYPES_STRING = URIRef("http://www.w3.org/2001/XMLSchema#string")
-LINK_ML_TYPES_BOOL = URIRef("http://www.w3.org/2001/XMLSchema#boolean")
-LINK_ML_TYPES_DECIMAL = URIRef("http://www.w3.org/2001/XMLSchema#decimal")
-LINK_ML_TYPES_INTEGER = URIRef("http://www.w3.org/2001/XMLSchema#integer")
-LINK_ML_TYPES_FLOAT = URIRef("http://www.w3.org/2001/XMLSchema#float")
-LINK_ML_TYPES_DOUBLE = URIRef("http://www.w3.org/2001/XMLSchema#double")
-LINK_ML_TYPES_DURATION = URIRef("http://www.w3.org/2001/XMLSchema#duration")
-LINK_ML_TYPES_DATETIME = URIRef("http://www.w3.org/2001/XMLSchema#dateTime")
-LINK_ML_TYPES_DATE = URIRef("http://www.w3.org/2001/XMLSchema#date")
-LINK_ML_TYPES_TIME = URIRef("http://www.w3.org/2001/XMLSchema#time")
-LINK_ML_TYPES_DATE_TIME = URIRef("http://www.w3.org/2001/XMLSchema#datetime")
-LINK_ML_TYPES_URI = URIRef("http://www.w3.org/2001/XMLSchema#anyURI")
-LINK_ML_TYPES_OBJECT_ID = URIRef("http://www.w3.org/ns/shex#iri")
-LINK_ML_TYPES_NODE_ID = URIRef("http://www.w3.org/ns/shex#nonLiteral")
 
 
 @dataclass
@@ -62,6 +49,9 @@ class ShaclGenerator(Generator):
         sv = self.schemaview
         g = Graph()
         g.bind("sh", SH)
+
+        ifabsent_processor = IfAbsentProcessor(sv)
+
         for pfx in self.schema.prefixes.values():
             g.bind(str(pfx.prefix_prefix), pfx.prefix_reference)
 
@@ -118,6 +108,7 @@ class ShaclGenerator(Generator):
                     prop_pv_literal(SH.minCount, 1)
                 prop_pv_literal(SH.minInclusive, s.minimum_value)
                 prop_pv_literal(SH.maxInclusive, s.maximum_value)
+
                 all_classes = sv.all_classes()
                 if s.any_of:
                     or_node = BNode()
@@ -180,6 +171,9 @@ class ShaclGenerator(Generator):
                         add_simple_data_type(prop_pv, r)
                     if s.pattern:
                         prop_pv(SH.pattern, Literal(s.pattern))
+
+                ifabsent_processor.process_slot(prop_pv, s)
+
         return g
 
     def _add_class(self, func: Callable, r: ElementName) -> None:
@@ -211,44 +205,9 @@ class ShaclGenerator(Generator):
 
 
 def add_simple_data_type(func: Callable, r: ElementName) -> None:
-    if r == "string":
-        func(SH.datatype, LINK_ML_TYPES_STRING)
-    elif r == "boolean":
-        func(SH.datatype, LINK_ML_TYPES_BOOL)
-    elif r == "duration":
-        func(SH.datatype, LINK_ML_TYPES_DURATION)
-    elif r == "datetime":
-        func(SH.datatype, LINK_ML_TYPES_DATETIME)
-    elif r == "date":
-        func(SH.datatype, LINK_ML_TYPES_DATE)
-    elif r == "time":
-        func(SH.datatype, LINK_ML_TYPES_TIME)
-    elif r == "datetime":
-        func(SH.datatype, LINK_ML_TYPES_DATE_TIME)
-    elif r == "decimal":
-        func(SH.datatype, LINK_ML_TYPES_DECIMAL)
-    elif r == "integer":
-        func(SH.datatype, LINK_ML_TYPES_INTEGER)
-    elif r == "float":
-        func(SH.datatype, LINK_ML_TYPES_FLOAT)
-    elif r == "double":
-        func(SH.datatype, LINK_ML_TYPES_DOUBLE)
-    elif r == "uri":
-        func(SH.datatype, LINK_ML_TYPES_URI)
-    elif r == "curi":
-        func(SH.datatype, LINK_ML_TYPES_STRING)
-    elif r == "ncname":
-        func(SH.datatype, LINK_ML_TYPES_STRING)
-    elif r == "objectidentifier":
-        func(SH.datatype, LINK_ML_TYPES_OBJECT_ID)
-    elif r == "nodeidentifier":
-        func(SH.datatype, LINK_ML_TYPES_NODE_ID)
-    elif r == "jsonpointer":
-        func(SH.datatype, LINK_ML_TYPES_STRING)
-    elif r == "jsonpath":
-        func(SH.datatype, LINK_ML_TYPES_STRING)
-    elif r == "sparqlpath":
-        func(SH.datatype, LINK_ML_TYPES_STRING)
+    for datatype in list(ShaclDataType):
+        if datatype.linkml_type == r:
+            func(SH.datatype, datatype.uri_ref)
 
 
 @shared_arguments(ShaclGenerator)
