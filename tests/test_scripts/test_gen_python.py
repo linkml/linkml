@@ -4,9 +4,9 @@ from typing import List, Optional
 from click.testing import CliRunner
 from linkml_runtime.utils.compile_python import compile_python
 
-
 from linkml.generators.pythongen import cli
 from tests.conftest import Snapshot
+
 from ..conftest import KITCHEN_SINK_PATH
 
 

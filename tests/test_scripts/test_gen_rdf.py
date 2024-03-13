@@ -4,6 +4,7 @@ from click.testing import CliRunner
 from linkml import LOCAL_METAMODEL_LDCONTEXT_FILE
 from linkml.generators.jsonldcontextgen import ContextGenerator
 from linkml.generators.rdfgen import cli
+
 from ..conftest import KITCHEN_SINK_PATH
 
 

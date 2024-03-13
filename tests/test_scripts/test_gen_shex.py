@@ -9,6 +9,7 @@ from linkml.generators.jsonldgen import JSONLDGenerator
 from linkml.generators.rdfgen import RDFGenerator
 from linkml.generators.shexgen import ShExGenerator, cli
 from tests import SKIP_SHEX_VALIDATION, SKIP_SHEX_VALIDATION_REASON
+
 from ..conftest import KITCHEN_SINK_PATH
 
 

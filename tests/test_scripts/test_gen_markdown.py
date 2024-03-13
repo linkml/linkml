@@ -1,7 +1,7 @@
 from click.testing import CliRunner
 
-
 from linkml.generators.markdowngen import cli
+
 from ..conftest import KITCHEN_SINK_PATH
 
 

@@ -2,8 +2,8 @@ import re
 
 from click.testing import CliRunner
 
-
 from linkml.generators.namespacegen import cli
+
 from ..conftest import KITCHEN_SINK_PATH
 
 
