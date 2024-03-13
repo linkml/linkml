@@ -20,10 +20,6 @@ class YAMLLoader(Loader):
                      *, 
                      base_dir: Optional[str] = None,
                      metadata: Optional[FileInfo] = None) -> Union[dict, List[dict]]:
-        if metadata is None:
-            metadata = FileInfo()
-        if base_dir and not metadata.base_path:
-            metadata.base_path = base_dir
         data = self._read_source(source, base_dir=base_dir, metadata=metadata, accept_header="text/yaml, application/yaml;q=0.9")
         if isinstance(data, str):
             data = StringIO(data)
