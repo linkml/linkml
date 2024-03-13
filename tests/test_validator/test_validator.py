@@ -51,6 +51,9 @@ class TestDataLoader(Loader):
         for i in range(self.how_many):
             yield {"id": i}
 
+    def load_any(self, *args, **kwargs):
+        raise NotImplementedError("Just a test loader!")
+
 
 def test_validate_valid_instance():
     plugins = [AcceptAnythingValidationPlugin()]

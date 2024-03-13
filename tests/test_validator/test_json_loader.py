@@ -2,7 +2,7 @@ import json
 
 import pytest
 
-from linkml.validator.loaders import JsonLoader
+from linkml.validator.loaders import JSONLoader
 
 
 def test_load_object(tmp_file_factory):
@@ -14,7 +14,7 @@ def test_load_object(tmp_file_factory):
     }
     json_file = tmp_file_factory("data.json", json.dumps(test_data))
 
-    loader = JsonLoader(json_file)
+    loader = JSONLoader(json_file)
     instances = loader.iter_instances()
     assert next(instances) == test_data
     with pytest.raises(StopIteration):
@@ -25,7 +25,7 @@ def test_load_list_of_objects(tmp_file_factory):
     test_data = [{"id": 1}, {"id": 2}]
     json_file = tmp_file_factory("data.json", json.dumps(test_data))
 
-    loader = JsonLoader(json_file)
+    loader = JSONLoader(json_file)
     instances = loader.iter_instances()
     assert next(instances) == test_data[0]
     assert next(instances) == test_data[1]
