@@ -4,9 +4,10 @@ from typing import List, Optional
 from click.testing import CliRunner
 from linkml_runtime.utils.compile_python import compile_python
 
-from linkml import LOCAL_METAMODEL_YAML_FILE
+
 from linkml.generators.pythongen import cli
 from tests.conftest import Snapshot
+from ..conftest import KITCHEN_SINK_PATH
 
 
 def gen_and_comp_python(
@@ -35,7 +36,7 @@ def test_help():
 
 def test_metamodel(snapshot):
     runner = CliRunner()
-    result = runner.invoke(cli, [LOCAL_METAMODEL_YAML_FILE])
+    result = runner.invoke(cli, [KITCHEN_SINK_PATH])
     assert result.exit_code == 0
     assert result.output == snapshot("genpython/meta.py")
 

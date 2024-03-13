@@ -3,8 +3,9 @@ import os
 import pytest
 from click.testing import CliRunner
 
-from linkml import LOCAL_METAMODEL_YAML_FILE
+
 from linkml.generators.owlgen import cli
+from ..conftest import KITCHEN_SINK_PATH
 
 
 def test_help():
@@ -23,7 +24,7 @@ def test_help():
 )
 def test_metamodel(arguments, snapshot_file, rdf_format, snapshot):
     runner = CliRunner()
-    result = runner.invoke(cli, arguments + [LOCAL_METAMODEL_YAML_FILE])
+    result = runner.invoke(cli, arguments + [KITCHEN_SINK_PATH])
     assert result.exit_code == 0
     # Only do the snapshot comparison if we're not on Windows. rdflib has a bug when expanding
     # prefixes delimited by an underscore that appears to be platform-dependent.

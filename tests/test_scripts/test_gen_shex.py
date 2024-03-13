@@ -3,12 +3,13 @@ from click.testing import CliRunner
 from pyshex import ShExEvaluator
 from rdflib import Graph
 
-from linkml import LOCAL_METAMODEL_YAML_FILE, METAMODEL_NAMESPACE
+from linkml import METAMODEL_NAMESPACE
 from linkml.generators.jsonldcontextgen import ContextGenerator
 from linkml.generators.jsonldgen import JSONLDGenerator
 from linkml.generators.rdfgen import RDFGenerator
 from linkml.generators.shexgen import ShExGenerator, cli
 from tests import SKIP_SHEX_VALIDATION, SKIP_SHEX_VALIDATION_REASON
+from ..conftest import KITCHEN_SINK_PATH
 
 
 def test_help():
@@ -31,7 +32,7 @@ def test_help():
 def test_meta(arguments, snapshot_file, snapshot):
     """Generate various forms of the metamodel in ShEx"""
     runner = CliRunner()
-    result = runner.invoke(cli, arguments + [LOCAL_METAMODEL_YAML_FILE])
+    result = runner.invoke(cli, arguments + [KITCHEN_SINK_PATH])
     assert result.exit_code == 0
     assert result.output == snapshot(f"genshex/{snapshot_file}")
 
@@ -41,20 +42,20 @@ def test_rdf_shex(tmp_path):
     """Generate ShEx and RDF for the model and verify that the RDF represents a valid instance"""
 
     json_file = tmp_path / "meta.jsonld"
-    json_str = JSONLDGenerator(LOCAL_METAMODEL_YAML_FILE).serialize()
+    json_str = JSONLDGenerator(KITCHEN_SINK_PATH).serialize()
     with open(json_file, "w") as f:
         f.write(json_str)
 
     context_file = tmp_path / "metacontext.jsonld"
-    ContextGenerator(LOCAL_METAMODEL_YAML_FILE).serialize(output=context_file)
+    ContextGenerator(KITCHEN_SINK_PATH).serialize(output=context_file)
     assert context_file.exists()
 
     rdf_file = tmp_path / "meta.ttl"
-    RDFGenerator(LOCAL_METAMODEL_YAML_FILE).serialize(output=rdf_file, context=context_file)
+    RDFGenerator(KITCHEN_SINK_PATH).serialize(output=rdf_file, context=context_file)
     assert rdf_file.exists()
 
     shex_file = tmp_path / "meta.shex"
-    ShExGenerator(LOCAL_METAMODEL_YAML_FILE).serialize(output=shex_file, collections=False)
+    ShExGenerator(KITCHEN_SINK_PATH).serialize(output=shex_file, collections=False)
     assert shex_file.exists()
 
     if SKIP_SHEX_VALIDATION:

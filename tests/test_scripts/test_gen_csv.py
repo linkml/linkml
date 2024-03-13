@@ -5,8 +5,9 @@ tests generation of CSV summaries
 import pytest
 from click.testing import CliRunner
 
-from linkml import LOCAL_METAMODEL_YAML_FILE
+
 from linkml.generators import csvgen
+from ..conftest import KITCHEN_SINK_PATH
 
 
 def test_help():
@@ -20,13 +21,13 @@ def test_help():
     [
         ([], "meta.csv"),
         (["-f", "tsv"], "meta.tsv"),
-        (["-r", "schema_definition"], "meta_schema_def.csv"),
-        (["-r", "schema_definition", "-r", "slot_definition"], "meta_schema_def_slot_def.csv"),
+        (["-r", "Person"], "meta_schema_def.csv"),
+        (["-r", "Person", "-r", "Event"], "meta_schema_def_slot_def.csv"),
     ],
 )
 def test_metamodel_valid_calls(arguments, snapshot_name, snapshot):
     runner = CliRunner()
-    result = runner.invoke(csvgen.cli, arguments + [LOCAL_METAMODEL_YAML_FILE])
+    result = runner.invoke(csvgen.cli, arguments + [KITCHEN_SINK_PATH])
     assert result.exit_code == 0
     assert result.output == snapshot(f"gencsv/{snapshot_name}")
 
@@ -34,6 +35,6 @@ def test_metamodel_valid_calls(arguments, snapshot_name, snapshot):
 @pytest.mark.parametrize("arguments,message", [(["-f", "xsv"], "xsv"), (["-r", "nada"], "Unrecognized class: nada")])
 def test_metamodel_invalid_calls(arguments, message):
     runner = CliRunner()
-    result = runner.invoke(csvgen.cli, arguments + [LOCAL_METAMODEL_YAML_FILE], standalone_mode=False)
+    result = runner.invoke(csvgen.cli, arguments + [KITCHEN_SINK_PATH], standalone_mode=False)
     assert result.exit_code != 0
     assert message in str(result.exception)

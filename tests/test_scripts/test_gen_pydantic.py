@@ -3,6 +3,7 @@ from pathlib import Path
 from click.testing import CliRunner
 
 from linkml.generators.pydanticgen import cli
+from ..conftest import KITCHEN_SINK_PATH
 
 
 def test_template_dir(input_path):

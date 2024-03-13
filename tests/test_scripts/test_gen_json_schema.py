@@ -3,8 +3,9 @@ import re
 import pytest
 from click.testing import CliRunner
 
-from linkml import LOCAL_METAMODEL_YAML_FILE
+
 from linkml.generators.jsonschemagen import cli
+from ..conftest import KITCHEN_SINK_PATH
 
 
 def test_help():
@@ -23,7 +24,7 @@ def test_help():
 )
 def test_metamodel_valid_calls(arguments, snapshot_file, snapshot):
     runner = CliRunner()
-    result = runner.invoke(cli, arguments + [LOCAL_METAMODEL_YAML_FILE])
+    result = runner.invoke(cli, arguments + [KITCHEN_SINK_PATH])
     assert result.exit_code == 0
     assert result.output == snapshot(f"genjsonschema/{snapshot_file}")
 

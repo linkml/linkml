@@ -1,7 +1,8 @@
 from click.testing import CliRunner
 
-from linkml import LOCAL_METAMODEL_YAML_FILE
+
 from linkml.generators.yamlgen import cli
+from ..conftest import KITCHEN_SINK_PATH
 
 
 def test_help():
@@ -13,7 +14,7 @@ def test_help():
 def test_metamodel(snapshot):
     """Test emitting a YAML file"""
     runner = CliRunner()
-    result = runner.invoke(cli, [LOCAL_METAMODEL_YAML_FILE])
+    result = runner.invoke(cli, [KITCHEN_SINK_PATH])
     assert result.exit_code == 0
     assert result.output == snapshot("genyaml/meta.yaml")
 
