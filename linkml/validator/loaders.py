@@ -14,8 +14,8 @@ import os
 import warnings
 from typing import Union
 
+from linkml_runtime.loaders import CSVLoader, JSONLoader, TSVLoader, YAMLLoader
 from linkml_runtime.loaders.loader_root import Loader
-from linkml_runtime.loaders import CSVLoader, TSVLoader, JSONLoader, YAMLLoader, PassthroughLoader
 
 
 def default_loader_for_file(file: Union[str, bytes, os.PathLike]) -> Loader:
