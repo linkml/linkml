@@ -1,22 +1,21 @@
 import unittest
 from typing import List
-import pytest
 
+import pytest
 from pyshex.shex_evaluator import EvaluationResult
 
 from linkml import LOCAL_METAMODEL_LDCONTEXT_FILE, LOCAL_METAMODEL_YAML_FILE, METAMODEL_NAMESPACE
+from linkml.generators.jsonldcontextgen import ContextGenerator
 from linkml.generators.markdowngen import MarkdownGenerator
 from linkml.generators.owlgen import OwlSchemaGenerator
+from linkml.generators.pythongen import PythonGenerator
 from linkml.generators.rdfgen import RDFGenerator
 from linkml.generators.shexgen import ShExGenerator
-from linkml.generators.jsonldcontextgen import ContextGenerator
-from linkml.generators.pythongen import PythonGenerator
 from tests import SKIP_MARKDOWN_VALIDATION, SKIP_MARKDOWN_VALIDATION_REASON
 from tests.test_base.environment import env
 from tests.utils.compare_rdf import compare_rdf
+from tests.utils.filters import ldcontext_metadata_filter, metadata_filter
 from tests.utils.generatortestcase import GeneratorTestCase
-from tests.utils.filters import ldcontext_metadata_filter
-from tests.utils.filters import metadata_filter
 from tests.utils.python_comparator import compare_python
 
 
