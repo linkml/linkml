@@ -671,14 +671,6 @@
                     <span class="sa">f</span><span class="s2">&quot;slot: </span><span class="si">{</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> - unrecognized domain (</span><span class="si">{</span><span class="n">slot</span><span class="o">.</span><span class="n">domain</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">,</span>
                     <span class="n">slot</span><span class="o">.</span><span class="n">domain</span><span class="p">,</span>
                 <span class="p">)</span>
-            <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">ifabsent</span><span class="p">:</span>
-                <span class="kn">from</span> <span class="nn">linkml.utils.ifabsent_functions</span> <span class="kn">import</span> <span class="n">isabsent_match</span>
-
-                <span class="k">if</span> <span class="n">isabsent_match</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">ifabsent</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">raise_value_error</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;Unrecognized ifabsent action for slot &#39;</span><span class="si">{</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;: &#39;</span><span class="si">{</span><span class="n">slot</span><span class="o">.</span><span class="n">ifabsent</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">,</span>
-                        <span class="n">slot</span><span class="o">.</span><span class="n">ifabsent</span><span class="p">,</span>
-                    <span class="p">)</span>
 
             <span class="c1"># Keys and identifiers must be present</span>
             <span class="k">if</span> <span class="nb">bool</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">key</span> <span class="ow">or</span> <span class="n">slot</span><span class="o">.</span><span class="n">identifier</span><span class="p">):</span>

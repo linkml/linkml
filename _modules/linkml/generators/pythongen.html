@@ -356,11 +356,7 @@
 <span class="kn">import</span> <span class="nn">linkml</span>
 <span class="kn">from</span> <span class="nn">linkml._version</span> <span class="kn">import</span> <span class="n">__version__</span>
 <span class="kn">from</span> <span class="nn">linkml.utils.generator</span> <span class="kn">import</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">shared_arguments</span>
-<span class="kn">from</span> <span class="nn">linkml.utils.ifabsent_functions</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">default_curie_or_uri</span><span class="p">,</span>
-    <span class="n">ifabsent_postinit_declaration</span><span class="p">,</span>
-    <span class="n">ifabsent_value_declaration</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">linkml.utils.ifabsent_functions</span> <span class="kn">import</span> <span class="n">ifabsent_postinit_declaration</span><span class="p">,</span> <span class="n">ifabsent_value_declaration</span>
 
 
 <div class="viewcode-block" id="PythonGenerator"><a class="viewcode-back" href="../../../generators/python.html#linkml.generators.pythongen.PythonGenerator">[docs]</a><span class="nd">@dataclass</span>
@@ -471,6 +467,7 @@
 <span class="s2">from jsonasobj2 import JsonObj, as_dict</span>
 <span class="s2">from typing import Optional, List, Union, Dict, ClassVar, Any</span>
 <span class="s2">from dataclasses import dataclass</span>
+<span class="s2">from datetime import date, datetime</span>
 <span class="si">{</span><span class="n">enumimports</span><span class="si">}</span>
 <span class="s2">from linkml_runtime.utils.slot import Slot</span>
 <span class="s2">from linkml_runtime.utils.metamodelcore import empty_list, empty_dict, bnode</span>
@@ -614,7 +611,7 @@
         <span class="k">return</span> <span class="n">rval</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">gen_namespaces</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="n">dflt_prefix</span> <span class="o">=</span> <span class="n">default_curie_or_uri</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">dflt_prefix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_curie_or_uri</span><span class="p">()</span>
         <span class="n">dflt</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;CurieNamespace(&#39;&#39;, &#39;</span><span class="si">{</span><span class="n">sfx</span><span class="p">(</span><span class="n">dflt_prefix</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39;)&quot;</span> <span class="k">if</span> <span class="s2">&quot;:/&quot;</span> <span class="ow">in</span> <span class="n">dflt_prefix</span> <span class="k">else</span> <span class="n">dflt_prefix</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
         <span class="n">curienamespace_defs</span> <span class="o">=</span> <span class="p">[</span>
             <span class="p">{</span>
@@ -961,6 +958,7 @@
         <span class="k">for</span> <span class="n">slot</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">domain_slots</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">ifabsent</span><span class="p">:</span>
                 <span class="n">dflt</span> <span class="o">=</span> <span class="n">ifabsent_postinit_declaration</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">ifabsent</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">,</span> <span class="n">slot</span><span class="p">)</span>
+
                 <span class="k">if</span> <span class="n">dflt</span> <span class="ow">and</span> <span class="n">dflt</span> <span class="o">!=</span> <span class="s2">&quot;None&quot;</span><span class="p">:</span>
                     <span class="n">post_inits_pre_super</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;if self.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">slot_name</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="si">}</span><span class="s2"> is None:&quot;</span><span class="p">)</span>
                     <span class="n">post_inits_pre_super</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">self.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">slot_name</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">dflt</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -1488,7 +1486,15 @@
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">prefix_string</span> <span class="o">+</span> <span class="n">string</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">split_col</span> <span class="ow">and</span> <span class="nb">input</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
             <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">prefix_string</span><span class="si">}</span><span class="s1">&quot;</span><span class="si">{</span><span class="n">string</span><span class="si">}</span><span class="s1">&quot;&#39;</span>
 
-        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">prefix_string</span><span class="si">}</span><span class="s1">&quot;&quot;&quot;</span><span class="si">{</span><span class="n">string</span><span class="si">}</span><span class="s1">&quot;&quot;&quot;&#39;</span></div>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">prefix_string</span><span class="si">}</span><span class="s1">&quot;&quot;&quot;</span><span class="si">{</span><span class="n">string</span><span class="si">}</span><span class="s1">&quot;&quot;&quot;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">_default_curie_or_uri</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">dflt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">default_prefix</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">default_prefix</span> <span class="k">else</span> <span class="n">sfx</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">&quot;:/&quot;</span> <span class="ow">in</span> <span class="n">dflt</span><span class="p">:</span>
+            <span class="n">prefix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">prefix_for</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">default_prefix</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">prefix</span><span class="p">:</span>
+                <span class="n">dflt</span> <span class="o">=</span> <span class="n">prefix</span>
+        <span class="k">return</span> <span class="n">dflt</span></div>
 
 
 <span class="nd">@shared_arguments</span><span class="p">(</span><span class="n">PythonGenerator</span><span class="p">)</span>
