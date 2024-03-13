@@ -2,9 +2,9 @@ import importlib
 import os
 import re
 import unittest
-from pathlib import Path
 from contextlib import redirect_stdout
 from io import StringIO
+from pathlib import Path
 
 from tests.test_notebooks import output_directory
 
