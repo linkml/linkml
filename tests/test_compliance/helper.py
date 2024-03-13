@@ -21,7 +21,7 @@ import rdflib
 import yaml
 from linkml_runtime import SchemaView
 from linkml_runtime.dumpers import rdflib_dumper, yaml_dumper
-from linkml_runtime.linkml_model import SchemaDefinition, Decimal
+from linkml_runtime.linkml_model import Decimal, SchemaDefinition
 from linkml_runtime.linkml_model import meta as meta
 from linkml_runtime.loaders import rdflib_loader
 from linkml_runtime.utils.compile_python import compile_python
