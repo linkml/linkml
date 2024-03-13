@@ -351,14 +351,6 @@ class SchemaLoader:
                     f"slot: {slot.name} - unrecognized domain ({slot.domain})",
                     slot.domain,
                 )
-            if slot.ifabsent:
-                from linkml.utils.ifabsent_functions import isabsent_match
-
-                if isabsent_match(slot.ifabsent) is None:
-                    self.raise_value_error(
-                        f"Unrecognized ifabsent action for slot '{slot.name}': '{slot.ifabsent}'",
-                        slot.ifabsent,
-                    )
 
             # Keys and identifiers must be present
             if bool(slot.key or slot.identifier):

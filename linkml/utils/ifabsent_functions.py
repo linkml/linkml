@@ -1,5 +1,5 @@
 import re
-from typing import Callable, List, Match, Optional, Text, Tuple
+from typing import Callable, List, Match, Optional, Text, Tuple, Union
 
 from linkml_runtime.linkml_model.meta import ClassDefinition, SlotDefinition
 from linkml_runtime.utils.formatutils import sfx
@@ -77,12 +77,13 @@ default_library: List[
     (
         r"date\((\d{4})-(\d{2})-(\d{2})\)",
         False,
-        lambda m, __, ___, ____: f"datetime.date({m[1]}, {m[2]}, {m[3]})",
+        lambda m, __, ___, ____: f"date({int(m[1])}, {int(m[2])}, {int(m[3])})",
     ),
     (
         r"datetime\((\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})Z\)",
         False,
-        lambda m, __, ___, ____: f"datetime.datetime({m[1]}, {m[2]}, {m[3]}, {m[4]}, {m[5]}, {m[6]})",
+        lambda m, __, ___, ____: f"datetime({int(m[1])}, {int(m[2])}, {int(m[3])}, "
+        f"{int(m[4])}, {int(m[5])}, {int(m[6])})",
     ),
     # TODO: We have to make the real URI available before any of these can work
     # ("class_uri", True,
@@ -113,12 +114,9 @@ default_library: List[
 
 def isabsent_match(
     txt: Text,
-) -> Optional[
-    Tuple[
-        Match[str],
-        bool,
-        Callable[[Match[str], SchemaLoader, ClassDefinition, SlotDefinition], str],
-    ]
+) -> Union[
+    tuple[Match[str], bool, Callable[[Match[str], SchemaLoader, ClassDefinition, SlotDefinition], str]],
+    tuple[None, None, None],
 ]:
     txt = str(txt)
     for pattern, postinit, f in default_library:
