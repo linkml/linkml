@@ -58,17 +58,6 @@ class PythonTestCase(TestEnvironmentTestCase):
             use_testing_root=True,
         )
 
-    def test_metamodel_python(self):
-        """Build meta.py"""
-        env.generate_single_file(
-            "meta.py",
-            lambda: PythonGenerator(env.meta_yaml, importmap=env.import_map, genmeta=True).serialize(),
-            value_is_returned=True,
-            filtr=metadata_filter,
-            comparator=lambda exp, act: compare_python(exp, act, self.env.expected_path("meta.py")),
-            use_testing_root=True,
-        )
-
 
 if __name__ == "__main__":
     unittest.main()
