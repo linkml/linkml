@@ -19,7 +19,6 @@ def test_help():
     assert "Generate a ShEx Schema for a  LinkML model" in result.output
 
 
-@pytest.mark.slow
 @pytest.mark.parametrize(
     "arguments,snapshot_file",
     [
