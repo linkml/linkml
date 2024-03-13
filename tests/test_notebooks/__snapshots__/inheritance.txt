@@ -1,0 +1,73 @@
+<img src="https://yuml.me/diagram/nofunky;dir:TB/class/[Root]^-[Children|root_id:string],[Children]^-[Child2|description:string;root_id(i):string],[Children]^-[Child1|root_id(i):string],[Child2]^-[Child22|angry:boolean;description(i):string;root_id(i):string],[Child2]^-[Child21|description(i):string;root_id(i):string],[Child22],[Child21],[Child1]"/>
+
+-----
+https://yuml.me/diagram/nofunky;dir:TB/class/[Root]^-[Children|root_id:string],[Children]^-[Child2|description:string;root_id(i):string],[Children]^-[Child1|root_id(i):string],[Child2]^-[Child22|angry:boolean;description(i):string;root_id(i):string],[Child2]^-[Child21|description(i):string;root_id(i):string],[Child22],[Child21],[Child1]
+
+# metamodel_version: 1.7.0
+BASE <http://example.org/model/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+
+<String> xsd:string
+
+<Int> xsd:integer
+
+<Boolean> xsd:boolean
+
+<Child1> CLOSED {
+    (  $<Child1_tes> (  &<Children_tes> ;
+          rdf:type [ <Children> ] ?
+       ) ;
+       rdf:type [ <Child1> ]
+    )
+}
+
+<Child2>  (
+    CLOSED {
+       (  $<Child2_tes> (  &<Children_tes> ;
+             rdf:type [ <Children> ] ? ;
+             <description> @<String>
+          ) ;
+          rdf:type [ <Child2> ]
+       )
+    } OR @<Child21> OR @<Child22>
+)
+
+<Child21> CLOSED {
+    (  $<Child21_tes> (  &<Child2_tes> ;
+          rdf:type [ <Child2> ] ?
+       ) ;
+       rdf:type [ <Child21> ]
+    )
+}
+
+<Child22> CLOSED {
+    (  $<Child22_tes> (  &<Child2_tes> ;
+          rdf:type [ <Child2> ] ? ;
+          <angry> @<Boolean>
+       ) ;
+       rdf:type [ <Child22> ]
+    )
+}
+
+<Children>  (
+    CLOSED {
+       (  $<Children_tes> (  &<Root_tes> ;
+             rdf:type [ <Root> ] ?
+          ) ;
+          rdf:type [ <Children> ]
+       )
+    } OR @<Child1> OR @<Child2>
+)
+
+<Root>  (
+    CLOSED {
+       (  $<Root_tes> rdf:type . * ;
+          rdf:type [ <Root> ] ?
+       )
+    } OR @<Children>
+)
+
+
+

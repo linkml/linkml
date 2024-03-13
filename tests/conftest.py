@@ -178,6 +178,8 @@ def pytest_collection_modifyitems(config, items):
 
 def pytest_sessionstart(session: pytest.Session):
     tests.WITH_OUTPUT = session.config.getoption("--with-output")
+    if session.config.getoption("--generate-snapshots"):
+        tests.DEFAULT_MISMATCH_ACTION = "MismatchAction.Ignore"
 
 
 def pytest_assertrepr_compare(config, op, left, right):
