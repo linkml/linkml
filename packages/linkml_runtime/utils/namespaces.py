@@ -137,7 +137,9 @@ class Namespaces(CaseInsensitiveDict):
     def curie_for(self, uri: Any, default_ok: bool = True, pythonform: bool = False) -> Optional[str]:
         """
         Return the most appropriate CURIE for URI.  The first longest matching prefix used, if any.  If no CURIE is
-        present, None is returned
+        present, None is returned.
+
+        Please see https://www.w3.org/TR/curie/ for more details about CURIEs.
 
         @param uri: URI to create the CURIE for
         @param default_ok: True means the default prefix is ok. Otherwise, we have to have a real prefix
@@ -191,7 +193,7 @@ class Namespaces(CaseInsensitiveDict):
 
     def prefix_suffix(self, uri_or_curie: Any, case_shift: bool = True) -> Tuple[Optional[str], Optional[str]]:
         uri_or_curie = str(uri_or_curie)
-        if ':/' in uri_or_curie:
+        if '://' in uri_or_curie:
             uri_or_curie = self.curie_for(uri_or_curie)
             if not uri_or_curie:
                 return None, None
