@@ -1,5 +1,6 @@
-import pytest
 from pathlib import Path
+
+import pytest
 
 from linkml import (
     LOCAL_MODEL_YAML_FILES,

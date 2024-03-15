@@ -1,9 +1,10 @@
-import pytest
 from pathlib import Path
+
+import pytest
+from linkml_runtime.utils.compile_python import compile_python
 
 from linkml import LOCAL_MODEL_YAML_FILES
 from linkml.generators.pythongen import PythonGenerator
-from linkml_runtime.utils.compile_python import compile_python
 
 
 @pytest.mark.parametrize("model", LOCAL_MODEL_YAML_FILES)
