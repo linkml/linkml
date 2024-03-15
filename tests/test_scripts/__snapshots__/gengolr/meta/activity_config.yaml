@@ -1,0 +1,21 @@
+# metamodel_version: 1.7.0id: activity
+schema_generating: true
+description: a provence-generating activity
+display_name: activity
+document_category: activity
+weight: 20
+fields:
+- id: id
+  display_name: id
+- id: started_at_time
+  display_name: started at time
+- id: ended_at_time
+  display_name: ended at time
+- id: was_informed_by
+  display_name: was informed by
+- id: was_associated_with
+  display_name: was associated with
+- id: used
+  display_name: used
+- id: description
+  display_name: description
