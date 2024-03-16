@@ -156,6 +156,16 @@ def input_path(request) -> Callable[[str], Path]:
     return get_path
 
 
+@pytest.fixture(scope="function")
+def temp_dir(request) -> Path:
+    base = Path(request.path.parent) / "temp"
+    test_dir = base / request.function.__name__
+    test_dir.mkdir(exist_ok=True, parents=True)
+    yield test_dir
+    if not request.config.getoption("with_output"):
+        shutil.rmtree(test_dir)
+
+
 def pytest_addoption(parser):
     parser.addoption(
         "--generate-snapshots",
