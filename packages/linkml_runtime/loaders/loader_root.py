@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import TextIO, Union, Optional, Callable, Dict, Type, Any, List
 from logging import getLogger
-from functools import lru_cache
 
 from pydantic import BaseModel
 from hbreader import FileInfo, hbread
@@ -150,15 +149,10 @@ class Loader(ABC):
                      base_dir: Optional[str] = None, 
                      metadata: Optional[FileInfo] = None, 
                      accept_header: Optional[str] = "text/plain, application/yaml;q=0.9") -> Union[dict, str]:
-
-        # avoid instantiating unhashable FileInfo type by getting default base_path, if any
-        if base_dir is None:
-            if metadata is not None:
-                base_dir = str(metadata.base_path) if metadata.base_path is not None else None
-            else:
-                base_dir = str(FileInfo().base_path) if FileInfo().base_path is not None else None
-        elif base_dir is not None:
-            base_dir = str(base_dir)
+        if metadata is None:
+            metadata = FileInfo()
+        if base_dir and not metadata.base_path:
+            metadata.base_path = base_dir
 
         if not isinstance(source, dict):
             # Try to get local version of schema, if one is known to exist
@@ -170,15 +164,8 @@ class Loader(ABC):
                 logger = getLogger('linkml_runtime.loaders.Loader')
                 logger.debug(f"Error converting stringlike source to local linkml file: {source}, got: {e}")
 
-            if not isinstance(metadata, FileInfo):
-                data = self._hashable_read(source, base_dir, accept_header)
-            else:
-                data = hbread(source, metadata, base_dir, accept_header)
+            data = hbread(source, metadata, base_dir, accept_header)
         else:
             data = source
 
         return data
-
-    @lru_cache(maxsize=CACHE_SIZE)
-    def _hashable_read(self, source: Union[dict, TextIO], base_dir: Optional[str] = None, accept_header: Optional[str] = None):
-        return hbread(source, None, base_dir, accept_header)
