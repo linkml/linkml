@@ -69,13 +69,13 @@ In an RDF database, nodes will typically have an rdf:type triples. This can be t
      * Range: [LabelType](types/LabelType.md)
      * in subsets: (translator_minimal)
 
-### Mixed in from epigenomic entity:
+### Mixed in from genomic entity:
 
  * [has biological sequence](has_biological_sequence.md)  <sub>0..1</sub>
      * Description: connects a genomic feature to its sequence
      * Range: [BiologicalSequence](types/BiologicalSequence.md)
 
-### Mixed in from genomic entity:
+### Mixed in from epigenomic entity:
 
  * [has biological sequence](has_biological_sequence.md)  <sub>0..1</sub>
      * Description: connects a genomic feature to its sequence
