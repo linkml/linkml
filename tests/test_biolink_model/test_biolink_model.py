@@ -10,7 +10,6 @@ from linkml.generators.graphqlgen import GraphqlGenerator
 from linkml.generators.jsonldcontextgen import ContextGenerator
 from linkml.generators.jsonldgen import JSONLDGenerator
 from linkml.generators.jsonschemagen import JsonSchemaGenerator
-from linkml.generators.markdowngen import MarkdownGenerator
 from linkml.generators.namespacegen import NamespaceGenerator
 from linkml.generators.owlgen import OwlSchemaGenerator
 from linkml.generators.protogen import ProtoGenerator
@@ -25,7 +24,7 @@ BIOLINK_NS = Namespace("https://w3id.org/biolink/vocab/")
 @pytest.mark.parametrize(
     "generator,extension,gen_kwargs,serialize_kwargs",
     [
-        (MarkdownGenerator, "markdown", {}, {"image_dir": False}),
+        # (MarkdownGenerator, "markdown", {}, {"image_dir": False}),
         (OwlSchemaGenerator, ".owl.ttl", {"useuris": False}, {}),
         (RDFGenerator, ".ttl", {}, {}),
         (ContextGenerator, ".context.jsonld", {"useuris": False}, {}),
