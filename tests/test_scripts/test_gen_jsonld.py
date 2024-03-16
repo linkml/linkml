@@ -2,9 +2,11 @@ import pytest
 from click.testing import CliRunner
 from rdflib import Graph, URIRef
 
-from linkml import LOCAL_METAMODEL_YAML_FILE, METAMODEL_NAMESPACE
+from linkml import METAMODEL_NAMESPACE
 from linkml.generators.jsonldcontextgen import ContextGenerator
 from linkml.generators.jsonldgen import JSONLDGenerator, cli
+
+from ..conftest import KITCHEN_SINK_PATH
 
 
 def test_help():
@@ -30,14 +32,14 @@ def test_metamodel_valid_calls(arguments, snapshot_file, snapshot):
     mock_context_path = "file:./context.jsonld"
 
     runner = CliRunner()
-    result = runner.invoke(cli, arguments + ["--context", mock_context_path, LOCAL_METAMODEL_YAML_FILE])
+    result = runner.invoke(cli, arguments + ["--context", mock_context_path, KITCHEN_SINK_PATH])
     assert result.exit_code == 0
     assert result.output == snapshot(f"genjsonld/{snapshot_file}")
 
 
 def test_metamodel_invalid_calls():
     runner = CliRunner()
-    result = runner.invoke(cli, ["-f", "xsv", LOCAL_METAMODEL_YAML_FILE], standalone_mode=False)
+    result = runner.invoke(cli, ["-f", "xsv", KITCHEN_SINK_PATH], standalone_mode=False)
     assert result.exit_code == 1
     assert "xsv" in str(result.exception)
 
@@ -106,7 +108,7 @@ def test_meta_output(tmp_path_factory):
     tmp_meta_context_path = str(tmp_path / "metacontext.jsonld")
 
     # Generate an image of the metamodel
-    gen = ContextGenerator(LOCAL_METAMODEL_YAML_FILE)
+    gen = ContextGenerator(KITCHEN_SINK_PATH)
 
     base = gen.namespaces[gen.schema.default_prefix]
     if str(base)[-1] not in "/#":
@@ -121,7 +123,7 @@ def test_meta_output(tmp_path_factory):
     with open(tmp_jsonld_path, "w") as tfile:
         tfile.write(
             JSONLDGenerator(
-                LOCAL_METAMODEL_YAML_FILE,
+                KITCHEN_SINK_PATH,
                 format=JSONLDGenerator.valid_formats[0],
             ).serialize(context=tmp_meta_context_path)
         )

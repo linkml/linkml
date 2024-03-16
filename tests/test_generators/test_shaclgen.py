@@ -1,8 +1,10 @@
 from collections import Counter
-from typing import List, Tuple
+from typing import Any, List, Tuple
 
 import rdflib
+from rdflib import SH, Literal, URIRef
 
+from linkml.generators.shacl.shacl_data_type import ShaclDataType
 from linkml.generators.shaclgen import ShaclGenerator
 
 EXPECTED = [
@@ -195,3 +197,59 @@ def _get_data_type(blank_node: rdflib.term.BNode, triples: List) -> List[rdflib.
             elif node_triplet[1] == rdflib.term.URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#rest"):
                 datatypes.extend(_get_data_type(node_triplet[2], triples))
     return datatypes
+
+
+def test_ifabsent(input_path):
+    """Test that the LinkML ifabsent attribute is supported by ShaclGenerator"""
+    shacl = ShaclGenerator(input_path("kitchen_sink_ifabsent.yaml"), mergeimports=True).serialize()
+    g = rdflib.Graph()
+    g.parse(data=shacl)
+
+    def check_slot_default_value(slot: URIRef, default_value: Any, datatype: str = None) -> None:
+        for subject, predicate, object in g.triples((None, SH.path, slot)):
+            assert (subject, SH.defaultValue, Literal(default_value, datatype=datatype)) in g
+
+    check_slot_default_value(
+        URIRef("https://w3id.org/linkml/tests/kitchen_sink/ifabsent_string"),
+        "This works",
+        datatype=ShaclDataType.STRING.uri_ref,
+    )
+    check_slot_default_value(
+        URIRef("https://w3id.org/linkml/tests/kitchen_sink/ifabsent_boolean"),
+        True,
+        datatype=ShaclDataType.BOOLEAN.uri_ref,
+    )
+    check_slot_default_value(
+        URIRef("https://w3id.org/linkml/tests/kitchen_sink/ifabsent_int"), 123, datatype=ShaclDataType.INTEGER.uri_ref
+    )
+    check_slot_default_value(
+        URIRef("https://w3id.org/linkml/tests/kitchen_sink/ifabsent_decimal"),
+        1.23,
+        datatype=ShaclDataType.DECIMAL.uri_ref,
+    )
+    check_slot_default_value(
+        URIRef("https://w3id.org/linkml/tests/kitchen_sink/ifabsent_float"),
+        1.23456,
+        datatype=ShaclDataType.FLOAT.uri_ref,
+    )
+    check_slot_default_value(
+        URIRef("https://w3id.org/linkml/tests/kitchen_sink/ifabsent_double"),
+        1.234567,
+        datatype=ShaclDataType.DOUBLE.uri_ref,
+    )
+    check_slot_default_value(
+        URIRef("https://w3id.org/linkml/tests/kitchen_sink/ifabsent_date"),
+        "2024-02-08",
+        datatype=ShaclDataType.DATE.uri_ref,
+    )
+    check_slot_default_value(
+        URIRef("https://w3id.org/linkml/tests/kitchen_sink/ifabsent_datetime"),
+        "2024-02-08T09:39:25Z",
+        datatype=ShaclDataType.DATETIME.uri_ref,
+    )
+    check_slot_default_value(
+        URIRef("https://w3id.org/linkml/tests/kitchen_sink/ifabsent_uri"),
+        "https://w3id.org/linkml/tests/kitchen_sink/ifabsent_boolean",
+        datatype=ShaclDataType.URI.uri_ref,
+    )
+    check_slot_default_value(URIRef("https://w3id.org/linkml/tests/kitchen_sink/ifabsent_not_literal"), "heartfelt")

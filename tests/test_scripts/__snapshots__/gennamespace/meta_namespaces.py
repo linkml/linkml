@@ -1,20 +1,11 @@
-# Auto generated from meta.yaml by namespacegen.py version: 0.0.1
+# Auto generated from kitchen_sink.yaml by namespacegen.py version: 0.0.1
 # Generation date: 2000-01-01T00:00:00
-# Schema: meta
+# Schema: kitchen_sink
 #
-# id: https://w3id.org/linkml/meta
-# description: The metamodel for schemas defined using the Linked Data Modeling Language framework. For more
-#              information on LinkML: * [linkml.io](https://linkml.io) main website *
-#              [specification](https://w3id.org/linkml/docs/specification/) LinkML is self-describing. Every
-#              LinkML schema consists of elements that instantiate classes in this metamodel. Core metaclasses: *
-#              [SchemaDefinition](https://w3id.org/linkml/SchemaDefinition) *
-#              [ClassDefinition](https://w3id.org/linkml/ClassDefinition) *
-#              [SlotDefinition](https://w3id.org/linkml/SlotDefinition) *
-#              [TypeDefinition](https://w3id.org/linkml/TypeDefinition) There are many subsets of *profiles* of
-#              the metamodel, for different purposes: * [MinimalSubset](https://w3id.org/linkml/MinimalSubset) *
-#              [BasicSubset](https://w3id.org/linkml/BasicSubset) For canonical reference documentation on any
-#              metamodel construct, refer to the official URI for each construct, e.g.
-#              [https://w3id.org/linkml/is_a](https://w3id.org/linkml/is_a)
+# id: https://w3id.org/linkml/tests/kitchen_sink
+# description: Kitchen Sink Schema This schema does not do anything useful. It exists to test all features of
+#              linkml. This particular text field exists to demonstrate markdown within a text field: Lists: * a *
+#              b * c And links, e.g to [Person](Person.md)
 # license: https://creativecommons.org/publicdomain/zero/1.0/
 
 from collections import defaultdict
@@ -39,28 +30,23 @@ class BiolinkNameSpace:
     """
 
     _namespaces = [
-        CurieNamespace('IAO', 'http://purl.obolibrary.org/obo/IAO_'),
-        CurieNamespace('NCIT', 'http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#'),
-        CurieNamespace('OIO', 'http://www.geneontology.org/formats/oboInOwl#'),
-        CurieNamespace('SIO', 'http://semanticscience.org/resource/SIO_'),
-        CurieNamespace('bibo', 'http://purl.org/ontology/bibo/'),
-        CurieNamespace('cdisc', 'http://rdf.cdisc.org/mms#'),
-        CurieNamespace('dcterms', 'http://purl.org/dc/terms/'),
+        CurieNamespace('A', 'http://example.org/activities/'),
+        CurieNamespace('BFO', 'http://purl.obolibrary.org/obo/BFO_'),
+        CurieNamespace('CODE', 'http://example.org/code/'),
+        CurieNamespace('P', 'http://example.org/person/'),
+        CurieNamespace('RO', 'http://purl.obolibrary.org/obo/RO_'),
+        CurieNamespace('ROR', 'http://example.org/ror/'),
+        CurieNamespace('biolink', 'https://w3id.org/biolink/'),
+        CurieNamespace('bizcodes', 'https://example.org/bizcodes/'),
+        CurieNamespace('core', 'https://w3id.org/linkml/tests/core/'),
+        CurieNamespace('dce', 'http://purl.org/dc/elements/1.1/'),
+        CurieNamespace('ks', 'https://w3id.org/linkml/tests/kitchen_sink/'),
+        CurieNamespace('lego', 'http://geneontology.org/lego/'),
         CurieNamespace('linkml', 'https://w3id.org/linkml/'),
-        CurieNamespace('oslc', 'http://open-services.net/ns/core#'),
-        CurieNamespace('owl', 'http://www.w3.org/2002/07/owl#'),
         CurieNamespace('pav', 'http://purl.org/pav/'),
         CurieNamespace('prov', 'http://www.w3.org/ns/prov#'),
-        CurieNamespace('qb', 'http://purl.org/linked-data/cube#'),
-        CurieNamespace('qudt', 'http://qudt.org/schema/qudt/'),
-        CurieNamespace('rdf', 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'),
-        CurieNamespace('rdfs', 'http://www.w3.org/2000/01/rdf-schema#'),
         CurieNamespace('schema', 'http://schema.org/'),
-        CurieNamespace('sh', 'http://www.w3.org/ns/shacl#'),
         CurieNamespace('skos', 'http://www.w3.org/2004/02/skos/core#'),
-        CurieNamespace('skosxl', 'http://www.w3.org/2008/05/skos-xl#'),
-        CurieNamespace('swrl', 'http://www.w3.org/2003/11/swrl#'),
-        CurieNamespace('vann', 'https://vocab.org/vann/'),
         CurieNamespace('xsd', 'http://www.w3.org/2001/XMLSchema#'),
     ]
 

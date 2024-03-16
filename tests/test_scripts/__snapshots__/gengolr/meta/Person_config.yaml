@@ -1,0 +1,37 @@
+# metamodel_version: 1.7.0id: Person
+schema_generating: true
+description: A person, living or dead
+display_name: Person
+document_category: Person
+weight: 20
+fields:
+- id: id
+  display_name: id
+- id: name
+  display_name: Person_name
+- id: has_employment_history
+  display_name: has employment history
+  cardinality: multi
+- id: has_familial_relationships
+  display_name: has familial relationships
+  cardinality: multi
+- id: has_medical_history
+  display_name: has medical history
+  cardinality: multi
+- id: age_in_years
+  description: number of years since birth
+  display_name: age in years
+- id: addresses
+  display_name: addresses
+  cardinality: multi
+- id: has_birth_event
+  display_name: has birth event
+- id: species_name
+  display_name: Person_species name
+- id: stomach_count
+  display_name: Person_stomach count
+- id: is_living
+  display_name: person__is_living
+- id: aliases
+  display_name: hasAliases__aliases
+  cardinality: multi
