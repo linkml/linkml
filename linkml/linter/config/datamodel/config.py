@@ -232,10 +232,18 @@ class StandardNamingConfig(RuleConfig):
 
     level: Union[str, "RuleLevel"] = None
     permissible_values_upper_case: Optional[Union[bool, Bool]] = None
+    slot_pattern: Optional[str] = None
+    class_pattern: Optional[str] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self.permissible_values_upper_case is not None and not isinstance(self.permissible_values_upper_case, Bool):
             self.permissible_values_upper_case = Bool(self.permissible_values_upper_case)
+
+        if self.class_pattern is not None and not isinstance(self.class_pattern, str):
+            self.class_pattern = str(self.class_pattern)
+
+        if self.slot_pattern is not None and not isinstance(self.slot_pattern, str):
+            self.slot_pattern = str(self.slot_pattern)
 
         super().__post_init__(**kwargs)
 
