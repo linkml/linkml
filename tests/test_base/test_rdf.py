@@ -1,10 +1,10 @@
-import pytest
-
 from pathlib import Path
 
+import pytest
+
 from linkml import LOCAL_METAMODEL_LDCONTEXT_FILE
-from tests import LOCAL_MODEL_YAML_NO_META
 from linkml.generators.rdfgen import RDFGenerator
+from tests import LOCAL_MODEL_YAML_NO_META
 
 
 @pytest.mark.parametrize("format", [".ttl"])

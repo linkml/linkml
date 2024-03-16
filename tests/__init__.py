@@ -4,7 +4,7 @@ import logging  # noqa: F401
 # Global testing control variables
 import os
 
-from linkml import LOCAL_MODEL_YAML_FILES, NAMESPACES, LOCAL_METAMODEL_YAML_FILE, METAMODEL_NAMESPACE
+from linkml import LOCAL_METAMODEL_YAML_FILE, LOCAL_MODEL_YAML_FILES, METAMODEL_NAMESPACE, NAMESPACES
 from tests.utils.test_environment import MismatchAction  # noqa: F401
 
 # ---------------------------------------------------------------

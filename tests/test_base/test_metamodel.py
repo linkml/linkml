@@ -1,15 +1,16 @@
 from pathlib import Path
+
 import pytest
+from linkml_runtime.utils.compile_python import compile_python
 
 from linkml import LOCAL_METAMODEL_LDCONTEXT_FILE, LOCAL_METAMODEL_YAML_FILE, METAMODEL_NAMESPACE
-from linkml.generators.rdfgen import RDFGenerator
-from linkml.generators.shexgen import ShExGenerator
 from linkml.generators.jsonldcontextgen import ContextGenerator
 from linkml.generators.jsonldgen import JSONLDGenerator
 from linkml.generators.markdowngen import MarkdownGenerator
-from linkml_runtime.utils.compile_python import compile_python
-from linkml.generators.pythongen import PythonGenerator
 from linkml.generators.owlgen import OwlSchemaGenerator
+from linkml.generators.pythongen import PythonGenerator
+from linkml.generators.rdfgen import RDFGenerator
+from linkml.generators.shexgen import ShExGenerator
 
 
 @pytest.mark.slow

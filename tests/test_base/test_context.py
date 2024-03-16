@@ -2,11 +2,11 @@ from pathlib import Path
 
 import pytest
 
+from linkml.generators.jsonldcontextgen import ContextGenerator
 from tests import (
     LOCAL_MODEL_YAML_NO_META,
     METAMODEL_NAMESPACE,
 )
-from linkml.generators.jsonldcontextgen import ContextGenerator
 
 
 @pytest.mark.parametrize("model", LOCAL_MODEL_YAML_NO_META)

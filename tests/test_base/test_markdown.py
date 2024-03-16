@@ -2,8 +2,8 @@ from pathlib import Path
 
 import pytest
 
-from tests import LOCAL_MODEL_YAML_NO_META
 from linkml.generators.markdowngen import MarkdownGenerator
+from tests import LOCAL_MODEL_YAML_NO_META
 
 
 @pytest.mark.parametrize("model", LOCAL_MODEL_YAML_NO_META)

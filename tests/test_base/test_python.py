@@ -3,8 +3,8 @@ from pathlib import Path
 import pytest
 from linkml_runtime.utils.compile_python import compile_python
 
-from tests import LOCAL_MODEL_YAML_NO_META
 from linkml.generators.pythongen import PythonGenerator
+from tests import LOCAL_MODEL_YAML_NO_META
 
 
 @pytest.mark.parametrize("model", LOCAL_MODEL_YAML_NO_META)
