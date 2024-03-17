@@ -105,6 +105,8 @@ Enforce standard naming conventions: CamelCase for classes, snake_case for slots
 
 **Additional Configuration**
 * `permissible_values_upper_case`: If `true`, permissible values will be checked for UPPER_SNAKE, otherwise snake_case. Default: `false`.
+* `class_pattern`: If specified, permissible format pattern for classes can be provided either as one of the following pattern `snake`, `uppersnake`, `camel`, `uppercamel`, `kebab` or as regular expression (e.g. `"[a-z][_a-z0-9]+"` for snake case)
+* `slot_pattern`: If specified, permissible format pattern for slots can be provided in analogy to `class_pattern`.
 
 ### tree_root_class
 
