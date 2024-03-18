@@ -96,16 +96,16 @@ class ContextGenerator(Generator):
         model: Optional[bool] = None,
         **_,
     ) -> str:
-        # if base is None:
-        #     base = self.base
-        # if output is None:
-        #     output = self.output
-        # if prefixes is None:
-        #     prefixes = self.prefixes
-        # if flatprefixes is None:
-        #     flatprefixes = self.flatprefixes
-        # if model is None:
-        #     model = self.model
+        if base is None:
+            base = self.base
+        if output is None:
+            output = self.output
+        if prefixes is None:
+            prefixes = self.prefixes
+        if flatprefixes is None:
+            flatprefixes = self.flatprefixes
+        if model is None:
+            model = self.model
 
         context = JsonObj()
         if self.emit_metadata:
@@ -258,8 +258,18 @@ class ContextGenerator(Generator):
         if uri_prefix and not is_default_namespace:
             self.add_prefix(uri_prefix)
 
-    def serialize(self, base: Optional[Union[str, Namespace]] = None, **kwargs) -> str:
-        return super().serialize(base=base, **kwargs)
+    def serialize(
+        self,
+        base: Optional[Union[str, Namespace]] = None,
+        output: Optional[str] = None,
+        prefixes: Optional[bool] = None,
+        flatprefixes: Optional[bool] = None,
+        model: Optional[bool] = None,
+        **kwargs,
+    ) -> str:
+        return super().serialize(
+            base=base, output=output, prefixes=prefixes, flatprefixes=flatprefixes, model=model, **kwargs
+        )
 
 
 @shared_arguments(ContextGenerator)
