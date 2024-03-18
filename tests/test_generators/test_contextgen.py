@@ -1,7 +1,7 @@
-import pdb
 import re
-from linkml.generators.jsonldcontextgen import ContextGenerator
+
 from linkml import LOCAL_TYPES_YAML_FILE, METAMODEL_NAMESPACE
+from linkml.generators.jsonldcontextgen import ContextGenerator
 
 
 def test_context(kitchen_sink_path):
