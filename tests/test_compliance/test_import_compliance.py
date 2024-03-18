@@ -9,25 +9,23 @@ Aliases include:
 
 import pytest
 import rdflib
-from rdflib import URIRef
 
-from linkml.reporting.model import RDF, RDFS
 from tests.test_compliance.helper import (
-    OWL,
     PYDANTIC,
-    PYTHON_DATACLASSES,
     ValidationBehavior,
     check_data,
-    validated_schema, JSONLD_CONTEXT,
+    validated_schema,
 )
 from tests.test_compliance.test_compliance import (
     CLASS_C,
+    CLASS_D,
+    CLASS_D1,
     CORE_FRAMEWORKS,
-    ENUM_E,
-    PV_1,
-    PV_2,
+    SCHEMA_M1,
     SLOT_S1,
-    TYPE_T, SLOT_S2, SCHEMA_M1, CLASS_D, CLASS_D1, SLOT_S3,
+    SLOT_S2,
+    SLOT_S3,
+    TYPE_T,
 )
 
 SDO_C = "schema:C"
@@ -51,18 +49,40 @@ OWLNS = rdflib.Namespace("http://www.w3.org/2002/07/owl#")
         (None, None, None, None, None, None, None, "basic", {SLOT_S1: 1}, True),
         (None, None, None, None, None, None, None, "basic_viol", {SLOT_S1: "x"}, False),
         (None, SDO_D, SDO_S1, None, None, None, None, "uri_aliases_CS", {SLOT_S1: 1}, True),
-        (None, None, None, None,  None, None, SDO_T, "uri_aliases_T", {SLOT_S1: 1}, True),
+        (None, None, None, None, None, None, SDO_T, "uri_aliases_T", {SLOT_S1: 1}, True),
         (None, None, None, None, ALIAS_S1, None, None, "aliased_s1", {ALIAS_S1: 1}, True),
         (None, None, None, None, ALIAS_S1, None, None, "aliased_s1_viol", {SLOT_S1: 1}, False),
         (None, None, None, None, None, ALIAS_S2, None, "aliased_s2", {ALIAS_S2: {SLOT_S3: "x"}}, True),
-        (None, None, None, None, ALIAS_S1, ALIAS_S2, None, "aliased_s1_s2", {ALIAS_S1: 1, ALIAS_S2: {SLOT_S3: "x"}}, True),
+        (
+            None,
+            None,
+            None,
+            None,
+            ALIAS_S1,
+            ALIAS_S2,
+            None,
+            "aliased_s1_s2",
+            {ALIAS_S1: 1, ALIAS_S2: {SLOT_S3: "x"}},
+            True,
+        ),
         (None, None, None, None, ALIAS_S2, ALIAS_S2, None, "conflict_s2", {ALIAS_S2: {SLOT_S3: "x"}}, True),
         (SDO_C, SDO_C, None, None, None, None, None, "conflict_c", {SLOT_S1: 1}, True),
     ],
 )
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
-def test_import(framework, class_c_uri, class_d_uri, slot_1_uri, slot_2_uri, slot_1_alias, slot_2_alias, type_uri, data_name, instance, is_valid):
-
+def test_import(
+    framework,
+    class_c_uri,
+    class_d_uri,
+    slot_1_uri,
+    slot_2_uri,
+    slot_1_alias,
+    slot_2_alias,
+    type_uri,
+    data_name,
+    instance,
+    is_valid,
+):
     """
     Tests import.
 
@@ -141,9 +161,10 @@ def test_import(framework, class_c_uri, class_d_uri, slot_1_uri, slot_2_uri, slo
     }
 
     schema_name = (
-         f"S1A{slot_1_alias}_S2A{slot_2_alias}"
-         f"_SU1{slot_1_uri}_SU2{slot_2_uri}_CUC{class_c_uri}_CUD{class_d_uri}"
-         f"_TU{type_uri}").replace(":", "_")
+        f"S1A{slot_1_alias}_S2A{slot_2_alias}"
+        f"_SU1{slot_1_uri}_SU2{slot_2_uri}_CUC{class_c_uri}_CUD{class_d_uri}"
+        f"_TU{type_uri}"
+    ).replace(":", "_")
     schema = validated_schema(
         test_import,
         schema_name,
@@ -173,7 +194,6 @@ def test_import(framework, class_c_uri, class_d_uri, slot_1_uri, slot_2_uri, slo
         description="alias",
         exclude_rdf=True,
     )
-
 
 
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
@@ -250,4 +270,3 @@ def test_import_name_clash(framework):
         description="alias",
         exclude_rdf=True,
     )
-

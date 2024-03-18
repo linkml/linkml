@@ -9,7 +9,7 @@ import shutil
 import subprocess
 import tempfile
 from collections import defaultdict
-from copy import deepcopy, copy
+from copy import copy, deepcopy
 from functools import lru_cache
 from pathlib import Path
 from typing import Any, Callable, Dict, Iterator, List, Optional, Set, Tuple, Type, Union
@@ -32,13 +32,14 @@ from pydantic import BaseModel
 import tests
 from linkml import generators as generators
 from linkml.generators import (
+    ContextGenerator,
     JsonSchemaGenerator,
     OwlSchemaGenerator,
     PydanticGenerator,
     PythonGenerator,
     ShaclGenerator,
     ShExGenerator,
-    sqlalchemygen, ContextGenerator,
+    sqlalchemygen,
 )
 from linkml.utils.generator import Generator
 from linkml.utils.sqlutils import SQLStore

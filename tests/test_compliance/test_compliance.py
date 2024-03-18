@@ -10,7 +10,7 @@ from tests.test_compliance.helper import (
     SHACL,
     SHEX,
     SQL_DDL_POSTGRES,
-    SQL_DDL_SQLITE, JSONLD,
+    SQL_DDL_SQLITE,
 )
 
 SCHEMA_M1 = "M1"

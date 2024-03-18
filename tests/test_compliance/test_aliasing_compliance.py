@@ -13,12 +13,13 @@ from rdflib import URIRef
 
 from linkml.reporting.model import RDF, RDFS
 from tests.test_compliance.helper import (
+    JSONLD_CONTEXT,
     OWL,
     PYDANTIC,
     PYTHON_DATACLASSES,
     ValidationBehavior,
     check_data,
-    validated_schema, JSONLD_CONTEXT,
+    validated_schema,
 )
 from tests.test_compliance.test_compliance import (
     CLASS_C,

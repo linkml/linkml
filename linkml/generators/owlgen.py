@@ -22,10 +22,11 @@ from linkml_runtime.linkml_model.meta import (
     EnumDefinition,
     EnumDefinitionName,
     PermissibleValue,
+    SchemaDefinitionName,
     SlotDefinition,
     SlotDefinitionName,
     TypeDefinition,
-    TypeDefinitionName, SchemaDefinitionName,
+    TypeDefinitionName,
 )
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.introspection import package_schemaview
