@@ -19,6 +19,6 @@
       "extensions": {
          "@type": "@id"
       },
-      "@base": "https:/w3id.org/linkml"
+      "@base": "https://w3id.org/linkml/"
    }
 }

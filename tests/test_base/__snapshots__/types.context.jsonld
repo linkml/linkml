@@ -10,6 +10,6 @@
       "shex": "http://www.w3.org/ns/shex#",
       "xsd": "http://www.w3.org/2001/XMLSchema#",
       "@vocab": "https://w3id.org/linkml/",
-      "@base": "https:/w3id.org/linkml"
+      "@base": "https://w3id.org/linkml/"
    }
 }
