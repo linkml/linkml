@@ -6,14 +6,14 @@ Generate JSON-LD contexts
 import os
 import re
 from dataclasses import dataclass, field
-from typing import Dict, Optional, Set
+from typing import Dict, Optional, Set, Union
 
 import click
 from jsonasobj2 import JsonObj, as_json
 from linkml_runtime.linkml_model.meta import ClassDefinition, SlotDefinition
 from linkml_runtime.linkml_model.types import SHEX
 from linkml_runtime.utils.formatutils import camelcase, underscore
-from rdflib import SKOS, XSD
+from rdflib import SKOS, XSD, Namespace
 
 from linkml._version import __version__
 from linkml.utils.generator import Generator, shared_arguments
@@ -47,7 +47,7 @@ class ContextGenerator(Generator):
     slot_class_maps: Dict = field(default_factory=lambda: dict())
     emit_metadata: bool = False
     model: Optional[bool] = True
-    base: Optional[str] = None
+    base: Optional[Union[str, Namespace]] = None
     output: Optional[str] = None
     prefixes: Optional[bool] = True
     flatprefixes: Optional[bool] = False
@@ -57,7 +57,7 @@ class ContextGenerator(Generator):
         if self.namespaces is None:
             raise TypeError("Schema text must be supplied to context generator.  Preparsed schema will not work")
 
-    def visit_schema(self, base: Optional[str] = None, output: Optional[str] = None, **_):
+    def visit_schema(self, base: Optional[Union[str, Namespace]] = None, output: Optional[str] = None, **_):
         # Add any explicitly declared prefixes
         for prefix in self.schema.prefixes.values():
             self.emit_prefixes.add(prefix.prefix_prefix)
@@ -84,15 +84,24 @@ class ContextGenerator(Generator):
 
     def end_schema(
         self,
-        base: Optional[str] = None,
+        base: Optional[Union[str, Namespace]] = None,
         output: Optional[str] = None,
-        prefixes: Optional[bool] = True,
-        flatprefixes: Optional[bool] = False,
-        model: Optional[bool] = True,
+        prefixes: Optional[bool] = None,
+        flatprefixes: Optional[bool] = None,
+        model: Optional[bool] = None,
         **_,
     ) -> None:
+        if base is None:
+            base = self.base
+        if output is None:
+            output = self.output
+        if prefixes is None:
+            prefixes = self.prefixes
+        if flatprefixes is None:
+            flatprefixes = self.flatprefixes
         if model is None:
             model = self.model
+
         context = JsonObj()
         if self.emit_metadata:
             comments = JsonObj()
@@ -102,6 +111,7 @@ class ContextGenerator(Generator):
             context.comments = comments
         context_content = {}
         if base:
+            base = str(base)
             if "://" not in base:
                 self.context_body["@base"] = os.path.relpath(base, os.path.dirname(self.schema.source_file))
             else:
@@ -177,6 +187,19 @@ class ContextGenerator(Generator):
                 self.add_mappings(slot)
         if slot_def:
             self.context_body[underscore(aliased_slot_name)] = slot_def
+
+    def serialize(
+        self,
+        base: Optional[Union[str, Namespace]] = None,
+        output: Optional[str] = None,
+        prefixes: Optional[bool] = None,
+        flatprefixes: Optional[bool] = None,
+        model: Optional[bool] = None,
+        **kwargs,
+    ) -> str:
+        return super().serialize(
+            base=base, output=output, prefixes=prefixes, flatprefixes=flatprefixes, model=model, **kwargs
+        )
 
 
 @shared_arguments(ContextGenerator)
