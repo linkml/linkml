@@ -14,7 +14,7 @@ class NamespacesTestCase(unittest.TestCase):
         self.assertEqual(str(ns.skos), str(SKOS))
         self.assertEqual(ns.skos.note, SKOS.note)
         ns.OIO = URIRef("http://www.geneontology.org/formats/oboInOwl")
-        ns['dc'] = "http://example.org/dc/"         # Overrides 'dc' in semweb_context
+        ns['dc'] = "http://example.org/dc/"  # Overrides 'dc' in semweb_context
         ns['l1'] = "http://example.org/subset/"
         ns['l2'] = "http://example.org/subset/test/"
         ns['l3'] = "http://example.org/subset/t"
@@ -63,8 +63,8 @@ class NamespacesTestCase(unittest.TestCase):
         self.assertEqual('u1:foo', ns.curie_for("urn:example:foo"))
         with self.assertRaises(ValueError):
             ns.curie_for("1abc\junk")
-        #no comment in skos?
-        #self.assertEqual(SKOS.comment, ns.uri_for("skos:comment"))
+        # no comment in skos?
+        # self.assertEqual(SKOS.comment, ns.uri_for("skos:comment"))
         self.assertEqual(URIRef('http://example.org/dc/table'), ns.uri_for("dc:table"))
         self.assertEqual(ns.uri_for("http://something.org"), URIRef("http://something.org"))
         self.assertEqual('https://w3id.org/biolink/metamodel/Schema', str(ns.uri_for(":Schema")))
@@ -99,6 +99,22 @@ class NamespacesTestCase(unittest.TestCase):
         test_NCIT_uri = URIRef('http://purl.obolibrary.org/obo/NCIT_C25300')
         self.assertEqual(prefixmap_merged.curie_for(test_NCIT_uri), test_NCIT_curie)
         self.assertEqual(prefixmap_merged.uri_for(test_NCIT_curie), test_NCIT_uri)
+
+    def test_prefix_suffix(self):
+        ns = Namespaces()
+        ns['farm'] = 'https://example.org/farm'
+        ns['farm_slash'] = 'https://slash.org/farm/'
+
+        self.assertEqual(('farm', 'cow'), ns.prefix_suffix('farm:cow'))
+        self.assertEqual(('farm', '/cow'), ns.prefix_suffix('https://example.org/farm/cow'))
+        self.assertEqual(('farm_slash', 'cow'), ns.prefix_suffix('https://slash.org/farm/cow'))
+        self.assertEqual(('farm_slash', 'cow/horns'), ns.prefix_suffix('farm_slash:cow/horns'))
+        self.assertEqual(('farm', '/cow/horns'), ns.prefix_suffix('farm:/cow/horns'))
+        self.assertEqual(('farm', '#cow/horns'), ns.prefix_suffix('farm:#cow/horns'))
+        self.assertEqual(('farm', ''), ns.prefix_suffix('farm:'))
+        self.assertEqual(('', 'cow'), ns.prefix_suffix(':cow'))
+        self.assertEqual((None, None), ns.prefix_suffix('https://missing-prefix.org/farm/cow'))
+
 
 if __name__ == '__main__':
     unittest.main()
