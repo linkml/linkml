@@ -67,7 +67,7 @@ class _Path(Enum):
     RDF = "rdf"
     SHEXC = "shex"
     SHEXJ = "shex"
-    YAML = "model/schema"
+    YAML = os.path.join("model", "schema")
 
 
 class ReleaseTag(_AutoName):
@@ -80,7 +80,7 @@ class ReleaseTag(_AutoName):
 
 def _build_path(source: Source, fmt: Format) -> str:
     """ Create the relative path for source and fmt """
-    return f"{_Path[fmt.name].value}/{source.value}.{fmt.value}"
+    return os.path.join(_Path[fmt.name].value, f"{source.value}.{fmt.value}")
 
 
 def _build_loc(base: str, source: Source, fmt: Format) -> str:
