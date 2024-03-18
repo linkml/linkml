@@ -374,6 +374,7 @@ def dump(
 
     if glob:
         import glob
+
         inputs = [item for input in inputs for item in glob.glob(input)]
     for input in inputs:
         logging.info(f"Loading: {input}")
