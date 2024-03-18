@@ -14,6 +14,11 @@ from linkml_runtime.utils.formatutils import is_empty
 
 YAMLObjTypes = Union[JsonObjTypes, "YAMLRoot"]
 
+try:
+    from yaml import CSafeLoader as SafeLoader
+except ImportError:
+    from yaml.loader import SafeLoader
+
 
 class YAMLMark(yaml.error.Mark):
     def __str__(self):
@@ -369,7 +374,7 @@ class extended_float(float, TypedNode):
     pass
 
 
-class DupCheckYamlLoader(yaml.loader.SafeLoader):
+class DupCheckYamlLoader(SafeLoader):
     """
     A YAML loader that throws an error when the same key appears twice
     """

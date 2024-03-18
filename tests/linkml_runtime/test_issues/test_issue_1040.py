@@ -19,4 +19,4 @@ class Issue1040TestCase(TestCase):
             trace.  We use this to make sure that the file name gets in correctly.  """
         with self.assertRaises(yaml.constructor.ConstructorError) as e:
             yaml_loader.load(env.input_path('issue_1040.yaml'), SchemaDefinition)
-        self.assertIn('File "issue_1040.yaml"', str(e.exception))
+        self.assertIn('"issue_1040.yaml"', str(e.exception))
