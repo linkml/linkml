@@ -25,7 +25,7 @@ from linkml_runtime.linkml_model.meta import (
     SlotDefinition,
     SlotDefinitionName,
     TypeDefinition,
-    TypeDefinitionName,
+    TypeDefinitionName, SchemaDefinitionName,
 )
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.introspection import package_schemaview
@@ -198,6 +198,12 @@ class OwlSchemaGenerator(Generator):
             self.add_type(typ)
         for enm in sv.all_enums(imports=mergeimports).values():
             self.add_enum(enm)
+
+        if not mergeimports:
+            for imp in schema.imports:
+                if imp == "linkml:types":
+                    continue
+                graph.add((base, OWL.imports, self._schema_uri(imp)))
 
         # Add metadata as annotation properties
         self.add_metadata(schema, base)
@@ -1128,6 +1134,13 @@ class OwlSchemaGenerator(Generator):
             # TODO: fix this upstream in schemaview
             default_prefix = self.schemaview.schema.default_prefix or ""
             return URIRef(self.schemaview.expand_curie(f"{default_prefix}:{underscore(p.name)}"))
+
+    def _schema_uri(self, scn: Union[str, SchemaDefinitionName]) -> URIRef:
+        if ":" in scn:
+            return URIRef(self.schemaview.expand_curie(scn))
+        else:
+            default_prefix = self.schemaview.schema.default_prefix or ""
+            return URIRef(self.schemaview.expand_curie(f"{default_prefix}:{scn}"))
 
     def _type_uri(self, tn: TypeDefinitionName, native: bool = None) -> URIRef:
         if native is None:

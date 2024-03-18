@@ -10,9 +10,10 @@ from tests.test_compliance.helper import (
     SHACL,
     SHEX,
     SQL_DDL_POSTGRES,
-    SQL_DDL_SQLITE,
+    SQL_DDL_SQLITE, JSONLD,
 )
 
+SCHEMA_M1 = "M1"
 CLASS_CONTAINER = "Container"
 CLASS_C = "C"
 CLASS_D = "D"
@@ -61,6 +62,7 @@ CORE_FRAMEWORKS = [
     JSON_SCHEMA,
     SHACL,
     SHEX,
+    # JSONLD,
     JSONLD_CONTEXT,
     #    SQL_ALCHEMY_IMPERATIVE,
     #    SQL_ALCHEMY_DECLARATIVE,
