@@ -16,9 +16,7 @@ RUN poetry self add "poetry-dynamic-versioning[plugin]"
 WORKDIR /code
 
 # Build project. The .git directory is needed for poetry-dynamic-versioning
-ADD ./.git ./.git
-COPY pyproject.toml poetry.lock README.md .
-COPY linkml linkml/
+ADD --keep-git-dir=true . .
 RUN poetry build
 
 #######################################
