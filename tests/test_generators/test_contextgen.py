@@ -1,6 +1,6 @@
 import re
 
-from linkml import LOCAL_TYPES_YAML_FILE, METAMODEL_NAMESPACE, LOCAL_ANNOTATIONS_YAML_FILE
+from linkml import LOCAL_ANNOTATIONS_YAML_FILE, LOCAL_TYPES_YAML_FILE, METAMODEL_NAMESPACE
 from linkml.generators.jsonldcontextgen import ContextGenerator
 
 
@@ -31,7 +31,7 @@ def test_model_field_usage(tmp_path):
 
     output_path = tmp_path.with_suffix(".context.json")
     generated = ContextGenerator(LOCAL_TYPES_YAML_FILE, output=str(output_path)).serialize()
-    assert generated is None
+    assert generated == ""
     assert output_path.exists()
 
     generated = ContextGenerator(LOCAL_ANNOTATIONS_YAML_FILE, model=False).serialize()
