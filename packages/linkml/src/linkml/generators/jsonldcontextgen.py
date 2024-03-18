@@ -91,13 +91,22 @@ class ContextGenerator(Generator):
         self,
         base: Optional[Union[str, Namespace]] = None,
         output: Optional[str] = None,
-        prefixes: Optional[bool] = True,
-        flatprefixes: Optional[bool] = False,
-        model: Optional[bool] = True,
+        prefixes: Optional[bool] = None,
+        flatprefixes: Optional[bool] = None,
+        model: Optional[bool] = None,
         **_,
     ) -> str:
-        if model is None:
-            model = self.model
+        # if base is None:
+        #     base = self.base
+        # if output is None:
+        #     output = self.output
+        # if prefixes is None:
+        #     prefixes = self.prefixes
+        # if flatprefixes is None:
+        #     flatprefixes = self.flatprefixes
+        # if model is None:
+        #     model = self.model
+
         context = JsonObj()
         if self.emit_metadata:
             comments = JsonObj()
