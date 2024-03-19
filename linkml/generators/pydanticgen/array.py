@@ -144,8 +144,14 @@ else:
                 for item in _v:
                     if isinstance(item, list):
                         _validate(item)
-                    elif cls.type_.__name__ not in ("AnyType", "Any"):
-                        if not isinstance(item, cls.type_):
+                    else:
+                        try:
+                            anytype = cls.type_.__name__ in ("AnyType", "Any")
+                        except AttributeError:
+                            # in python 3.8 and 3.9, `typing.Any` has no __name__
+                            anytype = str(cls.type_).split(".")[-1] in ("AnyType", "Any")
+
+                        if not anytype and not isinstance(item, cls.type_):
                             raise TypeError(
                                 (
                                     f"List items must be list of lists, or the type used in "
