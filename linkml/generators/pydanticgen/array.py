@@ -82,6 +82,7 @@ if int(PYDANTIC_VERSION[0]) >= 2:
                 ObjectImport(name="Generic"),
                 ObjectImport(name="Iterable"),
                 ObjectImport(name="TypeVar"),
+                ObjectImport(name="Union"),
                 ObjectImport(name="get_args"),
             ],
         )
@@ -92,7 +93,7 @@ if int(PYDANTIC_VERSION[0]) >= 2:
     # annotated types are special and inspect.getsource() can't stringify them
     _AnyShapeArrayInjects = [
         '_T = TypeVar("_T")',
-        '_RecursiveListType = Iterable[_T | Iterable["_RecursiveListType"]]',
+        '_RecursiveListType = Iterable[Union[_T, Iterable["_RecursiveListType"]]]',
         AnyShapeArrayType,
         "AnyShapeArray = Annotated[_RecursiveListType, AnyShapeArrayType]",
     ]
@@ -188,7 +189,9 @@ class ArrayRangeGenerator(ABC):
 
     REPR: ClassVar[ArrayRepresentation]
 
-    def __init__(self, array: ArrayExpression | None, dtype: str | Element, pydantic_ver: str = PYDANTIC_VERSION):
+    def __init__(
+        self, array: Optional[ArrayExpression], dtype: Union[str, Element], pydantic_ver: str = PYDANTIC_VERSION
+    ):
         self.array = array
         self.dtype = dtype
         self.pydantic_ver = pydantic_ver
