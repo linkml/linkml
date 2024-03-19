@@ -403,11 +403,11 @@
 <span class="sd">    For usage `Generator Docs &lt;https://linkml.io/linkml/generators/&gt;`_</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="c1"># ClassVars</span>
     <span class="n">schema</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">SchemaDefinition</span><span class="p">,</span> <span class="s2">&quot;Generator&quot;</span><span class="p">]</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;metamodel compliant schema.  Can be URI, file name, actual schema, another generator, an</span>
 <span class="sd">        open file or a pre-parsed schema&quot;&quot;&quot;</span>
 
+    <span class="c1"># ClassVars</span>
     <span class="n">generatorname</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Name of the generator. Override with os.path.basename(__file__)&quot;&quot;&quot;</span>
 
@@ -479,7 +479,8 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;True means output is to a directory, False is to stdout&quot;&quot;&quot;</span>
 
     <span class="n">base_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Base directory of schema</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Working directory or base URL of sources&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Working directory or base URL of sources.</span>
+<span class="sd">    Setting this is necessary for correct retrieval of relative imports.&quot;&quot;&quot;</span>
 
     <span class="n">metamodel_name_map</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Allows mapping of names of metamodel elements such as slot, etc&quot;&quot;&quot;</span>
@@ -516,8 +517,8 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">uses_schemaloader</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_initialize_using_schemaloader</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Using SchemaView with im=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">importmap</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span> <span class="o">=</span> <span class="n">SchemaView</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="n">importmap</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">importmap</span><span class="p">)</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Using SchemaView with im=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">importmap</span><span class="si">}</span><span class="s2"> // base_dir=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">base_dir</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span> <span class="o">=</span> <span class="n">SchemaView</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="n">importmap</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">importmap</span><span class="p">,</span> <span class="n">base_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">base_dir</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">schema</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">schema</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_init_namespaces</span><span class="p">()</span>
 

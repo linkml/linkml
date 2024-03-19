@@ -564,6 +564,8 @@
             <span class="n">range_base</span> <span class="o">=</span> <span class="n">METAMODEL_TYPE_TO_BASE</span><span class="p">[</span><span class="nb">range</span><span class="p">]</span>
         <span class="k">elif</span> <span class="nb">range</span> <span class="ow">in</span> <span class="n">schema</span><span class="o">.</span><span class="n">types</span><span class="p">:</span>
             <span class="n">range_base</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">types</span><span class="p">[</span><span class="nb">range</span><span class="p">]</span><span class="o">.</span><span class="n">base</span>
+        <span class="k">elif</span> <span class="nb">range</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Text</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown range: </span><span class="si">{</span><span class="nb">range</span><span class="si">}</span><span class="s2"> for </span><span class="si">{</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">Text</span><span class="p">()</span>

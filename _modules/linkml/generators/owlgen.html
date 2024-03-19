@@ -342,6 +342,7 @@
     <span class="n">EnumDefinition</span><span class="p">,</span>
     <span class="n">EnumDefinitionName</span><span class="p">,</span>
     <span class="n">PermissibleValue</span><span class="p">,</span>
+    <span class="n">SchemaDefinitionName</span><span class="p">,</span>
     <span class="n">SlotDefinition</span><span class="p">,</span>
     <span class="n">SlotDefinitionName</span><span class="p">,</span>
     <span class="n">TypeDefinition</span><span class="p">,</span>
@@ -518,6 +519,12 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">add_type</span><span class="p">(</span><span class="n">typ</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">enm</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">all_enums</span><span class="p">(</span><span class="n">imports</span><span class="o">=</span><span class="n">mergeimports</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">add_enum</span><span class="p">(</span><span class="n">enm</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">mergeimports</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">imp</span> <span class="ow">in</span> <span class="n">schema</span><span class="o">.</span><span class="n">imports</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">imp</span> <span class="o">==</span> <span class="s2">&quot;linkml:types&quot;</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">base</span><span class="p">,</span> <span class="n">OWL</span><span class="o">.</span><span class="n">imports</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_schema_uri</span><span class="p">(</span><span class="n">imp</span><span class="p">)))</span>
 
         <span class="c1"># Add metadata as annotation properties</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_metadata</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="n">base</span><span class="p">)</span>
@@ -1448,6 +1455,13 @@
             <span class="c1"># TODO: fix this upstream in schemaview</span>
             <span class="n">default_prefix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">default_prefix</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span>
             <span class="k">return</span> <span class="n">URIRef</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">expand_curie</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">default_prefix</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">underscore</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_schema_uri</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scn</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">SchemaDefinitionName</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">URIRef</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">&quot;:&quot;</span> <span class="ow">in</span> <span class="n">scn</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">URIRef</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">expand_curie</span><span class="p">(</span><span class="n">scn</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">default_prefix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">default_prefix</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span>
+            <span class="k">return</span> <span class="n">URIRef</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">expand_curie</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">default_prefix</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">scn</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="nf">_type_uri</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tn</span><span class="p">:</span> <span class="n">TypeDefinitionName</span><span class="p">,</span> <span class="n">native</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">URIRef</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">native</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
