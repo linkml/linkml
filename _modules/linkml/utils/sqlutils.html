@@ -644,9 +644,15 @@
     <span class="n">show_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Force creation of a database if it does not exist&quot;</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="nd">@click</span><span class="o">.</span><span class="n">argument</span><span class="p">(</span><span class="s2">&quot;input&quot;</span><span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
+    <span class="s2">&quot;--glob/--no-glob&quot;</span><span class="p">,</span>
+    <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">show_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Treat input as a quoted glob expression, e.g. &#39;data/*.json&#39;&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">argument</span><span class="p">(</span><span class="s2">&quot;inputs&quot;</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">dump</span><span class="p">(</span>
-    <span class="nb">input</span><span class="p">,</span>
+    <span class="n">inputs</span><span class="p">,</span>
     <span class="n">module</span><span class="p">,</span>
     <span class="n">db</span><span class="p">,</span>
     <span class="n">target_class</span><span class="p">,</span>
@@ -654,6 +660,7 @@
     <span class="n">schema</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">validate</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">force</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">glob</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">index_slot</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -679,34 +686,41 @@
     <span class="k">if</span> <span class="n">target_class</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;target class not specified and could not be inferred&quot;</span><span class="p">)</span>
     <span class="n">py_target_class</span> <span class="o">=</span> <span class="n">python_module</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="n">target_class</span><span class="p">]</span>
-    <span class="n">input_format</span> <span class="o">=</span> <span class="n">_get_format</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">input_format</span><span class="p">)</span>
-    <span class="n">loader</span> <span class="o">=</span> <span class="n">get_loader</span><span class="p">(</span><span class="n">input_format</span><span class="p">)</span>
-
-    <span class="n">inargs</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="k">if</span> <span class="n">datautils</span><span class="o">.</span><span class="n">_is_rdf_format</span><span class="p">(</span><span class="n">input_format</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">sv</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Must pass schema arg&quot;</span><span class="p">)</span>
-        <span class="n">inargs</span><span class="p">[</span><span class="s2">&quot;schemaview&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sv</span>
-        <span class="n">inargs</span><span class="p">[</span><span class="s2">&quot;fmt&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">input_format</span>
-    <span class="k">if</span> <span class="n">_is_xsv</span><span class="p">(</span><span class="n">input_format</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">index_slot</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">index_slot</span> <span class="o">=</span> <span class="n">infer_index_slot</span><span class="p">(</span><span class="n">sv</span><span class="p">,</span> <span class="n">target_class</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">index_slot</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;--index-slot is required for CSV input&quot;</span><span class="p">)</span>
-        <span class="n">inargs</span><span class="p">[</span><span class="s2">&quot;index_slot&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">index_slot</span>
-        <span class="n">inargs</span><span class="p">[</span><span class="s2">&quot;schema&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">schema</span>
-    <span class="n">obj</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="nb">input</span><span class="p">,</span> <span class="n">target_class</span><span class="o">=</span><span class="n">py_target_class</span><span class="p">,</span> <span class="o">**</span><span class="n">inargs</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">validate</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">schema</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;--schema must be passed in order to validate. Suppress with --no-validate&quot;</span><span class="p">)</span>
-        <span class="c1"># TODO: use validator framework</span>
-        <span class="n">validation</span><span class="o">.</span><span class="n">validate_object</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">schema</span><span class="p">)</span>
 
     <span class="n">endpoint</span> <span class="o">=</span> <span class="n">SQLStore</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="n">database_path</span><span class="o">=</span><span class="n">db</span><span class="p">,</span> <span class="n">include_schema_in_database</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">endpoint</span><span class="o">.</span><span class="n">native_module</span> <span class="o">=</span> <span class="n">python_module</span>
     <span class="n">endpoint</span><span class="o">.</span><span class="n">db_exists</span><span class="p">(</span><span class="n">force</span><span class="o">=</span><span class="n">force</span><span class="p">)</span>
     <span class="n">endpoint</span><span class="o">.</span><span class="n">compile</span><span class="p">()</span>
-    <span class="n">endpoint</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">glob</span><span class="p">:</span>
+        <span class="kn">import</span> <span class="nn">glob</span>
+
+        <span class="n">inputs</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="nb">input</span> <span class="ow">in</span> <span class="n">inputs</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="nb">input</span><span class="p">)]</span>
+    <span class="k">for</span> <span class="nb">input</span> <span class="ow">in</span> <span class="n">inputs</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Loading: </span><span class="si">{</span><span class="nb">input</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">input_format</span> <span class="o">=</span> <span class="n">_get_format</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">input_format</span><span class="p">)</span>
+        <span class="n">loader</span> <span class="o">=</span> <span class="n">get_loader</span><span class="p">(</span><span class="n">input_format</span><span class="p">)</span>
+
+        <span class="n">inargs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="n">datautils</span><span class="o">.</span><span class="n">_is_rdf_format</span><span class="p">(</span><span class="n">input_format</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">sv</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Must pass schema arg&quot;</span><span class="p">)</span>
+            <span class="n">inargs</span><span class="p">[</span><span class="s2">&quot;schemaview&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sv</span>
+            <span class="n">inargs</span><span class="p">[</span><span class="s2">&quot;fmt&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">input_format</span>
+        <span class="k">if</span> <span class="n">_is_xsv</span><span class="p">(</span><span class="n">input_format</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">index_slot</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">index_slot</span> <span class="o">=</span> <span class="n">infer_index_slot</span><span class="p">(</span><span class="n">sv</span><span class="p">,</span> <span class="n">target_class</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">index_slot</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;--index-slot is required for CSV input&quot;</span><span class="p">)</span>
+            <span class="n">inargs</span><span class="p">[</span><span class="s2">&quot;index_slot&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">index_slot</span>
+            <span class="n">inargs</span><span class="p">[</span><span class="s2">&quot;schema&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">schema</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="nb">input</span><span class="p">,</span> <span class="n">target_class</span><span class="o">=</span><span class="n">py_target_class</span><span class="p">,</span> <span class="o">**</span><span class="n">inargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">validate</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">schema</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;--schema must be passed in order to validate. Suppress with --no-validate&quot;</span><span class="p">)</span>
+            <span class="c1"># TODO: use validator framework</span>
+            <span class="n">validation</span><span class="o">.</span><span class="n">validate_object</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">schema</span><span class="p">)</span>
+        <span class="n">endpoint</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
 
 
 <span class="nd">@main</span><span class="o">.</span><span class="n">command</span><span class="p">()</span>
