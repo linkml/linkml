@@ -59,7 +59,7 @@ class PrefixGenerator(Generator):
             if self.default_ns:
                 self.emit_prefixes.add(self.default_ns)
 
-    def end_schema(self, base: Optional[str, Namespace] = None, output: Optional[str] = None, **_) -> None:
+    def end_schema(self, base: Optional[Union[str, Namespace]] = None, output: Optional[str] = None, **_) -> None:
         context = JsonObj()
         if base:
             base = str(base)
