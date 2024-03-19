@@ -36,7 +36,7 @@ class ArrayRepresentation(Enum):
 _ANONYMOUS_ARRAY_FIELDS = ("exact_number_dimensions", "minimum_number_dimensions", "maximum_number_dimensions")
 
 _T = TypeVar("_T")
-_RecursiveListType = Iterable[_T | Iterable["_RecursiveListType"]]
+_RecursiveListType = Iterable[Union[_T, Iterable["_RecursiveListType"]]]
 if int(PYDANTIC_VERSION[0]) >= 2:
 
     class AnyShapeArrayType(Generic[_T]):
