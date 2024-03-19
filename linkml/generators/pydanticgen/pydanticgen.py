@@ -121,6 +121,10 @@ class PydanticGenerator(OOCodeGenerator):
 
     # ObjectVars
     array_representations: List[ArrayRepresentation] = field(default_factory=lambda: [ArrayRepresentation.LIST])
+    black: bool = False
+    """
+    If black is present in the environment, format the serialized code with it
+    """
     pydantic_version: int = int(PYDANTIC_VERSION[0])
     template_dir: Optional[Union[str, Path]] = None
     """
@@ -675,7 +679,7 @@ class PydanticGenerator(OOCodeGenerator):
 
     def serialize(self) -> str:
         module = self.render()
-        return module.render(self._template_environment())
+        return module.render(self._template_environment(), self.black)
 
     def default_value_for_type(self, typ: str) -> str:
         return "None"

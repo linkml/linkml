@@ -12,7 +12,7 @@ try:
 except ImportError:
     import warnings
 
-    warnings.warn("Black is a development dependency, install it manually if you want to use it at runtime")
+    warnings.warn("Black is an optional dependency, install it with the extra 'black' like `pip install linkml[black]`")
 
 
 def _default_mode() -> "Mode":

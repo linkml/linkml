@@ -1,8 +1,15 @@
+from importlib.util import find_spec
 from typing import Any, ClassVar, Dict, Generator, List, Literal, Optional, Union, overload
 
 from jinja2 import Environment, PackageLoader
 from pydantic import BaseModel, Field
 from pydantic.version import VERSION as PYDANTIC_VERSION
+
+if find_spec("black") is not None:
+    from linkml.generators.pydanticgen.black import format_black
+else:
+    # no warning, having black is optional, we only warn when someone tries to import it explicitly
+    format_black = None
 
 if int(PYDANTIC_VERSION[0]) >= 2:
     from pydantic import computed_field
@@ -19,12 +26,31 @@ class TemplateModel(BaseModel):
     to already be rendered to strings - ie. rather than the ``class.py.jinja``
     template receiving a full :class:`.PydanticAttribute` object or dictionary,
     it receives it having already been rendered to a string. See the :meth:`.render` method.
+
+    .. admonition:: Black Formatting
+
+        Template models will try to use ``black`` to format results when it is available in the
+        environment when render is called with ``black = True`` . If it isn't, then the string is
+        returned without any formatting beyond the template.
+        This is mostly important for complex annotations like those produced for arrays,
+        as otherwise the templates are acceptable looking.
+
+        To install linkml with black, use the extra ``black`` dependency.
+
+        e.g. with pip::
+
+            pip install linkml[black]
+
+        or with poetry::
+
+            poetry install -E black
+
     """
 
     template: ClassVar[str]
     pydantic_ver: int = int(PYDANTIC_VERSION[0])
 
-    def render(self, environment: Optional[Environment] = None) -> str:
+    def render(self, environment: Optional[Environment] = None, black: bool = False) -> str:
         """
         Recursively render a template model to a string.
 
@@ -32,6 +58,10 @@ class TemplateModel(BaseModel):
         using the template set in :attr:`.TemplateModel.template` , but preserving the structure
         of lists and dictionaries. Regular :class:`.BaseModel` s are rendered to dictionaries.
         Any other value is passed through unchanged.
+
+        Args:
+            environment (:class:`jinja2.Environment`): Template environment - see :meth:`.environment`
+            black (bool): if ``True`` , format template with black. (default False)
         """
         if environment is None:
             environment = TemplateModel.environment()
@@ -43,7 +73,17 @@ class TemplateModel(BaseModel):
 
         data = {k: _render(getattr(self, k, None), environment) for k in fields}
         template = environment.get_template(self.template)
-        return template.render(**data)
+        rendered = template.render(**data)
+        if format_black is not None and black:
+            try:
+                return format_black(rendered)
+            except Exception:
+                # TODO: it would nice to have a standard logging module here ;)
+                return rendered
+        elif black and format_black is None:
+            raise ValueError("black formatting was requested, but black is not installed in this environment")
+        else:
+            return rendered
 
     @classmethod
     def environment(cls) -> Environment:
@@ -522,10 +562,10 @@ class PydanticModule(TemplateModel):
             super(PydanticModule, self).__init__(**kwargs)
             self.class_names = [c.name for c in self.classes.values()]
 
-        def render(self, environment: Optional[Environment] = None) -> str:
+        def render(self, environment: Optional[Environment] = None, black: bool = False) -> str:
             """
             Trivial override of parent method for pydantic 1 to ensure that
             :attr:`.class_names` are correct at render time
             """
             self.class_names = [c.name for c in self.classes.values()]
-            return super(PydanticModule, self).render(environment)
+            return super(PydanticModule, self).render(environment, black)

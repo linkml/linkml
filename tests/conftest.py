@@ -1,5 +1,7 @@
 import shutil
+import sys
 from abc import ABC, abstractmethod
+from importlib.abc import MetaPathFinder
 from pathlib import Path
 from typing import Callable, Optional
 
@@ -202,3 +204,47 @@ def patch_requests_cache(pytestconfig):
     # delete cache file unless we have requested it to persist for inspection
     if not pytestconfig.getoption("--with-output"):
         cache_file.unlink(missing_ok=True)
+
+
+class MockImportErrorFinder(MetaPathFinder):
+    """
+    Fake like we don't have a module when we really do.
+
+    see the ``mock_black_import`` fixture for example usage.
+
+    .. note::
+
+        you will also have to reimport any modules that potentially import the module you are removing -
+        see tests/test_generators/test_pydanticgen.py:test_template_noblack for an example
+
+    """
+
+    def __init__(self, module: str, *args, **kwargs):
+        super(MockImportErrorFinder, self).__init__(*args, **kwargs)
+        self.module = module
+
+    def find_spec(self, fullname, path, target):
+        if fullname.startswith(self.module):
+            raise ImportError(f"module with name {fullname} could not be found")
+        else:
+            return None
+
+
+@pytest.fixture(scope="function")
+def mock_black_import():
+    """
+    Pretend like we don't have black even if we do
+    """
+    removed = {}
+    for k, v in sys.modules.items():
+        if k.startswith("black"):
+            removed[k] = v
+    for k in removed.keys():
+        del sys.modules[k]
+    meta_finder = MockImportErrorFinder("black")
+    sys.meta_path.insert(0, meta_finder)
+
+    yield removed
+
+    sys.modules.update(removed)
+    sys.meta_path.remove(meta_finder)

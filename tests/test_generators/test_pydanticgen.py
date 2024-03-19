@@ -1,8 +1,10 @@
+import importlib
 import inspect
 import typing
 from contextlib import nullcontext as does_not_raise
 from dataclasses import dataclass
 from importlib.metadata import version
+from importlib.util import find_spec
 from pathlib import Path
 from types import GeneratorType, ModuleType
 from typing import ClassVar, Dict, List, Literal, Optional, Union, get_args, get_origin
@@ -19,7 +21,8 @@ from linkml_runtime.utils.schemaview import load_schema_wrap
 from pydantic import BaseModel, ValidationError
 from pydantic.version import VERSION as PYDANTIC_VERSION
 
-from linkml.generators.pydanticgen import PydanticGenerator
+from linkml.generators import pydanticgen as pydanticgen_root
+from linkml.generators.pydanticgen import PydanticGenerator, array, build, pydanticgen, template
 from linkml.generators.pydanticgen.array import AnyShapeArray, ArrayRepresentation
 from linkml.generators.pydanticgen.template import (
     ConditionalImport,
@@ -1584,3 +1587,76 @@ def test_generate_array_error_mixed_unbounded_shape(representation, array_error_
 
     with pytest.raises(ValueError, match=".*Cannot specify a minimum_number_dimensions while maximum is None.*"):
         _ = PydanticGenerator(array_error_mixed_unbounded, array_representations=representation).serialize()
+
+
+# --------------------------------------------------
+# Black formatting
+# --------------------------------------------------
+
+
+def _has_black() -> bool:
+    return find_spec("black") is not None
+
+
+@pytest.mark.xfail(not _has_black(), reason="black is not installed!")
+def test_template_black(array_mixed):
+    """
+    When black is installed, we should format template models with black :)
+    """
+    generated = PydanticGenerator(array_mixed, array_representations=[ArrayRepresentation.LIST]).render()
+    array_repr = generated.classes["MixedRangeShapeArray"].attributes["array"].render(black=True)
+    assert (
+        array_repr
+        == """array: Optional[
+    conlist(
+        max_items=5,
+        item_type=conlist(
+            min_items=2,
+            item_type=conlist(
+                min_items=2,
+                max_items=5,
+                item_type=conlist(
+                    min_items=6,
+                    max_items=6,
+                    item_type=Union[List[int], List[List[int]], List[List[List[int]]]],
+                ),
+            ),
+        ),
+    )
+] = Field(None)
+"""
+    )
+
+
+def test_template_noblack(array_mixed, mock_black_import):
+    """
+    When we don't have black, we should still be able to render templates normally
+
+    .. note::
+
+        keep this test last in the module because it messed up the objects we have imported previously :)
+
+    """
+
+    # ensure our mock worked
+    with pytest.raises(ImportError):
+        pass
+
+    importlib.reload(template)
+    importlib.reload(build)
+    importlib.reload(array)
+    importlib.reload(pydanticgen)
+    importlib.reload(pydanticgen_root)
+    from linkml.generators.pydanticgen import PydanticGenerator
+    from linkml.generators.pydanticgen.array import ArrayRepresentation
+
+    generated = PydanticGenerator(array_mixed, array_representations=[ArrayRepresentation.LIST]).render()
+    array_repr = generated.classes["MixedRangeShapeArray"].attributes["array"].render(black=False)
+    assert (
+        array_repr
+        == "array: Optional[conlist(max_items=5, item_type=conlist(min_items=2, item_type=conlist(min_items=2, max_items=5, item_type=conlist(min_items=6, max_items=6, item_type=Union[List[int], List[List[int]], List[List[List[int]]]]))))] = Field(None)"  # noqa: E501
+    )
+
+    # trying to render with black when we don't have it should raise a ValueError
+    with pytest.raises(ValueError):
+        _ = generated.classes["MixedRangeShapeArray"].attributes["array"].render(black=True)
