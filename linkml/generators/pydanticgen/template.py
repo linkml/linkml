@@ -13,6 +13,8 @@ else:
 
 if int(PYDANTIC_VERSION[0]) >= 2:
     from pydantic import computed_field
+else:
+    from pydantic.fields import ModelField
 
 
 class TemplateModel(BaseModel):
@@ -99,12 +101,19 @@ class TemplateModel(BaseModel):
         )
 
     if int(PYDANTIC_VERSION[0]) < 2:
+        # simulate pydantic 2's model_fields behavior
+        # without using classmethod + property decorators
+        # see:
+        # - https://docs.python.org/3/whatsnew/3.11.html#language-builtins
+        # - https://github.com/python/cpython/issues/89519
+        # and:
+        # - https://docs.python.org/3/reference/datamodel.html#customizing-class-creation
+        # for this version.
+        model_fields: ClassVar[Dict[str, "ModelField"]]
 
-        @classmethod
-        @property
-        def model_fields(cls) -> Dict[str, Any]:
-            """In pydantic 1, simulate pydantic 2 behavior"""
-            return cls.__fields__
+        def __init_subclass__(cls, **kwargs):
+            super().__init_subclass__(**kwargs)
+            cls.model_fields = cls.__fields__
 
         @overload
         def model_dump(self, mode: Literal["python"] = "python") -> dict: ...
@@ -175,7 +184,7 @@ class PydanticBaseModel(TemplateModel):
     """
     fields: Optional[List[str]] = None
     """
-    Extra fields that are typically injected into the base model via 
+    Extra fields that are typically injected into the base model via
     :attr:`~linkml.generators.pydanticgen.PydanticGenerator.injected_fields`
     """
     strict: bool = False
@@ -208,13 +217,13 @@ class PydanticAttribute(TemplateModel):
     annotations: Optional[dict] = None
     """
     Of the form::
-    
-        annotations = {'python_range': {'value': 'int'}} 
-    
+
+        annotations = {'python_range': {'value': 'int'}}
+
     .. todo::
-    
+
         simplify when refactoring pydanticgen, should just be a string or a model
-    
+
     """
     title: Optional[str] = None
     description: Optional[str] = None

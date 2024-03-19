@@ -357,9 +357,9 @@ classes:
     float_slot_line = lines[ix + 7].strip()
     assert float_slot_line == "attr4: Optional[float] = Field(1.0)"
     date_slot_line = lines[ix + 8].strip()
-    assert date_slot_line == "attr5: Optional[date] = Field(datetime.date(2020, 01, 01))"
+    assert date_slot_line == "attr5: Optional[date] = Field(date(2020, 1, 1))"
     datetime_slot_line = lines[ix + 9].strip()
-    assert datetime_slot_line == "attr6: Optional[datetime ] = Field(datetime.datetime(2020, 01, 01, 00, 00, 00))"
+    assert datetime_slot_line == "attr6: Optional[datetime ] = Field(datetime(2020, 1, 1, 0, 0, 0))"
 
 
 def test_multiline_module(input_path):

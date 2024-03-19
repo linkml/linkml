@@ -1,0 +1,12 @@
+# metamodel_version: 1.7.0id: DiagnosisConcept
+schema_generating: true
+display_name: DiagnosisConcept
+document_category: DiagnosisConcept
+weight: 20
+fields:
+- id: id
+  display_name: id
+- id: name
+  display_name: name
+- id: in_code_system
+  display_name: in code system

@@ -324,9 +324,15 @@ def main(verbose: int, quiet: bool, csv_field_size_limit: int):
     show_default=True,
     help="Force creation of a database if it does not exist",
 )
-@click.argument("input")
+@click.option(
+    "--glob/--no-glob",
+    default=False,
+    show_default=True,
+    help="Treat input as a quoted glob expression, e.g. 'data/*.json'",
+)
+@click.argument("inputs", nargs=-1)
 def dump(
-    input,
+    inputs,
     module,
     db,
     target_class,
@@ -334,6 +340,7 @@ def dump(
     schema=None,
     validate=None,
     force: bool = None,
+    glob: bool = None,
     index_slot=None,
 ) -> None:
     """
@@ -359,34 +366,41 @@ def dump(
     if target_class is None:
         raise Exception("target class not specified and could not be inferred")
     py_target_class = python_module.__dict__[target_class]
-    input_format = _get_format(input, input_format)
-    loader = get_loader(input_format)
-
-    inargs = {}
-    if datautils._is_rdf_format(input_format):
-        if sv is None:
-            raise Exception("Must pass schema arg")
-        inargs["schemaview"] = sv
-        inargs["fmt"] = input_format
-    if _is_xsv(input_format):
-        if index_slot is None:
-            index_slot = infer_index_slot(sv, target_class)
-            if index_slot is None:
-                raise Exception("--index-slot is required for CSV input")
-        inargs["index_slot"] = index_slot
-        inargs["schema"] = schema
-    obj = loader.load(source=input, target_class=py_target_class, **inargs)
-    if validate:
-        if schema is None:
-            raise Exception("--schema must be passed in order to validate. Suppress with --no-validate")
-        # TODO: use validator framework
-        validation.validate_object(obj, schema)
 
     endpoint = SQLStore(schema, database_path=db, include_schema_in_database=False)
     endpoint.native_module = python_module
     endpoint.db_exists(force=force)
     endpoint.compile()
-    endpoint.dump(obj)
+
+    if glob:
+        import glob
+
+        inputs = [item for input in inputs for item in glob.glob(input)]
+    for input in inputs:
+        logging.info(f"Loading: {input}")
+        input_format = _get_format(input, input_format)
+        loader = get_loader(input_format)
+
+        inargs = {}
+        if datautils._is_rdf_format(input_format):
+            if sv is None:
+                raise Exception("Must pass schema arg")
+            inargs["schemaview"] = sv
+            inargs["fmt"] = input_format
+        if _is_xsv(input_format):
+            if index_slot is None:
+                index_slot = infer_index_slot(sv, target_class)
+                if index_slot is None:
+                    raise Exception("--index-slot is required for CSV input")
+            inargs["index_slot"] = index_slot
+            inargs["schema"] = schema
+        obj = loader.load(source=input, target_class=py_target_class, **inargs)
+        if validate:
+            if schema is None:
+                raise Exception("--schema must be passed in order to validate. Suppress with --no-validate")
+            # TODO: use validator framework
+            validation.validate_object(obj, schema)
+        endpoint.dump(obj)
 
 
 @main.command()

@@ -1,0 +1,15 @@
+# metamodel_version: 1.7.0id: Organization
+schema_generating: true
+description: "An organization.\n\nThis description\nincludes newlines\n\n## Markdown\
+  \ headers\n\n * and\n * a\n * list"
+display_name: Organization
+document_category: Organization
+weight: 20
+fields:
+- id: id
+  display_name: id
+- id: name
+  display_name: name
+- id: aliases
+  display_name: hasAliases__aliases
+  cardinality: multi
