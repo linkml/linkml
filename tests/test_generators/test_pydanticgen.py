@@ -1605,9 +1605,32 @@ def test_template_black(array_mixed):
     """
     generated = PydanticGenerator(array_mixed, array_representations=[ArrayRepresentation.LIST]).render()
     array_repr = generated.classes["MixedRangeShapeArray"].attributes["array"].render(black=True)
-    assert (
-        array_repr
-        == """array: Optional[
+    if PYDANTIC_VERSION >= 2:
+        assert (
+            array_repr
+            == """array: Optional[
+    conlist(
+        max_length=5,
+        item_type=conlist(
+            min_length=2,
+            item_type=conlist(
+                min_length=2,
+                max_length=5,
+                item_type=conlist(
+                    min_length=6,
+                    max_length=6,
+                    item_type=Union[List[int], List[List[int]], List[List[List[int]]]],
+                ),
+            ),
+        ),
+    )
+] = Field(None)
+"""
+        )
+    else:
+        assert (
+            array_repr
+            == """array: Optional[
     conlist(
         max_items=5,
         item_type=conlist(
@@ -1625,7 +1648,7 @@ def test_template_black(array_mixed):
     )
 ] = Field(None)
 """
-    )
+        )
 
 
 def test_template_noblack(array_mixed, mock_black_import):
@@ -1652,10 +1675,16 @@ def test_template_noblack(array_mixed, mock_black_import):
 
     generated = PydanticGenerator(array_mixed, array_representations=[ArrayRepresentation.LIST]).render()
     array_repr = generated.classes["MixedRangeShapeArray"].attributes["array"].render(black=False)
-    assert (
-        array_repr
-        == "array: Optional[conlist(max_items=5, item_type=conlist(min_items=2, item_type=conlist(min_items=2, max_items=5, item_type=conlist(min_items=6, max_items=6, item_type=Union[List[int], List[List[int]], List[List[List[int]]]]))))] = Field(None)"  # noqa: E501
-    )
+    if PYDANTIC_VERSION >= 2:
+        assert (
+            array_repr
+            == "array: Optional[conlist(max_length=5, item_type=conlist(min_length=2, item_type=conlist(min_length=2, max_length=5, item_type=conlist(min_length=6, max_length=6, item_type=Union[List[int], List[List[int]], List[List[List[int]]]]))))] = Field(None)"  # noqa: E501
+        )
+    else:
+        assert (
+            array_repr
+            == "array: Optional[conlist(max_items=5, item_type=conlist(min_items=2, item_type=conlist(min_items=2, max_items=5, item_type=conlist(min_items=6, max_items=6, item_type=Union[List[int], List[List[int]], List[List[List[int]]]]))))] = Field(None)"  # noqa: E501
+        )
 
     # trying to render with black when we don't have it should raise a ValueError
     with pytest.raises(ValueError):
