@@ -34,3 +34,11 @@ classes:
         array:
           minimum_number_dimensions: 2
           maximum_number_dimensions: 5
+
+  ImplicitExact:
+    attributes:
+      array:
+        range: integer
+        array:
+          minimum_number_dimensions: 3
+          maximum_number_dimensions: 3

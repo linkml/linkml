@@ -22,6 +22,24 @@ classes:
             - alias: exact_card
               exact_cardinality: 6
 
+  MixedMinShapeArray:
+    attributes:
+      array:
+        range: integer
+        array:
+          minimum_number_dimensions: 5
+          maximum_number_dimensions: false
+          dimensions:
+            - alias: max_card
+              maximum_cardinality: 5
+            - alias: min_card
+              minimum_cardinality: 2
+            - alias: range_card
+              minimum_cardinality: 2
+              maximum_cardinality: 5
+            - alias: exact_card
+              exact_cardinality: 6
+
   MixedMaxShapeArray:
     attributes:
       array:
@@ -63,6 +81,49 @@ classes:
         range: integer
         array:
           exact_number_dimensions: 6
+          dimensions:
+            - alias: max_card
+              maximum_cardinality: 5
+            - alias: min_card
+              minimum_cardinality: 2
+            - alias: range_card
+              minimum_cardinality: 2
+              maximum_cardinality: 5
+            - alias: exact_card
+              exact_cardinality: 6
+
+
+  MixedNoOpExactShapeArray:
+    description: |
+      When the exact number of dimensions is equal to the number of labeled dimensions, 
+      the representation should be the same as if it hadn't been specified.
+      Test if this model is equivalent to labeled_shape.yaml/LabeledArray
+    attributes:
+      array:
+        range: integer
+        array:
+          exact_number_dimensions: 4
+          dimensions:
+            - alias: min_card
+              minimum_cardinality: 2
+            - alias: max_card
+              maximum_cardinality: 5
+            - alias: range_card
+              minimum_cardinality: 2
+              maximum_cardinality: 5
+            - alias: exact_card
+              exact_cardinality: 6
+
+  MixedImplicitExactShapeArray:
+    description: |
+      When minimum and maximum number of dimensions are equal, the result should be the same as specifying exact dimensions
+        attributes:
+    attributes:
+      array:
+        range: integer
+        array:
+          minimum_number_dimensions: 6
+          maximum_number_dimensions: 6
           dimensions:
             - alias: max_card
               maximum_cardinality: 5

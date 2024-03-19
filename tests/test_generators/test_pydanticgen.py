@@ -1045,6 +1045,18 @@ def array_mixed(input_path) -> SchemaDefinition:
     return load_schema_wrap(schema)
 
 
+@pytest.fixture(scope="module")
+def array_error_mixed_shape(input_path) -> SchemaDefinition:
+    schema = str(Path(input_path("arrays")) / "error_mixed_shape.yaml")
+    return load_schema_wrap(schema)
+
+
+@pytest.fixture(scope="module")
+def array_error_mixed_unbounded(input_path) -> SchemaDefinition:
+    schema = str(Path(input_path("arrays")) / "error_mixed_unbounded.yaml")
+    return load_schema_wrap(schema)
+
+
 @dataclass
 class TestCase:
     __test__ = False
@@ -1406,6 +1418,31 @@ def test_generate_array_mixed_max(case, representation, array_mixed):
     "case",
     [
         TestCase(type="fail", array=np.zeros((5, 2, 4, 6), dtype=int)),
+        TestCase(type="pass", array=np.zeros((5, 2, 4, 6, 7), dtype=int)),
+        TestCase(type="pass", array=np.zeros((5, 2, 4, 6, 7, 1, 1), dtype=int)),
+    ],
+)
+@pytest.mark.parametrize("representation", [[ArrayRepresentation.LIST], [ArrayRepresentation.NPARRAY]])
+def test_generate_array_mixed_min(case, representation, array_mixed):
+    """
+    An array with at least 5 dimensions (with the rest of the usual requirements for mixed shape test)
+    """
+    if ArrayRepresentation.NPARRAY in representation or representation == ArrayRepresentation.NPARRAY:
+        return
+    if ArrayRepresentation.LIST in representation:
+        case.array = case.array.tolist()
+
+    generated = PydanticGenerator(array_mixed, array_representations=representation).serialize()
+    mod = compile_python(generated)
+    cls = getattr(mod, "MixedMinShapeArray")
+    with case.expectation:
+        cls(array=case.array)
+
+
+@pytest.mark.parametrize(
+    "case",
+    [
+        TestCase(type="fail", array=np.zeros((5, 2, 4, 6), dtype=int)),
         TestCase(type="pass", array=np.zeros((5, 2, 4, 6, 1), dtype=int)),
         TestCase(type="pass", array=np.zeros((5, 2, 4, 6, 1, 1), dtype=int)),
         TestCase(type="pass", array=np.zeros((5, 2, 4, 6, 1, 1, 1), dtype=int)),
@@ -1474,3 +1511,76 @@ def test_generate_array_mixed_exact(case, representation, array_mixed):
     cls = getattr(mod, "MixedExactShapeArray")
     with case.expectation:
         cls(array=case.array)
+
+
+@pytest.mark.parametrize("representation", [[ArrayRepresentation.LIST], [ArrayRepresentation.NPARRAY]])
+def test_generate_array_anonymous_implicit_exact(representation, array_anonymous):
+    """
+    The representation of an anonymous array with min and max dimensions that are equal should be the same as
+    setting an exact dimensionality.
+    """
+    if ArrayRepresentation.NPARRAY in representation or representation == ArrayRepresentation.NPARRAY:
+        return
+
+    generated = PydanticGenerator(array_anonymous, array_representations=representation).render()
+    explicit = generated.classes["ExactDimensions"].attributes["array"]
+    implicit = generated.classes["ImplicitExact"].attributes["array"]
+    assert explicit.render() == implicit.render()
+
+
+@pytest.mark.parametrize("representation", [[ArrayRepresentation.LIST], [ArrayRepresentation.NPARRAY]])
+def test_generate_array_mixed_implicit_exact(representation, array_mixed):
+    """
+    The representation of an mixed array with min and max dimensions that are equal should be the same as
+    setting an exact dimensionality.
+    """
+    if ArrayRepresentation.NPARRAY in representation or representation == ArrayRepresentation.NPARRAY:
+        return
+
+    generated = PydanticGenerator(array_mixed, array_representations=representation).render()
+    explicit = generated.classes["MixedExactShapeArray"].attributes["array"]
+    implicit = generated.classes["MixedImplicitExactShapeArray"].attributes["array"]
+    assert explicit.render() == implicit.render()
+
+
+@pytest.mark.parametrize("representation", [[ArrayRepresentation.LIST], [ArrayRepresentation.NPARRAY]])
+def test_generate_array_mixed_noop_exact(representation, array_mixed, array_labeled):
+    """
+    When the exact number of dimensions is equal to the number of parameterized dimensions,
+    the representation should be equivalent to if it hadn't been specified
+    """
+    if ArrayRepresentation.NPARRAY in representation or representation == ArrayRepresentation.NPARRAY:
+        return
+
+    generated_mixed = PydanticGenerator(array_mixed, array_representations=representation).render()
+    generated_labeled = PydanticGenerator(array_labeled, array_representations=representation).render()
+    mixed = generated_mixed.classes["MixedNoOpExactShapeArray"].attributes["array"]
+    labeled = generated_labeled.classes["LabeledArray"].attributes["array"]
+    assert mixed.render() == labeled.render()
+
+
+@pytest.mark.parametrize("representation", [[ArrayRepresentation.LIST], [ArrayRepresentation.NPARRAY]])
+def test_generate_array_error_mixed_exact_shape(representation, array_error_mixed_shape):
+    """
+    When we try and make a mixed array where the exact number of dimensions are lower than the parameterized
+    dimensions, we should throw an error
+    """
+    if ArrayRepresentation.NPARRAY in representation or representation == ArrayRepresentation.NPARRAY:
+        return
+
+    with pytest.raises(ValueError, match=".*must be greater than the parameterized dimensions.*"):
+        _ = PydanticGenerator(array_error_mixed_shape, array_representations=representation).serialize()
+
+
+@pytest.mark.parametrize("representation", [[ArrayRepresentation.LIST], [ArrayRepresentation.NPARRAY]])
+def test_generate_array_error_mixed_unbounded_shape(representation, array_error_mixed_unbounded):
+    """
+    When we specify a minimum number of dimensions without a max (or setting max to False) in a mixed array,
+    we should throw an error - min without a max is undefined behavior, to set unbounded we need the max to be
+    explicitly false.
+    """
+    if ArrayRepresentation.NPARRAY in representation or representation == ArrayRepresentation.NPARRAY:
+        return
+
+    with pytest.raises(ValueError, match=".*Cannot specify a minimum_number_dimensions while maximum is None.*"):
+        _ = PydanticGenerator(array_error_mixed_unbounded, array_representations=representation).serialize()

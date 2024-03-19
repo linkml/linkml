@@ -301,10 +301,12 @@ class ListOfListsArray(ArrayRangeGenerator):
 
     def anonymous_shape(self, array: ArrayExpression) -> SlotResult:
         if array.exact_number_dimensions or (
-            array.minimum_number_dimensions and array.maximum_number_dimensions and 
-            array.minimum_number_dimensions == array.maximum_number_dimensions
+            array.minimum_number_dimensions
+            and array.maximum_number_dimensions
+            and array.minimum_number_dimensions == array.maximum_number_dimensions
         ):
-            return SlotResult(annotation=self._list_of_lists(array.exact_number_dimensions, self.dtype))
+            exact_dims = array.exact_number_dimensions or array.minimum_number_dimensions
+            return SlotResult(annotation=self._list_of_lists(exact_dims, self.dtype))
         elif not array.maximum_number_dimensions and (
             array.minimum_number_dimensions is None or array.minimum_number_dimensions == 1
         ):
@@ -335,7 +337,7 @@ class ListOfListsArray(ArrayRangeGenerator):
         - (what other metadata is allowable on labeled dimensions?)
         """
         # generate dimensions from inside out and then format
-        # e.g., if dimensions = [{min_card: 3}, {min_card: 2}], 
+        # e.g., if dimensions = [{min_card: 3}, {min_card: 2}],
         # annotation = conlist(min_length=3, item_type=conlist(min_length=2, item_type=dtype))
         range = self.dtype
         for dimension in reversed(array.dimensions):
@@ -348,14 +350,13 @@ class ListOfListsArray(ArrayRangeGenerator):
         Mixture of labeled dimensions with a max or min (or both) shape for anonymous dimensions
         """
         if array.exact_number_dimensions or (
-            array.minimum_number_dimensions and array.maximum_number_dimensions and 
-            array.minimum_number_dimensions == array.maximum_number_dimensions
+            array.minimum_number_dimensions
+            and array.maximum_number_dimensions
+            and array.minimum_number_dimensions == array.maximum_number_dimensions
         ):
             exact_dims = array.exact_number_dimensions or array.minimum_number_dimensions
             if exact_dims > len(array.dimensions):
-                res = SlotResult(
-                    annotation=self._list_of_lists(exact_dims - len(array.dimensions), self.dtype)
-                )
+                res = SlotResult(annotation=self._list_of_lists(exact_dims - len(array.dimensions), self.dtype))
             elif exact_dims == len(array.dimensions):
                 # equivalent to labeled shape
                 return self.labeled_shape(array)
@@ -372,7 +373,9 @@ class ListOfListsArray(ArrayRangeGenerator):
                 # some minimum anonymous dimensions but unlimited max dimensions
                 # e.g., if min = 3, len(dim) = 2, then res.annotation = List[Union[AnyShapeArray[dtype], dtype]]
                 # res.annotation will be wrapped with the 2 labeled dimensions later
-                res += self._list_of_lists(array.minimum_number_dimensions - len(array.dimensions), res.annotation)
+                res.annotation = self._list_of_lists(
+                    array.minimum_number_dimensions - len(array.dimensions), res.annotation
+                )
 
         elif array.minimum_number_dimensions and array.maximum_number_dimensions is None:
             raise ValueError(
@@ -389,14 +392,16 @@ class ListOfListsArray(ArrayRangeGenerator):
 
             res = self.anonymous_shape(ArrayExpression(minimum_number_dimensions=dmin, maximum_number_dimensions=dmax))
         else:
-            raise ValueError("Unsupported array specification! this is almost certainly a bug!")
+            raise ValueError("Unsupported array specification! this is almost certainly a bug!")  # pragma: no cover
 
         # Wrap inner dimension with labeled dimension
-        # e.g., if dimensions = [{min_card: 3}, {min_card: 2}] and res.annotation = List[Union[AnyShapeArray[dtype], dtype]] (min 3 dims, no max dims)
+        # e.g., if dimensions = [{min_card: 3}, {min_card: 2}]
+        # and res.annotation = List[Union[AnyShapeArray[dtype], dtype]]
+        # (min 3 dims, no max dims)
         # then the final annotation = conlist(
-        #     min_length=3, 
+        #     min_length=3,
         #     item_type=conlist(
-        #         min_length=2, 
+        #         min_length=2,
         #         item_type=List[Union[AnyShapeArray[dtype], dtype]]
         #     )
         # )
