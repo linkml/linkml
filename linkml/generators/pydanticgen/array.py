@@ -1,7 +1,7 @@
+import sys
 from abc import ABC, abstractmethod
 from enum import Enum
 from typing import (
-    Annotated,
     Any,
     ClassVar,
     Generic,
@@ -23,6 +23,11 @@ if int(PYDANTIC_VERSION[0]) < 2:
 else:
     from pydantic import GetCoreSchemaHandler
     from pydantic_core import CoreSchema, core_schema
+
+if sys.version_info.minor <= 8:
+    from typing_extensions import Annotated
+else:
+    from typing import Annotated
 
 from linkml.generators.pydanticgen.build import SlotResult
 from linkml.generators.pydanticgen.template import Import, Imports, ObjectImport
