@@ -406,7 +406,7 @@ class ListOfListsArray(ArrayRangeGenerator):
         #     )
         # )
         for dim in reversed(array.dimensions):
-            res += self._labeled_dimension(dim, dtype=res.annotation)
+            res = res.merge(self._labeled_dimension(dim, dtype=res.annotation))
 
         return res
 
