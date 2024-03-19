@@ -5,10 +5,14 @@ from jinja2 import Environment, PackageLoader
 from pydantic import BaseModel, Field
 from pydantic.version import VERSION as PYDANTIC_VERSION
 
-if find_spec("black") is not None:
-    from linkml.generators.pydanticgen.black import format_black
-else:
-    # no warning, having black is optional, we only warn when someone tries to import it explicitly
+try:
+    if find_spec("black") is not None:
+        from linkml.generators.pydanticgen.black import format_black
+    else:
+        # no warning, having black is optional, we only warn when someone tries to import it explicitly
+        format_black = None
+except ImportError:
+    # we can also get an import error from find_spec during testing because that's how we mock not having it installed
     format_black = None
 
 if int(PYDANTIC_VERSION[0]) >= 2:

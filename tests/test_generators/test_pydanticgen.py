@@ -1640,7 +1640,7 @@ def test_template_noblack(array_mixed, mock_black_import):
 
     # ensure our mock worked
     with pytest.raises(ImportError):
-        pass
+        import black  # noqa F401
 
     importlib.reload(template)
     importlib.reload(build)
