@@ -484,8 +484,7 @@ def _make_schema(
     mappings = list(_extract_mappings(schema))
     out_dir = _schema_out_path(schema)
     parent_out_dir = _schema_out_path(schema, parent=True)
-    base_dir = out_dir.relative_to(THIS_DIR)
-    schema["source_file"] = str(base_dir / "schema.yaml")
+    schema["source_file"] = str(out_dir / "schema.yaml")
 
     # Write top-level README (TODO: avoid doing this for each combination)
     with open(parent_out_dir / "README.md", "w", encoding="utf-8") as stream:
