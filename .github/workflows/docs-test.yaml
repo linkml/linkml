@@ -36,6 +36,9 @@ jobs:
           path: .venv
           key: venv-docs-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
 
+      - name: install pydantic 2
+        run: poetry run pip install 'pydantic>=2'
+
       #----------------------------------------------
       # install dependencies if cache does not exist
       #----------------------------------------------
