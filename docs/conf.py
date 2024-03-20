@@ -111,6 +111,7 @@ intersphinx_mapping = {
 
 # myst-nb
 nb_render_markdown_format = 'myst'
+nb_execution_show_tb = True
 
 # myst
 myst_heading_anchors = 3
