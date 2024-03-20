@@ -1,0 +1,19 @@
+# metamodel_version: 1.7.0id: MarriageEvent
+schema_generating: true
+display_name: MarriageEvent
+document_category: MarriageEvent
+weight: 20
+fields:
+- id: started_at_time
+  display_name: started at time
+- id: ended_at_time
+  display_name: ended at time
+- id: is_current
+  display_name: is current
+- id: metadata
+  description: Example of a slot that has an unconstrained range
+  display_name: metadata
+- id: married_to
+  display_name: married to
+- id: in_location
+  display_name: in location

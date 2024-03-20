@@ -244,6 +244,8 @@ class SQLTableGenerator(Generator):
             range_base = METAMODEL_TYPE_TO_BASE[range]
         elif range in schema.types:
             range_base = schema.types[range].base
+        elif range is None:
+            return Text()
         else:
             logging.error(f"Unknown range: {range} for {slot.name} = {slot.range}")
             return Text()

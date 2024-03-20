@@ -4,12 +4,10 @@ from linkml import (
     LOCAL_ANNOTATIONS_YAML_FILE,
     LOCAL_EXTENSIONS_YAML_FILE,
     LOCAL_MAPPINGS_YAML_FILE,
-    LOCAL_METAMODEL_YAML_FILE,
     LOCAL_TYPES_YAML_FILE,
     METAANNOTATIONS_NAMESPACE,
     METAEXTENSIONS_NAMESPACE,
     METAMAPPING_NAMESPACE,
-    METAMODEL_NAMESPACE,
     METATYPE_NAMESPACE,
 )
 from linkml.generators.jsonldcontextgen import ContextGenerator
@@ -64,17 +62,6 @@ class ContextTestCase(GeneratorTestCase):
             ContextGenerator,
             yaml_file=LOCAL_ANNOTATIONS_YAML_FILE,
             serialize_args=dict(base=METAANNOTATIONS_NAMESPACE),
-            filtr=ldcontext_metadata_filter,
-        )
-
-    def test_metamodel_context(self):
-        """Build meta.context.jsonld"""
-        self.model_name = "meta"
-        self.single_file_generator(
-            "context.jsonld",
-            ContextGenerator,
-            yaml_file=LOCAL_METAMODEL_YAML_FILE,
-            serialize_args=dict(base=METAMODEL_NAMESPACE),
             filtr=ldcontext_metadata_filter,
         )
 

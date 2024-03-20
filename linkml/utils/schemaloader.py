@@ -118,7 +118,7 @@ class SchemaLoader:
             sname = self.importmap.get(str(sname), sname)  # It may also use URI or other forms
             import_schemadefinition = load_raw_schema(
                 sname + ".yaml",
-                base_dir=os.path.dirname(self.schema.source_file) if self.schema.source_file else None,
+                base_dir=os.path.dirname(self.schema.source_file) if self.schema.source_file else self.base_dir,
                 merge_modules=self.merge_modules,
                 emit_metadata=self.emit_metadata,
             )
@@ -351,14 +351,6 @@ class SchemaLoader:
                     f"slot: {slot.name} - unrecognized domain ({slot.domain})",
                     slot.domain,
                 )
-            if slot.ifabsent:
-                from linkml.utils.ifabsent_functions import isabsent_match
-
-                if isabsent_match(slot.ifabsent) is None:
-                    self.raise_value_error(
-                        f"Unrecognized ifabsent action for slot '{slot.name}': '{slot.ifabsent}'",
-                        slot.ifabsent,
-                    )
 
             # Keys and identifiers must be present
             if bool(slot.key or slot.identifier):

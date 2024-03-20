@@ -1,0 +1,13 @@
+# metamodel_version: 1.7.0id: agent
+schema_generating: true
+description: a provence-generating agent
+display_name: agent
+document_category: agent
+weight: 20
+fields:
+- id: id
+  display_name: id
+- id: acted_on_behalf_of
+  display_name: acted on behalf of
+- id: was_informed_by
+  display_name: was informed by

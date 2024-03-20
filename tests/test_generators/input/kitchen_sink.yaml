@@ -63,6 +63,33 @@ subsets:
       - B
 
 classes:
+  AnyOfSimpleType:
+    attributes:
+      attribute1:
+        any_of:
+          - range: string
+          - range: integer
+  AnyOfClasses:
+    attributes:
+      attribute2:
+        any_of:
+          - range: Person
+          - range: Organization
+
+  AnyOfEnums:
+    attributes:
+      attribute3:
+        any_of:
+          - range: DiagnosisType
+          - range: EmploymentEventType
+
+  AnyOfMix:
+    attributes:
+      attribute4:
+        any_of:
+          - range: integer
+          - range: Person
+          - range: EmploymentEventType
 
   HasAliases:
     mixin: true
@@ -433,3 +460,6 @@ enums:
         description: spiteful
       indifferent:
         description: not overly friendly nor obnoxiously spiteful
+
+
+

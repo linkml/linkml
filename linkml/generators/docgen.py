@@ -192,52 +192,65 @@ class DocGenerator(Generator):
             "diagram_type": self.diagram_type.value if self.diagram_type else None,
             "include_top_level_diagram": self.include_top_level_diagram,
         }
+        self.logger.debug("Processing Index")
         template = self._get_template("index")
         out_str = template.render(gen=self, schema=sv.schema, schemaview=sv, **template_vars)
         self._write(out_str, directory, self.index_name)
         if self._is_single_file_format(self.format):
             self.logger.info(f"{self.format} is a single-page format, skipping non-index elements")
             return
+        self.logger.debug("Processing Schemas...")
         template = self._get_template("schema")
         for schema_name in sv.imports_closure():
+            self.logger.debug(f"  Generating doc for {schema_name}")
             imported_schema = sv.schema_map.get(schema_name)
             out_str = template.render(gen=self, schema=imported_schema, schemaview=sv, **template_vars)
             self._write(out_str, directory, imported_schema.name)
+        self.logger.debug("Processing Classes...")
         template = self._get_template("class")
         for cn, c in sv.all_classes().items():
             if self._is_external(c):
                 continue
             n = self.name(c)
+            self.logger.debug(f"  Generating doc for {n}")
             out_str = template.render(gen=self, element=c, schemaview=sv, **template_vars)
             self._write(out_str, directory, n)
+        self.logger.debug("Processing Slots...")
         template = self._get_template("slot")
         for sn, s in sv.all_slots().items():
             if self._is_external(s):
                 continue
             n = self.name(s)
+            self.logger.debug(f"  Generating doc for {n}")
             s = sv.induced_slot(sn)
             out_str = template.render(gen=self, element=s, schemaview=sv, **template_vars)
             self._write(out_str, directory, n)
+        self.logger.debug("Processing Enums...")
         template = self._get_template("enum")
         for en, e in sv.all_enums().items():
             if self._is_external(e):
                 continue
             n = self.name(e)
+            self.logger.debug(f"  Generating doc for {n}")
             out_str = template.render(gen=self, element=e, schemaview=sv, **template_vars)
             self._write(out_str, directory, n)
+        self.logger.debug("Processing Types...")
         template = self._get_template("type")
         for tn, t in sv.all_types().items():
             if self._exclude_type(t):
                 continue
             n = self.name(t)
+            self.logger.debug(f"  Generating doc for {n}")
             t = sv.induced_type(tn)
             out_str = template.render(gen=self, element=t, schemaview=sv, **template_vars)
             self._write(out_str, directory, n)
+        self.logger.debug("Processing Subsets...")
         template = self._get_template("subset")
         for _, s in sv.all_subsets().items():
             if self._is_external(c):
                 continue
             n = self.name(s)
+            self.logger.debug(f"  Generating doc for {n}")
             out_str = template.render(gen=self, element=s, schemaview=sv, **template_vars)
             self._write(out_str, directory, n)
 
@@ -253,6 +266,7 @@ class DocGenerator(Generator):
         path = Path(directory)
         path.mkdir(parents=True, exist_ok=True)
         file_name = f"{name}.{self._file_suffix()}"
+        self.logger.debug(f"  Writing file: {file_name}")
         with open(path / file_name, "w", encoding="UTF-8") as stream:
             stream.write(out_str)
 
