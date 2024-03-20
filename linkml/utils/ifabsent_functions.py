@@ -115,8 +115,8 @@ default_library: List[
 def isabsent_match(
     txt: Text,
 ) -> Union[
-    tuple[Match[str], bool, Callable[[Match[str], SchemaLoader, ClassDefinition, SlotDefinition], str]],
-    tuple[None, None, None],
+    Tuple[Match[str], bool, Callable[[Match[str], SchemaLoader, ClassDefinition, SlotDefinition], str]],
+    Tuple[None, None, None],
 ]:
     txt = str(txt)
     for pattern, postinit, f in default_library:
