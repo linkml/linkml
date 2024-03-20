@@ -595,7 +595,6 @@ class PydanticGenerator(OOCodeGenerator):
                 if s.array is not None:
                     # TODO add support for xarray
                     results = self.get_array_representations_range(s, pyrange)
-                    # pdb.set_trace()
                     # TODO: Move results unpacking to own function that is used after each slot build stage :)
                     for res in results:
                         if res.injected_classes:

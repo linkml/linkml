@@ -493,7 +493,7 @@ At releast, only pydanticgen supports arrays, but arrays will be implemented gra
 ### Representations
 
 Since arrays are unlike other data types in that they usually require some specialized libraries to handle them,
-and many formats don't have a single canonical array type, generators may accomodate multiple array
+and many formats don't have a single canonical array type, generators may accommodate multiple array
 representations.
 
 The pydantic generator currently supports a "List of lists" style array representation to be able to use

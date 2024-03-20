@@ -223,7 +223,7 @@ class ArrayRangeGenerator(ABC):
     def get_generator(cls, repr: ArrayRepresentation) -> Type["ArrayRangeGenerator"]:
         """Get the generator class for a given array representation"""
         for subclass in cls.__subclasses__():
-            if subclass.REPR == repr:
+            if repr in (subclass.REPR, subclass.REPR.value):
                 return subclass
         raise ValueError(f"Generator for array representation {repr} not found!")
 

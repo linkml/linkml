@@ -306,11 +306,11 @@ class PydanticClass(TemplateModel):
             super(PydanticClass, self).__init__(**kwargs)
             self.validators = self._validators()
 
-        def render(self, environment: Optional[Environment] = None) -> str:
+        def render(self, environment: Optional[Environment] = None, black: bool = False) -> str:
             """Overridden in pydantic 1 to ensure that validators are regenerated at rendering time"""
             # refresh in case attributes have changed since init
             self.validators = self._validators()
-            return super(PydanticClass, self).render(environment)
+            return super(PydanticClass, self).render(environment, black)
 
 
 class ObjectImport(BaseModel):
