@@ -5,7 +5,7 @@ imports:
   - linkml:types
 
 classes:
-  MixedAnyShapeArray:
+  ComplexAnyShapeArray:
     attributes:
       array:
         range: integer
@@ -14,13 +14,6 @@ classes:
           dimensions:
             - alias: max_card
               maximum_cardinality: 5
-            - alias: min_card
-              minimum_cardinality: 2
-            - alias: range_card
-              minimum_cardinality: 2
-              maximum_cardinality: 5
-            - alias: exact_card
-              exact_cardinality: 6
 
   MixedMaxShapeArray:
     attributes:

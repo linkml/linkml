@@ -1,0 +1,7 @@
+.feature {
+  background-color: var(--color-admonition-title--hint);
+  padding: 2px 10px;
+  color: #1a1c1e;
+  font-style: italic;
+  border-radius: 4px;
+}

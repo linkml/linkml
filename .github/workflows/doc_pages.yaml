@@ -25,6 +25,9 @@ jobs:
       - name: install
         run: poetry install
 
+      - name: install pydantic 2
+        run: poetry run pip install 'pydantic>=2'
+
       - name: Build documentation.
         run: |
           mkdir gh-pages
