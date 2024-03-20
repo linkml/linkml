@@ -131,12 +131,6 @@ nbconvert = "*"
 nbformat = "*"
 coverage = "^6.4.1"
 tox = "^4"
-furo = {version = "^2023.03.27", extras = ["docs"]}
-sphinxcontrib-mermaid = {version = "^0.7.1", extras = ["docs"]}
-sphinx = "*"
-sphinx-click = "*"
-sphinx-rtd-theme = "*"
-myst-parser = "*"
 requests-cache = "^1.2.0"
 
 [tool.poetry.group.tests.dependencies]
@@ -146,6 +140,17 @@ numpy = ">=1.24.3"
 
 [tool.poetry.group.shacl.dependencies]
 pyshacl = "^0.25.0"
+
+[tool.poetry.group.docs]
+optional = true
+
+[tool.poetry.group.docs.dependencies]
+furo = {version = "^2023.03.27", extras = ["docs"]}
+sphinxcontrib-mermaid = {version = "^0.7.1", extras = ["docs"]}
+sphinx = "*"
+sphinx-click = "*"
+sphinx-rtd-theme = "*"
+myst-parser = "*"
 
 [build-system]
 requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning"]
