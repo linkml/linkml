@@ -499,7 +499,7 @@ representations.
 The pydantic generator currently supports a "List of lists" style array representation to be able to use
 arrays without any additional external dependencies beyond pydantic. 
 
-See each [generator](generators)'s documentation page for a summary of the array representations they support.
+See each [generator](../generators/index.rst)'s documentation page for a summary of the array representations they support.
 
 ```{admonition} Numpy And Friends
 We are in the process of implementing an additional pydantic array representation that can

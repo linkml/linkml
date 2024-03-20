@@ -141,6 +141,7 @@ myst-parser = "*"
 requests-cache = "^1.2.0"
 myst-nb = {version=">=1.0.0", python=">=3.9"}
 sphinx-design = "^0.5.0"
+rich = "^13.7.1"
 
 [tool.poetry.group.tests.dependencies]
 pytest = "^7.4.0"
