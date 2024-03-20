@@ -14,7 +14,7 @@ from tests.test_compliance.helper import (
     PYDANTIC,
     ValidationBehavior,
     check_data,
-    validated_schema,
+    validated_schema, JSONLD_CONTEXT,
 )
 from tests.test_compliance.test_compliance import (
     CLASS_C,
@@ -41,6 +41,7 @@ EX = rdflib.Namespace("http://example.org/")
 SCHEMA = rdflib.Namespace("http://schema.org/")
 OWLNS = rdflib.Namespace("http://www.w3.org/2002/07/owl#")
 
+SKIP_JSONLD_CONTEXT = True
 
 @pytest.mark.parametrize(
     "class_c_uri,class_d_uri,slot_1_uri,slot_2_uri,slot_1_alias,slot_2_alias,type_uri,data_name,instance,is_valid",
@@ -159,7 +160,16 @@ def test_import(
             "slot_uri": slot_2_uri,
         },
     }
-
+    expected_jsonld_context = {}
+    if not SKIP_JSONLD_CONTEXT:
+        if slot_1_alias:
+            expected_jsonld_context[slot_1_alias] = {
+                "@type": "xsd:integer",
+                "@id": slot_1_uri if slot_1_uri else f"{SCHEMA_M1}:{SLOT_S2}", # TODO
+            }
+    mappings = {
+        JSONLD_CONTEXT: expected_jsonld_context,
+    }
     schema_name = (
         f"S1A{slot_1_alias}_S2A{slot_2_alias}"
         f"_SU1{slot_1_uri}_SU2{slot_2_uri}_CUC{class_c_uri}_CUD{class_d_uri}"
@@ -175,6 +185,7 @@ def test_import(
         slots=slots,
         prefixes={"schema": "http://schema.org/"},
         core_elements=["alias", "class_uri", "slot_uri"],
+        mappings=mappings,
         merge_type_imports=False,
     )
     if data_name == "conflict_s2":
