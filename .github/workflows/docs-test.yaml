@@ -34,10 +34,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: .venv
-          key: venv-docs-dummy1-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
-
-      - name: install pydantic 2
-        run: poetry run pip install 'pydantic>=2'
+          key: venv-docs-dummy2-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
 
       #----------------------------------------------
       # install dependencies if cache does not exist
@@ -45,6 +42,9 @@ jobs:
       - name: Install dependencies
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
         run: poetry install --no-interaction -E black
+
+      - name: install pydantic 2
+        run: poetry run pip install 'pydantic>=2'
 
       - name: Build docs
         working-directory: docs
