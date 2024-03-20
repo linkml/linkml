@@ -1,15 +1,18 @@
 import json
 
 import pytest
-from rdflib import Graph, URIRef, Literal, RDFS
+from rdflib import RDFS, Graph, Literal, URIRef
 
 
-@pytest.mark.parametrize("prefix,version,expected", [
-    (False, "1.1", True),
-    (True, "1.1", True),
-    (False, "1.0", False),
-    (True, "1.0", False),
-])
+@pytest.mark.parametrize(
+    "prefix,version,expected",
+    [
+        (False, "1.1", True),
+        (True, "1.1", True),
+        (False, "1.0", False),
+        (True, "1.0", False),
+    ],
+)
 def test_jsonld_prefix(prefix, version, expected):
     """
     Test JSON-LD prefix serialization.
@@ -59,5 +62,3 @@ def test_jsonld_prefix(prefix, version, expected):
         # TODO: determin if it's possible to do this
         # assert '"CHEBI:33709"' in jsonld
         assert '"CHEBI:33709"' in jsonld or '"http://purl.obolibrary.org/obo/CHEBI_33709"' in jsonld
-
-

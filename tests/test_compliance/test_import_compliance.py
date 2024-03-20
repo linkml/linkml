@@ -11,10 +11,11 @@ import pytest
 import rdflib
 
 from tests.test_compliance.helper import (
+    JSONLD_CONTEXT,
     PYDANTIC,
     ValidationBehavior,
     check_data,
-    validated_schema, JSONLD_CONTEXT,
+    validated_schema,
 )
 from tests.test_compliance.test_compliance import (
     CLASS_C,
@@ -42,6 +43,7 @@ SCHEMA = rdflib.Namespace("http://schema.org/")
 OWLNS = rdflib.Namespace("http://www.w3.org/2002/07/owl#")
 
 SKIP_JSONLD_CONTEXT = True
+
 
 @pytest.mark.parametrize(
     "class_c_uri,class_d_uri,slot_1_uri,slot_2_uri,slot_1_alias,slot_2_alias,type_uri,data_name,instance,is_valid",
@@ -165,7 +167,7 @@ def test_import(
         if slot_1_alias:
             expected_jsonld_context[slot_1_alias] = {
                 "@type": "xsd:integer",
-                "@id": slot_1_uri if slot_1_uri else f"{SCHEMA_M1}:{SLOT_S2}", # TODO
+                "@id": slot_1_uri if slot_1_uri else f"{SCHEMA_M1}:{SLOT_S2}",  # TODO
             }
     mappings = {
         JSONLD_CONTEXT: expected_jsonld_context,
