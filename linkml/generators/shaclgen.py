@@ -162,7 +162,7 @@ class ShaclGenerator(Generator):
                         if sv.get_identifier_slot(r) is not None:
                             prop_pv(SH.nodeKind, SH.IRI)
                         else:
-                            prop_pv(SH.nodeKind, SH.BlankNode)
+                            prop_pv(SH.nodeKind, SH.BlankNodeOrIRI)
                     elif r in sv.all_types().values():
                         self._add_type(prop_pv, r)
                     elif r in sv.all_enums():
