@@ -63,7 +63,7 @@ class PythonGenerator(Generator):
 
     def __post_init__(self) -> None:
         self.sourcefile = self.schema
-        self.schemaview = SchemaView(self.schema)
+        self.schemaview = SchemaView(self.schema, base_dir=self.base_dir)
         super().__post_init__()
         if self.format is None:
             self.format = self.valid_formats[0]

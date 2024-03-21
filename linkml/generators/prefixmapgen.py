@@ -6,14 +6,14 @@ Generate JSON-LD contexts
 import csv
 import os
 from dataclasses import dataclass, field
-from typing import Dict, Optional, Set
+from typing import Dict, Optional, Set, Union
 
 import click
 from jsonasobj2 import JsonObj, as_json
 from linkml_runtime.linkml_model.meta import ClassDefinition, SlotDefinition
 from linkml_runtime.linkml_model.types import SHEX
 from linkml_runtime.utils.formatutils import camelcase
-from rdflib import XSD
+from rdflib import XSD, Namespace
 
 from linkml._version import __version__
 from linkml.utils.generator import Generator, shared_arguments
@@ -35,7 +35,7 @@ class PrefixGenerator(Generator):
     default_ns: str = None
     context_body: Dict = field(default_factory=lambda: dict())
     slot_class_maps: Dict = field(default_factory=lambda: dict())
-    base: str = None
+    base: Optional[Union[str, Namespace]] = None
 
     def __post_init__(self):
         super().__post_init__()
@@ -59,9 +59,10 @@ class PrefixGenerator(Generator):
             if self.default_ns:
                 self.emit_prefixes.add(self.default_ns)
 
-    def end_schema(self, base: Optional[str] = None, output: Optional[str] = None, **_) -> None:
+    def end_schema(self, base: Optional[Union[str, Namespace]] = None, output: Optional[str] = None, **_) -> None:
         context = JsonObj()
         if base:
+            base = str(base)
             if "://" not in base:
                 self.context_body["@base"] = os.path.relpath(base, os.path.dirname(self.schema.source_file))
             else:

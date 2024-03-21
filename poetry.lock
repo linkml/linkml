@@ -822,7 +822,7 @@ files = [
 name = "html5lib"
 version = "1.1"
 description = "HTML parser based on the WHATWG HTML specification"
-optional = false
+optional = true
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 files = [
     {file = "html5lib-1.1-py2.py3-none-any.whl", hash = "sha256:0d78f8fde1c230e99fe37986a60526d7049ed4bf8a9fadbad5f00e22e58e041d"},
@@ -1600,7 +1600,7 @@ et-xmlfile = "*"
 name = "owlrl"
 version = "6.0.2"
 description = "OWL-RL and RDFS based RDF Closure inferencing for Python"
-optional = false
+optional = true
 python-versions = "*"
 files = [
     {file = "owlrl-6.0.2-py3-none-any.whl", hash = "sha256:57eca06b221edbbc682376c8d42e2ddffc99f61e82c0da02e26735592f08bacc"},
@@ -1771,7 +1771,7 @@ pyyaml = ">=5.3.1"
 name = "prettytable"
 version = "3.10.0"
 description = "A simple Python library for easily displaying tabular data in a visually appealing ASCII table format"
-optional = false
+optional = true
 python-versions = ">=3.8"
 files = [
     {file = "prettytable-3.10.0-py3-none-any.whl", hash = "sha256:6536efaf0757fdaa7d22e78b3aac3b69ea1b7200538c2c6995d649365bddab92"},
@@ -2039,7 +2039,7 @@ testing = ["covdefaults (>=2.3)", "pytest (>=7.4)", "pytest-cov (>=4.1)", "pytes
 name = "pyshacl"
 version = "0.25.0"
 description = "Python SHACL Validator"
-optional = false
+optional = true
 python-versions = ">=3.8.1,<4.0.0"
 files = [
     {file = "pyshacl-0.25.0-py3-none-any.whl", hash = "sha256:716b65397486b1a306efefd018d772d3c112a3828ea4e1be27aae16aee524243"},
@@ -3458,7 +3458,11 @@ files = [
 docs = ["furo", "jaraco.packaging (>=9.3)", "jaraco.tidelift (>=1.4)", "rst.linker (>=1.9)", "sphinx (>=3.5)", "sphinx-lint"]
 testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-enabler (>=2.2)", "pytest-ignore-flaky", "pytest-mypy", "pytest-ruff (>=0.2.1)"]
 
+[extras]
+shacl = ["pyshacl"]
+tests = ["pyshacl"]
+
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8.1"
-content-hash = "00653b00c25e13aefd83f591bba9da988d67a5a13e84bcdaea4ab4be2c04e556"
+content-hash = "12a333885dc43482828d4438efc5a2ebba97f80de020359dceb08703542188b4"
