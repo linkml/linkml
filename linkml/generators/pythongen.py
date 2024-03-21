@@ -36,7 +36,7 @@ from rdflib import URIRef
 import linkml
 from linkml._version import __version__
 from linkml.utils.generator import Generator, shared_arguments
-from linkml.utils.ifabsent_functions import ifabsent_postinit_declaration, ifabsent_value_declaration
+from linkml.utils.ifabsent_functions import ifabsent_value_declaration
 
 
 @dataclass

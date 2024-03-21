@@ -130,9 +130,3 @@ def ifabsent_value_declaration(txt: Text, loader, cls, slot) -> Optional[str]:
     m, postinit, f = isabsent_match(txt)
     if m and not postinit:
         return f(m, loader, cls, slot)
-
-
-def ifabsent_postinit_declaration(txt: Text, loader, cls, slot) -> Optional[str]:
-    m, postinit, f = isabsent_match(txt)
-    if m and postinit:
-        return f(m, loader, cls, slot)
