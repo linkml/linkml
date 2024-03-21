@@ -1,11 +1,16 @@
 from abc import ABC, abstractmethod
 from typing import TextIO, Union, Optional, Callable, Dict, Type, Any, List
+from logging import getLogger
 
 from pydantic import BaseModel
 from hbreader import FileInfo, hbread
 from jsonasobj2 import as_dict, JsonObj
 
 from linkml_runtime.utils.yamlutils import YAMLRoot
+from linkml_runtime import URI_TO_LOCAL
+
+CACHE_SIZE = 1024
+
 
 
 class Loader(ABC):
@@ -137,6 +142,7 @@ class Loader(ABC):
         else:
             return None
 
+
     def _read_source(self,
                      source: Union[str, dict, TextIO], 
                      *, 
@@ -149,7 +155,16 @@ class Loader(ABC):
             metadata.base_path = base_dir
 
         if not isinstance(source, dict):
-            data = hbread(source, metadata, metadata.base_path, accept_header)
+            # Try to get local version of schema, if one is known to exist
+            try:
+                if str(source) in URI_TO_LOCAL.keys():
+                    source = str(URI_TO_LOCAL[str(source)])
+            except (TypeError, KeyError) as e:
+                # Fine, use original `source` value
+                logger = getLogger('linkml_runtime.loaders.Loader')
+                logger.debug(f"Error converting stringlike source to local linkml file: {source}, got: {e}")
+
+            data = hbread(source, metadata, base_dir, accept_header)
         else:
             data = source
 
