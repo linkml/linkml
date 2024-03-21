@@ -5,7 +5,7 @@ import re
 from copy import copy
 from dataclasses import dataclass
 from types import ModuleType
-from typing import Dict,  List, Optional, Set, Tuple, Union
+from typing import Dict, List, Optional, Set, Tuple, Union
 
 import click
 from linkml_runtime import SchemaView
@@ -631,25 +631,16 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
         post_inits_designators = []
 
         domain_slots = self.sort_slots(self.domain_slots(cls))
-        induced_slots = self.schemaview.class_induced_slots(cls.name)
-        domain_slot_names = [s.name for s in domain_slots]
-        induced_slot_names = [s.name for s in induced_slots if s.designates_type]
-        induced_only_names = set(induced_slot_names) - set(domain_slot_names)
-        induced_only = [s for s in induced_slots if s.name in induced_only_names]
-        domain_slots += induced_only
+        induced_slots = [s for s in self.schemaview.class_induced_slots(cls.name) if s.designates_type]
+        induced_names = set([s.name for s in induced_slots]) - set([s.name for s in domain_slots])
+        domain_slots += [s for s in induced_slots if s.name in induced_names]
 
         for slot in domain_slots:
             generated = self.gen_postinit(cls, slot)
-            if slot.name not in induced_only_names:
+            if slot.name not in induced_names:
                 post_inits.append(generated)
             else:
                 post_inits_designators.append(generated)
-
-            if slot.ifabsent:
-                dflt = ifabsent_postinit_declaration(slot.ifabsent, self, cls, slot)
-                if dflt and dflt != "None":
-                    post_inits.append(f"if self.{self.slot_name(slot.name)} is None:")
-                    post_inits.append(f"\tself.{self.slot_name(slot.name)} = {dflt}")
 
         post_inits_post_super_line = "\n\t\t".join(post_inits_designators)
         post_inits_line = "\n\t\t".join([p for p in post_inits if p])
