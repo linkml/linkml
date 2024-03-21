@@ -6,6 +6,12 @@ from pathlib import Path
 from itertools import product
 from urllib.parse import urlparse
 
+try:
+    import requests_cache
+    HAVE_REQUESTS_CACHE = True
+except ImportError:
+    HAVE_REQUESTS_CACHE = False
+
 from linkml_runtime.linkml_model.linkml_files import (
     Source,
     Format,
@@ -62,7 +68,7 @@ def test_no_unmapped_dirs():
 # URLs
 # --------------------------------------------------
 
-@pytest.mark.skip('We need to cache this...')
+@pytest.mark.skipif(not HAVE_REQUESTS_CACHE, reason='We need to cache this...')
 @pytest.mark.parametrize(
     'release_type',
     ReleaseTag.__iter__()
@@ -96,7 +102,7 @@ def test_github_path_format(source,fmt, release_type):
     assert '\\' not in url
 
 
-@pytest.mark.skip("Need to cache this")
+@pytest.mark.skipif(not HAVE_REQUESTS_CACHE,reason= "Need to cache this")
 @pytest.mark.parametrize(
     'source,fmt',
     EXPECTED_FORMATS
@@ -107,7 +113,7 @@ def test_github_io_path(source,fmt):
     assert res.status_code != 404
 
 
-@pytest.mark.skip('Need to cache this')
+@pytest.mark.skipif(not HAVE_REQUESTS_CACHE,reason= 'Need to cache this')
 @pytest.mark.parametrize(
     'source,fmt',
     EXPECTED_FORMATS
