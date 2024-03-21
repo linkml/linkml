@@ -1,6 +1,7 @@
 from copy import copy
 from json import JSONDecoder
 from typing import Union, Any, List, Optional, Type, Callable, Dict
+from pprint import pformat
 
 import yaml
 from deprecated.classic import deprecated
@@ -11,6 +12,7 @@ from yaml.constructor import ConstructorError
 
 from linkml_runtime.utils.context_utils import CONTEXTS_PARAM_TYPE, merge_contexts
 from linkml_runtime.utils.formatutils import is_empty
+from linkml_runtime.utils.formatutils import remove_empty_items
 
 YAMLObjTypes = Union[JsonObjTypes, "YAMLRoot"]
 
@@ -276,6 +278,11 @@ class YAMLRoot(JsonObj):
     def MissingRequiredField(self, field_name: str) -> None:
         """ Generic loader error handler """
         raise ValueError(f"{field_name} must be supplied")
+
+    def __str__(self):
+        res = remove_empty_items(self)
+        return pformat(as_dict(res),indent=2,compact=True)
+
 
 
 def root_representer(dumper: yaml.Dumper, data: YAMLRoot):
