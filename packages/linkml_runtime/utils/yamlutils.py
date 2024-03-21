@@ -11,8 +11,7 @@ from rdflib import Graph, URIRef
 from yaml.constructor import ConstructorError
 
 from linkml_runtime.utils.context_utils import CONTEXTS_PARAM_TYPE, merge_contexts
-from linkml_runtime.utils.formatutils import is_empty
-from linkml_runtime.utils.formatutils import remove_empty_items
+from linkml_runtime.utils.formatutils import is_empty, remove_empty_items
 
 YAMLObjTypes = Union[JsonObjTypes, "YAMLRoot"]
 
