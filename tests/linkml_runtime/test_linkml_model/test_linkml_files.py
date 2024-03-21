@@ -1,5 +1,3 @@
-import pdb
-
 import pytest
 import requests
 from pathlib import Path
@@ -27,7 +25,7 @@ from linkml_runtime.linkml_model.linkml_files import (
 
 EXPECTED_FORMATS = [
     (source, fmt) for source, fmt in product(Source, Format)
-     if (fmt not in META_ONLY and source != Source.META)
+    if (fmt not in META_ONLY or source == Source.META)
 ]
 
 @pytest.mark.parametrize(
