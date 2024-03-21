@@ -4,6 +4,7 @@ import re
 import unittest
 from contextlib import redirect_stdout
 from io import StringIO
+from pathlib import Path
 
 from tests.test_notebooks import output_directory
 
@@ -12,7 +13,8 @@ class NotebookTests(unittest.TestCase):
     @staticmethod
     def eval_test(target: str, import_module: str) -> None:
         output = StringIO()
-        output_file = os.path.join(output_directory, target)
+        output_file = Path(os.path.join(output_directory, target))
+        output_file.parent.mkdir(parents=True, exist_ok=True)
         with redirect_stdout(output):
             importlib.import_module(import_module)
         with open(output_file, "w") as f:

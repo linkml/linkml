@@ -124,9 +124,7 @@ class PythonOutputTestCase(TestEnvironmentTestCase):
         )
 
         module = compile_python(env.expected_path(python_name))
-        from tests.test_enhancements.output.python_generation.python_types import Strings
 
-        self.check_expecteds(Strings, "Strings")
         self.check_expecteds(module.Strings, "Strings")
         self.check_expecteds(module.Booleans, "Booleans")
         self.check_expecteds(module.Integers, "Integers")

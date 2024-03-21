@@ -39,7 +39,7 @@ class TestEnvironment:
     def __init__(self, filedir: str) -> None:
         self.cwd = os.path.dirname(filedir)  # base directory for indir, outdir and tempdir
         self.indir = os.path.join(self.cwd, "input")  # Input files
-        self.outdir = os.path.join(self.cwd, "output")  # Expected/actual output files
+        self.outdir = os.path.join(self.cwd, "__snapshots__")  # Expected/actual output files
         self.tempdir = os.path.join(self.cwd, "temp")  # Scratch directory for temporary work
 
         # Get the parent's directory name.  If it is a test directory, borrow from its environment

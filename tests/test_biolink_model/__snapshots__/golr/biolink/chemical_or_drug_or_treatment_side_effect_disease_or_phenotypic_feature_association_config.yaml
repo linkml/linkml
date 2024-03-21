@@ -1,0 +1,117 @@
+# metamodel_version: 1.7.0# version: 3.1.2id: chemical_or_drug_or_treatment_side_effect_disease_or_phenotypic_feature_association
+schema_generating: true
+description: This association defines a relationship between a chemical or treatment
+  (or procedure) and a disease or phenotypic feature where the disesae or phenotypic
+  feature is a secondary, typically (but not always) undesirable effect.
+display_name: chemical or drug or treatment side effect disease or phenotypic feature
+  association
+document_category: chemical or drug or treatment side effect disease or phenotypic
+  feature association
+weight: 20
+fields:
+- id: id
+  description: A unique identifier for an entity. Must be either a CURIE shorthand
+    for a URI or a complete URI
+  display_name: id
+- id: iri
+  description: An IRI for an entity. This is determined by the id using expansion
+    rules.
+  display_name: iri
+- id: name
+  description: A human-readable name for an attribute or entity.
+  display_name: name
+- id: description
+  description: a human-readable description of an entity
+  display_name: description
+- id: has_attribute
+  description: connects any entity to an attribute
+  display_name: has attribute
+  cardinality: multi
+- id: subject
+  description: connects an association to the subject of the association. For example,
+    in a gene-to-phenotype association, the gene is subject and phenotype is object.
+  display_name: subject
+- id: object
+  description: connects an association to the object of the association. For example,
+    in a gene-to-phenotype association, the gene is subject and phenotype is object.
+  display_name: object
+- id: negated
+  description: if set to true, then the association is negated i.e. is not true
+  display_name: negated
+- id: qualifiers
+  description: connects an association to qualifiers that modify or qualify the meaning
+    of that association
+  display_name: qualifiers
+  cardinality: multi
+- id: publications
+  description: One or more publications that report the statement expressed in an
+    Association, or provide information used as  evidence supporting this statement.
+  display_name: publications
+  cardinality: multi
+- id: has_evidence
+  description: connects an association to an instance of supporting evidence
+  display_name: has evidence
+  cardinality: multi
+- id: knowledge_source
+  description: An Information Resource from which the knowledge expressed in an Association
+    was retrieved, directly or indirectly. This can be any resource through which
+    the knowledge passed on its way to its currently serialized form. In practice,
+    implementers should use one of the more specific subtypes of this generic property.
+  display_name: knowledge source
+- id: primary_knowledge_source
+  description: The most upstream source of the knowledge expressed in an Association
+    that an implementer can identify.  Performing a rigorous analysis of upstream
+    data providers is expected; every effort is made to catalog the most upstream
+    source of data in this property.  Only one data source should be declared primary
+    in any association.  "aggregator knowledge source" can be used to caputre non-primary
+    sources.
+  display_name: primary knowledge source
+- id: aggregator_knowledge_source
+  description: An intermediate aggregator resource from which knowledge expressed
+    in an Association was retrieved downstream of the original source, on its path
+    to its current serialized form.
+  display_name: aggregator knowledge source
+  cardinality: multi
+- id: timepoint
+  description: a point in time
+  display_name: timepoint
+- id: original_subject
+  description: used to hold the original subject of a relation (or predicate) that
+    an external knowledge source uses before transformation to match the biolink-model
+    specification.
+  display_name: original subject
+- id: original_predicate
+  description: used to hold the original relation/predicate that an external knowledge
+    source uses before transformation to match the biolink-model specification.
+  display_name: original predicate
+- id: original_object
+  description: used to hold the original object of a relation (or predicate) that
+    an external knowledge source uses before transformation to match the biolink-model
+    specification.
+  display_name: original object
+- id: type
+  description: rdf:type of biolink:Association should be fixed at rdf:Statement
+  display_name: association_type
+- id: category
+  description: "Name of the high level ontology class in which this entity is categorized.\
+    \ Corresponds to the label for the biolink entity type class.\n * In a neo4j database\
+    \ this MAY correspond to the neo4j label tag.\n * In an RDF database it should\
+    \ be a biolink model class URI.\nThis field is multi-valued. It should include\
+    \ values for ancestors of the biolink class; for example, a protein such as Shh\
+    \ would have category values `biolink:Protein`, `biolink:GeneProduct`, `biolink:MolecularEntity`,\
+    \ ...\nIn an RDF database, nodes will typically have an rdf:type triples. This\
+    \ can be to the most specific biolink class, or potentially to a class more specific\
+    \ than something in biolink. For example, a sequence feature `f` may have a rdf:type\
+    \ assertion to a SO class such as TF_binding_site, which is more specific than\
+    \ anything in biolink. Here we would have categories {biolink:GenomicEntity, biolink:MolecularEntity,\
+    \ biolink:NamedThing}"
+  display_name: association_category
+  cardinality: multi
+- id: FDA_adverse_event_level
+  description: ''
+  display_name: FDA adverse event level
+- id: predicate
+  description: A high-level grouping for the relationship type. AKA minimal predicate.
+    This is analogous to category for nodes.
+  display_name: chemical or drug or treatment side effect disease or phenotypic feature
+    association_predicate
