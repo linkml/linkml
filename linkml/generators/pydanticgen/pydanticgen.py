@@ -213,39 +213,6 @@ class PydanticGenerator(OOCodeGenerator):
             logging.error(f"Error compiling generated python code: {e}")
             raise e
 
-    @staticmethod
-    def sort_classes(clist: List[ClassDefinition]) -> List[ClassDefinition]:
-        """
-        sort classes such that if C is a child of P then C appears after P in the list
-
-        Overridden method include mixin classes
-
-        TODO: This should move to SchemaView
-        """
-        clist = list(clist)
-        slist = []  # sorted
-        while len(clist) > 0:
-            can_add = False
-            for i in range(len(clist)):
-                candidate = clist[i]
-                can_add = False
-                if candidate.is_a:
-                    candidates = [candidate.is_a] + candidate.mixins
-                else:
-                    candidates = candidate.mixins
-                if not candidates:
-                    can_add = True
-                else:
-                    if set(candidates) <= set([p.name for p in slist]):
-                        can_add = True
-                if can_add:
-                    slist = slist + [candidate]
-                    del clist[i]
-                    break
-            if not can_add:
-                raise ValueError(f"could not find suitable element in {clist} that does not ref {slist}")
-        return slist
-
     def get_predefined_slot_values(self) -> Dict[str, Dict[str, str]]:
         """
         :return: Dictionary of dictionaries with predefined slot values for each class
@@ -507,7 +474,7 @@ class PydanticGenerator(OOCodeGenerator):
             for i in self.imports:
                 imports += i
 
-        sorted_classes = self.sort_classes(list(sv.all_classes().values()))
+        sorted_classes = sv.ordered(sv.all_classes(), "inheritance")
         self.sorted_class_names = [camelcase(c.name) for c in sorted_classes]
 
         # Don't want to generate classes when class_uri is linkml:Any, will
