@@ -17,7 +17,12 @@ compare_operators = {ast.Eq: op.eq, ast.Lt: op.lt, ast.LtE: op.le, ast.Gt: op.gt
 
 def eval_conditional(*conds: List[Tuple[bool, Any]]) -> Any:
     """
-    >>> cond(x < 25 : 'low', x > 25 : 'high', True: 'low')
+    Evaluate a collection of expression,value tuples, returing the first value whose expression is true
+
+    >>> x= 40
+    >>> eval_conditional((x < 25, 'low'),  (x > 25, 'high'), (True, 'low'))
+    'high'
+
     :param subj:
     :return:
     """
@@ -58,10 +63,9 @@ def eval_expr(expr: str, **kwargs) -> Any:
 
     Nulls:
 
-    - If a variable is enclosed in {}s then entire expression will eval to None if variable is unset
+    - If a variable is enclosed in {}s then entire expression will eval to None if any variable is unset
 
-    >>> eval_expr('{x} + {y}', x=None, y=2)
-    None
+    >>> assert eval_expr('{x} + {y}', x=None, y=2) is None
 
     Functions:
 
@@ -89,9 +93,6 @@ def eval_expr(expr: str, **kwargs) -> Any:
             return eval_(ast.parse(expr, mode='eval').body, kwargs)
         except UnsetValueException:
             return None
-
-
-
 
 
 
