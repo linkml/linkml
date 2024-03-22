@@ -8,19 +8,6 @@
     {%- endif -%}
 {%- endif -%}
 
-{% macro compute_range(slot) -%}
-    {%- if slot.any_of or slot.exactly_one_of -%}
-        {%- for subslot_range in schemaview.slot_range_as_union(slot) -%}
-            {{ gen.link(subslot_range) }}
-            {%- if not loop.last -%}
-                &nbsp;or&nbsp;<br />
-            {%- endif -%}
-        {%- endfor -%}
-    {%- else -%}
-        {{ gen.link(slot.range) }}
-    {%- endif -%}
-{% endmacro %}
-
 # Slot: {{ title }}
 
 {%- if header -%}
@@ -46,14 +33,15 @@ URI: {{ gen.uri_link(element) }}
 <!-- no inheritance hierarchy -->
 {% endif %}
 
-{% if schemaview.get_classes_by_slot(element, include_induced=True) %}
+{% set classes_by_slot = schemaview.get_classes_by_slot(element) %}
+{% if classes_by_slot %}
 
 ## Applicable Classes
 
 | Name | Description | Modifies Slot |
 | --- | --- | --- |
-{% for c in schemaview.get_classes_by_slot(element, include_induced=True) -%}
-{{ gen.link(c) }} | {{ schemaview.get_class(c).description|enshorten }} | {% if c in schemaview.get_classes_modifying_slot(element) %} yes {% else %} no {% endif %} |
+{% for c in classes_by_slot -%}
+| {{ gen.link(c) }} | {{ schemaview.get_class(c).description|enshorten }} | {% if c in schemaview.get_classes_modifying_slot(element) %} yes {% else %} no {% endif %} |
 {% endfor %}
 
 {% endif %}
@@ -71,7 +59,7 @@ URI: {{ gen.uri_link(element) }}
 
 ## Properties
 
-* Range: {{ compute_range(element) }}
+* Range: {{gen.link(element.range)}}
 {% if element.multivalued %}
 * Multivalued: {{ element.multivalued }}
 {% endif -%}
