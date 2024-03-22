@@ -33,7 +33,7 @@ URI: {{ gen.uri_link(element) }}
 <!-- no inheritance hierarchy -->
 {% endif %}
 
-{% set classes_by_slot = schemaview.get_classes_by_slot(element) %}
+{% set classes_by_slot = schemaview.get_classes_by_slot(element, include_induced=True) %}
 {% if classes_by_slot %}
 
 ## Applicable Classes
