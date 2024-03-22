@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Working with data in SQL Databases" href="sql-databases.html" /><link rel="prev" title="CSVs and Tabular Data" href="csvs.html" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Working with Data" href="../data/index.html" /><link rel="prev" title="The metamodel" href="metamodel.html" />
 
     <link rel="shortcut icon" href="https://linkml.io/uploads/linkml-logo_color-no-words.png"/><!-- Generated with Sphinx 7.1.2 and Furo 2023.09.10 -->
-        <title>Python - linkml documentation</title>
+        <title>Expression Language - linkml documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=36a5483c" />
@@ -174,34 +174,34 @@
 <li class="toctree-l2"><a class="reference internal" href="../intro/tutorial10.html">Part 10: Working with SQL databases</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../schemas/index.html">LinkML Schemas</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of LinkML Schemas</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../schemas/models.html">Models</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../schemas/metadata.html">Schema Element Metadata</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../schemas/inheritance.html">Inheritance</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../schemas/slots.html">Slots</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../schemas/uris-and-mappings.html">URIs and Mappings</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../schemas/enums.html">Semantic Enumerations</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../schemas/inlining.html">Inlining objects</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../schemas/constraints.html">Adding constraints and rules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../schemas/type-designators.html">Type designators</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../schemas/subsets.html">Subsets</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../schemas/imports.html">Imports</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../schemas/advanced.html">Advanced features</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../schemas/generators.html">Mapping schemas to other frameworks</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../schemas/linter.html">Schema Linter</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../schemas/derived-models.html">Derived models</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../schemas/annotations.html">Annotations</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../schemas/metamodel.html">The metamodel</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../schemas/expression-language.html">Expression Language</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">LinkML Schemas</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of LinkML Schemas</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="models.html">Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metadata.html">Schema Element Metadata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="inheritance.html">Inheritance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="slots.html">Slots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="uris-and-mappings.html">URIs and Mappings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="enums.html">Semantic Enumerations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="inlining.html">Inlining objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="constraints.html">Adding constraints and rules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="type-designators.html">Type designators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="subsets.html">Subsets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="imports.html">Imports</a></li>
+<li class="toctree-l2"><a class="reference internal" href="advanced.html">Advanced features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generators.html">Mapping schemas to other frameworks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="linter.html">Schema Linter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="derived-models.html">Derived models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="annotations.html">Annotations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metamodel.html">The metamodel</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Expression Language</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Working with Data</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of Working with Data</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="conversion.html">Converting between different representations</a></li>
-<li class="toctree-l2"><a class="reference internal" href="validating-data.html">Data Validation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="rdf.html">Working with RDF and LinkML</a></li>
-<li class="toctree-l2"><a class="reference internal" href="csvs.html">CSVs and Tabular Data</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Python</a></li>
-<li class="toctree-l2"><a class="reference internal" href="sql-databases.html">Working with data in SQL Databases</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../data/index.html">Working with Data</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of Working with Data</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../data/conversion.html">Converting between different representations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../data/validating-data.html">Data Validation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../data/rdf.html">Working with RDF and LinkML</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../data/csvs.html">CSVs and Tabular Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../data/python.html">Python</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../data/sql-databases.html">Working with data in SQL Databases</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../generators/index.html">Generators</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of Generators</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -320,76 +320,179 @@
           </label>
         </div>
         <article role="main">
-          <section id="python">
-<h1>Python<a class="headerlink" href="#python" title="Permalink to this heading">#</a></h1>
-<section id="dataclasses">
-<h2>Dataclasses<a class="headerlink" href="#dataclasses" title="Permalink to this heading">#</a></h2>
-<p>Python dataclasses can be generated from any LinkML model (see <a class="reference internal" href="../generators/python.html"><span class="doc std std-doc">generators/python</span></a>).</p>
-<p>For example, for the personinfo schema, a Person dataclass is created:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">Person</span><span class="p">(</span><span class="n">NamedThing</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A person (alive, dead, undead, or fictional).</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">_inherited_slots</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
-
-    <span class="n">class_class_uri</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">URIRef</span><span class="p">]</span> <span class="o">=</span> <span class="n">SCHEMA</span><span class="o">.</span><span class="n">Person</span>
-    <span class="n">class_class_curie</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;schema:Person&quot;</span>
-    <span class="n">class_name</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Person&quot;</span>
-    <span class="n">class_model_uri</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">URIRef</span><span class="p">]</span> <span class="o">=</span> <span class="n">PERSONINFO</span><span class="o">.</span><span class="n">Person</span>
-
-    <span class="nb">id</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">PersonId</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">primary_email</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">birth_date</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">age_in_years</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">gender</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">current_address</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="s2">&quot;Address&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">has_employment_history</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="s2">&quot;EmploymentEvent&quot;</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="s2">&quot;EmploymentEvent&quot;</span><span class="p">]]]]</span> <span class="o">=</span> <span class="n">empty_list</span><span class="p">()</span>
-    <span class="n">has_familial_relationships</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="s2">&quot;FamilialRelationship&quot;</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="s2">&quot;FamilialRelationship&quot;</span><span class="p">]]]]</span> <span class="o">=</span> <span class="n">empty_list</span><span class="p">()</span>
-    <span class="n">has_medical_history</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="s2">&quot;MedicalEvent&quot;</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="s2">&quot;MedicalEvent&quot;</span><span class="p">]]]]</span> <span class="o">=</span> <span class="n">empty_list</span><span class="p">()</span>
-    <span class="n">aliases</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="n">empty_list</span><span class="p">()</span>
-</pre></div>
-</div>
-<p>You can also use the <a class="reference internal" href="../generators/pydantic.html"><span class="doc std std-doc">pydantic generator</span></a> for a different style of data classes.</p>
-<p>The generated python classes have additional functionality to help with serializing/deserializing.</p>
-</section>
-<section id="use-in-programs">
-<h2>Use in programs<a class="headerlink" href="#use-in-programs" title="Permalink to this heading">#</a></h2>
-<p>This can be used for programmatic manipulation, e.g:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">personinfo</span> <span class="kn">import</span> <span class="n">Person</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">p1</span> <span class="o">=</span> <span class="n">Person</span><span class="p">(</span><span class="s1">&#39;P1&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;joe schmoe&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-</section>
-<section id="loaders-and-dumpers">
-<h2>Loaders and dumpers<a class="headerlink" href="#loaders-and-dumpers" title="Permalink to this heading">#</a></h2>
-<p>The <a class="reference external" href="https://github.com/linkml/linkml-runtime">linkml-runtime</a> framework is included by default, allowing for dynamic conversion to and from other formats:</p>
-<p>The core LinkML formats are:</p>
+          <section id="expression-language">
+<h1>Expression Language<a class="headerlink" href="#expression-language" title="Permalink to this heading">#</a></h1>
+<p>The Expression Language is a domain-specific language (DSL) that allows for the evaluation of expressions with a syntax similar to Python. It provides a restricted subset of Python’s features to ensure safe and controlled execution.</p>
+<section id="syntax">
+<h2>Syntax<a class="headerlink" href="#syntax" title="Permalink to this heading">#</a></h2>
+<p>The Expression Language supports the following syntax elements:</p>
+<section id="literals">
+<h3>Literals<a class="headerlink" href="#literals" title="Permalink to this heading">#</a></h3>
 <ul class="simple">
-<li><p>json_loader/json_dumper: to export to and from JSON</p></li>
-<li><p>yaml_loader/yaml_dumper: to export to and from YAML</p></li>
-<li><p>rdflib_loader/rdflib_dumper: to export to and from any rdflib-supported serialization (e.g. .ttl)</p></li>
+<li><p>Numbers: Integer and floating-point numbers are supported.</p>
+<ul>
+<li><p>Examples: <code class="docutils literal notranslate"><span class="pre">42</span></code>, <code class="docutils literal notranslate"><span class="pre">3.14</span></code></p></li>
 </ul>
-<p>We also provide a csv loader/dumper, see <a class="reference internal" href="csvs.html"><span class="doc std std-doc">CSVs</span></a> section of the docs</p>
-<p>Dumping:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">linkml_runtime.dumpers</span> <span class="kn">import</span> <span class="n">json_dumper</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">personinfo</span> <span class="kn">import</span> <span class="n">Person</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">p1</span> <span class="o">=</span> <span class="n">Person</span><span class="p">(</span><span class="s1">&#39;P1&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;joe schmoe&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">json_dumper</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">p1</span><span class="p">))</span>
-<span class="go">{</span>
-<span class="go">  &quot;id&quot;: &quot;P1&quot;,</span>
-<span class="go">  &quot;name&quot;: &quot;joe schmoe&quot;,</span>
-<span class="go">  &quot;@type&quot;: &quot;Person&quot;</span>
-<span class="go">}</span>
-</pre></div>
-</div>
-<p>Loading:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">linkml_runtime.loaders</span> <span class="kn">import</span> <span class="n">json_loader</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">personinfo</span> <span class="kn">import</span> <span class="n">Person</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">p1</span> <span class="o">=</span> <span class="n">json_loader</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;person_data.json&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>For more developer documentations, see the <a class="reference internal" href="../developers/loaders-and-dumpers.html"><span class="doc std std-doc">loaders-and-dumpers</span></a> section of the developer docs</p>
+</li>
+<li><p>Strings: String literals are enclosed in double quotes (<code class="docutils literal notranslate"><span class="pre">&quot;</span></code>).</p>
+<ul>
+<li><p>Example: <code class="docutils literal notranslate"><span class="pre">&quot;Hello,</span> <span class="pre">world!&quot;</span></code></p></li>
+</ul>
+</li>
+<li><p>Booleans: Boolean values are represented by <code class="docutils literal notranslate"><span class="pre">True</span></code> and <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p>None: The <code class="docutils literal notranslate"><span class="pre">None</span></code> value represents the absence of a value.</p></li>
+</ul>
+</section>
+<section id="arithmetic-operations">
+<h3>Arithmetic Operations<a class="headerlink" href="#arithmetic-operations" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Addition: <code class="docutils literal notranslate"><span class="pre">+</span></code></p>
+<ul>
+<li><p>Example: <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">+</span> <span class="pre">2</span></code></p></li>
+</ul>
+</li>
+<li><p>Subtraction: <code class="docutils literal notranslate"><span class="pre">-</span></code></p>
+<ul>
+<li><p>Example: <code class="docutils literal notranslate"><span class="pre">5</span> <span class="pre">-</span> <span class="pre">3</span></code></p></li>
+</ul>
+</li>
+<li><p>Multiplication: <code class="docutils literal notranslate"><span class="pre">*</span></code></p>
+<ul>
+<li><p>Example: <code class="docutils literal notranslate"><span class="pre">2</span> <span class="pre">*</span> <span class="pre">4</span></code></p></li>
+</ul>
+</li>
+<li><p>Division: <code class="docutils literal notranslate"><span class="pre">/</span></code></p>
+<ul>
+<li><p>Example: <code class="docutils literal notranslate"><span class="pre">10</span> <span class="pre">/</span> <span class="pre">2</span></code></p></li>
+</ul>
+</li>
+<li><p>Exponentiation: <code class="docutils literal notranslate"><span class="pre">^</span></code> or <code class="docutils literal notranslate"><span class="pre">**</span></code></p>
+<ul>
+<li><p>Example: <code class="docutils literal notranslate"><span class="pre">2^3</span></code> or <code class="docutils literal notranslate"><span class="pre">2**3</span></code></p></li>
+</ul>
+</li>
+<li><p>Bitwise XOR: <code class="docutils literal notranslate"><span class="pre">^</span></code></p>
+<ul>
+<li><p>Example: <code class="docutils literal notranslate"><span class="pre">5</span> <span class="pre">^</span> <span class="pre">3</span></code></p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="comparison-operations">
+<h3>Comparison Operations<a class="headerlink" href="#comparison-operations" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Equal to: <code class="docutils literal notranslate"><span class="pre">==</span></code></p>
+<ul>
+<li><p>Example: <code class="docutils literal notranslate"><span class="pre">x</span> <span class="pre">==</span> <span class="pre">y</span></code></p></li>
+</ul>
+</li>
+<li><p>Less than: <code class="docutils literal notranslate"><span class="pre">&lt;</span></code></p>
+<ul>
+<li><p>Example: <code class="docutils literal notranslate"><span class="pre">x</span> <span class="pre">&lt;</span> <span class="pre">y</span></code></p></li>
+</ul>
+</li>
+<li><p>Less than or equal to: <code class="docutils literal notranslate"><span class="pre">&lt;=</span></code></p>
+<ul>
+<li><p>Example: <code class="docutils literal notranslate"><span class="pre">x</span> <span class="pre">&lt;=</span> <span class="pre">y</span></code></p></li>
+</ul>
+</li>
+<li><p>Greater than: <code class="docutils literal notranslate"><span class="pre">&gt;</span></code></p>
+<ul>
+<li><p>Example: <code class="docutils literal notranslate"><span class="pre">x</span> <span class="pre">&gt;</span> <span class="pre">y</span></code></p></li>
+</ul>
+</li>
+<li><p>Greater than or equal to: <code class="docutils literal notranslate"><span class="pre">&gt;=</span></code></p>
+<ul>
+<li><p>Example: <code class="docutils literal notranslate"><span class="pre">x</span> <span class="pre">&gt;=</span> <span class="pre">y</span></code></p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="logical-operations">
+<h3>Logical Operations<a class="headerlink" href="#logical-operations" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Logical AND: <code class="docutils literal notranslate"><span class="pre">and</span></code></p>
+<ul>
+<li><p>Example: <code class="docutils literal notranslate"><span class="pre">x</span> <span class="pre">and</span> <span class="pre">y</span></code></p></li>
+</ul>
+</li>
+<li><p>Logical OR: <code class="docutils literal notranslate"><span class="pre">or</span></code></p>
+<ul>
+<li><p>Example: <code class="docutils literal notranslate"><span class="pre">x</span> <span class="pre">or</span> <span class="pre">y</span></code></p></li>
+</ul>
+</li>
+<li><p>Logical NOT: <code class="docutils literal notranslate"><span class="pre">not</span></code></p>
+<ul>
+<li><p>Example: <code class="docutils literal notranslate"><span class="pre">not</span> <span class="pre">x</span></code></p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="variables">
+<h3>Variables<a class="headerlink" href="#variables" title="Permalink to this heading">#</a></h3>
+<p>Variables can be referenced by their names. They are resolved from the context in which the expression is evaluated.</p>
+<ul class="simple">
+<li><p>Example: <code class="docutils literal notranslate"><span class="pre">x</span> <span class="pre">+</span> <span class="pre">y</span></code></p></li>
+</ul>
+<p>If a variable is not defined or has a value of <code class="docutils literal notranslate"><span class="pre">None</span></code>, it will be treated as <code class="docutils literal notranslate"><span class="pre">None</span></code> in the expression.</p>
+</section>
+<section id="functions">
+<h3>Functions<a class="headerlink" href="#functions" title="Permalink to this heading">#</a></h3>
+<p>The Expression Language provides a set of built-in functions:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">max(arg1,</span> <span class="pre">arg2,</span> <span class="pre">...)</span></code>: Returns the maximum value among the arguments.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">min(arg1,</span> <span class="pre">arg2,</span> <span class="pre">...)</span></code>: Returns the minimum value among the arguments.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">len(arg)</span></code>: Returns the length of a string or a list.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">str(arg)</span></code>: Converts the argument to a string.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">strlen(arg)</span></code>: Returns the length of a string.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">case(cond1,</span> <span class="pre">val1,</span> <span class="pre">cond2,</span> <span class="pre">val2,</span> <span class="pre">...,</span> <span class="pre">default)</span></code>: Evaluates the conditions in order and returns the value associated with the first true condition. If no condition is true, the default value is returned.</p></li>
+</ul>
+</section>
+<section id="attribute-access">
+<h3>Attribute Access<a class="headerlink" href="#attribute-access" title="Permalink to this heading">#</a></h3>
+<p>Attributes of objects can be accessed using dot notation (<code class="docutils literal notranslate"><span class="pre">object.attribute</span></code>). Attribute access can be chained to navigate through nested objects.</p>
+<ul class="simple">
+<li><p>Example: <code class="docutils literal notranslate"><span class="pre">person.name</span></code>, <code class="docutils literal notranslate"><span class="pre">person.address.street</span></code></p></li>
+</ul>
+<p>When an attribute is accessed on a list, the operation is distributed over the elements of the list.</p>
+<ul class="simple">
+<li><p>Example: <code class="docutils literal notranslate"><span class="pre">persons.name</span></code> (returns a list of names)</p></li>
+</ul>
+</section>
+<section id="conditional-expressions">
+<h3>Conditional Expressions<a class="headerlink" href="#conditional-expressions" title="Permalink to this heading">#</a></h3>
+<p>Conditional expressions allow for the evaluation of different expressions based on a condition.</p>
+<ul class="simple">
+<li><p>Syntax: <code class="docutils literal notranslate"><span class="pre">&lt;expression_if_true&gt;</span> <span class="pre">if</span> <span class="pre">&lt;condition&gt;</span> <span class="pre">else</span> <span class="pre">&lt;expression_if_false&gt;</span></code></p></li>
+<li><p>Example: <code class="docutils literal notranslate"><span class="pre">&quot;Positive&quot;</span> <span class="pre">if</span> <span class="pre">x</span> <span class="pre">&gt;</span> <span class="pre">0</span> <span class="pre">else</span> <span class="pre">&quot;Non-positive&quot;</span></code></p></li>
+</ul>
+</section>
+<section id="operator-precedence">
+<h3>Operator Precedence<a class="headerlink" href="#operator-precedence" title="Permalink to this heading">#</a></h3>
+<p>The Expression Language follows the same operator precedence rules as Python. Parentheses can be used to override the default precedence order.</p>
+</section>
+</section>
+<section id="limitations">
+<h2>Limitations<a class="headerlink" href="#limitations" title="Permalink to this heading">#</a></h2>
+<p>The Expression Language has the following limitations:</p>
+<ul class="simple">
+<li><p>It does not support control flow statements such as loops or function definitions.</p></li>
+<li><p>It does not allow the use of certain potentially unsafe operations, such as <code class="docutils literal notranslate"><span class="pre">__import__</span></code>.</p></li>
+<li><p>It is designed for simple expressions and does not provide the full range of features available in Python.</p></li>
+</ul>
+</section>
+<section id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">#</a></h2>
+<p>Here are a few examples of expressions in the Expression Language:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">+</span> <span class="pre">2</span> <span class="pre">*</span> <span class="pre">3</span></code>: Evaluates to <code class="docutils literal notranslate"><span class="pre">7</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;Hello,</span> <span class="pre">&quot;</span> <span class="pre">+</span> <span class="pre">&quot;world!&quot;</span></code>: Evaluates to <code class="docutils literal notranslate"><span class="pre">&quot;Hello,</span> <span class="pre">world!&quot;</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">x</span> <span class="pre">&gt;</span> <span class="pre">10</span> <span class="pre">and</span> <span class="pre">y</span> <span class="pre">&lt;</span> <span class="pre">5</span></code>: Evaluates to <code class="docutils literal notranslate"><span class="pre">True</span></code> if <code class="docutils literal notranslate"><span class="pre">x</span></code> is greater than <code class="docutils literal notranslate"><span class="pre">10</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code> is less than <code class="docutils literal notranslate"><span class="pre">5</span></code>, otherwise <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">max(x,</span> <span class="pre">y,</span> <span class="pre">z)</span></code>: Returns the maximum value among <code class="docutils literal notranslate"><span class="pre">x</span></code>, <code class="docutils literal notranslate"><span class="pre">y</span></code>, and <code class="docutils literal notranslate"><span class="pre">z</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">person.name</span></code>: Returns the value of the <code class="docutils literal notranslate"><span class="pre">name</span></code> attribute of the <code class="docutils literal notranslate"><span class="pre">person</span></code> object.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;Positive&quot;</span> <span class="pre">if</span> <span class="pre">x</span> <span class="pre">&gt;</span> <span class="pre">0</span> <span class="pre">else</span> <span class="pre">&quot;Non-positive&quot;</span></code>: Returns <code class="docutils literal notranslate"><span class="pre">&quot;Positive&quot;</span></code> if <code class="docutils literal notranslate"><span class="pre">x</span></code> is greater than <code class="docutils literal notranslate"><span class="pre">0</span></code>, otherwise returns <code class="docutils literal notranslate"><span class="pre">&quot;Non-positive&quot;</span></code>.</p></li>
+</ul>
+<p>This documentation provides an overview of the Expression Language and its supported features. It is independent of any specific implementation or programming language.</p>
 </section>
 </section>
 
@@ -398,23 +501,23 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="sql-databases.html">
+          <a class="next-page" href="../data/index.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Working with data in SQL Databases</div>
+                <div class="title">Working with Data</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="csvs.html">
+          <a class="prev-page" href="metamodel.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">CSVs and Tabular Data</div>
+                <div class="title">The metamodel</div>
                 
               </div>
             </a>
@@ -448,10 +551,21 @@
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">Python</a><ul>
-<li><a class="reference internal" href="#dataclasses">Dataclasses</a></li>
-<li><a class="reference internal" href="#use-in-programs">Use in programs</a></li>
-<li><a class="reference internal" href="#loaders-and-dumpers">Loaders and dumpers</a></li>
+<li><a class="reference internal" href="#">Expression Language</a><ul>
+<li><a class="reference internal" href="#syntax">Syntax</a><ul>
+<li><a class="reference internal" href="#literals">Literals</a></li>
+<li><a class="reference internal" href="#arithmetic-operations">Arithmetic Operations</a></li>
+<li><a class="reference internal" href="#comparison-operations">Comparison Operations</a></li>
+<li><a class="reference internal" href="#logical-operations">Logical Operations</a></li>
+<li><a class="reference internal" href="#variables">Variables</a></li>
+<li><a class="reference internal" href="#functions">Functions</a></li>
+<li><a class="reference internal" href="#attribute-access">Attribute Access</a></li>
+<li><a class="reference internal" href="#conditional-expressions">Conditional Expressions</a></li>
+<li><a class="reference internal" href="#operator-precedence">Operator Precedence</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#limitations">Limitations</a></li>
+<li><a class="reference internal" href="#examples">Examples</a></li>
 </ul>
 </li>
 </ul>
