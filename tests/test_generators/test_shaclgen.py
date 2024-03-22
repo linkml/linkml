@@ -253,3 +253,16 @@ def test_ifabsent(input_path):
         datatype=ShaclDataType.URI.uri_ref,
     )
     check_slot_default_value(URIRef("https://w3id.org/linkml/tests/kitchen_sink/ifabsent_not_literal"), "heartfelt")
+
+
+def test_custom_class_range_is_blank_node_or_iri(input_path):
+    shacl = ShaclGenerator(input_path("shaclgen_custom_class_range.yaml"), mergeimports=True).serialize()
+
+    g = rdflib.Graph()
+    g.parse(data=shacl)
+
+    container_properties = g.objects(URIRef("https://w3id.org/linkml/examples/personinfo/Container"), SH.property)
+    persons_node = next(container_properties, None)
+    assert persons_node
+
+    assert (persons_node, SH.nodeKind, SH.BlankNodeOrIRI) in g

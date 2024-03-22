@@ -14,7 +14,7 @@ def test_jsonschema_validation(input_path):
     with pytest.raises(
         RuntimeError,
         match="Multiple potential target "
-        r"classes found: \['(Container|annotation)', '(Container|annotation)'\]. "
+        r"classes found: \[('Container'|'annotation'), ('Container'|'annotation')\]. "
         "Please specify a target using --target-class "
         "or by adding tree_root: true to the relevant class in the schema",
     ):

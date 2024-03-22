@@ -417,6 +417,7 @@ def _make_schema(
     post_process: Callable = None,
     merge_type_imports=True,
     imported_schemas: List[Dict] = None,
+    mappings: Optional[Dict[str, Any]] = None,
     **kwargs,
 ) -> Tuple[Dict, List]:
     """
@@ -464,7 +465,8 @@ def _make_schema(
                 schema["prefixes"]["linkml"] = "https://w3id.org/linkml/"
     else:
         schema = deepcopy(schema)
-
+    if mappings is not None:
+        schema["_mappings"] = mappings
     if classes is not None:
         schema["classes"].update(classes)
     if slots is not None:
