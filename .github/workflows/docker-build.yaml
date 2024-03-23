@@ -18,7 +18,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
         with:
-          fetch-tags: true
           fetch-depth: 100
 
       - name: Docker metadata
