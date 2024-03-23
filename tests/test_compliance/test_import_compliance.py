@@ -16,6 +16,8 @@ from tests.test_compliance.helper import (
     ValidationBehavior,
     check_data,
     validated_schema,
+    SHACL,
+    SQL_DDL_SQLITE,
 )
 from tests.test_compliance.test_compliance import (
     CLASS_C,
@@ -279,6 +281,66 @@ def test_import_name_clash(framework):
         instance,
         True,
         target_class=CLASS_C,
+        expected_behavior=expected_behavior,
+        description="alias",
+        exclude_rdf=True,
+    )
+
+
+@pytest.mark.network
+@pytest.mark.slow
+@pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
+@pytest.mark.parametrize("valid", [True, False])
+def test_import_metamodel(framework, valid):
+    """
+    Tests importing the metamodel works.
+    :return:
+    """
+    root_class_name = "DerivedSchema"
+    slots = {
+        SLOT_S1: {
+            "range": "string",
+            "required": True,
+        },
+    }
+    classes = {
+        root_class_name: {
+            "is_a": "schema_definition",
+            "slots": [SLOT_S1],
+        },
+    }
+
+    schema_name = "default"
+    if framework == SHACL:
+        pytest.skip("https://github.com/linkml/linkml/pull/2014")
+    schema = validated_schema(
+        test_import_metamodel,
+        schema_name,
+        framework,
+        imports=["linkml:meta", "linkml:meta"],
+        classes=classes,
+        slots=slots,
+        prefixes={"schema": "http://schema.org/"},
+        core_elements=["import"],
+        merge_type_imports=False,
+    )
+    if framework == SQL_DDL_SQLITE:
+        pytest.skip("sqla issue")
+    expected_behavior = ValidationBehavior.IMPLEMENTS
+    data_name = f"my_derived_schema_{valid}"
+    instance = {
+        "id": f"http://example.org/my-derived-schema-{valid}",
+        "name": data_name,
+    }
+    if valid:
+        instance[SLOT_S1] = "x"
+    check_data(
+        schema,
+        data_name,
+        framework,
+        instance,
+        valid,
+        target_class=root_class_name,
         expected_behavior=expected_behavior,
         description="alias",
         exclude_rdf=True,
