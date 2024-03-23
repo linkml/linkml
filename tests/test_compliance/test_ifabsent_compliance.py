@@ -11,7 +11,6 @@ from tests.test_compliance.helper import (
     OWL,
     PYDANTIC,
     PYTHON_DATACLASSES,
-    SHACL,
     SQL_DDL_SQLITE,
     ValidationBehavior,
     check_data,

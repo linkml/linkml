@@ -2,7 +2,7 @@ import re
 from typing import Any, Callable, Optional
 
 from linkml_runtime import SchemaView
-from linkml_runtime.linkml_model import SlotDefinition, ClassDefinition
+from linkml_runtime.linkml_model import SlotDefinition
 from rdflib import SH, Literal, URIRef
 from rdflib.term import Identifier
 
