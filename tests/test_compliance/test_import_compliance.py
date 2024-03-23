@@ -13,11 +13,11 @@ import rdflib
 from tests.test_compliance.helper import (
     JSONLD_CONTEXT,
     PYDANTIC,
+    SHACL,
+    SQL_DDL_SQLITE,
     ValidationBehavior,
     check_data,
     validated_schema,
-    SHACL,
-    SQL_DDL_SQLITE,
 )
 from tests.test_compliance.test_compliance import (
     CLASS_C,
