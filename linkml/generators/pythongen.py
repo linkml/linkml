@@ -480,7 +480,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
         :param cls: class containing variables to be rendered in inheritance hierarchy
         :return: variable declarations for target class and its ancestors
         """
-        domain_slots = self.sort_slots(self.domain_slots(cls))
+        domain_slots = self.sort_slots(self.class_slots(cls))
         initializers = [self.gen_class_variable(cls, slot, False) for slot in domain_slots]
         return "\n\t".join(initializers)
 
@@ -630,12 +630,15 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
         post_inits = []
         post_inits_designators = []
 
-        domain_slots = self.sort_slots(self.domain_slots(cls))
+        # separate induced/inherited type designator slots from owned domain slots,
+        # these have to be executed after the super() call
+        domain_slots = self.domain_slots(cls)
         induced_slots = [s for s in self.schemaview.class_induced_slots(cls.name) if s.designates_type]
         induced_names = set([s.name for s in induced_slots]) - set([s.name for s in domain_slots])
-        domain_slots += [s for s in induced_slots if s.name in induced_names]
 
-        for slot in domain_slots:
+        all_slots = self.sort_slots(self.class_slots(cls))
+
+        for slot in all_slots:
             generated = self.gen_postinit(cls, slot)
             if slot.name not in induced_names:
                 post_inits.append(generated)
@@ -871,19 +874,36 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
         return "\n\t\t".join(rlines)
 
     def primary_keys_for(self, cls: ClassDefinition) -> List[SlotDefinitionName]:
-        """Return the primary key for cls.
-
-        Note: At the moment we return at most one entry.  At some point, keys will be expanded to support
-              composite keys.
+        """
+        Return the primary keys for cls.
 
         @param cls: class to get keys for
         @return: List of primary keys or identifiers
         """
-        return [
-            slot_name
-            for slot_name in cls.slots
-            if self.schema.slots[slot_name].key or self.schema.slots[slot_name].identifier
+        return [slot.name for slot in self.all_slots(cls) if slot.key or slot.identifier]
+
+    def class_slots(self, cls: ClassDefinition) -> List[SlotDefinition]:
+        """
+        All the slots that need to be defined on this class specifically -
+        domain slots, identifiers, and primary keys.
+        The rest are defined in the parent classes.
+
+        literally :meth:`.domain_slots` + :meth:`primary_keys_for`
+
+        Args:
+            cls ( :class:`.ClassDefinition` ):
+
+        Returns:
+            list[SlotDefinition]
+        """
+        domain_slots = self.domain_slots(cls)
+        domain_slot_names = [d.name for d in domain_slots]
+        class_slots = [
+            slot
+            for slot in self.all_slots(cls)
+            if slot.name in domain_slot_names or slot.required or slot.identifier or slot.key or slot.designates_type
         ]
+        return class_slots
 
     def key_name_for(self, class_name: ClassDefinitionName) -> Optional[str]:
         for slot_name in self.primary_keys_for(self.schema.classes[class_name]):
