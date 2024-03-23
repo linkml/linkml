@@ -2,10 +2,11 @@ name: Build Docker Image
 
 on:
   push:
-    branches:
-      - "main"
+#    branches:
+#      - "main"
     tags:
-      - "v*"
+     # - "v*"
+      - "*"
   pull_request:
     branches:
       - "main"
@@ -18,8 +19,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
         with:
-          fetch-tags: true
           fetch-depth: 100
+          fetch-tags: ${{ github.event_name == 'push' && !contains(github.ref, 'refs/tags/') }}
 
       - name: Docker metadata
         uses: docker/metadata-action@v4
