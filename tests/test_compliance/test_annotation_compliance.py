@@ -12,9 +12,9 @@ import rdflib
 
 from tests.test_compliance.helper import (
     OWL,
-    validated_schema,
     ValidationBehavior,
     check_data,
+    validated_schema,
 )
 from tests.test_compliance.test_compliance import CLASS_C, CORE_FRAMEWORKS, SLOT_S1
 
