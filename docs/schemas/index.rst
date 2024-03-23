@@ -32,5 +32,6 @@ use the guide below.
    derived-models
    annotations
    metamodel
+   expression-language
 
 .. seealso:: `Programmatic example in a Jupyter Notebook <https://github.com/linkml/linkml/blob/main/notebooks/examples.ipynb>`_

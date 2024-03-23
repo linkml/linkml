@@ -274,6 +274,8 @@ class OwlSchemaGenerator(Generator):
                 self.graph.add((uri, metaslot_uri, obj))
 
         for k, v in e.annotations.items():
+            if isinstance(v, dict) or isinstance(v, list):
+                continue
             if ":" not in k:
                 default_prefix = this_sv.schema.default_prefix
                 if default_prefix in this_sv.schema.prefixes:
