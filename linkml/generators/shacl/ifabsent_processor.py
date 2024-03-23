@@ -23,7 +23,9 @@ class IfAbsentProcessor:
     def __init__(self, schema_view: SchemaView):
         self.schema_view = schema_view
 
-    def process_slot(self, add_prop: Callable[[URIRef, Identifier], None], slot: SlotDefinition, class_uri: Optional[URIRef]=None) -> None:
+    def process_slot(
+        self, add_prop: Callable[[URIRef, Identifier], None], slot: SlotDefinition, class_uri: Optional[URIRef] = None
+    ) -> None:
         if slot.ifabsent:
             ifabsent_match = self.ifabsent_regex.search(slot.ifabsent)
             ifabsent_default_value = ifabsent_match.group("default_value")
@@ -31,7 +33,11 @@ class IfAbsentProcessor:
             self._map_to_default_value(slot, add_prop, ifabsent_default_value, class_uri)
 
     def _map_to_default_value(
-        self, slot: SlotDefinition, add_prop: Callable[[URIRef, Identifier], None], ifabsent_default_value: Any, class_uri: Optional[URIRef]=None
+        self,
+        slot: SlotDefinition,
+        add_prop: Callable[[URIRef, Identifier], None],
+        ifabsent_default_value: Any,
+        class_uri: Optional[URIRef] = None,
     ) -> None:
         for datatype in list(ShaclDataType):
             if datatype.linkml_type == slot.range:

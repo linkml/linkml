@@ -60,9 +60,7 @@ def test_ifabsent(framework, schema_name, range, ifabsent, data_name, initial_va
     if range == CLASS_D:
         classes[CLASS_D] = {"attributes": {SLOT_ID: {"range": "string", "identifier": True}}}
     try:
-        schema = validated_schema(
-            test_ifabsent, schema_name, framework, classes=classes, core_elements=["ifabsent"]
-        )
+        schema = validated_schema(test_ifabsent, schema_name, framework, classes=classes, core_elements=["ifabsent"])
     except ValueError as e:
         if schema_valid:
             raise e
