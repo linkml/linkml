@@ -131,5 +131,5 @@ def test_annotation(
         True,
         target_class=CLASS_C,
         expected_behavior=ValidationBehavior.IMPLEMENTS,
-        description=f"trivial data test, mainly serves to check there is no edge case issues",
+        description="trivial data test, mainly serves to check there is no edge case issues",
     )
