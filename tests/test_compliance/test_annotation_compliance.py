@@ -12,7 +12,7 @@ import rdflib
 
 from tests.test_compliance.helper import (
     OWL,
-    validated_schema,
+    validated_schema, ValidationBehavior, check_data,
 )
 from tests.test_compliance.test_compliance import CLASS_C, CORE_FRAMEWORKS, SLOT_S1
 
@@ -27,10 +27,10 @@ EX = rdflib.Namespace("http://example.org/")
         ("empty", {}, {}),
         ("slot_num", {"foo": 1}, {}),
         ("slot_str", {"foo": "v1"}, {}),
-        ("slot_obj", {"foo": {"bar": "v1"}}, {}),
+        ("slot_nested_obj", {"foo": {"bar": "v1"}}, {}),
         ("class_num", {}, {"foo": 1}),
         ("class_str", {}, {"foo": "v1"}),
-        ("class_obj", {}, {"foo": {"bar": "v1"}}),
+        ("class_nested_obj", {}, {"foo": {"bar": "v1"}}),
         ("slot_incomplete", {"foo": None}, None),
         ("class_incomplete", None, {"foo": None}),
     ],
@@ -56,11 +56,10 @@ def test_annotation(
     is not yet implemented.
 
     :param framework: some frameworks like sqlite do not support annotations
-    :param annotation_name: name of the annotation
-    :param annotation_desc: description of the annotation
-    :param pvs: permissible values
-    :param value: value to check
-    :param include_meaning: whether to include the meaning in the annotation
+    :param name: name of the test
+    :param slot_annotations: slot annotations
+    :param class_annotations: class annotations
+    :param is_valid: whether the schema is valid
     :return:
     """
 
@@ -92,6 +91,7 @@ def test_annotation(
         class_annotations["class_metaslot"] = "..."
     if not is_valid:
         pytest.skip("TODO: test invalid annotations")
+    print(triples if "nested" not in name else None)
     classes = {
         "MetaclassM": {
             "attributes": {
@@ -109,17 +109,25 @@ def test_annotation(
             "annotations": anns(class_annotations),
             "instantiates": ["MetaclassM"],
             "_mappings": {
-                OWL: triples,
+                OWL: triples if "nested" not in name else None,
             },
         },
     }
-    if framework == OWL and (isinstance(slot_annotations, dict) or isinstance(class_annotations, dict)):
-        pytest.skip("TODO: Nested OWL slot annotations")
 
-    _schema = validated_schema(
+    schema = validated_schema(
         test_annotation,
         name,
         framework,
         classes=classes,
         core_elements=["annotations"],
+    )
+    check_data(
+        schema,
+        "null_data",
+        framework,
+        {SLOT_S1: "foo"},
+        True,
+        target_class=CLASS_C,
+        expected_behavior=ValidationBehavior.IMPLEMENTS,
+        description=f"trivial data test, mainly serves to check there is no edge case issues",
     )
