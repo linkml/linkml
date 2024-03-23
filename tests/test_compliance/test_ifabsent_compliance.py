@@ -2,8 +2,6 @@
 
 # TODO: structured patterns
 
-import re
-
 import pytest
 
 from tests.test_compliance.helper import (
