@@ -732,7 +732,7 @@ message ChemicalOrDrugOrTreatmentToDiseaseOrPhenotypicFeatureAssociation
   fDAIDAAdverseEventEnum fDAAdverseEventLevel = 0
   predicateType predicate = 0
  }
-// 	A role played by the molecular entity or part thereof within a chemical context.
+// A role played by the molecular entity or part thereof within a chemical context.
 message ChemicalRole
  {
   string id = 0

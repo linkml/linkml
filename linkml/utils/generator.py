@@ -83,11 +83,11 @@ class Generator(metaclass=abc.ABCMeta):
     For usage `Generator Docs <https://linkml.io/linkml/generators/>`_
     """
 
-    # ClassVars
     schema: Union[str, TextIO, SchemaDefinition, "Generator"]
     """metamodel compliant schema.  Can be URI, file name, actual schema, another generator, an
         open file or a pre-parsed schema"""
 
+    # ClassVars
     generatorname: ClassVar[str] = None
     """ Name of the generator. Override with os.path.basename(__file__)"""
 
@@ -159,7 +159,8 @@ class Generator(metaclass=abc.ABCMeta):
     """True means output is to a directory, False is to stdout"""
 
     base_dir: str = None  # Base directory of schema
-    """Working directory or base URL of sources"""
+    """Working directory or base URL of sources.
+    Setting this is necessary for correct retrieval of relative imports."""
 
     metamodel_name_map: Dict[str, str] = None
     """Allows mapping of names of metamodel elements such as slot, etc"""
@@ -196,8 +197,8 @@ class Generator(metaclass=abc.ABCMeta):
         if self.uses_schemaloader:
             self._initialize_using_schemaloader(schema)
         else:
-            logging.info(f"Using SchemaView with im={self.importmap}")
-            self.schemaview = SchemaView(schema, importmap=self.importmap)
+            logging.info(f"Using SchemaView with im={self.importmap} // base_dir={self.base_dir}")
+            self.schemaview = SchemaView(schema, importmap=self.importmap, base_dir=self.base_dir)
             self.schema = self.schemaview.schema
         self._init_namespaces()
 

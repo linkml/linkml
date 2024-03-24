@@ -80,7 +80,6 @@ class ContextGenerator(Generator):
                     self.namespaces[self.schema.name] = default_uri
                     self.emit_prefixes.add(self.schema.name)
             self.context_body["@vocab"] = default_uri
-            # self.context_body['@base'] = self.base_dir
 
     def end_schema(
         self,

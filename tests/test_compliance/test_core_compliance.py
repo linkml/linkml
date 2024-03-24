@@ -631,7 +631,7 @@ def test_identifier_is_required(framework, required_asserted, data_name, instanc
         }
     }
     schema = validated_schema(
-        test_cardinality,
+        test_identifier_is_required,
         f"requiredEQ_{required_asserted}",
         framework,
         classes=classes,
