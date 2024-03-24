@@ -1,11 +1,11 @@
-id: mixed_shape_array
-name: mixed_shape_array
-title: mixed_shape_array
+id: complex_dimensions_array
+name: complex_dimensions_array
+title: complex_dimensions_array
 imports:
   - linkml:types
 
 classes:
-  MixedAnyShapeArray:
+  ComplexAnyShapeArray:
     attributes:
       array:
         range: integer
@@ -22,7 +22,7 @@ classes:
             - alias: exact_card
               exact_cardinality: 6
 
-  MixedMinShapeArray:
+  ComplexMinShapeArray:
     attributes:
       array:
         range: integer
@@ -40,7 +40,7 @@ classes:
             - alias: exact_card
               exact_cardinality: 6
 
-  MixedMaxShapeArray:
+  ComplexMaxShapeArray:
     attributes:
       array:
         range: integer
@@ -57,7 +57,7 @@ classes:
             - alias: exact_card
               exact_cardinality: 6
 
-  MixedRangeShapeArray:
+  ComplexRangeShapeArray:
     attributes:
       array:
         range: integer
@@ -75,7 +75,7 @@ classes:
             - alias: exact_card
               exact_cardinality: 6
 
-  MixedExactShapeArray:
+  ComplexExactShapeArray:
     attributes:
       array:
         range: integer
@@ -93,11 +93,11 @@ classes:
               exact_cardinality: 6
 
 
-  MixedNoOpExactShapeArray:
+  ComplexNoOpExactShapeArray:
     description: |
-      When the exact number of dimensions is equal to the number of labeled dimensions, 
+      When the exact number of dimensions is equal to the number of parameterized dimensions, 
       the representation should be the same as if it hadn't been specified.
-      Test if this model is equivalent to labeled_shape.yaml/LabeledArray
+      Test if this model is equivalent to parameterized_dimensions.yaml/ParameterizedArray
     attributes:
       array:
         range: integer
@@ -114,7 +114,7 @@ classes:
             - alias: exact_card
               exact_cardinality: 6
 
-  MixedImplicitExactShapeArray:
+  ComplexImplicitExactShapeArray:
     description: |
       When minimum and maximum number of dimensions are equal, the result should be the same as specifying exact dimensions
         attributes:

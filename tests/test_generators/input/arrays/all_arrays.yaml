@@ -4,6 +4,6 @@ title: all_arrays
 imports:
   - linkml:types
   - any_shape
-  - anonymous_shape
-  - labeled_shape
-  - mixed_shape
+  - bounded_dimensions
+  - parameterized_dimensions
+  - complex_dimensions

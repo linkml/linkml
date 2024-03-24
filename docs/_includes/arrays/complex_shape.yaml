@@ -1,6 +1,6 @@
-id: mixed_shape_array
-name: mixed_shape_array
-title: mixed_shape_array
+id: complex_shape_array
+name: complex_shape_array
+title: complex_shape_array
 imports:
   - linkml:types
 
@@ -15,7 +15,7 @@ classes:
             - alias: max_card
               maximum_cardinality: 5
 
-  MixedMaxShapeArray:
+  ComplexMaxShapeArray:
     attributes:
       array:
         range: integer
@@ -32,7 +32,7 @@ classes:
             - alias: exact_card
               exact_cardinality: 6
 
-  MixedRangeShapeArray:
+  ComplexRangeShapeArray:
     attributes:
       array:
         range: integer
@@ -50,7 +50,7 @@ classes:
             - alias: exact_card
               exact_cardinality: 6
 
-  MixedExactShapeArray:
+  ComplexExactShapeArray:
     attributes:
       array:
         range: integer

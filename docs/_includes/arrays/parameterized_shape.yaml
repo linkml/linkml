@@ -1,6 +1,6 @@
-id: labeled_shape_array
-name: labeled_shape_array
-title: labeled_shape_array
+id: parameterized_shape_array
+name: parameterized_shape_array
+title: parameterized_shape_array
 imports:
   - linkml:types
 
@@ -42,7 +42,7 @@ classes:
               minimum_cardinality: 2
               maximum_cardinality: 5
 
-  LabeledArray:
+  ParameterizedArray:
     attributes:
       array:
         range: integer

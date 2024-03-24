@@ -251,12 +251,13 @@ The minimum size of this dimension (inclusive). If `None`, no minimum is set
 The exact size of this dimension. Equivalent to `minimum_cardinality` and `maximum_cardinality` being equal `int`s
 ```
 
+(array-forms)=
 ### Shape Forms
 
 The combinations of the different {class}`.ArrayExpression` properties imply four NDArray forms:
 
 - [Any Shape](AnyShapeArrays) - Arrays without limits to their shape
-- [Anonymous Shape](AnonymousShape) - Arrays with constraints on the number of dimensions without further parameterization
+- [Bounded Shape](BoundedShape) - Arrays with constraints on the number of dimensions without further parameterization
 - [Parameterized Shape](ParameterizedShape) - Arrays with parameterized dimensions
 - [Complex Shape](ComplexShape) - Arrays with both numeric constraints and parameterized dimensions
 
@@ -319,10 +320,10 @@ This is a technical limitation in {class}`.SchemaView` - see [`linkml-model#189`
 
 ````
 
-(AnonymousShape)=
-#### Anonymous
+(BoundedShape)=
+#### Bounded
 
-We have already seen so-called "Anonymous" shaped arrays, which don't add any additional parameterization beyond
+We have already seen so-called "Bounded" shaped arrays, which don't add any additional parameterization beyond
 the number of their dimensions.
 
 The `maximum_`, `minimum_`, and `exact_number_dimensions` properties can be used in combination to indicate...
@@ -333,7 +334,7 @@ A minimum without a maximum, using the {class}`AnyShapeArray` model internally -
 ---
 tags: ['hide-input']
 ---
-sch = schemas / 'anonymous_shape.yaml'
+sch = schemas / 'bounded_shape.yaml'
 render_comparison(sch, 'MinDimensions')
 ```
 
@@ -343,7 +344,7 @@ A maximum without a minimum -
 ---
 tags: ['hide-input']
 ---
-sch = schemas / 'anonymous_shape.yaml'
+sch = schemas / 'bounded_shape.yaml'
 render_comparison(sch, 'MaxDimensions')
 ```
 
@@ -353,7 +354,7 @@ An exact number of dimensions -
 ---
 tags: ['hide-input']
 ---
-sch = schemas / 'anonymous_shape.yaml'
+sch = schemas / 'bounded_shape.yaml'
 render_comparison(sch, 'ExactDimensions')
 ```
 
@@ -363,7 +364,7 @@ And a range of dimensions -
 ---
 tags: ['hide-input']
 ---
-sch = schemas / 'anonymous_shape.yaml'
+sch = schemas / 'bounded_shape.yaml'
 render_comparison(sch, 'RangeDimensions')
 ```
 
@@ -372,7 +373,7 @@ render_comparison(sch, 'RangeDimensions')
 
 Dimensions can be further parameterized, giving them names and cardinality constraints.
 
-Similarly to anonymous arrays, the following demonstrate setting a single-dimensional array with cardinality constraints...
+Similarly to bounded arrays, the following demonstrate setting a single-dimensional array with cardinality constraints...
 
 Minimum cardinality:
 
@@ -380,7 +381,7 @@ Minimum cardinality:
 ---
 tags: ['hide-input']
 ---
-sch = schemas / 'labeled_shape.yaml'
+sch = schemas / 'parameterized_shape.yaml'
 render_comparison(sch, 'MinCard')
 ```
 
@@ -390,7 +391,7 @@ Maximum cardinality:
 ---
 tags: ['hide-input']
 ---
-sch = schemas / 'labeled_shape.yaml'
+sch = schemas / 'parameterized_shape.yaml'
 render_comparison(sch, 'MaxCard')
 ```
 
@@ -400,7 +401,7 @@ Exact cardinality:
 ---
 tags: ['hide-input']
 ---
-sch = schemas / 'labeled_shape.yaml'
+sch = schemas / 'parameterized_shape.yaml'
 render_comparison(sch, 'ExactCard')
 ```
 
@@ -410,7 +411,7 @@ Cardinality range:
 ---
 tags: ['hide-input']
 ---
-sch = schemas / 'labeled_shape.yaml'
+sch = schemas / 'parameterized_shape.yaml'
 render_comparison(sch, 'RangeCard')
 ```
 
@@ -427,10 +428,10 @@ And they can be used together, for example one can specify
 ---
 tags: ['hide-input']
 ---
-sch = schemas / 'labeled_shape.yaml'
-render_comparison(sch, 'LabeledArray')
-labeled_mod = compile_module(sch)
-LabeledArray = getattr(labeled_mod, 'LabeledArray')
+sch = schemas / 'parameterized_shape.yaml'
+render_comparison(sch, 'ParameterizedArray')
+parameterized_mod = compile_module(sch)
+ParameterizedArray = getattr(parameterized_mod, 'ParameterizedArray')
 ```
 
 Which validates each of the constraints separately:
@@ -439,7 +440,7 @@ Which validates each of the constraints separately:
 array = np.arange(4*1*2*6,dtype=int).reshape((4,1,2,6))
 # array = np.ones((4,1,2,6), dtype=int)
 
-console.print(LabeledArray(array=array))
+console.print(ParameterizedArray(array=array))
 ```
 
 (ComplexShape)=
@@ -460,8 +461,8 @@ For example:
 ---
 tags: ['hide-input']
 ---
-sch = schemas / 'mixed_shape.yaml'
-render_comparison(sch, 'MixedRangeShapeArray')
+sch = schemas / 'complex_shape.yaml'
+render_comparison(sch, 'ComplexRangeShapeArray')
 ```
 
 The only place where the syntax of complex arrays differ is that `minimum` and `maximum_number_dimensions`
@@ -473,7 +474,7 @@ set `maximum_number_dimensions` to `False` :
 ---
 tags: ['hide-input']
 ---
-sch = schemas / 'mixed_shape.yaml'
+sch = schemas / 'complex_shape.yaml'
 render_comparison(sch, 'ComplexAnyShapeArray')
 ```
 
@@ -483,7 +484,7 @@ render_comparison(sch, 'ComplexAnyShapeArray')
 
 At releast, only pydanticgen supports arrays, but arrays will be implemented gradually for the rest of the generators.
 
-| generator                 | representation | anyshape | anonymous | labeled | mixed |
+| generator                 | representation | anyshape | bounded | parameterized | complex |
 |---------------------------|----------------|----------|-----------|---------|-------|
 | [pydantic](pydanticgen)   | List of Lists  | Y        | Y         | Y       | Y     |
 | [pydantic](pydanticgen)   | Numpydantic    | X        | X         | X       | X     |

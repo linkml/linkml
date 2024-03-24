@@ -1,20 +1,18 @@
-id: error_mixed_unbounded
-name: error_mixed_unbounded
-title: error_mixed_unbounded
+id: error_complex_dimensions
+name: error_complex_dimensions
+title: error_complex_dimensions
 imports:
   - linkml:types
 
 classes:
-  MixedUnboundedShapeArray:
+  ComplexTooLowExactShapeArray:
     description: |
-      When we specify a minimum number of dimensions without a max (or setting max to False) in a mixed array,
-      we should throw an error - min without a max is undefined behavior, to set unbounded we need the max to be
-      explicitly false.
+      When exact_number_dimensions is below the number of parameterized dimensions, we should throw an error
     attributes:
       array:
         range: integer
         array:
-          minimum_number_dimensions: 5
+          exact_number_dimensions: 2
           dimensions:
             - alias: max_card
               maximum_cardinality: 5

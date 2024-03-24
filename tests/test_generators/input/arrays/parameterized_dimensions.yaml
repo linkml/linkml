@@ -1,11 +1,11 @@
-id: labeled_shape_array
-name: labeled_shape_array
-title: labeled_shape_array
+id: parameterized_dimensions_array
+name: parameterized_dimensions_array
+title: parameterized_dimensions_array
 imports:
   - linkml:types
 
 classes:
-  LabeledArray:
+  ParameterizedArray:
     attributes:
       array:
         range: integer

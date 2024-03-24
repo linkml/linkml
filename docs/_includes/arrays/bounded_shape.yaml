@@ -1,6 +1,6 @@
-id: anonymous_shape_array
-name: anonymous_shape_array
-title: anonymous_shape_array
+id: bounded_shape_array
+name: bounded_shape_array
+title: bounded_shape_array
 imports:
   - linkml:types
 default_range: integer
