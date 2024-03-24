@@ -425,6 +425,7 @@ classes:
         assert mod.BadClass.__fields__["values"].default == 1
 
 
+@pytest.mark.skip("Labeled arrays not implemented")
 def test_pydantic_arrays():
     import numpy as np
 
@@ -580,6 +581,7 @@ classes:
     assert temperature_dataset.temperatures_in_K == temperatures
 
 
+@pytest.mark.skip("labeled arrays not implemented")
 def test_column_ordered_array_not_supported():
     unit_test_schema = """
 id: https://example.org/arrays

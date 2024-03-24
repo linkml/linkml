@@ -2,7 +2,6 @@ import inspect
 import logging
 import os
 from collections import defaultdict
-from copy import deepcopy
 from dataclasses import dataclass
 from pathlib import Path
 from types import ModuleType
@@ -15,13 +14,13 @@ from jinja2 import ChoiceLoader, Environment, FileSystemLoader
 from linkml_runtime.linkml_model.meta import (
     Annotation,
     ClassDefinition,
-    SchemaDefinition,
     SlotDefinition,
     TypeDefinition,
 )
 from linkml_runtime.utils.compile_python import compile_python
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.schemaview import SchemaView
+from pydantic import BaseModel
 from pydantic.version import VERSION as PYDANTIC_VERSION
 
 from linkml._version import __version__
@@ -94,6 +93,15 @@ DEFAULT_IMPORTS = (
         ),
     )
 )
+
+
+class ClassResult(BaseModel):
+    """
+    TODO: Merge with BuildResult when array implementations is merged
+    """
+
+    cls: PydanticClass
+    imports: Optional[List[Import]] = None
 
 
 @dataclass
@@ -200,6 +208,10 @@ class PydanticGenerator(OOCodeGenerator):
     genmeta: bool = False
     emit_metadata: bool = True
 
+    # Private attributes
+    _predefined_slot_values: Optional[Dict[str, Dict[str, str]]] = None
+    _class_bases: Optional[Dict[str, List[str]]] = None
+
     def compile_module(self, **kwargs) -> ModuleType:
         """
         Compiles generated python code to a module
@@ -246,42 +258,141 @@ class PydanticGenerator(OOCodeGenerator):
                 raise ValueError(f"could not find suitable element in {clist} that does not ref {slist}")
         return slist
 
-    def get_predefined_slot_values(self) -> Dict[str, Dict[str, str]]:
+    def generate_class(self, cls: ClassDefinition) -> ClassResult:
+        pyclass = PydanticClass(
+            name=camelcase(cls.name),
+            bases=self.class_bases.get(cls.name, PydanticBaseModel.default_name),
+            description=cls.description.replace('"', '\\"') if cls.description is not None else None,
+            pydantic_ver=self.pydantic_version,
+        )
+
+        attributes = {}
+        for sn in self.schemaview.class_slots(cls.name):
+            slot = self.generate_slot(self.schemaview.induced_slot(sn, cls.name), cls)
+            # TODO: handle imports and a proper slot result
+            attributes[slot.name] = slot
+
+        pyclass.attributes = attributes
+        return ClassResult(cls=pyclass)
+
+    def generate_slot(self, slot: SlotDefinition, cls: ClassDefinition) -> PydanticAttribute:
+        slot_args = {
+            k: slot._as_dict.get(k, None)
+            for k in PydanticAttribute.model_fields.keys()
+            if slot._as_dict.get(k, None) is not None
+        }
+        slot_args["name"] = underscore(slot.name)
+        slot_args["description"] = slot.description.replace('"', '\\"') if slot.description is not None else None
+        predef = self.predefined_slot_values.get(cls.name, {}).get(slot.name, None)
+        if predef is not None:
+            slot_args["predefined"] = str(predef)
+
+        pyslot = PydanticAttribute(**slot_args)
+
+        slot_ranges = []
+        # Confirm that the original slot range (ignoring the default that comes in from
+        # induced_slot) isn't in addition to setting any_of
+        any_of_ranges = [a.range if a.range else slot.range for a in slot.any_of]
+        if any_of_ranges:
+            # list comprehension here is pulling ranges from within AnonymousSlotExpression
+            slot_ranges.extend(any_of_ranges)
+        else:
+            slot_ranges.append(slot.range)
+
+        pyranges = [self.generate_python_range(slot_range, slot, cls) for slot_range in slot_ranges]
+
+        pyranges = list(set(pyranges))  # remove duplicates
+        pyranges.sort()
+
+        if len(pyranges) == 1:
+            pyrange = pyranges[0]
+        elif len(pyranges) > 1:
+            pyrange = f"Union[{', '.join(pyranges)}]"
+        else:
+            raise Exception(f"Could not generate python range for {cls.name}.{slot.name}")
+
+        if slot.multivalued:
+            if slot.inlined or slot.inlined_as_list:
+                collection_key = self.generate_collection_key(slot_ranges, slot, cls)
+            else:
+                collection_key = None
+            if slot.inlined is False or collection_key is None or slot.inlined_as_list is True:
+                pyrange = f"List[{pyrange}]"
+            else:
+                simple_dict_value = None
+                if len(slot_ranges) == 1:
+                    simple_dict_value = self._inline_as_simple_dict_with_value(slot)
+                if simple_dict_value:
+                    # inlining as simple dict
+                    pyrange = f"Dict[str, {simple_dict_value}]"
+                else:
+                    pyrange = f"Dict[{collection_key}, {pyrange}]"
+        if not (slot.required or slot.identifier or slot.key) and not slot.designates_type:
+            pyrange = f"Optional[{pyrange}]"
+        ann = Annotation("python_range", pyrange)
+        pyslot.annotations = {ann.tag: ann}
+        return pyslot
+
+    @property
+    def predefined_slot_values(self) -> Dict[str, Dict[str, str]]:
         """
         :return: Dictionary of dictionaries with predefined slot values for each class
         """
-        sv = self.schemaview
-        slot_values = defaultdict(dict)
-        for class_def in sv.all_classes().values():
-            for slot_name in sv.class_slots(class_def.name):
-                slot = sv.induced_slot(slot_name, class_def.name)
-                if slot.designates_type:
-                    target_value = get_type_designator_value(sv, slot, class_def)
-                    slot_values[camelcase(class_def.name)][slot.name] = f'"{target_value}"'
-                    if slot.multivalued:
-                        slot_values[camelcase(class_def.name)][slot.name] = (
-                            "[" + slot_values[camelcase(class_def.name)][slot.name] + "]"
-                        )
-                    slot_values[camelcase(class_def.name)][slot.name] = slot_values[camelcase(class_def.name)][
-                        slot.name
-                    ]
-                elif slot.ifabsent is not None:
-                    value = ifabsent_value_declaration(slot.ifabsent, sv, class_def, slot)
-                    slot_values[camelcase(class_def.name)][slot.name] = value
-                # Multivalued slots that are either not inlined (just an identifier) or are
-                # inlined as lists should get default_factory list, if they're inlined but
-                # not as a list, that means a dictionary
-                elif "linkml:elements" in slot.implements:
-                    slot_values[camelcase(class_def.name)][slot.name] = None
-                elif slot.multivalued:
-                    has_identifier_slot = self.range_class_has_identifier_slot(slot)
+        if self._predefined_slot_values is None:
+            sv = self.schemaview
+            slot_values = defaultdict(dict)
+            for class_def in sv.all_classes().values():
+                for slot_name in sv.class_slots(class_def.name):
+                    slot = sv.induced_slot(slot_name, class_def.name)
+                    if slot.designates_type:
+                        target_value = get_type_designator_value(sv, slot, class_def)
+                        slot_values[camelcase(class_def.name)][slot.name] = f'"{target_value}"'
+                        if slot.multivalued:
+                            slot_values[camelcase(class_def.name)][slot.name] = (
+                                "[" + slot_values[camelcase(class_def.name)][slot.name] + "]"
+                            )
+                        slot_values[camelcase(class_def.name)][slot.name] = slot_values[camelcase(class_def.name)][
+                            slot.name
+                        ]
+                    elif slot.ifabsent is not None:
+                        value = ifabsent_value_declaration(slot.ifabsent, sv, class_def, slot)
+                        slot_values[camelcase(class_def.name)][slot.name] = value
+                    # Multivalued slots that are either not inlined (just an identifier) or are
+                    # inlined as lists should get default_factory list, if they're inlined but
+                    # not as a list, that means a dictionary
+                    elif slot.multivalued:
+                        has_identifier_slot = self.range_class_has_identifier_slot(slot)
 
-                    if slot.inlined and not slot.inlined_as_list and has_identifier_slot:
-                        slot_values[camelcase(class_def.name)][slot.name] = "default_factory=dict"
-                    else:
-                        slot_values[camelcase(class_def.name)][slot.name] = "default_factory=list"
+                        if slot.inlined and not slot.inlined_as_list and has_identifier_slot:
+                            slot_values[camelcase(class_def.name)][slot.name] = "default_factory=dict"
+                        else:
+                            slot_values[camelcase(class_def.name)][slot.name] = "default_factory=list"
+            self._predefined_slot_values = slot_values
 
-        return slot_values
+        return self._predefined_slot_values
+
+    @property
+    def class_bases(self) -> Dict[str, List[str]]:
+        """
+        Generate the inheritance list for each class from is_a plus mixins
+        :return:
+        """
+        if self._class_bases is None:
+            sv = self.schemaview
+            parents = {}
+            for class_def in sv.all_classes().values():
+                class_parents = []
+                if class_def.is_a:
+                    class_parents.append(camelcase(class_def.is_a))
+                if self.gen_mixin_inheritance and class_def.mixins:
+                    class_parents.extend([camelcase(mixin) for mixin in class_def.mixins])
+                if len(class_parents) > 0:
+                    # Use the sorted list of classes to order the parent classes, but reversed to match MRO needs
+                    class_parents.sort(key=lambda x: self.sorted_class_names.index(x))
+                    class_parents.reverse()
+                    parents[camelcase(class_def.name)] = class_parents
+            self._class_bases = parents
+        return self._class_bases
 
     def range_class_has_identifier_slot(self, slot):
         """
@@ -302,26 +413,6 @@ class PydanticGenerator(OOCodeGenerator):
         if slot.range in sv.all_classes() and sv.get_identifier_slot(slot.range, use_key=True) is not None:
             has_identifier_slot = True
         return has_identifier_slot
-
-    def get_class_isa_plus_mixins(self) -> Dict[str, List[str]]:
-        """
-        Generate the inheritance list for each class from is_a plus mixins
-        :return:
-        """
-        sv = self.schemaview
-        parents = {}
-        for class_def in sv.all_classes().values():
-            class_parents = []
-            if class_def.is_a:
-                class_parents.append(camelcase(class_def.is_a))
-            if self.gen_mixin_inheritance and class_def.mixins:
-                class_parents.extend([camelcase(mixin) for mixin in class_def.mixins])
-            if len(class_parents) > 0:
-                # Use the sorted list of classes to order the parent classes, but reversed to match MRO needs
-                class_parents.sort(key=lambda x: self.sorted_class_names.index(x))
-                class_parents.reverse()
-                parents[camelcase(class_def.name)] = class_parents
-        return parents
 
     def get_mixin_identifier_range(self, mixin) -> str:
         sv = self.schemaview
@@ -447,8 +538,7 @@ class PydanticGenerator(OOCodeGenerator):
             return list(collection_keys)[0]
         return None
 
-    @staticmethod
-    def _inline_as_simple_dict_with_value(slot_def: SlotDefinition, sv: SchemaView) -> Optional[str]:
+    def _inline_as_simple_dict_with_value(self, slot_def: SlotDefinition) -> Optional[str]:
         """
         Determine if a slot should be inlined as a simple dict with a value.
 
@@ -471,17 +561,17 @@ class PydanticGenerator(OOCodeGenerator):
         :return: str
         """
         if slot_def.inlined and not slot_def.inlined_as_list:
-            if slot_def.range in sv.all_classes():
-                id_slot = sv.get_identifier_slot(slot_def.range, use_key=True)
+            if slot_def.range in self.schemaview.all_classes():
+                id_slot = self.schemaview.get_identifier_slot(slot_def.range, use_key=True)
                 if id_slot is not None:
-                    range_cls_slots = sv.class_induced_slots(slot_def.range)
+                    range_cls_slots = self.schemaview.class_induced_slots(slot_def.range)
                     if len(range_cls_slots) == 2:
                         non_id_slots = [slot for slot in range_cls_slots if slot.name != id_slot.name]
                         if len(non_id_slots) == 1:
                             value_slot = non_id_slots[0]
-                            value_slot_range_type = sv.get_type(value_slot.range)
+                            value_slot_range_type = self.schemaview.get_type(value_slot.range)
                             if value_slot_range_type is not None:
-                                return _get_pyrange(value_slot_range_type, sv)
+                                return _get_pyrange(value_slot_range_type, self.schemaview)
         return None
 
     def _template_environment(self) -> Environment:
@@ -494,131 +584,39 @@ class PydanticGenerator(OOCodeGenerator):
     def serialize(self) -> str:
         sv: SchemaView
         sv = self.schemaview
-        schema = sv.schema
-        pyschema = SchemaDefinition(
-            id=schema.id,
-            name=schema.name,
-            description=schema.description.replace('"', '\\"') if schema.description else None,
-        )
-        enums = self.generate_enums(sv.all_enums())
 
+        # imports
         imports = DEFAULT_IMPORTS
         if self.imports is not None:
             for i in self.imports:
                 imports += i
 
-        sorted_classes = self.sort_classes(list(sv.all_classes().values()))
-        self.sorted_class_names = [camelcase(c.name) for c in sorted_classes]
+        # enums
+        enums = self.generate_enums(sv.all_enums())
 
-        # Don't want to generate classes when class_uri is linkml:Any, will
-        # just swap in typing.Any instead down below
-        sorted_classes = [c for c in sorted_classes if c.class_uri != "linkml:Any"]
+        # base model
+        base_model = PydanticBaseModel(
+            pydantic_ver=self.pydantic_version, extra_fields=self.extra_fields, fields=self.injected_fields
+        )
 
-        for class_original in sorted_classes:
-            class_def: ClassDefinition
-            class_def = deepcopy(class_original)
-            class_name = class_original.name
-            class_def.name = camelcase(class_original.name)
-            if class_def.is_a:
-                class_def.is_a = camelcase(class_def.is_a)
-            class_def.mixins = [camelcase(p) for p in class_def.mixins]
-            if class_def.description:
-                class_def.description = class_def.description.replace('"', '\\"')
-            pyschema.classes[class_def.name] = class_def
-            for attribute in list(class_def.attributes.keys()):
-                del class_def.attributes[attribute]
-            for sn in sv.class_slots(class_name):
-                # TODO: fix runtime, copy should not be necessary
-                s = deepcopy(sv.induced_slot(sn, class_name))
-                # logging.error(f'Induced slot {class_name}.{sn} == {s.name} {s.range}')
-                s.name = underscore(s.name)
-                if s.description:
-                    s.description = s.description.replace('"', '\\"')
-                class_def.attributes[s.name] = s
-
-                slot_ranges: List[str] = []
-
-                # Confirm that the original slot range (ignoring the default that comes in from
-                # induced_slot) isn't in addition to setting any_of
-                any_of_ranges = [a.range if a.range else s.range for a in s.any_of]
-                if any_of_ranges:
-                    # list comprehension here is pulling ranges from within AnonymousSlotExpression
-                    slot_ranges.extend(any_of_ranges)
-                else:
-                    slot_ranges.append(s.range)
-
-                pyranges = [self.generate_python_range(slot_range, s, class_def) for slot_range in slot_ranges]
-
-                pyranges = list(set(pyranges))  # remove duplicates
-                pyranges.sort()
-
-                if len(pyranges) == 1:
-                    pyrange = pyranges[0]
-                elif len(pyranges) > 1:
-                    pyrange = f"Union[{', '.join(pyranges)}]"
-                else:
-                    raise Exception(f"Could not generate python range for {class_name}.{s.name}")
-
-                if "linkml:elements" in s.implements:
-                    # TODO add support for xarray
-                    pyrange = "np.ndarray"
-                    imports += Import(module="numpy", alias="np")
-                    if "linkml:ColumnOrderedArray" in class_def.implements:
-                        raise NotImplementedError("Cannot generate Pydantic code for ColumnOrderedArrays.")
-                elif s.multivalued:
-                    if s.inlined or s.inlined_as_list:
-                        collection_key = self.generate_collection_key(slot_ranges, s, class_def)
-                    else:
-                        collection_key = None
-                    if s.inlined is False or collection_key is None or s.inlined_as_list is True:
-                        pyrange = f"List[{pyrange}]"
-                    else:
-                        simple_dict_value = None
-                        if len(slot_ranges) == 1:
-                            simple_dict_value = self._inline_as_simple_dict_with_value(s, sv)
-                        if simple_dict_value:
-                            # inlining as simple dict
-                            pyrange = f"Dict[str, {simple_dict_value}]"
-                        else:
-                            pyrange = f"Dict[{collection_key}, {pyrange}]"
-                if not (s.required or s.identifier or s.key) and not s.designates_type:
-                    pyrange = f"Optional[{pyrange}]"
-                ann = Annotation("python_range", pyrange)
-                s.annotations[ann.tag] = ann
-
+        # injected classes
         if self.injected_classes is not None:
             injected_classes = [c if isinstance(c, str) else inspect.getsource(c) for c in self.injected_classes]
         else:
             injected_classes = None
 
-        base_model = PydanticBaseModel(
-            pydantic_ver=self.pydantic_version, extra_fields=self.extra_fields, fields=self.injected_fields
-        )
-
+        # schema classes
         classes = {}
-        predefined = self.get_predefined_slot_values()
-        bases = self.get_class_isa_plus_mixins()
-        for k, c in pyschema.classes.items():
-            attrs = {}
-            for attr_name, src_attr in c.attributes.items():
-                new_fields = {
-                    k: src_attr._as_dict.get(k, None)
-                    for k in PydanticAttribute.model_fields.keys()
-                    if src_attr._as_dict.get(k, None) is not None
-                }
-                predef_slot = predefined.get(k, {}).get(attr_name, None)
-                if predef_slot is not None:
-                    predef_slot = str(predef_slot)
-                new_fields["predefined"] = predef_slot
-                new_fields["name"] = attr_name
-                attrs[attr_name] = PydanticAttribute(**new_fields, pydantic_ver=self.pydantic_version)
-
-            new_class = PydanticClass(
-                name=k, attributes=attrs, description=c.description, pydantic_ver=self.pydantic_version
-            )
-            if k in bases:
-                new_class.bases = bases[k]
-            classes[k] = new_class
+        source_classes = self.sort_classes(list(sv.all_classes().values()))
+        # Don't want to generate classes when class_uri is linkml:Any, will
+        # just swap in typing.Any instead down below
+        source_classes = [c for c in source_classes if c.class_uri != "linkml:Any"]
+        self.sorted_class_names = [camelcase(c.name) for c in source_classes]
+        for cls in source_classes:
+            result = self.generate_class(cls)
+            classes[result.cls.name] = result.cls
+            if result.imports is not None:
+                imports += result.imports
 
         module = PydanticModule(
             pydantic_ver=self.pydantic_version,
