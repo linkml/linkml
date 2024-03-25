@@ -325,9 +325,10 @@
 <span class="kn">import</span> <span class="nn">collections</span>
 <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">lru_cache</span>
 <span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">copy</span><span class="p">,</span> <span class="n">deepcopy</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span><span class="p">,</span> <span class="n">deque</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
 
 <span class="kn">from</span> <span class="nn">linkml_runtime.utils.namespaces</span> <span class="kn">import</span> <span class="n">Namespaces</span>
 <span class="kn">from</span> <span class="nn">deprecated.classic</span> <span class="kn">import</span> <span class="n">deprecated</span>
@@ -475,7 +476,7 @@
     <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">hash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__key</span><span class="p">())</span>
 
-    <span class="nd">@lru_cache</span><span class="p">()</span>
+    <span class="nd">@lru_cache</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">namespaces</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Namespaces</span><span class="p">:</span>
         <span class="n">namespaces</span> <span class="o">=</span> <span class="n">Namespaces</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema_map</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
@@ -527,35 +528,77 @@
         <span class="n">schema</span> <span class="o">=</span> <span class="n">load_schema_wrap</span><span class="p">(</span><span class="n">sname</span> <span class="o">+</span> <span class="s1">&#39;.yaml&#39;</span><span class="p">,</span> <span class="n">base_dir</span><span class="o">=</span><span class="n">base_dir</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">schema</span></div>
 
-<div class="viewcode-block" id="SchemaView.imports_closure"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.imports_closure">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">()</span>
-    <span class="k">def</span> <span class="nf">imports_closure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">imports</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">traverse</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">inject_metadata</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">SchemaDefinitionName</span><span class="p">]:</span>
+<div class="viewcode-block" id="SchemaView.imports_closure"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.imports_closure">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">imports_closure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">imports</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">traverse</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">inject_metadata</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">SchemaDefinitionName</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return all imports</span>
 
-<span class="sd">        :param traverse: if true, traverse recursively</span>
+<span class="sd">        Objects in imported classes override one another in a &quot;python-like&quot; order -</span>
+<span class="sd">        from the point of view of the importing schema, imports will override one</span>
+<span class="sd">        another from first to last, recursively for each layer of imports.</span>
+
+<span class="sd">        An import tree like::</span>
+
+<span class="sd">            - main</span>
+<span class="sd">              - s1</span>
+<span class="sd">                - s1_1</span>
+<span class="sd">                - s1_2</span>
+<span class="sd">                    - s1_2_1</span>
+<span class="sd">                    - s1_2_2</span>
+<span class="sd">              - s2</span>
+<span class="sd">                - s2_1</span>
+<span class="sd">                - s2_2</span>
+
+<span class="sd">        will override objects with the same name, in order::</span>
+
+<span class="sd">            [&#39;s1_1&#39;, &#39;s1_2_1&#39;, &#39;s1_2_2&#39;, &#39;s1_2&#39;, &#39;s1&#39;, &#39;s2_1&#39;, &#39;s2_2&#39;, &#39;s2&#39;]</span>
+
+<span class="sd">        :param imports: bool (default: ``True`` ) include imported schemas, recursively</span>
+<span class="sd">        :param traverse: bool, optional (default: ``True`` ) (Deprecated, use</span>
+<span class="sd">            ``imports`` ). if true, traverse recursively</span>
 <span class="sd">        :return: all schema names in the transitive reflexive imports closure</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">imports</span><span class="p">:</span>
-            <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema_map</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">schema_map</span> <span class="o">=</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="p">}</span>
-        <span class="n">closure</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">closure</span> <span class="o">=</span> <span class="n">deque</span><span class="p">()</span>
         <span class="n">visited</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
         <span class="n">todo</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">traverse</span><span class="p">:</span>
+
+        <span class="k">if</span> <span class="n">traverse</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="s1">&#39;traverse behaves identically to imports and will be removed in a future version. Use imports instead.&#39;</span><span class="p">,</span>
+                <span class="ne">DeprecationWarning</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">imports</span> <span class="ow">or</span> <span class="p">(</span><span class="ow">not</span> <span class="n">traverse</span> <span class="ow">and</span> <span class="n">traverse</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">todo</span>
+
         <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">todo</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># visit item</span>
             <span class="n">sn</span> <span class="o">=</span> <span class="n">todo</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
-            <span class="n">visited</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">sn</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">sn</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema_map</span><span class="p">:</span>
                 <span class="n">imported_schema</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_import</span><span class="p">(</span><span class="n">sn</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">schema_map</span><span class="p">[</span><span class="n">sn</span><span class="p">]</span> <span class="o">=</span> <span class="n">imported_schema</span>
-            <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema_map</span><span class="p">[</span><span class="n">sn</span><span class="p">]</span>
-            <span class="k">if</span> <span class="n">sn</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">closure</span><span class="p">:</span>
-                <span class="n">closure</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sn</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">imports</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">visited</span><span class="p">:</span>
-                    <span class="n">todo</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+
+            <span class="c1"># resolve item&#39;s imports if it has not been visited already</span>
+            <span class="c1"># we will get duplicates, but not cycles this way, and</span>
+            <span class="c1"># filter out dupes, preserving the first entry, at the end.</span>
+            <span class="k">if</span> <span class="n">sn</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">visited</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema_map</span><span class="p">[</span><span class="n">sn</span><span class="p">]</span><span class="o">.</span><span class="n">imports</span><span class="p">:</span>
+                    <span class="c1"># no self imports ;)</span>
+                    <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="n">sn</span><span class="p">:</span>
+                        <span class="n">todo</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+
+            <span class="c1"># add item to closure</span>
+            <span class="c1"># append + pop (above) is FILO queue, which correctly extends tree leaves,</span>
+            <span class="c1"># but in backwards order.</span>
+            <span class="n">closure</span><span class="o">.</span><span class="n">appendleft</span><span class="p">(</span><span class="n">sn</span><span class="p">)</span>
+            <span class="n">visited</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">sn</span><span class="p">)</span>
+
+        <span class="c1"># filter duplicates, keeping first entry</span>
+        <span class="n">closure</span> <span class="o">=</span> <span class="nb">list</span><span class="p">({</span><span class="n">k</span><span class="p">:</span><span class="kc">None</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">closure</span><span class="p">}</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+
         <span class="k">if</span> <span class="n">inject_metadata</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema_map</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
                 <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="p">{</span><span class="o">**</span><span class="n">s</span><span class="o">.</span><span class="n">classes</span><span class="p">,</span> <span class="o">**</span><span class="n">s</span><span class="o">.</span><span class="n">enums</span><span class="p">,</span> <span class="o">**</span><span class="n">s</span><span class="o">.</span><span class="n">slots</span><span class="p">,</span> <span class="o">**</span><span class="n">s</span><span class="o">.</span><span class="n">subsets</span><span class="p">,</span> <span class="o">**</span><span class="n">s</span><span class="o">.</span><span class="n">types</span><span class="p">}</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
@@ -565,7 +608,7 @@
                         <span class="n">a</span><span class="o">.</span><span class="n">from_schema</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">id</span>
         <span class="k">return</span> <span class="n">closure</span></div>
 
-<div class="viewcode-block" id="SchemaView.all_schema"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.all_schema">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">()</span>
+<div class="viewcode-block" id="SchemaView.all_schema"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.all_schema">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">all_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">imports</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">SchemaDefinition</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param imports: include imports closure</span>
@@ -575,7 +618,7 @@
         <span class="k">return</span> <span class="p">[</span><span class="n">m</span><span class="p">[</span><span class="n">sn</span><span class="p">]</span> <span class="k">for</span> <span class="n">sn</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">imports_closure</span><span class="p">(</span><span class="n">imports</span><span class="p">)]</span></div>
 
 <div class="viewcode-block" id="SchemaView.all_class"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.all_class">[docs]</a>    <span class="nd">@deprecated</span><span class="p">(</span><span class="s2">&quot;Use `all_classes` instead&quot;</span><span class="p">)</span>
-    <span class="nd">@lru_cache</span><span class="p">()</span>
+    <span class="nd">@lru_cache</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">all_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">imports</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">ClassDefinitionName</span><span class="p">,</span> <span class="n">ClassDefinition</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param imports: include imports closure</span>
@@ -620,7 +663,7 @@
         <span class="n">rank_ordered_elements</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">unranked_map</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">rank_ordered_elements</span>
 
-<div class="viewcode-block" id="SchemaView.all_classes"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.all_classes">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">()</span>
+<div class="viewcode-block" id="SchemaView.all_classes"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.all_classes">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">all_classes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ordered_by</span><span class="o">=</span><span class="n">OrderedBy</span><span class="o">.</span><span class="n">PRESERVE</span><span class="p">,</span> <span class="n">imports</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">ClassDefinitionName</span><span class="p">,</span> <span class="n">ClassDefinition</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param ordered_by: an enumerated parameter that returns all the slots in the order specified.</span>
@@ -639,7 +682,7 @@
         <span class="k">return</span> <span class="n">ordered_classes</span></div>
 
 <div class="viewcode-block" id="SchemaView.all_slot"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.all_slot">[docs]</a>    <span class="nd">@deprecated</span><span class="p">(</span><span class="s2">&quot;Use `all_slots` instead&quot;</span><span class="p">)</span>
-    <span class="nd">@lru_cache</span><span class="p">()</span>
+    <span class="nd">@lru_cache</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">all_slot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">SlotDefinitionName</span><span class="p">,</span> <span class="n">SlotDefinition</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param imports: include imports closure</span>
@@ -647,7 +690,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_slots</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="SchemaView.all_slots"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.all_slots">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">()</span>
+<div class="viewcode-block" id="SchemaView.all_slots"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.all_slots">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">all_slots</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ordered_by</span><span class="o">=</span><span class="n">OrderedBy</span><span class="o">.</span><span class="n">PRESERVE</span><span class="p">,</span> <span class="n">imports</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span>
         <span class="n">SlotDefinitionName</span><span class="p">,</span> <span class="n">SlotDefinition</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -674,7 +717,7 @@
         <span class="k">return</span> <span class="n">ordered_slots</span></div>
 
 <div class="viewcode-block" id="SchemaView.all_enum"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.all_enum">[docs]</a>    <span class="nd">@deprecated</span><span class="p">(</span><span class="s2">&quot;Use `all_enums` instead&quot;</span><span class="p">)</span>
-    <span class="nd">@lru_cache</span><span class="p">()</span>
+    <span class="nd">@lru_cache</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">all_enum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">imports</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">EnumDefinitionName</span><span class="p">,</span> <span class="n">EnumDefinition</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param imports: include imports closure</span>
@@ -682,7 +725,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_dict</span><span class="p">(</span><span class="n">ENUMS</span><span class="p">,</span> <span class="n">imports</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="SchemaView.all_enums"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.all_enums">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">()</span>
+<div class="viewcode-block" id="SchemaView.all_enums"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.all_enums">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">all_enums</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">imports</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">EnumDefinitionName</span><span class="p">,</span> <span class="n">EnumDefinition</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param imports: include imports closure</span>
@@ -691,7 +734,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_dict</span><span class="p">(</span><span class="n">ENUMS</span><span class="p">,</span> <span class="n">imports</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="SchemaView.all_type"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.all_type">[docs]</a>    <span class="nd">@deprecated</span><span class="p">(</span><span class="s2">&quot;Use `all_types` instead&quot;</span><span class="p">)</span>
-    <span class="nd">@lru_cache</span><span class="p">()</span>
+    <span class="nd">@lru_cache</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">all_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">imports</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">TypeDefinitionName</span><span class="p">,</span> <span class="n">TypeDefinition</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param imports: include imports closure</span>
@@ -699,7 +742,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_dict</span><span class="p">(</span><span class="n">TYPES</span><span class="p">,</span> <span class="n">imports</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="SchemaView.all_types"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.all_types">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">()</span>
+<div class="viewcode-block" id="SchemaView.all_types"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.all_types">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">all_types</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">imports</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">TypeDefinitionName</span><span class="p">,</span> <span class="n">TypeDefinition</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param imports: include imports closure</span>
@@ -715,7 +758,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_dict</span><span class="p">(</span><span class="n">SUBSETS</span><span class="p">,</span> <span class="n">imports</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="SchemaView.all_subsets"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.all_subsets">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">()</span>
+<div class="viewcode-block" id="SchemaView.all_subsets"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.all_subsets">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">all_subsets</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">imports</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">SubsetDefinitionName</span><span class="p">,</span> <span class="n">SubsetDefinition</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param imports: include imports closure</span>
@@ -724,7 +767,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_dict</span><span class="p">(</span><span class="n">SUBSETS</span><span class="p">,</span> <span class="n">imports</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="SchemaView.all_element"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.all_element">[docs]</a>    <span class="nd">@deprecated</span><span class="p">(</span><span class="s2">&quot;Use `all_elements` instead&quot;</span><span class="p">)</span>
-    <span class="nd">@lru_cache</span><span class="p">()</span>
+    <span class="nd">@lru_cache</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">all_element</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">imports</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">ElementName</span><span class="p">,</span> <span class="n">Element</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param imports: include imports closure</span>
@@ -738,7 +781,7 @@
         <span class="c1"># {**a,**b} syntax merges dictionary a and b into a single dictionary, removing duplicates.</span>
         <span class="k">return</span> <span class="p">{</span><span class="o">**</span><span class="n">all_classes</span><span class="p">,</span> <span class="o">**</span><span class="n">all_slots</span><span class="p">,</span> <span class="o">**</span><span class="n">all_enums</span><span class="p">,</span> <span class="o">**</span><span class="n">all_types</span><span class="p">,</span> <span class="o">**</span><span class="n">all_subsets</span><span class="p">}</span></div>
 
-<div class="viewcode-block" id="SchemaView.all_elements"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.all_elements">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">()</span>
+<div class="viewcode-block" id="SchemaView.all_elements"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.all_elements">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">all_elements</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">imports</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">ElementName</span><span class="p">,</span> <span class="n">Element</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param imports: include imports closure</span>
@@ -755,6 +798,7 @@
     <span class="k">def</span> <span class="nf">_get_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slot_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">imports</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
         <span class="n">schemas</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_schema</span><span class="p">(</span><span class="n">imports</span><span class="p">)</span>
         <span class="n">d</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="c1"># pdb.set_trace()</span>
         <span class="c1"># iterate through all schemas and merge the list together</span>
         <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">schemas</span><span class="p">:</span>
             <span class="c1"># get the value of element name from the schema, if empty, return empty dictionary.</span>
@@ -764,7 +808,7 @@
 
         <span class="k">return</span> <span class="n">d</span>
 
-<div class="viewcode-block" id="SchemaView.slot_name_mappings"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.slot_name_mappings">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">()</span>
+<div class="viewcode-block" id="SchemaView.slot_name_mappings"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.slot_name_mappings">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">slot_name_mappings</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">SlotDefinition</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Mapping between processed safe slot names (following naming conventions)  and slots.</span>
@@ -778,7 +822,7 @@
             <span class="n">m</span><span class="p">[</span><span class="n">underscore</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">name</span><span class="p">)]</span> <span class="o">=</span> <span class="n">s</span>
         <span class="k">return</span> <span class="n">m</span></div>
 
-<div class="viewcode-block" id="SchemaView.class_name_mappings"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.class_name_mappings">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">()</span>
+<div class="viewcode-block" id="SchemaView.class_name_mappings"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.class_name_mappings">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">class_name_mappings</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ClassDefinition</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Mapping between processed safe class names (following naming conventions) and classes.</span>
@@ -792,7 +836,7 @@
             <span class="n">m</span><span class="p">[</span><span class="n">camelcase</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">name</span><span class="p">)]</span> <span class="o">=</span> <span class="n">s</span>
         <span class="k">return</span> <span class="n">m</span></div>
 
-<div class="viewcode-block" id="SchemaView.in_schema"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.in_schema">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">()</span>
+<div class="viewcode-block" id="SchemaView.in_schema"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.in_schema">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">in_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element_name</span><span class="p">:</span> <span class="n">ElementName</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SchemaDefinitionName</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param element_name:</span>
@@ -803,7 +847,7 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Element </span><span class="si">{</span><span class="n">element_name</span><span class="si">}</span><span class="s1"> not in any schema&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">ix</span><span class="p">[</span><span class="n">element_name</span><span class="p">]</span></div>
 
-    <span class="nd">@lru_cache</span><span class="p">()</span>
+    <span class="nd">@lru_cache</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">element_by_schema_map</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">ElementName</span><span class="p">,</span> <span class="n">SchemaDefinitionName</span><span class="p">]:</span>
         <span class="n">ix</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="n">schemas</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_schema</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
@@ -816,7 +860,7 @@
                     <span class="n">ix</span><span class="p">[</span><span class="n">aname</span><span class="p">]</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">name</span>
         <span class="k">return</span> <span class="n">ix</span>
 
-<div class="viewcode-block" id="SchemaView.get_class"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.get_class">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">()</span>
+<div class="viewcode-block" id="SchemaView.get_class"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.get_class">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">get_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">class_name</span><span class="p">:</span> <span class="n">CLASS_NAME</span><span class="p">,</span> <span class="n">imports</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ClassDefinition</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param class_name: name of the class to be retrieved</span>
@@ -829,7 +873,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">c</span></div>
 
-<div class="viewcode-block" id="SchemaView.get_slot"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.get_slot">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">()</span>
+<div class="viewcode-block" id="SchemaView.get_slot"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.get_slot">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">get_slot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slot_name</span><span class="p">:</span> <span class="n">SLOT_NAME</span><span class="p">,</span> <span class="n">imports</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SlotDefinition</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param slot_name: name of the slot to be retrieved</span>
@@ -852,7 +896,7 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;No such slot as &quot;</span><span class="si">{</span><span class="n">slot_name</span><span class="si">}</span><span class="s1">&quot;&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">slot</span></div>
 
-<div class="viewcode-block" id="SchemaView.get_subset"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.get_subset">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">()</span>
+<div class="viewcode-block" id="SchemaView.get_subset"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.get_subset">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">get_subset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subset_name</span><span class="p">:</span> <span class="n">SUBSET_NAME</span><span class="p">,</span> <span class="n">imports</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SubsetDefinition</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param subset_name: name of the subsey to be retrieved</span>
@@ -865,7 +909,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">s</span></div>
 
-<div class="viewcode-block" id="SchemaView.get_enum"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.get_enum">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">()</span>
+<div class="viewcode-block" id="SchemaView.get_enum"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.get_enum">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">get_enum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">enum_name</span><span class="p">:</span> <span class="n">ENUM_NAME</span><span class="p">,</span> <span class="n">imports</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">EnumDefinition</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param enum_name: name of the enum to be retrieved</span>
@@ -878,7 +922,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">e</span></div>
 
-<div class="viewcode-block" id="SchemaView.get_type"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.get_type">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">()</span>
+<div class="viewcode-block" id="SchemaView.get_type"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.get_type">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">get_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">type_name</span><span class="p">:</span> <span class="n">TYPE_NAME</span><span class="p">,</span> <span class="n">imports</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TypeDefinition</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param type_name: name of the type to be retrieved</span>
@@ -900,7 +944,7 @@
             <span class="n">parents</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">is_a</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">parents</span>
 
-<div class="viewcode-block" id="SchemaView.class_parents"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.class_parents">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">()</span>
+<div class="viewcode-block" id="SchemaView.class_parents"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.class_parents">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">class_parents</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">class_name</span><span class="p">:</span> <span class="n">CLASS_NAME</span><span class="p">,</span> <span class="n">imports</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">mixins</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">is_a</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">ClassDefinitionName</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param class_name: child class name</span>
@@ -911,7 +955,7 @@
         <span class="bp">cls</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_class</span><span class="p">(</span><span class="n">class_name</span><span class="p">,</span> <span class="n">imports</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parents</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">imports</span><span class="p">,</span> <span class="n">mixins</span><span class="p">,</span> <span class="n">is_a</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="SchemaView.enum_parents"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.enum_parents">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">()</span>
+<div class="viewcode-block" id="SchemaView.enum_parents"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.enum_parents">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">enum_parents</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">enum_name</span><span class="p">:</span> <span class="n">ENUM_NAME</span><span class="p">,</span> <span class="n">imports</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">mixins</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">is_a</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">EnumDefinitionName</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param enum_name: child enum name</span>
@@ -922,7 +966,7 @@
         <span class="n">e</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_enum</span><span class="p">(</span><span class="n">enum_name</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parents</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">imports</span><span class="p">,</span> <span class="n">mixins</span><span class="p">,</span> <span class="n">is_a</span><span class="o">=</span><span class="n">is_a</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="SchemaView.permissible_value_parent"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.permissible_value_parent">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">()</span>
+<div class="viewcode-block" id="SchemaView.permissible_value_parent"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.permissible_value_parent">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">permissible_value_parent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">permissible_value</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">enum_name</span><span class="p">:</span> <span class="n">ENUM_NAME</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span>
         <span class="nb">str</span><span class="p">,</span> <span class="n">PermissibleValueText</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -939,7 +983,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">[]</span></div>
 
-    <span class="nd">@lru_cache</span><span class="p">()</span>
+    <span class="nd">@lru_cache</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">permissible_value_children</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">permissible_value</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">enum_name</span><span class="p">:</span> <span class="n">ENUM_NAME</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span>
         <span class="nb">str</span><span class="p">,</span> <span class="n">PermissibleValueText</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -973,7 +1017,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;No such enum as &quot;</span><span class="si">{</span><span class="n">enum_name</span><span class="si">}</span><span class="s1">&quot;&#39;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="SchemaView.slot_parents"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.slot_parents">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">()</span>
+<div class="viewcode-block" id="SchemaView.slot_parents"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.slot_parents">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">slot_parents</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slot_name</span><span class="p">:</span> <span class="n">SLOT_NAME</span><span class="p">,</span> <span class="n">imports</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">mixins</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">is_a</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">SlotDefinitionName</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param slot_name: child slot name</span>
@@ -987,7 +1031,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">[]</span></div>
 
-<div class="viewcode-block" id="SchemaView.type_parents"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.type_parents">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">()</span>
+<div class="viewcode-block" id="SchemaView.type_parents"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.type_parents">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">type_parents</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">type_name</span><span class="p">:</span> <span class="n">TYPE_NAME</span><span class="p">,</span> <span class="n">imports</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">TypeDefinitionName</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param type_name: child type name</span>
@@ -1000,7 +1044,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">[]</span></div>
 
-<div class="viewcode-block" id="SchemaView.get_children"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.get_children">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">()</span>
+<div class="viewcode-block" id="SchemaView.get_children"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.get_children">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">get_children</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">mixin</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        get the children of an element (any class, slot, enum, type)</span>
@@ -1017,7 +1061,7 @@
                     <span class="n">children</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">el</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">children</span></div>
 
-<div class="viewcode-block" id="SchemaView.class_children"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.class_children">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">()</span>
+<div class="viewcode-block" id="SchemaView.class_children"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.class_children">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">class_children</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">class_name</span><span class="p">:</span> <span class="n">CLASS_NAME</span><span class="p">,</span> <span class="n">imports</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">mixins</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">is_a</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">ClassDefinitionName</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param class_name: parent class name</span>
@@ -1029,7 +1073,7 @@
         <span class="n">elts</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">get_class</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_classes</span><span class="p">(</span><span class="n">imports</span><span class="o">=</span><span class="n">imports</span><span class="p">)]</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">elts</span> <span class="k">if</span> <span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">is_a</span> <span class="o">==</span> <span class="n">class_name</span> <span class="ow">and</span> <span class="n">is_a</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">mixins</span> <span class="ow">and</span> <span class="n">class_name</span> <span class="ow">in</span> <span class="n">x</span><span class="o">.</span><span class="n">mixins</span><span class="p">)]</span></div>
 
-<div class="viewcode-block" id="SchemaView.slot_children"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.slot_children">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">()</span>
+<div class="viewcode-block" id="SchemaView.slot_children"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.slot_children">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">slot_children</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slot_name</span><span class="p">:</span> <span class="n">SLOT_NAME</span><span class="p">,</span> <span class="n">imports</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">mixins</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">is_a</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">SlotDefinitionName</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param slot_name: parent slot name</span>
@@ -1041,7 +1085,7 @@
         <span class="n">elts</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">get_slot</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_slots</span><span class="p">(</span><span class="n">imports</span><span class="p">)]</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">elts</span> <span class="k">if</span> <span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">is_a</span> <span class="o">==</span> <span class="n">slot_name</span> <span class="ow">and</span> <span class="n">is_a</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">mixins</span> <span class="ow">and</span> <span class="n">slot_name</span> <span class="ow">in</span> <span class="n">x</span><span class="o">.</span><span class="n">mixins</span><span class="p">)]</span></div>
 
-<div class="viewcode-block" id="SchemaView.class_ancestors"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.class_ancestors">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">()</span>
+<div class="viewcode-block" id="SchemaView.class_ancestors"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.class_ancestors">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">class_ancestors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">class_name</span><span class="p">:</span> <span class="n">CLASS_NAME</span><span class="p">,</span> <span class="n">imports</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">mixins</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">reflexive</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">is_a</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                         <span class="n">depth_first</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">ClassDefinitionName</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1059,7 +1103,7 @@
                         <span class="n">class_name</span><span class="p">,</span>
                         <span class="n">reflexive</span><span class="o">=</span><span class="n">reflexive</span><span class="p">,</span> <span class="n">depth_first</span><span class="o">=</span><span class="n">depth_first</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="SchemaView.permissible_value_ancestors"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.permissible_value_ancestors">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">()</span>
+<div class="viewcode-block" id="SchemaView.permissible_value_ancestors"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.permissible_value_ancestors">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">permissible_value_ancestors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">permissible_value_text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
                                     <span class="n">enum_name</span><span class="p">:</span> <span class="n">ENUM_NAME</span><span class="p">,</span>
                                     <span class="n">reflexive</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -1074,7 +1118,7 @@
                         <span class="n">reflexive</span><span class="o">=</span><span class="n">reflexive</span><span class="p">,</span>
                         <span class="n">depth_first</span><span class="o">=</span><span class="n">depth_first</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="SchemaView.permissible_value_descendants"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.permissible_value_descendants">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">()</span>
+<div class="viewcode-block" id="SchemaView.permissible_value_descendants"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.permissible_value_descendants">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">permissible_value_descendants</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">permissible_value_text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
                                     <span class="n">enum_name</span><span class="p">:</span> <span class="n">ENUM_NAME</span><span class="p">,</span>
                                     <span class="n">reflexive</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -1090,7 +1134,7 @@
                         <span class="n">reflexive</span><span class="o">=</span><span class="n">reflexive</span><span class="p">,</span>
                         <span class="n">depth_first</span><span class="o">=</span><span class="n">depth_first</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="SchemaView.enum_ancestors"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.enum_ancestors">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">()</span>
+<div class="viewcode-block" id="SchemaView.enum_ancestors"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.enum_ancestors">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">enum_ancestors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">enum_name</span><span class="p">:</span> <span class="n">ENUM_NAME</span><span class="p">,</span> <span class="n">imports</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">mixins</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">reflexive</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">is_a</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                        <span class="n">depth_first</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">EnumDefinitionName</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1108,7 +1152,7 @@
                         <span class="n">enum_name</span><span class="p">,</span>
                         <span class="n">reflexive</span><span class="o">=</span><span class="n">reflexive</span><span class="p">,</span> <span class="n">depth_first</span><span class="o">=</span><span class="n">depth_first</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="SchemaView.type_ancestors"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.type_ancestors">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">()</span>
+<div class="viewcode-block" id="SchemaView.type_ancestors"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.type_ancestors">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">type_ancestors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">type_name</span><span class="p">:</span> <span class="n">TYPES</span><span class="p">,</span> <span class="n">imports</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">reflexive</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">depth_first</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span>
         <span class="n">TypeDefinitionName</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1124,7 +1168,7 @@
                         <span class="n">type_name</span><span class="p">,</span>
                         <span class="n">reflexive</span><span class="o">=</span><span class="n">reflexive</span><span class="p">,</span> <span class="n">depth_first</span><span class="o">=</span><span class="n">depth_first</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="SchemaView.slot_ancestors"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.slot_ancestors">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">()</span>
+<div class="viewcode-block" id="SchemaView.slot_ancestors"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.slot_ancestors">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">slot_ancestors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slot_name</span><span class="p">:</span> <span class="n">SLOT_NAME</span><span class="p">,</span> <span class="n">imports</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">mixins</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">reflexive</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">is_a</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span>
         <span class="n">SlotDefinitionName</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1141,7 +1185,7 @@
                         <span class="n">slot_name</span><span class="p">,</span>
                         <span class="n">reflexive</span><span class="o">=</span><span class="n">reflexive</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="SchemaView.class_descendants"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.class_descendants">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">()</span>
+<div class="viewcode-block" id="SchemaView.class_descendants"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.class_descendants">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">class_descendants</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">class_name</span><span class="p">:</span> <span class="n">CLASS_NAME</span><span class="p">,</span> <span class="n">imports</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">mixins</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">reflexive</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">is_a</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span>
         <span class="n">ClassDefinitionName</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1157,7 +1201,7 @@
         <span class="k">return</span> <span class="n">_closure</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">class_children</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">imports</span><span class="o">=</span><span class="n">imports</span><span class="p">,</span> <span class="n">mixins</span><span class="o">=</span><span class="n">mixins</span><span class="p">,</span> <span class="n">is_a</span><span class="o">=</span><span class="n">is_a</span><span class="p">),</span> <span class="n">class_name</span><span class="p">,</span>
                         <span class="n">reflexive</span><span class="o">=</span><span class="n">reflexive</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="SchemaView.slot_descendants"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.slot_descendants">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">()</span>
+<div class="viewcode-block" id="SchemaView.slot_descendants"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.slot_descendants">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">slot_descendants</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slot_name</span><span class="p">:</span> <span class="n">SLOT_NAME</span><span class="p">,</span> <span class="n">imports</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">mixins</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">reflexive</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">is_a</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span>
         <span class="n">SlotDefinitionName</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1173,7 +1217,7 @@
         <span class="k">return</span> <span class="n">_closure</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">slot_children</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">imports</span><span class="o">=</span><span class="n">imports</span><span class="p">,</span> <span class="n">mixins</span><span class="o">=</span><span class="n">mixins</span><span class="p">,</span> <span class="n">is_a</span><span class="o">=</span><span class="n">is_a</span><span class="p">),</span> <span class="n">slot_name</span><span class="p">,</span>
                         <span class="n">reflexive</span><span class="o">=</span><span class="n">reflexive</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="SchemaView.class_roots"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.class_roots">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">()</span>
+<div class="viewcode-block" id="SchemaView.class_roots"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.class_roots">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">class_roots</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">imports</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">mixins</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">is_a</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">ClassDefinitionName</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        All classes that have no parents</span>
@@ -1186,7 +1230,7 @@
                 <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_classes</span><span class="p">(</span><span class="n">imports</span><span class="o">=</span><span class="n">imports</span><span class="p">)</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">class_parents</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">mixins</span><span class="o">=</span><span class="n">mixins</span><span class="p">,</span> <span class="n">is_a</span><span class="o">=</span><span class="n">is_a</span><span class="p">,</span> <span class="n">imports</span><span class="o">=</span><span class="n">imports</span><span class="p">)</span> <span class="o">==</span> <span class="p">[]]</span></div>
 
-<div class="viewcode-block" id="SchemaView.class_leaves"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.class_leaves">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">()</span>
+<div class="viewcode-block" id="SchemaView.class_leaves"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.class_leaves">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">class_leaves</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">imports</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">mixins</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">is_a</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">ClassDefinitionName</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        All classes that have no children</span>
@@ -1199,7 +1243,7 @@
                 <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_classes</span><span class="p">(</span><span class="n">imports</span><span class="o">=</span><span class="n">imports</span><span class="p">)</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">class_children</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">mixins</span><span class="o">=</span><span class="n">mixins</span><span class="p">,</span> <span class="n">is_a</span><span class="o">=</span><span class="n">is_a</span><span class="p">,</span> <span class="n">imports</span><span class="o">=</span><span class="n">imports</span><span class="p">)</span> <span class="o">==</span> <span class="p">[]]</span></div>
 
-<div class="viewcode-block" id="SchemaView.slot_roots"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.slot_roots">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">()</span>
+<div class="viewcode-block" id="SchemaView.slot_roots"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.slot_roots">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">slot_roots</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">imports</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">mixins</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">SlotDefinitionName</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        All slotes that have no parents</span>
@@ -1211,7 +1255,7 @@
                 <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_slots</span><span class="p">(</span><span class="n">imports</span><span class="o">=</span><span class="n">imports</span><span class="p">)</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">slot_parents</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">mixins</span><span class="o">=</span><span class="n">mixins</span><span class="p">,</span> <span class="n">imports</span><span class="o">=</span><span class="n">imports</span><span class="p">)</span> <span class="o">==</span> <span class="p">[]]</span></div>
 
-<div class="viewcode-block" id="SchemaView.slot_leaves"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.slot_leaves">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">()</span>
+<div class="viewcode-block" id="SchemaView.slot_leaves"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.slot_leaves">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">slot_leaves</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">imports</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">mixins</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">SlotDefinitionName</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        All slotes that have no children</span>
@@ -1223,7 +1267,7 @@
                 <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_slots</span><span class="p">(</span><span class="n">imports</span><span class="o">=</span><span class="n">imports</span><span class="p">)</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">slot_children</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">mixins</span><span class="o">=</span><span class="n">mixins</span><span class="p">,</span> <span class="n">imports</span><span class="o">=</span><span class="n">imports</span><span class="p">)</span> <span class="o">==</span> <span class="p">[]]</span></div>
 
-<div class="viewcode-block" id="SchemaView.is_multivalued"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.is_multivalued">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">()</span>
+<div class="viewcode-block" id="SchemaView.is_multivalued"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.is_multivalued">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">is_multivalued</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slot_name</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        returns True if slot is multivalued, else returns False</span>
@@ -1233,7 +1277,7 @@
         <span class="n">induced_slot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">induced_slot</span><span class="p">(</span><span class="n">slot_name</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">True</span> <span class="k">if</span> <span class="n">induced_slot</span><span class="o">.</span><span class="n">multivalued</span> <span class="k">else</span> <span class="kc">False</span></div>
 
-<div class="viewcode-block" id="SchemaView.slot_is_true_for_metadata_property"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.slot_is_true_for_metadata_property">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">()</span>
+<div class="viewcode-block" id="SchemaView.slot_is_true_for_metadata_property"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.slot_is_true_for_metadata_property">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">slot_is_true_for_metadata_property</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slot_name</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">,</span> <span class="n">metadata_property</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns true if the value of the provided &quot;metadata_property&quot; is True.  For example,</span>
@@ -1359,7 +1403,7 @@
 
         <span class="k">return</span> <span class="n">applicable_elements</span></div>
 
-<div class="viewcode-block" id="SchemaView.all_aliases"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.all_aliases">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">()</span>
+<div class="viewcode-block" id="SchemaView.all_aliases"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.all_aliases">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">all_aliases</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the aliases</span>
@@ -1380,7 +1424,7 @@
 
         <span class="k">return</span> <span class="n">element_aliases</span></div>
 
-<div class="viewcode-block" id="SchemaView.get_mappings"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.get_mappings">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">()</span>
+<div class="viewcode-block" id="SchemaView.get_mappings"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.get_mappings">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">get_mappings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element_name</span><span class="p">:</span> <span class="n">ElementName</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">imports</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span>
         <span class="n">MAPPING_TYPE</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">URIorCURIE</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1411,7 +1455,7 @@
 
         <span class="k">return</span> <span class="n">m_dict</span></div>
 
-<div class="viewcode-block" id="SchemaView.is_mixin"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.is_mixin">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">()</span>
+<div class="viewcode-block" id="SchemaView.is_mixin"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.is_mixin">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">is_mixin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element_name</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">ElementName</span><span class="p">,</span> <span class="n">Element</span><span class="p">]):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Determines whether the given name is the name of a mixin</span>
@@ -1425,7 +1469,7 @@
         <span class="n">is_mixin</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">mixin</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">Definition</span><span class="p">)</span> <span class="k">else</span> <span class="kc">False</span>
         <span class="k">return</span> <span class="n">is_mixin</span></div>
 
-<div class="viewcode-block" id="SchemaView.inverse"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.inverse">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">()</span>
+<div class="viewcode-block" id="SchemaView.inverse"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.inverse">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">inverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slot_name</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Determines whether the given name is a relationship, and if that relationship has an inverse, returns</span>
@@ -1469,7 +1513,7 @@
                     <span class="n">ix</span><span class="p">[</span><span class="n">v</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">mapping_type</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_element</span><span class="p">(</span><span class="n">en</span><span class="p">,</span> <span class="n">imports</span><span class="o">=</span><span class="n">imports</span><span class="p">)))</span>
         <span class="k">return</span> <span class="n">ix</span></div>
 
-<div class="viewcode-block" id="SchemaView.is_relationship"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.is_relationship">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">()</span>
+<div class="viewcode-block" id="SchemaView.is_relationship"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.is_relationship">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">is_relationship</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">class_name</span><span class="p">:</span> <span class="n">CLASS_NAME</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">imports</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Tests if a class represents a relationship or reified statement</span>
@@ -1488,7 +1532,7 @@
                     <span class="k">return</span> <span class="kc">True</span>
         <span class="k">return</span> <span class="kc">False</span></div>
 
-<div class="viewcode-block" id="SchemaView.annotation_dict"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.annotation_dict">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">()</span>
+<div class="viewcode-block" id="SchemaView.annotation_dict"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.annotation_dict">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">annotation_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element_name</span><span class="p">:</span> <span class="n">ElementName</span><span class="p">,</span> <span class="n">imports</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">URIorCURIE</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a dictionary where keys are annotation tags and values are annotation values for any given element.</span>
@@ -1504,7 +1548,7 @@
         <span class="n">e</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_element</span><span class="p">(</span><span class="n">element_name</span><span class="p">,</span> <span class="n">imports</span><span class="o">=</span><span class="n">imports</span><span class="p">)</span>
         <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">e</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span></div>
 
-<div class="viewcode-block" id="SchemaView.class_slots"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.class_slots">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">()</span>
+<div class="viewcode-block" id="SchemaView.class_slots"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.class_slots">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">class_slots</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">class_name</span><span class="p">:</span> <span class="n">CLASS_NAME</span><span class="p">,</span> <span class="n">imports</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">direct</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span>
         <span class="n">SlotDefinitionName</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1530,7 +1574,7 @@
                 <span class="n">slots_nr</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">slots_nr</span></div>
 
-<div class="viewcode-block" id="SchemaView.induced_slot"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.induced_slot">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">()</span>
+<div class="viewcode-block" id="SchemaView.induced_slot"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.induced_slot">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">induced_slot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slot_name</span><span class="p">:</span> <span class="n">SLOT_NAME</span><span class="p">,</span> <span class="n">class_name</span><span class="p">:</span> <span class="n">CLASS_NAME</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">imports</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                      <span class="n">mangle_name</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SlotDefinition</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1545,15 +1589,16 @@
 <span class="sd">        :param imports: include imports closure</span>
 <span class="sd">        :return: dynamic slot constructed by inference</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">slot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_slot</span><span class="p">(</span><span class="n">slot_name</span><span class="p">,</span> <span class="n">imports</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">class_name</span><span class="p">:</span>
             <span class="bp">cls</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_class</span><span class="p">(</span><span class="n">class_name</span><span class="p">,</span> <span class="n">imports</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">cls</span> <span class="o">=</span> <span class="kc">None</span>
+
         <span class="c1"># attributes take priority over schema-level slot definitions, IF</span>
         <span class="c1"># the attributes is declared for the class or an ancestor</span>
         <span class="n">slot_comes_from_attribute</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">if</span> <span class="bp">cls</span><span class="p">:</span>
+            <span class="n">slot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_slot</span><span class="p">(</span><span class="n">slot_name</span><span class="p">,</span> <span class="n">imports</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
             <span class="c1"># traverse ancestors (reflexive), starting with</span>
             <span class="c1"># the main class</span>
             <span class="k">for</span> <span class="n">an</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">class_ancestors</span><span class="p">(</span><span class="n">class_name</span><span class="p">):</span>
@@ -1564,11 +1609,13 @@
                     <span class="k">break</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">slot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_slot</span><span class="p">(</span><span class="n">slot_name</span><span class="p">,</span> <span class="n">imports</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="n">slot</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No such slot </span><span class="si">{</span><span class="n">slot_name</span><span class="si">}</span><span class="s2"> as an attribute of </span><span class="si">{</span><span class="n">class_name</span><span class="si">}</span><span class="s2"> ancestors &quot;</span>
                              <span class="s2">&quot;or as a slot definition in the schema&quot;</span><span class="p">)</span>
+
         <span class="c1"># copy the slot, as it will be modified</span>
-        <span class="n">induced_slot</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">slot</span><span class="p">)</span>
+        <span class="n">induced_slot</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="n">slot</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">slot_comes_from_attribute</span><span class="p">:</span>
             <span class="n">slot_anc_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">slot_ancestors</span><span class="p">(</span><span class="n">slot_name</span><span class="p">,</span> <span class="n">reflexive</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="c1"># inheritable slot: first propagate from ancestors</span>
@@ -1576,7 +1623,7 @@
                 <span class="n">anc_slot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_slot</span><span class="p">(</span><span class="n">anc_sn</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
                 <span class="k">for</span> <span class="n">metaslot_name</span> <span class="ow">in</span> <span class="n">SlotDefinition</span><span class="o">.</span><span class="n">_inherited_slots</span><span class="p">:</span>
                     <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">anc_slot</span><span class="p">,</span> <span class="n">metaslot_name</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
-                        <span class="nb">setattr</span><span class="p">(</span><span class="n">induced_slot</span><span class="p">,</span> <span class="n">metaslot_name</span><span class="p">,</span> <span class="n">deepcopy</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">anc_slot</span><span class="p">,</span> <span class="n">metaslot_name</span><span class="p">)))</span>
+                        <span class="nb">setattr</span><span class="p">(</span><span class="n">induced_slot</span><span class="p">,</span> <span class="n">metaslot_name</span><span class="p">,</span> <span class="n">copy</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">anc_slot</span><span class="p">,</span> <span class="n">metaslot_name</span><span class="p">)))</span>
         <span class="n">COMBINE</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s1">&#39;maximum_value&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">min</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span>
             <span class="s1">&#39;minimum_value&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">max</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span>
@@ -1623,14 +1670,14 @@
             <span class="k">if</span> <span class="n">induced_slot</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">slots</span> <span class="ow">or</span> <span class="n">induced_slot</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">attributes</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">induced_slot</span><span class="o">.</span><span class="n">domain_of</span><span class="p">:</span>
                     <span class="n">induced_slot</span><span class="o">.</span><span class="n">domain_of</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">induced_slot</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">induced_slot</span></div>
 
-    <span class="nd">@lru_cache</span><span class="p">()</span>
+    <span class="nd">@lru_cache</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">_metaslots_for_slot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">fake_slot</span> <span class="o">=</span> <span class="n">SlotDefinition</span><span class="p">(</span><span class="s1">&#39;__FAKE&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="nb">vars</span><span class="p">(</span><span class="n">fake_slot</span><span class="p">)</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
 
-<div class="viewcode-block" id="SchemaView.class_induced_slots"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.class_induced_slots">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">()</span>
+<div class="viewcode-block" id="SchemaView.class_induced_slots"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.class_induced_slots">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">class_induced_slots</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">class_name</span><span class="p">:</span> <span class="n">CLASS_NAME</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">imports</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">SlotDefinition</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        All slots that are asserted or inferred for a class, with their inferred semantics</span>
@@ -1641,7 +1688,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">induced_slot</span><span class="p">(</span><span class="n">sn</span><span class="p">,</span> <span class="n">class_name</span><span class="p">,</span> <span class="n">imports</span><span class="o">=</span><span class="n">imports</span><span class="p">)</span> <span class="k">for</span> <span class="n">sn</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">class_slots</span><span class="p">(</span><span class="n">class_name</span><span class="p">)]</span></div>
 
-<div class="viewcode-block" id="SchemaView.induced_class"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.induced_class">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">()</span>
+<div class="viewcode-block" id="SchemaView.induced_class"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.induced_class">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">induced_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">class_name</span><span class="p">:</span> <span class="n">CLASS_NAME</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ClassDefinition</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate an induced class</span>
@@ -1661,7 +1708,7 @@
         <span class="n">c</span><span class="o">.</span><span class="n">slots</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">return</span> <span class="n">c</span></div>
 
-<div class="viewcode-block" id="SchemaView.induced_type"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.induced_type">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">()</span>
+<div class="viewcode-block" id="SchemaView.induced_type"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.induced_type">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">induced_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">type_name</span><span class="p">:</span> <span class="n">TYPE_NAME</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TypeDefinition</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 
@@ -1679,7 +1726,7 @@
                 <span class="n">t</span><span class="o">.</span><span class="n">repr</span> <span class="o">=</span> <span class="n">parent</span><span class="o">.</span><span class="n">repr</span>
         <span class="k">return</span> <span class="n">t</span></div>
 
-<div class="viewcode-block" id="SchemaView.induced_enum"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.induced_enum">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">()</span>
+<div class="viewcode-block" id="SchemaView.induced_enum"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.induced_enum">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">induced_enum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">enum_name</span><span class="p">:</span> <span class="n">ENUM_NAME</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">EnumDefinition</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 
@@ -1689,7 +1736,7 @@
         <span class="n">e</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_enum</span><span class="p">(</span><span class="n">enum_name</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">e</span></div>
 
-<div class="viewcode-block" id="SchemaView.get_identifier_slot"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.get_identifier_slot">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">()</span>
+<div class="viewcode-block" id="SchemaView.get_identifier_slot"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.get_identifier_slot">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">get_identifier_slot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cn</span><span class="p">:</span> <span class="n">CLASS_NAME</span><span class="p">,</span> <span class="n">use_key</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">imports</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">SlotDefinition</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Find the slot that is the identifier for the given class</span>
@@ -1707,7 +1754,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span></div>
 
-<div class="viewcode-block" id="SchemaView.get_key_slot"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.get_key_slot">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">()</span>
+<div class="viewcode-block" id="SchemaView.get_key_slot"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.get_key_slot">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">get_key_slot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cn</span><span class="p">:</span> <span class="n">CLASS_NAME</span><span class="p">,</span> <span class="n">imports</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">SlotDefinition</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Find the slot that is the key for the given class</span>
@@ -1722,7 +1769,7 @@
                 <span class="k">return</span> <span class="n">s</span>
         <span class="k">return</span> <span class="kc">None</span></div>
 
-<div class="viewcode-block" id="SchemaView.get_type_designator_slot"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.get_type_designator_slot">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">()</span>
+<div class="viewcode-block" id="SchemaView.get_type_designator_slot"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.get_type_designator_slot">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">get_type_designator_slot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cn</span><span class="p">:</span> <span class="n">CLASS_NAME</span><span class="p">,</span> <span class="n">imports</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">SlotDefinition</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param cn: class name</span>
@@ -1805,31 +1852,34 @@
             <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">range</span><span class="p">:</span>
                 <span class="n">range_union_of</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">range</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">range_union_of</span></div>
-
-<div class="viewcode-block" id="SchemaView.get_classes_by_slot"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.get_classes_by_slot">[docs]</a>    <span class="k">def</span> <span class="nf">get_classes_by_slot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">,</span> <span class="n">include_induced</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">ClassDefinitionName</span><span class="p">]:</span>
+        
+<div class="viewcode-block" id="SchemaView.get_classes_by_slot"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.get_classes_by_slot">[docs]</a>    <span class="k">def</span> <span class="nf">get_classes_by_slot</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">,</span> <span class="n">include_induced</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">ClassDefinitionName</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get all classes that use a given slot, either as a direct or induced slot.</span>
 
 <span class="sd">        :param slot: slot in consideration</span>
 <span class="sd">        :param include_induced: supplement all direct slots with induced slots, defaults to False</span>
 <span class="sd">        :return: list of slots, either direct, or both direct and induced</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">slots_list</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># list of all direct or induced slots</span>
+        <span class="n">classes_set</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>  <span class="c1"># use set to avoid duplicates</span>
+        <span class="n">all_classes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_classes</span><span class="p">()</span>
 
-        <span class="k">for</span> <span class="n">c_name</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_classes</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="c1"># check if slot is direct specification on class</span>
+        <span class="k">for</span> <span class="n">c_name</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">all_classes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">slots</span><span class="p">:</span>
-                <span class="n">slots_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c_name</span><span class="p">)</span>
+                <span class="n">classes_set</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">c_name</span><span class="p">)</span>
 
-        <span class="c1"># include induced classes also if requested</span>
         <span class="k">if</span> <span class="n">include_induced</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">c_name</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_classes</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                <span class="k">for</span> <span class="n">ind_slot</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">class_induced_slots</span><span class="p">(</span><span class="n">c_name</span><span class="p">):</span>
-                    <span class="k">if</span> <span class="n">ind_slot</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
-                        <span class="n">slots_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c_name</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">c_name</span> <span class="ow">in</span> <span class="n">all_classes</span><span class="p">:</span>
+                <span class="n">induced_slot_names</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">ind_slot</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">ind_slot</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">class_induced_slots</span><span class="p">(</span><span class="n">c_name</span><span class="p">)</span>
+                <span class="p">]</span>
+                <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">induced_slot_names</span><span class="p">:</span>
+                    <span class="n">classes_set</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">c_name</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">dict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span><span class="n">slots_list</span><span class="p">))</span></div>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">classes_set</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="SchemaView.get_slots_by_enum"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.get_slots_by_enum">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">()</span>
+<div class="viewcode-block" id="SchemaView.get_slots_by_enum"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.get_slots_by_enum">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">get_slots_by_enum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">enum_name</span><span class="p">:</span> <span class="n">ENUM_NAME</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">SlotDefinition</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get all slots that use a given enum: schema defined, attribute, or slot_usage.</span>
 
@@ -1880,7 +1930,7 @@
                 <span class="n">anns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_type</span><span class="p">(</span><span class="n">t</span><span class="p">)</span><span class="o">.</span><span class="n">annotations</span>
                 <span class="k">return</span> <span class="s2">&quot;percent_encoded&quot;</span> <span class="ow">in</span> <span class="n">anns</span></div>
 
-<div class="viewcode-block" id="SchemaView.usage_index"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.usage_index">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">()</span>
+<div class="viewcode-block" id="SchemaView.usage_index"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.usage_index">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">usage_index</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">ElementName</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">SchemaUsage</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Fetch an index that shows the ways in which each element is used</span>
@@ -1970,7 +2020,7 @@
 <span class="sd">        :param slot_name: slot to be deleted</span>
 <span class="sd">        :return:</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">slotes</span><span class="p">[</span><span class="n">slot_name</span><span class="p">]</span>
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">slots</span><span class="p">[</span><span class="n">slot_name</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_modified</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="SchemaView.delete_enum"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.delete_enum">[docs]</a>    <span class="k">def</span> <span class="nf">delete_enum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">enum_name</span><span class="p">:</span> <span class="n">EnumDefinitionName</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -1978,7 +2028,7 @@
 <span class="sd">        :param enum_name: enum to be deleted</span>
 <span class="sd">        :return:</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">enumes</span><span class="p">[</span><span class="n">enum_name</span><span class="p">]</span>
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">enums</span><span class="p">[</span><span class="n">enum_name</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_modified</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="SchemaView.delete_type"><a class="viewcode-back" href="../../../developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.delete_type">[docs]</a>    <span class="k">def</span> <span class="nf">delete_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">type_name</span><span class="p">:</span> <span class="n">TypeDefinitionName</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -1994,7 +2044,7 @@
 <span class="sd">        :param subset_name: subset to be deleted</span>
 <span class="sd">        :return:</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">subsetes</span><span class="p">[</span><span class="n">subset_name</span><span class="p">]</span>
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">subsets</span><span class="p">[</span><span class="n">subset_name</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_modified</span><span class="p">()</span></div>
 
     <span class="c1"># def rename(self, old_name: str, new_name: str):</span>
