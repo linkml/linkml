@@ -1,0 +1,92 @@
+name: Test with upstream linkml
+on:
+  workflow_dispatch:
+
+jobs:
+  test_upstream:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest, windows-latest ]
+        python-version: [ "3.8", "3.9", "3.10", "3.11" ]
+        pydantic-version: [ "1", "2" ]
+        exclude:
+          - os: windows-latest
+            python-version: "3.8"
+          - os: windows-latest
+            pydantic-version: "1"
+          - python-version: "3.8"
+            pydantic-version: "1"
+          - python-version: "3.9"
+            pydantic-version: "1"
+          - python-version: "3.10"
+            pydantic-version: "1"
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: checkout upstream
+        uses: actions/checkout@v4
+        with:
+          repository: linkml/linkml
+          path: linkml
+          fetch-depth: 0
+
+      - name: checkout linkml-runtime
+        uses: actions/checkout@v4
+        with:
+          repository: linkml/linkml-runtime
+          path: linkml-runtime
+          fetch-depth: 0
+
+      - name: set up python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: install poetry
+        uses: snok/install-poetry@v1
+        with:
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+
+      - name: Load cached venv
+        id: cached-poetry-dependencies
+        uses: actions/cache@v3
+        with:
+          path: linkml/.venv
+          key: venv-${{ matrix.python-version }}-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
+
+      # make extra sure we're removing any old version of linkml-runtime that exists
+      - name: uninstall potentially cached linkml-runtime
+        working-directory: linkml
+        run: poetry run pip uninstall linkml-runtime
+
+      # we are not using linkml-runtime's lockfile, but simulating what will happen
+      # when we merge this and update linkml's lockfile
+      - name: add linkml-runtime to lockfile
+        working-directory: linkml
+        run: poetry add ../linkml-runtime
+
+      # use correct pydantic version
+      - name: install pydantic
+        working-directory: linkml
+        run: poetry add pydantic@^${{ matrix.pydantic-version }}
+
+      # note that we run the installation step always, even if we restore a venv,
+      # the cache will restore the old version of linkml-runtime, but the lockfile
+      # will only store the directory dependency (and thus will reinstall it)
+      # the cache will still speedup the rest of the installation
+      - name: install linkml
+        working-directory: linkml
+        run: poetry install --no-interaction -E tests
+
+      - name: print linkml-runtime version
+        working-directory: linkml
+        run: poetry run python -c 'import linkml_runtime; from importlib.metadata import version; print(linkml_runtime.__file__); print(version("linkml_runtime"))'
+
+      - name: run tests
+        working-directory: linkml
+        run: poetry run python -m pytest --with-slow
+
+
+
