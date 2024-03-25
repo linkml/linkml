@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "linkml"
-version = "0.0.0"
+version = "1.7.6.post48.dev0+dd1ce611"
 description = "Linked Open Data Modeling Language"
 authors = [
     "Chris Mungall <cjmungall@lbl.gov>",
@@ -43,7 +43,7 @@ packages = [
 ]
 
 [tool.poetry-dynamic-versioning]
-enable = true
+enable = false
 vcs = "git"
 style = "pep440"
 
@@ -139,6 +139,7 @@ sphinx-click = "*"
 sphinx-rtd-theme = "*"
 myst-parser = "*"
 requests-cache = "^1.2.0"
+sphinx-jinja = "^2.0.2"
 
 [tool.poetry.group.tests.dependencies]
 pytest = "^7.4.0"

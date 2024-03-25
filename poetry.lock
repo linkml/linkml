@@ -2107,6 +2107,7 @@ description = "A pure Python implementation of the trie data structure."
 optional = false
 python-versions = "*"
 files = [
+    {file = "PyTrie-0.4.0-py3-none-any.whl", hash = "sha256:f687c224ee8c66cda8e8628a903011b692635ffbb08d4b39c5f92b18eb78c950"},
     {file = "PyTrie-0.4.0.tar.gz", hash = "sha256:8f4488f402d3465993fb6b6efa09866849ed8cda7903b50647b7d0342b805379"},
 ]
 
@@ -2801,6 +2802,22 @@ docutils = "*"
 sphinx = ">=2.0"
 
 [[package]]
+name = "sphinx-jinja"
+version = "2.0.2"
+description = "includes jinja templates in a documentation"
+optional = false
+python-versions = ">=3.6,<4"
+files = [
+    {file = "sphinx-jinja-2.0.2.tar.gz", hash = "sha256:c6232b59a894139770be1dc6d0b00a379e4288ce78157904e1f8473dea3e0718"},
+    {file = "sphinx_jinja-2.0.2-py3-none-any.whl", hash = "sha256:705ebeb9b7a6018ca3f93724315a7c1effa6ba3db44d630e7eaaa15e4ac081a8"},
+]
+
+[package.dependencies]
+docutils = ">=0.16"
+Jinja2 = ">=2.11"
+sphinx = ">4.2.0"
+
+[[package]]
 name = "sphinx-rtd-theme"
 version = "2.0.0"
 description = "Read the Docs theme for Sphinx"
@@ -3396,4 +3413,4 @@ tests = ["pyshacl"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8.1"
-content-hash = "12a333885dc43482828d4438efc5a2ebba97f80de020359dceb08703542188b4"
+content-hash = "a5204e0fc37caab369e0756904567383869085e6ca7363f6b5183357ceb7b781"

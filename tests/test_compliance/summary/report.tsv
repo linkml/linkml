@@ -1,0 +1,956 @@
+schema_name	data_name	framework	expected_behavior	test_name	module_name	valid	description	notes
+test_attributes-attributes	object_may_be_empty	python_dataclasses	implements	test_attributes	core	True	pattern	None
+test_attributes-attributes	not_all_attributes_need_to_be_specified	python_dataclasses	implements	test_attributes	core	True	pattern	None
+test_attributes-attributes	all_attributes_can_be_specified	python_dataclasses	implements	test_attributes	core	True	pattern	None
+test_attributes-attributes	attributes_not_in_the_class_are_not_allowed	python_dataclasses	implements	test_attributes	core	False	pattern	None
+test_attributes-attributes	object_may_be_empty	pydantic	implements	test_attributes	core	True	pattern	None
+test_attributes-attributes	not_all_attributes_need_to_be_specified	pydantic	implements	test_attributes	core	True	pattern	None
+test_attributes-attributes	all_attributes_can_be_specified	pydantic	implements	test_attributes	core	True	pattern	None
+test_attributes-attributes	attributes_not_in_the_class_are_not_allowed	pydantic	implements	test_attributes	core	False	pattern	None
+test_attributes-attributes	object_may_be_empty	java	untested	test_attributes	core	True	pattern	None
+test_attributes-attributes	not_all_attributes_need_to_be_specified	java	untested	test_attributes	core	True	pattern	None
+test_attributes-attributes	all_attributes_can_be_specified	java	untested	test_attributes	core	True	pattern	None
+test_attributes-attributes	attributes_not_in_the_class_are_not_allowed	java	untested	test_attributes	core	False	pattern	None
+test_attributes-attributes	object_may_be_empty	jsonschema	implements	test_attributes	core	True	pattern	None
+test_attributes-attributes	not_all_attributes_need_to_be_specified	jsonschema	implements	test_attributes	core	True	pattern	None
+test_attributes-attributes	all_attributes_can_be_specified	jsonschema	implements	test_attributes	core	True	pattern	None
+test_attributes-attributes	attributes_not_in_the_class_are_not_allowed	jsonschema	implements	test_attributes	core	False	pattern	None
+test_attributes-attributes	object_may_be_empty	shacl	implements	test_attributes	core	True	pattern	None
+test_attributes-attributes	not_all_attributes_need_to_be_specified	shacl	implements	test_attributes	core	True	pattern	None
+test_attributes-attributes	all_attributes_can_be_specified	shacl	implements	test_attributes	core	True	pattern	None
+test_attributes-attributes	attributes_not_in_the_class_are_not_allowed	shacl	implements	test_attributes	core	False	pattern	None
+test_attributes-attributes	object_may_be_empty	shex	untested	test_attributes	core	True	pattern	None
+test_attributes-attributes	not_all_attributes_need_to_be_specified	shex	untested	test_attributes	core	True	pattern	None
+test_attributes-attributes	all_attributes_can_be_specified	shex	untested	test_attributes	core	True	pattern	None
+test_attributes-attributes	attributes_not_in_the_class_are_not_allowed	shex	untested	test_attributes	core	False	pattern	None
+test_attributes-attributes	object_may_be_empty	jsonld_context	implements	test_attributes	core	True	pattern	None
+test_attributes-attributes	not_all_attributes_need_to_be_specified	jsonld_context	implements	test_attributes	core	True	pattern	None
+test_attributes-attributes	all_attributes_can_be_specified	jsonld_context	implements	test_attributes	core	True	pattern	None
+test_attributes-attributes	attributes_not_in_the_class_are_not_allowed	jsonld_context	implements	test_attributes	core	False	pattern	None
+test_attributes-attributes	object_may_be_empty	sql_ddl_sqlite	implements	test_attributes	core	True	pattern	None
+test_attributes-attributes	not_all_attributes_need_to_be_specified	sql_ddl_sqlite	implements	test_attributes	core	True	pattern	None
+test_attributes-attributes	all_attributes_can_be_specified	sql_ddl_sqlite	implements	test_attributes	core	True	pattern	None
+test_attributes-attributes	attributes_not_in_the_class_are_not_allowed	sql_ddl_sqlite	implements	test_attributes	core	False	pattern	None
+test_attributes-attributes	object_may_be_empty	sql_ddl_postgres	untested	test_attributes	core	True	pattern	None
+test_attributes-attributes	not_all_attributes_need_to_be_specified	sql_ddl_postgres	untested	test_attributes	core	True	pattern	None
+test_attributes-attributes	all_attributes_can_be_specified	sql_ddl_postgres	untested	test_attributes	core	True	pattern	None
+test_attributes-attributes	attributes_not_in_the_class_are_not_allowed	sql_ddl_postgres	untested	test_attributes	core	False	pattern	None
+test_attributes-attributes	object_may_be_empty	owl	untested	test_attributes	core	True	pattern	None
+test_attributes-attributes	not_all_attributes_need_to_be_specified	owl	untested	test_attributes	core	True	pattern	None
+test_attributes-attributes	all_attributes_can_be_specified	owl	untested	test_attributes	core	True	pattern	None
+test_attributes-attributes	attributes_not_in_the_class_are_not_allowed	owl	untested	test_attributes	core	False	pattern	None
+test_type_range-string	str-	python_dataclasses	implements	test_type_range	core	True	pattern	None
+test_type_range-string	NoneType-None	python_dataclasses	implements	test_type_range	core	True	pattern	None
+test_type_range-string	int-1	python_dataclasses	coerces	test_type_range	core	False	pattern	None
+test_type_range-string	float-1.1	python_dataclasses	coerces	test_type_range	core	False	pattern	None
+test_type_range-string	str-1	python_dataclasses	implements	test_type_range	core	True	pattern	None
+test_type_range-string	bool-True	python_dataclasses	coerces	test_type_range	core	False	pattern	None
+test_type_range-string	bool-False	python_dataclasses	coerces	test_type_range	core	False	pattern	None
+test_type_range-integer	str-	python_dataclasses	implements	test_type_range	core	False	pattern	None
+test_type_range-integer	NoneType-None	python_dataclasses	implements	test_type_range	core	True	pattern	None
+test_type_range-integer	int-1	python_dataclasses	implements	test_type_range	core	True	pattern	None
+test_type_range-integer	float-1.1	python_dataclasses	coerces	test_type_range	core	False	pattern	None
+test_type_range-integer	str-1	python_dataclasses	coerces	test_type_range	core	False	pattern	None
+test_type_range-integer	bool-True	python_dataclasses	incomplete	test_type_range	core	False	pattern	None
+test_type_range-integer	bool-False	python_dataclasses	incomplete	test_type_range	core	False	pattern	None
+test_type_range-float	str-	python_dataclasses	implements	test_type_range	core	False	pattern	None
+test_type_range-float	NoneType-None	python_dataclasses	implements	test_type_range	core	True	pattern	None
+test_type_range-float	int-1	python_dataclasses	coerces	test_type_range	core	False	pattern	None
+test_type_range-float	float-1.1	python_dataclasses	implements	test_type_range	core	True	pattern	None
+test_type_range-float	str-1	python_dataclasses	coerces	test_type_range	core	False	pattern	None
+test_type_range-float	bool-True	python_dataclasses	coerces	test_type_range	core	False	pattern	None
+test_type_range-float	bool-False	python_dataclasses	coerces	test_type_range	core	False	pattern	None
+test_type_range-double	str-	python_dataclasses	implements	test_type_range	core	False	pattern	None
+test_type_range-double	NoneType-None	python_dataclasses	implements	test_type_range	core	True	pattern	None
+test_type_range-double	int-1	python_dataclasses	coerces	test_type_range	core	False	pattern	None
+test_type_range-double	float-1.1	python_dataclasses	implements	test_type_range	core	True	pattern	None
+test_type_range-double	str-1	python_dataclasses	coerces	test_type_range	core	False	pattern	None
+test_type_range-double	bool-True	python_dataclasses	coerces	test_type_range	core	False	pattern	None
+test_type_range-double	bool-False	python_dataclasses	coerces	test_type_range	core	False	pattern	None
+test_type_range-boolean	str-	python_dataclasses	implements	test_type_range	core	False	pattern	None
+test_type_range-boolean	NoneType-None	python_dataclasses	implements	test_type_range	core	True	pattern	None
+test_type_range-boolean	int-1	python_dataclasses	coerces	test_type_range	core	False	pattern	None
+test_type_range-boolean	float-1.1	python_dataclasses	implements	test_type_range	core	False	pattern	None
+test_type_range-boolean	str-1	python_dataclasses	coerces	test_type_range	core	False	pattern	None
+test_type_range-boolean	bool-True	python_dataclasses	implements	test_type_range	core	True	pattern	None
+test_type_range-boolean	bool-False	python_dataclasses	implements	test_type_range	core	True	pattern	None
+test_type_range-string	str-	pydantic	implements	test_type_range	core	True	pattern	None
+test_type_range-string	NoneType-None	pydantic	implements	test_type_range	core	True	pattern	None
+test_type_range-string	int-1	pydantic	coerces	test_type_range	core	False	pattern	None
+test_type_range-string	float-1.1	pydantic	coerces	test_type_range	core	False	pattern	None
+test_type_range-string	str-1	pydantic	implements	test_type_range	core	True	pattern	None
+test_type_range-string	bool-True	pydantic	coerces	test_type_range	core	False	pattern	None
+test_type_range-string	bool-False	pydantic	coerces	test_type_range	core	False	pattern	None
+test_type_range-integer	str-	pydantic	implements	test_type_range	core	False	pattern	None
+test_type_range-integer	NoneType-None	pydantic	implements	test_type_range	core	True	pattern	None
+test_type_range-integer	int-1	pydantic	implements	test_type_range	core	True	pattern	None
+test_type_range-integer	float-1.1	pydantic	coerces	test_type_range	core	False	pattern	None
+test_type_range-integer	str-1	pydantic	coerces	test_type_range	core	False	pattern	None
+test_type_range-integer	bool-True	pydantic	coerces	test_type_range	core	False	pattern	None
+test_type_range-integer	bool-False	pydantic	coerces	test_type_range	core	False	pattern	None
+test_type_range-float	str-	pydantic	implements	test_type_range	core	False	pattern	None
+test_type_range-float	NoneType-None	pydantic	implements	test_type_range	core	True	pattern	None
+test_type_range-float	int-1	pydantic	coerces	test_type_range	core	False	pattern	None
+test_type_range-float	float-1.1	pydantic	implements	test_type_range	core	True	pattern	None
+test_type_range-float	str-1	pydantic	coerces	test_type_range	core	False	pattern	None
+test_type_range-float	bool-True	pydantic	coerces	test_type_range	core	False	pattern	None
+test_type_range-float	bool-False	pydantic	coerces	test_type_range	core	False	pattern	None
+test_type_range-double	str-	pydantic	implements	test_type_range	core	False	pattern	None
+test_type_range-double	NoneType-None	pydantic	implements	test_type_range	core	True	pattern	None
+test_type_range-double	int-1	pydantic	coerces	test_type_range	core	False	pattern	None
+test_type_range-double	float-1.1	pydantic	implements	test_type_range	core	True	pattern	None
+test_type_range-double	str-1	pydantic	coerces	test_type_range	core	False	pattern	None
+test_type_range-double	bool-True	pydantic	coerces	test_type_range	core	False	pattern	None
+test_type_range-double	bool-False	pydantic	coerces	test_type_range	core	False	pattern	None
+test_type_range-boolean	str-	pydantic	implements	test_type_range	core	False	pattern	None
+test_type_range-boolean	NoneType-None	pydantic	implements	test_type_range	core	True	pattern	None
+test_type_range-boolean	int-1	pydantic	coerces	test_type_range	core	False	pattern	None
+test_type_range-boolean	float-1.1	pydantic	implements	test_type_range	core	False	pattern	None
+test_type_range-boolean	str-1	pydantic	coerces	test_type_range	core	False	pattern	None
+test_type_range-boolean	bool-True	pydantic	implements	test_type_range	core	True	pattern	None
+test_type_range-boolean	bool-False	pydantic	implements	test_type_range	core	True	pattern	None
+test_type_range-string	str-	java	untested	test_type_range	core	True	pattern	None
+test_type_range-string	NoneType-None	java	untested	test_type_range	core	True	pattern	None
+test_type_range-string	int-1	java	untested	test_type_range	core	False	pattern	None
+test_type_range-string	float-1.1	java	untested	test_type_range	core	False	pattern	None
+test_type_range-string	str-1	java	untested	test_type_range	core	True	pattern	None
+test_type_range-string	bool-True	java	untested	test_type_range	core	False	pattern	None
+test_type_range-string	bool-False	java	untested	test_type_range	core	False	pattern	None
+test_type_range-integer	str-	java	untested	test_type_range	core	False	pattern	None
+test_type_range-integer	NoneType-None	java	untested	test_type_range	core	True	pattern	None
+test_type_range-integer	int-1	java	untested	test_type_range	core	True	pattern	None
+test_type_range-integer	float-1.1	java	untested	test_type_range	core	False	pattern	None
+test_type_range-integer	str-1	java	untested	test_type_range	core	False	pattern	None
+test_type_range-integer	bool-True	java	untested	test_type_range	core	False	pattern	None
+test_type_range-integer	bool-False	java	untested	test_type_range	core	False	pattern	None
+test_type_range-float	str-	java	untested	test_type_range	core	False	pattern	None
+test_type_range-float	NoneType-None	java	untested	test_type_range	core	True	pattern	None
+test_type_range-float	int-1	java	untested	test_type_range	core	False	pattern	None
+test_type_range-float	float-1.1	java	untested	test_type_range	core	True	pattern	None
+test_type_range-float	str-1	java	untested	test_type_range	core	False	pattern	None
+test_type_range-float	bool-True	java	untested	test_type_range	core	False	pattern	None
+test_type_range-float	bool-False	java	untested	test_type_range	core	False	pattern	None
+test_type_range-double	str-	java	untested	test_type_range	core	False	pattern	None
+test_type_range-double	NoneType-None	java	untested	test_type_range	core	True	pattern	None
+test_type_range-double	int-1	java	untested	test_type_range	core	False	pattern	None
+test_type_range-double	float-1.1	java	untested	test_type_range	core	True	pattern	None
+test_type_range-double	str-1	java	untested	test_type_range	core	False	pattern	None
+test_type_range-double	bool-True	java	untested	test_type_range	core	False	pattern	None
+test_type_range-double	bool-False	java	untested	test_type_range	core	False	pattern	None
+test_type_range-boolean	str-	java	untested	test_type_range	core	False	pattern	None
+test_type_range-boolean	NoneType-None	java	untested	test_type_range	core	True	pattern	None
+test_type_range-boolean	int-1	java	untested	test_type_range	core	False	pattern	None
+test_type_range-boolean	float-1.1	java	untested	test_type_range	core	False	pattern	None
+test_type_range-boolean	str-1	java	untested	test_type_range	core	False	pattern	None
+test_type_range-boolean	bool-True	java	untested	test_type_range	core	True	pattern	None
+test_type_range-boolean	bool-False	java	untested	test_type_range	core	True	pattern	None
+test_type_range-string	str-	jsonschema	implements	test_type_range	core	True	pattern	None
+test_type_range-string	NoneType-None	jsonschema	implements	test_type_range	core	True	pattern	None
+test_type_range-string	int-1	jsonschema	implements	test_type_range	core	False	pattern	None
+test_type_range-string	float-1.1	jsonschema	implements	test_type_range	core	False	pattern	None
+test_type_range-string	str-1	jsonschema	implements	test_type_range	core	True	pattern	None
+test_type_range-string	bool-True	jsonschema	implements	test_type_range	core	False	pattern	None
+test_type_range-string	bool-False	jsonschema	implements	test_type_range	core	False	pattern	None
+test_type_range-integer	str-	jsonschema	implements	test_type_range	core	False	pattern	None
+test_type_range-integer	NoneType-None	jsonschema	implements	test_type_range	core	True	pattern	None
+test_type_range-integer	int-1	jsonschema	implements	test_type_range	core	True	pattern	None
+test_type_range-integer	float-1.1	jsonschema	implements	test_type_range	core	False	pattern	None
+test_type_range-integer	str-1	jsonschema	implements	test_type_range	core	False	pattern	None
+test_type_range-integer	bool-True	jsonschema	implements	test_type_range	core	False	pattern	None
+test_type_range-integer	bool-False	jsonschema	implements	test_type_range	core	False	pattern	None
+test_type_range-float	str-	jsonschema	implements	test_type_range	core	False	pattern	None
+test_type_range-float	NoneType-None	jsonschema	implements	test_type_range	core	True	pattern	None
+test_type_range-float	int-1	jsonschema	accepts	test_type_range	core	False	pattern	None
+test_type_range-float	float-1.1	jsonschema	implements	test_type_range	core	True	pattern	None
+test_type_range-float	str-1	jsonschema	implements	test_type_range	core	False	pattern	None
+test_type_range-float	bool-True	jsonschema	accepts	test_type_range	core	False	pattern	None
+test_type_range-float	bool-False	jsonschema	accepts	test_type_range	core	False	pattern	None
+test_type_range-double	str-	jsonschema	implements	test_type_range	core	False	pattern	None
+test_type_range-double	NoneType-None	jsonschema	implements	test_type_range	core	True	pattern	None
+test_type_range-double	int-1	jsonschema	accepts	test_type_range	core	False	pattern	None
+test_type_range-double	float-1.1	jsonschema	implements	test_type_range	core	True	pattern	None
+test_type_range-double	str-1	jsonschema	implements	test_type_range	core	False	pattern	None
+test_type_range-double	bool-True	jsonschema	accepts	test_type_range	core	False	pattern	None
+test_type_range-double	bool-False	jsonschema	accepts	test_type_range	core	False	pattern	None
+test_type_range-boolean	str-	jsonschema	implements	test_type_range	core	False	pattern	None
+test_type_range-boolean	NoneType-None	jsonschema	implements	test_type_range	core	True	pattern	None
+test_type_range-boolean	int-1	jsonschema	implements	test_type_range	core	False	pattern	None
+test_type_range-boolean	float-1.1	jsonschema	implements	test_type_range	core	False	pattern	None
+test_type_range-boolean	str-1	jsonschema	implements	test_type_range	core	False	pattern	None
+test_type_range-boolean	bool-True	jsonschema	implements	test_type_range	core	True	pattern	None
+test_type_range-boolean	bool-False	jsonschema	implements	test_type_range	core	True	pattern	None
+test_type_range-string	str-	shacl	implements	test_type_range	core	True	pattern	None
+test_type_range-string	NoneType-None	shacl	implements	test_type_range	core	True	pattern	None
+test_type_range-string	int-1	shacl	incomplete	test_type_range	core	False	pattern	None
+test_type_range-string	float-1.1	shacl	incomplete	test_type_range	core	False	pattern	None
+test_type_range-string	str-1	shacl	implements	test_type_range	core	True	pattern	None
+test_type_range-string	bool-True	shacl	incomplete	test_type_range	core	False	pattern	None
+test_type_range-string	bool-False	shacl	incomplete	test_type_range	core	False	pattern	None
+test_type_range-integer	str-	shacl	implements	test_type_range	core	False	pattern	None
+test_type_range-integer	NoneType-None	shacl	implements	test_type_range	core	True	pattern	None
+test_type_range-integer	int-1	shacl	implements	test_type_range	core	True	pattern	None
+test_type_range-integer	float-1.1	shacl	incomplete	test_type_range	core	False	pattern	None
+test_type_range-integer	str-1	shacl	incomplete	test_type_range	core	False	pattern	None
+test_type_range-integer	bool-True	shacl	incomplete	test_type_range	core	False	pattern	None
+test_type_range-integer	bool-False	shacl	incomplete	test_type_range	core	False	pattern	None
+test_type_range-float	str-	shacl	implements	test_type_range	core	False	pattern	None
+test_type_range-float	NoneType-None	shacl	implements	test_type_range	core	True	pattern	None
+test_type_range-float	int-1	shacl	incomplete	test_type_range	core	False	pattern	None
+test_type_range-float	float-1.1	shacl	implements	test_type_range	core	True	pattern	None
+test_type_range-float	str-1	shacl	incomplete	test_type_range	core	False	pattern	None
+test_type_range-float	bool-True	shacl	incomplete	test_type_range	core	False	pattern	None
+test_type_range-float	bool-False	shacl	incomplete	test_type_range	core	False	pattern	None
+test_type_range-double	str-	shacl	implements	test_type_range	core	False	pattern	None
+test_type_range-double	NoneType-None	shacl	implements	test_type_range	core	True	pattern	None
+test_type_range-double	int-1	shacl	incomplete	test_type_range	core	False	pattern	None
+test_type_range-double	float-1.1	shacl	implements	test_type_range	core	True	pattern	None
+test_type_range-double	str-1	shacl	incomplete	test_type_range	core	False	pattern	None
+test_type_range-double	bool-True	shacl	incomplete	test_type_range	core	False	pattern	None
+test_type_range-double	bool-False	shacl	incomplete	test_type_range	core	False	pattern	None
+test_type_range-boolean	str-	shacl	implements	test_type_range	core	False	pattern	None
+test_type_range-boolean	NoneType-None	shacl	implements	test_type_range	core	True	pattern	None
+test_type_range-boolean	int-1	shacl	incomplete	test_type_range	core	False	pattern	None
+test_type_range-boolean	float-1.1	shacl	implements	test_type_range	core	False	pattern	None
+test_type_range-boolean	str-1	shacl	incomplete	test_type_range	core	False	pattern	None
+test_type_range-boolean	bool-True	shacl	implements	test_type_range	core	True	pattern	None
+test_type_range-boolean	bool-False	shacl	implements	test_type_range	core	True	pattern	None
+test_type_range-string	str-	shex	untested	test_type_range	core	True	pattern	None
+test_type_range-string	NoneType-None	shex	untested	test_type_range	core	True	pattern	None
+test_type_range-string	int-1	shex	incomplete	test_type_range	core	False	pattern	None
+test_type_range-string	float-1.1	shex	incomplete	test_type_range	core	False	pattern	None
+test_type_range-string	str-1	shex	untested	test_type_range	core	True	pattern	None
+test_type_range-string	bool-True	shex	incomplete	test_type_range	core	False	pattern	None
+test_type_range-string	bool-False	shex	incomplete	test_type_range	core	False	pattern	None
+test_type_range-integer	str-	shex	untested	test_type_range	core	False	pattern	None
+test_type_range-integer	NoneType-None	shex	untested	test_type_range	core	True	pattern	None
+test_type_range-integer	int-1	shex	untested	test_type_range	core	True	pattern	None
+test_type_range-integer	float-1.1	shex	incomplete	test_type_range	core	False	pattern	None
+test_type_range-integer	str-1	shex	incomplete	test_type_range	core	False	pattern	None
+test_type_range-integer	bool-True	shex	incomplete	test_type_range	core	False	pattern	None
+test_type_range-integer	bool-False	shex	incomplete	test_type_range	core	False	pattern	None
+test_type_range-float	str-	shex	untested	test_type_range	core	False	pattern	None
+test_type_range-float	NoneType-None	shex	untested	test_type_range	core	True	pattern	None
+test_type_range-float	int-1	shex	incomplete	test_type_range	core	False	pattern	None
+test_type_range-float	float-1.1	shex	untested	test_type_range	core	True	pattern	None
+test_type_range-float	str-1	shex	incomplete	test_type_range	core	False	pattern	None
+test_type_range-float	bool-True	shex	incomplete	test_type_range	core	False	pattern	None
+test_type_range-float	bool-False	shex	incomplete	test_type_range	core	False	pattern	None
+test_type_range-double	str-	shex	untested	test_type_range	core	False	pattern	None
+test_type_range-double	NoneType-None	shex	untested	test_type_range	core	True	pattern	None
+test_type_range-double	int-1	shex	incomplete	test_type_range	core	False	pattern	None
+test_type_range-double	float-1.1	shex	untested	test_type_range	core	True	pattern	None
+test_type_range-double	str-1	shex	incomplete	test_type_range	core	False	pattern	None
+test_type_range-double	bool-True	shex	incomplete	test_type_range	core	False	pattern	None
+test_type_range-double	bool-False	shex	incomplete	test_type_range	core	False	pattern	None
+test_type_range-boolean	str-	shex	untested	test_type_range	core	False	pattern	None
+test_type_range-boolean	NoneType-None	shex	untested	test_type_range	core	True	pattern	None
+test_type_range-boolean	int-1	shex	incomplete	test_type_range	core	False	pattern	None
+test_type_range-boolean	float-1.1	shex	untested	test_type_range	core	False	pattern	None
+test_type_range-boolean	str-1	shex	incomplete	test_type_range	core	False	pattern	None
+test_type_range-boolean	bool-True	shex	untested	test_type_range	core	True	pattern	None
+test_type_range-boolean	bool-False	shex	untested	test_type_range	core	True	pattern	None
+test_type_range-string	str-	jsonld_context	implements	test_type_range	core	True	pattern	None
+test_type_range-string	NoneType-None	jsonld_context	implements	test_type_range	core	True	pattern	None
+test_type_range-string	int-1	jsonld_context	implements	test_type_range	core	False	pattern	None
+test_type_range-string	float-1.1	jsonld_context	implements	test_type_range	core	False	pattern	None
+test_type_range-string	str-1	jsonld_context	implements	test_type_range	core	True	pattern	None
+test_type_range-string	bool-True	jsonld_context	implements	test_type_range	core	False	pattern	None
+test_type_range-string	bool-False	jsonld_context	implements	test_type_range	core	False	pattern	None
+test_type_range-integer	str-	jsonld_context	implements	test_type_range	core	False	pattern	None
+test_type_range-integer	NoneType-None	jsonld_context	implements	test_type_range	core	True	pattern	None
+test_type_range-integer	int-1	jsonld_context	implements	test_type_range	core	True	pattern	None
+test_type_range-integer	float-1.1	jsonld_context	implements	test_type_range	core	False	pattern	None
+test_type_range-integer	str-1	jsonld_context	implements	test_type_range	core	False	pattern	None
+test_type_range-integer	bool-True	jsonld_context	implements	test_type_range	core	False	pattern	None
+test_type_range-integer	bool-False	jsonld_context	implements	test_type_range	core	False	pattern	None
+test_type_range-float	str-	jsonld_context	implements	test_type_range	core	False	pattern	None
+test_type_range-float	NoneType-None	jsonld_context	implements	test_type_range	core	True	pattern	None
+test_type_range-float	int-1	jsonld_context	implements	test_type_range	core	False	pattern	None
+test_type_range-float	float-1.1	jsonld_context	implements	test_type_range	core	True	pattern	None
+test_type_range-float	str-1	jsonld_context	implements	test_type_range	core	False	pattern	None
+test_type_range-float	bool-True	jsonld_context	implements	test_type_range	core	False	pattern	None
+test_type_range-float	bool-False	jsonld_context	implements	test_type_range	core	False	pattern	None
+test_type_range-double	str-	jsonld_context	implements	test_type_range	core	False	pattern	None
+test_type_range-double	NoneType-None	jsonld_context	implements	test_type_range	core	True	pattern	None
+test_type_range-double	int-1	jsonld_context	implements	test_type_range	core	False	pattern	None
+test_type_range-double	float-1.1	jsonld_context	implements	test_type_range	core	True	pattern	None
+test_type_range-double	str-1	jsonld_context	implements	test_type_range	core	False	pattern	None
+test_type_range-double	bool-True	jsonld_context	implements	test_type_range	core	False	pattern	None
+test_type_range-double	bool-False	jsonld_context	implements	test_type_range	core	False	pattern	None
+test_type_range-boolean	str-	jsonld_context	implements	test_type_range	core	False	pattern	None
+test_type_range-boolean	NoneType-None	jsonld_context	implements	test_type_range	core	True	pattern	None
+test_type_range-boolean	int-1	jsonld_context	implements	test_type_range	core	False	pattern	None
+test_type_range-boolean	float-1.1	jsonld_context	implements	test_type_range	core	False	pattern	None
+test_type_range-boolean	str-1	jsonld_context	implements	test_type_range	core	False	pattern	None
+test_type_range-boolean	bool-True	jsonld_context	implements	test_type_range	core	True	pattern	None
+test_type_range-boolean	bool-False	jsonld_context	implements	test_type_range	core	True	pattern	None
+test_type_range-string	str-	sql_ddl_sqlite	implements	test_type_range	core	True	pattern	None
+test_type_range-string	NoneType-None	sql_ddl_sqlite	implements	test_type_range	core	True	pattern	None
+test_type_range-string	int-1	sql_ddl_sqlite	incomplete	test_type_range	core	False	pattern	None
+test_type_range-string	float-1.1	sql_ddl_sqlite	incomplete	test_type_range	core	False	pattern	None
+test_type_range-string	str-1	sql_ddl_sqlite	implements	test_type_range	core	True	pattern	None
+test_type_range-string	bool-True	sql_ddl_sqlite	incomplete	test_type_range	core	False	pattern	None
+test_type_range-string	bool-False	sql_ddl_sqlite	incomplete	test_type_range	core	False	pattern	None
+test_type_range-integer	str-	sql_ddl_sqlite	incomplete	test_type_range	core	False	pattern	None
+test_type_range-integer	NoneType-None	sql_ddl_sqlite	implements	test_type_range	core	True	pattern	None
+test_type_range-integer	int-1	sql_ddl_sqlite	implements	test_type_range	core	True	pattern	None
+test_type_range-integer	float-1.1	sql_ddl_sqlite	incomplete	test_type_range	core	False	pattern	None
+test_type_range-integer	str-1	sql_ddl_sqlite	incomplete	test_type_range	core	False	pattern	None
+test_type_range-integer	bool-True	sql_ddl_sqlite	incomplete	test_type_range	core	False	pattern	None
+test_type_range-integer	bool-False	sql_ddl_sqlite	incomplete	test_type_range	core	False	pattern	None
+test_type_range-float	str-	sql_ddl_sqlite	incomplete	test_type_range	core	False	pattern	None
+test_type_range-float	NoneType-None	sql_ddl_sqlite	implements	test_type_range	core	True	pattern	None
+test_type_range-float	int-1	sql_ddl_sqlite	incomplete	test_type_range	core	False	pattern	None
+test_type_range-float	float-1.1	sql_ddl_sqlite	implements	test_type_range	core	True	pattern	None
+test_type_range-float	str-1	sql_ddl_sqlite	incomplete	test_type_range	core	False	pattern	None
+test_type_range-float	bool-True	sql_ddl_sqlite	incomplete	test_type_range	core	False	pattern	None
+test_type_range-float	bool-False	sql_ddl_sqlite	incomplete	test_type_range	core	False	pattern	None
+test_type_range-double	str-	sql_ddl_sqlite	incomplete	test_type_range	core	False	pattern	None
+test_type_range-double	NoneType-None	sql_ddl_sqlite	implements	test_type_range	core	True	pattern	None
+test_type_range-double	int-1	sql_ddl_sqlite	incomplete	test_type_range	core	False	pattern	None
+test_type_range-double	float-1.1	sql_ddl_sqlite	implements	test_type_range	core	True	pattern	None
+test_type_range-double	str-1	sql_ddl_sqlite	incomplete	test_type_range	core	False	pattern	None
+test_type_range-double	bool-True	sql_ddl_sqlite	incomplete	test_type_range	core	False	pattern	None
+test_type_range-double	bool-False	sql_ddl_sqlite	incomplete	test_type_range	core	False	pattern	None
+test_type_range-boolean	str-	sql_ddl_sqlite	incomplete	test_type_range	core	False	pattern	None
+test_type_range-boolean	NoneType-None	sql_ddl_sqlite	implements	test_type_range	core	True	pattern	None
+test_type_range-boolean	int-1	sql_ddl_sqlite	incomplete	test_type_range	core	False	pattern	None
+test_type_range-boolean	float-1.1	sql_ddl_sqlite	incomplete	test_type_range	core	False	pattern	None
+test_type_range-boolean	str-1	sql_ddl_sqlite	incomplete	test_type_range	core	False	pattern	None
+test_type_range-boolean	bool-True	sql_ddl_sqlite	implements	test_type_range	core	True	pattern	None
+test_type_range-boolean	bool-False	sql_ddl_sqlite	implements	test_type_range	core	True	pattern	None
+test_type_range-string	str-	sql_ddl_postgres	untested	test_type_range	core	True	pattern	None
+test_type_range-string	NoneType-None	sql_ddl_postgres	untested	test_type_range	core	True	pattern	None
+test_type_range-string	int-1	sql_ddl_postgres	untested	test_type_range	core	False	pattern	None
+test_type_range-string	float-1.1	sql_ddl_postgres	untested	test_type_range	core	False	pattern	None
+test_type_range-string	str-1	sql_ddl_postgres	untested	test_type_range	core	True	pattern	None
+test_type_range-string	bool-True	sql_ddl_postgres	untested	test_type_range	core	False	pattern	None
+test_type_range-string	bool-False	sql_ddl_postgres	untested	test_type_range	core	False	pattern	None
+test_type_range-integer	str-	sql_ddl_postgres	untested	test_type_range	core	False	pattern	None
+test_type_range-integer	NoneType-None	sql_ddl_postgres	untested	test_type_range	core	True	pattern	None
+test_type_range-integer	int-1	sql_ddl_postgres	untested	test_type_range	core	True	pattern	None
+test_type_range-integer	float-1.1	sql_ddl_postgres	untested	test_type_range	core	False	pattern	None
+test_type_range-integer	str-1	sql_ddl_postgres	untested	test_type_range	core	False	pattern	None
+test_type_range-integer	bool-True	sql_ddl_postgres	untested	test_type_range	core	False	pattern	None
+test_type_range-integer	bool-False	sql_ddl_postgres	untested	test_type_range	core	False	pattern	None
+test_type_range-float	str-	sql_ddl_postgres	untested	test_type_range	core	False	pattern	None
+test_type_range-float	NoneType-None	sql_ddl_postgres	untested	test_type_range	core	True	pattern	None
+test_type_range-float	int-1	sql_ddl_postgres	untested	test_type_range	core	False	pattern	None
+test_type_range-float	float-1.1	sql_ddl_postgres	untested	test_type_range	core	True	pattern	None
+test_type_range-float	str-1	sql_ddl_postgres	untested	test_type_range	core	False	pattern	None
+test_type_range-float	bool-True	sql_ddl_postgres	untested	test_type_range	core	False	pattern	None
+test_type_range-float	bool-False	sql_ddl_postgres	untested	test_type_range	core	False	pattern	None
+test_type_range-double	str-	sql_ddl_postgres	untested	test_type_range	core	False	pattern	None
+test_type_range-double	NoneType-None	sql_ddl_postgres	untested	test_type_range	core	True	pattern	None
+test_type_range-double	int-1	sql_ddl_postgres	untested	test_type_range	core	False	pattern	None
+test_type_range-double	float-1.1	sql_ddl_postgres	untested	test_type_range	core	True	pattern	None
+test_type_range-double	str-1	sql_ddl_postgres	untested	test_type_range	core	False	pattern	None
+test_type_range-double	bool-True	sql_ddl_postgres	untested	test_type_range	core	False	pattern	None
+test_type_range-double	bool-False	sql_ddl_postgres	untested	test_type_range	core	False	pattern	None
+test_type_range-boolean	str-	sql_ddl_postgres	untested	test_type_range	core	False	pattern	None
+test_type_range-boolean	NoneType-None	sql_ddl_postgres	untested	test_type_range	core	True	pattern	None
+test_type_range-boolean	int-1	sql_ddl_postgres	untested	test_type_range	core	False	pattern	None
+test_type_range-boolean	float-1.1	sql_ddl_postgres	untested	test_type_range	core	False	pattern	None
+test_type_range-boolean	str-1	sql_ddl_postgres	untested	test_type_range	core	False	pattern	None
+test_type_range-boolean	bool-True	sql_ddl_postgres	untested	test_type_range	core	True	pattern	None
+test_type_range-boolean	bool-False	sql_ddl_postgres	untested	test_type_range	core	True	pattern	None
+test_type_range-string	str-	owl	untested	test_type_range	core	True	pattern	None
+test_type_range-string	NoneType-None	owl	untested	test_type_range	core	True	pattern	None
+test_type_range-string	int-1	owl	incomplete	test_type_range	core	False	pattern	None
+test_type_range-string	float-1.1	owl	incomplete	test_type_range	core	False	pattern	None
+test_type_range-string	str-1	owl	untested	test_type_range	core	True	pattern	None
+test_type_range-string	bool-True	owl	incomplete	test_type_range	core	False	pattern	None
+test_type_range-string	bool-False	owl	incomplete	test_type_range	core	False	pattern	None
+test_type_range-integer	str-	owl	untested	test_type_range	core	False	pattern	None
+test_type_range-integer	NoneType-None	owl	untested	test_type_range	core	True	pattern	None
+test_type_range-integer	int-1	owl	untested	test_type_range	core	True	pattern	None
+test_type_range-integer	float-1.1	owl	incomplete	test_type_range	core	False	pattern	None
+test_type_range-integer	str-1	owl	incomplete	test_type_range	core	False	pattern	None
+test_type_range-integer	bool-True	owl	incomplete	test_type_range	core	False	pattern	None
+test_type_range-integer	bool-False	owl	incomplete	test_type_range	core	False	pattern	None
+test_type_range-float	str-	owl	untested	test_type_range	core	False	pattern	None
+test_type_range-float	NoneType-None	owl	untested	test_type_range	core	True	pattern	None
+test_type_range-float	int-1	owl	incomplete	test_type_range	core	False	pattern	None
+test_type_range-float	float-1.1	owl	untested	test_type_range	core	True	pattern	None
+test_type_range-float	str-1	owl	incomplete	test_type_range	core	False	pattern	None
+test_type_range-float	bool-True	owl	incomplete	test_type_range	core	False	pattern	None
+test_type_range-float	bool-False	owl	incomplete	test_type_range	core	False	pattern	None
+test_type_range-double	str-	owl	untested	test_type_range	core	False	pattern	None
+test_type_range-double	NoneType-None	owl	untested	test_type_range	core	True	pattern	None
+test_type_range-double	int-1	owl	incomplete	test_type_range	core	False	pattern	None
+test_type_range-double	float-1.1	owl	untested	test_type_range	core	True	pattern	None
+test_type_range-double	str-1	owl	incomplete	test_type_range	core	False	pattern	None
+test_type_range-double	bool-True	owl	incomplete	test_type_range	core	False	pattern	None
+test_type_range-double	bool-False	owl	incomplete	test_type_range	core	False	pattern	None
+test_type_range-boolean	str-	owl	untested	test_type_range	core	False	pattern	None
+test_type_range-boolean	NoneType-None	owl	untested	test_type_range	core	True	pattern	None
+test_type_range-boolean	int-1	owl	incomplete	test_type_range	core	False	pattern	None
+test_type_range-boolean	float-1.1	owl	untested	test_type_range	core	False	pattern	None
+test_type_range-boolean	str-1	owl	incomplete	test_type_range	core	False	pattern	None
+test_type_range-boolean	bool-True	owl	untested	test_type_range	core	True	pattern	None
+test_type_range-boolean	bool-False	owl	untested	test_type_range	core	True	pattern	None
+test_any_type-linkml_any	str-	python_dataclasses	implements	test_any_type	core	True	linkml:Any with 	None
+test_any_type-linkml_any	NoneType-None	python_dataclasses	implements	test_any_type	core	True	linkml:Any with None	None
+test_any_type-linkml_any	int-1	python_dataclasses	implements	test_any_type	core	True	linkml:Any with 1	None
+test_any_type-linkml_any	float-1.1	python_dataclasses	implements	test_any_type	core	True	linkml:Any with 1.1	None
+test_any_type-linkml_any	str-1	python_dataclasses	implements	test_any_type	core	True	linkml:Any with 1	None
+test_any_type-linkml_any	bool-True	python_dataclasses	implements	test_any_type	core	True	linkml:Any with True	None
+test_any_type-linkml_any	bool-False	python_dataclasses	implements	test_any_type	core	True	linkml:Any with False	None
+test_any_type-linkml_any	dict-{}	python_dataclasses	implements	test_any_type	core	True	linkml:Any with {}	None
+test_any_type-linkml_any	dict-{'foo': 1}	python_dataclasses	implements	test_any_type	core	True	linkml:Any with {'foo': 1}	None
+test_any_type-linkml_any	str-	pydantic	implements	test_any_type	core	True	linkml:Any with 	None
+test_any_type-linkml_any	NoneType-None	pydantic	implements	test_any_type	core	True	linkml:Any with None	None
+test_any_type-linkml_any	int-1	pydantic	implements	test_any_type	core	True	linkml:Any with 1	None
+test_any_type-linkml_any	float-1.1	pydantic	implements	test_any_type	core	True	linkml:Any with 1.1	None
+test_any_type-linkml_any	str-1	pydantic	implements	test_any_type	core	True	linkml:Any with 1	None
+test_any_type-linkml_any	bool-True	pydantic	implements	test_any_type	core	True	linkml:Any with True	None
+test_any_type-linkml_any	bool-False	pydantic	implements	test_any_type	core	True	linkml:Any with False	None
+test_any_type-linkml_any	dict-{}	pydantic	implements	test_any_type	core	True	linkml:Any with {}	None
+test_any_type-linkml_any	dict-{'foo': 1}	pydantic	implements	test_any_type	core	True	linkml:Any with {'foo': 1}	None
+test_any_type-linkml_any	str-	java	untested	test_any_type	core	True	linkml:Any with 	None
+test_any_type-linkml_any	NoneType-None	java	untested	test_any_type	core	True	linkml:Any with None	None
+test_any_type-linkml_any	int-1	java	untested	test_any_type	core	True	linkml:Any with 1	None
+test_any_type-linkml_any	float-1.1	java	untested	test_any_type	core	True	linkml:Any with 1.1	None
+test_any_type-linkml_any	str-1	java	untested	test_any_type	core	True	linkml:Any with 1	None
+test_any_type-linkml_any	bool-True	java	untested	test_any_type	core	True	linkml:Any with True	None
+test_any_type-linkml_any	bool-False	java	untested	test_any_type	core	True	linkml:Any with False	None
+test_any_type-linkml_any	dict-{}	java	untested	test_any_type	core	True	linkml:Any with {}	None
+test_any_type-linkml_any	dict-{'foo': 1}	java	untested	test_any_type	core	True	linkml:Any with {'foo': 1}	None
+test_any_type-linkml_any	str-	jsonschema	implements	test_any_type	core	True	linkml:Any with 	None
+test_any_type-linkml_any	NoneType-None	jsonschema	implements	test_any_type	core	True	linkml:Any with None	None
+test_any_type-linkml_any	int-1	jsonschema	implements	test_any_type	core	True	linkml:Any with 1	None
+test_any_type-linkml_any	float-1.1	jsonschema	implements	test_any_type	core	True	linkml:Any with 1.1	None
+test_any_type-linkml_any	str-1	jsonschema	implements	test_any_type	core	True	linkml:Any with 1	None
+test_any_type-linkml_any	bool-True	jsonschema	implements	test_any_type	core	True	linkml:Any with True	None
+test_any_type-linkml_any	bool-False	jsonschema	implements	test_any_type	core	True	linkml:Any with False	None
+test_any_type-linkml_any	dict-{}	jsonschema	implements	test_any_type	core	True	linkml:Any with {}	None
+test_any_type-linkml_any	dict-{'foo': 1}	jsonschema	implements	test_any_type	core	True	linkml:Any with {'foo': 1}	None
+test_any_type-linkml_any	str-	shacl	untested	test_any_type	core	True	linkml:Any with 	None
+test_any_type-linkml_any	NoneType-None	shacl	untested	test_any_type	core	True	linkml:Any with None	None
+test_any_type-linkml_any	int-1	shacl	untested	test_any_type	core	True	linkml:Any with 1	None
+test_any_type-linkml_any	float-1.1	shacl	untested	test_any_type	core	True	linkml:Any with 1.1	None
+test_any_type-linkml_any	str-1	shacl	untested	test_any_type	core	True	linkml:Any with 1	None
+test_any_type-linkml_any	bool-True	shacl	untested	test_any_type	core	True	linkml:Any with True	None
+test_any_type-linkml_any	bool-False	shacl	untested	test_any_type	core	True	linkml:Any with False	None
+test_any_type-linkml_any	dict-{}	shacl	untested	test_any_type	core	True	linkml:Any with {}	None
+test_any_type-linkml_any	dict-{'foo': 1}	shacl	untested	test_any_type	core	True	linkml:Any with {'foo': 1}	None
+test_any_type-linkml_any	str-	shex	untested	test_any_type	core	True	linkml:Any with 	None
+test_any_type-linkml_any	NoneType-None	shex	untested	test_any_type	core	True	linkml:Any with None	None
+test_any_type-linkml_any	int-1	shex	untested	test_any_type	core	True	linkml:Any with 1	None
+test_any_type-linkml_any	float-1.1	shex	untested	test_any_type	core	True	linkml:Any with 1.1	None
+test_any_type-linkml_any	str-1	shex	untested	test_any_type	core	True	linkml:Any with 1	None
+test_any_type-linkml_any	bool-True	shex	untested	test_any_type	core	True	linkml:Any with True	None
+test_any_type-linkml_any	bool-False	shex	untested	test_any_type	core	True	linkml:Any with False	None
+test_any_type-linkml_any	dict-{}	shex	untested	test_any_type	core	True	linkml:Any with {}	None
+test_any_type-linkml_any	dict-{'foo': 1}	shex	untested	test_any_type	core	True	linkml:Any with {'foo': 1}	None
+test_any_type-linkml_any	str-	jsonld_context	implements	test_any_type	core	True	linkml:Any with 	None
+test_any_type-linkml_any	NoneType-None	jsonld_context	implements	test_any_type	core	True	linkml:Any with None	None
+test_any_type-linkml_any	int-1	jsonld_context	implements	test_any_type	core	True	linkml:Any with 1	None
+test_any_type-linkml_any	float-1.1	jsonld_context	implements	test_any_type	core	True	linkml:Any with 1.1	None
+test_any_type-linkml_any	str-1	jsonld_context	implements	test_any_type	core	True	linkml:Any with 1	None
+test_any_type-linkml_any	bool-True	jsonld_context	implements	test_any_type	core	True	linkml:Any with True	None
+test_any_type-linkml_any	bool-False	jsonld_context	implements	test_any_type	core	True	linkml:Any with False	None
+test_any_type-linkml_any	dict-{}	jsonld_context	implements	test_any_type	core	True	linkml:Any with {}	None
+test_any_type-linkml_any	dict-{'foo': 1}	jsonld_context	implements	test_any_type	core	True	linkml:Any with {'foo': 1}	None
+test_any_type-linkml_any	str-	owl	untested	test_any_type	core	True	linkml:Any with 	None
+test_any_type-linkml_any	NoneType-None	owl	untested	test_any_type	core	True	linkml:Any with None	None
+test_any_type-linkml_any	int-1	owl	untested	test_any_type	core	True	linkml:Any with 1	None
+test_any_type-linkml_any	float-1.1	owl	untested	test_any_type	core	True	linkml:Any with 1.1	None
+test_any_type-linkml_any	str-1	owl	untested	test_any_type	core	True	linkml:Any with 1	None
+test_any_type-linkml_any	bool-True	owl	untested	test_any_type	core	True	linkml:Any with True	None
+test_any_type-linkml_any	bool-False	owl	untested	test_any_type	core	True	linkml:Any with False	None
+test_any_type-linkml_any	dict-{}	owl	untested	test_any_type	core	True	linkml:Any with {}	None
+test_any_type-linkml_any	dict-{'foo': 1}	owl	untested	test_any_type	core	True	linkml:Any with {'foo': 1}	None
+test_uri_types-uri	httpCOLONSOLIDUSSOLIDUSexampleFULL_STOPorgSOLIDUSxSOLIDUS1HYPHEN_MINUShttpCOLONSOLIDUSSOLIDUSexampleFULL_STOPorgSOLIDUSxSOLIDUS1	python_dataclasses	implements	test_uri_types	core	True	uris and curies	None
+test_uri_types-uri	XSPACE1HYPHEN_MINUSXSPACE1	python_dataclasses	implements	test_uri_types	core	False	uris and curies	None
+test_uri_types-uriorcurie	XFULL_STOPYCOLON1HYPHEN_MINUSXFULL_STOPYCOLON1	python_dataclasses	implements	test_uri_types	core	True	uris and curies	None
+test_uri_types-uriorcurie	XSPACE1HYPHEN_MINUSXSPACE1	python_dataclasses	implements	test_uri_types	core	False	uris and curies	None
+test_uri_types-uriorcurie	XSPACE1COLON1HYPHEN_MINUSXSPACE1COLON1	python_dataclasses	implements	test_uri_types	core	False	uris and curies	None
+test_uri_types-curie	XFULL_STOPYCOLONA1HYPHEN_MINUSXFULL_STOPYCOLONA1	python_dataclasses	implements	test_uri_types	core	True	uris and curies	None
+test_uri_types-curie	XSPACE1HYPHEN_MINUSXSPACE1	python_dataclasses	implements	test_uri_types	core	False	uris and curies	None
+test_uri_types-curie	XSPACE1COLONA1HYPHEN_MINUSXSPACE1COLONA1	python_dataclasses	implements	test_uri_types	core	False	uris and curies	None
+test_uri_types-uri	httpCOLONSOLIDUSSOLIDUSexampleFULL_STOPorgSOLIDUSxSOLIDUS1HYPHEN_MINUShttpCOLONSOLIDUSSOLIDUSexampleFULL_STOPorgSOLIDUSxSOLIDUS1	pydantic	implements	test_uri_types	core	True	uris and curies	None
+test_uri_types-uri	XSPACE1HYPHEN_MINUSXSPACE1	pydantic	incomplete	test_uri_types	core	False	uris and curies	None
+test_uri_types-uriorcurie	XCOLON1HYPHEN_MINUSXCOLON1	pydantic	implements	test_uri_types	core	True	uris and curies	None
+test_uri_types-uriorcurie	XFULL_STOPYCOLON1HYPHEN_MINUSXFULL_STOPYCOLON1	pydantic	implements	test_uri_types	core	True	uris and curies	None
+test_uri_types-uriorcurie	XSPACE1HYPHEN_MINUSXSPACE1	pydantic	incomplete	test_uri_types	core	False	uris and curies	None
+test_uri_types-uriorcurie	XSPACE1COLON1HYPHEN_MINUSXSPACE1COLON1	pydantic	incomplete	test_uri_types	core	False	uris and curies	None
+test_uri_types-curie	XCOLON1HYPHEN_MINUSXCOLON1	pydantic	implements	test_uri_types	core	True	uris and curies	None
+test_uri_types-curie	XFULL_STOPYCOLONA1HYPHEN_MINUSXFULL_STOPYCOLONA1	pydantic	implements	test_uri_types	core	True	uris and curies	None
+test_uri_types-curie	XSPACE1HYPHEN_MINUSXSPACE1	pydantic	incomplete	test_uri_types	core	False	uris and curies	None
+test_uri_types-curie	XSPACE1COLONA1HYPHEN_MINUSXSPACE1COLONA1	pydantic	incomplete	test_uri_types	core	False	uris and curies	None
+test_uri_types-uri	httpCOLONSOLIDUSSOLIDUSexampleFULL_STOPorgSOLIDUSxSOLIDUS1HYPHEN_MINUShttpCOLONSOLIDUSSOLIDUSexampleFULL_STOPorgSOLIDUSxSOLIDUS1	java	untested	test_uri_types	core	True	uris and curies	None
+test_uri_types-uri	XSPACE1HYPHEN_MINUSXSPACE1	java	untested	test_uri_types	core	False	uris and curies	None
+test_uri_types-uriorcurie	XCOLON1HYPHEN_MINUSXCOLON1	java	untested	test_uri_types	core	True	uris and curies	None
+test_uri_types-uriorcurie	XFULL_STOPYCOLON1HYPHEN_MINUSXFULL_STOPYCOLON1	java	untested	test_uri_types	core	True	uris and curies	None
+test_uri_types-uriorcurie	XSPACE1HYPHEN_MINUSXSPACE1	java	untested	test_uri_types	core	False	uris and curies	None
+test_uri_types-uriorcurie	XSPACE1COLON1HYPHEN_MINUSXSPACE1COLON1	java	untested	test_uri_types	core	False	uris and curies	None
+test_uri_types-curie	XCOLON1HYPHEN_MINUSXCOLON1	java	untested	test_uri_types	core	True	uris and curies	None
+test_uri_types-curie	XFULL_STOPYCOLONA1HYPHEN_MINUSXFULL_STOPYCOLONA1	java	untested	test_uri_types	core	True	uris and curies	None
+test_uri_types-curie	XSPACE1HYPHEN_MINUSXSPACE1	java	untested	test_uri_types	core	False	uris and curies	None
+test_uri_types-curie	XSPACE1COLONA1HYPHEN_MINUSXSPACE1COLONA1	java	untested	test_uri_types	core	False	uris and curies	None
+test_uri_types-uri	httpCOLONSOLIDUSSOLIDUSexampleFULL_STOPorgSOLIDUSxSOLIDUS1HYPHEN_MINUShttpCOLONSOLIDUSSOLIDUSexampleFULL_STOPorgSOLIDUSxSOLIDUS1	jsonschema	implements	test_uri_types	core	True	uris and curies	None
+test_uri_types-uri	XSPACE1HYPHEN_MINUSXSPACE1	jsonschema	incomplete	test_uri_types	core	False	uris and curies	None
+test_uri_types-uriorcurie	XCOLON1HYPHEN_MINUSXCOLON1	jsonschema	implements	test_uri_types	core	True	uris and curies	None
+test_uri_types-uriorcurie	XFULL_STOPYCOLON1HYPHEN_MINUSXFULL_STOPYCOLON1	jsonschema	implements	test_uri_types	core	True	uris and curies	None
+test_uri_types-uriorcurie	XSPACE1HYPHEN_MINUSXSPACE1	jsonschema	incomplete	test_uri_types	core	False	uris and curies	None
+test_uri_types-uriorcurie	XSPACE1COLON1HYPHEN_MINUSXSPACE1COLON1	jsonschema	incomplete	test_uri_types	core	False	uris and curies	None
+test_uri_types-curie	XCOLON1HYPHEN_MINUSXCOLON1	jsonschema	implements	test_uri_types	core	True	uris and curies	None
+test_uri_types-curie	XFULL_STOPYCOLONA1HYPHEN_MINUSXFULL_STOPYCOLONA1	jsonschema	implements	test_uri_types	core	True	uris and curies	None
+test_uri_types-curie	XSPACE1HYPHEN_MINUSXSPACE1	jsonschema	incomplete	test_uri_types	core	False	uris and curies	None
+test_uri_types-curie	XSPACE1COLONA1HYPHEN_MINUSXSPACE1COLONA1	jsonschema	incomplete	test_uri_types	core	False	uris and curies	None
+test_uri_types-uri	httpCOLONSOLIDUSSOLIDUSexampleFULL_STOPorgSOLIDUSxSOLIDUS1HYPHEN_MINUShttpCOLONSOLIDUSSOLIDUSexampleFULL_STOPorgSOLIDUSxSOLIDUS1	shacl	implements	test_uri_types	core	True	uris and curies	None
+test_uri_types-uri	XSPACE1HYPHEN_MINUSXSPACE1	shacl	implements	test_uri_types	core	False	uris and curies	None
+test_uri_types-uriorcurie	XFULL_STOPYCOLON1HYPHEN_MINUSXFULL_STOPYCOLON1	shacl	implements	test_uri_types	core	True	uris and curies	None
+test_uri_types-uriorcurie	XSPACE1HYPHEN_MINUSXSPACE1	shacl	implements	test_uri_types	core	False	uris and curies	None
+test_uri_types-uriorcurie	XSPACE1COLON1HYPHEN_MINUSXSPACE1COLON1	shacl	implements	test_uri_types	core	False	uris and curies	None
+test_uri_types-curie	XFULL_STOPYCOLONA1HYPHEN_MINUSXFULL_STOPYCOLONA1	shacl	implements	test_uri_types	core	True	uris and curies	None
+test_uri_types-curie	XSPACE1HYPHEN_MINUSXSPACE1	shacl	implements	test_uri_types	core	False	uris and curies	None
+test_uri_types-curie	XSPACE1COLONA1HYPHEN_MINUSXSPACE1COLONA1	shacl	implements	test_uri_types	core	False	uris and curies	None
+test_uri_types-uri	httpCOLONSOLIDUSSOLIDUSexampleFULL_STOPorgSOLIDUSxSOLIDUS1HYPHEN_MINUShttpCOLONSOLIDUSSOLIDUSexampleFULL_STOPorgSOLIDUSxSOLIDUS1	shex	untested	test_uri_types	core	True	uris and curies	None
+test_uri_types-uri	XSPACE1HYPHEN_MINUSXSPACE1	shex	untested	test_uri_types	core	False	uris and curies	None
+test_uri_types-uriorcurie	XFULL_STOPYCOLON1HYPHEN_MINUSXFULL_STOPYCOLON1	shex	untested	test_uri_types	core	True	uris and curies	None
+test_uri_types-uriorcurie	XSPACE1HYPHEN_MINUSXSPACE1	shex	untested	test_uri_types	core	False	uris and curies	None
+test_uri_types-uriorcurie	XSPACE1COLON1HYPHEN_MINUSXSPACE1COLON1	shex	untested	test_uri_types	core	False	uris and curies	None
+test_uri_types-curie	XFULL_STOPYCOLONA1HYPHEN_MINUSXFULL_STOPYCOLONA1	shex	untested	test_uri_types	core	True	uris and curies	None
+test_uri_types-curie	XSPACE1HYPHEN_MINUSXSPACE1	shex	untested	test_uri_types	core	False	uris and curies	None
+test_uri_types-curie	XSPACE1COLONA1HYPHEN_MINUSXSPACE1COLONA1	shex	untested	test_uri_types	core	False	uris and curies	None
+test_uri_types-uri	httpCOLONSOLIDUSSOLIDUSexampleFULL_STOPorgSOLIDUSxSOLIDUS1HYPHEN_MINUShttpCOLONSOLIDUSSOLIDUSexampleFULL_STOPorgSOLIDUSxSOLIDUS1	jsonld_context	implements	test_uri_types	core	True	uris and curies	None
+test_uri_types-uri	XSPACE1HYPHEN_MINUSXSPACE1	jsonld_context	implements	test_uri_types	core	False	uris and curies	None
+test_uri_types-uriorcurie	XCOLON1HYPHEN_MINUSXCOLON1	jsonld_context	implements	test_uri_types	core	True	uris and curies	None
+test_uri_types-uriorcurie	XFULL_STOPYCOLON1HYPHEN_MINUSXFULL_STOPYCOLON1	jsonld_context	implements	test_uri_types	core	True	uris and curies	None
+test_uri_types-uriorcurie	XSPACE1HYPHEN_MINUSXSPACE1	jsonld_context	implements	test_uri_types	core	False	uris and curies	None
+test_uri_types-uriorcurie	XSPACE1COLON1HYPHEN_MINUSXSPACE1COLON1	jsonld_context	implements	test_uri_types	core	False	uris and curies	None
+test_uri_types-curie	XCOLON1HYPHEN_MINUSXCOLON1	jsonld_context	implements	test_uri_types	core	True	uris and curies	None
+test_uri_types-curie	XFULL_STOPYCOLONA1HYPHEN_MINUSXFULL_STOPYCOLONA1	jsonld_context	implements	test_uri_types	core	True	uris and curies	None
+test_uri_types-curie	XSPACE1HYPHEN_MINUSXSPACE1	jsonld_context	implements	test_uri_types	core	False	uris and curies	None
+test_uri_types-curie	XSPACE1COLONA1HYPHEN_MINUSXSPACE1COLONA1	jsonld_context	implements	test_uri_types	core	False	uris and curies	None
+test_uri_types-uri	httpCOLONSOLIDUSSOLIDUSexampleFULL_STOPorgSOLIDUSxSOLIDUS1HYPHEN_MINUShttpCOLONSOLIDUSSOLIDUSexampleFULL_STOPorgSOLIDUSxSOLIDUS1	sql_ddl_sqlite	implements	test_uri_types	core	True	uris and curies	None
+test_uri_types-uri	XSPACE1HYPHEN_MINUSXSPACE1	sql_ddl_sqlite	implements	test_uri_types	core	False	uris and curies	None
+test_uri_types-uriorcurie	XFULL_STOPYCOLON1HYPHEN_MINUSXFULL_STOPYCOLON1	sql_ddl_sqlite	implements	test_uri_types	core	True	uris and curies	None
+test_uri_types-uriorcurie	XSPACE1HYPHEN_MINUSXSPACE1	sql_ddl_sqlite	implements	test_uri_types	core	False	uris and curies	None
+test_uri_types-uriorcurie	XSPACE1COLON1HYPHEN_MINUSXSPACE1COLON1	sql_ddl_sqlite	implements	test_uri_types	core	False	uris and curies	None
+test_uri_types-curie	XFULL_STOPYCOLONA1HYPHEN_MINUSXFULL_STOPYCOLONA1	sql_ddl_sqlite	implements	test_uri_types	core	True	uris and curies	None
+test_uri_types-curie	XSPACE1HYPHEN_MINUSXSPACE1	sql_ddl_sqlite	implements	test_uri_types	core	False	uris and curies	None
+test_uri_types-curie	XSPACE1COLONA1HYPHEN_MINUSXSPACE1COLONA1	sql_ddl_sqlite	implements	test_uri_types	core	False	uris and curies	None
+test_uri_types-uri	httpCOLONSOLIDUSSOLIDUSexampleFULL_STOPorgSOLIDUSxSOLIDUS1HYPHEN_MINUShttpCOLONSOLIDUSSOLIDUSexampleFULL_STOPorgSOLIDUSxSOLIDUS1	sql_ddl_postgres	untested	test_uri_types	core	True	uris and curies	None
+test_uri_types-uri	XSPACE1HYPHEN_MINUSXSPACE1	sql_ddl_postgres	untested	test_uri_types	core	False	uris and curies	None
+test_uri_types-uriorcurie	XCOLON1HYPHEN_MINUSXCOLON1	sql_ddl_postgres	untested	test_uri_types	core	True	uris and curies	None
+test_uri_types-uriorcurie	XFULL_STOPYCOLON1HYPHEN_MINUSXFULL_STOPYCOLON1	sql_ddl_postgres	untested	test_uri_types	core	True	uris and curies	None
+test_uri_types-uriorcurie	XSPACE1HYPHEN_MINUSXSPACE1	sql_ddl_postgres	untested	test_uri_types	core	False	uris and curies	None
+test_uri_types-uriorcurie	XSPACE1COLON1HYPHEN_MINUSXSPACE1COLON1	sql_ddl_postgres	untested	test_uri_types	core	False	uris and curies	None
+test_uri_types-curie	XCOLON1HYPHEN_MINUSXCOLON1	sql_ddl_postgres	untested	test_uri_types	core	True	uris and curies	None
+test_uri_types-curie	XFULL_STOPYCOLONA1HYPHEN_MINUSXFULL_STOPYCOLONA1	sql_ddl_postgres	untested	test_uri_types	core	True	uris and curies	None
+test_uri_types-curie	XSPACE1HYPHEN_MINUSXSPACE1	sql_ddl_postgres	untested	test_uri_types	core	False	uris and curies	None
+test_uri_types-curie	XSPACE1COLONA1HYPHEN_MINUSXSPACE1COLONA1	sql_ddl_postgres	untested	test_uri_types	core	False	uris and curies	None
+test_uri_types-uri	httpCOLONSOLIDUSSOLIDUSexampleFULL_STOPorgSOLIDUSxSOLIDUS1HYPHEN_MINUShttpCOLONSOLIDUSSOLIDUSexampleFULL_STOPorgSOLIDUSxSOLIDUS1	owl	untested	test_uri_types	core	True	uris and curies	None
+test_uri_types-uri	XSPACE1HYPHEN_MINUSXSPACE1	owl	untested	test_uri_types	core	False	uris and curies	None
+test_uri_types-uriorcurie	XFULL_STOPYCOLON1HYPHEN_MINUSXFULL_STOPYCOLON1	owl	untested	test_uri_types	core	True	uris and curies	None
+test_uri_types-uriorcurie	XSPACE1HYPHEN_MINUSXSPACE1	owl	untested	test_uri_types	core	False	uris and curies	None
+test_uri_types-uriorcurie	XSPACE1COLON1HYPHEN_MINUSXSPACE1COLON1	owl	untested	test_uri_types	core	False	uris and curies	None
+test_uri_types-curie	XFULL_STOPYCOLONA1HYPHEN_MINUSXFULL_STOPYCOLONA1	owl	untested	test_uri_types	core	True	uris and curies	None
+test_uri_types-curie	XSPACE1HYPHEN_MINUSXSPACE1	owl	untested	test_uri_types	core	False	uris and curies	None
+test_uri_types-curie	XSPACE1COLONA1HYPHEN_MINUSXSPACE1COLONA1	owl	untested	test_uri_types	core	False	uris and curies	None
+test_date_types-date	timesHYPHEN_MINUSFridayHYPHEN_MINUSFriday	python_dataclasses	implements	test_date_types	core	False	uris and curies	None
+test_date_types-date	timesHYPHEN_MINUS2021HYPHEN_MINUS2021	python_dataclasses	implements	test_date_types	core	False	uris and curies	None
+test_date_types-datetime	timesHYPHEN_MINUSFridayHYPHEN_MINUSFriday	python_dataclasses	implements	test_date_types	core	False	uris and curies	None
+test_date_types-time	timesHYPHEN_MINUSFridayHYPHEN_MINUSFriday	python_dataclasses	implements	test_date_types	core	False	uris and curies	None
+test_date_types-date	timesHYPHEN_MINUS2021HYPHEN_MINUS01HYPHEN_MINUS01HYPHEN_MINUS2021HYPHEN_MINUS01HYPHEN_MINUS01	python_dataclasses	implements	test_date_types	core	True	uris and curies	None
+test_date_types-date	timesHYPHEN_MINUS2021HYPHEN_MINUS01HYPHEN_MINUS01PLUS_SIGN06COLON00HYPHEN_MINUS2021HYPHEN_MINUS01HYPHEN_MINUS01PLUS_SIGN06COLON00	python_dataclasses	false_positive	test_date_types	core	True	uris and curies	None
+test_date_types-datetime	timesHYPHEN_MINUS2021HYPHEN_MINUS01HYPHEN_MINUS01HYPHEN_MINUS2021HYPHEN_MINUS01HYPHEN_MINUS01	python_dataclasses	coerces	test_date_types	core	False	uris and curies	None
+test_date_types-datetime	timesHYPHEN_MINUS2002HYPHEN_MINUS05HYPHEN_MINUS30T09COLON00COLON00HYPHEN_MINUS2002HYPHEN_MINUS05HYPHEN_MINUS30T09COLON00COLON00	python_dataclasses	implements	test_date_types	core	True	uris and curies	None
+test_date_types-datetime	timesHYPHEN_MINUS2002HYPHEN_MINUS05HYPHEN_MINUS30T09COLON00COLON00ZHYPHEN_MINUS2002HYPHEN_MINUS05HYPHEN_MINUS30T09COLON00COLON00Z	python_dataclasses	false_positive	test_date_types	core	True	uris and curies	None
+test_date_types-datetime	timesHYPHEN_MINUS2002HYPHEN_MINUS05HYPHEN_MINUS30T09COLON00COLON00PLUS_SIGN06COLON00HYPHEN_MINUS2002HYPHEN_MINUS05HYPHEN_MINUS30T09COLON00COLON00PLUS_SIGN06COLON00	python_dataclasses	false_positive	test_date_types	core	True	uris and curies	None
+test_date_types-time	timesHYPHEN_MINUS09COLON00COLON00HYPHEN_MINUS09COLON00COLON00	python_dataclasses	implements	test_date_types	core	True	uris and curies	None
+test_date_types-time	timesHYPHEN_MINUS09COLON00COLON00FULL_STOP5HYPHEN_MINUS09COLON00COLON00FULL_STOP5	python_dataclasses	false_positive	test_date_types	core	True	uris and curies	None
+test_date_types-time	timesHYPHEN_MINUS09COLON00COLON00ZHYPHEN_MINUS09COLON00COLON00Z	python_dataclasses	false_positive	test_date_types	core	True	uris and curies	None
+test_date_types-date	timesHYPHEN_MINUSFridayHYPHEN_MINUSFriday	pydantic	implements	test_date_types	core	False	uris and curies	None
+test_date_types-date	timesHYPHEN_MINUS2021HYPHEN_MINUS2021	pydantic	incomplete	test_date_types	core	False	uris and curies	None
+test_date_types-date	timesHYPHEN_MINUS20210101HYPHEN_MINUS20210101	pydantic	incomplete	test_date_types	core	False	uris and curies	None
+test_date_types-datetime	timesHYPHEN_MINUSFridayHYPHEN_MINUSFriday	pydantic	implements	test_date_types	core	False	uris and curies	None
+test_date_types-time	timesHYPHEN_MINUSFridayHYPHEN_MINUSFriday	pydantic	incomplete	test_date_types	core	False	uris and curies	None
+test_date_types-date	timesHYPHEN_MINUS2021HYPHEN_MINUS01HYPHEN_MINUS01HYPHEN_MINUS2021HYPHEN_MINUS01HYPHEN_MINUS01	pydantic	implements	test_date_types	core	True	uris and curies	None
+test_date_types-date	timesHYPHEN_MINUS2021HYPHEN_MINUS01HYPHEN_MINUS01PLUS_SIGN06COLON00HYPHEN_MINUS2021HYPHEN_MINUS01HYPHEN_MINUS01PLUS_SIGN06COLON00	pydantic	false_positive	test_date_types	core	True	uris and curies	None
+test_date_types-datetime	timesHYPHEN_MINUS2021HYPHEN_MINUS01HYPHEN_MINUS01HYPHEN_MINUS2021HYPHEN_MINUS01HYPHEN_MINUS01	pydantic	implements	test_date_types	core	False	uris and curies	None
+test_date_types-datetime	timesHYPHEN_MINUS2002HYPHEN_MINUS05HYPHEN_MINUS30T09COLON00COLON00HYPHEN_MINUS2002HYPHEN_MINUS05HYPHEN_MINUS30T09COLON00COLON00	pydantic	implements	test_date_types	core	True	uris and curies	None
+test_date_types-datetime	timesHYPHEN_MINUS2002HYPHEN_MINUS05HYPHEN_MINUS30T09COLON00COLON00ZHYPHEN_MINUS2002HYPHEN_MINUS05HYPHEN_MINUS30T09COLON00COLON00Z	pydantic	false_positive	test_date_types	core	True	uris and curies	None
+test_date_types-datetime	timesHYPHEN_MINUS2002HYPHEN_MINUS05HYPHEN_MINUS30T09COLON00COLON00PLUS_SIGN06COLON00HYPHEN_MINUS2002HYPHEN_MINUS05HYPHEN_MINUS30T09COLON00COLON00PLUS_SIGN06COLON00	pydantic	false_positive	test_date_types	core	True	uris and curies	None
+test_date_types-time	timesHYPHEN_MINUS09COLON00COLON00HYPHEN_MINUS09COLON00COLON00	pydantic	implements	test_date_types	core	True	uris and curies	None
+test_date_types-time	timesHYPHEN_MINUS09COLON00COLON00FULL_STOP5HYPHEN_MINUS09COLON00COLON00FULL_STOP5	pydantic	implements	test_date_types	core	True	uris and curies	None
+test_date_types-time	timesHYPHEN_MINUS09COLON00COLON00ZHYPHEN_MINUS09COLON00COLON00Z	pydantic	false_positive	test_date_types	core	True	uris and curies	None
+test_date_types-date	timesHYPHEN_MINUSFridayHYPHEN_MINUSFriday	java	untested	test_date_types	core	False	uris and curies	None
+test_date_types-date	timesHYPHEN_MINUS2021HYPHEN_MINUS2021	java	untested	test_date_types	core	False	uris and curies	None
+test_date_types-date	timesHYPHEN_MINUS20210101HYPHEN_MINUS20210101	java	untested	test_date_types	core	False	uris and curies	None
+test_date_types-datetime	timesHYPHEN_MINUSFridayHYPHEN_MINUSFriday	java	untested	test_date_types	core	False	uris and curies	None
+test_date_types-time	timesHYPHEN_MINUSFridayHYPHEN_MINUSFriday	java	untested	test_date_types	core	False	uris and curies	None
+test_date_types-date	timesHYPHEN_MINUS2021HYPHEN_MINUS01HYPHEN_MINUS01HYPHEN_MINUS2021HYPHEN_MINUS01HYPHEN_MINUS01	java	untested	test_date_types	core	True	uris and curies	None
+test_date_types-date	timesHYPHEN_MINUS2021HYPHEN_MINUS01HYPHEN_MINUS01PLUS_SIGN06COLON00HYPHEN_MINUS2021HYPHEN_MINUS01HYPHEN_MINUS01PLUS_SIGN06COLON00	java	untested	test_date_types	core	True	uris and curies	None
+test_date_types-datetime	timesHYPHEN_MINUS2021HYPHEN_MINUS01HYPHEN_MINUS01HYPHEN_MINUS2021HYPHEN_MINUS01HYPHEN_MINUS01	java	untested	test_date_types	core	False	uris and curies	None
+test_date_types-datetime	timesHYPHEN_MINUS2002HYPHEN_MINUS05HYPHEN_MINUS30T09COLON00COLON00HYPHEN_MINUS2002HYPHEN_MINUS05HYPHEN_MINUS30T09COLON00COLON00	java	untested	test_date_types	core	True	uris and curies	None
+test_date_types-datetime	timesHYPHEN_MINUS2002HYPHEN_MINUS05HYPHEN_MINUS30T09COLON00COLON00ZHYPHEN_MINUS2002HYPHEN_MINUS05HYPHEN_MINUS30T09COLON00COLON00Z	java	untested	test_date_types	core	True	uris and curies	None
+test_date_types-datetime	timesHYPHEN_MINUS2002HYPHEN_MINUS05HYPHEN_MINUS30T09COLON00COLON00PLUS_SIGN06COLON00HYPHEN_MINUS2002HYPHEN_MINUS05HYPHEN_MINUS30T09COLON00COLON00PLUS_SIGN06COLON00	java	untested	test_date_types	core	True	uris and curies	None
+test_date_types-time	timesHYPHEN_MINUS09COLON00COLON00HYPHEN_MINUS09COLON00COLON00	java	untested	test_date_types	core	True	uris and curies	None
+test_date_types-time	timesHYPHEN_MINUS09COLON00COLON00FULL_STOP5HYPHEN_MINUS09COLON00COLON00FULL_STOP5	java	untested	test_date_types	core	True	uris and curies	None
+test_date_types-time	timesHYPHEN_MINUS09COLON00COLON00ZHYPHEN_MINUS09COLON00COLON00Z	java	untested	test_date_types	core	True	uris and curies	None
+test_date_types-date	timesHYPHEN_MINUSFridayHYPHEN_MINUSFriday	jsonschema	implements	test_date_types	core	False	uris and curies	None
+test_date_types-date	timesHYPHEN_MINUS2021HYPHEN_MINUS2021	jsonschema	implements	test_date_types	core	False	uris and curies	None
+test_date_types-date	timesHYPHEN_MINUS20210101HYPHEN_MINUS20210101	jsonschema	implements	test_date_types	core	False	uris and curies	None
+test_date_types-datetime	timesHYPHEN_MINUSFridayHYPHEN_MINUSFriday	jsonschema	implements	test_date_types	core	False	uris and curies	None
+test_date_types-time	timesHYPHEN_MINUSFridayHYPHEN_MINUSFriday	jsonschema	implements	test_date_types	core	False	uris and curies	None
+test_date_types-date	timesHYPHEN_MINUS2021HYPHEN_MINUS01HYPHEN_MINUS01HYPHEN_MINUS2021HYPHEN_MINUS01HYPHEN_MINUS01	jsonschema	implements	test_date_types	core	True	uris and curies	None
+test_date_types-date	timesHYPHEN_MINUS2021HYPHEN_MINUS01HYPHEN_MINUS01PLUS_SIGN06COLON00HYPHEN_MINUS2021HYPHEN_MINUS01HYPHEN_MINUS01PLUS_SIGN06COLON00	jsonschema	false_positive	test_date_types	core	True	uris and curies	None
+test_date_types-datetime	timesHYPHEN_MINUS2021HYPHEN_MINUS01HYPHEN_MINUS01HYPHEN_MINUS2021HYPHEN_MINUS01HYPHEN_MINUS01	jsonschema	implements	test_date_types	core	False	uris and curies	None
+test_date_types-datetime	timesHYPHEN_MINUS2002HYPHEN_MINUS05HYPHEN_MINUS30T09COLON00COLON00HYPHEN_MINUS2002HYPHEN_MINUS05HYPHEN_MINUS30T09COLON00COLON00	jsonschema	false_positive	test_date_types	core	True	uris and curies	None
+test_date_types-datetime	timesHYPHEN_MINUS2002HYPHEN_MINUS05HYPHEN_MINUS30T09COLON00COLON00ZHYPHEN_MINUS2002HYPHEN_MINUS05HYPHEN_MINUS30T09COLON00COLON00Z	jsonschema	implements	test_date_types	core	True	uris and curies	None
+test_date_types-datetime	timesHYPHEN_MINUS2002HYPHEN_MINUS05HYPHEN_MINUS30T09COLON00COLON00PLUS_SIGN06COLON00HYPHEN_MINUS2002HYPHEN_MINUS05HYPHEN_MINUS30T09COLON00COLON00PLUS_SIGN06COLON00	jsonschema	implements	test_date_types	core	True	uris and curies	None
+test_date_types-time	timesHYPHEN_MINUS09COLON00COLON00HYPHEN_MINUS09COLON00COLON00	jsonschema	false_positive	test_date_types	core	True	uris and curies	None
+test_date_types-time	timesHYPHEN_MINUS09COLON00COLON00FULL_STOP5HYPHEN_MINUS09COLON00COLON00FULL_STOP5	jsonschema	false_positive	test_date_types	core	True	uris and curies	None
+test_date_types-time	timesHYPHEN_MINUS09COLON00COLON00ZHYPHEN_MINUS09COLON00COLON00Z	jsonschema	implements	test_date_types	core	True	uris and curies	None
+test_date_types-date	timesHYPHEN_MINUSFridayHYPHEN_MINUSFriday	shacl	incomplete	test_date_types	core	False	uris and curies	None
+test_date_types-date	timesHYPHEN_MINUS2021HYPHEN_MINUS2021	shacl	incomplete	test_date_types	core	False	uris and curies	None
+test_date_types-date	timesHYPHEN_MINUS20210101HYPHEN_MINUS20210101	shacl	incomplete	test_date_types	core	False	uris and curies	None
+test_date_types-datetime	timesHYPHEN_MINUSFridayHYPHEN_MINUSFriday	shacl	incomplete	test_date_types	core	False	uris and curies	None
+test_date_types-time	timesHYPHEN_MINUSFridayHYPHEN_MINUSFriday	shacl	incomplete	test_date_types	core	False	uris and curies	None
+test_date_types-date	timesHYPHEN_MINUS2021HYPHEN_MINUS01HYPHEN_MINUS01HYPHEN_MINUS2021HYPHEN_MINUS01HYPHEN_MINUS01	shacl	false_positive	test_date_types	core	True	uris and curies	None
+test_date_types-date	timesHYPHEN_MINUS2021HYPHEN_MINUS01HYPHEN_MINUS01PLUS_SIGN06COLON00HYPHEN_MINUS2021HYPHEN_MINUS01HYPHEN_MINUS01PLUS_SIGN06COLON00	shacl	false_positive	test_date_types	core	True	uris and curies	None
+test_date_types-datetime	timesHYPHEN_MINUS2021HYPHEN_MINUS01HYPHEN_MINUS01HYPHEN_MINUS2021HYPHEN_MINUS01HYPHEN_MINUS01	shacl	incomplete	test_date_types	core	False	uris and curies	None
+test_date_types-datetime	timesHYPHEN_MINUS2002HYPHEN_MINUS05HYPHEN_MINUS30T09COLON00COLON00HYPHEN_MINUS2002HYPHEN_MINUS05HYPHEN_MINUS30T09COLON00COLON00	shacl	false_positive	test_date_types	core	True	uris and curies	None
+test_date_types-datetime	timesHYPHEN_MINUS2002HYPHEN_MINUS05HYPHEN_MINUS30T09COLON00COLON00ZHYPHEN_MINUS2002HYPHEN_MINUS05HYPHEN_MINUS30T09COLON00COLON00Z	shacl	false_positive	test_date_types	core	True	uris and curies	None
+test_date_types-datetime	timesHYPHEN_MINUS2002HYPHEN_MINUS05HYPHEN_MINUS30T09COLON00COLON00PLUS_SIGN06COLON00HYPHEN_MINUS2002HYPHEN_MINUS05HYPHEN_MINUS30T09COLON00COLON00PLUS_SIGN06COLON00	shacl	false_positive	test_date_types	core	True	uris and curies	None
+test_date_types-time	timesHYPHEN_MINUS09COLON00COLON00HYPHEN_MINUS09COLON00COLON00	shacl	false_positive	test_date_types	core	True	uris and curies	None
+test_date_types-time	timesHYPHEN_MINUS09COLON00COLON00FULL_STOP5HYPHEN_MINUS09COLON00COLON00FULL_STOP5	shacl	false_positive	test_date_types	core	True	uris and curies	None
+test_date_types-time	timesHYPHEN_MINUS09COLON00COLON00ZHYPHEN_MINUS09COLON00COLON00Z	shacl	false_positive	test_date_types	core	True	uris and curies	None
+test_date_types-date	timesHYPHEN_MINUSFridayHYPHEN_MINUSFriday	shex	incomplete	test_date_types	core	False	uris and curies	None
+test_date_types-date	timesHYPHEN_MINUS2021HYPHEN_MINUS2021	shex	incomplete	test_date_types	core	False	uris and curies	None
+test_date_types-date	timesHYPHEN_MINUS20210101HYPHEN_MINUS20210101	shex	incomplete	test_date_types	core	False	uris and curies	None
+test_date_types-datetime	timesHYPHEN_MINUSFridayHYPHEN_MINUSFriday	shex	incomplete	test_date_types	core	False	uris and curies	None
+test_date_types-time	timesHYPHEN_MINUSFridayHYPHEN_MINUSFriday	shex	incomplete	test_date_types	core	False	uris and curies	None
+test_date_types-date	timesHYPHEN_MINUS2021HYPHEN_MINUS01HYPHEN_MINUS01HYPHEN_MINUS2021HYPHEN_MINUS01HYPHEN_MINUS01	shex	false_positive	test_date_types	core	True	uris and curies	None
+test_date_types-date	timesHYPHEN_MINUS2021HYPHEN_MINUS01HYPHEN_MINUS01PLUS_SIGN06COLON00HYPHEN_MINUS2021HYPHEN_MINUS01HYPHEN_MINUS01PLUS_SIGN06COLON00	shex	false_positive	test_date_types	core	True	uris and curies	None
+test_date_types-datetime	timesHYPHEN_MINUS2021HYPHEN_MINUS01HYPHEN_MINUS01HYPHEN_MINUS2021HYPHEN_MINUS01HYPHEN_MINUS01	shex	incomplete	test_date_types	core	False	uris and curies	None
+test_date_types-datetime	timesHYPHEN_MINUS2002HYPHEN_MINUS05HYPHEN_MINUS30T09COLON00COLON00HYPHEN_MINUS2002HYPHEN_MINUS05HYPHEN_MINUS30T09COLON00COLON00	shex	false_positive	test_date_types	core	True	uris and curies	None
+test_date_types-datetime	timesHYPHEN_MINUS2002HYPHEN_MINUS05HYPHEN_MINUS30T09COLON00COLON00ZHYPHEN_MINUS2002HYPHEN_MINUS05HYPHEN_MINUS30T09COLON00COLON00Z	shex	false_positive	test_date_types	core	True	uris and curies	None
+test_date_types-datetime	timesHYPHEN_MINUS2002HYPHEN_MINUS05HYPHEN_MINUS30T09COLON00COLON00PLUS_SIGN06COLON00HYPHEN_MINUS2002HYPHEN_MINUS05HYPHEN_MINUS30T09COLON00COLON00PLUS_SIGN06COLON00	shex	false_positive	test_date_types	core	True	uris and curies	None
+test_date_types-time	timesHYPHEN_MINUS09COLON00COLON00HYPHEN_MINUS09COLON00COLON00	shex	false_positive	test_date_types	core	True	uris and curies	None
+test_date_types-time	timesHYPHEN_MINUS09COLON00COLON00FULL_STOP5HYPHEN_MINUS09COLON00COLON00FULL_STOP5	shex	false_positive	test_date_types	core	True	uris and curies	None
+test_date_types-time	timesHYPHEN_MINUS09COLON00COLON00ZHYPHEN_MINUS09COLON00COLON00Z	shex	false_positive	test_date_types	core	True	uris and curies	None
+test_date_types-date	timesHYPHEN_MINUSFridayHYPHEN_MINUSFriday	jsonld_context	implements	test_date_types	core	False	uris and curies	None
+test_date_types-date	timesHYPHEN_MINUS2021HYPHEN_MINUS2021	jsonld_context	implements	test_date_types	core	False	uris and curies	None
+test_date_types-date	timesHYPHEN_MINUS20210101HYPHEN_MINUS20210101	jsonld_context	implements	test_date_types	core	False	uris and curies	None
+test_date_types-datetime	timesHYPHEN_MINUSFridayHYPHEN_MINUSFriday	jsonld_context	implements	test_date_types	core	False	uris and curies	None
+test_date_types-time	timesHYPHEN_MINUSFridayHYPHEN_MINUSFriday	jsonld_context	implements	test_date_types	core	False	uris and curies	None
+test_date_types-date	timesHYPHEN_MINUS2021HYPHEN_MINUS01HYPHEN_MINUS01HYPHEN_MINUS2021HYPHEN_MINUS01HYPHEN_MINUS01	jsonld_context	implements	test_date_types	core	True	uris and curies	None
+test_date_types-date	timesHYPHEN_MINUS2021HYPHEN_MINUS01HYPHEN_MINUS01PLUS_SIGN06COLON00HYPHEN_MINUS2021HYPHEN_MINUS01HYPHEN_MINUS01PLUS_SIGN06COLON00	jsonld_context	implements	test_date_types	core	True	uris and curies	None
+test_date_types-datetime	timesHYPHEN_MINUS2021HYPHEN_MINUS01HYPHEN_MINUS01HYPHEN_MINUS2021HYPHEN_MINUS01HYPHEN_MINUS01	jsonld_context	implements	test_date_types	core	False	uris and curies	None
+test_date_types-datetime	timesHYPHEN_MINUS2002HYPHEN_MINUS05HYPHEN_MINUS30T09COLON00COLON00HYPHEN_MINUS2002HYPHEN_MINUS05HYPHEN_MINUS30T09COLON00COLON00	jsonld_context	implements	test_date_types	core	True	uris and curies	None
+test_date_types-datetime	timesHYPHEN_MINUS2002HYPHEN_MINUS05HYPHEN_MINUS30T09COLON00COLON00ZHYPHEN_MINUS2002HYPHEN_MINUS05HYPHEN_MINUS30T09COLON00COLON00Z	jsonld_context	implements	test_date_types	core	True	uris and curies	None
+test_date_types-datetime	timesHYPHEN_MINUS2002HYPHEN_MINUS05HYPHEN_MINUS30T09COLON00COLON00PLUS_SIGN06COLON00HYPHEN_MINUS2002HYPHEN_MINUS05HYPHEN_MINUS30T09COLON00COLON00PLUS_SIGN06COLON00	jsonld_context	implements	test_date_types	core	True	uris and curies	None
+test_date_types-time	timesHYPHEN_MINUS09COLON00COLON00HYPHEN_MINUS09COLON00COLON00	jsonld_context	implements	test_date_types	core	True	uris and curies	None
+test_date_types-time	timesHYPHEN_MINUS09COLON00COLON00FULL_STOP5HYPHEN_MINUS09COLON00COLON00FULL_STOP5	jsonld_context	implements	test_date_types	core	True	uris and curies	None
+test_date_types-time	timesHYPHEN_MINUS09COLON00COLON00ZHYPHEN_MINUS09COLON00COLON00Z	jsonld_context	implements	test_date_types	core	True	uris and curies	None
+test_date_types-date	timesHYPHEN_MINUSFridayHYPHEN_MINUSFriday	sql_ddl_sqlite	incomplete	test_date_types	core	False	uris and curies	None
+test_date_types-date	timesHYPHEN_MINUS2021HYPHEN_MINUS2021	sql_ddl_sqlite	incomplete	test_date_types	core	False	uris and curies	None
+test_date_types-date	timesHYPHEN_MINUS20210101HYPHEN_MINUS20210101	sql_ddl_sqlite	incomplete	test_date_types	core	False	uris and curies	None
+test_date_types-datetime	timesHYPHEN_MINUSFridayHYPHEN_MINUSFriday	sql_ddl_sqlite	incomplete	test_date_types	core	False	uris and curies	None
+test_date_types-time	timesHYPHEN_MINUSFridayHYPHEN_MINUSFriday	sql_ddl_sqlite	incomplete	test_date_types	core	False	uris and curies	None
+test_date_types-date	timesHYPHEN_MINUS2021HYPHEN_MINUS01HYPHEN_MINUS01HYPHEN_MINUS2021HYPHEN_MINUS01HYPHEN_MINUS01	sql_ddl_sqlite	incomplete	test_date_types	core	True	uris and curies	None
+test_date_types-date	timesHYPHEN_MINUS2021HYPHEN_MINUS01HYPHEN_MINUS01PLUS_SIGN06COLON00HYPHEN_MINUS2021HYPHEN_MINUS01HYPHEN_MINUS01PLUS_SIGN06COLON00	sql_ddl_sqlite	incomplete	test_date_types	core	True	uris and curies	None
+test_date_types-datetime	timesHYPHEN_MINUS2021HYPHEN_MINUS01HYPHEN_MINUS01HYPHEN_MINUS2021HYPHEN_MINUS01HYPHEN_MINUS01	sql_ddl_sqlite	incomplete	test_date_types	core	False	uris and curies	None
+test_date_types-datetime	timesHYPHEN_MINUS2002HYPHEN_MINUS05HYPHEN_MINUS30T09COLON00COLON00HYPHEN_MINUS2002HYPHEN_MINUS05HYPHEN_MINUS30T09COLON00COLON00	sql_ddl_sqlite	incomplete	test_date_types	core	True	uris and curies	None
+test_date_types-datetime	timesHYPHEN_MINUS2002HYPHEN_MINUS05HYPHEN_MINUS30T09COLON00COLON00ZHYPHEN_MINUS2002HYPHEN_MINUS05HYPHEN_MINUS30T09COLON00COLON00Z	sql_ddl_sqlite	incomplete	test_date_types	core	True	uris and curies	None
+test_date_types-datetime	timesHYPHEN_MINUS2002HYPHEN_MINUS05HYPHEN_MINUS30T09COLON00COLON00PLUS_SIGN06COLON00HYPHEN_MINUS2002HYPHEN_MINUS05HYPHEN_MINUS30T09COLON00COLON00PLUS_SIGN06COLON00	sql_ddl_sqlite	incomplete	test_date_types	core	True	uris and curies	None
+test_date_types-time	timesHYPHEN_MINUS09COLON00COLON00HYPHEN_MINUS09COLON00COLON00	sql_ddl_sqlite	incomplete	test_date_types	core	True	uris and curies	None
+test_date_types-time	timesHYPHEN_MINUS09COLON00COLON00FULL_STOP5HYPHEN_MINUS09COLON00COLON00FULL_STOP5	sql_ddl_sqlite	incomplete	test_date_types	core	True	uris and curies	None
+test_date_types-time	timesHYPHEN_MINUS09COLON00COLON00ZHYPHEN_MINUS09COLON00COLON00Z	sql_ddl_sqlite	incomplete	test_date_types	core	True	uris and curies	None
+test_date_types-date	timesHYPHEN_MINUSFridayHYPHEN_MINUSFriday	sql_ddl_postgres	untested	test_date_types	core	False	uris and curies	None
+test_date_types-date	timesHYPHEN_MINUS2021HYPHEN_MINUS2021	sql_ddl_postgres	untested	test_date_types	core	False	uris and curies	None
+test_date_types-date	timesHYPHEN_MINUS20210101HYPHEN_MINUS20210101	sql_ddl_postgres	untested	test_date_types	core	False	uris and curies	None
+test_date_types-datetime	timesHYPHEN_MINUSFridayHYPHEN_MINUSFriday	sql_ddl_postgres	untested	test_date_types	core	False	uris and curies	None
+test_date_types-time	timesHYPHEN_MINUSFridayHYPHEN_MINUSFriday	sql_ddl_postgres	untested	test_date_types	core	False	uris and curies	None
+test_date_types-date	timesHYPHEN_MINUS2021HYPHEN_MINUS01HYPHEN_MINUS01HYPHEN_MINUS2021HYPHEN_MINUS01HYPHEN_MINUS01	sql_ddl_postgres	untested	test_date_types	core	True	uris and curies	None
+test_date_types-date	timesHYPHEN_MINUS2021HYPHEN_MINUS01HYPHEN_MINUS01PLUS_SIGN06COLON00HYPHEN_MINUS2021HYPHEN_MINUS01HYPHEN_MINUS01PLUS_SIGN06COLON00	sql_ddl_postgres	untested	test_date_types	core	True	uris and curies	None
+test_date_types-datetime	timesHYPHEN_MINUS2021HYPHEN_MINUS01HYPHEN_MINUS01HYPHEN_MINUS2021HYPHEN_MINUS01HYPHEN_MINUS01	sql_ddl_postgres	untested	test_date_types	core	False	uris and curies	None
+test_date_types-datetime	timesHYPHEN_MINUS2002HYPHEN_MINUS05HYPHEN_MINUS30T09COLON00COLON00HYPHEN_MINUS2002HYPHEN_MINUS05HYPHEN_MINUS30T09COLON00COLON00	sql_ddl_postgres	untested	test_date_types	core	True	uris and curies	None
+test_date_types-datetime	timesHYPHEN_MINUS2002HYPHEN_MINUS05HYPHEN_MINUS30T09COLON00COLON00ZHYPHEN_MINUS2002HYPHEN_MINUS05HYPHEN_MINUS30T09COLON00COLON00Z	sql_ddl_postgres	untested	test_date_types	core	True	uris and curies	None
+test_date_types-datetime	timesHYPHEN_MINUS2002HYPHEN_MINUS05HYPHEN_MINUS30T09COLON00COLON00PLUS_SIGN06COLON00HYPHEN_MINUS2002HYPHEN_MINUS05HYPHEN_MINUS30T09COLON00COLON00PLUS_SIGN06COLON00	sql_ddl_postgres	untested	test_date_types	core	True	uris and curies	None
+test_date_types-time	timesHYPHEN_MINUS09COLON00COLON00HYPHEN_MINUS09COLON00COLON00	sql_ddl_postgres	untested	test_date_types	core	True	uris and curies	None
+test_date_types-time	timesHYPHEN_MINUS09COLON00COLON00FULL_STOP5HYPHEN_MINUS09COLON00COLON00FULL_STOP5	sql_ddl_postgres	untested	test_date_types	core	True	uris and curies	None
+test_date_types-time	timesHYPHEN_MINUS09COLON00COLON00ZHYPHEN_MINUS09COLON00COLON00Z	sql_ddl_postgres	untested	test_date_types	core	True	uris and curies	None
+test_date_types-date	timesHYPHEN_MINUSFridayHYPHEN_MINUSFriday	owl	incomplete	test_date_types	core	False	uris and curies	None
+test_date_types-date	timesHYPHEN_MINUS2021HYPHEN_MINUS2021	owl	incomplete	test_date_types	core	False	uris and curies	None
+test_date_types-date	timesHYPHEN_MINUS20210101HYPHEN_MINUS20210101	owl	incomplete	test_date_types	core	False	uris and curies	None
+test_date_types-datetime	timesHYPHEN_MINUSFridayHYPHEN_MINUSFriday	owl	incomplete	test_date_types	core	False	uris and curies	None
+test_date_types-time	timesHYPHEN_MINUSFridayHYPHEN_MINUSFriday	owl	incomplete	test_date_types	core	False	uris and curies	None
+test_date_types-date	timesHYPHEN_MINUS2021HYPHEN_MINUS01HYPHEN_MINUS01HYPHEN_MINUS2021HYPHEN_MINUS01HYPHEN_MINUS01	owl	false_positive	test_date_types	core	True	uris and curies	None
+test_date_types-date	timesHYPHEN_MINUS2021HYPHEN_MINUS01HYPHEN_MINUS01PLUS_SIGN06COLON00HYPHEN_MINUS2021HYPHEN_MINUS01HYPHEN_MINUS01PLUS_SIGN06COLON00	owl	false_positive	test_date_types	core	True	uris and curies	None
+test_date_types-datetime	timesHYPHEN_MINUS2021HYPHEN_MINUS01HYPHEN_MINUS01HYPHEN_MINUS2021HYPHEN_MINUS01HYPHEN_MINUS01	owl	incomplete	test_date_types	core	False	uris and curies	None
+test_date_types-datetime	timesHYPHEN_MINUS2002HYPHEN_MINUS05HYPHEN_MINUS30T09COLON00COLON00HYPHEN_MINUS2002HYPHEN_MINUS05HYPHEN_MINUS30T09COLON00COLON00	owl	false_positive	test_date_types	core	True	uris and curies	None
+test_date_types-datetime	timesHYPHEN_MINUS2002HYPHEN_MINUS05HYPHEN_MINUS30T09COLON00COLON00ZHYPHEN_MINUS2002HYPHEN_MINUS05HYPHEN_MINUS30T09COLON00COLON00Z	owl	false_positive	test_date_types	core	True	uris and curies	None
+test_date_types-datetime	timesHYPHEN_MINUS2002HYPHEN_MINUS05HYPHEN_MINUS30T09COLON00COLON00PLUS_SIGN06COLON00HYPHEN_MINUS2002HYPHEN_MINUS05HYPHEN_MINUS30T09COLON00COLON00PLUS_SIGN06COLON00	owl	false_positive	test_date_types	core	True	uris and curies	None
+test_date_types-time	timesHYPHEN_MINUS09COLON00COLON00HYPHEN_MINUS09COLON00COLON00	owl	false_positive	test_date_types	core	True	uris and curies	None
+test_date_types-time	timesHYPHEN_MINUS09COLON00COLON00FULL_STOP5HYPHEN_MINUS09COLON00COLON00FULL_STOP5	owl	false_positive	test_date_types	core	True	uris and curies	None
+test_date_types-time	timesHYPHEN_MINUS09COLON00COLON00ZHYPHEN_MINUS09COLON00COLON00Z	owl	false_positive	test_date_types	core	True	uris and curies	None
+test_cardinality-MVFalse_REQFalse	sv	python_dataclasses	implements	test_cardinality	core	True	cardinality	None
+test_cardinality-MVFalse_REQFalse	list2	python_dataclasses	incomplete	test_cardinality	core	False	cardinality	None
+test_cardinality-MVFalse_REQTrue	sv	python_dataclasses	implements	test_cardinality	core	True	cardinality	None
+test_cardinality-MVFalse_REQTrue	list2	python_dataclasses	incomplete	test_cardinality	core	False	cardinality	None
+test_cardinality-MVTrue_REQFalse	sv	python_dataclasses	coerces	test_cardinality	core	False	cardinality	None
+test_cardinality-MVTrue_REQFalse	list2	python_dataclasses	implements	test_cardinality	core	True	cardinality	None
+test_cardinality-MVTrue_REQTrue	sv	python_dataclasses	coerces	test_cardinality	core	False	cardinality	None
+test_cardinality-MVTrue_REQTrue	list2	python_dataclasses	implements	test_cardinality	core	True	cardinality	None
+test_cardinality-MVFalse_REQFalse	sv	pydantic	implements	test_cardinality	core	True	cardinality	None
+test_cardinality-MVFalse_REQFalse	list2	pydantic	implements	test_cardinality	core	False	cardinality	None
+test_cardinality-MVFalse_REQTrue	sv	pydantic	implements	test_cardinality	core	True	cardinality	None
+test_cardinality-MVFalse_REQTrue	list2	pydantic	implements	test_cardinality	core	False	cardinality	None
+test_cardinality-MVTrue_REQFalse	sv	pydantic	implements	test_cardinality	core	False	cardinality	None
+test_cardinality-MVTrue_REQFalse	list2	pydantic	implements	test_cardinality	core	True	cardinality	None
+test_cardinality-MVTrue_REQTrue	sv	pydantic	implements	test_cardinality	core	False	cardinality	None
+test_cardinality-MVTrue_REQTrue	list2	pydantic	implements	test_cardinality	core	True	cardinality	None
+test_cardinality-MVFalse_REQFalse	sv	java	untested	test_cardinality	core	True	cardinality	None
+test_cardinality-MVFalse_REQFalse	list2	java	untested	test_cardinality	core	False	cardinality	None
+test_cardinality-MVFalse_REQTrue	sv	java	untested	test_cardinality	core	True	cardinality	None
+test_cardinality-MVFalse_REQTrue	list2	java	untested	test_cardinality	core	False	cardinality	None
+test_cardinality-MVTrue_REQFalse	sv	java	untested	test_cardinality	core	False	cardinality	None
+test_cardinality-MVTrue_REQFalse	list2	java	untested	test_cardinality	core	True	cardinality	None
+test_cardinality-MVTrue_REQTrue	sv	java	untested	test_cardinality	core	False	cardinality	None
+test_cardinality-MVTrue_REQTrue	list2	java	untested	test_cardinality	core	True	cardinality	None
+test_cardinality-MVFalse_REQFalse	sv	jsonschema	implements	test_cardinality	core	True	cardinality	None
+test_cardinality-MVFalse_REQFalse	list2	jsonschema	implements	test_cardinality	core	False	cardinality	None
+test_cardinality-MVFalse_REQTrue	sv	jsonschema	implements	test_cardinality	core	True	cardinality	None
+test_cardinality-MVFalse_REQTrue	list2	jsonschema	implements	test_cardinality	core	False	cardinality	None
+test_cardinality-MVTrue_REQFalse	sv	jsonschema	implements	test_cardinality	core	False	cardinality	None
+test_cardinality-MVTrue_REQFalse	list2	jsonschema	implements	test_cardinality	core	True	cardinality	None
+test_cardinality-MVTrue_REQTrue	sv	jsonschema	implements	test_cardinality	core	False	cardinality	None
+test_cardinality-MVTrue_REQTrue	list2	jsonschema	implements	test_cardinality	core	True	cardinality	None
+test_cardinality-MVFalse_REQFalse	sv	shacl	implements	test_cardinality	core	True	cardinality	None
+test_cardinality-MVFalse_REQFalse	list2	shacl	incomplete	test_cardinality	core	False	cardinality	None
+test_cardinality-MVFalse_REQTrue	sv	shacl	implements	test_cardinality	core	True	cardinality	None
+test_cardinality-MVFalse_REQTrue	list2	shacl	incomplete	test_cardinality	core	False	cardinality	None
+test_cardinality-MVTrue_REQFalse	sv	shacl	incomplete	test_cardinality	core	False	cardinality	None
+test_cardinality-MVTrue_REQFalse	list2	shacl	implements	test_cardinality	core	True	cardinality	None
+test_cardinality-MVTrue_REQTrue	sv	shacl	incomplete	test_cardinality	core	False	cardinality	None
+test_cardinality-MVTrue_REQTrue	list2	shacl	implements	test_cardinality	core	True	cardinality	None
+test_cardinality-MVFalse_REQFalse	sv	shex	untested	test_cardinality	core	True	cardinality	None
+test_cardinality-MVFalse_REQFalse	list2	shex	untested	test_cardinality	core	False	cardinality	None
+test_cardinality-MVFalse_REQTrue	sv	shex	untested	test_cardinality	core	True	cardinality	None
+test_cardinality-MVFalse_REQTrue	list2	shex	untested	test_cardinality	core	False	cardinality	None
+test_cardinality-MVTrue_REQFalse	sv	shex	untested	test_cardinality	core	False	cardinality	None
+test_cardinality-MVTrue_REQFalse	list2	shex	untested	test_cardinality	core	True	cardinality	None
+test_cardinality-MVTrue_REQTrue	sv	shex	untested	test_cardinality	core	False	cardinality	None
+test_cardinality-MVTrue_REQTrue	list2	shex	untested	test_cardinality	core	True	cardinality	None
+test_cardinality-MVFalse_REQFalse	sv	jsonld_context	implements	test_cardinality	core	True	cardinality	None
+test_cardinality-MVFalse_REQFalse	list2	jsonld_context	implements	test_cardinality	core	False	cardinality	None
+test_cardinality-MVFalse_REQTrue	sv	jsonld_context	implements	test_cardinality	core	True	cardinality	None
+test_cardinality-MVFalse_REQTrue	list2	jsonld_context	implements	test_cardinality	core	False	cardinality	None
+test_cardinality-MVTrue_REQFalse	sv	jsonld_context	implements	test_cardinality	core	False	cardinality	None
+test_cardinality-MVTrue_REQFalse	list2	jsonld_context	implements	test_cardinality	core	True	cardinality	None
+test_cardinality-MVTrue_REQTrue	sv	jsonld_context	implements	test_cardinality	core	False	cardinality	None
+test_cardinality-MVTrue_REQTrue	list2	jsonld_context	implements	test_cardinality	core	True	cardinality	None
+test_cardinality-MVFalse_REQFalse	sv	sql_ddl_sqlite	implements	test_cardinality	core	True	cardinality	None
+test_cardinality-MVFalse_REQFalse	list2	sql_ddl_sqlite	incomplete	test_cardinality	core	False	cardinality	None
+test_cardinality-MVFalse_REQTrue	sv	sql_ddl_sqlite	implements	test_cardinality	core	True	cardinality	None
+test_cardinality-MVFalse_REQTrue	list2	sql_ddl_sqlite	incomplete	test_cardinality	core	False	cardinality	None
+test_cardinality-MVTrue_REQFalse	sv	sql_ddl_sqlite	incomplete	test_cardinality	core	False	cardinality	None
+test_cardinality-MVTrue_REQFalse	list2	sql_ddl_sqlite	implements	test_cardinality	core	True	cardinality	None
+test_cardinality-MVTrue_REQTrue	sv	sql_ddl_sqlite	incomplete	test_cardinality	core	False	cardinality	None
+test_cardinality-MVTrue_REQTrue	list2	sql_ddl_sqlite	implements	test_cardinality	core	True	cardinality	None
+test_cardinality-MVFalse_REQFalse	sv	sql_ddl_postgres	untested	test_cardinality	core	True	cardinality	None
+test_cardinality-MVFalse_REQFalse	list2	sql_ddl_postgres	untested	test_cardinality	core	False	cardinality	None
+test_cardinality-MVFalse_REQTrue	sv	sql_ddl_postgres	untested	test_cardinality	core	True	cardinality	None
+test_cardinality-MVFalse_REQTrue	list2	sql_ddl_postgres	untested	test_cardinality	core	False	cardinality	None
+test_cardinality-MVTrue_REQFalse	sv	sql_ddl_postgres	untested	test_cardinality	core	False	cardinality	None
+test_cardinality-MVTrue_REQFalse	list2	sql_ddl_postgres	untested	test_cardinality	core	True	cardinality	None
+test_cardinality-MVTrue_REQTrue	sv	sql_ddl_postgres	untested	test_cardinality	core	False	cardinality	None
+test_cardinality-MVTrue_REQTrue	list2	sql_ddl_postgres	untested	test_cardinality	core	True	cardinality	None
+test_cardinality-MVFalse_REQFalse	sv	owl	untested	test_cardinality	core	True	cardinality	None
+test_cardinality-MVFalse_REQFalse	list2	owl	incomplete	test_cardinality	core	False	cardinality	None
+test_cardinality-MVFalse_REQTrue	sv	owl	untested	test_cardinality	core	True	cardinality	None
+test_cardinality-MVFalse_REQTrue	list2	owl	incomplete	test_cardinality	core	False	cardinality	None
+test_cardinality-MVTrue_REQFalse	sv	owl	incomplete	test_cardinality	core	False	cardinality	None
+test_cardinality-MVTrue_REQFalse	list2	owl	untested	test_cardinality	core	True	cardinality	None
+test_cardinality-MVTrue_REQTrue	sv	owl	incomplete	test_cardinality	core	False	cardinality	None
+test_cardinality-MVTrue_REQTrue	list2	owl	untested	test_cardinality	core	True	cardinality	None
+test_identifier_is_required-requiredEQ_None	empty	python_dataclasses	implements	test_identifier_is_required	core	False	identifier implies required	None
+test_identifier_is_required-requiredEQ_None	empty	pydantic	implements	test_identifier_is_required	core	False	identifier implies required	None
+test_identifier_is_required-requiredEQ_None	empty	java	untested	test_identifier_is_required	core	False	identifier implies required	None
+test_identifier_is_required-requiredEQ_None	empty	jsonschema	implements	test_identifier_is_required	core	False	identifier implies required	None
+test_identifier_is_required-requiredEQ_None	empty	shex	untested	test_identifier_is_required	core	False	identifier implies required	None
+test_identifier_is_required-requiredEQ_None	empty	jsonld_context	implements	test_identifier_is_required	core	False	identifier implies required	None
+test_identifier_is_required-requiredEQ_None	empty	sql_ddl_sqlite	implements	test_identifier_is_required	core	False	identifier implies required	None
+test_identifier_is_required-requiredEQ_None	empty	sql_ddl_postgres	untested	test_identifier_is_required	core	False	identifier implies required	None
+test_identifier_is_required-requiredEQ_None	empty	owl	untested	test_identifier_is_required	core	False	identifier implies required	None
+test_identifier_is_required-requiredEQ_True	empty	python_dataclasses	implements	test_identifier_is_required	core	False	identifier implies required	None
+test_identifier_is_required-requiredEQ_True	empty	pydantic	implements	test_identifier_is_required	core	False	identifier implies required	None
+test_identifier_is_required-requiredEQ_True	empty	java	untested	test_identifier_is_required	core	False	identifier implies required	None
+test_identifier_is_required-requiredEQ_True	empty	jsonschema	implements	test_identifier_is_required	core	False	identifier implies required	None
+test_identifier_is_required-requiredEQ_True	empty	shex	untested	test_identifier_is_required	core	False	identifier implies required	None
+test_identifier_is_required-requiredEQ_True	empty	jsonld_context	implements	test_identifier_is_required	core	False	identifier implies required	None
+test_identifier_is_required-requiredEQ_True	empty	sql_ddl_sqlite	implements	test_identifier_is_required	core	False	identifier implies required	None
+test_identifier_is_required-requiredEQ_True	empty	sql_ddl_postgres	untested	test_identifier_is_required	core	False	identifier implies required	None
+test_identifier_is_required-requiredEQ_True	empty	owl	untested	test_identifier_is_required	core	False	identifier implies required	None
+test_identifier_is_required-requiredEQ_None	present	python_dataclasses	implements	test_identifier_is_required	core	True	identifier implies required	None
+test_identifier_is_required-requiredEQ_None	present	pydantic	implements	test_identifier_is_required	core	True	identifier implies required	None
+test_identifier_is_required-requiredEQ_None	present	java	untested	test_identifier_is_required	core	True	identifier implies required	None
+test_identifier_is_required-requiredEQ_None	present	jsonschema	implements	test_identifier_is_required	core	True	identifier implies required	None
+test_identifier_is_required-requiredEQ_None	present	shex	untested	test_identifier_is_required	core	True	identifier implies required	None
+test_identifier_is_required-requiredEQ_None	present	jsonld_context	implements	test_identifier_is_required	core	True	identifier implies required	None
+test_identifier_is_required-requiredEQ_None	present	sql_ddl_sqlite	implements	test_identifier_is_required	core	True	identifier implies required	None
+test_identifier_is_required-requiredEQ_None	present	sql_ddl_postgres	untested	test_identifier_is_required	core	True	identifier implies required	None
+test_identifier_is_required-requiredEQ_None	present	owl	untested	test_identifier_is_required	core	True	identifier implies required	None
+test_identifier_is_required-requiredEQ_True	present	python_dataclasses	implements	test_identifier_is_required	core	True	identifier implies required	None
+test_identifier_is_required-requiredEQ_True	present	pydantic	implements	test_identifier_is_required	core	True	identifier implies required	None
+test_identifier_is_required-requiredEQ_True	present	java	untested	test_identifier_is_required	core	True	identifier implies required	None
+test_identifier_is_required-requiredEQ_True	present	jsonschema	implements	test_identifier_is_required	core	True	identifier implies required	None
+test_identifier_is_required-requiredEQ_True	present	shex	untested	test_identifier_is_required	core	True	identifier implies required	None
+test_identifier_is_required-requiredEQ_True	present	jsonld_context	implements	test_identifier_is_required	core	True	identifier implies required	None
+test_identifier_is_required-requiredEQ_True	present	sql_ddl_sqlite	implements	test_identifier_is_required	core	True	identifier implies required	None
+test_identifier_is_required-requiredEQ_True	present	sql_ddl_postgres	untested	test_identifier_is_required	core	True	identifier implies required	None
+test_identifier_is_required-requiredEQ_True	present	owl	untested	test_identifier_is_required	core	True	identifier implies required	None
+test_cardinality-ClassNameEQ_C__SlotNameEQ_s1__TypeNameEQ_T1	test	python_dataclasses	implements	test_non_standard_names	core	True	nom-standard names are allowed	None
+test_cardinality-ClassNameEQ_C__SlotNameEQ_s1__TypeNameEQ_T1	test	pydantic	implements	test_non_standard_names	core	True	nom-standard names are allowed	None
+test_cardinality-ClassNameEQ_C__SlotNameEQ_s1__TypeNameEQ_T1	test	java	untested	test_non_standard_names	core	True	nom-standard names are allowed	None
+test_cardinality-ClassNameEQ_C__SlotNameEQ_s1__TypeNameEQ_T1	test	jsonschema	implements	test_non_standard_names	core	True	nom-standard names are allowed	None
+test_cardinality-ClassNameEQ_C__SlotNameEQ_s1__TypeNameEQ_T1	test	shacl	implements	test_non_standard_names	core	True	nom-standard names are allowed	None
+test_cardinality-ClassNameEQ_C__SlotNameEQ_s1__TypeNameEQ_T1	test	shex	untested	test_non_standard_names	core	True	nom-standard names are allowed	None
+test_cardinality-ClassNameEQ_C__SlotNameEQ_s1__TypeNameEQ_T1	test	jsonld_context	implements	test_non_standard_names	core	True	nom-standard names are allowed	None
+test_cardinality-ClassNameEQ_C__SlotNameEQ_s1__TypeNameEQ_T1	test	sql_ddl_sqlite	implements	test_non_standard_names	core	True	nom-standard names are allowed	None
+test_cardinality-ClassNameEQ_C__SlotNameEQ_s1__TypeNameEQ_T1	test	sql_ddl_postgres	untested	test_non_standard_names	core	True	nom-standard names are allowed	None
+test_cardinality-ClassNameEQ_C__SlotNameEQ_s1__TypeNameEQ_T1	test	owl	untested	test_non_standard_names	core	True	nom-standard names are allowed	None
+test_cardinality-ClassNameEQ_C__SlotNameEQ_S1__TypeNameEQ_t1	test	python_dataclasses	implements	test_non_standard_names	core	True	nom-standard names are allowed	None
+test_cardinality-ClassNameEQ_C__SlotNameEQ_S1__TypeNameEQ_t1	test	pydantic	implements	test_non_standard_names	core	True	nom-standard names are allowed	None
+test_cardinality-ClassNameEQ_C__SlotNameEQ_S1__TypeNameEQ_t1	test	java	untested	test_non_standard_names	core	True	nom-standard names are allowed	None
+test_cardinality-ClassNameEQ_C__SlotNameEQ_S1__TypeNameEQ_t1	test	jsonschema	implements	test_non_standard_names	core	True	nom-standard names are allowed	None
+test_cardinality-ClassNameEQ_C__SlotNameEQ_S1__TypeNameEQ_t1	test	shacl	implements	test_non_standard_names	core	True	nom-standard names are allowed	None
+test_cardinality-ClassNameEQ_C__SlotNameEQ_S1__TypeNameEQ_t1	test	shex	untested	test_non_standard_names	core	True	nom-standard names are allowed	None
+test_cardinality-ClassNameEQ_C__SlotNameEQ_S1__TypeNameEQ_t1	test	jsonld_context	implements	test_non_standard_names	core	True	nom-standard names are allowed	None
+test_cardinality-ClassNameEQ_C__SlotNameEQ_S1__TypeNameEQ_t1	test	sql_ddl_sqlite	implements	test_non_standard_names	core	True	nom-standard names are allowed	None
+test_cardinality-ClassNameEQ_C__SlotNameEQ_S1__TypeNameEQ_t1	test	sql_ddl_postgres	untested	test_non_standard_names	core	True	nom-standard names are allowed	None
+test_cardinality-ClassNameEQ_C__SlotNameEQ_S1__TypeNameEQ_t1	test	owl	untested	test_non_standard_names	core	True	nom-standard names are allowed	None
+test_cardinality-ClassNameEQ_c__SlotNameEQ_S1__TypeNameEQ_t1	test	python_dataclasses	implements	test_non_standard_names	core	True	nom-standard names are allowed	None
+test_cardinality-ClassNameEQ_c__SlotNameEQ_S1__TypeNameEQ_t1	test	pydantic	implements	test_non_standard_names	core	True	nom-standard names are allowed	None
+test_cardinality-ClassNameEQ_c__SlotNameEQ_S1__TypeNameEQ_t1	test	java	untested	test_non_standard_names	core	True	nom-standard names are allowed	None
+test_cardinality-ClassNameEQ_c__SlotNameEQ_S1__TypeNameEQ_t1	test	shex	untested	test_non_standard_names	core	True	nom-standard names are allowed	None
+test_cardinality-ClassNameEQ_c__SlotNameEQ_S1__TypeNameEQ_t1	test	jsonld_context	implements	test_non_standard_names	core	True	nom-standard names are allowed	None
+test_cardinality-ClassNameEQ_c__SlotNameEQ_S1__TypeNameEQ_t1	test	sql_ddl_sqlite	implements	test_non_standard_names	core	True	nom-standard names are allowed	None
+test_cardinality-ClassNameEQ_c__SlotNameEQ_S1__TypeNameEQ_t1	test	sql_ddl_postgres	untested	test_non_standard_names	core	True	nom-standard names are allowed	None
+test_cardinality-ClassNameEQ_c__SlotNameEQ_S1__TypeNameEQ_t1	test	owl	untested	test_non_standard_names	core	True	nom-standard names are allowed	None
+test_cardinality-ClassNameEQ_C__SlotNameEQ_sSPACE1__TypeNameEQ_tSPACE1	test	python_dataclasses	implements	test_non_standard_names	core	True	nom-standard names are allowed	None
+test_cardinality-ClassNameEQ_C__SlotNameEQ_sSPACE1__TypeNameEQ_tSPACE1	test	pydantic	implements	test_non_standard_names	core	True	nom-standard names are allowed	None
+test_cardinality-ClassNameEQ_C__SlotNameEQ_sSPACE1__TypeNameEQ_tSPACE1	test	java	untested	test_non_standard_names	core	True	nom-standard names are allowed	None
+test_cardinality-ClassNameEQ_C__SlotNameEQ_sSPACE1__TypeNameEQ_tSPACE1	test	jsonschema	implements	test_non_standard_names	core	True	nom-standard names are allowed	None
+test_cardinality-ClassNameEQ_C__SlotNameEQ_sSPACE1__TypeNameEQ_tSPACE1	test	shacl	implements	test_non_standard_names	core	True	nom-standard names are allowed	None
+test_cardinality-ClassNameEQ_C__SlotNameEQ_sSPACE1__TypeNameEQ_tSPACE1	test	shex	untested	test_non_standard_names	core	True	nom-standard names are allowed	None
+test_cardinality-ClassNameEQ_C__SlotNameEQ_sSPACE1__TypeNameEQ_tSPACE1	test	jsonld_context	implements	test_non_standard_names	core	True	nom-standard names are allowed	None
+test_cardinality-ClassNameEQ_C__SlotNameEQ_sSPACE1__TypeNameEQ_tSPACE1	test	sql_ddl_sqlite	implements	test_non_standard_names	core	True	nom-standard names are allowed	None
+test_cardinality-ClassNameEQ_C__SlotNameEQ_sSPACE1__TypeNameEQ_tSPACE1	test	sql_ddl_postgres	untested	test_non_standard_names	core	True	nom-standard names are allowed	None
+test_cardinality-ClassNameEQ_C__SlotNameEQ_sSPACE1__TypeNameEQ_tSPACE1	test	owl	untested	test_non_standard_names	core	True	nom-standard names are allowed	None
+test_cardinality-ClassNameEQ_C__SlotNameEQ_1s__TypeNameEQ_T1	test	python_dataclasses	incomplete	test_non_standard_names	core	True	nom-standard names are allowed	None
+test_cardinality-ClassNameEQ_C__SlotNameEQ_1s__TypeNameEQ_T1	test	pydantic	incomplete	test_non_standard_names	core	True	nom-standard names are allowed	None
+test_cardinality-ClassNameEQ_C__SlotNameEQ_1s__TypeNameEQ_T1	test	java	untested	test_non_standard_names	core	True	nom-standard names are allowed	None
+test_cardinality-ClassNameEQ_C__SlotNameEQ_1s__TypeNameEQ_T1	test	jsonschema	implements	test_non_standard_names	core	True	nom-standard names are allowed	None
+test_cardinality-ClassNameEQ_C__SlotNameEQ_1s__TypeNameEQ_T1	test	shacl	untested	test_non_standard_names	core	True	nom-standard names are allowed	None
+test_cardinality-ClassNameEQ_C__SlotNameEQ_1s__TypeNameEQ_T1	test	shex	untested	test_non_standard_names	core	True	nom-standard names are allowed	None
+test_cardinality-ClassNameEQ_C__SlotNameEQ_1s__TypeNameEQ_T1	test	jsonld_context	implements	test_non_standard_names	core	True	nom-standard names are allowed	None
+test_cardinality-ClassNameEQ_C__SlotNameEQ_1s__TypeNameEQ_T1	test	sql_ddl_sqlite	incomplete	test_non_standard_names	core	True	nom-standard names are allowed	None
+test_cardinality-ClassNameEQ_C__SlotNameEQ_1s__TypeNameEQ_T1	test	sql_ddl_postgres	untested	test_non_standard_names	core	True	nom-standard names are allowed	None
+test_cardinality-ClassNameEQ_C__SlotNameEQ_1s__TypeNameEQ_T1	test	owl	untested	test_non_standard_names	core	True	nom-standard names are allowed	None
+test_non_standard_num_names-ENE_PVs1	test	python_dataclasses	implements	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENE_PVs1	test	pydantic	implements	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENE_PVs1	test	java	untested	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENE_PVs1	test	jsonschema	implements	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENE_PVs1	test	shacl	implements	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENE_PVs1	test	shex	untested	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENE_PVs1	test	jsonld_context	implements	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENE_PVs1	test	sql_ddl_sqlite	implements	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENE_PVs1	test	sql_ddl_postgres	untested	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENE_PVs1	test	owl	untested	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENE_PVS1	test	python_dataclasses	implements	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENE_PVS1	test	pydantic	implements	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENE_PVS1	test	java	untested	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENE_PVS1	test	jsonschema	implements	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENE_PVS1	test	shacl	implements	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENE_PVS1	test	shex	untested	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENE_PVS1	test	jsonld_context	implements	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENE_PVS1	test	sql_ddl_sqlite	implements	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENE_PVS1	test	sql_ddl_postgres	untested	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENE_PVS1	test	owl	untested	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENe_PVS1	test	python_dataclasses	implements	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENe_PVS1	test	pydantic	implements	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENe_PVS1	test	java	untested	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENe_PVS1	test	jsonschema	implements	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENe_PVS1	test	shacl	implements	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENe_PVS1	test	shex	untested	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENe_PVS1	test	jsonld_context	implements	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENe_PVS1	test	sql_ddl_sqlite	implements	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENe_PVS1	test	sql_ddl_postgres	untested	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENe_PVS1	test	owl	untested	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENeSPACE1_PVS1	test	python_dataclasses	implements	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENeSPACE1_PVS1	test	pydantic	implements	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENeSPACE1_PVS1	test	java	untested	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENeSPACE1_PVS1	test	jsonschema	implements	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENeSPACE1_PVS1	test	shacl	implements	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENeSPACE1_PVS1	test	shex	untested	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENeSPACE1_PVS1	test	jsonld_context	implements	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENeSPACE1_PVS1	test	sql_ddl_sqlite	implements	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENeSPACE1_PVS1	test	sql_ddl_postgres	untested	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENeSPACE1_PVS1	test	owl	untested	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENE_PVsSPACE1	test	python_dataclasses	implements	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENE_PVsSPACE1	test	pydantic	implements	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENE_PVsSPACE1	test	java	untested	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENE_PVsSPACE1	test	jsonschema	implements	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENE_PVsSPACE1	test	shacl	implements	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENE_PVsSPACE1	test	shex	untested	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENE_PVsSPACE1	test	jsonld_context	implements	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENE_PVsSPACE1	test	sql_ddl_sqlite	implements	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENE_PVsSPACE1	test	sql_ddl_postgres	untested	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENE_PVsSPACE1	test	owl	untested	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENE_PV1s	test	python_dataclasses	implements	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENE_PV1s	test	pydantic	implements	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENE_PV1s	test	java	untested	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENE_PV1s	test	jsonschema	implements	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENE_PV1s	test	shacl	implements	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENE_PV1s	test	shex	untested	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENE_PV1s	test	jsonld_context	implements	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENE_PV1s	test	sql_ddl_sqlite	implements	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENE_PV1s	test	sql_ddl_postgres	untested	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENE_PV1s	test	owl	untested	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENE_PVSPACE	test	python_dataclasses	implements	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENE_PVSPACE	test	pydantic	incomplete	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENE_PVSPACE	test	java	untested	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENE_PVSPACE	test	jsonschema	implements	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENE_PVSPACE	test	shacl	implements	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENE_PVSPACE	test	shex	untested	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENE_PVSPACE	test	jsonld_context	implements	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENE_PVSPACE	test	sql_ddl_sqlite	implements	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENE_PVSPACE	test	sql_ddl_postgres	untested	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENE_PVSPACE	test	owl	untested	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENE_PVAPOSTROPHE	test	python_dataclasses	implements	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENE_PVAPOSTROPHE	test	pydantic	implements	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENE_PVAPOSTROPHE	test	java	untested	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENE_PVAPOSTROPHE	test	jsonschema	implements	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENE_PVAPOSTROPHE	test	shacl	implements	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENE_PVAPOSTROPHE	test	shex	untested	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENE_PVAPOSTROPHE	test	jsonld_context	implements	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENE_PVAPOSTROPHE	test	sql_ddl_sqlite	implements	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENE_PVAPOSTROPHE	test	sql_ddl_postgres	untested	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENE_PVAPOSTROPHE	test	owl	untested	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENELEFT_SQUARE_BRACKETxRIGHT_SQUARE_BRACKET_PVLEFT_SQUARE_BRACKETxRIGHT_SQUARE_BRACKET	test	python_dataclasses	incomplete	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENELEFT_SQUARE_BRACKETxRIGHT_SQUARE_BRACKET_PVLEFT_SQUARE_BRACKETxRIGHT_SQUARE_BRACKET	test	pydantic	incomplete	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENELEFT_SQUARE_BRACKETxRIGHT_SQUARE_BRACKET_PVLEFT_SQUARE_BRACKETxRIGHT_SQUARE_BRACKET	test	java	untested	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENELEFT_SQUARE_BRACKETxRIGHT_SQUARE_BRACKET_PVLEFT_SQUARE_BRACKETxRIGHT_SQUARE_BRACKET	test	jsonschema	implements	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENELEFT_SQUARE_BRACKETxRIGHT_SQUARE_BRACKET_PVLEFT_SQUARE_BRACKETxRIGHT_SQUARE_BRACKET	test	shacl	incomplete	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENELEFT_SQUARE_BRACKETxRIGHT_SQUARE_BRACKET_PVLEFT_SQUARE_BRACKETxRIGHT_SQUARE_BRACKET	test	shex	untested	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENELEFT_SQUARE_BRACKETxRIGHT_SQUARE_BRACKET_PVLEFT_SQUARE_BRACKETxRIGHT_SQUARE_BRACKET	test	jsonld_context	implements	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENELEFT_SQUARE_BRACKETxRIGHT_SQUARE_BRACKET_PVLEFT_SQUARE_BRACKETxRIGHT_SQUARE_BRACKET	test	sql_ddl_sqlite	incomplete	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENELEFT_SQUARE_BRACKETxRIGHT_SQUARE_BRACKET_PVLEFT_SQUARE_BRACKETxRIGHT_SQUARE_BRACKET	test	sql_ddl_postgres	untested	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENELEFT_SQUARE_BRACKETxRIGHT_SQUARE_BRACKET_PVLEFT_SQUARE_BRACKETxRIGHT_SQUARE_BRACKET	test	owl	incomplete	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENE_PVLEFT_SQUARE_BRACKETxRIGHT_SQUARE_BRACKET	test	python_dataclasses	implements	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENE_PVLEFT_SQUARE_BRACKETxRIGHT_SQUARE_BRACKET	test	pydantic	implements	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENE_PVLEFT_SQUARE_BRACKETxRIGHT_SQUARE_BRACKET	test	java	untested	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENE_PVLEFT_SQUARE_BRACKETxRIGHT_SQUARE_BRACKET	test	jsonschema	implements	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENE_PVLEFT_SQUARE_BRACKETxRIGHT_SQUARE_BRACKET	test	shacl	implements	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENE_PVLEFT_SQUARE_BRACKETxRIGHT_SQUARE_BRACKET	test	shex	untested	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENE_PVLEFT_SQUARE_BRACKETxRIGHT_SQUARE_BRACKET	test	jsonld_context	implements	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENE_PVLEFT_SQUARE_BRACKETxRIGHT_SQUARE_BRACKET	test	sql_ddl_sqlite	implements	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENE_PVLEFT_SQUARE_BRACKETxRIGHT_SQUARE_BRACKET	test	sql_ddl_postgres	untested	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None
+test_non_standard_num_names-ENE_PVLEFT_SQUARE_BRACKETxRIGHT_SQUARE_BRACKET	test	owl	untested	test_non_standard_num_names	core	True	nom-standard enum/pv names are allowed	None

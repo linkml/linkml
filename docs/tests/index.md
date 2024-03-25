@@ -1,0 +1,6 @@
+# Tests
+
+```{toctree}
+compliance/index
+```
+
