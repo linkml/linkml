@@ -1,11 +1,13 @@
 name: Test with upstream linkml
 on:
+  pull_request_review:
+    types: [ submitted ]
   workflow_dispatch:
 
 jobs:
   test_upstream:
+    if: github.event_name == 'workflow_dispatch' || github.event.review.state == 'APPROVED'
     strategy:
-      fail-fast: false
       matrix:
         os: [ ubuntu-latest, windows-latest ]
         python-version: [ "3.8", "3.9", "3.10", "3.11" ]
@@ -24,17 +26,20 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
+
       - name: checkout upstream
         uses: actions/checkout@v4
         with:
           repository: linkml/linkml
           path: linkml
+          ref: main
           fetch-depth: 0
 
       - name: checkout linkml-runtime
         uses: actions/checkout@v4
         with:
-          repository: linkml/linkml-runtime
+          # don't specify repository like this or else we won't get pull request branches correctly
+          # repository: linkml/linkml-runtime
           path: linkml-runtime
           fetch-depth: 0
 
