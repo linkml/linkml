@@ -1,9 +1,10 @@
 import logging
 
-from tests.test_compliance.helper import report
+from tests.test_compliance.helper import copy_report, report
 
 
 def pytest_sessionfinish(session, exitstatus) -> None:
     logging.info(f"finishing session: {session} {exitstatus}")
+    report()
     if exitstatus == 0:
-        report()
+        copy_report()

@@ -65,6 +65,7 @@ for you:
 
    developers/index
    code/index
+   tests/index
 
 
 

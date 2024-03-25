@@ -12,6 +12,8 @@
 #
 import os
 import sys
+from pathlib import Path
+import csv
 sys.path.insert(0, os.path.abspath('..'))
 
 
@@ -40,7 +42,8 @@ extensions = [
     'sphinxcontrib.mermaid',
     'sphinx.ext.napoleon',
     'sphinx.ext.intersphinx',
-    'myst_parser'
+    'myst_parser',
+    'sphinx_jinja'
 ]
 
 myst_heading_anchors = 3
@@ -103,4 +106,44 @@ intersphinx_mapping = {
     'python': ('https://docs.python.org/3', None),
     'pydantic': ('https://docs.pydantic.dev/latest', None),
     'jinja2': ('https://jinja.palletsprojects.com/en/latest/', None)
+}
+
+# --------------------------------------------------
+# Jinja contexts
+# --------------------------------------------------
+def load_compliance():
+    compliance_summaries = Path(__file__).parents[1] / 'tests' / 'test_compliance' / 'summary'
+    compliance = {}
+    for summary in compliance_summaries.glob('*.tsv'):
+        with open(summary, 'r') as sfile:
+            reader = csv.DictReader(sfile, delimiter='\t')
+            data = [row for row in reader]
+        compliance[summary.stem] = data
+
+    # re-stack report so that it's {module: {test: {schema: [rows]}}
+    exclude_cols = (
+        'test_name',
+        'module_name',
+        'schema_name'
+    )
+
+    modules = {}
+    for row in compliance['report']:
+        if row['module_name'] not in modules:
+            modules[row['module_name']] = {}
+        if row['test_name'] not in modules[row['module_name']]:
+            modules[row['module_name']][row['test_name']] = {}
+        if row['schema_name'] not in modules[row['module_name']][row['test_name']]:
+            modules[row['module_name']][row['test_name']][row['schema_name']] = []
+
+        clean_row = {k:v for k,v in row.items() if k not in exclude_cols}
+
+        modules[row['module_name']][row['test_name']][row['schema_name']].append(clean_row)
+    compliance['modules'] = modules
+
+    return compliance
+
+
+jinja_contexts = {
+    'compliance': {'compliance': load_compliance()}
 }

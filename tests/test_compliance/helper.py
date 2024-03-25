@@ -5,6 +5,7 @@ import enum
 import json
 import logging
 import os
+import re
 import shutil
 import subprocess
 import tempfile
@@ -49,6 +50,7 @@ from tests.output.types import Decimal
 
 THIS_DIR = Path(__file__).parent
 OUTPUT_DIR = THIS_DIR / "output"
+SUMMARY_DIR = THIS_DIR / "summary"
 
 SCHEMA_NAME = str
 FRAMEWORK = str  ## pydantic, java, etc
@@ -116,6 +118,9 @@ class DataCheck(BaseModel):
     data_name: str
     framework: str
     expected_behavior: ValidationBehavior
+    test_name: str
+    module_name: str
+    valid: bool
     description: str = None
     notes: Optional[str] = None
 
@@ -229,6 +234,19 @@ def report():
     with open(OUTPUT_DIR / f"coverage{suffix}.txt", "w", encoding="utf-8") as stream:
         stream.write(f"Coverage: {coverage}")
         stream.write("\n".join(sorted(set(elements))))
+
+
+def copy_report():
+    summary_files = (
+        "report.tsv",
+        "summary.tsv",
+        "pivoted.tsv",
+    )
+    SUMMARY_DIR.mkdir(exist_ok=True)
+    for file in summary_files:
+        source = OUTPUT_DIR / file
+        target = SUMMARY_DIR / file
+        shutil.copy(source, target)
 
 
 ## atexit.register(report)
@@ -847,17 +865,31 @@ def check_data(
         if should_warn:
             logging.warning("TODO: check for warnings")
     feature.set_framework_behavior(framework, expected_behavior)
-    if not valid:
-        all_test_results.append(
-            DataCheck(
-                schema_name=schema["name"],
-                data_name=data_name,
-                framework=framework,
-                expected_behavior=expected_behavior,
-                description=description,
-                notes=str(notes),
-            )
+
+    current_test = os.environ.get("PYTEST_CURRENT_TEST", None)
+    if current_test is not None:
+        test_name = current_test.split("::")[-1].split("[")[0]
+        module_name = current_test.split(":")[0].split("/")[-1]
+        module_name = re.sub(r"^test_", "", module_name)
+        module_name = re.sub(r"_compliance.py$", "", module_name)
+
+    else:
+        test_name = ""
+        module_name = ""
+
+    all_test_results.append(
+        DataCheck(
+            schema_name=schema["name"],
+            test_name=test_name,
+            module_name=module_name,
+            valid=valid,
+            data_name=data_name,
+            framework=framework,
+            expected_behavior=expected_behavior,
+            description=description,
+            notes=str(notes),
         )
+    )
 
 
 def clean_null_terms(d):

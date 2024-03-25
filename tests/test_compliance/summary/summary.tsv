@@ -1,0 +1,48 @@
+name	python_dataclasses	pydantic	java	jsonschema	shacl	shex	jsonld_context	sql_ddl_sqlite	sql_ddl_postgres	owl
+test_alias	implements	incomplete	untested	implements	mixed	untested	implements	implements	untested	untested
+test_enum_alias	implements	implements	untested	implements	implements	untested	implements	implements	untested	untested
+test_annotation	implements	implements	untested	implements	implements	untested	implements	implements	untested	untested
+test_slot_any_of	incomplete	implements	untested	incomplete	untested	untested	implements	incomplete	untested	untested
+test_slot_exactly_one_of	incomplete	incomplete	incomplete	implements	incomplete	incomplete	incomplete	incomplete	incomplete	untested
+test_slot_all_of	incomplete	incomplete	incomplete	implements	incomplete	incomplete	incomplete	incomplete	incomplete	untested
+test_slot_none_of	incomplete	incomplete	incomplete	implements	incomplete	incomplete	incomplete	incomplete	incomplete	untested
+test_cardinality_in_exactly_one_of	incomplete	incomplete	incomplete	incomplete	incomplete	incomplete	incomplete	incomplete	incomplete	incomplete
+test_class_any_of	incomplete	incomplete	incomplete	incomplete	incomplete	incomplete	incomplete	incomplete	incomplete	untested
+test_class_boolean_with_expressions	incomplete	incomplete	incomplete	incomplete		incomplete	incomplete	incomplete	incomplete	incomplete
+test_slot_boolean_with_expressions	incomplete	incomplete	incomplete	incomplete		incomplete	incomplete	incomplete	incomplete	incomplete
+test_min_max	incomplete	implements	untested	implements	implements	untested	implements	incomplete	untested	untested
+test_preconditions	incomplete	incomplete	incomplete	implements		incomplete	incomplete	incomplete	incomplete	untested
+test_preconditions_combos	incomplete	incomplete	incomplete	implements		incomplete	incomplete	incomplete	incomplete	incomplete
+test_classification_rules	incomplete	incomplete	incomplete	incomplete		incomplete	incomplete	incomplete	incomplete	incomplete
+test_value_presence_in_rules	incomplete	incomplete	incomplete	implements		incomplete	incomplete	incomplete	incomplete	incomplete
+test_membership	incomplete	incomplete	incomplete	implements	incomplete	incomplete	incomplete	incomplete	incomplete	incomplete
+test_attributes	implements	implements	untested	implements	implements	untested	implements	implements	untested	untested
+test_type_range	incomplete	mixed	untested	mixed	incomplete	incomplete	implements	incomplete	untested	incomplete
+test_any_type	implements	implements	untested	implements	untested	untested	implements			untested
+test_uri_types	implements	incomplete	untested	incomplete	implements	untested	implements	implements	untested	untested
+test_date_types	mixed	incomplete	untested	mixed	incomplete	incomplete	implements	incomplete	untested	incomplete
+test_cardinality	incomplete	incomplete	untested	implements	incomplete	untested	implements	incomplete	untested	incomplete
+test_identifier_is_required	implements	implements	untested	implements		untested	implements	implements	untested	untested
+test_non_standard_num_names	incomplete	incomplete	untested	implements	incomplete	untested	implements	incomplete	untested	incomplete
+test_typeof	incomplete	mixed	untested	mixed		untested	implements	incomplete	untested	incomplete
+test_designates_type	incomplete	incomplete	incomplete	incomplete	incomplete	incomplete	incomplete	incomplete	incomplete	incomplete
+test_enum	mixed	mixed	mixed	implements	mixed	mixed	mixed	incomplete	mixed	mixed
+test_enum_hierarchy	implements	implements	untested	implements	implements	untested	implements	incomplete	untested	untested
+test_import	implements	incomplete	untested	implements	untested	untested	implements	implements	untested	untested
+test_basic_class_inheritance	incomplete	incomplete	untested	implements	incomplete	untested	implements	incomplete	untested	incomplete
+test_mixins	incomplete	incomplete	untested	implements	incomplete	untested	implements	incomplete	untested	incomplete
+test_refine_attributes	implements	implements	untested	implements	implements	untested	implements	implements	untested	untested
+test_slot_usage	incomplete	implements	untested	implements	incomplete	untested	implements	incomplete	untested	untested
+test_basic_slot_inheritance	incomplete	implements	untested	implements	mixed	untested	implements	incomplete	untested	untested
+test_abstract_classes	incomplete	incomplete	incomplete	implements	incomplete	incomplete	incomplete	incomplete	incomplete	incomplete
+test_inlined	mixed	implements	untested	incomplete		untested	implements	incomplete	untested	untested
+test_inlined_as_simple_dict	mixed	incomplete	untested	implements	incomplete	untested	implements		untested	incomplete
+test_instantiates	implements	implements	untested	implements	implements	untested	implements	implements	untested	untested
+test_jsonpointer	incomplete	incomplete	incomplete	incomplete		incomplete	incomplete	incomplete	incomplete	incomplete
+test_descriptions	implements	implements	untested	implements	implements	untested	implements	implements	untested	untested
+test_element_uris	implements	implements	untested	implements	implements	untested	implements	implements	untested	untested
+test_common_metadata										
+test_pattern	incomplete	incomplete	untested	incomplete	implements	untested	implements	incomplete	untested	
+test_id_prefix	incomplete	incomplete	incomplete	incomplete	incomplete	incomplete	incomplete	incomplete	incomplete	incomplete
+test_identifier	implements	incomplete	incomplete	incomplete	incomplete	incomplete	incomplete	incomplete	incomplete	incomplete
+test_unique_keys	incomplete	incomplete	incomplete	incomplete	incomplete	incomplete	incomplete	incomplete	incomplete	incomplete
