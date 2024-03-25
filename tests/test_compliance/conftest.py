@@ -1,7 +1,6 @@
 import logging
-import pdb
 
-from tests.test_compliance.helper import report, copy_report
+from tests.test_compliance.helper import copy_report, report
 
 
 def pytest_sessionfinish(session, exitstatus) -> None:
