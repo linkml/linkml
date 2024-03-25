@@ -14,7 +14,6 @@ jobs:
     - name: Check out repository
       uses: actions/checkout@v4
     - name: Set up python
-      if: env.RUN_UPDATE != 'false'
       uses: actions/setup-python@v5
       with:
         python-version: "3.11"
@@ -26,7 +25,6 @@ jobs:
         UPDATE_MESSAGE=$(poetry update | grep -i 'updating' | grep -v 'Updating dependencies' | sed 's/Updating//g')
         echo "UPDATE_MESSAGE=$UPDATE_MESSAGE" >> "$GITHUB_OUTPUT"
     - name: Create pull request
-      if: steps.lockfile-update.outputs.UPDATE_MESSAGE != ""
       uses: peter-evans/create-pull-request@v6
       with:
         branch: update-lockfile
