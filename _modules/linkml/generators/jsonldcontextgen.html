@@ -327,7 +327,7 @@
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">click</span>
 <span class="kn">from</span> <span class="nn">jsonasobj2</span> <span class="kn">import</span> <span class="n">JsonObj</span><span class="p">,</span> <span class="n">as_json</span>
@@ -454,16 +454,13 @@
         <span class="n">class_def</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="n">cn</span> <span class="o">=</span> <span class="n">camelcase</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_mappings</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
-        <span class="n">cls_uri_prefix</span><span class="p">,</span> <span class="n">cls_uri_suffix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">prefix_suffix</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">class_uri</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_ns</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">cls_uri_prefix</span> <span class="ow">or</span> <span class="n">cls_uri_prefix</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_ns</span><span class="p">:</span>
-            <span class="n">class_def</span><span class="p">[</span><span class="s2">&quot;@id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">cls_uri_prefix</span> <span class="o">+</span> <span class="s2">&quot;:&quot;</span> <span class="o">+</span> <span class="n">cls_uri_suffix</span><span class="p">)</span> <span class="k">if</span> <span class="n">cls_uri_prefix</span> <span class="k">else</span> <span class="bp">cls</span><span class="o">.</span><span class="n">class_uri</span>
-            <span class="k">if</span> <span class="n">cls_uri_prefix</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">add_prefix</span><span class="p">(</span><span class="n">cls_uri_prefix</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_build_element_id</span><span class="p">(</span><span class="n">class_def</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">class_uri</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">class_def</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">slot_class_maps</span><span class="p">[</span><span class="n">cn</span><span class="p">]</span> <span class="o">=</span> <span class="n">class_def</span>
 
         <span class="c1"># We don&#39;t bother to visit class slots - just all slots</span>
-        <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">True</span>
 
     <span class="k">def</span> <span class="nf">visit_slot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">aliased_slot_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">identifier</span><span class="p">:</span>
@@ -490,14 +487,37 @@
                         <span class="n">slot_def</span><span class="p">[</span><span class="s2">&quot;@type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;@id&quot;</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="n">slot_def</span><span class="p">[</span><span class="s2">&quot;@type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">range_type</span><span class="o">.</span><span class="n">uri</span>
-                <span class="n">slot_prefix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">prefix_for</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">slot_uri</span><span class="p">)</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_ns</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">slot_prefix</span> <span class="ow">or</span> <span class="n">slot_prefix</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_ns</span><span class="p">:</span>
-                    <span class="n">slot_def</span><span class="p">[</span><span class="s2">&quot;@id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">slot</span><span class="o">.</span><span class="n">slot_uri</span>
-                    <span class="k">if</span> <span class="n">slot_prefix</span><span class="p">:</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">add_prefix</span><span class="p">(</span><span class="n">slot_prefix</span><span class="p">)</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">_build_element_id</span><span class="p">(</span><span class="n">slot_def</span><span class="p">,</span> <span class="n">slot</span><span class="o">.</span><span class="n">slot_uri</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">add_mappings</span><span class="p">(</span><span class="n">slot</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">slot_def</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">context_body</span><span class="p">[</span><span class="n">underscore</span><span class="p">(</span><span class="n">aliased_slot_name</span><span class="p">)]</span> <span class="o">=</span> <span class="n">slot_def</span>
+
+    <span class="k">def</span> <span class="nf">_build_element_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">definition</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">uri</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Defines the elements @id attribute according to the default namespace prefix of the schema.</span>
+
+<span class="sd">        The @id namespace prefix is added only if it doesn&#39;t correspond to the default schema namespace prefix</span>
+<span class="sd">        whether it is in URI format or as an alias.</span>
+
+<span class="sd">        @param definition: the element (class or slot) definition</span>
+<span class="sd">        @param uri: the uri of the element (class or slot)</span>
+<span class="sd">        @return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">uri_prefix</span><span class="p">,</span> <span class="n">uri_suffix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">prefix_suffix</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span>
+        <span class="n">is_default_namespace</span> <span class="o">=</span> <span class="n">uri_prefix</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">context_body</span><span class="p">[</span><span class="s2">&quot;@vocab&quot;</span><span class="p">]</span> <span class="ow">or</span> <span class="n">uri_prefix</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">prefix_for</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">context_body</span><span class="p">[</span><span class="s2">&quot;@vocab&quot;</span><span class="p">]</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">uri_prefix</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">uri_suffix</span><span class="p">:</span>
+            <span class="n">definition</span><span class="p">[</span><span class="s2">&quot;@id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">uri</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">uri_prefix</span> <span class="ow">or</span> <span class="n">is_default_namespace</span><span class="p">:</span>
+            <span class="n">definition</span><span class="p">[</span><span class="s2">&quot;@id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">uri_suffix</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">definition</span><span class="p">[</span><span class="s2">&quot;@id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">uri_prefix</span> <span class="o">+</span> <span class="s2">&quot;:&quot;</span> <span class="o">+</span> <span class="n">uri_suffix</span><span class="p">)</span> <span class="k">if</span> <span class="n">uri_prefix</span> <span class="k">else</span> <span class="n">uri</span>
+
+        <span class="k">if</span> <span class="n">uri_prefix</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">is_default_namespace</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_prefix</span><span class="p">(</span><span class="n">uri_prefix</span><span class="p">)</span>
 
 <div class="viewcode-block" id="ContextGenerator.serialize"><a class="viewcode-back" href="../../../generators/jsonld-context.html#linkml.generators.jsonldcontextgen.ContextGenerator.serialize">[docs]</a>    <span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Namespace</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="n">base</span><span class="o">=</span><span class="n">base</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div></div>
