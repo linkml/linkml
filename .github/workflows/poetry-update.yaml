@@ -24,6 +24,7 @@ jobs:
       shell: bash
       run: |
         UPDATE_MESSAGE=$(poetry update)
+        echo $UPDATE_MESSAGE
         echo "UPDATE_MESSAGE=$UPDATE_MESSAGE" >> $GITHUB_ENV
     - name: Create pull request
       uses: peter-evans/create-pull-request@v6
