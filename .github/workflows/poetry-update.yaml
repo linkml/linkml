@@ -24,18 +24,12 @@ jobs:
       run: |
         BEFORE=$(echo "$(poetry show)" | awk '{print $1,$2}')
         echo "$BEFORE"
-        ECHO "BEFORE=$BEFORE" >> "$GITHUB_ENV"
+        echo "BEFORE=$BEFORE" >> "$GITHUB_ENV"
     - name: Update lockfile
       id: lockfile-update
       shell: bash
       run: |
-        UPDATE_MESSAGE=$(poetry update)
-        echo $UPDATE_MESSAGE
-        {
-          echo 'UPDATE_MESSAGE<<EOF'
-          echo "$UPDATE_MESSAGE"
-          echo EOF
-        } >> "$GITHUB_ENV"
+        poetry update
     - name: Show updated deps
       shell: bash
       run: |
