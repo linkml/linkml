@@ -16,14 +16,24 @@ jobs:
     - name: Set up python
       uses: actions/setup-python@v5
       with:
-        python-version: "3.11"
+        python-version: "3.10"
     - name: Install Poetry
       uses: snok/install-poetry@v1
+    - name: Install current deps
+      shell: bash
+      run: |
+        poetry install
     - name: Update lockfile
       id: lockfile-update
+      shell: bash
       run: |
-        UPDATE_MESSAGE=$(poetry update | grep -i 'updating' | grep -v 'Updating dependencies' | sed 's/Updating//g')
-        echo "UPDATE_MESSAGE=$UPDATE_MESSAGE" >> "$GITHUB_OUTPUT"
+        UPDATE_MSG=$(poetry update)
+        {
+          echo 'UPDATE_MSG<<EOF'
+          echo "$UPDATE_MSG"
+          echo EOF
+        } >> "$GITHUB_ENV"
+
     - name: Create pull request
       uses: peter-evans/create-pull-request@v6
       with:
@@ -35,7 +45,7 @@ jobs:
         body: |
           Update poetry dependencies: 
           
-          ${{ steps.lockfile-update.outputs.UPDATE_MESSAGE }}
+          ${{ env.UPDATE_MSG }}
           
         
 

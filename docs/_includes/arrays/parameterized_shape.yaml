@@ -1,0 +1,59 @@
+id: parameterized_shape_array
+name: parameterized_shape_array
+title: parameterized_shape_array
+imports:
+  - linkml:types
+
+classes:
+  MinCard:
+    attributes:
+      array:
+        range: integer
+        array:
+          dimensions:
+            - alias: min_card
+              minimum_cardinality: 2
+
+  MaxCard:
+    attributes:
+      array:
+        range: integer
+        array:
+          dimensions:
+            - alias: max_card
+              maximum_cardinality: 5
+
+  ExactCard:
+    attributes:
+      array:
+        range: integer
+        array:
+          dimensions:
+            - alias: max_card
+              exact_cardinality: 3
+
+  RangeCard:
+    attributes:
+      array:
+        range: integer
+        array:
+          dimensions:
+            - alias: min_card
+              minimum_cardinality: 2
+              maximum_cardinality: 5
+
+  ParameterizedArray:
+    attributes:
+      array:
+        range: integer
+        array:
+          dimensions:
+            - alias: min_card
+              minimum_cardinality: 2
+            - alias: max_card
+              maximum_cardinality: 5
+            - alias: range_card
+              minimum_cardinality: 2
+              maximum_cardinality: 5
+            - alias: exact_card
+              exact_cardinality: 6

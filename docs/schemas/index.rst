@@ -19,6 +19,7 @@ use the guide below.
    metadata
    inheritance
    slots
+   arrays
    uris-and-mappings
    enums
    inlining
