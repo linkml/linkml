@@ -19,6 +19,9 @@
       },
       "ex": "http://example.org/",
       "linkml": "https://w3id.org/linkml/",
-      "@vocab": "http://example.org/"
+      "@vocab": "http://example.org/",
+      "MyClass": {
+         "@id": "MyClass"
+      }
    }
 }
