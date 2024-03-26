@@ -7,9 +7,10 @@ from linkml_runtime.utils.yamlutils import as_rdf
 from linkml.generators.jsonldcontextgen import ContextGenerator
 from linkml.generators.jsonldgen import JSONLDGenerator
 from linkml.generators.pythongen import PythonGenerator
+from tests.utils.compare_jsonld_context import CompareJsonldContext
 
 
-def test_uri_and_curie(input_path, snapshot):
+def test_uri_and_curie(input_path, snapshot, snapshot_path):
     """Compile a model of URI's and Curies and then test the various types"""
     model_name = "uriandcurie"
     model_path = input_path(f"{model_name}.yaml")
@@ -19,7 +20,7 @@ def test_uri_and_curie(input_path, snapshot):
 
     # Check that the interpretations are correct
     contextgen_output = ContextGenerator(model_path).serialize()
-    assert contextgen_output == snapshot(f"{model_name}.jsonld")
+    CompareJsonldContext.compare_with_snapshot(contextgen_output, snapshot_path(f"{model_name}.jsonld"))
 
     jsonldgen_output = JSONLDGenerator(model_path).serialize()
     assert jsonldgen_output == snapshot(f"{model_name}.json")

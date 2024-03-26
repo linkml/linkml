@@ -1,0 +1,22 @@
+id: https://sparc.olympiangods.org/sparcur/schemas/1/sparc
+title: sparc export schema
+name: sparc-linkml
+imports:
+  - linkml:types
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+  sparc: http://uri.interlex.org/tgbugs/uris/readable/sparc/
+  rdfs: http://www.w3.org/2000/01/rdf-schema#
+
+default_prefix: sparc
+
+classes:
+  Thing:
+    class_uri: rdfs:Resource
+
+slots:
+  id:
+    slot_uri: sparc:id
+  label:
+    slot_uri: rdfs:label
