@@ -29,7 +29,7 @@ jobs:
           echo 'UPDATE_MESSAGE<<EOF'
           echo "$UPDATE_MESSAGE"
           echo EOF
-        } >> "$GITHUB_ENV
+        } >> "$GITHUB_ENV"
     - name: Create pull request
       uses: peter-evans/create-pull-request@v6
       with:
