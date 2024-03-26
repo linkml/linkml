@@ -34,20 +34,13 @@ jobs:
       id: lockfile-update
       shell: bash
       run: |
-        poetry update
-    - name: Show updated deps
-      shell: bash
-      run: |
-        AFTER=$(echo "$(poetry show)" | awk '{print $1,$2}')
-        echo "$AFTER"
-        echo "${{ env.BEFORE }}"
-        POETRY_DIFF=$(diff <(echo "${{ env.BEFORE }}") <(echo "$AFTER") -y --suppress-common-lines -W 80)
-        echo "$POETRY_DIFF"
+        UPDATE_MSG=$(poetry update)
         {
-          echo 'POETRY_DIFF<<EOF'
-          echo "$POETRY_DIFF"
+          echo 'UPDATE_MSG<<EOF'
+          echo "$UPDATE_MSG"
           echo EOF
         } >> "$GITHUB_ENV"
+
     - name: Create pull request
       uses: peter-evans/create-pull-request@v6
       with:
@@ -59,9 +52,7 @@ jobs:
         body: |
           Update poetry dependencies: 
           
-          ```
-          ${{ env.POETRY_DIFF }}
-          ```
+          ${{ env.UPDATE_MSG}}
           
         
 
