@@ -1,5 +1,7 @@
 :tocdepth: 3
 
+.. _pydanticgen:
+
 Pydantic
 ========
 
@@ -223,6 +225,19 @@ Combine all the pieces:
 .. automodule:: linkml.generators.pydanticgen.template
     :members:
     :undoc-members:
+    :member-order: bysource
+
+Arrays
+-------
+
+.. admonition:: TODO
+
+    Narrative documentation for pydantic LoL Arrays. Subsection this by different array reps
+
+See `Schemas/Arrays <arrays>`_
+
+.. automodule:: linkml.generators.pydanticgen.array
+    :members:
     :member-order: bysource
 
 Additional Notes

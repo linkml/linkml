@@ -9,7 +9,11 @@
         <title>How to recognize and work with different structural forms - linkml documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=36a5483c" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/common.css?v=b029f2e4" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/notebooks.css?v=8a1ccf7d" />
     
     
 
@@ -179,6 +183,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../schemas/metadata.html">Schema Element Metadata</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../schemas/inheritance.html">Inheritance</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../schemas/slots.html">Slots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../schemas/arrays.html">Arrays</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../schemas/uris-and-mappings.html">URIs and Mappings</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../schemas/enums.html">Semantic Enumerations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../schemas/inlining.html">Inlining objects</a></li>
@@ -260,6 +265,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../faq/python.html">FAQ: Python</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../faq/getting-help.html">FAQ: Getting Help</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../faq/contributing.html">FAQ: Contributing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/tricky_choices.html">FAQ: Tricky Choices</a></li>
 </ul>
 </li>
 </ul>
@@ -321,7 +327,7 @@
         </div>
         <article role="main">
           <section id="how-to-recognize-and-work-with-different-structural-forms">
-<h1>How to recognize and work with different structural forms<a class="headerlink" href="#how-to-recognize-and-work-with-different-structural-forms" title="Permalink to this heading">#</a></h1>
+<span id="structural-forms"></span><h1>How to recognize and work with different structural forms<a class="headerlink" href="#how-to-recognize-and-work-with-different-structural-forms" title="Permalink to this heading">#</a></h1>
 <section id="introduction">
 <h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this heading">#</a></h2>
 <section id="purpose-of-the-guide">
@@ -361,8 +367,8 @@ note cases where it can be useful to blend these forms together.</p>
 <p>This guide aims to provide clarity on the strengths and use cases of each style, assisting you in making an informed decision for your data modeling needs.</p>
 </section>
 </section>
-<section id="structural-forms">
-<h2>Structural Forms<a class="headerlink" href="#structural-forms" title="Permalink to this heading">#</a></h2>
+<section id="id1">
+<h2>Structural Forms<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h2>
 <section id="tabular-structural-form">
 <h3>Tabular Structural Form<a class="headerlink" href="#tabular-structural-form" title="Permalink to this heading">#</a></h3>
 <section id="overview">
@@ -524,8 +530,8 @@ can be easily used.</p>
 </section>
 <section id="tree-structural-forms">
 <h3>Tree Structural Forms<a class="headerlink" href="#tree-structural-forms" title="Permalink to this heading">#</a></h3>
-<section id="id1">
-<h4>Overview<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h4>
+<section id="id2">
+<h4>Overview<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h4>
 <p>The tree form is designed for data structures where data is organized in a nested manner. This style is suitable for datasets where attributes are composite or compound objects.</p>
 </section>
 <section id="example">
@@ -639,23 +645,23 @@ an explicit <code class="docutils literal notranslate"><span class="pre">inlined
 automatically if there is no identifier.</p>
 <p>These changes reflect the nested structure of the book prices in the JSON representation, showcasing the flexibility of LinkML in adapting to different data structuring needs.</p>
 </section>
-<section id="id2">
-<h4>Key Characteristics<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h4>
+<section id="id3">
+<h4>Key Characteristics<a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h4>
 <ul class="simple">
 <li><p><strong>Nested Data Representation</strong>: Data is structured in a tree-like format, with a composition-style hierarchy</p></li>
 <li><p><strong>Complex Data Structures</strong>: Ideal for representing complex, interrelated data elements that are not easily captured in a flat structure.</p></li>
 <li><p><strong>Flexible and Scalable</strong>: Accommodates varying levels of detail and complexity, allowing for scalability.</p></li>
 </ul>
 </section>
-<section id="id3">
-<h4>Usage Scenarios<a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h4>
+<section id="id4">
+<h4>Usage Scenarios<a class="headerlink" href="#id4" title="Permalink to this heading">#</a></h4>
 <ul class="simple">
 <li><p><strong>Configurations and Settings</strong>: For data involving settings or configurations where hierarchical groupings are necessary.</p></li>
 <li><p><strong>Complex Data Models</strong>: Suitable for representing complex entities, such as organizational structures or product catalogs.</p></li>
 </ul>
 </section>
-<section id="id4">
-<h4>Serialization Formats and Databases<a class="headerlink" href="#id4" title="Permalink to this heading">#</a></h4>
+<section id="id5">
+<h4>Serialization Formats and Databases<a class="headerlink" href="#id5" title="Permalink to this heading">#</a></h4>
 <ul class="simple">
 <li><p><strong>JSON/YAML</strong></p></li>
 <li><p><strong>XML</strong> (not typically used in modern environments)</p></li>
@@ -666,8 +672,8 @@ this shape. In general, other database systems should work, but
 may introduce mild impedance mismatches or the need for lightweight
 structural transformations.</p>
 </section>
-<section id="id5">
-<h4>Key Metamodel Elements and Concepts<a class="headerlink" href="#id5" title="Permalink to this heading">#</a></h4>
+<section id="id6">
+<h4>Key Metamodel Elements and Concepts<a class="headerlink" href="#id6" title="Permalink to this heading">#</a></h4>
 <p>In addition to the core elements and concepts used for flat
 tabular data:</p>
 <ul class="simple">
@@ -695,30 +701,30 @@ hierarchical structures, for example:</p>
 </pre></div>
 </div>
 </section>
-<section id="id6">
-<h4>Conclusion<a class="headerlink" href="#id6" title="Permalink to this heading">#</a></h4>
+<section id="id7">
+<h4>Conclusion<a class="headerlink" href="#id7" title="Permalink to this heading">#</a></h4>
 <p>The Tree Structural Form, when implemented with LinkML, offers an effective way to model complex and hierarchical data structures. This approach is particularly beneficial for datasets where relationships and nested groupings play a crucial role, allowing for a more natural and intuitive representation of the data. With careful planning and implementation, this style can greatly enhance the organization and accessibility of complex datasets.</p>
 </section>
 </section>
 <section id="relational-structural-form">
 <h3>Relational Structural Form<a class="headerlink" href="#relational-structural-form" title="Permalink to this heading">#</a></h3>
-<section id="id7">
-<h4>Overview<a class="headerlink" href="#id7" title="Permalink to this heading">#</a></h4>
+<section id="id8">
+<h4>Overview<a class="headerlink" href="#id8" title="Permalink to this heading">#</a></h4>
 <p>The relational or SQL schema style is centered around the relational model, commonly used in SQL databases. In particular, where
 the schema has been fully or partially <em>normalized</em> (otherwise
 it becomes indistinguishable from the Tabular Structural Form).</p>
 <p>This style is characterized by data organized into tables (aka records, <em>relations</em>), with relationships between these tables managed through keys. It’s ideal for datasets with complex interrelationships between different entities.</p>
 </section>
-<section id="id8">
-<h4>Key Characteristics<a class="headerlink" href="#id8" title="Permalink to this heading">#</a></h4>
+<section id="id9">
+<h4>Key Characteristics<a class="headerlink" href="#id9" title="Permalink to this heading">#</a></h4>
 <ul class="simple">
 <li><p><strong>Table-oriented Data Organization</strong>: Data is structured in tables, where each table represents a different entity type.</p></li>
 <li><p><strong>Relationships Through Keys</strong>: Relationships between tables are defined using primary and foreign keys.</p></li>
 <li><p><strong>Use of Joins in querying</strong>: This style facilitates complex queries, joining data from multiple tables.</p></li>
 </ul>
 </section>
-<section id="id9">
-<h4>Usage Scenarios<a class="headerlink" href="#id9" title="Permalink to this heading">#</a></h4>
+<section id="id10">
+<h4>Usage Scenarios<a class="headerlink" href="#id10" title="Permalink to this heading">#</a></h4>
 <ul class="simple">
 <li><p><strong>Complex Interrelated Datasets</strong>: Suitable for datasets with intricate relationships between various entities.</p></li>
 <li><p><strong>Scalable Data Models</strong>: Effective for models that require scalability and flexibility in defining inter-table relationships.</p></li>
@@ -852,8 +858,8 @@ it becomes indistinguishable from the Tabular Structural Form).</p>
 </ul>
 <p>This schema effectively models the relational structure of the data, with separate entities for authors, books, and prices, and uses identifiers to establish relationships between these entities. It exemplifies how LinkML can be used to represent a relational data model, similar to traditional SQL database designs.</p>
 </section>
-<section id="id10">
-<h4>Serialization Formats and Databases<a class="headerlink" href="#id10" title="Permalink to this heading">#</a></h4>
+<section id="id11">
+<h4>Serialization Formats and Databases<a class="headerlink" href="#id11" title="Permalink to this heading">#</a></h4>
 <ul class="simple">
 <li><p><strong>CSVs/TSVs</strong></p></li>
 <li><p><strong>RDF</strong> (in particular for fully normalized data)</p></li>
@@ -864,8 +870,8 @@ good choice, in particular when the data is heavily normalized.
 In practice any system can be used, but systems that don’t
 have first class support for joins/traversal may be suboptimal.</p>
 </section>
-<section id="id11">
-<h4>Key Metamodel Elements and Concepts<a class="headerlink" href="#id11" title="Permalink to this heading">#</a></h4>
+<section id="id12">
+<h4>Key Metamodel Elements and Concepts<a class="headerlink" href="#id12" title="Permalink to this heading">#</a></h4>
 <p>In addition to the core elements and concepts used for flat
 tabular data:</p>
 <ul class="simple">
@@ -889,8 +895,8 @@ tables.</p>
 </section>
 <section id="ontological-structural-form">
 <h3>Ontological Structural Form<a class="headerlink" href="#ontological-structural-form" title="Permalink to this heading">#</a></h3>
-<section id="id12">
-<h4>Overview<a class="headerlink" href="#id12" title="Permalink to this heading">#</a></h4>
+<section id="id13">
+<h4>Overview<a class="headerlink" href="#id13" title="Permalink to this heading">#</a></h4>
 <p>The ontological or knowledge graph schema style in LinkML focuses on
 hierarchical classification of entities within a domain, and the use of inheritance to propagate down attributes.</p>
 <p><strong>NOTE</strong> this form is somewhat orthogonal to the others, and as such me may later choose to separate this into its own document.</p>
@@ -1017,16 +1023,16 @@ hierarchical classification of entities within a domain, and the use of inherita
 </pre></div>
 </div>
 </section>
-<section id="id13">
-<h4>Key Characteristics<a class="headerlink" href="#id13" title="Permalink to this heading">#</a></h4>
+<section id="id14">
+<h4>Key Characteristics<a class="headerlink" href="#id14" title="Permalink to this heading">#</a></h4>
 <ul class="simple">
 <li><p><strong>Entity-Relationship Framework</strong>: Models data as entities (nodes) and relationships (edges) in a graph.</p></li>
 <li><p><strong>Semantic Depth</strong>: Emphasizes the meaning and nuances of relationships between entities.</p></li>
 <li><p><strong>Inferential Capabilities</strong>: Facilitates advanced querying and inference for knowledge extraction.</p></li>
 </ul>
 </section>
-<section id="id14">
-<h4>Usage Scenarios<a class="headerlink" href="#id14" title="Permalink to this heading">#</a></h4>
+<section id="id15">
+<h4>Usage Scenarios<a class="headerlink" href="#id15" title="Permalink to this heading">#</a></h4>
 <ul>
 <li><p><strong>Complex Semantic Models</strong>: Ideal for complex systems with significant relational depth.</p></li>
 <li><p><strong>Data Integration</strong>: Suited for scenarios requiring the merging of various data sources or adherence to standard ontologies.</p></li>
@@ -1044,8 +1050,8 @@ hierarchical classification of entities within a domain, and the use of inherita
 </li>
 </ul>
 </section>
-<section id="id15">
-<h4>Serialization Formats and Databases<a class="headerlink" href="#id15" title="Permalink to this heading">#</a></h4>
+<section id="id16">
+<h4>Serialization Formats and Databases<a class="headerlink" href="#id16" title="Permalink to this heading">#</a></h4>
 <ul class="simple">
 <li><p><strong>OWL</strong></p></li>
 <li><p><strong>RDFS</strong></p></li>
@@ -1054,8 +1060,8 @@ hierarchical classification of entities within a domain, and the use of inherita
 <p>RDF databases and Graph databases can be a good choice for this
 form of data.</p>
 </section>
-<section id="id16">
-<h4>Key Metamodel Elements and Concepts<a class="headerlink" href="#id16" title="Permalink to this heading">#</a></h4>
+<section id="id17">
+<h4>Key Metamodel Elements and Concepts<a class="headerlink" href="#id17" title="Permalink to this heading">#</a></h4>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">is_a</span></code> and <code class="docutils literal notranslate"><span class="pre">mixins</span></code> for inheritance hierarchies</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">slot_usage</span></code> to refine the use of existing properties</p></li>
@@ -1078,16 +1084,16 @@ form of data.</p>
 </li>
 </ul>
 </section>
-<section id="id17">
-<h4>Best Practices<a class="headerlink" href="#id17" title="Permalink to this heading">#</a></h4>
+<section id="id18">
+<h4>Best Practices<a class="headerlink" href="#id18" title="Permalink to this heading">#</a></h4>
 <ul class="simple">
 <li><p><strong>Semantic Clarity</strong>: Ensure each entity and relationship is semantically well-defined.</p></li>
 <li><p><strong>Scalable and Adaptable Ontologies</strong>: Design ontologies to be flexible and scalable, accommodating evolving knowledge.</p></li>
 <li><p><strong>Utilize LinkML’s Semantic Capabilities</strong>: Leverage LinkML features for semantic web integration and ontology modeling.</p></li>
 </ul>
 </section>
-<section id="id18">
-<h4>Conclusion<a class="headerlink" href="#id18" title="Permalink to this heading">#</a></h4>
+<section id="id19">
+<h4>Conclusion<a class="headerlink" href="#id19" title="Permalink to this heading">#</a></h4>
 <p>The ontological/knowledge graph schema style, when utilized with LinkML, offers a sophisticated means to model data with complex semantic relationships. This style is invaluable for creating detailed knowledge graphs that require a deep understanding of the data and its interconnections. By effectively employing class hierarchies and understanding the nuances between property graph and RDF/S styles, one can develop comprehensive, semantically rich models that serve a wide range of advanced data analysis and integration purposes.</p>
 </section>
 </section>
@@ -1160,7 +1166,7 @@ form of data.</p>
 <li><a class="reference internal" href="#choosing-the-right-schema-style">Choosing the Right Schema Style</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#structural-forms">Structural Forms</a><ul>
+<li><a class="reference internal" href="#id1">Structural Forms</a><ul>
 <li><a class="reference internal" href="#tabular-structural-form">Tabular Structural Form</a><ul>
 <li><a class="reference internal" href="#overview">Overview</a></li>
 <li><a class="reference internal" href="#tabular-data-example">Tabular Data Example</a></li>
@@ -1174,21 +1180,21 @@ form of data.</p>
 </ul>
 </li>
 <li><a class="reference internal" href="#tree-structural-forms">Tree Structural Forms</a><ul>
-<li><a class="reference internal" href="#id1">Overview</a></li>
+<li><a class="reference internal" href="#id2">Overview</a></li>
 <li><a class="reference internal" href="#example">Example</a></li>
 <li><a class="reference internal" href="#modified-schema-to-allow-for-nesting">Modified schema to allow for nesting</a></li>
-<li><a class="reference internal" href="#id2">Key Characteristics</a></li>
-<li><a class="reference internal" href="#id3">Usage Scenarios</a></li>
-<li><a class="reference internal" href="#id4">Serialization Formats and Databases</a></li>
-<li><a class="reference internal" href="#id5">Key Metamodel Elements and Concepts</a></li>
+<li><a class="reference internal" href="#id3">Key Characteristics</a></li>
+<li><a class="reference internal" href="#id4">Usage Scenarios</a></li>
+<li><a class="reference internal" href="#id5">Serialization Formats and Databases</a></li>
+<li><a class="reference internal" href="#id6">Key Metamodel Elements and Concepts</a></li>
 <li><a class="reference internal" href="#hierarchical-composition">Hierarchical Composition</a></li>
-<li><a class="reference internal" href="#id6">Conclusion</a></li>
+<li><a class="reference internal" href="#id7">Conclusion</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#relational-structural-form">Relational Structural Form</a><ul>
-<li><a class="reference internal" href="#id7">Overview</a></li>
-<li><a class="reference internal" href="#id8">Key Characteristics</a></li>
-<li><a class="reference internal" href="#id9">Usage Scenarios</a></li>
+<li><a class="reference internal" href="#id8">Overview</a></li>
+<li><a class="reference internal" href="#id9">Key Characteristics</a></li>
+<li><a class="reference internal" href="#id10">Usage Scenarios</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#example-json-following-relational-structural-form">Example JSON, following Relational Structural Form</a><ul>
@@ -1200,21 +1206,21 @@ form of data.</p>
 <li><a class="reference internal" href="#author-class">Author Class</a></li>
 <li><a class="reference internal" href="#book-class">Book Class</a></li>
 <li><a class="reference internal" href="#price-class">Price Class</a></li>
-<li><a class="reference internal" href="#id10">Serialization Formats and Databases</a></li>
-<li><a class="reference internal" href="#id11">Key Metamodel Elements and Concepts</a></li>
+<li><a class="reference internal" href="#id11">Serialization Formats and Databases</a></li>
+<li><a class="reference internal" href="#id12">Key Metamodel Elements and Concepts</a></li>
 <li><a class="reference internal" href="#best-practices">Best Practices</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#ontological-structural-form">Ontological Structural Form</a><ul>
-<li><a class="reference internal" href="#id12">Overview</a></li>
+<li><a class="reference internal" href="#id13">Overview</a></li>
 <li><a class="reference internal" href="#example-ontology">Example Ontology</a></li>
-<li><a class="reference internal" href="#id13">Key Characteristics</a></li>
-<li><a class="reference internal" href="#id14">Usage Scenarios</a></li>
-<li><a class="reference internal" href="#id15">Serialization Formats and Databases</a></li>
-<li><a class="reference internal" href="#id16">Key Metamodel Elements and Concepts</a></li>
+<li><a class="reference internal" href="#id14">Key Characteristics</a></li>
+<li><a class="reference internal" href="#id15">Usage Scenarios</a></li>
+<li><a class="reference internal" href="#id16">Serialization Formats and Databases</a></li>
+<li><a class="reference internal" href="#id17">Key Metamodel Elements and Concepts</a></li>
 <li><a class="reference internal" href="#property-graph-vs-rdf-s-style">Property Graph vs. RDF/S Style</a></li>
-<li><a class="reference internal" href="#id17">Best Practices</a></li>
-<li><a class="reference internal" href="#id18">Conclusion</a></li>
+<li><a class="reference internal" href="#id18">Best Practices</a></li>
+<li><a class="reference internal" href="#id19">Conclusion</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#multidimensional-structural-form">Multidimensional Structural Form</a></li>
@@ -1235,6 +1241,7 @@ form of data.</p>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="../_static/scripts/furo.js?v=32e29ea5"></script>
+    <script src="../_static/design-tabs.js?v=36754332"></script>
     <script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
     <script>mermaid.initialize({startOnLoad:true});</script>
     </body>

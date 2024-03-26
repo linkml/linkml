@@ -8,7 +8,11 @@
         <title>linkml.generators.pydanticgen.template - linkml documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=135e06be" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo-extensions.css?v=36a5483c" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/css/common.css?v=b029f2e4" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/css/notebooks.css?v=8a1ccf7d" />
     
     
 
@@ -178,6 +182,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../schemas/metadata.html">Schema Element Metadata</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../schemas/inheritance.html">Inheritance</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../schemas/slots.html">Slots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../schemas/arrays.html">Arrays</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../schemas/uris-and-mappings.html">URIs and Mappings</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../schemas/enums.html">Semantic Enumerations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../schemas/inlining.html">Inlining objects</a></li>
@@ -259,6 +264,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../faq/python.html">FAQ: Python</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../faq/getting-help.html">FAQ: Getting Help</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../faq/contributing.html">FAQ: Contributing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../faq/tricky_choices.html">FAQ: Tricky Choices</a></li>
 </ul>
 </li>
 </ul>
@@ -319,17 +325,27 @@
         </div>
         <article role="main">
           <h1>Source code for linkml.generators.pydanticgen.template</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">ClassVar</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">overload</span>
+<span></span><span class="kn">from</span> <span class="nn">importlib.util</span> <span class="kn">import</span> <span class="n">find_spec</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">ClassVar</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">overload</span>
 
 <span class="kn">from</span> <span class="nn">jinja2</span> <span class="kn">import</span> <span class="n">Environment</span><span class="p">,</span> <span class="n">PackageLoader</span>
 <span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">Field</span>
 <span class="kn">from</span> <span class="nn">pydantic.version</span> <span class="kn">import</span> <span class="n">VERSION</span> <span class="k">as</span> <span class="n">PYDANTIC_VERSION</span>
 
+<span class="k">try</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">find_spec</span><span class="p">(</span><span class="s2">&quot;black&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">linkml.generators.pydanticgen.black</span> <span class="kn">import</span> <span class="n">format_black</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># no warning, having black is optional, we only warn when someone tries to import it explicitly</span>
+        <span class="n">format_black</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="c1"># we can also get an import error from find_spec during testing because that&#39;s how we mock not having it installed</span>
+    <span class="n">format_black</span> <span class="o">=</span> <span class="kc">None</span>
+
 <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">PYDANTIC_VERSION</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">computed_field</span>
 <span class="k">else</span><span class="p">:</span>
-    <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
-        <span class="kn">from</span> <span class="nn">pydantic.fields</span> <span class="kn">import</span> <span class="n">ModelField</span>
+    <span class="kn">from</span> <span class="nn">pydantic.fields</span> <span class="kn">import</span> <span class="n">ModelField</span>
 
 
 <div class="viewcode-block" id="TemplateModel"><a class="viewcode-back" href="../../../../generators/pydantic.html#linkml.generators.pydanticgen.template.TemplateModel">[docs]</a><span class="k">class</span> <span class="nc">TemplateModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
@@ -343,12 +359,31 @@
 <span class="sd">    to already be rendered to strings - ie. rather than the ``class.py.jinja``</span>
 <span class="sd">    template receiving a full :class:`.PydanticAttribute` object or dictionary,</span>
 <span class="sd">    it receives it having already been rendered to a string. See the :meth:`.render` method.</span>
+
+<span class="sd">    .. admonition:: Black Formatting</span>
+
+<span class="sd">        Template models will try to use ``black`` to format results when it is available in the</span>
+<span class="sd">        environment when render is called with ``black = True`` . If it isn&#39;t, then the string is</span>
+<span class="sd">        returned without any formatting beyond the template.</span>
+<span class="sd">        This is mostly important for complex annotations like those produced for arrays,</span>
+<span class="sd">        as otherwise the templates are acceptable looking.</span>
+
+<span class="sd">        To install linkml with black, use the extra ``black`` dependency.</span>
+
+<span class="sd">        e.g. with pip::</span>
+
+<span class="sd">            pip install linkml[black]</span>
+
+<span class="sd">        or with poetry::</span>
+
+<span class="sd">            poetry install -E black</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">template</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
     <span class="n">pydantic_ver</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">PYDANTIC_VERSION</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 
-<div class="viewcode-block" id="TemplateModel.render"><a class="viewcode-back" href="../../../../generators/pydantic.html#linkml.generators.pydanticgen.template.TemplateModel.render">[docs]</a>    <span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environment</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Environment</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="viewcode-block" id="TemplateModel.render"><a class="viewcode-back" href="../../../../generators/pydantic.html#linkml.generators.pydanticgen.template.TemplateModel.render">[docs]</a>    <span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environment</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Environment</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">black</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Recursively render a template model to a string.</span>
 
@@ -356,6 +391,10 @@
 <span class="sd">        using the template set in :attr:`.TemplateModel.template` , but preserving the structure</span>
 <span class="sd">        of lists and dictionaries. Regular :class:`.BaseModel` s are rendered to dictionaries.</span>
 <span class="sd">        Any other value is passed through unchanged.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            environment (:class:`jinja2.Environment`): Template environment - see :meth:`.environment`</span>
+<span class="sd">            black (bool): if ``True`` , format template with black. (default False)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">environment</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">environment</span> <span class="o">=</span> <span class="n">TemplateModel</span><span class="o">.</span><span class="n">environment</span><span class="p">()</span>
@@ -367,7 +406,17 @@
 
         <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">_render</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="n">environment</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">}</span>
         <span class="n">template</span> <span class="o">=</span> <span class="n">environment</span><span class="o">.</span><span class="n">get_template</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">template</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="o">**</span><span class="n">data</span><span class="p">)</span></div>
+        <span class="n">rendered</span> <span class="o">=</span> <span class="n">template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="o">**</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">format_black</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">black</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">format_black</span><span class="p">(</span><span class="n">rendered</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="c1"># TODO: it would nice to have a standard logging module here ;)</span>
+                <span class="k">return</span> <span class="n">rendered</span>
+        <span class="k">elif</span> <span class="n">black</span> <span class="ow">and</span> <span class="n">format_black</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;black formatting was requested, but black is not installed in this environment&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">rendered</span></div>
 
 <div class="viewcode-block" id="TemplateModel.environment"><a class="viewcode-back" href="../../../../generators/pydantic.html#linkml.generators.pydanticgen.template.TemplateModel.environment">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">environment</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Environment</span><span class="p">:</span>
@@ -468,6 +517,17 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Extra fields that are typically injected into the base model via</span>
 <span class="sd">    :attr:`~linkml.generators.pydanticgen.PydanticGenerator.injected_fields`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Enable strict mode in the base model.</span>
+<span class="sd">    </span>
+<span class="sd">    .. note::</span>
+<span class="sd">    </span>
+<span class="sd">        Pydantic 2 only! Pydantic 1 only has strict types, not strict mode. See: https://github.com/linkml/linkml/issues/1955</span>
+<span class="sd">    </span>
+<span class="sd">    References:</span>
+<span class="sd">        https://docs.pydantic.dev/latest/concepts/strict_mode</span>
 <span class="sd">    &quot;&quot;&quot;</span></div>
 
 
@@ -573,11 +633,11 @@
             <span class="nb">super</span><span class="p">(</span><span class="n">PydanticClass</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">validators</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_validators</span><span class="p">()</span>
 
-        <span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environment</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Environment</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environment</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Environment</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">black</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">            </span><span class="sd">&quot;&quot;&quot;Overridden in pydantic 1 to ensure that validators are regenerated at rendering time&quot;&quot;&quot;</span>
             <span class="c1"># refresh in case attributes have changed since init</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">validators</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_validators</span><span class="p">()</span>
-            <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">PydanticClass</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">environment</span><span class="p">)</span></div>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">PydanticClass</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">environment</span><span class="p">,</span> <span class="n">black</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ObjectImport"><a class="viewcode-back" href="../../../../generators/pydantic.html#linkml.generators.pydanticgen.template.ObjectImport">[docs]</a><span class="k">class</span> <span class="nc">ObjectImport</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
@@ -641,6 +701,10 @@
             <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">]</span>
 
         <span class="c1"># handle conditionals</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ConditionalImport</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">ConditionalImport</span><span class="p">):</span>
+            <span class="c1"># If our condition is the same, return the newer version</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">condition</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">condition</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">[</span><span class="n">other</span><span class="p">]</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ConditionalImport</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">ConditionalImport</span><span class="p">):</span>
             <span class="c1"># we don&#39;t have a good way of combining conditionals, just return both</span>
             <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">]</span>
@@ -751,9 +815,20 @@
 
     <span class="n">imports</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Import</span><span class="p">,</span> <span class="n">ConditionalImport</span><span class="p">]]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Import</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Imports&quot;</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Import</span><span class="p">,</span> <span class="s2">&quot;Imports&quot;</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Import</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="s2">&quot;Imports&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Imports</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">all</span><span class="p">([</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">Import</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">other</span><span class="p">])):</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;model_copy&quot;</span><span class="p">):</span>
+                <span class="n">self_copy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_copy</span><span class="p">(</span><span class="n">deep</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">self_copy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">other</span><span class="p">:</span>
+                <span class="n">self_copy</span> <span class="o">+=</span> <span class="n">i</span>
+            <span class="k">return</span> <span class="n">self_copy</span>
+
         <span class="c1"># check if we have one of these already</span>
         <span class="n">imports</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">imports</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
         <span class="n">existing</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">imports</span> <span class="k">if</span> <span class="n">i</span><span class="o">.</span><span class="n">module</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">module</span><span class="p">]</span>
 
         <span class="c1"># if we have nothing importing from this module yet, add it!</span>
@@ -775,6 +850,10 @@
                         <span class="n">merged</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
                         <span class="n">imports</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">merged</span><span class="p">)</span>
                         <span class="k">break</span>
+
+        <span class="c1"># SPECIAL CASE - __future__ annotations must happen at the top of a file</span>
+        <span class="n">imports</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">imports</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">i</span><span class="p">:</span> <span class="n">i</span><span class="o">.</span><span class="n">module</span> <span class="o">==</span> <span class="s2">&quot;__future__&quot;</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="n">Imports</span><span class="p">(</span><span class="n">imports</span><span class="o">=</span><span class="n">imports</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
@@ -816,13 +895,13 @@
             <span class="nb">super</span><span class="p">(</span><span class="n">PydanticModule</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">class_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">classes</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
 
-        <span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environment</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Environment</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environment</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Environment</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">black</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Trivial override of parent method for pydantic 1 to ensure that</span>
 <span class="sd">            :attr:`.class_names` are correct at render time</span>
 <span class="sd">            &quot;&quot;&quot;</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">class_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">classes</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
-            <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">PydanticModule</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">environment</span><span class="p">)</span></div>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">PydanticModule</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">environment</span><span class="p">,</span> <span class="n">black</span><span class="p">)</span></div>
 </pre></div>
         </article>
       </div>
@@ -859,6 +938,7 @@
     <script src="../../../../_static/doctools.js?v=888ff710"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="../../../../_static/scripts/furo.js?v=32e29ea5"></script>
+    <script src="../../../../_static/design-tabs.js?v=36754332"></script>
     <script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
     <script>mermaid.initialize({startOnLoad:true});</script>
     </body>

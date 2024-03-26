@@ -7,7 +7,11 @@
     <link rel="shortcut icon" href="https://linkml.io/uploads/linkml-logo_color-no-words.png"/><!-- Generated with Sphinx 7.1.2 and Furo 2023.09.10 --><title>Index - linkml documentation</title>
 <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=135e06be" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=36a5483c" />
+    <link rel="stylesheet" type="text/css" href="_static/css/common.css?v=b029f2e4" />
+    <link rel="stylesheet" type="text/css" href="_static/css/notebooks.css?v=8a1ccf7d" />
     
     
 
@@ -177,6 +181,7 @@
 <li class="toctree-l2"><a class="reference internal" href="schemas/metadata.html">Schema Element Metadata</a></li>
 <li class="toctree-l2"><a class="reference internal" href="schemas/inheritance.html">Inheritance</a></li>
 <li class="toctree-l2"><a class="reference internal" href="schemas/slots.html">Slots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="schemas/arrays.html">Arrays</a></li>
 <li class="toctree-l2"><a class="reference internal" href="schemas/uris-and-mappings.html">URIs and Mappings</a></li>
 <li class="toctree-l2"><a class="reference internal" href="schemas/enums.html">Semantic Enumerations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="schemas/inlining.html">Inlining objects</a></li>
@@ -258,6 +263,7 @@
 <li class="toctree-l2"><a class="reference internal" href="faq/python.html">FAQ: Python</a></li>
 <li class="toctree-l2"><a class="reference internal" href="faq/getting-help.html">FAQ: Getting Help</a></li>
 <li class="toctree-l2"><a class="reference internal" href="faq/contributing.html">FAQ: Contributing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq/tricky_choices.html">FAQ: Tricky Choices</a></li>
 </ul>
 </li>
 </ul>
@@ -338,6 +344,13 @@
 
         <ul>
           <li><a href="generators/owl.html#cmdoption-gen-owl-add-root-classes">gen-owl command line option</a>
+</li>
+        </ul></li>
+        <li>
+    --array-representations
+
+        <ul>
+          <li><a href="generators/pydantic.html#cmdoption-gen-pydantic-array-representations">gen-pydantic command line option</a>
 </li>
         </ul></li>
         <li>
@@ -2230,9 +2243,11 @@
 </li>
         <li><a href="generators/jsonld.html#linkml.generators.jsonldgen.JSONLDGenerator.adjust_slot">adjust_slot() (linkml.generators.jsonldgen.JSONLDGenerator method)</a>
 </li>
-        <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.template.Import.alias">alias (linkml.generators.pydanticgen.template.Import attribute)</a>
+        <li><a href="schemas/arrays.html#alias">alias (built-in variable)</a>
 
         <ul>
+          <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.template.Import.alias">(linkml.generators.pydanticgen.template.Import attribute)</a>
+</li>
           <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.template.ObjectImport.alias">(linkml.generators.pydanticgen.template.ObjectImport attribute)</a>
 </li>
           <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.DimensionExpression.alias">(linkml_runtime.linkml_model.meta.DimensionExpression attribute)</a>
@@ -2278,10 +2293,10 @@
           <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.TypeDefinition.all_of">(linkml_runtime.linkml_model.meta.TypeDefinition attribute)</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.all_schema">all_schema() (linkml_runtime.utils.schemaview.SchemaView method)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.all_slot">all_slot() (linkml_runtime.utils.schemaview.SchemaView method)</a>
 </li>
         <li><a href="generators/docgen.html#linkml.generators.docgen.DocGenerator.all_slot_objects">all_slot_objects() (linkml.generators.docgen.DocGenerator method)</a>
@@ -2336,6 +2351,14 @@
           <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.TypeDefinition.any_of">(linkml_runtime.linkml_model.meta.TypeDefinition attribute)</a>
 </li>
         </ul></li>
+        <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.array.ArrayRangeGenerator.any_shape">any_shape() (linkml.generators.pydanticgen.array.ArrayRangeGenerator method)</a>
+
+        <ul>
+          <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.array.ListOfListsArray.any_shape">(linkml.generators.pydanticgen.array.ListOfListsArray method)</a>
+</li>
+        </ul></li>
+        <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.array.AnyShapeArrayType">AnyShapeArrayType (class in linkml.generators.pydanticgen.array)</a>
+</li>
         <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.ClassDefinition.apply_to">apply_to (linkml_runtime.linkml_model.meta.ClassDefinition attribute)</a>
 
         <ul>
@@ -2346,9 +2369,19 @@
 </li>
         <li><a href="code/utils.html#linkml.utils.schemasynopsis.SchemaSynopsis.applytos">applytos (linkml.utils.schemasynopsis.SchemaSynopsis attribute)</a>
 </li>
-        <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.SlotDefinition.array">array (linkml_runtime.linkml_model.meta.SlotDefinition attribute)</a>
+        <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.array.ArrayRangeGenerator.array">array (linkml.generators.pydanticgen.array.ArrayRangeGenerator attribute)</a>
+
+        <ul>
+          <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.SlotDefinition.array">(linkml_runtime.linkml_model.meta.SlotDefinition attribute)</a>
 </li>
+        </ul></li>
         <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.ArrayExpression">ArrayExpression (class in linkml_runtime.linkml_model.meta)</a>
+</li>
+        <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.array.ArrayRangeGenerator">ArrayRangeGenerator (class in linkml.generators.pydanticgen.array)</a>
+</li>
+        <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.array.ArrayRepresentation">ArrayRepresentation (class in linkml.generators.pydanticgen.array)</a>
+</li>
+        <li><a href="schemas/arrays.html#index-0">Arrays</a>
 </li>
         <li><a href="developers/schemabuilder.html#linkml.utils.schema_builder.SchemaBuilder.as_dict">as_dict() (linkml.utils.schema_builder.SchemaBuilder method)</a>
 </li>
@@ -2378,10 +2411,18 @@
 </li>
         <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.template.PydanticClass.bases">bases (linkml.generators.pydanticgen.template.PydanticClass attribute)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.PydanticGenerator.black">black (linkml.generators.pydanticgen.PydanticGenerator attribute)</a>
+</li>
         <li><a href="code/utils.html#linkml.utils.execute_tutorial.Block">Block (class in linkml.utils.execute_tutorial)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.array.ArrayRangeGenerator.bounded_dimensions">bounded_dimensions() (linkml.generators.pydanticgen.array.ArrayRangeGenerator method)</a>
+
+        <ul>
+          <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.array.ListOfListsArray.bounded_dimensions">(linkml.generators.pydanticgen.array.ListOfListsArray method)</a>
+</li>
+        </ul></li>
         <li><a href="generators/yuml.html#linkml.generators.yumlgen.YumlGenerator.box_generated">box_generated (linkml.generators.yumlgen.YumlGenerator attribute)</a>
 </li>
         <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.ArrayExpression.broad_mappings">broad_mappings (linkml_runtime.linkml_model.meta.ArrayExpression attribute)</a>
@@ -2512,10 +2553,10 @@
           <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.TypeDefinition.class_name">(linkml_runtime.linkml_model.meta.TypeDefinition attribute)</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.class_name_mappings">class_name_mappings() (linkml_runtime.utils.schemaview.SchemaView method)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.template.PydanticModule.class_names">class_names (linkml.generators.pydanticgen.template.PydanticModule property)</a>
 </li>
         <li><a href="code/utils.html#linkml.utils.generator.Generator.class_or_type_for">class_or_type_for() (linkml.utils.generator.Generator method)</a>
@@ -2576,6 +2617,12 @@
 </li>
         <li><a href="developers/sqlstore.html#linkml.utils.sqlutils.SQLStore.compile_native">compile_native() (linkml.utils.sqlutils.SQLStore method)</a>
 </li>
+        <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.array.ArrayRangeGenerator.complex_dimensions">complex_dimensions() (linkml.generators.pydanticgen.array.ArrayRangeGenerator method)</a>
+
+        <ul>
+          <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.array.ListOfListsArray.complex_dimensions">(linkml.generators.pydanticgen.array.ListOfListsArray method)</a>
+</li>
+        </ul></li>
         <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.EnumDefinition.concepts">concepts (linkml_runtime.linkml_model.meta.EnumDefinition attribute)</a>
 </li>
         <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.template.ConditionalImport.condition">condition (linkml.generators.pydanticgen.template.ConditionalImport attribute)</a>
@@ -2723,8 +2770,12 @@
 </li>
         <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.DimensionExpression">DimensionExpression (class in linkml_runtime.linkml_model.meta)</a>
 </li>
-        <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.ArrayExpression.dimensions">dimensions (linkml_runtime.linkml_model.meta.ArrayExpression attribute)</a>
+        <li><a href="schemas/arrays.html#dimensions">dimensions (built-in variable)</a>
+
+        <ul>
+          <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.ArrayExpression.dimensions">(linkml_runtime.linkml_model.meta.ArrayExpression attribute)</a>
 </li>
+        </ul></li>
         <li><a href="generators/docgen.html#linkml.generators.docgen.DocGenerator.directory">directory (linkml.generators.docgen.DocGenerator attribute)</a>
 
         <ul>
@@ -2746,6 +2797,8 @@
         <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.SlotDefinition.domain_of">domain_of (linkml_runtime.linkml_model.meta.SlotDefinition attribute)</a>
 </li>
         <li><a href="code/utils.html#linkml.utils.generator.Generator.domain_slots">domain_slots() (linkml.utils.generator.Generator method)</a>
+</li>
+        <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.array.ArrayRangeGenerator.dtype">dtype (linkml.generators.pydanticgen.array.ArrayRangeGenerator attribute)</a>
 </li>
         <li><a href="developers/sqlstore.html#linkml.utils.sqlutils.SQLStore.dump">dump() (linkml.utils.sqlutils.SQLStore method)</a>
 
@@ -2855,9 +2908,11 @@
 </li>
         <li><a href="code/utils.html#linkml.utils.schemasynopsis.SchemaSynopsis.errors">errors() (linkml.utils.schemasynopsis.SchemaSynopsis method)</a>
 </li>
-        <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.DimensionExpression.exact_cardinality">exact_cardinality (linkml_runtime.linkml_model.meta.DimensionExpression attribute)</a>
+        <li><a href="schemas/arrays.html#exact_cardinality">exact_cardinality (built-in variable)</a>
 
         <ul>
+          <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.DimensionExpression.exact_cardinality">(linkml_runtime.linkml_model.meta.DimensionExpression attribute)</a>
+</li>
           <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.SlotDefinition.exact_cardinality">(linkml_runtime.linkml_model.meta.SlotDefinition attribute)</a>
 </li>
         </ul></li>
@@ -2867,8 +2922,12 @@
           <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.DimensionExpression.exact_mappings">(linkml_runtime.linkml_model.meta.DimensionExpression attribute)</a>
 </li>
         </ul></li>
-        <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.ArrayExpression.exact_number_dimensions">exact_number_dimensions (linkml_runtime.linkml_model.meta.ArrayExpression attribute)</a>
+        <li><a href="schemas/arrays.html#exact_number_dimensions">exact_number_dimensions (built-in variable)</a>
+
+        <ul>
+          <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.ArrayExpression.exact_number_dimensions">(linkml_runtime.linkml_model.meta.ArrayExpression attribute)</a>
 </li>
+        </ul></li>
         <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.ClassDefinition.exactly_one_of">exactly_one_of (linkml_runtime.linkml_model.meta.ClassDefinition attribute)</a>
 
         <ul>
@@ -3593,6 +3652,8 @@
     gen-pydantic command line option
 
         <ul>
+          <li><a href="generators/pydantic.html#cmdoption-gen-pydantic-array-representations">--array-representations</a>
+</li>
           <li><a href="generators/pydantic.html#cmdoption-gen-pydantic-extra-fields">--extra-fields</a>
 </li>
           <li><a href="generators/pydantic.html#cmdoption-gen-pydantic-f">--format</a>
@@ -4131,6 +4192,8 @@
         </ul></li>
         <li><a href="generators/docgen.html#linkml.generators.docgen.DocGenerator.genmeta">genmeta (linkml.generators.docgen.DocGenerator attribute)</a>
 </li>
+        <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.PydanticGenerator.get_array_representations_range">get_array_representations_range() (linkml.generators.pydanticgen.PydanticGenerator method)</a>
+</li>
         <li><a href="developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.get_children">get_children() (linkml_runtime.utils.schemaview.SchemaView method)</a>
 </li>
         <li><a href="developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.get_class">get_class() (linkml_runtime.utils.schemaview.SchemaView method)</a>
@@ -4154,6 +4217,8 @@
         <li><a href="developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.get_elements_applicable_by_prefix">get_elements_applicable_by_prefix() (linkml_runtime.utils.schemaview.SchemaView method)</a>
 </li>
         <li><a href="developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.get_enum">get_enum() (linkml_runtime.utils.schemaview.SchemaView method)</a>
+</li>
+        <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.array.ArrayRangeGenerator.get_generator">get_generator() (linkml.generators.pydanticgen.array.ArrayRangeGenerator class method)</a>
 </li>
         <li><a href="developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.get_identifier_slot">get_identifier_slot() (linkml_runtime.utils.schemaview.SchemaView method)</a>
 </li>
@@ -4197,6 +4262,8 @@
   <h2>H</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.array.ArrayRangeGenerator.has_bounded_dimensions">has_bounded_dimensions (linkml.generators.pydanticgen.array.ArrayRangeGenerator property)</a>
+</li>
         <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.ArrayExpression.has_extra_dimensions">has_extra_dimensions (linkml_runtime.linkml_model.meta.ArrayExpression attribute)</a>
 </li>
     </ul></td>
@@ -4630,6 +4697,13 @@
 </li>
         </ul></li>
         <li>
+    linkml.generators.pydanticgen.array
+
+        <ul>
+          <li><a href="generators/pydantic.html#module-linkml.generators.pydanticgen.array">module</a>
+</li>
+        </ul></li>
+        <li>
     linkml.generators.pydanticgen.template
 
         <ul>
@@ -4777,6 +4851,8 @@
 </li>
         <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.SlotDefinition.list_elements_unique">list_elements_unique (linkml_runtime.linkml_model.meta.SlotDefinition attribute)</a>
 </li>
+        <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.array.ListOfListsArray">ListOfListsArray (class in linkml.generators.pydanticgen.array)</a>
+</li>
         <li><a href="developers/sqlstore.html#linkml.utils.sqlutils.SQLStore.load">load() (linkml.utils.sqlutils.SQLStore method)</a>
 
         <ul>
@@ -4843,6 +4919,8 @@
   <h2>M</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.array.ArrayRangeGenerator.make">make() (linkml.generators.pydanticgen.array.ArrayRangeGenerator method)</a>
+</li>
         <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.ArrayExpression.mappings">mappings (linkml_runtime.linkml_model.meta.ArrayExpression attribute)</a>
 
         <ul>
@@ -4865,14 +4943,20 @@
 </li>
         <li><a href="developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.materialize_patterns">materialize_patterns() (linkml_runtime.utils.schemaview.SchemaView method)</a>
 </li>
-        <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.DimensionExpression.maximum_cardinality">maximum_cardinality (linkml_runtime.linkml_model.meta.DimensionExpression attribute)</a>
+        <li><a href="schemas/arrays.html#maximum_cardinality">maximum_cardinality (built-in variable)</a>
 
         <ul>
+          <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.DimensionExpression.maximum_cardinality">(linkml_runtime.linkml_model.meta.DimensionExpression attribute)</a>
+</li>
           <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.SlotDefinition.maximum_cardinality">(linkml_runtime.linkml_model.meta.SlotDefinition attribute)</a>
 </li>
         </ul></li>
-        <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.ArrayExpression.maximum_number_dimensions">maximum_number_dimensions (linkml_runtime.linkml_model.meta.ArrayExpression attribute)</a>
+        <li><a href="schemas/arrays.html#maximum_number_dimensions">maximum_number_dimensions (built-in variable)</a>
+
+        <ul>
+          <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.ArrayExpression.maximum_number_dimensions">(linkml_runtime.linkml_model.meta.ArrayExpression attribute)</a>
 </li>
+        </ul></li>
         <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.template.PydanticAttribute.maximum_value">maximum_value (linkml.generators.pydanticgen.template.PydanticAttribute attribute)</a>
 
         <ul>
@@ -4927,14 +5011,20 @@
           <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.SchemaDefinition.metamodel_version">(linkml_runtime.linkml_model.meta.SchemaDefinition attribute)</a>
 </li>
         </ul></li>
-        <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.DimensionExpression.minimum_cardinality">minimum_cardinality (linkml_runtime.linkml_model.meta.DimensionExpression attribute)</a>
+        <li><a href="schemas/arrays.html#minimum_cardinality">minimum_cardinality (built-in variable)</a>
 
         <ul>
+          <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.DimensionExpression.minimum_cardinality">(linkml_runtime.linkml_model.meta.DimensionExpression attribute)</a>
+</li>
           <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.SlotDefinition.minimum_cardinality">(linkml_runtime.linkml_model.meta.SlotDefinition attribute)</a>
 </li>
         </ul></li>
-        <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.ArrayExpression.minimum_number_dimensions">minimum_number_dimensions (linkml_runtime.linkml_model.meta.ArrayExpression attribute)</a>
+        <li><a href="schemas/arrays.html#minimum_number_dimensions">minimum_number_dimensions (built-in variable)</a>
+
+        <ul>
+          <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.ArrayExpression.minimum_number_dimensions">(linkml_runtime.linkml_model.meta.ArrayExpression attribute)</a>
 </li>
+        </ul></li>
         <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.template.PydanticAttribute.minimum_value">minimum_value (linkml.generators.pydanticgen.template.PydanticAttribute attribute)</a>
 
         <ul>
@@ -5051,6 +5141,8 @@
 </li>
           <li><a href="generators/jsonld.html#module-linkml.generators.jsonldgen">linkml.generators.jsonldgen</a>
 </li>
+          <li><a href="generators/pydantic.html#module-linkml.generators.pydanticgen.array">linkml.generators.pydanticgen.array</a>
+</li>
           <li><a href="generators/pydantic.html#module-linkml.generators.pydanticgen.template">linkml.generators.pydanticgen.template</a>
 </li>
           <li><a href="generators/rdf.html#module-linkml.generators.rdfgen">linkml.generators.rdfgen</a>
@@ -5164,6 +5256,8 @@
           <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.DimensionExpression.notes">(linkml_runtime.linkml_model.meta.DimensionExpression attribute)</a>
 </li>
         </ul></li>
+        <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.array.NPTypingArray">NPTypingArray (class in linkml.generators.pydanticgen.array)</a>
+</li>
         <li><a href="generators/docgen.html#linkml.generators.docgen.DocGenerator.number_value_range">number_value_range() (linkml.generators.docgen.DocGenerator static method)</a>
 </li>
     </ul></td>
@@ -5212,6 +5306,12 @@
   <h2>P</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.array.ArrayRangeGenerator.parameterized_dimensions">parameterized_dimensions() (linkml.generators.pydanticgen.array.ArrayRangeGenerator method)</a>
+
+        <ul>
+          <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.array.ListOfListsArray.parameterized_dimensions">(linkml.generators.pydanticgen.array.ListOfListsArray method)</a>
+</li>
+        </ul></li>
         <li><a href="code/utils.html#linkml.utils.generator.Generator.parent">parent() (linkml.utils.generator.Generator method)</a>
 </li>
         <li><a href="code/utils.html#linkml.utils.execute_tutorial.parse_file_to_blocks">parse_file_to_blocks() (in module linkml.utils.execute_tutorial)</a>
@@ -5244,10 +5344,10 @@
 </li>
         <li><a href="code/utils.html#linkml.utils.execute_tutorial.Block.prior_lines">prior_lines (linkml.utils.execute_tutorial.Block attribute)</a>
 </li>
-        <li><a href="code/utils.html#linkml.utils.schemaloader.SchemaLoader.process_slot_usage_definitions">process_slot_usage_definitions() (linkml.utils.schemaloader.SchemaLoader method)</a>
-</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="code/utils.html#linkml.utils.schemaloader.SchemaLoader.process_slot_usage_definitions">process_slot_usage_definitions() (linkml.utils.schemaloader.SchemaLoader method)</a>
+</li>
         <li><a href="code/utils.html#linkml.utils.schemaloader.SchemaLoader.process_slot_usages">process_slot_usages() (linkml.utils.schemaloader.SchemaLoader method)</a>
 </li>
         <li><a href="generators/project-generator.html#linkml.generators.projectgen.ProjectGenerator">ProjectGenerator (class in linkml.generators.projectgen)</a>
@@ -5258,8 +5358,12 @@
 </li>
         <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.EnumDefinition.pv_formula">pv_formula (linkml_runtime.linkml_model.meta.EnumDefinition attribute)</a>
 </li>
-        <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.template.TemplateModel.pydantic_ver">pydantic_ver (linkml.generators.pydanticgen.template.TemplateModel attribute)</a>
+        <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.array.ArrayRangeGenerator.pydantic_ver">pydantic_ver (linkml.generators.pydanticgen.array.ArrayRangeGenerator attribute)</a>
+
+        <ul>
+          <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.template.TemplateModel.pydantic_ver">(linkml.generators.pydanticgen.template.TemplateModel attribute)</a>
 </li>
+        </ul></li>
         <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.template.PydanticAttribute">PydanticAttribute (class in linkml.generators.pydanticgen.template)</a>
 </li>
         <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.template.PydanticBaseModel">PydanticBaseModel (class in linkml.generators.pydanticgen.template)</a>
@@ -5500,10 +5604,10 @@
 </li>
         <li><a href="developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.slot_leaves">slot_leaves() (linkml_runtime.utils.schemaview.SchemaView method)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="code/utils.html#linkml.utils.generator.Generator.slot_name">slot_name() (linkml.utils.generator.Generator method)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="code/utils.html#linkml.utils.schemaloader.SchemaLoader.slot_name_for">slot_name_for() (linkml.utils.schemaloader.SchemaLoader static method)</a>
 </li>
         <li><a href="developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.slot_name_mappings">slot_name_mappings() (linkml_runtime.utils.schemaview.SchemaView method)</a>
@@ -5588,6 +5692,8 @@
           <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.DimensionExpression.status">(linkml_runtime.linkml_model.meta.DimensionExpression attribute)</a>
 </li>
         </ul></li>
+        <li><a href="generators/pydantic.html#linkml.generators.pydanticgen.template.PydanticBaseModel.strict">strict (linkml.generators.pydanticgen.template.PydanticBaseModel attribute)</a>
+</li>
         <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.ArrayExpression.structured_aliases">structured_aliases (linkml_runtime.linkml_model.meta.ArrayExpression attribute)</a>
 
         <ul>
@@ -6027,6 +6133,7 @@
     <script src="_static/doctools.js?v=888ff710"></script>
     <script src="_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="_static/scripts/furo.js?v=32e29ea5"></script>
+    <script src="_static/design-tabs.js?v=36754332"></script>
     <script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
     <script>mermaid.initialize({startOnLoad:true});</script>
     </body>
