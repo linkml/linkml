@@ -684,7 +684,7 @@ class Generator(metaclass=abc.ABCMeta):
 
     def slot_name(self, name: str) -> str:
         """
-        Return the underscored version of the aliased slot name if name is a slot. Prepend "unknown\_" if the name
+        Return the underscored version of the aliased slot name if name is a slot. Prepend ``unknown_`` if the name
         isn't valid.
         """
         slot = self.slot_for(name)

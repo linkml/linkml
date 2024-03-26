@@ -16,13 +16,13 @@
             "description": "skos:prefLabel",
             "meaning": "@id"
          },
-         "@id": "https://microbiomedata/schema/slot_1"
+         "@id": "slot_1"
       },
       "ParentClass": {
-         "@id": "https://microbiomedata/schema/mixs/ParentClass"
+         "@id": "mixs/ParentClass"
       },
       "SampleClass": {
-         "@id": "https://microbiomedata/schema/SampleClass"
+         "@id": "SampleClass"
       }
    }
 }

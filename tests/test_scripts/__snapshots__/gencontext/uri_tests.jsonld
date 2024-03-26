@@ -13,8 +13,14 @@
       "sc": {
          "@id": "skos:prefLabel"
       },
+      "sd": {
+         "@id": "sd"
+      },
       "su": {
          "@id": "http://example.org/slot/su"
+      },
+      "C1": {
+         "@id": "C1"
       },
       "Cc": {
          "@id": "skos:Concept"

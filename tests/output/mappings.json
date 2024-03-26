@@ -467,9 +467,9 @@
   ],
   "metamodel_version": "1.7.0",
   "source_file": "mappings.yaml",
-  "source_file_date": "2024-02-07T18:13:31",
+  "source_file_date": "2024-03-05T09:44:45",
   "source_file_size": 2753,
-  "generation_date": "2024-02-07T20:47:40",
+  "generation_date": "2024-03-15T11:20:26",
   "@type": "SchemaDefinition",
   "@context": [
     "https://w3id.org/linkml/meta.context.jsonld",
@@ -494,10 +494,12 @@
         "@id": "skos:closeMatch"
       },
       "deprecated_element_has_exact_replacement": {
-        "@type": "@id"
+        "@type": "@id",
+        "@id": "deprecated_element_has_exact_replacement"
       },
       "deprecated_element_has_possible_replacement": {
-        "@type": "@id"
+        "@type": "@id",
+        "@id": "deprecated_element_has_possible_replacement"
       },
       "exact_mappings": {
         "@type": "@id",
