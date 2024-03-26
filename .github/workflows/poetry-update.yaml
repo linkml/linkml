@@ -25,7 +25,11 @@ jobs:
         poetry install
         BEFORE=$(echo "$(poetry show)" | awk '{print $1,$2}')
         echo "$BEFORE"
-        echo "BEFORE=$BEFORE" >> "$GITHUB_ENV"
+        {
+          echo 'BEFORE<<EOF'
+          echo "$BEFORE"
+          echo EOF
+        } >> "$GITHUB_ENV"
     - name: Update lockfile
       id: lockfile-update
       shell: bash
@@ -36,10 +40,13 @@ jobs:
       run: |
         AFTER=$(echo "$(poetry show)" | awk '{print $1,$2}')
         echo "$AFTER"
-        echo "AFTER=$AFTER" >> "$GITHUB_ENV"
         POETRY_DIFF=$(diff <(echo "${{ env.BEFORE}}") <(echo "$AFTER") -y --suppress-common-lines -W 80)
         echo "$POETRY_DIFF"
-        echo "POETRY_DIFF=$POETRY_DIFF" >> "$GITHUB_ENV"
+        {
+          echo 'POETRY_DIFF<<EOF'
+          echo "$POETRY_DIFF"
+          echo EOF
+        } >> "$GITHUB_ENV"
     - name: Create pull request
       uses: peter-evans/create-pull-request@v6
       with:
@@ -51,7 +58,9 @@ jobs:
         body: |
           Update poetry dependencies: 
           
+          ```
           ${{ env.POETRY_DIFF }}
+          ```
           
         
 
