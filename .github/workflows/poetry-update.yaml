@@ -41,7 +41,7 @@ jobs:
         AFTER=$(echo "$(poetry show)" | awk '{print $1,$2}')
         echo "$AFTER"
         echo "${{ env.BEFORE }}"
-        diff <(echo "${{ env.BEFORE }}") <(echo "$AFTER") -y --suppress-common-lines -W 80
+        POETRY_DIFF=$(diff <(echo "${{ env.BEFORE }}") <(echo "$AFTER") -y --suppress-common-lines -W 80)
         echo "$POETRY_DIFF"
         {
           echo 'POETRY_DIFF<<EOF'
