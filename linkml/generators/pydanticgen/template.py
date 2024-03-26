@@ -525,14 +525,7 @@ class Imports(TemplateModel):
                         break
 
         # SPECIAL CASE - __future__ annotations must happen at the top of a file
-        # TODO: Make a sort method
-        futures = []
-        for item in imports[-2:]:
-            if item.module == "__future__":
-                futures.append(item)
-        if len(futures) > 0:
-            imports.remove(futures[0])
-            imports.insert(0, futures[0])
+        imports = sorted(imports, key=lambda i: i.module == "__future__", reverse=True)
 
         return Imports(imports=imports)
 

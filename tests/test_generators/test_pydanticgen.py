@@ -889,6 +889,49 @@ def test_imports_dunder():
     assert imports[1] == import_b
 
 
+def test_imports_future():
+    """
+    __future__ imports should always be imported first
+    """
+    import_a = Import(module="module_a")
+    import_b = Import(module="module_b")
+    import_c = ConditionalImport(
+        module="module_c",
+        alias="module_c_alias",
+        objects=[ObjectImport(name="module_c_obj")],
+        condition="1 == 1",
+        alternative=Import(module="module_d", objects=[ObjectImport(name="module_d_obj", alias="module_c_obj")]),
+    )
+    future = Import(module="__future__", objects=[ObjectImport(name="annotations")])
+
+    imports = Imports() + import_a + import_b + import_c + future
+    assert imports.imports[0] == future
+    assert not any([i.module == "__future__" for i in imports.imports[1:]])
+    # the rest of the order should be unchanged
+    assert imports.imports[1] == import_a
+    assert imports.imports[2] == import_b
+    assert imports.imports[3] == import_c
+
+    # this should also work if we add two imports objects together - they should be merged down to one statement
+    # we DONT currently handle merging when `Imports` is instantiated, it's intended to be used iteratively
+    # but when we add two imports together, the first should iterate over the second term
+    future_2 = Import(module="__future__", objects=[ObjectImport(name="unicode_literals")])
+    future_3 = Import(module="__future__", objects=[ObjectImport(name="generator_stop")])
+    imports_2 = Imports(imports=[future_2, future_3])
+    # we haven't merged yet
+    assert imports_2.imports == [future_2, future_3]
+
+    imports += imports_2
+    # now we should have merged and collapsed the future imports to a single expression at the top
+    assert imports.imports[0].module == "__future__"
+    assert imports.imports[0].objects == [
+        ObjectImport(name="annotations"),
+        ObjectImport(name="unicode_literals"),
+        ObjectImport(name="generator_stop"),
+    ]
+    assert not any([i.module == "__future__" for i in imports.imports[1:]])
+
+
 def test_template_models_templates():
     """
     All template models should have templates!
