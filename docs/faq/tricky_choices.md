@@ -7,6 +7,6 @@ and the considerations we weighed to arrive at the form we did.
 
 ## Arrays
 
-```{admonition} Hey
-Document me plz
+```{admonition} TODO
+To be filled in before we finish labeled arrays.
 ```
