@@ -1,4 +1,3 @@
-import pdb
 from typing import Dict, List, Union
 
 from pydantic.version import VERSION
@@ -67,4 +66,3 @@ def test_pydanticgen_inline_dict():
     assert dict_field.default_factory is None
     assert list_field.annotation == List[Bike]
     assert list_field.default_factory is None
-
