@@ -1,3 +1,6 @@
+from pydantic.version import VERSION
+from typing import Dict, Union
+
 from linkml.generators.pydanticgen import PydanticGenerator
 
 schema_str = """
@@ -41,8 +44,12 @@ slots:
 
 def test_pydanticgen_inline_dict():
     gen = PydanticGenerator(schema_str)
-    output = gen.serialize()
+    mod = gen.compile_module()
+    Person = getattr(mod, 'Person')
+    Bike = getattr(mod, 'Bike')
+    if VERSION.startswith('1'):
+        field = Person.__fields__['has_bikes']
+    else:
+        field = Person.model_fields['has_bikes']
 
-    output_subset = [line for line in output.splitlines() if "has_bikes: " in line]
-    assert len(output_subset) == 1
-    assert "has_bikes: Dict[str, str] = Field(default_factory=dict)" in output_subset[0]
+    assert field.annotation == Dict[str, Union[str,Bike]]

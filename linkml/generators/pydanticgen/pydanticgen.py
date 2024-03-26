@@ -323,7 +323,10 @@ class PydanticGenerator(OOCodeGenerator):
                 if len(slot_ranges) == 1:
                     simple_dict_value = self._inline_as_simple_dict_with_value(slot)
                 if simple_dict_value:
-                    # inlining as simple dict
+                    # simple_dict_value might be the range of the identifier of a class when range is a class,
+                    # so we specify either that identifier or the range itself
+                    if simple_dict_value != pyrange:
+                        simple_dict_value = f"Union[{simple_dict_value}, {pyrange}]"
                     pyrange = f"Dict[str, {simple_dict_value}]"
                 else:
                     pyrange = f"Dict[{collection_key}, {pyrange}]"
