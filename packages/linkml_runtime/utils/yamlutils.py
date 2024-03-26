@@ -1,7 +1,9 @@
+import pdb
 from copy import copy
 from json import JSONDecoder
 from typing import Union, Any, List, Optional, Type, Callable, Dict
 from pprint import pformat
+import textwrap
 
 import yaml
 from deprecated.classic import deprecated
@@ -11,7 +13,7 @@ from rdflib import Graph, URIRef
 from yaml.constructor import ConstructorError
 
 from linkml_runtime.utils.context_utils import CONTEXTS_PARAM_TYPE, merge_contexts
-from linkml_runtime.utils.formatutils import is_empty, remove_empty_items
+from linkml_runtime.utils.formatutils import is_empty, remove_empty_items, is_list, is_dict, items
 
 YAMLObjTypes = Union[JsonObjTypes, "YAMLRoot"]
 
@@ -278,10 +280,20 @@ class YAMLRoot(JsonObj):
         """ Generic loader error handler """
         raise ValueError(f"{field_name} must be supplied")
 
-    def __str__(self):
-        res = remove_empty_items(self)
-        return pformat(as_dict(res),indent=2,compact=True)
+    def __repr__(self):
+        """Only reformat 1-layer deep to preserve __repr__ of child objects"""
+        res = {}
+        for key, val in items(self):
+            if val == [] or val == {} or val is None:
+                continue
+            res[key] = val
+        return self.__class__.__name__ + '(' + pformat(res, indent=2,
+                                                       compact=True) + ')'
 
+    def __str__(self):
+        """Dump everything into a dict, recursively, stringifying it all"""
+        res = remove_empty_items(self)
+        return self.__class__.__name__ + '(' + pformat(res, indent=2, compact=True) + ')'
 
 
 def root_representer(dumper: yaml.Dumper, data: YAMLRoot):
