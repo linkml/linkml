@@ -19,6 +19,12 @@ jobs:
         python-version: "3.10"
     - name: Install Poetry
       uses: snok/install-poetry@v1
+    - name: Show current deps
+      shell: bash
+      run: |
+        BEFORE=$(echo "$(poetry show)" | awk '{print $1,$2}')
+        echo "$BEFORE"
+        ECHO "BEFORE=$BEFORE" >> "$GITHUB_ENV"
     - name: Update lockfile
       id: lockfile-update
       shell: bash
@@ -30,10 +36,19 @@ jobs:
           echo "$UPDATE_MESSAGE"
           echo EOF
         } >> "$GITHUB_ENV"
+    - name: Show updated deps
+      shell: bash
+      run: |
+        AFTER=$(echo "$(poetry show)" | awk '{print $1,$2}')
+        echo "$AFTER"
+        echo "AFTER=$AFTER" >> "$GITHUB_ENV"
+        POETRY_DIFF=$(diff <(echo "${{ env.BEFORE}}") <(echo "$AFTER") -y --suppress-common-lines -W 80)
+        echo "$POETRY_DIFF"
+        echo "POETRY_DIFF=$POETRY_DIFF" >> "$GITHUB_ENV"
     - name: Create pull request
       uses: peter-evans/create-pull-request@v6
       with:
-        branch: update-lockfile
+        branch: update-lockfile2
         title: "[poetry] Update Lockfile"
         commit-message: "Update poetry lockfile"
         labels: poetry
@@ -41,7 +56,7 @@ jobs:
         body: |
           Update poetry dependencies: 
           
-          ${{ env.UPDATE_MESSAGE }}
+          ${{ env.POETRY_DIFF }}
           
         
 
