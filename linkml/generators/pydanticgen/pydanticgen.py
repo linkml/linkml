@@ -514,7 +514,6 @@ class PydanticGenerator(OOCodeGenerator):
             generator = ArrayRangeGenerator.get_generator(repr)
             result = generator(slot.array, range, self.pydantic_version).make()
             array_reps.append(result)
-            # TODO: Handle imports, injected classes
 
         if len(array_reps) == 0:
             raise ValueError("No array representation generated, but one was requested!")

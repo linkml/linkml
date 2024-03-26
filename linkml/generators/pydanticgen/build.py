@@ -17,7 +17,6 @@ class BuildResult(BaseModel):
     elsewhere in the generation process (like adding imports, injecting classes, etc.)
     """
 
-    # FIXME: PLACEHOLDER TYPES PENDING MERGE OF OTHER PULL REQUESTS
     imports: Optional[Union[List[Import], Imports]] = None
     injected_classes: Optional[List[Union[str, Type]]] = None
 
