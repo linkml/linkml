@@ -23,7 +23,7 @@ jobs:
       id: lockfile-update
       shell: bash
       run: |
-        UPDATE_MESSAGE=$(poetry update)
+        UPDATE_MESSAGE=$(poetry update | grep -i 'updating' | grep -v 'Updating dependencies' | sed 's/Updating//g')
         echo $UPDATE_MESSAGE
         echo "UPDATE_MESSAGE=$UPDATE_MESSAGE" >> $GITHUB_ENV
     - name: Create pull request
