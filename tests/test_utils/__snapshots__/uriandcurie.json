@@ -189,14 +189,23 @@
       "xsd": "http://www.w3.org/2001/XMLSchema#",
       "@vocab": "http://example.org/test/uriandcurie",
       "hasCurie": {
-        "@type": "@id"
+        "@type": "@id",
+        "@id": "hasCurie"
+      },
+      "hasNcName": {
+        "@id": "hasNcName"
       },
       "hasURI": {
-        "@type": "@id"
+        "@type": "@id",
+        "@id": "hasURI"
       },
       "id": "@id",
       "id2": {
-        "@type": "@id"
+        "@type": "@id",
+        "@id": "id2"
+      },
+      "C1": {
+        "@id": "C1"
       }
     },
     {

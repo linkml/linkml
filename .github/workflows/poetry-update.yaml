@@ -1,0 +1,42 @@
+name: Poetry update
+# with code borrowed from https://github.com/fuzzylabs/gha-poetry-update/blob/main/action.yml
+
+on:
+  schedule:
+    # once a week, monday at midnight GMT
+    - cron: "0 0 * * 1"
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out repository
+      uses: actions/checkout@v4
+    - name: Set up python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.11"
+    - name: Install Poetry
+      uses: snok/install-poetry@v1
+    - name: Update lockfile
+      id: lockfile-update
+      run: |
+        UPDATE_MESSAGE=$(poetry update | grep -i 'updating' | grep -v 'Updating dependencies' | sed 's/Updating//g')
+        echo "UPDATE_MESSAGE=$UPDATE_MESSAGE" >> "$GITHUB_OUTPUT"
+    - name: Create pull request
+      uses: peter-evans/create-pull-request@v6
+      with:
+        branch: update-lockfile
+        title: "[poetry] Update Lockfile"
+        commit-message: "Update poetry lockfile"
+        labels: poetry
+        add-paths: poetry.lock
+        body: |
+          Update poetry dependencies: 
+          
+          ${{ steps.lockfile-update.outputs.UPDATE_MESSAGE }}
+          
+        
+
+
