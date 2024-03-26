@@ -52,7 +52,7 @@ jobs:
         body: |
           Update poetry dependencies: 
           
-          ${{ env.UPDATE_MSG}}
+          ${{ env.UPDATE_MSG }}
           
         
 
