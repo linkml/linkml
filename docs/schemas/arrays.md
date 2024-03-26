@@ -301,7 +301,7 @@ Direct support for array libraries like numpy, hdf5, dask, zarr, and xarray with
 :::::
 
 The resulting pydantic models use a special {class}`AnyShapeArray` class injected by pydanticgen's 
-{mod}`~linkml.generators.pydanticgen.template` system when using the List of List representation 
+{mod}`~linkml.generators.pydanticgen.template` system when using the List of List (LoL) representation 
 (see [Representations](array-representations)). 
 
 
