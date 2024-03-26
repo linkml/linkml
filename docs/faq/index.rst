@@ -14,3 +14,4 @@ FAQ
    python
    getting-help
    contributing
+   tricky_choices

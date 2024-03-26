@@ -1,9 +1,17 @@
+(howto-arrays)=
 # Multidimensional Arrays
 
-__NOTE__ With the release of LinkML 1.7.0. 
-[The LinkML metamodel has first-class N-dimensional array support]
-(https://github.com/linkml/linkml-model/releases/tag/v1.7.0) -- this guide
+```{important}
+With the release of LinkML 1.7.0. 
+[The LinkML metamodel has first-class N-dimensional array 
+support](https://github.com/linkml/linkml-model/releases/tag/v1.7.0) -- this guide
 will be updated as support is built into tooling.
+This page is a historical reference for considerations made during the
+development of the specification, and will be integrated elsewhere in the docs.
+
+See [Schema/arrays](arrays) for more information on specifying arrays
+```
+
 
 ## Background
 

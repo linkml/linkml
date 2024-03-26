@@ -123,6 +123,7 @@ requests = ">=2.22"
 sqlalchemy = ">=1.4.31"
 watchdog = ">=0.9.0"
 pyshacl = { version = "^0.25.0", optional = true }
+black = { version=">=24.0.0", optional = true }
 
 [tool.poetry.group.dev.dependencies]
 chardet = "*"
@@ -139,6 +140,9 @@ sphinx-click = "*"
 sphinx-rtd-theme = "*"
 myst-parser = "*"
 requests-cache = "^1.2.0"
+myst-nb = {version=">=1.0.0", python=">=3.9"}
+sphinx-design = "^0.5.0"
+rich = "^13.7.1"
 
 [tool.poetry.group.tests.dependencies]
 pytest = "^7.4.0"
@@ -149,8 +153,9 @@ numpy = [
 ]
 
 [tool.poetry.extras]
+black = ["black"]
 shacl = ["pyshacl"]
-tests = ["pyshacl"]
+tests = ["black", "pyshacl"]
 
 [build-system]
 requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning"]
