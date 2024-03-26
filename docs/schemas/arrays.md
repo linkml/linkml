@@ -482,7 +482,7 @@ render_comparison(sch, 'ComplexAnyShapeArray')
 
 ### Support
 
-At releast, only pydanticgen supports arrays, but arrays will be implemented gradually for the rest of the generators.
+At release, only pydanticgen supports arrays, but arrays will be implemented gradually for the rest of the generators.
 
 | generator                 | representation | anyshape | bounded | parameterized | complex |
 |---------------------------|----------------|----------|-----------|---------|-------|
