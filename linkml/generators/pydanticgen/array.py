@@ -379,6 +379,8 @@ class ListOfListsArray(ArrayRangeGenerator):
 
         A mixture of ``List`` , :class:`.conlist` , and :class:`.AnyShapeArray` .
         """
+        # first process any unlabeled dimensions which must be the innermost level of the annotation,
+        # then wrap that with labeled dimensions
         if array.exact_number_dimensions or (
             array.minimum_number_dimensions
             and array.maximum_number_dimensions
