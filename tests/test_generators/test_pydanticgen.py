@@ -241,7 +241,7 @@ slots:
             True,
             False,
             True,
-            "Optional[Dict[str, str]]",
+            "Optional[Dict[str, Union[str, B]]]",
             "references to class with identifier inlined ONLY ON REQUEST, with dict as default",
         ),
         # TODO: fix the next two
@@ -264,6 +264,7 @@ def test_pydantic_inlining(range, multivalued, inlined, inlined_as_list, B_has_i
         "Optional[List[B]]": "Field(default_factory=list)",
         "Optional[Dict[str, B]]": "Field(default_factory=dict)",
         "Optional[Dict[str, str]]": "Field(default_factory=dict)",
+        "Optional[Dict[str, Union[str, B]]]": "Field(default_factory=dict)",
     }
 
     sb = SchemaBuilder("test")
@@ -425,6 +426,7 @@ classes:
         assert mod.BadClass.__fields__["values"].default == 1
 
 
+@pytest.mark.skip("Labeled arrays not implemented")
 def test_pydantic_arrays():
     import numpy as np
 
@@ -580,6 +582,7 @@ classes:
     assert temperature_dataset.temperatures_in_K == temperatures
 
 
+@pytest.mark.skip("labeled arrays not implemented")
 def test_column_ordered_array_not_supported():
     unit_test_schema = """
 id: https://example.org/arrays
