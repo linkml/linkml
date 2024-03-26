@@ -21,6 +21,7 @@ jobs:
       uses: snok/install-poetry@v1
     - name: Update lockfile
       id: lockfile-update
+      shell: bash
       run: |
         UPDATE_MESSAGE=$(poetry update | grep -i 'updating' | grep -v 'Updating dependencies' | sed 's/Updating//g')
         {
