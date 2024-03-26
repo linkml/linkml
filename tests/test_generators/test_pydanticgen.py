@@ -241,7 +241,7 @@ slots:
             True,
             False,
             True,
-            "Optional[Dict[str, str]]",
+            "Optional[Dict[str, Union[str, B]]]",
             "references to class with identifier inlined ONLY ON REQUEST, with dict as default",
         ),
         # TODO: fix the next two
@@ -264,6 +264,7 @@ def test_pydantic_inlining(range, multivalued, inlined, inlined_as_list, B_has_i
         "Optional[List[B]]": "Field(default_factory=list)",
         "Optional[Dict[str, B]]": "Field(default_factory=dict)",
         "Optional[Dict[str, str]]": "Field(default_factory=dict)",
+        "Optional[Dict[str, Union[str, B]]]": "Field(default_factory=dict)",
     }
 
     sb = SchemaBuilder("test")

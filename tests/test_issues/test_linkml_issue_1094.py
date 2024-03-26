@@ -62,7 +62,13 @@ def test_pydanticgen_inline_dict():
         dict_field = Person.model_fields["has_bikes"]
         list_field = Person.model_fields["has_bike_list"]
 
-    assert dict_field.annotation == Dict[str, Union[str, Bike]]
+    if VERSION.startswith("1"):
+        # pydantic 1 uses ForwardRef rather than replacing the forwardref
+        assert eval(dict_field.annotation.__forward_code__) == Dict[str, Union[str, Bike]]
+        assert eval(list_field.annotation.__forward_code__) == List[Bike]
+    else:
+        assert dict_field.annotation == Dict[str, Union[str, Bike]]
+        assert list_field.annotation == List[Bike]
+
     assert dict_field.default_factory is None
-    assert list_field.annotation == List[Bike]
     assert list_field.default_factory is None
