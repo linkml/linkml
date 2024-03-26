@@ -259,7 +259,7 @@ The combinations of the different {class}`.ArrayExpression` properties imply fou
 - [Any Shape](AnyShapeArrays) - Arrays without limits to their shape
 - [Bounded Shape](BoundedShape) - Arrays with constraints on the number of dimensions without further parameterization
 - [Parameterized Shape](ParameterizedShape) - Arrays with parameterized dimensions
-- [Complex Shape](ComplexShape) - Arrays with both numeric constraints and parameterized dimensions
+- [Complex Shape](ComplexShape) - Arrays with both constraints on the number of dimensions and parameterized dimensions
 
 (AnyShapeArrays)=
 #### Any
