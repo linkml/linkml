@@ -116,7 +116,7 @@ class DataCheck(BaseModel):
     data_name: str
     framework: str
     expected_behavior: ValidationBehavior
-    description: str = None
+    description: Optional[str] = None
     notes: Optional[str] = None
 
 
