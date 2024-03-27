@@ -41,7 +41,7 @@ DEFAULT_ = CurieNamespace('', 'https://microbiomedata/schema/')
 
 
 
-@dataclass
+@dataclass(repr=False)
 class SampleClass(ParentClass):
     _inherited_slots: ClassVar[List[str]] = []
 
