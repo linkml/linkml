@@ -11,6 +11,7 @@ from tests.test_compliance.helper import (
 from tests.test_compliance.test_compliance import (
     CLASS_C,
     CLASS_CONTAINER,
+    CLASS_D,
     CORE_FRAMEWORKS,
     SLOT_ID,
     SLOT_S1,
@@ -219,3 +220,189 @@ def test_unique_keys(framework, description, objects, is_valid, is_valid_if_null
         expected_behavior=expected_behavior,
         description=description,
     )
+
+
+D_INST_1 = {SLOT_ID: "ex:d1", SLOT_S3: "t"}
+D_INST_2 = {SLOT_ID: "ex:d2", SLOT_S3: "t"}
+
+
+@pytest.mark.parametrize(
+    "schema_name,d_has_id,s1def,s2def,ddl,valid_objs,invalid_objs",
+    [
+        (
+            "s1_ref",
+            True,
+            {"range": CLASS_D},
+            {"range": "integer"},
+            "UNIQUE (s1, s2)",
+            [
+                ("ex:d1", 5),
+                ("ex:d1", 4),
+            ],
+            [
+                ("ex:d1", 5),
+                ("ex:d1", 5),
+            ],
+        ),
+        (
+            "s1_inlined",
+            True,
+            {"range": CLASS_D, "inlined": True},
+            {"range": "integer"},
+            "UNIQUE (s1_id, s2)",
+            [
+                (D_INST_1, 5),
+                (D_INST_2, 5),
+            ],
+            [
+                (D_INST_1, 5),
+                (D_INST_1, 5),
+            ],
+        ),
+        (
+            "s1_multivalued",
+            True,
+            {"range": "integer", "multivalued": True},
+            {"range": "integer"},
+            "",
+            [
+                ([1, 2], 5),
+                ([1, 3], 5),
+            ],
+            [
+                ([1, 2], 5),
+                ([1, 2], 5),
+            ],
+        ),
+        (
+            "s1_multivalued_ref",
+            True,
+            {"range": CLASS_D, "multivalued": True},
+            {"range": "integer"},
+            "",
+            [
+                (["ex:d1", "ex:d2"], 5),
+                (["ex:d1"], 5),
+            ],
+            [
+                (["ex:d1"], 5),
+                (["ex:d1"], 5),
+            ],
+        ),
+        (
+            "s1_multivalued_inlined",
+            False,
+            {"range": CLASS_D, "multivalued": True, "inlined_as_list": True},
+            {"range": "integer"},
+            "",
+            [
+                ([D_INST_1, D_INST_2], 5),
+                ([D_INST_1], 5),
+            ],
+            [
+                ([D_INST_1], 5),
+                ([D_INST_1], 5),
+            ],
+        ),
+    ],
+)
+@pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
+def test_inlined_unique_keys(framework, schema_name, d_has_id, s1def, s2def, ddl, valid_objs, invalid_objs):
+    """
+    Tests unique keys where some slots may be inlined
+
+    """
+    consider_nulls_inequal = True
+    is_inlined = s1def.get("inlined_as_list", False) or s1def.get("inlined", False)
+    d_is_top_level = s1def["range"] == CLASS_D and not is_inlined
+    classes = {
+        CLASS_CONTAINER: {
+            "attributes": {
+                "entities": {
+                    "range": CLASS_C,
+                    "multivalued": True,
+                    "inlined": True,
+                    "inlined_as_list": True,
+                },
+            },
+        },
+        CLASS_C: {
+            "attributes": {
+                SLOT_S1: s1def,
+                SLOT_S2: s2def,
+            },
+            "unique_keys": {
+                "main": {
+                    "unique_key_slots": [SLOT_S1, SLOT_S2],
+                    "consider_nulls_inequal": consider_nulls_inequal,
+                },
+            },
+            "_mappings": {
+                SQL_DDL_SQLITE: ddl,
+                # OWL: (
+                #    "@prefix ex: <http://example.org/> ."
+                #    "@prefix owl: <http://www.w3.org/2002/07/owl#> ."
+                #    "ex:C owl:hasKey (ex:s1 ex:s2) , (ex:s1 ex:s3) ."
+                # ),
+            },
+        },
+        CLASS_D: {
+            "attributes": {
+                SLOT_ID: {
+                    "identifier": d_has_id,
+                },
+                SLOT_S3: {},
+            },
+        },
+    }
+    if d_is_top_level:
+        classes[CLASS_CONTAINER]["attributes"]["d_entities"] = {
+            "range": CLASS_D,
+            "multivalued": True,
+            "inlined": True,
+            "inlined_as_list": True,
+        }
+    schema = validated_schema(
+        test_inlined_unique_keys,
+        schema_name,
+        framework,
+        classes=classes,
+        core_elements=["unique_keys", "inlined"],
+    )
+    for is_valid, objects in [(True, valid_objs), (False, invalid_objs)]:
+        if objects is None:
+            continue
+        obj = {"entities": [{SLOT_S1: s1, SLOT_S2: s2} for s1, s2 in objects]}
+        if d_is_top_level:
+            obj["d_entities"] = [D_INST_1, D_INST_2]
+        expected_behavior = ValidationBehavior.IMPLEMENTS
+        if not is_valid:
+            if framework == SQL_DDL_SQLITE:
+                # SQLite and most RDBMSs treats nulls as inequal
+                if not consider_nulls_inequal:
+                    expected_behavior = ValidationBehavior.IMPLEMENTS
+                else:
+                    expected_behavior = ValidationBehavior.INCOMPLETE
+            elif framework == OWL:
+                # TODO: by its open world nature, OWL will not consider clashes to be a violation
+                # unless Unique Name Assumptions are explicitly asserted. This is currently outside
+                # of the scope of the limited OWL support in this test suite.
+                expected_behavior = ValidationBehavior.INCOMPLETE
+            else:
+                # only supported in SQL backends
+                expected_behavior = ValidationBehavior.INCOMPLETE
+        if framework == SQL_DDL_SQLITE and schema_name == "s1_multivalued_ref":
+            # TODO: bug in SQLA for this case
+            # AttributeError: 'DId' object has no attribute '_sa_instance_state'
+            # https://github.com/linkml/linkml/issues/1160
+            expected_behavior = ValidationBehavior.INCOMPLETE
+        check_data(
+            schema,
+            f"V{is_valid}",
+            framework,
+            obj,
+            is_valid,
+            target_class=CLASS_CONTAINER,
+            expected_behavior=expected_behavior,
+            description=f"Expected validity={is_valid}",
+        )
