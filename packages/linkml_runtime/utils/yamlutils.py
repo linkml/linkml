@@ -286,7 +286,7 @@ class YAMLRoot(JsonObj):
                 continue
             res[key] = val
         return self.__class__.__name__ + '(' + pformat(res, indent=2,
-                                                       compact=True) + ')'
+                                                       compact=True, sort_dicts=False) + ')'
 
     def __str__(self):
         """Dump everything into a dict, recursively, stringifying it all"""

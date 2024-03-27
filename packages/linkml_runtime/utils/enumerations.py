@@ -102,4 +102,4 @@ class EnumDefinitionImpl(YAMLRoot, metaclass=EnumDefinitionMeta):
 
     def __repr__(self) -> str:
         rlist = [(f.name, getattr(self._code, f.name)) for f in fields(self._code)]
-        return '(' + ', '.join([f"{f[0]}={repr(f[1])}" for f in rlist if f[1]]) + ')'
+        return self.__class__.__name__ + '(' + ', '.join([f"{f[0]}={repr(f[1])}" for f in rlist if f[1]]) + ')'
