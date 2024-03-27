@@ -1,4 +1,3 @@
-
 from linkml.generators import SQLTableGenerator
 
 schema_yaml = """
