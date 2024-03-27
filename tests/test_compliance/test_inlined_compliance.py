@@ -221,10 +221,6 @@ def test_inlined(framework, inlined, inlined_as_list, multivalued, foreign_key, 
             }
         }
         is_valid = entailed_inlined and not multivalued
-        if framework == JSON_SCHEMA:
-            if inlined and not inlined_as_list and multivalued and foreign_key:
-                # TODO: json-schema generation appears incorrect here
-                implementation_status = ValidationBehavior.INCOMPLETE
     elif data == "flat_list":
         inst = {
             SLOT_S1: [id_val, id_val2],
@@ -232,6 +228,8 @@ def test_inlined(framework, inlined, inlined_as_list, multivalued, foreign_key, 
         is_valid = not entailed_inlined and multivalued
         if framework == SQL_DDL_SQLITE and multivalued and foreign_key:
             # TODO: bug in SQLA for this case
+            # AttributeError: 'DId' object has no attribute '_sa_instance_state'
+            # https://github.com/linkml/linkml/issues/1160
             implementation_status = ValidationBehavior.INCOMPLETE
     elif data == "inlined_list":
         inst = {
