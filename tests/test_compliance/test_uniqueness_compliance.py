@@ -149,45 +149,43 @@ def test_unique_keys(framework, description, objects, is_valid, is_valid_if_null
     Tests unique keys
 
     """
-    classes = (
-        {
-            CLASS_CONTAINER: {
-                "attributes": {
-                    "entities": {
-                        "range": CLASS_C,
-                        "multivalued": True,
-                        "inlined": True,
-                        "inlined_as_list": True,
-                    },
-                },
-            },
-            CLASS_C: {
-                "attributes": {
-                    SLOT_S1: {},
-                    SLOT_S2: {},
-                    SLOT_S3: {},
-                },
-                "unique_keys": {
-                    "main": {
-                        "unique_key_slots": [SLOT_S1, SLOT_S2],
-                        "consider_nulls_inequal": consider_nulls_inequal,
-                    },
-                    "secondary": {
-                        "unique_key_slots": [SLOT_S1, SLOT_S3],
-                        "consider_nulls_inequal": consider_nulls_inequal,
-                    },
-                },
-                "_mappings": {
-                    SQL_DDL_SQLITE: f"UNIQUE ({SLOT_S1}, {SLOT_S2})",
-                    OWL: (
-                        "@prefix ex: <http://example.org/> ."
-                        "@prefix owl: <http://www.w3.org/2002/07/owl#> ."
-                        "ex:C owl:hasKey (ex:s1 ex:s2) , (ex:s1 ex:s3) ."
-                    ),
+    classes = {
+        CLASS_CONTAINER: {
+            "attributes": {
+                "entities": {
+                    "range": CLASS_C,
+                    "multivalued": True,
+                    "inlined": True,
+                    "inlined_as_list": True,
                 },
             },
         },
-    )
+        CLASS_C: {
+            "attributes": {
+                SLOT_S1: {},
+                SLOT_S2: {},
+                SLOT_S3: {},
+            },
+            "unique_keys": {
+                "main": {
+                    "unique_key_slots": [SLOT_S1, SLOT_S2],
+                    "consider_nulls_inequal": consider_nulls_inequal,
+                },
+                "secondary": {
+                    "unique_key_slots": [SLOT_S1, SLOT_S3],
+                    "consider_nulls_inequal": consider_nulls_inequal,
+                },
+            },
+            "_mappings": {
+                SQL_DDL_SQLITE: f"UNIQUE ({SLOT_S1}, {SLOT_S2})",
+                OWL: (
+                    "@prefix ex: <http://example.org/> ."
+                    "@prefix owl: <http://www.w3.org/2002/07/owl#> ."
+                    "ex:C owl:hasKey (ex:s1 ex:s2) , (ex:s1 ex:s3) ."
+                ),
+            },
+        },
+    }
     schema = validated_schema(
         test_unique_keys,
         f"NIE{consider_nulls_inequal}",
