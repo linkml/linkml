@@ -314,7 +314,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
     def gen_references(self) -> str:
         """Generate python type declarations for all identifiers (primary keys)"""
         rval = []
-        for cls in self._sort_classes(self.schema.classes.values()):
+        for cls in self.schemaview.ordered(self.schema.classes, "inheritance"):
             if not cls.imported_from:
                 pkeys = self.primary_keys_for(cls)
                 if pkeys:
@@ -376,7 +376,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
         """Create class definitions for all non-mixin classes in the model
         Note that apply_to classes are transformed to mixins
         """
-        clist = self._sort_classes(self.schema.classes.values())
+        clist = self.schemaview.ordered(self.schema.classes.values(), "inheritance")
         return "\n".join([self.gen_classdef(v) for v in clist if not v.imported_from])
 
     def gen_classdef(self, cls: ClassDefinition) -> str:
@@ -690,28 +690,6 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
             else ""
         )
 
-    # sort classes such that if C is a child of P then C appears after P in the list
-    @staticmethod
-    def _sort_classes(clist: List[ClassDefinition]) -> List[ClassDefinition]:
-        clist = list(clist)
-        slist = []  # sorted
-        while len(clist) > 0:
-            for i in range(len(clist)):
-                candidate = clist[i]
-                can_add = False
-                if candidate.is_a is None:
-                    can_add = True
-                else:
-                    if candidate.is_a in [p.name for p in slist]:
-                        can_add = True
-                if can_add:
-                    slist = slist + [candidate]
-                    del clist[i]
-                    break
-            if not can_add:
-                raise (f"could not find suitable element in {clist} that does not ref {slist}")
-        return slist
-
     def is_key_value_class(self, range_name: DefinitionName) -> bool:
         """
         Return True if range_name references a class with exactly one key and one value
@@ -965,7 +943,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
             return False
         if slot_range in self.schema.enums:
             return True
-        clist = [x.name for x in self._sort_classes(self.schema.classes.values())]
+        clist = [x.name for x in self.schemaview.ordered(self.schema.classes, "inheritance")]
         for cname in clist:
             if cname == owning_class:
                 logging.info(f"TRUE: OCCURS SAME: {cname} == {slot_range} owning: {owning_class}")

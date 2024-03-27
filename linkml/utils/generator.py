@@ -199,7 +199,7 @@ class Generator(metaclass=abc.ABCMeta):
         else:
             logging.info(f"Using SchemaView with im={self.importmap} // base_dir={self.base_dir}")
             self.schemaview = SchemaView(schema, importmap=self.importmap, base_dir=self.base_dir)
-            self.schema = self.schemaview.schema
+            self.schema: SchemaDefinition = self.schemaview.schema
         self._init_namespaces()
 
     def _initialize_using_schemaloader(self, schema: Union[str, TextIO, SchemaDefinition, "Generator"]):
@@ -207,26 +207,14 @@ class Generator(metaclass=abc.ABCMeta):
         # other generators.
         # See https://github.com/linkml/linkml/issues/923 for discussion on how
         # to simplify the overall framework
-        if isinstance(schema, Generator):
-            gen = schema
-            self.schema = gen.schema
-            self.synopsis = gen.synopsis
-            self.loaded = gen.loaded
-            self.namespaces = gen.namespaces
-            self.base_dir = gen.base_dir
-            self.importmap = gen.importmap
-            self.source_file_data = gen.source_file_date
-            self.source_file_size = gen.source_file_size
-            self.schema_location = gen.schema_location
-            self.schema_defaults = gen.schema_defaults
-            self.logger = gen.logger
-        else:
-            if isinstance(schema, SchemaDefinition):
-                # schemaloader based methods require schemas to have been created via SchemaLoader,
-                # which prepopulates some fields (e.g. definition_url). If the schema has not been processed through the
-                # loader, then roundtrip
-                if any(c for c in schema.classes.values() if not c.definition_uri):
-                    schema = yaml_dumper.dumps(schema)
+        if isinstance(schema, SchemaDefinition):
+            # schemaloader based methods require schemas to have been created via SchemaLoader,
+            # which prepopulates some fields (e.g. definition_url). If the schema has not been processed through the
+            # loader, then roundtrip
+            if any(c for c in schema.classes.values() if not c.definition_uri):
+                schema = yaml_dumper.dumps(schema)
+
+        if not isinstance(schema, Generator):
             loader = SchemaLoader(
                 schema,
                 self.base_dir,
@@ -238,17 +226,20 @@ class Generator(metaclass=abc.ABCMeta):
                 source_file_date=self.source_file_date,
                 source_file_size=self.source_file_size,
             )
-            loader.resolve()
-            self.schema = loader.schema
-            self.synopsis = loader.synopsis
-            self.loaded = loader.loaded
-            self.namespaces = loader.namespaces
-            self.base_dir = loader.base_dir
-            self.importmap = loader.importmap
-            self.source_file_data = loader.source_file_date
-            self.source_file_size = loader.source_file_size
-            self.schema_location = loader.schema_location
-            self.schema_defaults = loader.schema_defaults
+            schema = loader.resolve()
+        else:
+            self.logger = schema.logger
+
+        self.schema: SchemaDefinition = schema
+        self.synopsis = schema.synopsis
+        self.loaded = schema.loaded
+        self.namespaces = schema.namespaces
+        self.base_dir = schema.base_dir
+        self.importmap = schema.importmap
+        self.source_file_data = schema.source_file_date
+        self.source_file_size = schema.source_file_size
+        self.schema_location = schema.schema_location
+        self.schema_defaults = schema.schema_defaults
 
     def _init_namespaces(self):
         if self.namespaces is None:
