@@ -42,7 +42,7 @@ DEFAULT_ = TCCM
 
 
 
-@dataclass
+@dataclass(repr=False)
 class IterableResolvedValueSet(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -62,7 +62,7 @@ class IterableResolvedValueSet(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class Directory(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 

@@ -67,7 +67,7 @@ class OntologyClassId(ElementIdentifier):
     pass
 
 
-@dataclass
+@dataclass(repr=False)
 class Biosample(YAMLRoot):
     """
     A material sample. May be environmental (encompassing many organisms) or isolate or tissue
@@ -102,7 +102,7 @@ class Biosample(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class BiosampleProcessing(YAMLRoot):
     """
     A process that takes one or more biosamples as inputs and generates one or more as output
@@ -129,7 +129,7 @@ class BiosampleProcessing(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class Annotation(YAMLRoot):
     """
     An annotation on a sample. This is essentially a key value pair
@@ -160,7 +160,7 @@ class Annotation(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class Characteristic(YAMLRoot):
     """
     A characteristic of a biosample. Examples: depth, habitat, material, ... For NMDC, characteristics SHOULD be
@@ -209,7 +209,7 @@ class NormalizedValue(YAMLRoot):
     class_model_uri: ClassVar[URIRef] = NMDC.NormalizedValue
 
 
-@dataclass
+@dataclass(repr=False)
 class QuantityValue(NormalizedValue):
     """
     A simple quantity, e.g. 2cm
@@ -234,7 +234,7 @@ class QuantityValue(NormalizedValue):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class ControlledTermValue(NormalizedValue):
     """
     A controlled term or class from an ontology
@@ -255,7 +255,7 @@ class ControlledTermValue(NormalizedValue):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class GeolocationValue(NormalizedValue):
     """
     A normalized value for a location on the earth's surface
@@ -289,7 +289,7 @@ class Unit(YAMLRoot):
     class_model_uri: ClassVar[URIRef] = NMDC.Unit
 
 
-@dataclass
+@dataclass(repr=False)
 class OntologyClass(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 
