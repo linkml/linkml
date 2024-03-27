@@ -267,6 +267,16 @@ class MixinOwner(NamedThing):
         if not isinstance(self.id, MixinOwnerId):
             self.id = MixinOwnerId(self.id)
 
+        if self._is_empty(self.name):
+            self.MissingRequiredField("name")
+        if not isinstance(self.name, str):
+            self.name = str(self.name)
+
+        if self._is_empty(self.object):
+            self.MissingRequiredField("object")
+        if not isinstance(self.object, NamedThingId):
+            self.object = NamedThingId(self.object)
+
         if self._is_empty(self.subject):
             self.MissingRequiredField("subject")
         if not isinstance(self.subject, SubjectRange1Id):
@@ -298,6 +308,21 @@ class SubjectRange1(NamedThing):
         if not isinstance(self.id, SubjectRange1Id):
             self.id = SubjectRange1Id(self.id)
 
+        if self._is_empty(self.name):
+            self.MissingRequiredField("name")
+        if not isinstance(self.name, str):
+            self.name = str(self.name)
+
+        if self._is_empty(self.subject):
+            self.MissingRequiredField("subject")
+        if not isinstance(self.subject, NamedThingId):
+            self.subject = NamedThingId(self.subject)
+
+        if self._is_empty(self.object):
+            self.MissingRequiredField("object")
+        if not isinstance(self.object, NamedThingId):
+            self.object = NamedThingId(self.object)
+
         super().__post_init__(**kwargs)
 
 
@@ -320,6 +345,21 @@ class ObjectRange1(NamedThing):
             self.MissingRequiredField("id")
         if not isinstance(self.id, ObjectRange1Id):
             self.id = ObjectRange1Id(self.id)
+
+        if self._is_empty(self.name):
+            self.MissingRequiredField("name")
+        if not isinstance(self.name, str):
+            self.name = str(self.name)
+
+        if self._is_empty(self.subject):
+            self.MissingRequiredField("subject")
+        if not isinstance(self.subject, NamedThingId):
+            self.subject = NamedThingId(self.subject)
+
+        if self._is_empty(self.object):
+            self.MissingRequiredField("object")
+        if not isinstance(self.object, NamedThingId):
+            self.object = NamedThingId(self.object)
 
         super().__post_init__(**kwargs)
 

@@ -554,9 +554,6 @@ class FamilialRelationship(Relationship):
         if self.cordialness is not None and not isinstance(self.cordialness, str):
             self.cordialness = str(self.cordialness)
 
-        if self.cordialness is not None and not isinstance(self.cordialness, CordialnessEnum):
-            self.cordialness = CordialnessEnum(self.cordialness)
-
         super().__post_init__(**kwargs)
 
 
