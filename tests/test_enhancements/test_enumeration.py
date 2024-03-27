@@ -151,11 +151,11 @@ class EnumerationTestCase(TestEnvironmentTestCase):
         module = compile_python(env.expected_path(python_name))
         c1 = module.PositionalRecord("my location", "a")
         self.assertEqual(
-            "PositionalRecord(id='my location', position=(text='a', description='top'))",
-            str(c1),
+            module.PositionalRecord(id='my location', position=module.OpenEnum('a')),
+            c1,
         )
         self.assertEqual("a", str(c1.position))
-        self.assertEqual("(text='a', description='top')", repr(c1.position))
+        self.assertEqual("OpenEnum(text='a', description='top')", repr(c1.position))
         try:
             module.PositionalRecord("your location", "z")
         except ValueError as e:
@@ -163,10 +163,10 @@ class EnumerationTestCase(TestEnvironmentTestCase):
         x = module.PositionalRecord("117493", "c")
         self.assertEqual("c", str(x.position))
         self.assertEqual(
-            "PositionalRecord(id='117493', position=(text='c', description='bottom'))",
+            "PositionalRecord({'id': '117493', 'position': OpenEnum(text='c', description='bottom')})",
             repr(x),
         )
-        self.assertEqual("(text='c', description='bottom')", repr(x.position))
+        self.assertEqual("OpenEnum(text='c', description='bottom')", repr(x.position))
 
     def test_notebook_model_2(self):
         file = "notebook_model_2"
