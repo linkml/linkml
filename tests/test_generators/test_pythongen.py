@@ -35,15 +35,21 @@ def test_pythongen(kitchen_sink_path):
     # however, inline in a non-list context does not
     p2dict = {"id": "P:2", "has_birth_event": {"started_at_time": "1981-01-01"}}
     json_loader.loads(p2dict, kitchen_module.Person)
-    assert str(p) == "Person({'has_employment_history': [{'employed_at': 'ROR:1'}], 'id': 'P:1'})"
+    assert str(p) == "Person({'id': 'P:1', 'has_employment_history': [EmploymentEvent({'employed_at': 'ROR:1'})]})"
 
     f = kitchen_module.FamilialRelationship(related_to="me", type="SIBLING_OF", cordialness="heartfelt")
-    assert str(f) == "FamilialRelationship({'cordialness': 'heartfelt', 'related_to': 'me', 'type': 'SIBLING_OF'})"
+    assert str(f) == """FamilialRelationship({
+  'related_to': 'me',
+  'type': 'SIBLING_OF',
+  'cordialness': CordialnessEnum(text='heartfelt', description='warm and hearty friendliness')
+})"""
 
     diagnosis = kitchen_module.DiagnosisConcept(id="CODE:D0001", name="headache")
     event = kitchen_module.MedicalEvent(in_location="GEO:1234", diagnosis=diagnosis)
-    assert str(event) == """MedicalEvent({ 'diagnosis': {'id': 'CODE:D0001', 'name': 'headache'},
-  'in_location': 'GEO:1234'})"""
+    assert str(event) == """MedicalEvent({
+  'in_location': 'GEO:1234',
+  'diagnosis': DiagnosisConcept({'id': 'CODE:D0001', 'name': 'headache'})
+})"""
 
 
 def test_multiline_stuff(input_path):
