@@ -13,7 +13,9 @@
         [ sh:namespace <https://w3id.org/linkml/examples/personinfo/> ;
             sh:prefix "ex" ],
         [ sh:namespace linkml: ;
-            sh:prefix "linkml" ] ;
+            sh:prefix "linkml" ],
+        [ sh:namespace <https://w3id.org/linkml/examples/personinfo/> ;
+            sh:prefix "ex" ] ;
     linkml:classes <https://w3id.org/linkml/examples/personinfo/GeoAge>,
         <https://w3id.org/linkml/examples/personinfo/GeoObject>,
         <https://w3id.org/linkml/examples/personinfo/Organization>,

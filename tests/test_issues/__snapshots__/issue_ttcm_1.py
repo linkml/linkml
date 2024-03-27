@@ -461,7 +461,7 @@ class VERSIONTAG(ValueSet):
 
 
 
-@dataclass
+@dataclass(repr=False)
 class ResourceDescription(YAMLRoot):
     """
     ResourceDescription represents the shared characteristics common to both abstract and resource version
@@ -524,7 +524,7 @@ class ResourceDescription(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class SourceAndNotation(YAMLRoot):
     """
     Format and notation that some or all the releases (versions) of this resource are published in
@@ -557,7 +557,7 @@ class SourceAndNotation(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class AbstractResourceDescription(ResourceDescription):
     """
     The description of the characteristics of a resource that are independent of the resource content.
@@ -585,7 +585,7 @@ class AbstractResourceDescription(ResourceDescription):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class ResourceVersionDescription(ResourceDescription):
     """
     Information about the source, format, release date, version identifier, etc. of a specific version of an abstract
@@ -629,7 +629,7 @@ class ResourceVersionDescription(ResourceDescription):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class NameAndMeaningReference(YAMLRoot):
     """
     A NameAndMeaningReference consists of a local identifier that references a unique meaning within the context of a
@@ -662,7 +662,7 @@ class NameAndMeaningReference(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class AssociationReference(NameAndMeaningReference):
     """
     A name or identifier that uniquely names an association instance in a code system.
@@ -676,7 +676,7 @@ class AssociationReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-@dataclass
+@dataclass(repr=False)
 class BindingQualifierReference(NameAndMeaningReference):
     """
     A reference to an entity that describes the role that a given value set binding plays for a concept domain. T
@@ -692,7 +692,7 @@ class BindingQualifierReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-@dataclass
+@dataclass(repr=False)
 class CaseSignificanceReference(NameAndMeaningReference):
     """
     A reference to an entity that describes significance of the case in term or designation.
@@ -706,7 +706,7 @@ class CaseSignificanceReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-@dataclass
+@dataclass(repr=False)
 class CodeSystemCategoryReference(NameAndMeaningReference):
     """
     A reference to information about a paradigm model used to create an ontology (a.k.a. knowledge representation
@@ -721,7 +721,7 @@ class CodeSystemCategoryReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-@dataclass
+@dataclass(repr=False)
 class CodeSystemReference(NameAndMeaningReference):
     """
     A reference to a code system or ontology.
@@ -735,7 +735,7 @@ class CodeSystemReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-@dataclass
+@dataclass(repr=False)
 class CodeSystemVersionReference(NameAndMeaningReference):
     """
     A reference to a specific version of code system and, if known, the code system which it is a version of.
@@ -757,7 +757,7 @@ class CodeSystemVersionReference(NameAndMeaningReference):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class ConceptDomainReference(NameAndMeaningReference):
     """
     A reference to a concept domain.
@@ -771,7 +771,7 @@ class ConceptDomainReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-@dataclass
+@dataclass(repr=False)
 class ContextReference(NameAndMeaningReference):
     """
     A reference to a realm or context.
@@ -785,7 +785,7 @@ class ContextReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-@dataclass
+@dataclass(repr=False)
 class DesignationFidelityReference(NameAndMeaningReference):
     """
     A reference to a description about designation faithfulness or accuracy.
@@ -799,7 +799,7 @@ class DesignationFidelityReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-@dataclass
+@dataclass(repr=False)
 class DesignationTypeReference(NameAndMeaningReference):
     """
     A reference to a designation type or form such as “short name,” “abbreviation,” “eponym.”
@@ -813,7 +813,7 @@ class DesignationTypeReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-@dataclass
+@dataclass(repr=False)
 class FormalityLevelReference(NameAndMeaningReference):
     """
     A reference to a description of the relative formality an ontology.
@@ -827,7 +827,7 @@ class FormalityLevelReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-@dataclass
+@dataclass(repr=False)
 class FormatReference(NameAndMeaningReference):
     """
     A reference to a particular way that information is encoded for storage or transmission.
@@ -841,7 +841,7 @@ class FormatReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-@dataclass
+@dataclass(repr=False)
 class LanguageReference(NameAndMeaningReference):
     """
     A reference to a spoken or written human language.
@@ -855,7 +855,7 @@ class LanguageReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-@dataclass
+@dataclass(repr=False)
 class MapCorrelationReference(NameAndMeaningReference):
     """
     A reference to a way that the source and target in a map can be related or assessed.
@@ -869,7 +869,7 @@ class MapCorrelationReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-@dataclass
+@dataclass(repr=False)
 class MapReference(NameAndMeaningReference):
     """
     A reference to an abstract map.
@@ -883,7 +883,7 @@ class MapReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-@dataclass
+@dataclass(repr=False)
 class MapVersionReference(NameAndMeaningReference):
     """
     A reference to a map version and the corresponding map, if known.
@@ -905,7 +905,7 @@ class MapVersionReference(NameAndMeaningReference):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class MatchAlgorithmReference(NameAndMeaningReference):
     """
     A reference to an algorithm used for selecting and filtering data.
@@ -919,7 +919,7 @@ class MatchAlgorithmReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-@dataclass
+@dataclass(repr=False)
 class ModelAttributeReference(NameAndMeaningReference):
     """
     A reference to an attribute defined in the CTS2 specification.
@@ -933,7 +933,7 @@ class ModelAttributeReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-@dataclass
+@dataclass(repr=False)
 class NamespaceReference(NameAndMeaningReference):
     """
     A reference to a conceptual space that groups identifiers to avoid conflict with items that have the same name but
@@ -948,7 +948,7 @@ class NamespaceReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-@dataclass
+@dataclass(repr=False)
 class OntologyDomainReference(NameAndMeaningReference):
     """
     A reference to a subject domain for an ontology.
@@ -962,7 +962,7 @@ class OntologyDomainReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-@dataclass
+@dataclass(repr=False)
 class OntologyEngineeringMethodologyReference(NameAndMeaningReference):
     """
     A reference to a method model that can be used to create an ontology.
@@ -976,7 +976,7 @@ class OntologyEngineeringMethodologyReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-@dataclass
+@dataclass(repr=False)
 class OntologyEngineeringToolReference(NameAndMeaningReference):
     """
     A reference to a tool that can be used to create an ontology.
@@ -990,7 +990,7 @@ class OntologyEngineeringToolReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-@dataclass
+@dataclass(repr=False)
 class OntologyLanguageReference(NameAndMeaningReference):
     """
     A reference to a language in which an ontology may be implemented.
@@ -1004,7 +1004,7 @@ class OntologyLanguageReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-@dataclass
+@dataclass(repr=False)
 class OntologySyntaxReference(NameAndMeaningReference):
     """
     A reference to a syntax in which an ontology may be represented.
@@ -1018,7 +1018,7 @@ class OntologySyntaxReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-@dataclass
+@dataclass(repr=False)
 class OntologyTaskReference(NameAndMeaningReference):
     """
     A reference to a purpose for which an ontology can be designed.
@@ -1032,7 +1032,7 @@ class OntologyTaskReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-@dataclass
+@dataclass(repr=False)
 class OntologyTypeReference(NameAndMeaningReference):
     """
     A reference to the nature of the content of an ontology.
@@ -1046,7 +1046,7 @@ class OntologyTypeReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-@dataclass
+@dataclass(repr=False)
 class PredicateReference(YAMLRoot):
     """
     An EntityReference that serves the role of predicate. Note that this varies slightly from the base class of
@@ -1085,7 +1085,7 @@ class PredicateReference(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class ReasoningAlgorithmReference(NameAndMeaningReference):
     """
     A reference to a formal algorithm for making inferences about an ontology.
@@ -1099,7 +1099,7 @@ class ReasoningAlgorithmReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-@dataclass
+@dataclass(repr=False)
 class RoleReference(NameAndMeaningReference):
     """
     A reference to a role that an individual, organization, or bibliographic reference can play in the construction of
@@ -1114,7 +1114,7 @@ class RoleReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-@dataclass
+@dataclass(repr=False)
 class SourceAndRoleReference(NameAndMeaningReference):
     """
     A reference to a source that also includes the role that the source played and/or fixes the particular chapter,
@@ -1137,7 +1137,7 @@ class SourceAndRoleReference(NameAndMeaningReference):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class SourceReference(NameAndMeaningReference):
     """
     A reference to an individual, organization of bibliographic reference.
@@ -1151,7 +1151,7 @@ class SourceReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-@dataclass
+@dataclass(repr=False)
 class StatusReference(NameAndMeaningReference):
     """
     A reference to a state in an external ontology authoring workflow.
@@ -1165,7 +1165,7 @@ class StatusReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-@dataclass
+@dataclass(repr=False)
 class ValueSetDefinitionReference(NameAndMeaningReference):
     """
     A reference to a set of rules for constructing a value set along with the corresponding value set if known.
@@ -1179,7 +1179,7 @@ class ValueSetDefinitionReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-@dataclass
+@dataclass(repr=False)
 class ValueSetReference(NameAndMeaningReference):
     """
     A reference to a named set of entity references.
@@ -1193,7 +1193,7 @@ class ValueSetReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-@dataclass
+@dataclass(repr=False)
 class VersionTagReference(NameAndMeaningReference):
     """
     A reference to a tag that can be assigned to versionable resources within the context of a service implementation.

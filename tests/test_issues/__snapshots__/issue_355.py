@@ -44,7 +44,7 @@ class ContaineeId(URIorCURIE):
     pass
 
 
-@dataclass
+@dataclass(repr=False)
 class Container(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -61,7 +61,7 @@ class Container(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class Containee(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 

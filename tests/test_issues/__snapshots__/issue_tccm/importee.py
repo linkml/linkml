@@ -50,7 +50,7 @@ class BaseId(extended_str):
     pass
 
 
-@dataclass
+@dataclass(repr=False)
 class Base(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 

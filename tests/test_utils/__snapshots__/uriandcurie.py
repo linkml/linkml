@@ -99,7 +99,7 @@ class C1Id(ElementIdentifier):
     pass
 
 
-@dataclass
+@dataclass(repr=False)
 class C1(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 

@@ -68,7 +68,7 @@ class EId(D1Id):
     pass
 
 
-@dataclass
+@dataclass(repr=False)
 class A(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -88,7 +88,7 @@ class A(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class B(A):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -112,7 +112,7 @@ class B(A):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class C(B):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -136,7 +136,7 @@ class C(B):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class D1(C):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -160,7 +160,7 @@ class D1(C):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class D2(C):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -180,7 +180,7 @@ class D2(C):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class E(D1):
     _inherited_slots: ClassVar[List[str]] = []
 

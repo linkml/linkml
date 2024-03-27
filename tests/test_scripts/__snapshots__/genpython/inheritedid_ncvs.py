@@ -85,7 +85,7 @@ class OntologyClassId(NamedThingId):
     pass
 
 
-@dataclass
+@dataclass(repr=False)
 class NamedThing(YAMLRoot):
     """
     a databased entity or concept/class
@@ -105,7 +105,7 @@ class NamedThing(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class Attribute(YAMLRoot):
     """
     A property or characteristic of an entity
@@ -125,7 +125,7 @@ class Attribute(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class BiologicalSex(Attribute):
     id: Union[str, BiologicalSexId] = None
 
@@ -138,7 +138,7 @@ class BiologicalSex(Attribute):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class OntologyClass(NamedThing):
     """
     a concept or class in an ontology, vocabulary or thesaurus

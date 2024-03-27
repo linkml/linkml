@@ -43,7 +43,7 @@ DEFAULT_ = EX
 
 
 
-@dataclass
+@dataclass(repr=False)
 class Thing(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -65,7 +65,7 @@ class Thing(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class Person(Thing):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -97,7 +97,7 @@ class Person(Thing):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class Organization(Thing):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -120,7 +120,7 @@ class Organization(Thing):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class GeoObject(Thing):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -142,7 +142,7 @@ class GeoObject(Thing):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class GeoAge(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 
