@@ -221,8 +221,8 @@ def add_simple_data_type(func: Callable, r: ElementName) -> None:
     help="Use '--closed' to generate closed SHACL shapes. Use '--non-closed' to generate open SHACL shapes.",
 )
 @click.option(
-    "--suffix",
     "-s",
+    "--suffix",
     default="",
     show_default=True,
     help="Use --suffix to append given string to SHACL class name (e. g. --suffix Shape: Person becomes PersonShape).",
