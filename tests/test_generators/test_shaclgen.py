@@ -9,12 +9,12 @@ from linkml.generators.shaclgen import ShaclGenerator
 
 EXPECTED = [
     (
-        rdflib.term.URIRef("https://w3id.org/linkml/tests/kitchen_sink/PersonShape"),
+        rdflib.term.URIRef("https://w3id.org/linkml/tests/kitchen_sink/Person"),
         rdflib.term.URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
         rdflib.term.URIRef("http://www.w3.org/ns/shacl#NodeShape"),
     ),
     (
-        rdflib.term.URIRef("https://w3id.org/linkml/tests/kitchen_sink/PersonShape"),
+        rdflib.term.URIRef("https://w3id.org/linkml/tests/kitchen_sink/Person"),
         rdflib.term.URIRef("http://www.w3.org/ns/shacl#closed"),
         rdflib.term.Literal("true", datatype=rdflib.term.URIRef("http://www.w3.org/2001/XMLSchema#boolean")),
     ),
@@ -22,13 +22,101 @@ EXPECTED = [
 
 EXPECTED_closed = [
     (
-        rdflib.term.URIRef("https://w3id.org/linkml/tests/kitchen_sink/PersonShape"),
+        rdflib.term.URIRef("https://w3id.org/linkml/tests/kitchen_sink/Person"),
         rdflib.term.URIRef("http://www.w3.org/ns/shacl#closed"),
         rdflib.term.Literal("false", datatype=rdflib.term.URIRef("http://www.w3.org/2001/XMLSchema#boolean")),
     ),
 ]
 
+EXPECTED_suffix = [
+    (
+        rdflib.term.URIRef("https://w3id.org/linkml/tests/kitchen_sink/PersonShape"),
+        rdflib.term.URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+        rdflib.term.URIRef("http://www.w3.org/ns/shacl#NodeShape"),
+    ),
+]
+
 EXPECTED_any_of = [
+    (
+        rdflib.term.URIRef("https://w3id.org/linkml/tests/kitchen_sink/AnyOfSimpleType"),
+        [
+            (
+                rdflib.term.URIRef("http://www.w3.org/ns/shacl#datatype"),
+                rdflib.term.URIRef("http://www.w3.org/2001/XMLSchema#integer"),
+            ),
+            (
+                rdflib.term.URIRef("http://www.w3.org/ns/shacl#datatype"),
+                rdflib.term.URIRef("http://www.w3.org/2001/XMLSchema#string"),
+            ),
+        ],
+    ),
+    (
+        rdflib.term.URIRef("https://w3id.org/linkml/tests/kitchen_sink/AnyOfClasses"),
+        [
+            (
+                rdflib.term.URIRef("http://www.w3.org/ns/shacl#class"),
+                rdflib.term.URIRef("https://w3id.org/linkml/tests/kitchen_sink/Person"),
+            ),
+            (
+                rdflib.term.URIRef("http://www.w3.org/ns/shacl#class"),
+                rdflib.term.URIRef("https://w3id.org/linkml/tests/kitchen_sink/Organization"),
+            ),
+        ],
+    ),
+    (
+        rdflib.term.URIRef("https://w3id.org/linkml/tests/kitchen_sink/AnyOfEnums"),
+        [
+            (
+                rdflib.term.URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#first"),
+                rdflib.term.URIRef("https://example.org/bizcodes/001"),
+            ),
+            (
+                rdflib.term.URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#first"),
+                rdflib.term.URIRef("https://example.org/bizcodes/002"),
+            ),
+            (
+                rdflib.term.URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#first"),
+                rdflib.term.URIRef("https://example.org/bizcodes/003"),
+            ),
+            (
+                rdflib.term.URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#first"),
+                rdflib.term.URIRef("https://example.org/bizcodes/004"),
+            ),
+            (rdflib.term.URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#first"), rdflib.term.Literal("TODO")),
+        ],
+    ),
+    (
+        rdflib.term.URIRef("https://w3id.org/linkml/tests/kitchen_sink/AnyOfMix"),
+        [
+            (
+                rdflib.term.URIRef("http://www.w3.org/ns/shacl#datatype"),
+                rdflib.term.URIRef("http://www.w3.org/2001/XMLSchema#integer"),
+            ),
+            (
+                rdflib.term.URIRef("http://www.w3.org/ns/shacl#class"),
+                rdflib.term.URIRef("https://w3id.org/linkml/tests/kitchen_sink/Person"),
+            ),
+            (
+                rdflib.term.URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#first"),
+                rdflib.term.URIRef("https://example.org/bizcodes/001"),
+            ),
+            (
+                rdflib.term.URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#first"),
+                rdflib.term.URIRef("https://example.org/bizcodes/002"),
+            ),
+            (
+                rdflib.term.URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#first"),
+                rdflib.term.URIRef("https://example.org/bizcodes/003"),
+            ),
+            (
+                rdflib.term.URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#first"),
+                rdflib.term.URIRef("https://example.org/bizcodes/004"),
+            ),
+        ],
+    ),
+]
+
+EXPECTED_any_of_with_suffix = [
     (
         rdflib.term.URIRef("https://w3id.org/linkml/tests/kitchen_sink/AnyOfSimpleTypeShape"),
         [
@@ -55,73 +143,28 @@ EXPECTED_any_of = [
             ),
         ],
     ),
-    (
-        rdflib.term.URIRef("https://w3id.org/linkml/tests/kitchen_sink/AnyOfEnumsShape"),
-        [
-            (
-                rdflib.term.URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#first"),
-                rdflib.term.URIRef("https://example.org/bizcodes/001"),
-            ),
-            (
-                rdflib.term.URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#first"),
-                rdflib.term.URIRef("https://example.org/bizcodes/002"),
-            ),
-            (
-                rdflib.term.URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#first"),
-                rdflib.term.URIRef("https://example.org/bizcodes/003"),
-            ),
-            (
-                rdflib.term.URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#first"),
-                rdflib.term.URIRef("https://example.org/bizcodes/004"),
-            ),
-            (rdflib.term.URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#first"), rdflib.term.Literal("TODO")),
-        ],
-    ),
-    (
-        rdflib.term.URIRef("https://w3id.org/linkml/tests/kitchen_sink/AnyOfMixShape"),
-        [
-            (
-                rdflib.term.URIRef("http://www.w3.org/ns/shacl#datatype"),
-                rdflib.term.URIRef("http://www.w3.org/2001/XMLSchema#integer"),
-            ),
-            (
-                rdflib.term.URIRef("http://www.w3.org/ns/shacl#class"),
-                rdflib.term.URIRef("https://w3id.org/linkml/tests/kitchen_sink/Person"),
-            ),
-            (
-                rdflib.term.URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#first"),
-                rdflib.term.URIRef("https://example.org/bizcodes/001"),
-            ),
-            (
-                rdflib.term.URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#first"),
-                rdflib.term.URIRef("https://example.org/bizcodes/002"),
-            ),
-            (
-                rdflib.term.URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#first"),
-                rdflib.term.URIRef("https://example.org/bizcodes/003"),
-            ),
-            (
-                rdflib.term.URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#first"),
-                rdflib.term.URIRef("https://example.org/bizcodes/004"),
-            ),
-        ],
-    ),
 ]
 
 
 def test_shacl(kitchen_sink_path):
     """tests shacl generation"""
     shaclstr = ShaclGenerator(kitchen_sink_path, mergeimports=True).serialize()
-    do_test(shaclstr, EXPECTED)
+    do_test(shaclstr, EXPECTED, EXPECTED_any_of)
 
 
 def test_shacl_closed(kitchen_sink_path):
     """tests shacl generation"""
     shaclstr = ShaclGenerator(kitchen_sink_path, mergeimports=True, closed=False).serialize()
-    do_test(shaclstr, EXPECTED_closed)
+    do_test(shaclstr, EXPECTED_closed, EXPECTED_any_of)
 
 
-def do_test(shaclstr, expected):
+def test_shacl_suffix(kitchen_sink_path):
+    """tests shacl generation with suffix option"""
+    shaclstr = ShaclGenerator(kitchen_sink_path, mergeimports=True, closed=True, suffix="Shape").serialize()
+    do_test(shaclstr, EXPECTED_suffix, EXPECTED_any_of_with_suffix)
+
+
+def do_test(shaclstr, expected, expected_any_of):
     g = rdflib.Graph()
     g.parse(data=shaclstr)
     triples = list(g.triples((None, None, None)))
@@ -129,7 +172,7 @@ def do_test(shaclstr, expected):
         assert et in triples
     # TODO: test shacl validation; pyshacl requires rdflib6
 
-    assert_any_of(EXPECTED_any_of, triples)
+    assert_any_of(expected_any_of, triples)
 
 
 def assert_any_of(
@@ -261,7 +304,7 @@ def test_custom_class_range_is_blank_node_or_iri(input_path):
     g = rdflib.Graph()
     g.parse(data=shacl)
 
-    container_properties = g.objects(URIRef("https://w3id.org/linkml/examples/personinfo/ContainerShape"), SH.property)
+    container_properties = g.objects(URIRef("https://w3id.org/linkml/examples/personinfo/Container"), SH.property)
     persons_node = next(container_properties, None)
     assert persons_node
 

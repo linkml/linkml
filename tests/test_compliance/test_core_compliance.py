@@ -475,7 +475,7 @@ def test_cardinality(framework, multivalued, required, data_name, value):
         "@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> ."
         "@prefix sh: <http://www.w3.org/ns/shacl#> ."
         "@prefix xsd: <http://www.w3.org/2001/XMLSchema#> ."
-        "ex:CShape a sh:NodeShape ;"
+        "ex:C a sh:NodeShape ;"
         "sh:closed true ;"
         "sh:ignoredProperties ( rdf:type ) ;"
         "sh:property [ sh:datatype xsd:string ;"

@@ -22,12 +22,12 @@ class ShaclGenerator(Generator):
     # ClassVars
     closed: bool = True
     """True means add 'sh:closed=true' to all shapes, except of mixin shapes and shapes, that have parents"""
-
+    suffix: str = ""
+    """parameterized suffix to be appended. No suffix per default."""
     generatorname = os.path.basename(__file__)
     generatorversion = "0.0.1"
     valid_formats = ["ttl"]
     file_extension = "shacl.ttl"
-    shape_suffix = "Shape"
     visit_all_class_slots = False
     uses_schemaloader = True
 
@@ -56,16 +56,15 @@ class ShaclGenerator(Generator):
         for pfx in self.schema.prefixes.values():
             g.bind(str(pfx.prefix_prefix), pfx.prefix_reference)
 
+        print(f"# class suffix: {self.suffix}")
         for c in sv.all_classes().values():
 
             def shape_pv(p, v):
                 if v is not None:
-                    g.add((class_uri_shape, p, v))
+                    g.add((class_uri_with_suffix, p, v))
 
             class_uri = URIRef(sv.get_uri(c, expand=True))
-            class_uri_shape = class_uri
-            if not class_uri_shape.endswith(self.shape_suffix):
-                class_uri_shape += self.shape_suffix
+            class_uri_with_suffix = class_uri + self.suffix
             shape_pv(RDF.type, SH.NodeShape)
             shape_pv(SH.targetClass, class_uri)  # TODO
             if self.closed:
@@ -220,6 +219,13 @@ def add_simple_data_type(func: Callable, r: ElementName) -> None:
     default=True,
     show_default=True,
     help="Use '--closed' to generate closed SHACL shapes. Use '--non-closed' to generate open SHACL shapes.",
+)
+@click.option(
+    "--suffix",
+    "-s",
+    default="",
+    show_default=True,
+    help="Use --suffix to append given string to SHACL class name (e. g. --suffix Shape: Person becomes PersonShape).",
 )
 @click.version_option(__version__, "-V", "--version")
 @click.command()
