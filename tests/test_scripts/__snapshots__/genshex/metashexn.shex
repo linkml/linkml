@@ -124,12 +124,6 @@ core:Agent CLOSED {
     } OR @<SubclassTest>
 )
 
-<ClassWithShape> CLOSED {
-    (  $<ClassWithShape_tes> rdf:type . * ;
-       rdf:type [ <ClassWithShape> ] ?
-    )
-}
-
 <CodeSystem> CLOSED {
     (  $<CodeSystem_tes> core:name @linkml:String ? ;
        rdf:type [ <CodeSystem> ]

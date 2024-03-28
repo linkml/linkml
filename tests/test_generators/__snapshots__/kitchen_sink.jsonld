@@ -264,9 +264,6 @@
       "ClassWithSpaces": {
          "@id": "ClassWithSpaces"
       },
-      "ClassWithShape": {
-         "@id": "ClassWithShape"
-      },
       "CodeSystem": {
          "@id": "CodeSystem"
       },

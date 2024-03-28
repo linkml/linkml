@@ -321,8 +321,6 @@ classes:
   tub sub class 1:
     description: Same depth as Sub sub class 1
     is_a: subclass test
-  ClassWithShape:
-    description: Class with Shape suffix
 
 
   AnyObject:

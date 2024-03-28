@@ -1931,14 +1931,6 @@
       "class_uri": "https://w3id.org/linkml/tests/kitchen_sink/TubSubClass1"
     },
     {
-      "name": "ClassWithShape",
-      "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/ClassWithShape",
-      "description": "Class with Shape suffix",
-      "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
-      "slot_usage": {},
-      "class_uri": "https://w3id.org/linkml/tests/kitchen_sink/ClassWithShape"
-    },
-    {
       "name": "AnyObject",
       "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/AnyObject",
       "description": "Example of unconstrained class",
