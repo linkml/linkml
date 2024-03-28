@@ -27,6 +27,7 @@ class ShaclGenerator(Generator):
     generatorversion = "0.0.1"
     valid_formats = ["ttl"]
     file_extension = "shacl.ttl"
+    shape_suffix = "Shape"
     visit_all_class_slots = False
     uses_schemaloader = True
 
@@ -59,9 +60,12 @@ class ShaclGenerator(Generator):
 
             def shape_pv(p, v):
                 if v is not None:
-                    g.add((class_uri, p, v))
+                    g.add((class_uri_shape, p, v))
 
             class_uri = URIRef(sv.get_uri(c, expand=True))
+            class_uri_shape = class_uri
+            if not class_uri_shape.endswith(self.shape_suffix):
+                class_uri_shape += self.shape_suffix
             shape_pv(RDF.type, SH.NodeShape)
             shape_pv(SH.targetClass, class_uri)  # TODO
             if self.closed:

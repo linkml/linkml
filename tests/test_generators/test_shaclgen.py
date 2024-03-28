@@ -9,20 +9,25 @@ from linkml.generators.shaclgen import ShaclGenerator
 
 EXPECTED = [
     (
-        rdflib.term.URIRef("https://w3id.org/linkml/tests/kitchen_sink/Person"),
+        rdflib.term.URIRef("https://w3id.org/linkml/tests/kitchen_sink/PersonShape"),
         rdflib.term.URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
         rdflib.term.URIRef("http://www.w3.org/ns/shacl#NodeShape"),
     ),
     (
-        rdflib.term.URIRef("https://w3id.org/linkml/tests/kitchen_sink/Person"),
+        rdflib.term.URIRef("https://w3id.org/linkml/tests/kitchen_sink/PersonShape"),
         rdflib.term.URIRef("http://www.w3.org/ns/shacl#closed"),
         rdflib.term.Literal("true", datatype=rdflib.term.URIRef("http://www.w3.org/2001/XMLSchema#boolean")),
+    ),
+    (
+        rdflib.term.URIRef("https://w3id.org/linkml/tests/kitchen_sink/ClassWithShape"),
+        rdflib.term.URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+        rdflib.term.URIRef("http://www.w3.org/ns/shacl#NodeShape"),
     ),
 ]
 
 EXPECTED_closed = [
     (
-        rdflib.term.URIRef("https://w3id.org/linkml/tests/kitchen_sink/Person"),
+        rdflib.term.URIRef("https://w3id.org/linkml/tests/kitchen_sink/PersonShape"),
         rdflib.term.URIRef("http://www.w3.org/ns/shacl#closed"),
         rdflib.term.Literal("false", datatype=rdflib.term.URIRef("http://www.w3.org/2001/XMLSchema#boolean")),
     ),
@@ -30,7 +35,7 @@ EXPECTED_closed = [
 
 EXPECTED_any_of = [
     (
-        rdflib.term.URIRef("https://w3id.org/linkml/tests/kitchen_sink/AnyOfSimpleType"),
+        rdflib.term.URIRef("https://w3id.org/linkml/tests/kitchen_sink/AnyOfSimpleTypeShape"),
         [
             (
                 rdflib.term.URIRef("http://www.w3.org/ns/shacl#datatype"),
@@ -43,7 +48,7 @@ EXPECTED_any_of = [
         ],
     ),
     (
-        rdflib.term.URIRef("https://w3id.org/linkml/tests/kitchen_sink/AnyOfClasses"),
+        rdflib.term.URIRef("https://w3id.org/linkml/tests/kitchen_sink/AnyOfClassesShape"),
         [
             (
                 rdflib.term.URIRef("http://www.w3.org/ns/shacl#class"),
@@ -56,7 +61,7 @@ EXPECTED_any_of = [
         ],
     ),
     (
-        rdflib.term.URIRef("https://w3id.org/linkml/tests/kitchen_sink/AnyOfEnums"),
+        rdflib.term.URIRef("https://w3id.org/linkml/tests/kitchen_sink/AnyOfEnumsShape"),
         [
             (
                 rdflib.term.URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#first"),
@@ -78,7 +83,7 @@ EXPECTED_any_of = [
         ],
     ),
     (
-        rdflib.term.URIRef("https://w3id.org/linkml/tests/kitchen_sink/AnyOfMix"),
+        rdflib.term.URIRef("https://w3id.org/linkml/tests/kitchen_sink/AnyOfMixShape"),
         [
             (
                 rdflib.term.URIRef("http://www.w3.org/ns/shacl#datatype"),
@@ -261,7 +266,7 @@ def test_custom_class_range_is_blank_node_or_iri(input_path):
     g = rdflib.Graph()
     g.parse(data=shacl)
 
-    container_properties = g.objects(URIRef("https://w3id.org/linkml/examples/personinfo/Container"), SH.property)
+    container_properties = g.objects(URIRef("https://w3id.org/linkml/examples/personinfo/ContainerShape"), SH.property)
     persons_node = next(container_properties, None)
     assert persons_node
 

@@ -188,6 +188,12 @@
             "title": "BirthEvent",
             "type": "object"
         },
+        "ClassWithShape": {
+            "additionalProperties": false,
+            "description": "Class with Shape suffix",
+            "title": "ClassWithShape",
+            "type": "object"
+        },
         "ClassWithSpaces": {
             "additionalProperties": false,
             "description": "",
