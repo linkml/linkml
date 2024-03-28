@@ -744,6 +744,12 @@ Available templates to override:
     default="forbid",
     help="How to handle extra fields in BaseModel.",
 )
+@click.option(
+    "--black",
+    is_flag=True,
+    default=False,
+    help="Format generated models with black (must be present in the environment)"
+)
 @click.version_option(__version__, "-V", "--version")
 @click.command()
 def cli(
@@ -757,6 +763,7 @@ def cli(
     array_representations=list("list"),
     pydantic_version=1,
     extra_fields: Literal["allow", "forbid", "ignore"] = "forbid",
+    black:bool=False,
     **args,
 ):
     """Generate pydantic classes to represent a LinkML model"""
@@ -782,6 +789,7 @@ def cli(
         gen_classvars=classvars,
         gen_slots=slots,
         template_dir=template_dir,
+        black=black,
         **args,
     )
     print(gen.serialize())
