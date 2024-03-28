@@ -3,7 +3,7 @@ import logging
 import os
 import textwrap
 from collections import defaultdict
-from copy import deepcopy
+from copy import copy, deepcopy
 from dataclasses import dataclass, field
 from pathlib import Path
 from types import ModuleType
@@ -28,6 +28,7 @@ from linkml_runtime.linkml_model.meta import (
 )
 from linkml_runtime.utils.compile_python import compile_python
 from linkml_runtime.utils.formatutils import camelcase, underscore
+from linkml_runtime.utils.yamlutils import remove_empty_items
 from linkml_runtime.utils.schemaview import SchemaView
 from pydantic.version import VERSION as PYDANTIC_VERSION
 
@@ -50,6 +51,7 @@ from linkml.generators.pydanticgen.template import (
     PydanticModule,
     TemplateModel,
 )
+from linkml.generators.pydanticgen import includes
 from linkml.utils.generator import shared_arguments
 from linkml.utils.ifabsent_functions import ifabsent_value_declaration
 
@@ -80,6 +82,7 @@ DEFAULT_IMPORTS = (
         module="typing",
         objects=[
             ObjectImport(name="Any"),
+            ObjectImport(name="ClassVar"),
             ObjectImport(name="List"),
             ObjectImport(name="Literal"),
             ObjectImport(name="Dict"),
@@ -95,6 +98,7 @@ DEFAULT_IMPORTS = (
             ObjectImport(name="BaseModel"),
             ObjectImport(name="ConfigDict"),
             ObjectImport(name="Field"),
+            ObjectImport(name="RootModel"),
             ObjectImport(name="field_validator"),
         ],
         alternative=Import(
@@ -103,6 +107,11 @@ DEFAULT_IMPORTS = (
         ),
     )
 )
+
+DEFAULT_INJECTS = {
+    1: [includes.LinkMLMeta_v1],
+    2: [includes.LinkMLMeta_v2]
+}
 
 
 @dataclass
@@ -530,7 +539,7 @@ class PydanticGenerator(OOCodeGenerator):
             description=schema.description.replace('"', '\\"') if schema.description else None,
         )
         enums = self.generate_enums(sv.all_enums())
-        injected_classes = []
+        injected_classes = copy(DEFAULT_INJECTS[self.pydantic_version])
         if self.injected_classes is not None:
             injected_classes += self.injected_classes
 
@@ -654,14 +663,20 @@ class PydanticGenerator(OOCodeGenerator):
                     predef_slot = str(predef_slot)
                 new_fields["predefined"] = predef_slot
                 new_fields["name"] = attr_name
-                attrs[attr_name] = PydanticAttribute(**new_fields, pydantic_ver=self.pydantic_version)
+                attr_meta = {k:v for k,v in remove_empty_items(src_attr).items() if k not in PydanticAttribute.exclude_from_meta() }
+
+                attrs[attr_name] = PydanticAttribute(**new_fields, pydantic_ver=self.pydantic_version, meta=attr_meta)
+
+            class_meta = {k:v for k,v in remove_empty_items(c).items() if k not in PydanticClass.exclude_from_meta() }
 
             new_class = PydanticClass(
-                name=k, attributes=attrs, description=c.description, pydantic_ver=self.pydantic_version
+                name=k, attributes=attrs, description=c.description, pydantic_ver=self.pydantic_version, meta=class_meta
             )
             if k in bases:
                 new_class.bases = bases[k]
             classes[k] = new_class
+
+        schema_meta = {k:v for k,v in remove_empty_items(schema).items() if k not in PydanticModule.exclude_from_meta() }
 
         module = PydanticModule(
             pydantic_ver=self.pydantic_version,
@@ -672,6 +687,7 @@ class PydanticGenerator(OOCodeGenerator):
             injected_classes=injected_classes,
             enums=enums,
             classes=classes,
+            meta=schema_meta
         )
         return module
 
