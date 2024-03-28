@@ -27,9 +27,8 @@ from linkml_runtime.linkml_model.meta import (
     TypeDefinition,
 )
 from linkml_runtime.utils.compile_python import compile_python
-from linkml_runtime.utils.formatutils import camelcase, underscore
+from linkml_runtime.utils.formatutils import camelcase, underscore, remove_empty_items
 from linkml_runtime.utils.schemaview import SchemaView
-from linkml_runtime.utils.yamlutils import remove_empty_items
 from pydantic.version import VERSION as PYDANTIC_VERSION
 
 from linkml._version import __version__
