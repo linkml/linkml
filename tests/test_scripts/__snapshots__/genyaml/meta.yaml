@@ -1583,6 +1583,12 @@ classes:
     - classWithSpaces__slot_with_space_1
     - subclassTest__slot_with_space_2
     class_uri: ks:TubSubClass1
+  ClassWithShape:
+    name: ClassWithShape
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/ClassWithShape
+    description: Class with Shape suffix
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    class_uri: ks:ClassWithShape
   AnyObject:
     name: AnyObject
     definition_uri: https://w3id.org/linkml/tests/kitchen_sink/AnyObject

@@ -62,6 +62,10 @@ type ClassWithSpaces
     slotWithSpace1: String
   }
 
+type ClassWithShape
+  {
+  }
+
 type CodeSystem
   {
     id: String!

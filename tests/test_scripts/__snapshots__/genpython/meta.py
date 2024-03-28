@@ -816,6 +816,18 @@ class TubSubClass1(SubclassTest):
     class_model_uri: ClassVar[URIRef] = KS.TubSubClass1
 
 
+class ClassWithShape(YAMLRoot):
+    """
+    Class with Shape suffix
+    """
+    _inherited_slots: ClassVar[List[str]] = []
+
+    class_class_uri: ClassVar[URIRef] = KS["ClassWithShape"]
+    class_class_curie: ClassVar[str] = "ks:ClassWithShape"
+    class_name: ClassVar[str] = "ClassWithShape"
+    class_model_uri: ClassVar[URIRef] = KS.ClassWithShape
+
+
 AnyObject = Any
 
 @dataclass

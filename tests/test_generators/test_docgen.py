@@ -512,6 +512,7 @@ def test_class_hierarchy_as_tuples(kitchen_sink_path, input_path):
         (1, "subclass test"),
         (2, "Sub sub class 2"),
         (2, "tub sub class 1"),
+        (0, "ClassWithShape"),
         (0, "CodeSystem"),
         (0, "Concept"),
         (1, "ProcedureConcept"),
